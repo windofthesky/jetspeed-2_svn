@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
@@ -28,6 +29,7 @@ import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
@@ -124,8 +126,12 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         //
         try
         {
+            RequestContext context = (RequestContext) request.getAttribute("org.apache.jetspeed.request.RequestContext");
             PortletWindow portletWindow = getPortletWindow(fragment);
-            container.renderPortlet(portletWindow, request, response);
+            HttpServletRequest servletRequest = context.getRequestForWindow(portletWindow);
+            HttpServletResponse servletResponse = context.getResponseForWindow(portletWindow);
+            
+            container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }
         catch (Exception e)
         {            
