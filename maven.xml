@@ -133,7 +133,8 @@ limitations under the License.
                ignoreFailures="false"/>
   </goal>
   
-  <goal name="allBuild"
+  
+   <goal name="allBuild"
         description="Build all jars and war">
     <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
@@ -183,97 +184,21 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/components/cm"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Component Manager jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="components/file-cache/project.xml,components/id-generator/project.xml,components/locator/project.xml,components/portlet-factory/project.xml"
-               goals="jar:install"
-               banner="Build and Install the Misc. Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/jetspeed"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Jetspeed Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/deploy-tool"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Jetspeed Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>			   
-    <maven:reactor
                basedir="${basedir}/content-server"
                includes="project.xml"
                goals="jar:install"
                banner="Build and Install the content server jar"
                postProcessing="false"
                ignoreFailures="false"/>
+
     <maven:reactor
-               basedir="${basedir}/components/rdbms"
-               includes="project.xml"
+               basedir="${basedir}"
+               includes="components/**/project.xml"
                goals="jar:install"
-               banner="Build and Install the RDBMS jar"
+               banner="Build and Install the Misc. Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
-   <maven:reactor
-               basedir="${basedir}/components/persistence"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Persistence jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/prefs"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Preferences Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/registry"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Registry Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/security"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Security Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-      <maven:reactor
-               basedir="${basedir}/components/capability"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Capability Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/profiler"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Profiler Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/components/page-manager"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Page Manager Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    
+
     <maven:reactor
                basedir="${basedir}/cps"
                includes="project.xml"
@@ -288,6 +213,7 @@ limitations under the License.
                banner="Build and Install the Portlet Taglibs"
                postProcessing="false"
                ignoreFailures="false"/>
+    
 
      <!-- Build war files -->
      <maven:reactor
