@@ -493,15 +493,12 @@ limitations under the License.
     <j:set var="dbase" value="${org.apache.jetspeed.production.database.default.name}"/>
     <j:choose>    
 	    <j:when test="${dbase == 'mysql'}" >
-            <copy  file="../src/sql/mysql/populate-entities-for-default-psml.sql" 
-                  tofile="../src/sql/populate-entities-temp.sql"/>  		
+        	<j:set var="database.arg.script" value="../src/sql/mysql/populate-entities-for-default-psml.sql" />
 	    </j:when>
 	    <j:otherwise>
-            <copy  file="../src/sql/populate-entities-for-default-psml.sql" 
-                   tofile="../src/sql/populate-entities-temp.sql"/>  			  		
+        	<j:set var="database.arg.script" value="../src/sql/populate-entities-for-default-psml.sql" />
 	    </j:otherwise>
 	</j:choose>	
-    <j:set var="database.arg.script" value="../src/sql/populate-entities-temp.sql" />
     <attainGoal name="db.production.properties"/>
     <attainGoal name="db.execute" />	
   </goal>
