@@ -19,7 +19,7 @@ limitations under the License.
   "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-	
+  <display-name>Jetspeed-2 Enterprise Portal</display-name>	
   <filter>
     <filter-name>ContentServer</filter-name>
     <filter-class>org.apache.jetspeed.contentserver.ContentFilter</filter-class>
