@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
+import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
@@ -86,6 +87,8 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         HttpServletRequest servletRequest = null;
         try
         {
+            PortletContainerServices.prepare("jetspeed");
+            
             PortletWindow portletWindow = getPortletWindow(fragment);
 
             servletRequest = request.getRequestForWindow(portletWindow);
