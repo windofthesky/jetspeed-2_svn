@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
+<%@page import="javax.portlet.PortletRequest" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
@@ -59,5 +60,9 @@ limitations under the License.
   </c:otherwise>
 
 </c:choose>
+<br><br>
+<b>Portlet Request - User info:</b>
+<br>Render request: <%= renderRequest.getAttribute(PortletRequest.USER_INFO) %>
+<br>Request: <%= request.getAttribute(PortletRequest.USER_INFO) %>
 <br>
 For help on role configuration select the help icon.
