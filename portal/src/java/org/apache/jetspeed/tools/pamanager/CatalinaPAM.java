@@ -38,9 +38,7 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     protected static final Log log = LogFactory.getLog("deployment");
 
     public CatalinaPAM(String server, int port, String user, String password) throws PortletApplicationException
-    {
-    	useDefaultPluginFordeploy = true;
-		
+    {		
         try
         {
             tomcatManager = new TomcatManager(server, port, user, password);
@@ -58,9 +56,9 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         
         try
         {            
-			super.deploy(webAppsDir, warFile, paName);
-            //checkResponse(tomcatManager.install(warFile, paName));
+            super.deploy(webAppsDir, warFile, paName);
             checkResponse(tomcatManager.install(webAppsDir + "/" + paName, paName));
+			
         }
         catch (PortletApplicationException pe)
         {
@@ -225,7 +223,7 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
      */
     private void checkResponse(String response) throws PortletApplicationException
     {
-        if (response == null || !response.startsWith("OK"))
+        if (response == null || (!response.startsWith("OK") && response.indexOf("Application already exists at path") == -1) )
         {
             if (response == null)
             {
