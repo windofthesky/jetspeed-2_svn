@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -231,8 +232,21 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
      */
     public Iterator getUsers(String filter)
     {
-        throw new UnsupportedOperationException("getUsers no implemented yet.");
-       // return null;
+        Collection users = new LinkedList();
+        PersistenceStore store = getPersistenceStore();       
+        Iterator result = store.getExtent(JetspeedUserPrincipalImpl.class).iterator();
+        while (result.hasNext())
+        {
+            JetspeedUserPrincipal omUser = (JetspeedUserPrincipal)result.next();
+            String path = omUser.getFullPath();
+            if (path == null || !path.startsWith("/user")) // TODO: FIXME: the extend shouldn't return roles!
+            {
+                continue;
+            }
+            User user = super.getUser(omUser);
+            users.add(user);
+        }
+        return users.iterator();
     }
 
     /**
