@@ -16,9 +16,9 @@ limitations under the License.
 -->
 <project>
   <body>
-    <links>
-      <item name="Jetspeed 2 Home" href="../../../site/target/docs/index.html"/>
-    </links>
+      <links>
+        <item name="Jetspeed 2" href="../../index.html"/>
+      </links>
     <menu name="Misc.">
       <item name="Tasks" href="tasks.html"/>
     </menu>

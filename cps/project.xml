@@ -22,9 +22,15 @@ limitations under the License.
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
-	  Common Portlet Services shared amongst portal applications
+      Common Portlet Services shared amongst portal applications
   </description>
   <shortDescription>Common Portlet Services</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/cps</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/cps/</url>
+  </repository>
+
   <dependencies>  	
    <dependency>
       <id>jetspeed-rdbms</id>
@@ -208,4 +214,23 @@ limitations under the License.
     </unitTest>
     
   </build>
+
+  <reports>
+    <report>maven-jdepend-plugin</report>
+<!--
+    <report>maven-checkstyle-plugin</report>
+-->
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
+
+
 </project>
