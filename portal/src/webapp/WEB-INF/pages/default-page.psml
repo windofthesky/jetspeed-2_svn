@@ -44,5 +44,9 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>        
+    <fragment id="16" type="portlet" name="HW_App::RoleSecurityTest">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="2" />
+    </fragment>        
   </fragment>
 </page>
