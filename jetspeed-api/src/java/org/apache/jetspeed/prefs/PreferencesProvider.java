@@ -14,9 +14,10 @@
  */
 package org.apache.jetspeed.prefs;
 
+import java.util.Collection;
 import java.util.prefs.Preferences;
 
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.prefs.om.Node;
 
 /**
  * <p>Utility component used to pass the {@link PersistenceStoreContainer} and
@@ -25,9 +26,21 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface PreferencesProvider
-{
-    PersistenceStore getPersistenceStore();
-
+{    
     boolean isPropertyManagerEnabled();
     
+    Node getNode( String fullPath, int nodeType ) throws NodeDoesNotExistException;
+    
+    boolean nodeExists( String fullPath, int nodeType );
+    
+    Node createNode( Node parent, String nodeName, int nodeType, String fullPath )
+    throws FailedToCreateNodeException, NodeAlreadyExistsException;
+    
+    Collection getChildren(Node parentNode);
+    
+    void storeNode(Node node);
+    
+    void removeNode(Node node);
+    
+    void init() throws Exception;
 }

@@ -51,8 +51,9 @@ public interface PropertyManager
      * @throws PropertyException Thrown if any property in the
      *                           set in already assigned to a property set
      *                           definition.
+     * @throws PreferencesException
      */
-    void addPropertyKeys(Preferences prefNode, Map propertyKeysMap) throws PropertyException;
+    void addPropertyKeys(Preferences prefNode, Map propertyKeysMap) throws PropertyException, PreferencesException;
 
     /**
      * <p>Returns the property keys available to a {@link Preferences} node whether
@@ -66,16 +67,18 @@ public interface PropertyManager
      * </ul>
      * @param prefNode The {@link Preferences} node.
      * @return The map of property keys names / types.
+     * @throws PreferencesException
      */
-    Map getPropertyKeys(Preferences prefNode);
+    Map getPropertyKeys(Preferences prefNode) throws PreferencesException;
 
     /**
      * <p>Remove the specified collection of property keys from the given preferences node.</p>
      * @param prefNode The {@link Preferences} node.
      * @param propertyKeys A collection of property key names.
      * @throws PropertyException Throws if delete fails.
+     * @throws PreferencesException
      */
-    void removePropertyKeys(Preferences prefNode, Collection propertyKeys) throws PropertyException;
+    void removePropertyKeys(Preferences prefNode, Collection propertyKeys) throws PropertyException, PreferencesException;
 
     /**
      * <p>Update a property key.</p>
@@ -84,8 +87,9 @@ public interface PropertyManager
      * @param newPropertyKey The property key name / type map used to
      *                       update the old property.
      * @throws PropertyException Throws if update fails.
+     * @throws PreferencesException
      */
     void updatePropertyKey(String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey)
-        throws PropertyException;
+        throws PropertyException, PreferencesException;
 
 }
