@@ -206,17 +206,18 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
         return null;
     }
     
+/*
     private void publishServices()
     throws CPSInitializationException
     {
         try
         {
             Hashtable env = new Hashtable();
-            env.put(Context.INITIAL_CONTEXT_FACTORY,  
+             env.put(Context.INITIAL_CONTEXT_FACTORY,  
                 "com.sun.jndi.fscontext.FSContextFactory");
-            env.put(Context.PROVIDER_URL, "file:/");
-            //env.put(Context.OBJECT_FACTORIES, "foo.bar.ObjFactory");
-            //env.put("foo", "bar");            
+             env.put(Context.PROVIDER_URL, "file:/");
+            env.put(Context.OBJECT_FACTORIES, "foo.bar.ObjFactory");
+            env.put("foo", "bar");            
             Context ctx = new InitialContext(env);        
             ctx.bind("cps/services", this);
         }
@@ -225,7 +226,7 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
             throw new CPSInitializationException(e.toString()); 
         }
     }
- 
+*/ 
     public boolean isInitialized()
     {
         return initialized;
