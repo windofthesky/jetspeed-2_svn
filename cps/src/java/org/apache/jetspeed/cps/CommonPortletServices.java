@@ -53,8 +53,13 @@
  */
 package org.apache.jetspeed.cps;
 
+import java.util.Hashtable;
 import java.util.Properties;
 import java.io.FileInputStream;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,6 +82,8 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
 
     private static final Log log = LogFactory.getLog(CommonPortletServices.class);
 
+    private boolean initialized = false;
+    
     /**
      * This constructor is protected to force clients to use
      * getInstance() to access this class.
@@ -92,7 +99,7 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
      * @return The single instance of this class.
      */
     public static CommonPortletServices getInstance()
-    {
+    {        
         return instance;
     }
 
@@ -116,6 +123,11 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
     {
         try
         {
+            if (initialized)
+            {
+                return;
+            }
+            
             //
             // bootstrap the initable services
             //
@@ -193,5 +205,29 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
         }
         return null;
     }
-
+    
+    private void publishServices()
+    throws CPSInitializationException
+    {
+        try
+        {
+            Hashtable env = new Hashtable();
+            env.put(Context.INITIAL_CONTEXT_FACTORY,  
+                "com.sun.jndi.fscontext.FSContextFactory");
+            env.put(Context.PROVIDER_URL, "file:/");
+            //env.put(Context.OBJECT_FACTORIES, "foo.bar.ObjFactory");
+            //env.put("foo", "bar");            
+            Context ctx = new InitialContext(env);        
+            ctx.bind("cps/services", this);
+        }
+        catch (NamingException e)
+        {
+            throw new CPSInitializationException(e.toString()); 
+        }
+    }
+ 
+    public boolean isInitialized()
+    {
+        return initialized;
+    }
 }

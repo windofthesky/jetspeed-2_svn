@@ -40,7 +40,7 @@
   	
   	 <dependency>
       <id>commons-beanutils</id>
-      <version>1.6</version>
+      <version>1.6.1</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
