@@ -91,7 +91,7 @@ public class FileObjectHandler implements FSObjectHandler
     /**
      * @see org.apache.jetspeed.deployment.fs.FSObjectHandler#getConfiguration()
      */
-    public Configuration getConfiguration(String configPath)
+    public InputStream getConfiguration(String configPath)
     {
         // TODO Auto-generated method stub
         return null;

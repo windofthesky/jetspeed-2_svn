@@ -65,6 +65,8 @@ import java.util.jar.JarInputStream;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>
@@ -81,6 +83,8 @@ public class JARObjectHandlerImpl implements FSObjectHandler
 	private JarInputStream content;
 	
     private JarFile jarFile;
+    
+    private static final Log log = LogFactory.getLog("deployment"); 
     /**
      * @see org.apache.jetspeed.deployment.fs.FSObjectHandler#getPath()
      */
@@ -142,13 +146,17 @@ public class JARObjectHandlerImpl implements FSObjectHandler
     /**
      * @see org.apache.jetspeed.deployment.fs.FSObjectHandler#getConfiguration()
      */
-    public Configuration getConfiguration(String configPath) throws IOException
+    public InputStream getConfiguration(String configPath) throws IOException
     {
     	JarEntry jarEntry = jarFile.getJarEntry(configPath);
-    	InputStream configStream = jarFile.getInputStream(jarEntry);
-		PropertiesConfiguration conf = new PropertiesConfiguration();
-    	conf.load(configStream);
-    	return conf;       
+    	// null indicates this is probably not a deployment
+    	// we need to be concerned about 
+    	if(jarEntry == null)
+    	{
+    		return null;
+    	}
+    	return jarFile.getInputStream(jarEntry);
+		
     }
 
 }
