@@ -21,10 +21,12 @@ import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.ParsedObject;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.Language;
@@ -35,6 +37,13 @@ import org.apache.pluto.om.common.Language;
 public class PortletDefinitionHandler extends AbstractObjectHandler
 {
     private static final String KEY_PREFIX = "PortletDefinition::";
+    private static final String ID = "ID";
+    private static final String PORTLET_APPLICATION = "portlet_application";
+    
+    {
+        fields.add(ID);
+        fields.add(PORTLET_APPLICATION);
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.ObjectHandler#parseObject(java.lang.Object)
@@ -47,26 +56,45 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             result = new BaseParsedObject();
             PortletDefinitionComposite pd = (PortletDefinitionComposite)o;
             
+            //need to get Locale here
+            String displayNameText = pd.getDisplayNameText(JetspeedLocale.getDefaultLocale());
+            result.setTitle(displayNameText);
+            
+            String description = pd.getDescriptionText(JetspeedLocale.getDefaultLocale());
+            result.setDescription(description);
+            
+            result.setClassName(pd.getClass().getName());
+            result.setKey(KEY_PREFIX + pd.getUniqueName());
+            result.setType(ParsedObject.OBJECT_TYPE_PORTLET);
+            
+            //TODO: this is common to PAs as well, possible refactor
+            MultiHashMap fieldMap = new MultiHashMap();
+            fieldMap.put(ID, pd.getName());
+            
+            PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
+            fieldMap.put(PORTLET_APPLICATION, pa.getName()); 
+            
+            Collection mdFields = pd.getMetadata().getFields();
+            for (Iterator fieldIter = mdFields.iterator(); fieldIter.hasNext();)
+            {
+                LocalizedField field = (LocalizedField) fieldIter.next();                
+                fieldMap.put(field.getName(), field.getValue());
+            }
+            
             //Handle descriptions
-            StringBuffer descBuffer = new StringBuffer();
             Iterator descIter = pd.getDescriptionSet().iterator();
             while (descIter.hasNext())
             {
                 Description desc = (Description) descIter.next();
-                descBuffer.append(desc.getDescription());
-                descBuffer.append(" ");
+                fieldMap.put(ParsedObject.FIELDNAME_DESCRIPTION, desc.getDescription());
             }
             
-            result.setDescription(descBuffer.toString());
-            
             //Handle keywords and titles
-            StringBuffer titleBuffer = new StringBuffer();
             Iterator displayNameIter = pd.getDisplayNameSet().iterator();
             while (displayNameIter.hasNext())
             {
                 DisplayName displayName = (DisplayName) displayNameIter.next();
-                titleBuffer.append(displayName.getDisplayName());
-                titleBuffer.append(" ");
+                fieldMap.put(ParsedObject.FIELDNAME_TITLE, displayName.getDisplayName());
             }
             
             HashSet keywordSet = new HashSet();
@@ -75,10 +103,8 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             while (langIter.hasNext())
             {
                 Language lang = (Language) langIter.next();
-                titleBuffer.append(lang.getTitle());
-                titleBuffer.append(" ");
-                titleBuffer.append(lang.getShortTitle());
-                titleBuffer.append(" ");
+                fieldMap.put(ParsedObject.FIELDNAME_TITLE, lang.getTitle());
+                fieldMap.put(ParsedObject.FIELDNAME_TITLE, lang.getShortTitle());
                 
                 Iterator keywordIter = lang.getKeywords();
                 while (keywordIter.hasNext())
@@ -88,25 +114,9 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
                 }
             }
             
-            result.setTitle(titleBuffer.toString());
-            result.setClassName(pd.getClass().getName());
-            result.setKey(KEY_PREFIX + pd.getUniqueName());
-            result.setType(ParsedObject.OBJECT_TYPE_PORTLET);
-            
             String[] temp = new String[keywordSet.size()];
             result.setKeywords((String[])keywordSet.toArray(temp));
-            
-            //TODO: this is common to PAs as well, possible refactor
-            MultiHashMap fieldMap = new MultiHashMap();
-            
-            Collection mdFields = pd.getMetadata().getFields();
-            for (Iterator fieldIter = mdFields.iterator(); fieldIter.hasNext();)
-            {
-                LocalizedField field = (LocalizedField) fieldIter.next();
-                
-                fieldMap.put(field.getName(), field.getValue());
-                this.fields.add(field.getName());
-            }
+            result.setFields(fieldMap);
         }
         return result;
     }

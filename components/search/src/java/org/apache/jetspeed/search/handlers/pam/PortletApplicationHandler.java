@@ -32,6 +32,11 @@ import org.apache.jetspeed.search.ParsedObject;
 public class PortletApplicationHandler extends AbstractObjectHandler
 {
     private static final String KEY_PREFIX = "PortletApplication::";
+    private static final String ID = "ID";
+    
+    {
+        fields.add(ID);        
+    }
 
     /** 
      * @see org.apache.jetspeed.search.ObjectHandler#parseObject(java.lang.Object)
@@ -49,15 +54,17 @@ public class PortletApplicationHandler extends AbstractObjectHandler
 	        result.setTitle(pa.getName());
 	        result.setKey(KEY_PREFIX + pa.getName());
 	        result.setType(ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION);
+	        result.setClassName(pa.getClass().getName());
 	        
 	        MultiHashMap fieldMap = new MultiHashMap();
+	        fieldMap.put(ID, pa.getName());
 	        
 	        Collection fields = pa.getMetadata().getFields();
 	        for (Iterator fieldIter = fields.iterator(); fieldIter.hasNext();)
             {
                 LocalizedField field = (LocalizedField) fieldIter.next();
                 fieldMap.put(field.getName(), field.getValue());
-                this.fields.add(field.getName());
+                //this.fields.add(field.getName());
             }
 	        
 	        result.setFields(fieldMap);
