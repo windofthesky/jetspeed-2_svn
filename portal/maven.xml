@@ -477,9 +477,11 @@ limitations under the License.
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/WEB-INF/classes">
       <fileset dir="${basedir}/target/classes" />
     </copy>
+    <!--
      <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}">
       <fileset dir="${basedir}/src/webapp" />
     </copy>
+    -->
   </goal>
 
   <goal name="catalina:base-shared"
