@@ -37,6 +37,7 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.configuration.Configuration;
@@ -1128,6 +1129,21 @@ public class JetspeedPowerTool implements ViewTool
     public Object getComponent(String name)
     {
         return Jetspeed.getComponentManager().getComponent(name);
+    }
+    
+    public String getAbsoluteUrl(String relativePath)
+    {
+        HttpServletRequest request = Jetspeed.getCurrentRequestContext().getRequest();
+        StringBuffer path = new StringBuffer();
+        return path.append(request.getScheme())
+        .append("://")
+        .append(request.getServerName())
+        .append(":")
+        .append(request.getServerPort())
+        .append(request.getContextPath())
+        .append(request.getServletPath())
+        .append(relativePath)
+        .toString(); 
     }
     
 }
