@@ -21,8 +21,7 @@ import java.util.Iterator;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.capabilities.impl.JetspeedCapabilities;
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 /**
  * Test Capability Service
@@ -30,21 +29,10 @@ import org.apache.jetspeed.components.persistence.store.util.PersistenceSupporte
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends PersistenceSupportedTestCase
+public class TestCapability extends DatasourceEnabledSpringTestCase
 {
     private Capabilities capabilities = null;
-    
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestCapability(String name)
-    {
-        super(name);
-    }
-
-    
+        
     /**
      * Start the tests.
      *
@@ -59,8 +47,7 @@ public class TestCapability extends PersistenceSupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();               
-
-        capabilities = new JetspeedCapabilities(persistenceStore);        
+        this.capabilities = (Capabilities) ctx.getBean("capabilities");
     }
     
     public static Test suite()
@@ -150,4 +137,9 @@ public class TestCapability extends PersistenceSupportedTestCase
         }
     }
 
+    protected String[] getConfigurations()
+    {
+        return new String[] {"/META-INF/test-spring.xml"};
+    }
+    
 }

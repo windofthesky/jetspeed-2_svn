@@ -29,8 +29,10 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.QueryByCriteria;
+import org.apache.ojb.broker.query.QueryFactory;
 
 /**
  * Jetspeed Capabilities
@@ -39,7 +41,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class JetspeedCapabilities implements Capabilities 
+public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport implements Capabilities 
 {
     private String originalAlias;
 
@@ -59,11 +61,10 @@ public class JetspeedCapabilities implements Capabilities
     private Class capabilityClass = CapabilityImpl.class;
     private Class mimeTypeClass = MimeTypeImpl.class;
     private Class mediaTypeClass = MediaTypeImpl.class;
-    private PersistenceStore persistenceStore;
 
-    public JetspeedCapabilities(PersistenceStore persistenceStore)
+    public JetspeedCapabilities(String repositoryPath)
     {
-         this.persistenceStore = persistenceStore;
+        super(repositoryPath);
     }
     
     /**
@@ -79,9 +80,9 @@ public class JetspeedCapabilities implements Capabilities
      * @param persistenceStore  The persistence persistenceStore 
      * @param properties  Properties for this component described above
      */
-    public JetspeedCapabilities(PersistenceStore persistenceStore, Properties properties)
+    public JetspeedCapabilities(String repositoryPath, Properties properties)
 	{
-        this(persistenceStore);
+        super(repositoryPath);
         initModelClasses(properties);
     }
     
@@ -294,7 +295,8 @@ public class JetspeedCapabilities implements Capabilities
         if (null == clients)
         {
                 
-            this.clients = persistenceStore.getExtent(ClientImpl.class);
+            this.clients = getPersistenceBrokerTemplate().getCollectionByQuery(
+                    QueryFactory.newQuery(clientClass, new Criteria()));
         }
 
         return this.clients.iterator();
@@ -307,7 +309,7 @@ public class JetspeedCapabilities implements Capabilities
     {
         //Find the MediaType by matching the Mimetype
         
-        Filter filter = persistenceStore.newFilter();        
+        Criteria filter = new Criteria();
 
         Vector temp = new Vector();
         // Add Mimetypes to map and create query
@@ -326,8 +328,8 @@ public class JetspeedCapabilities implements Capabilities
         if (temp.size() > 0)
         {
             filter.addIn("mimetypes.name", temp);
-            Object query = persistenceStore.newQuery(mediaTypeClass, filter);
-            co = persistenceStore.getCollectionByQuery(query);
+            QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
+            co = getPersistenceBrokerTemplate().getCollectionByQuery(query);            
         }
 
         if (co == null || co.isEmpty())
@@ -353,12 +355,11 @@ public class JetspeedCapabilities implements Capabilities
      * @see org.apache.jetspeed.capabilities.CapabilityService#getMediaType(java.lang.String)
      */
     public MediaType getMediaType(String mediaType)
-    {
-        
-        Filter filter = persistenceStore.newFilter();        
+    {        
+        Criteria filter = new Criteria();        
         filter.addEqualTo("name", mediaType);
-        Object query = persistenceStore.newQuery(mediaTypeClass, filter);
-        return (MediaType) persistenceStore.getObjectByQuery(query);
+        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
+        return (MediaType) getPersistenceBrokerTemplate().getObjectByQuery(query);                   
     }
 
     /**
@@ -369,12 +370,13 @@ public class JetspeedCapabilities implements Capabilities
     public MediaType getMediaTypeForMimeType(String mimeTypeName)
     {               
         //Find the MediaType by matching the Mimetype
-        
-        
-        Filter filter = persistenceStore.newFilter();        
+                
+        Criteria filter = new Criteria();       
         filter.addEqualTo("mimetypes.name", mimeTypeName);
-        Object query = persistenceStore.newQuery(mediaTypeClass, filter);        
-        Collection mediaTypeCollection = persistenceStore.getCollectionByQuery(query);                
+        
+        QueryByCriteria query = QueryFactory.newQuery(mediaTypeClass, filter);
+        Collection mediaTypeCollection = getPersistenceBrokerTemplate().getCollectionByQuery(query);                    
+        
         Iterator mtIterator = mediaTypeCollection.iterator();
         if (mtIterator.hasNext())
         {

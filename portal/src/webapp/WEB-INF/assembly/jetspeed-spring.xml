@@ -112,39 +112,14 @@ limitations under the License.
   	   <!-- Cache size -->
   	   <constructor-arg index="1"><value>100</value></constructor-arg>  	   
   </bean>
-  
-  <!-- Persistence Store -->
-  <bean id="persistenceStoreTarget" 
-  	   class="org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore"  	   
-  	   singleton="false" >  	   
-  	   <!-- Name of the DataSource to use for DB operations -->
-  	   <constructor-arg index="0"><value>jetspeed</value></constructor-arg>
-  </bean>
-  
-  <!-- Makes it so that each thread has an its own instance of the PersistenceStore -->
-  <bean id="threadLocalPersistenceStore" 
-  	    class="org.springframework.aop.target.ThreadLocalTargetSource">
-     <property name="targetBeanName">
-     	<value>persistenceStoreTarget</value>
-     </property>
-  </bean>
-
-  <!-- Helps generate our pre-thread PersistenceStore instance -->
-  <bean id="org.apache.jetspeed.components.persistence.store.PersistenceStore"
-        class="org.springframework.aop.framework.ProxyFactoryBean"
-  >             
-       <property name="targetSource"><ref local="threadLocalPersistenceStore"/></property>
-       <property name="proxyInterfaces"><value>org.apache.jetspeed.components.persistence.store.PersistenceStore</value></property>
-  </bean>
-  
+    
   <!-- Portlet Registry DAO-->
   <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
     	<constructor-arg>
     		<value>META-INF/registry_repository.xml</value>
     	</constructor-arg>
     </bean>
-		
-    
+		    
 	<bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry"
 		  name="portletRegistry"
 		  parent="baseTransactionProxy" >
@@ -271,11 +246,29 @@ limitations under the License.
 		</property>		  	   
   </bean>
   
-  <!-- Capabillites -->
+  <!-- Capabilities DAO-->
+  <bean id="capabilitiesImpl" class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities" init-method="init">
+    	<constructor-arg>
+    		<value>META-INF/capabilities-ojb.xml</value>
+    	</constructor-arg>
+    </bean>
+  
+  <!-- Capabilities -->  
   <bean id="org.apache.jetspeed.capabilities.Capabilities" 
-  	   class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities"
+        name="capabilities"
+        parent="baseTransactionProxy"        
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.capabilities.Capabilities</value>
+		</property>
+		<property name="target">
+			<ref bean="capabilitiesImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>		  	   
   </bean>
   
    

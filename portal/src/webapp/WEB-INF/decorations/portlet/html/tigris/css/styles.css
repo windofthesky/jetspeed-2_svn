@@ -30,7 +30,7 @@ limitations under the License.
     Specify the height of the image used
     else it will use the text height    
     **/
-    height:10px;    
+    height:8px;    
     font-weight:bold;
 }
  
@@ -46,7 +46,7 @@ limitations under the License.
 {
     padding: 2px;
     overflow : scroll;
-
+	border: 1px solid #999999
 }
 
 .portlet-tigris .PContentRight
