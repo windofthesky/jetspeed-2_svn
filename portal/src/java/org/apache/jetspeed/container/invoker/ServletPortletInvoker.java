@@ -77,6 +77,7 @@ import org.apache.jetspeed.container.PortletContextFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.servlet.WebApplicationDefinition;
 
 /**
  * ServletPortletInvoker invokes portlets in another web application, calling a 
@@ -199,7 +200,12 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     {
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
 
-        String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
+        WebApplicationDefinition webApplicationDefinition = app.getWebApplicationDefinition();
+        if(webApplicationDefinition == null)
+        {
+        	throw new IllegalStateException("Portlet application "+app.getName()+ " has no associated web application.");
+        }
+        String portletApplicationName = webApplicationDefinition.getContextRoot();
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
