@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -42,7 +43,7 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
-
+    
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
@@ -56,7 +57,7 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
         boolean maximized = (window != null);
         
-        request.setAttribute("page", getPage(request));
+        request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY, getPage(request));
         request.setAttribute("fragment", getFragment(request, maximized));
         request.setAttribute("dispatcher", getDispatcher(request));
         if (maximized)
@@ -102,7 +103,7 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
 
         super.doView(request, response);
 
-        request.removeAttribute("page");
+        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
         request.removeAttribute("fragment");        
         request.removeAttribute("layout");
         request.removeAttribute("dispatcher");
@@ -131,7 +132,7 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     {
         // Very ugly and Pluto dependant but I don't see anything better right now
         ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        Page page = (Page) innerRequest.getAttribute("org.apache.jetspeed.Page");
+        Page page = (Page) innerRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
 
         return page;
     }

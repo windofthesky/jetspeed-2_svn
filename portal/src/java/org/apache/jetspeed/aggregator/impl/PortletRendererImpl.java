@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
@@ -92,7 +93,7 @@ public class PortletRendererImpl implements PortletRenderer, Startable
 
             servletRequest.setAttribute("org.apache.jetspeed.ContentDispatcher",getDispatcher(request,true));
             servletRequest.setAttribute("org.apache.jetspeed.Fragment",fragment);
-            servletRequest.setAttribute("org.apache.jetspeed.Page",request.getPage());
+            servletRequest.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY,request.getPage());
 
             // should we decorate here instead of rendering Portlet ?
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
@@ -107,7 +108,7 @@ public class PortletRendererImpl implements PortletRenderer, Startable
             {
                 servletRequest.removeAttribute("org.apache.jetspeed.ContentDispatcher");
                 servletRequest.removeAttribute("org.apache.jetspeed.Fragment");
-                servletRequest.removeAttribute("org.apache.jetspeed.Page");
+                servletRequest.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
             }
         }
     }
