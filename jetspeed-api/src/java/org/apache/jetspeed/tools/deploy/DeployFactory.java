@@ -28,8 +28,8 @@ public interface DeployFactory
      *
      * @param inputWarPath
      * @param outputWarPath
-     * @param registerAtInit
+     * @param stripLoggers
      * @return Deploy instance
      */
-    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean registerAtInit) throws Exception;
+    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers) throws Exception;
 }
