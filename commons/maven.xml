@@ -4,4 +4,10 @@
          xmlns:define="jelly:define"
          xmlns:reactor="reactor">
 
+  <goal name="deployJar">
+  	<attainGoal name="jar:install"/>
+
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${catalina.shared.lib}"/>
+  </goal>
+
 </project>
