@@ -179,7 +179,11 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     public String getName()
     {
         String path = getPath();
-        String parentName = getParent().getPath()+"/";
+        String parentName = "";
+        if(getParent() != null)
+        {
+            parentName = getParent().getPath()+"/";
+        }
         
         if(path.indexOf(parentName) > -1)
         {
