@@ -335,14 +335,17 @@ protected void setUp() throws Exception
 
         Folder folder1 = pageManager.getFolder("folder1");
         assertNotNull(folder1);
+                
         assertEquals(2, folder1.getFolders().size());
         Iterator childItr = folder1.getFolders().iterator();
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
+        assertEquals("default-page.psml", folder2.getDefaultPage());
         assertEquals("folder1/folder2", folder2.getPath());
         assertEquals("folder2", folder2.getName());
         Folder folder3 = (Folder) childItr.next();
         assertEquals("folder1/folder3", folder3.getPath());
+        assertEquals("test001.psml", folder3.getDefaultPage());
 
         assertEquals(1, folder2.getPages().size());
         assertEquals(2, folder3.getPages().size());
@@ -372,12 +375,17 @@ protected void setUp() throws Exception
         assertTrue(folder3.getLinks().get("Jetspeed2.link").isHidden());
         assertFalse(folder3.getLinks().get("apache.link").isHidden());
         
+        assertNotNull(folder3.getAllNodes().get("Jetspeed2.link"));
+        assertNull(folder3.getAllNodes().exclusiveSubset("Jetspeed2\\.link").get("Jetspeed2.link"));
+        assertNull(folder3.getAllNodes().inclusiveSubset("apache\\.link").get("Jetspeed2.link"));
+        assertNotNull(folder3.getAllNodes().inclusiveSubset("apache\\.link").get("apache.link"));
+        
 
     }
 
     public void testFolderMetaData() throws Exception
     {
-        Folder folder1French = pageManager.getFolder("folder1");
+        Folder folder1French = pageManager.getFolder("folder1");        
 ;
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRENCH));
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRANCE));

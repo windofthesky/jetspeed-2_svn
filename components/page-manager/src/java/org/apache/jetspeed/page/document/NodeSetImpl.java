@@ -26,128 +26,124 @@ import java.util.TreeMap;
  * PageSetImpl
  * </p>
  * <p>
- *
+ * 
  * </p>
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
 public class NodeSetImpl implements NodeSet
-{    
+{
     private Map nodes;
     private Map subsets;
     private String resolveToPath;
     private Comparator comparator;
-    
-    
-    public NodeSetImpl(String resolveToPath)
+
+    public NodeSetImpl( String resolveToPath )
     {
-         this.resolveToPath = resolveToPath;    
-         nodes = new TreeMap();
-         subsets = new HashMap();
+        this.resolveToPath = resolveToPath;
+        nodes = new TreeMap();
+        subsets = new HashMap();
     }
-    
+
     /**
      * 
      * @param resolveToPath
      * @param comparator
      */
-    public NodeSetImpl(String resolveToPath, Comparator comparator)
+    public NodeSetImpl( String resolveToPath, Comparator comparator )
     {
-         this.resolveToPath = resolveToPath;
-         nodes = new TreeMap(comparator);
-         this.comparator = comparator;
-         subsets = new HashMap();
+        this.resolveToPath = resolveToPath;
+        nodes = new TreeMap(comparator);
+        this.comparator = comparator;
+        subsets = new HashMap();
     }
-    
+
     /**
      * 
      * <p>
      * get
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.page.document.NodeSet#get(java.lang.String)
      * @param name
      * @return
      */
     public Node get( String name )
-    {    
-      
-       if(nodes.containsKey(name))
-       {
-           return (Node) nodes.get(name);
-       }
-       else if(resolveToPath != null)
-       {
-           if(resolveToPath.endsWith("/"))
-           {
-               return (Node) nodes.get(resolveToPath + name);
-           }
-           else
-           {
-               return (Node) nodes.get(resolveToPath + "/" + name);
-           }
-       }
-       
-       return null;
-    }
-    
+    {
 
-    
+        if (nodes.containsKey(name))
+        {
+            return (Node) nodes.get(name);
+        }
+        else if (resolveToPath != null)
+        {
+            if (resolveToPath.endsWith("/"))
+            {
+                return (Node) nodes.get(resolveToPath + name);
+            }
+            else
+            {
+                return (Node) nodes.get(resolveToPath + "/" + name);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * 
      * <p>
      * add
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.page.document.NodeSet#add(org.apache.jetspeed.page.document.Node)
      * @param document
      */
-    public void add(Node node)
-    {      
-        nodes.put(node.getPath(), node);  
+    public void add( Node node )
+    {
+        nodes.put(node.getPath(), node);
         String path = node.getPath();
-        if(subsets.containsKey(node.getType()))
+        if (subsets.containsKey(node.getType()))
         {
-            ((NodeSet)subsets.get(node.getType())).add(node);
+            ((NodeSet) subsets.get(node.getType())).add(node);
         }
-        
+
     }
 
     /**
      * <p>
      * size
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.om.page.DocumentSet#size()
      * @return
      */
     public int size()
-    {       
+    {
         return nodes.size();
     }
-    
+
     /**
      * 
      * <p>
      * iterator
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.page.document.NodeSet#iterator()
      * @return
      */
     public Iterator iterator()
-    {        
+    {
         return nodes.values().iterator();
     }
-    
-    
 
     /**
      * <p>
      * subset
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.page.document.NodeSet#iteratorOverType(java.lang.String)
      * @param type
      * @return
@@ -155,26 +151,79 @@ public class NodeSetImpl implements NodeSet
     public NodeSet subset( String type )
     {
         NodeSet subset = (NodeSet) subsets.get(type);
-        if(subset == null)
-        {      
+        if (subset == null)
+        {
 
-           
-            if(subset == null)
+            if (subset == null)
             {
                 subset = new NodeSetImpl(resolveToPath, comparator);
                 subsets.put(type, subset);
             }
-            
+
             Iterator nodeItr = nodes.values().iterator();
-            while(nodeItr.hasNext())
+            while (nodeItr.hasNext())
             {
                 Node node = (Node) nodeItr.next();
-                if(node.getType().equals(type))
+                if (node.getType().equals(type))
                 {
                     subset.add(node);
-                }              
-            }          
-        }   
+                }
+            }
+        }
+
+        return subset;
+    }
+
+    /**
+     * <p>
+     * exclusiveSubset
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.NodeSet#exclusiveSubset(java.lang.String)
+     * @param regex
+     * @return
+     */
+    public NodeSet exclusiveSubset( String regex )
+    {
+        Iterator allNodes = nodes.entrySet().iterator();
+        NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
+        while (allNodes.hasNext())
+        {
+            Map.Entry entry = (Map.Entry) allNodes.next();
+            Node node = (Node) entry.getValue();
+            String key = (String) entry.getKey();
+            if (!key.matches(regex) && !node.getName().matches(regex))
+            {
+                subset.add(node);
+            }
+        }
+        
+        return subset;
+    }
+
+    /**
+     * <p>
+     * inclusiveSubset
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.NodeSet#inclusiveSubset(java.lang.String)
+     * @param regex
+     * @return
+     */
+    public NodeSet inclusiveSubset( String regex )
+    {
+        Iterator allNodes = nodes.entrySet().iterator();
+        NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
+        while (allNodes.hasNext())
+        {
+            Map.Entry entry = (Map.Entry) allNodes.next();
+            String key = (String) entry.getKey();
+            Node node = (Node) entry.getValue();
+            if (key.matches(regex) || node.getName().matches(regex))
+            {
+                subset.add(node);
+            }
+        }
         
         return subset;
     }
