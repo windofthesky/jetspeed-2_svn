@@ -145,4 +145,8 @@ public class PortletApplicationBean implements PortletApplication
         return pa.getWebApplicationDefinition();
     }
 
+    public Collection getJetspeedServices()
+    {
+        return pa.getJetspeedServices();
+    }
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -63,6 +64,9 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     
     /** Metadata property */
     private Collection metadataFields = null;
+
+    /** Metadata property */
+    private Collection services = null;
     
     /** Description */
     private String description;
@@ -332,6 +336,31 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     protected void setMetadataFields(Collection metadataFields)
     {
         this.metadataFields = metadataFields;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getJetspeedServices()
+     */
+    public Collection getJetspeedServices()
+    {
+        if(services == null)
+        {
+            services = new ArrayList();
+        }
+        
+        return services;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addJetspeedService(org.apache.jetspeed.om.common.JetspeedServiceReference)
+     */
+    public void addJetspeedService(JetspeedServiceReference service)
+    {
+        if(services == null)
+        {
+            services = new ArrayList();
+        }
+        services.add(service);
     }
 
 }
