@@ -244,8 +244,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
                 throw new UnknownPortletDefinitionException("Could not locate portlet definition \""+fragment.getName()+"\".");
             }
             portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
-/*
- TODO: DST: Why the hell are we storing an entity on a getter?
+
+ //TODO: DST: Why the hell are we storing an entity on a getter?
  
             // fix issues, persist entity and update fragment ID
             try
@@ -256,7 +256,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             {
                 log.error("Error persisting new portletEntity", e);
             }
-*/
+
             fragment.setId(portletWindow.getId().toString());
             oid = portletWindow.getId();
         }

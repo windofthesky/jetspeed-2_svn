@@ -56,7 +56,7 @@ container = new DefaultPicoContainer()
 //
 // Template Locator component assembly
 //
-roots = [ applicationRoot + "/WEB-INF/templates" ]
+roots = [ applicationRoot + "WEB-INF/templates" ]
 container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots))
 
 //
