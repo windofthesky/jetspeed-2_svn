@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry kind="src" path="portals-bridges/frameworks/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/velocity/src/java"/>
 	<classpathentry including="**/CVS/*" kind="src" path="applications/security/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/java"/>
@@ -55,7 +56,7 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b10.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
+	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.7.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/castor/jars/castor-0.9.4.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-digester/jars/commons-digester-1.5.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-io/jars/commons-io-0.1.jar"/>
@@ -100,5 +101,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-orm-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-codec/jars/commons-codec-1.3.jar"/>
+	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-validator/jars/commons-validator-1.1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
