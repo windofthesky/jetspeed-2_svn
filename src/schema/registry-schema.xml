@@ -198,6 +198,7 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="PORTLET_IDENTIFIER" size="80" type="VARCHAR"/>
         <column name="EXPIRATION_CACHE" size="30" type="VARCHAR"/>
+        <column name="RESOURCE_BUNDLE" size="255" type="VARCHAR"/>
         <column name="PREFERENCE_VALIDATOR" size="255" type="VARCHAR"/>
         <!-- This breaks some tests since portlet identifier is not required
         <unique name="UK_PORTLET_IDENT">

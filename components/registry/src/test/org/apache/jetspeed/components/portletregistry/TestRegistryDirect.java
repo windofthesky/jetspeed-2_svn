@@ -20,7 +20,10 @@ import java.util.Locale;
 
 import javax.portlet.PortletMode;
 
+import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -64,6 +67,8 @@ public class TestRegistryDirect extends AbstractRegistryTest
     {
         super.setUp();
         
+        PortletCache portletCache = new PortletCache();
+        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
         
         buildTestData();
         
