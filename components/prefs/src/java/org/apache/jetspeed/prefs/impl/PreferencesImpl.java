@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.PreferencesProvider;
+import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;

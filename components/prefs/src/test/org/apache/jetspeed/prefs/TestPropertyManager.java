@@ -24,7 +24,6 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyException;
 import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.prefs.om.Property;
 
