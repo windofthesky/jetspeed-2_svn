@@ -8,6 +8,9 @@ package org.apache.jetspeed.deployment;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import javax.portlet.Portlet;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -20,11 +23,14 @@ import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
 import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryUtils;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -117,8 +123,26 @@ public class TestSimpleDeployment extends JetspeedTest
 		PortletRegistryComponent portletRegistry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
         assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
         assertTrue(TEST_PORTLET_APP_NAME+" directory was not created, app not deployed.", new File(webAppsDir+"/"+TEST_PORTLET_APP_NAME).exists());
-        assertNotNull("jetspeed was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier("jetspeed"));
+        MutablePortletApplication jetspeedApp = portletRegistry.getPortletApplicationByIdentifier("jetspeed");
+        assertNotNull("jetspeed was not registered into the portlet registery.", jetspeedApp);
         assertFalse("local app, jetspeed, got deployed when it should have only been registered.", new File(webAppsDir+"/jetspeed").exists());
+        
+        //make sure we can load registered app's classed
+        Iterator portletDefItr =  jetspeedApp.getPortletDefinitions().iterator();
+        while(portletDefItr.hasNext())
+        {
+            PortletDefinition def = (PortletDefinition) portletDefItr.next();
+            try
+            {
+                Portlet portlet = JetspeedPortletFactory.loadPortletClass(def.getClassName());
+                assertNotNull(portlet);
+            }
+            catch (Exception e)
+            {
+                assertNull("Unable to load registered portlet class, "+def.getClassName(), e);
+            }
+           
+        }
         
 
     }
@@ -138,13 +162,23 @@ public class TestSimpleDeployment extends JetspeedTest
             delpoySrc = new File("./test/deployment/deploy").getCanonicalPath();
             deployRootFile = new File("./test/deployment/templates/decorator");
             deployRoot = deployRootFile.getCanonicalPath();
-            webAppsDir = new File("./test/deployment/webapps").getCanonicalPath();
+            File webAppsDirFile = new File("./target/webapps");
+            
+            if(!webAppsDirFile.exists())
+            { 
+               webAppsDirFile.mkdirs();
+            }
+            webAppsDir = webAppsDirFile.getCanonicalPath();
             testDb = new File("./test/db/hsql/Registry").getCanonicalPath();
             // remove any prior left overs
             
 			FileSystemPAM pam = new FileSystemPAM();
 			
-			pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);	
+
+	            pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);
+            pam.unregister(webAppsDir, "jetspeed");
+            pam.undeploy(webAppsDir, "struts-demo");
+	        
         }
         catch (Exception e)
         {
@@ -161,16 +195,7 @@ public class TestSimpleDeployment extends JetspeedTest
     {
         
         super.tearDown();
-		FileSystemPAM pam = new FileSystemPAM();
-		try
-        {
-            pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);
-            pam.unregister(webAppsDir, "jetspeed");
-        }
-        catch (PortletApplicationException e)
-        {            
-            e.printStackTrace();
-        }
+		
 		
     }
 
