@@ -91,7 +91,7 @@ public class HSQLDBServer extends BaseCommonService
 {
     public static final String KEY_USE_JNDI_DS = "use.jndi.datasource";
     public static final String SERVICE_NAME = "HSQLDBServer";
-    public static final String NAMING_ROOT = "java:comp/env";
+    public static final String NAMING_ROOT = "java:comp/env/";
 
     private static final Log log = LogFactory.getLog(HSQLDBServer.class);
 
