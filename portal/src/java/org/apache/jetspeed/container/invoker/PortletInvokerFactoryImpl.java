@@ -172,4 +172,26 @@ public class PortletInvokerFactoryImpl
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.pluto.factory.PortletInvokerFactory#releasePortletInvoker(org.apache.pluto.invoker.PortletInvoker)
+     */
+    public void releasePortletInvoker(PortletInvoker invoker)
+    {
+        try
+        {
+            if (invoker instanceof ServletPortletInvoker)
+            {
+                servletInvokerFactory.passivateObject(invoker);                
+            }
+            else
+            {
+                localInvokerFactory.passivateObject(invoker);                            
+            }
+        }
+        catch (Exception e)
+        {
+            log.error(e);
+        }
+    }
+    
 }

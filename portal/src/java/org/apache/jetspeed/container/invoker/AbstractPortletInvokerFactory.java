@@ -104,6 +104,7 @@ public abstract class AbstractPortletInvokerFactory
     {
         JetspeedPortletInvoker invoker = (JetspeedPortletInvoker)object;
         invoker.passivate();        
+        pool.returnObject(invoker);
     }
 
     /* (non-Javadoc)
