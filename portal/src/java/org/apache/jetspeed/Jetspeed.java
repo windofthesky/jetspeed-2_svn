@@ -55,12 +55,18 @@ public class Jetspeed
     {
         try
         {
-            log.info("Jetspeed environment attempting to initialize portal Engine...");
-            engine = new JetspeedEngine();
-            engine.init(configuration, applicationRoot, config);
-            log.info("JetspeedEngine successfuly intialized.");
-            log.info("Jetspeed environment successfuly intialized.");
-            return engine;
+            synchronized(Jetspeed.class)
+            {
+                if(engine == null)
+                {
+                    log.info("Jetspeed environment attempting to initialize portal Engine...");
+                    engine = new JetspeedEngine();
+                    engine.init(configuration, applicationRoot, config);
+                    log.info("JetspeedEngine successfuly intialized.");
+                    log.info("Jetspeed environment successfuly intialized.");
+                }
+                return engine;
+            }
         }
         catch (Exception e)
         {
