@@ -52,7 +52,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedContainerServlet extends HttpServlet implements ServletContainerConstants
+public class JetspeedContainerServlet extends HttpServlet 
 {
  //   private final static Log log = LogFactory.getLog(JetspeedContainerServlet.class);
    // private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
@@ -68,9 +68,10 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     // -------------------------------------------------------------------
     // I N I T I A L I Z A T I O N
     // -------------------------------------------------------------------
-    private static final String INIT_START_MSG = "Jetspeed Container Starting Initialization...";
-    private static final String INIT_DONE_MSG = "Jetspeed Container Initialization complete, Ready to service requests.";
-
+    private static final String JCS = "JetspeedContainerServlet: ";
+    private static final String INIT_START_MSG = JCS + "starting initialization of context ";
+    private static final String INIT_DONE_MSG = JCS + "Initialization complete for context ";
+    
     /**
      * Intialize Servlet.
      */
@@ -78,43 +79,48 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     {
         synchronized (this.getClass())
         {            
-            // log.info(INIT_START_MSG + " " + config.getServletContext().getRealPath("/"));
             super.init(config);
-
+            ServletContext context = getServletContext();
+            String name = context.getServletContextName();
+            if (name == null || name.length() == 0)
+            {
+                name = context.getRealPath("/");
+                if (name == null)
+                {
+                    name = "Jetspeed";
+                }
+            }
+            context.log(INIT_START_MSG + name);            
+            System.out.println(INIT_START_MSG + name);            
 
             try
             {                
-                ServletContext context = config.getServletContext();
-                webappRoot = config.getServletContext().getRealPath("/");                
                 String registerAtInit = config.getInitParameter("registerAtInit");
                 if (null != registerAtInit)
                 {
-                    // log.info("Considering PA for registration during servlet init: " + context.getServletContextName());
+                    context.log(JCS + "Considering PA for registration during servlet init: " + name);
                     String portletApplication = config.getInitParameter("portletApplication");
                     if (null == portletApplication)
                     {
-                        throw new ServletException("Portlet Application Name not supplied in Init Parameters.");
+                        throw new ServletException(JCS + "Portlet Application Name not supplied in Init Parameters.");
                     }
                     
                     registerPortletApplication(context, portletApplication);
                     
-                }
-                else
-                {
-                    // log.info("Will not register this PA during servlet init: " + context.getServletContextName());
-                }
-                
+                }                
             }
             catch (Exception e)
             {
                 initFailure = e;
-                // log.fatal("Jetspeed: init() failed: ", e);
-                // System.err.println(ExceptionUtils.getStackTrace(e));
-                throw new ServletException("Jetspeed: init() failed", e);
+                String message = JCS + "Initialization of servlet " + name + " failed.";
+                context.log(message, e);
+                System.err.println(message);
+                e.printStackTrace(System.err);                
+                throw new ServletException(message, e);
             }
 
-            // console.info(INIT_DONE_MSG);
-            // log.info(INIT_DONE_MSG + " " + config.getServletContext().getRealPath("/"));
+            context.log(INIT_DONE_MSG + name);
+            System.out.println(INIT_DONE_MSG + name);
         }
     }
 
@@ -122,22 +128,23 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     throws ServletException
     {
 
-        // log.info("Attempting to register portlet application: name=" + portletApplicationName);
-        if (attemptRegistration(context, portletApplicationName)) {
-            // log.info("Registered portlet application: name=" + portletApplicationName);
+        context.log(JCS + "Attempting to register portlet application: name=" + portletApplicationName);
+        if (attemptRegistration(context, portletApplicationName)) 
+        {
+            context.log(JCS + "Registered portlet application: name=" + portletApplicationName);
         }
 
-        // log.info("Could not registered protlet application; starting back ground thread to register when jetspeed comes online: name=" + portletApplicationName);
+        context.log(JCS + "Could not registered portlet application; starting back ground thread to register when jetspeed comes online: name=" + portletApplicationName);
         final Timer timer = new Timer(true);
         timer.schedule(
                 new TimerTask() {
                     public void run() {
-                        // log.info("Attempting to register portlet application: name=" + portletApplicationName);
+                        context.log(JCS + "Attempting to register portlet application: name=" + portletApplicationName);
                         if (attemptRegistration(context, portletApplicationName)) {
-                            // log.info("Registered portlet application: name=" + portletApplicationName);
+                            context.log(JCS + "Registered portlet application: name=" + portletApplicationName);
                             timer.cancel();
                         } else {
-                            // log.info("Could not register portlet application; will try again later: name=" + portletApplicationName);
+                            context.log(JCS + "Could not register portlet application; will try again later: name=" + portletApplicationName);
                         }
                     }
                 },
@@ -160,11 +167,11 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                     FileSystemHelper webapp = new DirectoryHelper(new File(context.getRealPath("/")));
                     if (registrar.registerPortletApplication(webapp, portletApplicationName))
                     {
-                        // log.info("Portlet Application Registered at Servlet Init: " + portletApplicationName);
+                        context.log(JCS + "Portlet Application Registered at Servlet Init: " + portletApplicationName);
                     }
                     else
                     {
-                        // log.info("Portlet Application did not change. Not Registered at Servlet Init: " + portletApplicationName);
+                        context.log(JCS + "Portlet Application did not change. Not Registered at Servlet Init: " + portletApplicationName);
                     }
                     return true;
                 }
@@ -172,7 +179,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         }
         catch (Exception e)
         {
-            // log.error("Failed to register PA: " + portletApplicationName);
+            context.log(JCS + "Failed to register PA: " + portletApplicationName);
         }
         return false;
     }    
@@ -208,13 +215,9 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 return;
             }
             
-            PortletDefinition portletDefinition = JetspeedPortletFactoryProxy.getCurrentPortletDefinition();
-System.out.println("Got thread local PD = " + portletDefinition);
-                        
+            PortletDefinition portletDefinition = JetspeedPortletFactoryProxy.getCurrentPortletDefinition();                        
             Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
             portletName = portletDefinition.getName();
-
-            // log.debug("Rendering: Portlet Class = " + portletDefinition.getClassName());
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
@@ -237,8 +240,8 @@ System.out.println("Got thread local PD = " + portletDefinition);
         }
         catch (Throwable t)
         {
-
-            // log.error("Error rendering portlet \""+portletName+"\": " + t.toString(), t);
+            ServletContext context = getServletContext();
+            context.log(JCS + "Error rendering portlet \"" + portletName + "\": " + t.toString(), t);
             try
             {
                 String errorTemplate = getInitParameter("portal.error.page");
@@ -256,11 +259,11 @@ System.out.println("Got thread local PD = " + portletDefinition);
             }
             catch (Exception e)
             {
+                context.log(JCS + "Error rendering JetspeedContainerServlet error page: " + e.toString(), e);                
                 PrintWriter directError = new PrintWriter(response.getWriter());
-                directError.write("Error occured process includeTemplate(): " + t.toString() + "\n\n");
+                directError.write("Error Rendering portlet: " + portletName + ": " + t.toString() + "\n\n");
                 t.printStackTrace(directError);
                 directError.close();
-                // log.error("Error rendering JetspeedContainerServlet error page: " + e.toString(), e);
             }
             finally
             {
@@ -293,7 +296,7 @@ System.out.println("Got thread local PD = " + portletDefinition);
      */
     public final void destroy()
     {
-        // log.info("Done shutting down!");
+        getServletContext().log(JCS + "Shutting down portlet app context: " + getServletContext().getServletContextName());
     }
 
     public static final String LOCAL_CLASSES = "/WEB-INF/classes/";
