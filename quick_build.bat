@@ -35,14 +35,6 @@ call maven allBuild
 
 echo
 echo +++++++++++++++++++++++++++
-echo 3. Install into Catalina Shared
-echo +++++++++++++++++++++++++++
-
-call maven catalina:base-shared
-call maven catalina:shared
-
-echo
-echo +++++++++++++++++++++++++++
 echo 4. Deploy Jetspeed Portal WAR into Catalina
 echo +++++++++++++++++++++++++++
 
