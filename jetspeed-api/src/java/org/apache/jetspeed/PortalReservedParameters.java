@@ -31,4 +31,7 @@ public final class PortalReservedParameters
     public final static String DEFAULT_PIPELINE = "jetspeed-pipeline";
     public final static String PORTLET_PIPELINE = "portlet-pipeline";
     public final static String ACTION_PIPELINE = "action-pipeline";
+    
+    // Session and Request attribute keys
+    public static final String PAGE_ATTRIBUTE_KEY = "org.apache.jetspeed.Page";
 }
