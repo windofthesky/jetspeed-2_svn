@@ -25,7 +25,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class RequestSessionResolver implements RuleCriterionResolver
+public class RequestSessionResolver extends StandardResolver implements RuleCriterionResolver
 {
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
@@ -45,11 +45,4 @@ public class RequestSessionResolver implements RuleCriterionResolver
         return value;            
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
-     */
-    public boolean isControl()
-    {
-        return true;
-    }
 }

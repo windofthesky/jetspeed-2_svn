@@ -70,4 +70,13 @@ public class UserCriterionResolver
         return null;
      }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
+     */
+    public boolean isControl(RuleCriterion criterion)
+    {
+        return true;
+    }
+    
+    
 }

@@ -210,16 +210,16 @@ public class TestProfiler extends PersistenceSupportedTestCase
             switch (count)
             {
                 case 0:
-                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
-                    assertNotNull("fallback criteria value", criterion.getValue());
-                    assertTrue("fallback criteria value", criterion.getValue().equals(DEFAULT_PAGE));
-                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
-                    break;                    
-                case 1:
                     assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_ROLE));
                     assertNull("fallback criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_LOOP);                    
                     break;
+                case 1:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
+                    assertNotNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;                                        
                 case 2:
                     assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
                     assertNull("fallback criteria value", criterion.getValue());

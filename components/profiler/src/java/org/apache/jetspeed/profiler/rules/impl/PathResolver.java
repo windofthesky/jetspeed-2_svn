@@ -55,7 +55,7 @@ public class PathResolver implements RuleCriterionResolver
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
      */
-    public boolean isControl()
+    public boolean isControl(RuleCriterion criterion)
     {
         return false;
     }

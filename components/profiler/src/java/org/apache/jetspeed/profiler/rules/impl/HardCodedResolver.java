@@ -25,7 +25,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class HardCodedResolver implements RuleCriterionResolver
+public class HardCodedResolver extends StandardResolver implements RuleCriterionResolver
 {
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
@@ -35,11 +35,4 @@ public class HardCodedResolver implements RuleCriterionResolver
         return criterion.getValue();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
-     */
-    public boolean isControl()
-    {
-        return true;
-    }
 }

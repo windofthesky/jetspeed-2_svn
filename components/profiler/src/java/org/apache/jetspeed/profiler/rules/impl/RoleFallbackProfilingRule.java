@@ -94,7 +94,7 @@ public class RoleFallbackProfilingRule
             if (resolver != null)
             {
                 String value = resolver.resolve(context, criterion);
-                boolean isControl = resolver.isControl();
+                boolean isControl = resolver.isControl(criterion);
                 locator.add(criterion, isControl, value);
             }                
         }               

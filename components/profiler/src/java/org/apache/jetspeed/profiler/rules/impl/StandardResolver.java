@@ -47,8 +47,13 @@ public class StandardResolver implements RuleCriterionResolver
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
      */
-    public boolean isControl()
+    public boolean isControl(RuleCriterion criterion)
     {
+        if (criterion.getName().equals(RuleCriterionResolver.PATH) ||
+            criterion.getName().equals(RuleCriterionResolver.PAGE))
+        {
+            return false;
+        }
         return true;
     }
 }

@@ -47,4 +47,12 @@ public class CountryCriterionResolver
         return context.getLocale().getCountry();   
     }    
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
+     */
+    public boolean isControl(RuleCriterion criterion)
+    {
+        return true;
+    }
+    
 }

@@ -44,4 +44,13 @@ public class LanguageCriterionResolver
         return context.getLocale().getLanguage();   
     }    
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
+     */
+    public boolean isControl(RuleCriterion criterion)
+    {
+        return true;
+    }
+    
+    
 }

@@ -44,4 +44,12 @@ public class MediatypeCriterionResolver
         return context.getMediaType();   
     }    
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
+     */
+    public boolean isControl(RuleCriterion criterion)
+    {
+        return true;
+    }
+    
 }
