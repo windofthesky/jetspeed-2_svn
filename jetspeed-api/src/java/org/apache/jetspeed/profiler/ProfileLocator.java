@@ -31,8 +31,8 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
  * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
  * An example locator path:</p>
  * 
- *      <pre>desktop:default-desktop.psml:page:default.psml:artist:al-stewart:song:on-the-border</pre>
- *      <pre>desktop:default-desktop.psml:path:/sports/football/nfl/chiefs:language:en</pre>
+ *      <pre>page:default.psml:artist:al-stewart:song:on-the-border</pre>
+ *      <pre>path:/sports/football/nfl/chiefs:language:en</pre>
  * 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -109,7 +109,7 @@ public interface ProfileLocator
      * Note: all locator property elements are assumed to be control properties.
      * An example locator path:</p>
      * 
-     *      <pre>:desktop:default-desktop.psml:page:default.psml:artist:air:song:all-i-need</pre>
+     *      <pre>:page:default.psml:artist:air:song:all-i-need</pre>
      * 
      * @param path The normalized path as shown above from which the locator is created.
      */
@@ -120,7 +120,7 @@ public interface ProfileLocator
      * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
      * An example locator path:</p>
      * 
-     *      <pre>:desktop:default-desktop.psml:page:default.psml:artist:joni-mitchell:song:cary</pre>
+     *      <pre>:page:default.psml:artist:joni-mitchell:song:cary</pre>
      * 
      * @return The normalized path as shown above.
      */

@@ -69,8 +69,6 @@ public interface ProfilingRule
     public final static String STANDARD_COUNTRY = "country";
     public final static String STANDARD_LANGUAGE = "language";
     public final static String STANDARD_ROLE_FALLBACK = "roles";
-    // additional desktop concept
-    public final static String STANDARD_DESKTOP = "desktop";    
 
     /**
      * Given a criterion name, look up a value resolver

@@ -29,11 +29,11 @@ import org.apache.jetspeed.request.RequestContext;
  * It requires that the request context is already populated with the portal request and response,
  * and capability and user information. The request context parameters, properties and attributes
  * make up the profile criterion which the profiler uses to locate portal resources:
- *   1. desktop
- *   2. page
- *   3. fragment
+ *   1. page
+ *   2. navigations
+ *   3. document lists
  * 
- * In all cases (desktop, page, fragment), a fallback algorithm should be applied to fallback
+ * In all cases, a fallback algorithm should be applied to fallback
  * to default portal resources.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
