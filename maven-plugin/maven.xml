@@ -69,7 +69,8 @@ limitations under the License.
      </copy>
      <copy todir="src/plugin-resources/" overwrite="true" failonerror="true">
          <fileset dir="../portal/src/resources" />            	       	       
-     </copy>		
+     </copy>
+     <copy file="../layout-portlets/target/jetspeed-layouts.war" todir="src/plugin-resources/webapp/WEB-INF/deploy" overwrite="true" failonerror="true" />
 </goal>
 
   <goal name="db.execute">
