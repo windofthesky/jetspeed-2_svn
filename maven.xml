@@ -360,6 +360,8 @@ limitations under the License.
   <goal name="db.create.production">
     <attainGoal name="db.production.properties"/>
     <attainGoal name="db.create"/>
+    <j:set var="database.arg.script" value="./src/sql/populate-userinfo-for-default-psml.sql" />
+    <attainGoal name="db.execute" />
   </goal>
 
   <goal name="db.create">
@@ -407,7 +409,6 @@ limitations under the License.
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.recreate">
-<!--    <attainGoal name="db.drop" /> -->
     <attainGoal name="db.create.production" />
   </goal>
 
