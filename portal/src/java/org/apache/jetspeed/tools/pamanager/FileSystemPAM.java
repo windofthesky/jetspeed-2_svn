@@ -27,9 +27,9 @@ import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
@@ -69,9 +69,10 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     protected String webAppsDir;
     protected PortletEntityAccessComponent entityAccess;
     protected PortletWindowAccessor windowAccess;
+    private PortletCache portletCache;
 
     public FileSystemPAM( String webAppsDir, PortletRegistryComponent registry,
-            PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess )
+            PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, PortletCache portletCache )
     {
         super();
         ArgUtil.assertNotNull(PortletRegistryComponent.class, registry, this);
@@ -79,7 +80,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         this.registry = registry;
         this.entityAccess = entityAccess;
         this.webAppsDir = webAppsDir;
-
+        this.portletCache = portletCache;
         this.windowAccess = windowAccess;
     }
 
@@ -144,7 +145,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             }
 
             log.info("Removing a portlets from the PortletCache that belong to portlet application " + paName);
-            PortletCache.removeAll(app);
+            portletCache.removeAll(app);
 
             // remove entries from the registry
             log.info("Remove all registry entries defined for portlet application " + paName);
