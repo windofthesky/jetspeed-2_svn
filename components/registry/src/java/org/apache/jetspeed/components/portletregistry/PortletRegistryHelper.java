@@ -14,7 +14,6 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
 
 /**
  * <p>Helper class for the portlet registry.</p>
@@ -56,7 +55,7 @@ public class PortletRegistryHelper
         int split = 0;
         if (null != uniqueName)
         {
-            split = uniqueName.indexOf(PortletRegistryComponentImpl.PORTLET_UNIQUE_NAME_SEPARATOR);
+            split = uniqueName.indexOf(PersistenceBrokerPortletRegistry.PORTLET_UNIQUE_NAME_SEPARATOR);
         }
         if (split < 1)
         {
@@ -64,7 +63,7 @@ public class PortletRegistryHelper
                 "The unique portlet name, \""
                     + uniqueName
                     + "\";  is not well formed.  No "
-                    + PortletRegistryComponentImpl.PORTLET_UNIQUE_NAME_SEPARATOR
+                    + PersistenceBrokerPortletRegistry.PORTLET_UNIQUE_NAME_SEPARATOR
                     + " delimiter was found.");
         }
         return split;
