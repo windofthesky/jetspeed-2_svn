@@ -71,9 +71,12 @@ import org.apache.pluto.om.common.PreferenceCtrl;
  */
 public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
 {
+	String DEFAULT_PREFERENCE = "org.apache.pluto.om.common.Preference.default";
+	String USER_PREFERENCE = "org.apache.pluto.om.common.Preference.default.user";
+	
     void addDescription(Locale locale, String Description);
 
-    Description getDescription(Locale locale);
+    Description getDescription(Locale locale);    
 
     /**
      * @throws java.lang.ArrayIndexOutofBounds if index is outside the constraints
