@@ -38,11 +38,11 @@ limitations under the License.
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>
-        <td><input type="text" size="15" name="<%=LoginConstants.USERNAME%>"></td>
+        <td><input type="text" size="30" name="<%=LoginConstants.USERNAME%>"></td>
       </tr>
       <tr>
         <td><fmt:message key="login.label.Password"/></td>
-        <td><input type="password" size="15" name="<%=LoginConstants.PASSWORD%>"></td>
+        <td><input type="password" size="30" name="<%=LoginConstants.PASSWORD%>"></td>
       </tr>
       <tr>
         <td colspan="2"><input type="submit" value="<fmt:message key="login.label.Login"/>"></td>

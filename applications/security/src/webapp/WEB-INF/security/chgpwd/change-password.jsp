@@ -46,15 +46,15 @@ limitations under the License.
       <table border="0">
       <tr>
         <td><fmt:message key="chgpwd.label.currentPassword"/></td>
-        <td><input type="text" size="30" name="<%=ChangePasswordPortlet.CURRENT_PASSWORD%>"></td>
+        <td><input type="password" size="30" name="<%=ChangePasswordPortlet.CURRENT_PASSWORD%>"></td>
       </tr>
       <tr>
         <td><fmt:message key="chgpwd.label.newPassword"/></td>
-        <td><input type="text" size="30" name="<%=ChangePasswordPortlet.NEW_PASSWORD%>"></td>
+        <td><input type="password" size="30" name="<%=ChangePasswordPortlet.NEW_PASSWORD%>"></td>
       </tr>
       <tr>
         <td><fmt:message key="chgpwd.label.newPasswordAgain"/></td>
-        <td><input type="text" size="30" name="<%=ChangePasswordPortlet.NEW_PASSWORD_AGAIN%>"></td>
+        <td><input type="password" size="30" name="<%=ChangePasswordPortlet.NEW_PASSWORD_AGAIN%>"></td>
       </tr>
       <tr>
         <td colspan="2"><input type="submit" value="<fmt:message key="chgpwd.label.save"/>"></td>
