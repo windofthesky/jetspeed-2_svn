@@ -23,11 +23,11 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.Page;
-
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -41,10 +41,7 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public interface RequestContext
 {
-    public static final String PREFERED_LANGUAGE_SESSION_KEY = "org.apache.jetspeed.prefered.language";
-    public static final String PREFERED_LOCALE_SESSION_KEY = "org.apache.jetspeed.prefered.locale";
-    public static final String PREFERED_CHARACTERENCODING_KEY = "org.apache.jetspeed.prefered.characterencoding";
-    public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";    												
+    public final static String REQUEST_PORTALENV = PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE;
 
     /**
      * Gets the HTTP Servlet Request.  This is the Servlet
