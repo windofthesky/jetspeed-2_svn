@@ -28,6 +28,7 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
@@ -98,11 +99,25 @@ public interface PageManager
     /**
      * 
      * <p>
+     * getProfiledPageContext
+     * </p>
+     *
+     * @param locator
+     * @return profiled page context
+     * @throws PageNotFoundException if the page cannot be found.
+     * @throws DocumentException
+     * @throws NodeException
+     */
+    public ProfiledPageContext getProfiledPageContext(ProfileLocator locator) throws PageNotFoundException, DocumentException, NodeException;
+
+    /**
+     * 
+     * <p>
      * getPage
      * </p>
      *
      * @param locator
-     * @return
+     * @return located Page instance
      * @throws PageNotFoundException if the page cannot be found.
      * @throws DocumentException
      * @throws NodeException

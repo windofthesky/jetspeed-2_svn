@@ -18,11 +18,6 @@ package org.apache.jetspeed.profiler;
 import java.security.Principal;
 import java.util.Collection;
 
-import org.apache.jetspeed.om.desktop.Desktop;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -52,8 +47,7 @@ public interface Profiler
      * @param context The request context
      * @return a new Profile Locator object or null if failed to find a appropriate locator.
      */
-    ProfileLocator getProfile(RequestContext context)
-        throws ProfilerException;
+    ProfileLocator getProfile(RequestContext context) throws ProfilerException;
 
     /**
      *  Get the Profile object using the request parameters and the rule.
@@ -61,41 +55,26 @@ public interface Profiler
      * @param context The request context
      * @return a new Profile Locator object or null if failed to find a appropriate locator.
      */        
-    ProfileLocator getProfile(RequestContext context, ProfilingRule rule)
-        throws ProfilerException;        
+    ProfileLocator getProfile(RequestContext context, ProfilingRule rule) throws ProfilerException;        
     
-    /**
-     * @param locator
-     * @return
-     */
-    Desktop getDesktop(ProfileLocator locator);
-    
-    /**
-     * 
-     * <p>
-     * getPage
-     * </p>
-     *
-     * @param locator
-     * @return
-     * @throws PageNotFoundException
-     * @throws NodeException
-     */
-    Page getPage(ProfileLocator locator) throws PageNotFoundException, NodeException;
-    
-    /**
-     * @param locator
-     * @return
-     */
-    Fragment getFragment(ProfileLocator locator);
-      
     /**
       * Creates a new ProfileLocator object that can be managed by
       * the current Profiler implementation
       *
+      * @param context The request context
       * @return A new ProfileLocator object
       */
-    ProfileLocator createLocator();
+    ProfileLocator createLocator(RequestContext context);
+        
+    /**
+      * Creates a new ProfiledPageContext object that references
+      * the specified locator and can be managed by the current
+      * Profiler implementation
+      *
+      * @param locator ProfileLocator object used to select page
+      * @return A new ProfiledPageContext object
+      */
+    ProfiledPageContext createProfiledPageContext(ProfileLocator locator);
         
     /**
      * For a given principal, lookup the associated profiling rule to that principal name.

@@ -293,7 +293,7 @@ container.registerComponent(singletonAdapter(
 container.registerComponentImplementation(
                        Profiler, 
                        JetspeedProfiler, 
-                       doParams([cmpParam(PersistenceStore), cmpParam(PageManager)])
+                       doParams([cmpParam(PersistenceStore)])
 )
 
 /* **********************************************************

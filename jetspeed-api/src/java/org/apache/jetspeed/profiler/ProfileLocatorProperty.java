@@ -68,5 +68,10 @@ public interface ProfileLocatorProperty
     /**
      * @param string
      */
-    public void setType(String type);    
+    void setType(String type);    
+
+    /**
+     * @return control classification flag
+     */
+    boolean isControl();
 }

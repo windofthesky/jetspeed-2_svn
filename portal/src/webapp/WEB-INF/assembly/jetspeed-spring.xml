@@ -146,7 +146,6 @@ limitations under the License.
   	   class="org.apache.jetspeed.profiler.impl.JetspeedProfiler"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.page.PageManager"/></constructor-arg> 	   
   </bean>
   
   <!-- Capabillites -->

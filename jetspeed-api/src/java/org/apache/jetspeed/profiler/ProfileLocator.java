@@ -17,6 +17,7 @@ package org.apache.jetspeed.profiler;
 
 import java.util.Iterator;
 
+import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 
 /**
@@ -42,8 +43,16 @@ public interface ProfileLocator
     public final static String PATH_SEPARATOR = ":";
         
     /**
+     * Initialize this page context.
+     *
+     * @param profiler The profiler initializing this locator.
+     * @param requestPath The request path used to create this locator.
+     */
+    void init(Profiler profiler, String requestPath);
+
+    /**
      * Get an iterator over the locator's properties.
-     * Elements are returned as @link ProfileLocatorProperty 
+     * Elements are returned as @link ProfileLocatorProperty array. 
      *  
      * @return an iterator over the profile locator properties
      */
@@ -55,12 +64,23 @@ public interface ProfileLocator
      * The value is combined with the rule to create a property.
      * 
      * @param criterion The rule criterion on which this property is based.
+     * @param isControl The control classification for property.
      * @param value The value to set on the property.
      */        
-    void add(RuleCriterion criterion, String value);
+    void add(RuleCriterion criterion, boolean isControl, String value);
 
     /**
      * Add a property based on a simple name and value.
+     * 
+     * @param name The name of the property.
+     * @param isControl The control classification for property.
+     * @param value The value to set on the property.
+     */            
+    void add(String name, boolean isControl, String value);
+    
+    /**
+     * Add a property based on a simple name and value assumed
+     * to be control property.
      * 
      * @param name The name of the property.
      * @param value The value to set on the property.
@@ -76,8 +96,17 @@ public interface ProfileLocator
     String getValue(String name);
     
     /**
+     * For a given property name, return control status of property.
+     *  
+     * @param name The name of the property
+     * @return control classification flag
+     */
+    boolean isControl(String name);
+    
+    /**
      * <p>Profiles can be created from a normalized <i>Profile Locator Path</i>
      * The format of the path is name:value pairs of all property, separated by a <i>path separator</i>.
+     * Note: all locator property elements are assumed to be control properties.
      * An example locator path:</p>
      * 
      *      <pre>:desktop:default-desktop.psml:page:default.psml:artist:air:song:all-i-need</pre>
@@ -98,10 +127,35 @@ public interface ProfileLocator
     String getLocatorPath();
         
     /**
+     * <p>Normalize profile properties obtained from profile locator iterators
+     * into a <i>Profile Locator Path</i>.</p>
+     * 
+     * @param properties The array of profile properties.
+     * @return The normalized path for properties.
+     */
+    String getLocatorPath(ProfileLocatorProperty [] properties);
+        
+    /**
      * Returns a normalized path. @see #getLocatorPath()
      * 
      * @return The normalized path representation of this locator.
      */
     String toString();
     
+    /**
+     * <p>Locators are intended to be sufficient to locate managed pages, so the request
+     * path must be generally available in the event it is not otherwise captured in a
+     * rule criterion.</p>
+     * 
+     * @return The request path.
+     */
+    String getRequestPath();
+
+    /**
+      * Creates a new ProfiledPageContext object that can be
+      * managed by the current Profiler implementation
+      *
+      * @return A new ProfiledPageContext object
+      */
+    ProfiledPageContext createProfiledPageContext();
 }

@@ -78,4 +78,11 @@ public interface RuleCriterionResolver
      */        
     String resolve(RequestContext context, RuleCriterion criterion);
     
+    /**
+     * Gets the control classification of the resolver.
+     * 
+     * @return The control class flag
+     */    
+    boolean isControl();
+    
 }
