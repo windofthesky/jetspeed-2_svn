@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
@@ -119,7 +121,7 @@ public class CustomerPortlet extends org.apache.portals.bridges.common.GenericSe
      *       in the session.
      *
      */
-    public void processAction(RenderRequest request, ActionResponse actionResponse) throws PortletException, IOException
+    public void processAction(ActionRequest request, ActionResponse actionResponse) throws PortletException, IOException
     {
 
     }

@@ -16,6 +16,8 @@
 package org.apache.portals.bridges.common;
 
 import java.io.IOException;
+
+import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
@@ -187,7 +189,7 @@ public class GenericServletPortlet extends GenericPortlet
      *
      * @task Need to be able to execute a servlet for the action
      */
-    public void processAction(RenderRequest request, ActionResponse actionResponse)
+    public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
         String actionPage = this.defaultActionPage;

@@ -16,9 +16,10 @@
 package org.apache.jetspeed.demo.simple;
 
 import java.io.IOException;
+
+import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
 import org.apache.portals.bridges.common.GenericServletPortlet;
@@ -92,7 +93,7 @@ public class AttributeScopeServlet extends GenericServletPortlet
      * @see javax.portlet.GenericPortlet#processAction
      *
      */
-    public void processAction(PortletRequest request, ActionResponse actionResponse)
+    public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
         PortletSession session = request.getPortletSession();
