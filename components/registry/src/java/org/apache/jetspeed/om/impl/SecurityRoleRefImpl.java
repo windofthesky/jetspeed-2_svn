@@ -139,6 +139,18 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
         descCollWrapper.setInnerCollection(descriptions);
         descCollWrapper.addDescription(description);
     }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.MutableDescriptionSet#addDescription(java.util.Locale, java.lang.String)
+     */
+    public void addDescription(Locale locale, String description)
+    {
+        SecurityRoleRefDescriptionImpl descImpl = new SecurityRoleRefDescriptionImpl();
+        descImpl.setDescription(description);
+        descImpl.setLocale(locale);
+        
+        addDescription(descImpl);
+    }
 
     /**
      * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#setDescriptionSet(org.apache.pluto.om.common.DescriptionSet)
@@ -163,7 +175,14 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
         
         descObj.setLocale(JetspeedLocale.getDefaultLocale());
         descObj.setDescription(arg0);
-
+        addDescription(descObj);
     }
 
+    /**
+     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#getDescriptionSet()
+     */
+    public DescriptionSet getDescriptionSet()
+    {
+        return descCollWrapper;
+    }
 }

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.common;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -34,6 +35,9 @@ public interface SecurityRoleRefComposite extends SecurityRoleRef, SecurityRoleR
 {
     void addDescription(Description description);
     
+    void addDescription(Locale locale, String description);
+    
     void setDescriptionSet(DescriptionSet descriptions);
 
+    DescriptionSet getDescriptionSet();
 }
