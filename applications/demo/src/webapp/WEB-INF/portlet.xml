@@ -645,7 +645,15 @@ limitations under the License.
       <preference>                            
         <name>JdbcPassword</name>                    
         <value></value>    
-      </preference>                                   
+      </preference>     
+      <preference>                            
+        <name>SSOJdbcDriver</name>                    
+        <value>com.mysql.jdbc.Driver</value>    
+      </preference>                               
+      <preference>                            
+        <name>SSOJdbcConnection</name>                    
+        <value>jdbc:mysql://127.0.0.1/j2</value>    
+      </preference>                                
       <preference>                            
         <name>SSOSite</name>                    
         <value></value>    
