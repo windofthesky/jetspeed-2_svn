@@ -34,16 +34,6 @@ limitations under the License.
 
   <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
   <shortDescription>Enterprise Information Portal</shortDescription>
-  <url>http://www.sporteportal.com/jetspeed-2/</url>
-  <issueTrackingUrl>http://www.sporteportal.com/scarab</issueTrackingUrl>
-  <siteAddress>www.sporteportal.com</siteAddress>
-  <siteDirectory></siteDirectory>
-  <distributionDirectory></distributionDirectory>
-
-  <repository>
-    <connection>scm:cvs:pserver:paul@cvs.bluesunrise.com:/cvs:jetspeed-2</connection>
-    <url>http://cvs.sporteportal.com/viewcvs/jetspeed-2/</url>
-  </repository>
 
   <mailingLists>
     <mailingList>
