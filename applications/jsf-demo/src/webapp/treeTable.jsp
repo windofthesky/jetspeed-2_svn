@@ -33,7 +33,7 @@
         	    nodeClass="tree-node"
         	    headerClass="portlet-table-header"
         	    footerClass="portlet-table-footer"
-    	        rowClasses="portlet-table-row1, portlet-table-row2"
+    	        rowClasses="portlet-table-body, portlet-table-alternate"
     	        columnClasses="portlet-table-col1, portlet-table-col2"
 	            selectedNodeClass="tree-node-selected"
 	            expandRoot="true">

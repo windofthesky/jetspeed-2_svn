@@ -269,7 +269,7 @@ limitations under the License.
 .portlet-tigris .portlet-section-selected,
 .portlet-tigris .portlet-section-subheader,
 .portlet-tigris .portlet-section-footer,
-.portlet-tigris .portlet-section-text,
+.portlet-tigris .portlet-section-text
 {
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
@@ -282,13 +282,24 @@ limitations under the License.
 /* PLT.C.5 Forms                     */
 /* --------------------------------- */
 .portlet-tigris .portlet-form-label {
-
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-form-input-field {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-form-button {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-icon-label {
@@ -313,22 +324,6 @@ limitations under the License.
 }
 
 .portlet-tigris .portlet-form-field {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: x-small;
-}
-
-
-/* font */
-.portlet-tigris .portlet-section-header,
-.portlet-tigris .portlet-section-body,
-.portlet-tigris .portlet-section-alternate,
-.portlet-tigris .portlet-section-selected,
-.portlet-tigris .portlet-section-subheader,
-.portlet-tigris .portlet-section-footer,
-.portlet-tigris .portlet-section-text,
-{
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
@@ -533,15 +528,26 @@ limitations under the License.
 }
 
 /* --------------------------------- */
-/* Portlet Table                     */
+/* WSRP (10.6.5 Tables)              */
 /* --------------------------------- */
-.portlet-tigris th, td, input {
+.portlet-tigris .portlet-table-header,
+.portlet-tigris .portlet-table-body,
+.portlet-tigris .portlet-table-alternate,
+.portlet-tigris .portlet-table-selected,
+.portlet-tigris .portlet-table-subheader,
+.portlet-tigris .portlet-table-footer,
+.portlet-tigris .portlet-table-text,
+.portlet-tigris th,
+.portlet-tigris td,
+.portlet-tigris input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: small;
 }
 
-.portlet-tigris table, th, td {
+.portlet-tigris table,
+.portlet-tigris th,
+.portlet-tigris td {
 	vertical-align: top;
-	font-size: small;
 	border: none;
 	/* action buttons shifts right a few millimeters by the following */
 	/*white-space: nowrap;*/
@@ -549,6 +555,13 @@ limitations under the License.
 
 .portlet-tigris .portlet-table-header {
 	background-color: #bbb;
+	border: 0.75px solid #fff;
+	padding: 2px 3px;
+	text-align: left;
+}
+
+.portlet-tigris .portlet-table-subheader {
+	background-color: #ccc;
 	border: 0.75px solid #fff;
 	padding: 2px 3px;
 	text-align: left;
@@ -566,23 +579,34 @@ limitations under the License.
 }
 
 
-.portlet-tigris .portlet-table-row1 td {
+.portlet-tigris .portlet-table-body,
+.portlet-tigris .portlet-table-body td {
 	font-size: small;
 	background: #ddd;
 	border-bottom: 1px solid #fff;
 }
 
-.portlet-tigris .portlet-table-row2 td {
+.portlet-tigris .portlet-table-alternate,
+.portlet-tigris .portlet-table-alternate td {
 	font-size: small;
 	background: #efefef;
 	border-bottom: 1px solid #fff;
 }
 
+.portlet-tigris .portlet-table-selected,
+.portlet-tigris .portlet-table-selected td {
+	font-size: small;
+	background: #ffe;
+	border-bottom: 1px solid #fff;
+}
+
+/* not defined on WSRP*/
 .portlet-tigris .portlet-table-col1 {
 	border-right: 1px solid #fff;
 	padding: 2px 15px 2px 5px;
 }
 
+/* not defined on WSRP*/
 .portlet-tigris .portlet-table-col2 {
 	border-left: 1px solid #fff;
 	padding: 2px 15px 2px 5px;
