@@ -30,3 +30,9 @@
 #end
 $extraction
 #end
+
+#macro (ViewLink $view)
+#set($vl_result = $renderResponse.createRenderURL())
+$vl_result.setParameter("velocity.view", $view)
+$vl_result
+#end
