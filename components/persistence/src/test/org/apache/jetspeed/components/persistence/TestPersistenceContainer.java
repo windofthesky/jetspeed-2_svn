@@ -52,20 +52,30 @@
  * <http://www.apache.org/>.
  */
 package org.apache.jetspeed.components.persistence;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.ComponentManager;
 
 /**
  * <p>
  * TestPersistenceContainer
- * </p>
- *  @
+ * </p>@
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $ $
  *  
  */
 public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 {
+    private ComponentManager persistenceCm;
+    private ComponentManager rdbmsCm;
+
+
     /**
      * @param arg0
      */
@@ -74,165 +84,184 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
         super(arg0);
         // TODO Auto-generated constructor stub
     }
+    public static Test suite()
+    {
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPersistenceContainer.class);
+    }
     
-    
-    
-//    private static final String TEST_APP_1 = "test adding object";
-//    private PersistenceStoreContainer pContainer;
-//    private ComponentManager cm;
-//    public static Test suite()
-//    {
-//        // All methods starting with "test" will be executed in the test suite.
-//        return new DatasourceEnabledTestSuite(TestPersistenceContainer.class);
-//    }
-//
-//    /**
-//     * @param testName
-//     */
-//    public TestPersistenceContainer(String testName)
-//    {
-//        super(testName);
-//    }
-//    public void testStartContainer() throws Exception
-//    {
-//        PersistenceStoreContainer pContainer = null;
-//        try
-//        {
-//            pContainer = getInstance();
-//            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
-//            assertNotNull(store);
-//        }
-//        catch (RuntimeException e)
-//        {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//        finally
-//        {
-//            cm.killContainer();
-//        }
-//    }
-//    public void testBasicPersistence() throws Exception
-//    {
-//        PersistenceStoreContainer pContainer = getInstance();
-//        PersistenceStore store = pContainer.getStoreForThread("jetspeed");
-//        assertNotNull(store);
-//        initTestObject(store);
-//        store.getTransaction().begin();
-//        assertNotNull(getTestObject1(store));
-//        store.getTransaction().commit();
-//    }
-//    protected PersistenceStoreContainer getInstance() throws Exception
-//    {
-//        if (this.pContainer == null)
-//        {
-//            pContainer = (PersistenceStoreContainer) cm.getRootContainer();
-//        }
-//        return pContainer;
-//    }
-//    protected void initTestObject(PersistenceStore store) throws Exception
-//    {
-//        try
-//        {
-//            store.getTransaction().begin();
-//            MutablePortletApplication app = new PortletApplicationDefinitionImpl();
-//            store.makePersistent(app);
-//            app.setName(TEST_APP_1);
-//            app.setVersion("1.0");
-//            app.setDescription("This is a test from persistence layer");
-//            // create a web application
-//            MutableWebApplication wad = new WebApplicationDefinitionImpl();
-//            wad.addDescription(getEnglishLanguage().getLocale(), "This is an english desrcitpion");
-//            wad.addDisplayName(getEnglishLanguage().getLocale(), "This is an english display name");
-//            wad.setContextRoot("/test");
-//            app.setWebApplicationDefinition(wad);
-//
-//            // Create some Portlets
-//            PortletDefinitionComposite pdc = new PortletDefinitionImpl();
-//            pdc.setClassName("com.bogus.Class1");
-//            pdc.setName("Portlet 1");
-//            PortletDefinitionComposite pdc2 = new PortletDefinitionImpl();
-//            pdc2.setClassName("com.bogus.Class2");
-//            pdc2.setName("Portlet 2");
-//            app.addPortletDefinition(pdc);
-//            app.addPortletDefinition(pdc2);
-//            store.getTransaction().commit();
-//        }
-//        catch (Exception e)
-//        {
-//            store.getTransaction().rollback();
-//            store.close();
-//            throw e;
-//        }
-//    }
-//    protected Language getEnglishLanguage()
-//    {
-//        MutableLanguage lang = new LanguageImpl();
-//        lang.setTitle("Portlet Title");
-//        lang.setShortTitle("Portlet Short Title");
-//        lang.setLocale(Locale.ENGLISH);
-//        return lang;
-//    }
-//    protected void destroyTestObject(PersistenceStore store) throws Exception
-//    {
-//        try
-//        {
-//            store.getTransaction().begin();
-//            Filter c = store.newFilter();
-//            c.addEqualTo("name", TEST_APP_1);
-//            Object query = store.newQuery(PortletApplicationDefinitionImpl.class, c);
-//            Collection removeUs = store.getCollectionByQuery(query);
-//            Iterator itr = removeUs.iterator();
-//            while (itr.hasNext())
-//            {
-//                store.deletePersistent(itr.next());
-//            }
-//            store.getTransaction().commit();
-//        }
-//        catch (Exception e)
-//        {
-//            store.getTransaction().rollback();
-//            throw e;
-//        }
-//    }
-//    protected PortletApplicationDefinitionImpl getTestObject1(PersistenceStore store)
-//    {
-//        Filter c = store.newFilter();
-//        c.addEqualTo("name", TEST_APP_1);
-//        Object obj = store.getObjectByQuery(store.newQuery(PortletApplicationDefinitionImpl.class, c));
-//        return (PortletApplicationDefinitionImpl) obj;
-//    }
-//
-//    /**
-//     * @see junit.framework.TestCase#setUp()
-//     */
-//    protected void setUp() throws Exception
-//    {
-//        super.setUp();
-//        Map oms = new HashMap();
-//        oms.put("pluto.om", "../../portal/src/webapp/WEB-INF/conf/pluto.om");
-//        if (!OMHelper.isInitialized())
-//        {
-//            OMHelper helper = new OMHelper(oms);
-//            helper.start();
-//        }
-//        
-//        Reader composition = new InputStreamReader(Thread.currentThread().getContextClassLoader()
-//        .getResourceAsStream(
-//        "org/apache/jetspeed/containers/persistence.container.groovy"));
-//        cm = new ComponentManager(composition, ComponentManager.GROOVY);
-//        cm.getRootContainer();
-//        destroyTestObject(getInstance().getStore("jetspeed"));
-//    }
-//
-//    /**
-//     * @see junit.framework.TestCase#tearDown()
-//     */
-//    protected void tearDown() throws Exception
-//    {
-//        destroyTestObject(getInstance().getStore("jetspeed"));
-//        super.tearDown();
-//    }
+    public void testStartContainer()
+    {
+        assertNotNull(rdbmsCm);
+        assertNotNull(persistenceCm);
+    }
+
+
+
+    //    private static final String TEST_APP_1 = "test adding object";
+    //    private PersistenceStoreContainer pContainer;
+    //    private ComponentManager cm;
+    //    public static Test suite()
+    //    {
+    //        // All methods starting with "test" will be executed in the test suite.
+    //        return new DatasourceEnabledTestSuite(TestPersistenceContainer.class);
+    //    }
+    //
+    //    /**
+    //     * @param testName
+    //     */
+    //    public TestPersistenceContainer(String testName)
+    //    {
+    //        super(testName);
+    //    }
+    //    public void testStartContainer() throws Exception
+    //    {
+    //        PersistenceStoreContainer pContainer = null;
+    //        try
+    //        {
+    //            pContainer = getInstance();
+    //            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+    //            assertNotNull(store);
+    //        }
+    //        catch (RuntimeException e)
+    //        {
+    //            e.printStackTrace();
+    //            throw e;
+    //        }
+    //        finally
+    //        {
+    //            cm.killContainer();
+    //        }
+    //    }
+    //    public void testBasicPersistence() throws Exception
+    //    {
+    //        PersistenceStoreContainer pContainer = getInstance();
+    //        PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+    //        assertNotNull(store);
+    //        initTestObject(store);
+    //        store.getTransaction().begin();
+    //        assertNotNull(getTestObject1(store));
+    //        store.getTransaction().commit();
+    //    }
+    //    protected PersistenceStoreContainer getInstance() throws Exception
+    //    {
+    //        if (this.pContainer == null)
+    //        {
+    //            pContainer = (PersistenceStoreContainer) cm.getRootContainer();
+    //        }
+    //        return pContainer;
+    //    }
+    //    protected void initTestObject(PersistenceStore store) throws Exception
+    //    {
+    //        try
+    //        {
+    //            store.getTransaction().begin();
+    //            MutablePortletApplication app = new PortletApplicationDefinitionImpl();
+    //            store.makePersistent(app);
+    //            app.setName(TEST_APP_1);
+    //            app.setVersion("1.0");
+    //            app.setDescription("This is a test from persistence layer");
+    //            // create a web application
+    //            MutableWebApplication wad = new WebApplicationDefinitionImpl();
+    //            wad.addDescription(getEnglishLanguage().getLocale(), "This is an english
+    // desrcitpion");
+    //            wad.addDisplayName(getEnglishLanguage().getLocale(), "This is an english
+    // display name");
+    //            wad.setContextRoot("/test");
+    //            app.setWebApplicationDefinition(wad);
+    //
+    //            // Create some Portlets
+    //            PortletDefinitionComposite pdc = new PortletDefinitionImpl();
+    //            pdc.setClassName("com.bogus.Class1");
+    //            pdc.setName("Portlet 1");
+    //            PortletDefinitionComposite pdc2 = new PortletDefinitionImpl();
+    //            pdc2.setClassName("com.bogus.Class2");
+    //            pdc2.setName("Portlet 2");
+    //            app.addPortletDefinition(pdc);
+    //            app.addPortletDefinition(pdc2);
+    //            store.getTransaction().commit();
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            store.getTransaction().rollback();
+    //            store.close();
+    //            throw e;
+    //        }
+    //    }
+    //    protected Language getEnglishLanguage()
+    //    {
+    //        MutableLanguage lang = new LanguageImpl();
+    //        lang.setTitle("Portlet Title");
+    //        lang.setShortTitle("Portlet Short Title");
+    //        lang.setLocale(Locale.ENGLISH);
+    //        return lang;
+    //    }
+    //    protected void destroyTestObject(PersistenceStore store) throws
+    // Exception
+    //    {
+    //        try
+    //        {
+    //            store.getTransaction().begin();
+    //            Filter c = store.newFilter();
+    //            c.addEqualTo("name", TEST_APP_1);
+    //            Object query = store.newQuery(PortletApplicationDefinitionImpl.class,
+    // c);
+    //            Collection removeUs = store.getCollectionByQuery(query);
+    //            Iterator itr = removeUs.iterator();
+    //            while (itr.hasNext())
+    //            {
+    //                store.deletePersistent(itr.next());
+    //            }
+    //            store.getTransaction().commit();
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            store.getTransaction().rollback();
+    //            throw e;
+    //        }
+    //    }
+    //    protected PortletApplicationDefinitionImpl
+    // getTestObject1(PersistenceStore store)
+    //    {
+    //        Filter c = store.newFilter();
+    //        c.addEqualTo("name", TEST_APP_1);
+    //        Object obj =
+    // store.getObjectByQuery(store.newQuery(PortletApplicationDefinitionImpl.class,
+    // c));
+    //        return (PortletApplicationDefinitionImpl) obj;
+    //    }
+    //
+    //    /**
+    //     * @see junit.framework.TestCase#setUp()
+    //     */
+    //    protected void setUp() throws Exception
+    //    {
+    //        super.setUp();
+    //        Map oms = new HashMap();
+    //        oms.put("pluto.om", "../../portal/src/webapp/WEB-INF/conf/pluto.om");
+    //        if (!OMHelper.isInitialized())
+    //        {
+    //            OMHelper helper = new OMHelper(oms);
+    //            helper.start();
+    //        }
+    //        
+    //        Reader composition = new
+    // InputStreamReader(Thread.currentThread().getContextClassLoader()
+    //        .getResourceAsStream(
+    //        "org/apache/jetspeed/containers/persistence.container.groovy"));
+    //        cm = new ComponentManager(composition, ComponentManager.GROOVY);
+    //        cm.getRootContainer();
+    //        destroyTestObject(getInstance().getStore("jetspeed"));
+    //    }
+    //
+    //    /**
+    //     * @see junit.framework.TestCase#tearDown()
+    //     */
+    //    protected void tearDown() throws Exception
+    //    {
+    //        destroyTestObject(getInstance().getStore("jetspeed"));
+    //        super.tearDown();
+    //    }
 
     //	public void testAdd2atATime() throws TransactionStateException
     //	{
@@ -535,5 +564,29 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 
 
 
+
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Reader rdbmsScript = new InputStreamReader(cl.getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
+        Reader persistenceScript = new InputStreamReader(cl.getResourceAsStream("org/apache/jetspeed/containers/persistence.container.groovy"));
+        rdbmsCm = new ComponentManager(rdbmsScript, ComponentManager.GROOVY);
+        persistenceCm = new ComponentManager(persistenceScript, ComponentManager.GROOVY);
+        rdbmsCm.getRootContainer();
+        persistenceCm.getRootContainer();
+    }
+
+   
+    protected void tearDown() throws Exception
+    {
+
+        super.tearDown();
+        rdbmsCm.killContainer();
+        persistenceCm.killContainer();
+    }
 
 }
