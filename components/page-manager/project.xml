@@ -142,6 +142,27 @@ limitations under the License.
       <id>xml-apis</id>
       <version>2.0.2</version>
     </dependency>
+    <dependency>
+      <id>saxpath</id>
+      <version>1.0-FCS</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+      <dependency>
+      <id>jaxen</id>
+      <version>1.0-FCS-full</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>jdom</id>
+      <version>b10</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
     <!-- This is only a test dependency -->
     <dependency>
       <id>hsqldb</id>
