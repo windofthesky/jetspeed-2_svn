@@ -100,7 +100,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
             String msg = "Failed to retrieve Portlet Definition for " + fragment.getName();
             logger.warn(msg);
             portletEntity = new PortletEntityImpl();
-            fragment.setRenderedContent(msg);
+            fragment.overrideRenderedContent(msg);
         }
 
         portletEntity.setId(entityKey.toString());

@@ -110,7 +110,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             String msg = "Failed to retrieve Portlet Definition for " + fragment.getName();
             log.warn(msg);
             portletEntity = new PortletEntityImpl();
-            fragment.setRenderedContent(msg);
+            fragment.overrideRenderedContent(msg);
         }
         
         portletEntity.setId(entityKey.toString());
