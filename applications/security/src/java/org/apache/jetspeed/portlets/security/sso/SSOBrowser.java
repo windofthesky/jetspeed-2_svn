@@ -139,6 +139,8 @@ public class SSOBrowser extends BrowserPortlet
             String refresh = request.getParameter("sso.refresh");
             String save = request.getParameter("sso.save");
             String neue = request.getParameter("sso.new");
+            String delete = request.getParameter("ssoDelete");
+            
             if (refresh != null)
             {
                 this.clearBrowserIterator(request);
@@ -147,6 +149,29 @@ public class SSOBrowser extends BrowserPortlet
             {
                 PortletMessaging.cancel(request, "site", "selected");
                 PortletMessaging.cancel(request, "site", "selectedUrl");                                
+            }
+            else if (delete != null)
+            {
+                if (!(isEmpty(delete)))
+                {
+                    try
+                    {
+                        SSOSite site = null;
+                        site = sso.getSite(delete);
+                        if (site != null)
+                        {
+                            sso.removeSite(site);
+                            this.clearBrowserIterator(request);
+                            PortletMessaging.cancel(request, "site", "selected");
+                            PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                        }
+                    }
+                    catch (SSOException e)
+                    {
+                        // TODO: exception handling
+                        System.err.println("Exception storing site: " + e);
+                    }
+                }                
             }
             else if (save != null)
             {

@@ -21,6 +21,8 @@ limitations under the License.
 
 *#
 
+<script language='JavaScript' src='/security/scripts/jetspeed-security.js'></script>
+
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
 
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
@@ -57,7 +59,9 @@ limitations under the License.
         <div align="center"><a href='$action'>$ssoName</a></div>
       </td>
        <td class="$rowstyle" nowrap width='24' align='center'>
-         <img src="/security/images/waste_bin.gif" width="20" height="15" border="0"/>
+         <a href="javascript:YesNoPopup('Confirm to Delete Site:','Confirm Delete','ssoForm','ssoDelete','$ssoUrl','YesNoReturnMethod()');">
+           <img src="/security/images/waste_bin.gif" width="20" height="15" border="0"/>            
+         </a>
        </td>      
     <td class="">&nbsp;</td>               
    </tr>
@@ -71,7 +75,7 @@ limitations under the License.
   </tr>
 </table>
 <br/>
-<form action="$renderResponse.createActionURL()" method="post">
+<form name='ssoForm' action="$renderResponse.createActionURL()" method="post">
 <table>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Site Name:&nbsp;</td>
@@ -87,6 +91,7 @@ limitations under the License.
   </tr>
 </table>
 <br/>
+<input name='ssoDelete' type='hidden' value=''/>
 <input name='sso.save' type="submit" value="$MESSAGES.getString('save')" class="portlet-form-button"/>
 <input name='sso.refresh' class="portlet-form-button" type="submit" value="$MESSAGES.getString('refresh')" />
 <input name='sso.new' class="portlet-form-button" type="submit" value="$MESSAGES.getString('new')" />
