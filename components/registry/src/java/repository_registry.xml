@@ -1,14 +1,10 @@
 <!--
- 	- D U B L I N  C O R E
+ 	- M E T A D A T A   F I E L D
 -->
 
-    <class-descriptor class="org.apache.jetspeed.om.common.DublinCore">
-      <extent-class class-ref="org.apache.jetspeed.om.common.impl.DublinCoreImpl" />         
-    </class-descriptor>
-
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.impl.DublinCoreImpl"
-   	  table="PORTLET_APPLICATION_DUBLIN_CORE"
+<class-descriptor
+   	  class="org.apache.jetspeed.om.common.impl.GenericMetadataImpl"
+   	  table="PA_METADATA"
    >
       <field-descriptor
          name="id"
@@ -20,7 +16,7 @@
       />
 
       <collection-descriptor
-         name="titles"
+         name="fields"
          element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
          auto-delete="true"
      	 auto-update = "true"
@@ -28,128 +24,18 @@
       >         
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
-      <collection-descriptor
-         name="creators"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="subjects"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="publishers"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="types"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="formats"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="identifiers"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="sources"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="languages"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="relations"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="coverages"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-      <collection-descriptor
-         name="rights"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-     
-   </class-descriptor>
-   
+</class-descriptor>
+
 <!--
  	- L O C A L I Z E D   F I E L D
--->
-
+-->   
    <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
       <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />         
     </class-descriptor>
    
    <class-descriptor
    	  class="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-   	  table="PORTLET_APPLICATION_DUBLIN_CORE_FIELDS"
+   	  table="PA_METADATA_FIELDS"
    >
       <field-descriptor
          name="id"
@@ -168,6 +54,12 @@
       <field-descriptor
          name="value"
          column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
          jdbc-type="VARCHAR"
       />
 
@@ -240,10 +132,10 @@
          column="WEB_APP_ID"
          jdbc-type="INTEGER"       
       />
-      
+
       <field-descriptor
-         name="dublinCoreId"
-         column="DUBLIN_CORE_ID"
+         name="metadataId"
+         column="METADATA_ID"
          jdbc-type="INTEGER"       
       />
 
@@ -252,15 +144,15 @@
          column="APP_TYPE"
          jdbc-type="INTEGER"       
       />
-      
+
       <reference-descriptor 
-      	  name="dublinCore" 
-      	  class-ref="org.apache.jetspeed.om.common.impl.DublinCoreImpl" 
+      	  name="metadata" 
+      	  class-ref="org.apache.jetspeed.om.common.impl.GenericMetadataImpl" 
 		  auto-delete="true"
       	  auto-update = "true"
       	  auto-retrieve = "true"
       	  >
-         <foreignkey field-ref="dublinCoreId"/>
+         <foreignkey field-ref="metadataId"/>
       </reference-descriptor>
      
       <reference-descriptor 

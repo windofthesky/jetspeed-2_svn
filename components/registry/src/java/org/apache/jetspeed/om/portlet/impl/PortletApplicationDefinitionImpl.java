@@ -58,8 +58,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.DublinCore;
-import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.impl.GenericMetadataImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -99,9 +99,9 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     protected long webApplicationId;
     
     /** DublinCore property */
-    private DublinCore dublinCore = new DublinCoreImpl();
+    private GenericMetadata metadata = new GenericMetadataImpl();
     /** PK of this DublinCore */
-    protected long dublinCoreId;
+    protected long metadataId;
 
     /** Description */
     private String description;
@@ -279,19 +279,19 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getDublinCore()
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
      */
-    public DublinCore getDublinCore()
-    {
-        return dublinCore;
+    public GenericMetadata getMetadata() {
+        return metadata;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setDublinCore(org.apache.jetspeed.om.common.DublinCore)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
-    public void setDublinCore(DublinCore dublinCore)
-    {
-        this.dublinCore = dublinCore;
+    public void setMetadata(GenericMetadata metadata) {
+        this.metadata = metadata;        
     }
+
+    
 
 }

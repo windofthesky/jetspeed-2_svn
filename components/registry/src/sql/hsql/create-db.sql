@@ -1,20 +1,20 @@
 ----------------------------------------------------------------------------
--- Create Portlet Application Dublin Core Table
+-- Create Portlet Application Metadata Table
 ----------------------------------------------------------------------------
-CREATE TABLE PORTLET_APPLICATION_DUBLIN_CORE
+CREATE TABLE PA_METADATA
 ( 
     ID INTEGER NOT NULL PRIMARY KEY
 );
 
 ----------------------------------------------------------------------------
--- Create Portlet Application Dublin Core Fields Table
+-- Create Portlet Application Metadata Fields Table
 ----------------------------------------------------------------------------
-
-CREATE TABLE PORTLET_APPLICATION_DUBLIN_CORE_FIELDS
+CREATE TABLE PA_METADATA_FIELDS
 (
     ID INTEGER NOT NULL PRIMARY KEY,
     OBJECT_ID INTEGER NOT NULL,
     VALUE LONGVARCHAR NOT NULL,
+    NAME VARCHAR(100) NOT NULL,
     LOCALE_STRING VARCHAR(50) NOT NULL
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE PORTLET_APPLICATION
     APP_TYPE INTEGER, 
     DESCRIPTION VARCHAR(80),
     WEB_APP_ID INTEGER NOT NULL,
-    DUBLIN_CORE_ID INTEGER NOT NULL
+    METADATA_ID INTEGER NOT NULL
 );
 
 ALTER TABLE PORTLET_APPLICATION ADD CONSTRAINT UK_APPLICATION UNIQUE (APP_NAME);
