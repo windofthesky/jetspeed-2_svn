@@ -39,7 +39,6 @@ import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
@@ -61,7 +60,7 @@ public class JetspeedRequestContext implements RequestContext
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
-    private ProfileLocator locator;
+    private Map locators;
     private Page page;
     private PortletDefinition portletDefinition;
     private Subject subject;
@@ -132,14 +131,14 @@ public class JetspeedRequestContext implements RequestContext
         return config;
     }
 
-    public ProfileLocator getProfileLocator()
+    public Map getProfileLocators()
     {
-        return locator;
+        return locators;
     }
 
-    public void setProfileLocator( ProfileLocator locator )
+    public void setProfileLocators( Map locators )
     {
-        this.locator = locator;
+        this.locators = locators;
     }
 
     public Page getPage()
