@@ -29,7 +29,7 @@ limitations under the License.
 </c:if>
 
 <%
-    PortletSession portletSession = renderRequest.getPortletSession();
+    PortletSession portletSession = renderRequest.getPortletSession(true);
     Long lg = (Long)portletSession.getAttribute("LastGuess", PortletSession.APPLICATION_SCOPE);
     String lastGuess = "50";
     if (lg != null)

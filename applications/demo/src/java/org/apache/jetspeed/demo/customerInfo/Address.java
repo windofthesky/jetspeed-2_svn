@@ -15,11 +15,15 @@
  */
 package org.apache.jetspeed.demo.customerInfo;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
 public class Address
+    implements
+        Serializable
 {
     
     /** Holds value of property name. */

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.demo.customerInfo;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -22,7 +23,9 @@ import java.util.Date;
  * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public class CustomerInfo
+public class CustomerInfo 
+    implements
+        Serializable
 {
     
     /** Holds value of property name. */
