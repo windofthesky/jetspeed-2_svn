@@ -6,14 +6,14 @@
      portlet-decorator="box-titled"
   />
   <title>Welcome to Jetspeed-2</title>
-  <fragment id="f001" type="layout" name="jetspeed::OneColumn">
-    <fragment id="p002-01" type="portlet" name="HW_App::LoginPortlet"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::HelloPortlet"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::DisplayRequestPortlet"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::CustomerList"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::CustomerInfo"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::CustomerDetail"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::JMXPortlet"/>
-    <fragment id="p002-01" type="portlet" name="HW_App::PreferencePortlet"/>
+  <fragment id="f001" entity="1" type="layout" name="jetspeed::OneColumn">
+    <fragment id="p002-01" entity="12" type="portlet" name="HW_App::LoginPortlet"/>
+    <fragment id="p002-02" entity="3" type="portlet" name="HW_App::HelloPortlet"/>
+    <fragment id="p002-03" entity="6" type="portlet" name="HW_App::DisplayRequestPortlet"/>
+    <fragment id="p002-04" entity="9" type="portlet" name="HW_App::CustomerList"/>
+    <fragment id="p002-05" entity="10" type="portlet" name="HW_App::CustomerInfo"/>
+    <fragment id="p002-06" entity="11" type="portlet" name="HW_App::CustomerDetail"/>
+    <fragment id="p002-07" entity="4" type="portlet" name="HW_App::JMXPortlet"/>
+    <fragment id="p002-08" entity="5" type="portlet" name="HW_App::PreferencePortlet"/>
   </fragment>
 </page>

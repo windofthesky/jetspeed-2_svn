@@ -126,6 +126,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
         Fragment f = (Fragment) children.get(0);
         assertTrue(f.getId().equals("pe001"));
         assertTrue(f.getName().equals("HelloPortlet"));
+        assertTrue(f.getEntityId().equals("3"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
         List properties = f.getProperties(root.getName());
@@ -140,6 +141,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
         assertTrue(f.getId().equals("pe002"));
         assertTrue(f.getName().equals("JMXPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
+        assertTrue(f.getEntityId().equals("4"));
 
         properties = f.getProperties(root.getName());
         assertNotNull(properties);

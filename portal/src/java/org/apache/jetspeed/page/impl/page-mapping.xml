@@ -37,6 +37,10 @@
       <bind-xml name="acl" node="attribute"/>
     </field>
 
+    <field name="entityId" type="java.lang.String">
+      <bind-xml name="entity" node="attribute"/>
+    </field>
+
     <field name="type" type="java.lang.String">
       <bind-xml name="type" node="attribute"/>
     </field>

@@ -16,6 +16,13 @@
 package org.apache.jetspeed;
 
 import org.apache.jetspeed.components.ComponentAssemblyTestCase;
+import java.io.FileInputStream;
+import java.util.Properties;
+import java.io.File;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4jFactory;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * PortalComponentAssemblyTestCase
@@ -25,6 +32,8 @@ import org.apache.jetspeed.components.ComponentAssemblyTestCase;
  */
 public class PortalComponentAssemblyTestCase extends ComponentAssemblyTestCase
 {
+    private String log4jFile = "./src/webapp/WEB-INF/conf/Log4j.properties";
+    
     public PortalComponentAssemblyTestCase(String name)
     {
         super(name);
@@ -37,4 +46,31 @@ public class PortalComponentAssemblyTestCase extends ComponentAssemblyTestCase
     {
         return "portal";
     }
+    
+    public void setUp()
+    throws Exception
+    {
+        super.setUp();
+        Properties p = new Properties();
+        try
+        {
+            File baseDir = new File(System.getProperty("basedir"));
+            if(baseDir.exists())
+            {
+                System.out.println("Finding logfile from basedir " + baseDir);
+                File logFile = new File(baseDir, log4jFile);
+                p.load(new FileInputStream(logFile));
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        PropertyConfigurator.configure(p);
+        
+        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+        System.out.println("set props ok");
+        
+    }
+    
 }
