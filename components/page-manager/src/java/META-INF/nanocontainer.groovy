@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.picocontainer.ComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
@@ -31,17 +31,14 @@ import java.io.File
 import java.util.Properties
 
 applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./")
+pageRoot = System.getProperty("org.apache.jetspeed.page_root", "/WEB-INF/pages")
 
 
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer(parent)
 
 
-root = applicationRoot + "/testdata/pages"
-Long scanRate = 120
-cacheSize = 100
-// fileCache = new FileCache(scanRate, cacheSize)
-pageManager = new CastorXmlPageManager(parent.getComponentInstance("IdGenerator"), parent.getComponentInstance(FileCache), root)
-container.registerComponentInstance(PageManager, pageManager)
-// container.registerComponentImplementation(PageManager, CastorXmlPageManager, new Parameter[] {new ComponentParameter("IdGenerator"), new ComponentParameter(FileCache), new ConstantParameter(root)})
+root = applicationRoot + pageRoot
+
+container.registerComponentImplementation(PageManager, CastorXmlPageManager, new Parameter[] {new ComponentParameter("IdGenerator"), new ComponentParameter(FileCache), new ConstantParameter(root)})
 
 return container

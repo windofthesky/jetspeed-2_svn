@@ -18,11 +18,13 @@ package org.apache.jetspeed.page.impl;
 
 //standard java stuff
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,30 +85,38 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     protected OutputFormat format = null;
 
     // castor mapping
-    protected String mapFileResource = "org/apache/jetspeed/page/impl/page-mapping.xml";
+    protected String mapFileResource = "META-INF/page-mapping.xml";
 
     /** the Castor mapping file name */
     protected Mapping mapping = null;
 
-    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root) throws FileNotFoundException
     {    
         super(generator);
         this.rootDir = new File(root);
-        this.pages = fileCache;        
+        this.pages = fileCache;       
+        if(!this.rootDir.exists())
+        {
+            throw new FileNotFoundException("PSML page directory, "+rootDir.getAbsolutePath()+", does not exist.");
+        }
     }
     
-    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root, List modelClasses)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root, List modelClasses) throws FileNotFoundException
     {
         super(generator, modelClasses);
         this.rootDir = new File(root);
-        this.pages = fileCache;        
+        this.pages = fileCache;      
+        if(!this.rootDir.exists())
+        {
+            throw new FileNotFoundException("PSML page directory, "+rootDir.getAbsolutePath()+", does not exist.");
+        }
     }
 
     public CastorXmlPageManager(IdGenerator generator,
                                 FileCache fileCache, 
                                 String root,                                        
                                 List modelClasses,
-                                String extension) 
+                                String extension) throws FileNotFoundException 
                                        
     {
         this(generator, fileCache, root, modelClasses);
@@ -397,7 +407,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     {
         try
         {            
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(mapFileResource);
+            // InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(mapFileResource);
+            // URL mapUrl = Thread.currentThread().getContextClassLoader().getResource(mapFileResource);
+            URL mapUrl = getClass().getClassLoader().getResource(mapFileResource);
+            if(mapUrl == null)
+            {
+                throw new IOException("Unbale to load Castor mapping "+mapFileResource+" system resource.");
+            }
                         
             if (log.isDebugEnabled())
             {
@@ -407,8 +423,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             mapping = new Mapping();
                     
                     
-            InputSource is = new InputSource(stream);
-            is.setSystemId(mapFileResource);
+            InputSource is = new InputSource(mapUrl.openStream());
+            // is.setSystemId(mapFileResource);
                    
             mapping.loadMapping(is);
         }
