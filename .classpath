@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
-	<classpathentry kind="src" path="applications/localeselector/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/test"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="applications/localeselector/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/perl/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
