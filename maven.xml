@@ -44,9 +44,37 @@
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}"
+               includes="commons/project.xml"
+               goals="jar:install"
+               banner="Build and Install the common jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
                includes="components/cm/project.xml"
                goals="jar:install"
                banner="Build and Install the Component Manager jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
+               includes="components/rdbms/project.xml"
+               goals="jar:install"
+               banner="Build and Install the RDBMS jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+   <maven:reactor
+               basedir="${basedir}"
+               includes="components/persistence/project.xml"
+               goals="jar:install"
+               banner="Build and Install the Persistence jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+   <maven:reactor
+               basedir="${basedir}"
+               includes="components/registry/project.xml"
+               goals="jar:install"
+               banner="Build and Install the Registry jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
@@ -68,13 +96,6 @@
                includes="plugin/project.xml"
                goals="jar:install"
                banner="Build and Install the Plugin jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="commons/project.xml"
-               goals="jar:install"
-               banner="Build and Install the common jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
