@@ -166,7 +166,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public LanguageSet getLanguageSet()
     {
-        langListWrapper.setInnerCollection(languageSet);
+        if ( languageSet != null )
+            langListWrapper.setInnerCollection(languageSet);
         return langListWrapper;
     }
 
