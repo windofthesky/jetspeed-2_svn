@@ -77,7 +77,7 @@ Aurelien Pernoud aurelien@apache.org
 
 
 [4] Issue Tracker
- (i) JIRA URL: http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10493
+ (i) JIRA URL: http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10493
   DONE
 
 (iii) Jira 

@@ -66,6 +66,7 @@ public class PreferencesFactoryImpl implements PreferencesFactory
         }
         catch(Throwable e)
         {
+	    e.printStackTrace();
             throw new PreferencesException("Failed to initialize prefs api.  "+e.toString());
         }
     }

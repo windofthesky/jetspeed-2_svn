@@ -92,7 +92,7 @@ taylor
 twl
 
 [4] Issue Tracker
- (i) Bugzilla URL: http://nagoya.apache.org/bugzilla/buglist.cgi?product=wsrp4j 
+ (i) Bugzilla URL: http://issues.apache.org/bugzilla/buglist.cgi?product=wsrp4j 
 
 or 
 

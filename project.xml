@@ -13,7 +13,7 @@
     <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
     <shortDescription>Enterprise Information Portal</shortDescription>
     <url>http://portals.apache.org/jetspeed-2</url>
-    <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
+    <issueTrackingUrl>http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
     <siteAddress>portals.apache.org</siteAddress>
     <siteDirectory>/www/portals.apache.org/jetspeed-2-generated</siteDirectory>
     <repository>

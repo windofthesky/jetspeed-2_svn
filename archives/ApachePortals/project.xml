@@ -20,7 +20,7 @@
     We intend to build freely available portal software in order to promote the use of this technology.
   </description>
   <url>http://portals.apache.org/</url>
-  <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
+  <issueTrackingUrl>http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
   <siteAddress>portals.apache.org</siteAddress>
   <siteDirectory>/www/portals.apache.org/</siteDirectory>
 
