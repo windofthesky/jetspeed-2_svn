@@ -364,10 +364,7 @@ public class PortletApplicationDetail extends ServletPortlet
                             if(userAttr.getName().equals(userAttrName))
                             {
                                 found = true;
-                                System.out.println("Removing " + userAttrName);
-                                registry.getPersistenceStore().deletePersistent(userAttr); 
                                 userAttrIter.remove();
-                                System.out.println("Removed from iter " + userAttrName);                                
                                 break;
                             }
                         }
