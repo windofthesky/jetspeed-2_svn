@@ -23,6 +23,14 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
     private String bindName;
 
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize() throws Throwable
+    {
+        stop();
+        super.finalize();
+    }
     /**
      * 
      * @param user
@@ -71,8 +79,23 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
         }
         catch (NamingException e)
         {
-            new IllegalStateException("Naming exception "+e.toString());
+            throw new IllegalStateException("Naming exception "+e.toString());
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.picocontainer.Startable#stop()
+     */
+    public void stop()
+    {        
+        try
+        {
+            jndi.unbindObject("comp/env/jdbc/"+bindName);
+        }
+        catch (NamingException e)
+        {
+             throw new IllegalStateException("Naming exception "+e.toString());
+        }
+        super.stop();
+    }
 }
