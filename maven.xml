@@ -52,6 +52,7 @@ limitations under the License.
 
   <goal name="allBuild"
         description="Build all jars and war">
+    <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
   	<attainGoal name="db.create.test"/>
 
@@ -191,6 +192,7 @@ limitations under the License.
                ignoreFailures="false"/>
 
           <attainGoal name="copy.shared.deps" />
+          <attainGoal name="check.patch.tomcat5.jaas.realm"/>
   </goal>
 
   <goal name="copy.shared.deps">
