@@ -91,7 +91,7 @@ public class TyrexJNDIComponent implements JNDIComponent
 	{
 	    log.debug("Binding "+obj+" to name "+bindToName);
 		Context ctx = getRootContext();
-		ctx.bind(bindToName, obj);
+		ctx.bind(bindToName, obj);		
 	}
 
     /** 
@@ -105,7 +105,17 @@ public class TyrexJNDIComponent implements JNDIComponent
     public void unbindFromCurrentThread() throws NamingException
     {
 		RuntimeContext.unsetRuntimeContext();
-		RuntimeContext.cleanup(Thread.currentThread());
+		RuntimeContext.cleanup(Thread.currentThread());		
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.jndi.JNDIComponent#unbindObject(java.lang.String)
+     */
+    public void unbindObject( String name ) throws NamingException
+    {
+        log.debug("Unbinding name "+name);
+		Context ctx = getRootContext();
+		ctx.unbind(name);		
+
+    }
 }

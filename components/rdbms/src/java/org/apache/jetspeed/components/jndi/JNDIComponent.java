@@ -38,5 +38,7 @@ public interface JNDIComponent
 	void unbindFromCurrentThread() throws NamingException;
 	
 	void bindObject(String bindToName, Object obj) throws NamingException;
+	
+	void unbindObject(String name) throws NamingException;
 
 }
