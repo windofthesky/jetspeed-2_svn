@@ -17,6 +17,7 @@ limitations under the License.
 <project>
   <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
+  <currentVersion>2.0-M2-dev</currentVersion>
   <id>maven-jetspeed2-plugin</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed 2 Maven Plugin</name>
