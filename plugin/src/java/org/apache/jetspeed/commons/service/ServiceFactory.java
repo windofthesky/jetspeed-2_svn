@@ -17,7 +17,16 @@ import org.apache.fulcrum.ServiceManager;
 import org.apache.fulcrum.TurbineServices;
 
 /**
+ * <p>
  * ServiceFactory
+ * </p>
+ * <p>
+ * The service factory can be used if the system in which the
+ * peristence service is used has no running fulcrum impplementation.
+ * </p>
+ * <p>
+ * </p>
+ * 
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
