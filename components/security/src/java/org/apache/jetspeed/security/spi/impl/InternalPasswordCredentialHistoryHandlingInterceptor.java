@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
@@ -100,7 +101,7 @@ public class InternalPasswordCredentialHistoryHandlingInterceptor extends
                 if ( historicalPasswordCredential.getValue() != null &&
                         historicalPasswordCredential.getValue().equals(password) )
                 {
-                    throw new SecurityException(SecurityException.PASSWORD_ALREADY_USED);
+                    throw new PasswordAlreadyUsedException();
                 }
             }
         }
