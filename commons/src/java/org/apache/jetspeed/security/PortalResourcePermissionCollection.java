@@ -25,7 +25,7 @@ import java.util.Iterator;
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class PortletPermissionCollection extends PermissionCollection
+public class PortalResourcePermissionCollection extends PermissionCollection
 {
 
     ArrayList perms = new ArrayList();
@@ -33,7 +33,7 @@ public class PortletPermissionCollection extends PermissionCollection
     /**
      * 
      */
-    public PortletPermissionCollection()
+    public PortalResourcePermissionCollection()
     {
         super(); 
     }

@@ -110,8 +110,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("removepermission");
         RolePrincipal role = new RolePrincipalImpl("removepermissionrole");
-        PortletPermission perm1 = new PortletPermission("removepermission1", "view, edit, delete, minimize, maximize");
-        PortletPermission perm2 = new PortletPermission("removepermission2", "view, edit, minimize, maximize");
+        PortletPermission perm1 = new PortletPermission("removepermission1", "view, edit, secure, minimized, maximized");
+        PortletPermission perm2 = new PortletPermission("removepermission2", "view, edit, minimized, maximized");
         try
         {
             ums.addUser(user.getName(), "password");
@@ -172,8 +172,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         // Init test.
         UserPrincipal user1 = new UserPrincipalImpl("testgrantpermission1");
         UserPrincipal user2 = new UserPrincipalImpl("testgrantpermission2");
-        PortletPermission perm1 = new PortletPermission("testportlet", "view, minimize, delete");
-        PortletPermission perm2 = new PortletPermission("testportlet", "view, minimize, maximize, delete");
+        PortletPermission perm1 = new PortletPermission("testportlet", "view, minimized, secure");
+        PortletPermission perm2 = new PortletPermission("testportlet", "view, minimized, maximized, secure");
         try
         {
             ums.addUser(user2.getName(), "password");
@@ -306,8 +306,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         GroupPrincipal group2 = new GroupPrincipalImpl("anongroup2");
         PortletPermission perm1 = new PortletPermission("anontestportlet", "view");
         PortletPermission perm2 = new PortletPermission("anontestportlet", "view, edit");
-        PortletPermission perm3 = new PortletPermission("anontestportlet", "view, edit, delete");
-        PortletPermission perm4 = new PortletPermission("anontestportlet", "view, edit, delete, minimize");
+        PortletPermission perm3 = new PortletPermission("anontestportlet", "view, edit, secure");
+        PortletPermission perm4 = new PortletPermission("anontestportlet", "view, edit, secure, minimized");
         try
         {
             ums.addUser(user.getName(), "password");
@@ -393,8 +393,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     {
         // Init test.
         UserPrincipal user = new UserPrincipalImpl("revokepermission");
-        PortletPermission perm1 = new PortletPermission("revokepermission1", "view, edit, minimize, maximize");
-        PortletPermission perm2 = new PortletPermission("revokepermission2", "view, edit, minimize, maximize");
+        PortletPermission perm1 = new PortletPermission("revokepermission1", "view, edit, minimized, maximized");
+        PortletPermission perm2 = new PortletPermission("revokepermission2", "view, edit, minimized, maximized");
         try
         {
             ums.addUser(user.getName(), "password");
@@ -489,13 +489,13 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         // Remove permissions.
         PortletPermission perm1 = new PortletPermission("anontestportlet", "view");
         PortletPermission perm2 = new PortletPermission("anontestportlet", "view, edit");
-        PortletPermission perm3 = new PortletPermission("anontestportlet", "view, edit, delete");
-        PortletPermission perm4 = new PortletPermission("anontestportlet", "view, edit, delete, minimize");
-        PortletPermission perm5 = new PortletPermission("removepermission1", "view, edit, delete, minimize, maximize");
-        PortletPermission perm6 = new PortletPermission("removepermission2", "view, edit, minimize, maximize");
-        PortletPermission perm7 = new PortletPermission("revokepermission1", "view, edit, minimize, maximize");
-        PortletPermission perm8 = new PortletPermission("revokepermission2", "view, edit, minimize, maximize");
-        PortletPermission perm9 = new PortletPermission("testportlet", "view, minimize, delete");
+        PortletPermission perm3 = new PortletPermission("anontestportlet", "view, edit, secure");
+        PortletPermission perm4 = new PortletPermission("anontestportlet", "view, edit, secure, minimized");
+        PortletPermission perm5 = new PortletPermission("removepermission1", "view, edit, secure, minimized, maximized");
+        PortletPermission perm6 = new PortletPermission("removepermission2", "view, edit, minimized, maximized");
+        PortletPermission perm7 = new PortletPermission("revokepermission1", "view, edit, minimized, maximized");
+        PortletPermission perm8 = new PortletPermission("revokepermission2", "view, edit, minimized, maximized");
+        PortletPermission perm9 = new PortletPermission("testportlet", "view, minimized, secure");
         try
         {
             pms.removePermission(perm1);

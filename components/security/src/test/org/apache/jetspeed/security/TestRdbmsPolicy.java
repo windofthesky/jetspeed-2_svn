@@ -174,7 +174,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    PortletPermission perm2 = new PortletPermission("myportlet", "delete");
+                    PortletPermission perm2 = new PortletPermission("myportlet", "secure");
                     AccessController.checkPermission(perm2);
                     return null;
                 }

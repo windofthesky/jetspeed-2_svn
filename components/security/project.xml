@@ -238,6 +238,14 @@ limitations under the License.
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
+    <dependency>
+      <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
+      <id>portlet-api</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
     
     <dependency>
       <id>jta</id>
