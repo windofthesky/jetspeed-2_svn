@@ -61,8 +61,6 @@ import org.apache.jetspeed.om.entity.impl.PortletEntityImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.ObjectID;
@@ -135,7 +133,7 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
         if (portletEntity == null)
         {
             portletEntity = newPortletEntityInstance(portletDefinition);
-            ((PortletEntityCtrl) portletEntity).setId(entityId.toString());			
+            ((PortletEntityCtrl) portletEntity).setId(entityId.toString());
         }
         return portletEntity;
     }
@@ -166,12 +164,6 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
         PortletEntityImpl portletEntity = new PortletEntityImpl();
         portletEntity.setPortletDefinition(portletDefinition);
         return portletEntity;
-    }
-
-    public void serviceRequest(PortletEntity portletEntity, RequestContext request)
-    {
-        ArgUtil.notNull(new Object[] { portletEntity, request }, new String[] { "portletEntity", "request" }, "serviceRequest()");
-
     }
 
 }
