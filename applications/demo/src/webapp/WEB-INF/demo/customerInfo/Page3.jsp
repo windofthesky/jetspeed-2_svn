@@ -18,10 +18,10 @@ limitations under the License.
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.customerInfo.resources.CustomerDetailResources" />
 
 <div>
-  Hello from Page 3<br>
+  <fmt:message key="page3.label.HelloFromPage3"/><br>
 
-  This page should forwarded to the correct detail page, like address
-  or order history...
+  <fmt:message key="page3.label.ThisPageShouldForwardedToTheCorrectDetailPage"/>
 </div>

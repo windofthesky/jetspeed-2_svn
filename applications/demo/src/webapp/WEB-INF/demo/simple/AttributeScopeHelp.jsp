@@ -13,7 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.AttributeScopeResources" />
 <p>
-  This is the Help Jsp for the AttributeScope demo portlet
+  <fmt:message key="attributescopehelp.label.ThisIsHelp"/>
 </p>
 

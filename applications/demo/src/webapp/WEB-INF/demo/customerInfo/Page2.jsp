@@ -18,30 +18,31 @@ limitations under the License.
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.customerInfo.resources.CustomerInfoResources" />
 
 <div>
-  Hello from Page 2<br>
+  <fmt:message key="page2.label.HelloFromPage2"/><br>
   <c:if test="${empty CurrentCustomer}">
     <c:set var="CurrentCustomer" value="${CustomerList[0]}"/>
   </c:if>
   <table>
     <tr>
-      <td>CustomerName</td>
-      <td>:</td>
+      <td><fmt:message key="page2.label.CustomerName"/></td>
+      <td><fmt:message key="page2.label.sepa"/></td>
       <td><c:out value="${CurrentCustomer.name}" /></td>
     </tr>
     <tr>
-      <td>Last Ordered</td>
-      <td>:</td>
+      <td><fmt:message key="page2.label.LastOrdered"/></td>
+      <td><fmt:message key="page2.label.sepa"/></td>
       <td><fmt:formatDate value="${CurrentCustomer.lastOrderedAsDate}" /></td>
     </tr>
   </table>
   <ul>
     <c:if test="${CurrentCustomer.billingAddress != null}">
-    <li>Show Billing Address in CustomerDetail window</li>
+    <li><fmt:message key="page2.label.ShowBillingAddressInCustomerDetailWindow"/></li>
     </c:if>
     <c:if test="${CurrentCustomer.shippingAddress != null}">
-    <li>Show Shipping Address in CustomerDetail window</li>
+    <li><fmt:message key="page2.label.ShowShippingAddressInCustomerDetailWindow"/></li>
     </c:if>
   </ul> 
  </div>

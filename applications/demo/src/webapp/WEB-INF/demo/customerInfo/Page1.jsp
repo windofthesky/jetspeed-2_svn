@@ -22,14 +22,15 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<fmt:setBundle basename="org.apache.jetspeed.demo.customerInfo.resources.CustomerListResources" />
 <portlet:defineObjects/>
 
 <div>
-  Hello from Page 1 with Taglib<br>
+  <fmt:message key="page1.label.HelloFromPage1WithTaglib"/><br>
   <table width="100%">
     <tr bgcolor="lightgray">
-      <th>Customer Name</th>
-      <th>Date of Last Order</th>
+      <th><fmt:message key="page1.label.CustomerName"/></th>
+      <th><fmt:message key="page1.label.DateOfLastOrder"/></th>
     </tr>
     <c:forEach items="${CustomerList}" var="Customer">
     <tr>
@@ -39,7 +40,7 @@ limitations under the License.
     </tr>
     </c:forEach>
     <tr>
-      <td colspan="2" align="center">** End of List in request **</td>
+      <td colspan="2" align="center"><fmt:message key="page1.label.EndOfListInRequest"/></td>
     </tr>
 <%
  List customerList = (List) renderRequest.getAttribute("CustomerList");
@@ -57,10 +58,10 @@ limitations under the License.
  }
 %>
     <tr>
-      <td colspan="2" align="center">** End of List in renderRequest **</td>
+      <td colspan="2" align="center"><fmt:message key="page1.label.EndOfListInRenderRequest"/></td>
     </tr>
   </table>
   <p>
-    <strong>NOTE:</strong> The above list should match!
+    <fmt:message key="page1.label.NoteTheAboveListShouldMatch"/>
   </p>
 </div>

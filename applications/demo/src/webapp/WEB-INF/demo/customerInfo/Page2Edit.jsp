@@ -18,7 +18,8 @@ limitations under the License.
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.customerInfo.resources.CustomerInfoResources" />
 
 <div>
-This will be Edit mode for the Customer Info Portlet<br>
+<fmt:message key="page2Edit.label.ThisWillBeEditModeForTheCustomerInfoPortlet"/><br>
 </div>

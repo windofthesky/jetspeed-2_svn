@@ -17,29 +17,32 @@ limitations under the License.
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri='/WEB-INF/veltag.tld' prefix='vel'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.preferences.resources.PreferenceResources" />
 
 <portlet:defineObjects/>
 
-<h3>Preference List</h3>
+<h3><fmt:message key="prefview.label.PreferenceList"/></h3>
 
 <p>
 
-<portlet:renderURL windowState="normal" portletMode="view"  var="viewLink">
-	 <portlet:param name="invokeMessage" value="No action just render" />
-</portlet:renderURL>
+<portlet:renderURL windowState="normal" portletMode="view"  var="baseViewLink"/>
+<c:url value="${baseViewLink}" var="viewLink">
+	 <c:param name="invokeMessage"><fmt:message key="prefview.label.noactionjustrender"/></c:param>
+</c:url>
 
-<a href="<c:out value="${viewLink}" />">View Me!!!</a>
+<a href="<c:out value="${viewLink}" />"><fmt:message key="prefview.label.ViewMe"/></a>
 </p>
 
 <p>
-<a href="<portlet:actionURL windowState="normal" portletMode="view" />">Invoke My Action!!!</a>
+<a href="<portlet:actionURL windowState="normal" portletMode="view" />"><fmt:message key="prefview.label.InvokeMyAction"/></a>
 </p>
 <vel:velocity>
 $renderRequest.getAttribute("viewMessage")
 <br>
 
 #foreach($paramName in $renderRequest.ParameterNames)
-Parameter: $paramName
+<fmt:message key="prefview.label.Parameter"/> $paramName
 <br />
 #end
 
@@ -54,7 +57,7 @@ $!renderRequest.getParameter("invokeMessage")
   
   ${prefName} <br/>
   #foreach($prefValue in $preferences.getValues($prefName, null))
-    &nbsp;&nbsp; value $velocityCount = ${prefValue} <br/>
+    &nbsp;&nbsp; <fmt:message key="prefview.label.value"/> $velocityCount = ${prefValue} <br/>
   #end
  
 #end

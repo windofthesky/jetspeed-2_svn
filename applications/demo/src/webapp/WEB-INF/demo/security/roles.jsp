@@ -16,43 +16,45 @@ limitations under the License.
 <%@page import="javax.portlet.PortletRequest" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.security.resources.RoleResources" />
 
 <portlet:defineObjects/>
 
-<h3>User roles</h3>
+<h3><fmt:message key="roles.label.UserRoles"/></h3>
 
 <c:choose>
 
   <c:when test="${empty renderRequest.userPrincipal}">
-	  Login to see the roles you've been assigned
+	  <fmt:message key="roles.label.LoginToSeeTheRoles"/>
   </c:when>
 
   <c:otherwise>
-    User: <c:out value='${renderRequest.userPrincipal.name}'/><br>
+    <fmt:message key="roles.label.UserColon"/> <c:out value='${renderRequest.userPrincipal.name}'/><br>
     <br>
-    isUserInRole:<br>
+    <fmt:message key="roles.label.isUserInRole"/><br>
     <table border="1">
       <tr>
-      	<th>Role Ref Name</th>
-      	<th>Role Name</th>
-      	<th>PortletRequest</th>
-      	<th>ServletRequest</th>
+      	<th><fmt:message key="roles.label.RoleRefName"/></th>
+      	<th><fmt:message key="roles.label.RoleName"/></th>
+      	<th><fmt:message key="roles.label.PortletRequest"/></th>
+      	<th><fmt:message key="roles.label.ServletRequest"/></th>
       </tr>
       <tr>
-      	<td>Administrator</td>
-      	<td>admin</td>
+      	<td><fmt:message key="roles.label.Administrator"/></td>
+      	<td><fmt:message key="roles.label.admin"/></td>
       	<td><%= renderRequest.isUserInRole("Administrator") %></td>
       	<td><%= request.isUserInRole("Administrator") %></td>
       </tr>
       <tr>
-      	<td>Manager</td>
-      	<td>manager</td>
+      	<td><fmt:message key="roles.label.Manager"/></td>
+      	<td><fmt:message key="roles.label.manager"/></td>
       	<td><%= renderRequest.isUserInRole("Manager") %></td>
       	<td><%= request.isUserInRole("Manager") %></td>
       </tr>
       <tr>
-      	<td>User</td>
-      	<td>user</td>
+      	<td><fmt:message key="roles.label.User"/></td>
+      	<td><fmt:message key="roles.label.user"/></td>
       	<td><%= renderRequest.isUserInRole("User") %></td>
       	<td><%= request.isUserInRole("User") %></td>
     	</tr>
@@ -61,4 +63,4 @@ limitations under the License.
 
 </c:choose>
 <br>
-For help on role configuration select the help icon.
+<fmt:message key="roles.label.ForHelpOnRoleConfig"/>

@@ -17,28 +17,30 @@ limitations under the License.
 <%@ taglib uri="portlet.tld" prefix='portlet'%>
 <%@ taglib uri="c.tld" prefix="c" %>
 <%@ taglib uri="c-rt.tld" prefix="c-rt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.userinfo.resources.UserInfoResources" />
 
 <portlet:defineObjects/>
 
-<h3>User attributes</h3>
+<h3><fmt:message key="userinfo.label.UserAttributes"/></h3>
 
 <c:choose>
 
   <c:when test="${empty renderRequest.userPrincipal}">
-	  Login to see the user attributes available.
+	  <fmt:message key="userinfo.label.LoginToSeeTheUserAttributesAvailable"/>
   </c:when>
 
   <c:otherwise>
-    <b>User Attribute for user:</b> <c:out value='${renderRequest.userPrincipal.name}'/><br>
+    <b><fmt:message key="userinfo.label.UserAttributeForUser"/></b> <c:out value='${renderRequest.userPrincipal.name}'/><br>
     <br>
 
 	<table border="1">
       <tr>
-      	<th colspan="2" align="center">Portlet Request</th>
+      	<th colspan="2" align="center"><fmt:message key="userinfo.label.PortletRequest"/></th>
 	  </tr>
       <tr>
-      	<th>User Attribute</th>
-      	<th>User Attribute Value</th>
+      	<th><fmt:message key="userinfo.label.UserAttribute"/></th>
+      	<th><fmt:message key="userinfo.label.UserAttributeValue"/></th>
       </tr>
       
       <c-rt:forEach var="userAttr" items="<%= renderRequest.getAttribute(PortletRequest.USER_INFO)%>">    
@@ -54,11 +56,11 @@ limitations under the License.
 	
 	<table border="1">
       <tr>
-      	<th colspan="2" align="center">Servlet Request</th>
+      	<th colspan="2" align="center"><fmt:message key="userinfo.label.ServletRequest"/></th>
 	  </tr>
       <tr>
-      	<th>User Attribute</th>
-      	<th>User Attribute Value</th>
+      	<th><fmt:message key="userinfo.label.UserAttribute"/></th>
+      	<th><fmt:message key="userinfo.label.UserAttributeValue"/></th>
       </tr>
       
       <c-rt:forEach var="userAttr" items="<%= request.getAttribute(PortletRequest.USER_INFO)%>">    
@@ -74,4 +76,4 @@ limitations under the License.
 
 </c:choose>
 <br>
-For help on user attributes configuration select the help icon.
+<fmt:message key="userinfo.label.ForHelpOnUserAttributesConfigurationSelectTheHelpIcon"/>

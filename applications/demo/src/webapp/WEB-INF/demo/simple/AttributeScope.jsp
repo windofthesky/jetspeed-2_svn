@@ -17,23 +17,26 @@ limitations under the License.
 <%@ page import="java.util.*" %>
 <%@ page import="javax.portlet.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portletAPI'%>
+<fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.AttributeScopeResources" />
 
-<portletAPI:init/>
+<portletAPI:defineObjects/>
 <div>
-  Portlet Name = <c:out value="${portletConfig.portletName}"/><br/>
+<fmt:message key="attributescope.label.PortletName"/> = <c:out value="${portletConfig.portletName}"/><br/>
+<fmt:message key="attributescope.label.SessionID"/>
 <%
 {
-  PortletSession portletSession = portletRequest.getPortletSession();
-  out.println( "Session ID = " + portletSession.getId() + "<br/>");
+  PortletSession portletSession = renderRequest.getPortletSession(true);
+  out.println( " = " + portletSession.getId() + "<br/>");
 }
 %>
 
-  <h2>Application Scope Attributes</h2>
+  <h2><fmt:message key="attributescope.label.ApplicationScopeAttributes"/></h2>
 <%
 {
   Object attribute = null;
-  PortletSession portletSession = portletRequest.getPortletSession();
+  PortletSession portletSession = renderRequest.getPortletSession(true);
   Enumeration attributes = portletSession.getAttributeNames(PortletSession.APPLICATION_SCOPE);
   while (attributes.hasMoreElements())
   {
@@ -46,11 +49,11 @@ limitations under the License.
   }
 }
 %>
-  <h2>Portlet Scope Attributes</h2>
+  <h2><fmt:message key="attributescope.label.PortletScopeAttributes"/></h2>
 <%
 {
   Object attribute = null;
-  PortletSession portletSession = portletRequest.getPortletSession();
+  PortletSession portletSession = renderRequest.getPortletSession(true);
   Enumeration attributes = portletSession.getAttributeNames(PortletSession.PORTLET_SCOPE);
   while (attributes.hasMoreElements())
   {
@@ -63,15 +66,15 @@ limitations under the License.
   }
 }
 %>
-  <h2>Request Scope Attributes</h2>
+  <h2><fmt:message key="attributescope.label.RequestScopeAttributes"/></h2>
 <%
 {
   Object attribute = null;
-  Enumeration attributes = portletRequest.getAttributeNames();
+  Enumeration attributes = renderRequest.getAttributeNames();
   while (attributes.hasMoreElements())
   {
     String name = (String)attributes.nextElement();
-    attribute = portletRequest.getAttribute(name);
+    attribute = renderRequest.getAttribute(name);
     if (attribute!=null)
     {
       out.print(name + " = " + attribute + "<br/>");
@@ -80,7 +83,7 @@ limitations under the License.
 }
 %>
   <br/>
-  <form action="<%= portletResponse.createActionURL() %>" method="POST">
-    <input type="submit" value="Increment Counters">
+  <form action="<%= renderResponse.createActionURL() %>" method="POST">
+    <input type="submit" value="<fmt:message key="attributescope.label.IncrementCounters"/>">
   </form>
 </div>
