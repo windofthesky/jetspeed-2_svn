@@ -103,14 +103,13 @@
                banner="Build and Install the Preferences Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
-    <!-- Needs db-ojb-1.0.rc5-PATCHED -->
-    <!--<maven:reactor
+    <maven:reactor
                basedir="${basedir}/components/security"
                includes="project.xml"
                goals="build.security"
                banner="Build and Install the Security Components jar"
                postProcessing="false"
-               ignoreFailures="false"/>-->
+               ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/cps"
                includes="project.xml"
