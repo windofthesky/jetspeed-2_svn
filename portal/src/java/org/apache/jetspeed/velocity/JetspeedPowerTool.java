@@ -702,7 +702,7 @@ public class JetspeedPowerTool
 
             if (mode.equals(PortletMode.VIEW.toString()))
             {
-                if (content.supportsPortletMode(PortletMode.EDIT))
+                if (content.supportsPortletMode(PortletMode.EDIT) && checkAccess(Page.EDIT_ACTION))
                 {
                     createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
                 }
@@ -723,7 +723,7 @@ public class JetspeedPowerTool
             // help
             {
                 createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-                if (content.supportsPortletMode(PortletMode.EDIT))
+                if (content.supportsPortletMode(PortletMode.EDIT) && checkAccess(Page.EDIT_ACTION))
                 {
                     createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
                 }
@@ -737,6 +737,19 @@ public class JetspeedPowerTool
         }
     }
 
+    private boolean checkAccess(String action)
+    {
+        boolean access = true;
+        try
+        {
+            getPage().checkAccess(action);
+        }
+        catch (SecurityException se)
+        {
+            access = false;
+        }
+        return access;
+    }
     /**
      * Gets the list of decorator actions for a page. Each layout fragment on a
      * page has its own collection of actions associated with it. The creation
