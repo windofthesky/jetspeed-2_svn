@@ -62,7 +62,7 @@ public class JetspeedDescriptorUtilities
 			digester.addObjectCreate("portlet-app/user-attribute-ref", UserAttributeRefImpl.class);
             digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name", "name");
             digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name-link", "nameLink");
-            digester.addSetNext("portlet-app/portlet/security-role-ref", "addUserAttributeRef");
+            digester.addSetNext("portlet-app/user-attribute-ref", "addUserAttributeRef");
             
             digester.parse(reader);
             result = true;
