@@ -129,7 +129,8 @@ public class PortletApplicationBrowser extends ServletPortlet
 			            if(pa != null)
 			            {
 			                //TODO:  do we need to look up the pdef?  Could we just pass the child name into setAttribute?
-			                PortletDefinition pdef = pa.getPortletDefinitionByName(child.getName());
+			                String pdefName = child.getName().substring(pa.getName().length() + 2); //remove pa prefix
+			                PortletDefinition pdef = pa.getPortletDefinitionByName(pdefName);
 			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef.getName(), PortletSession.APPLICATION_SCOPE);
 			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, new TabBean("pa_portlets"), PortletSession.APPLICATION_SCOPE);
 			            }
@@ -189,7 +190,7 @@ public class PortletApplicationBrowser extends ServletPortlet
             while (pdefIter.hasNext())
             {
                 PortletDefinitionComposite portlet = (PortletDefinitionComposite) pdefIter.next();
-                TreeControlNode portletNode = new TreeControlNode(portlet.getName(), 
+                TreeControlNode portletNode = new TreeControlNode(pa.getName() + "::" + portlet.getName(), 
                                                                   null, 
                                                                   portlet.getDisplayNameText(locale), 
                                                                   PortletApplicationResources.PORTLET_URL, 
