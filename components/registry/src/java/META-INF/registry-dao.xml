@@ -6,44 +6,39 @@
 	-->
 <beans>
   
-	<!-- Transaction manager for a single OJB PersistenceBroker (alternative to JTA) -->
-	<bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager"/>
+   <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
 
-	<!-- Transaction manager that delegates to JTA (for a transactional JNDI DataSource) -->
-	<!--
-	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/>
-	-->
-
-
-	<!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
-
-	<!--
-		- A parent bean definition which is a base definition for transaction proxies.
-		- It is markes as abstract, since it is never supposed to be instantiated itself.
-		- We set shared transaction attributes here, following our naming patterns.
-		- The attributes can still be overridden in child bean definitions.
-		-->
-	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
-			abstract="true">
-		<property name="transactionManager"><ref bean="transactionManager"/></property>
-		<property name="transactionAttributes">
-			<props>
-				<prop key="*">PROPAGATION_REQUIRED</prop>
-			</props>
-		</property>
-	</bean>
 
 	<!--
 	  - PortletRegsitry business object: OJB implementation, as an inner bean wrapped
 		- by an outer transactional proxy. The two bean definitions could have been separate,
 		- but this is cleaner as there is no need to ever access the unwrapped object.
     -->
-    <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceStorePortletRegistry" init-method="init"/>
+    <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
+    	<constructor-arg>
+    		<value>META-INF/registry_repository.xml</value>
+    	</constructor-arg>
+    </bean>
 		
     
-	<bean id="portletRegistry" parent="baseTransactionProxy" >
-		<property name="target">
+	<bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry"
+		  name="portletRegistry"
+		  parent="baseTransactionProxy" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
+		</property>
+
+		<property name="target"> 
 			<ref bean="portletRegistryImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="regsister*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
 		</property>
 	</bean>
 

@@ -377,6 +377,7 @@ limitations under the License.
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
+         proxy="true"
       >
           <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
@@ -388,6 +389,7 @@ limitations under the License.
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
+         proxy="true"
       >
          <inverse-foreignkey field-ref="portletId"/>
 
@@ -399,6 +401,7 @@ limitations under the License.
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
+         proxy="true"
       >
 
          <inverse-foreignkey field-ref="portletId"/>
@@ -411,7 +414,7 @@ limitations under the License.
          element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
          auto-delete="true"
          auto-update = "true"
-         auto-retrieve = "true"
+         auto-retrieve = "true"         
       >
 
          <inverse-foreignkey field-ref="parentId"/>
@@ -425,6 +428,7 @@ limitations under the License.
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
+         proxy="true"
 
        >
          <inverse-foreignkey field-ref="portletId"/>
