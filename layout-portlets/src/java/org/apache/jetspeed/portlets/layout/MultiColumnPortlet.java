@@ -74,9 +74,10 @@ public class MultiColumnPortlet extends LayoutPortlet
         if (request.getParameter("moveBy") != null && request.getParameter("fragmentId") != null)
         {
             Page page = getPage(request);
-            ArrayList tempFrags = new ArrayList(page.getRootFragment().getFragments());
+            Fragment f = getFragment(request, false);
+            ArrayList tempFrags = new ArrayList(f.getFragments());
             doMoveFragment(page.getFragmentById(request.getParameter("fragmentId")), request.getParameter("moveBy"),
-                    request, tempFrags);
+                           request, tempFrags);
 
             try
             {
@@ -96,7 +97,8 @@ public class MultiColumnPortlet extends LayoutPortlet
             return;
         }
 
-        List[] columns = buildColumns(getFragment(request, false), this.numColumns, request);
+        Fragment f = getFragment(request, false);
+        List[] columns = buildColumns(f, this.numColumns, request);
 
         request.setAttribute("columns", columns);
         request.setAttribute("numberOfColumns", new Integer(numColumns));
@@ -105,6 +107,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         super.doView(request, response);
 
         request.removeAttribute("columns");
+        request.removeAttribute("numberOfColumns");
     }
 
     protected List[] buildColumns( Fragment f, int colNum, RenderRequest request ) throws PortletException
@@ -129,10 +132,18 @@ public class MultiColumnPortlet extends LayoutPortlet
                     rowNum = row;
                 }
 
-                col = Integer.parseInt(fChild.getPropertyValue(this.layoutType, "column"));
-                if (col > colNum)
+                if (colNum > 1)
                 {
-                    fChild.setPropertyValue(this.layoutType, "column", String.valueOf(col % colNum));
+                    col = Integer.parseInt(fChild.getPropertyValue(this.layoutType, "column"));
+                    if (col > colNum)
+                    {
+                        fChild.setPropertyValue(this.layoutType, "column", String.valueOf(col % colNum));
+                    }
+                }
+                else
+                {
+                    col = 0;
+                    fChild.setPropertyValue(this.layoutType, "column", String.valueOf(col));
                 }
 
                 if (row > lastRowForColumn[col])
