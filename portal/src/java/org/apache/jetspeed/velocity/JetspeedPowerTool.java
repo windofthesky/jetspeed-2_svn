@@ -460,11 +460,18 @@ public class JetspeedPowerTool implements ViewTool
         setCurrentFragment(f);
 
         String decoratorPath = decorator + "/" + DECORATOR_TYPE + ext;
-        TemplateDescriptor template = getTemplate(decoratorPath, fragmentType, decorationLocator, decorationLocatorDescriptor); 
-        // Not found specifcally for the fragmentType, then try the generic type
-        if(template == null)
+        TemplateDescriptor template = null;
+        try
         {
-            template = getTemplate(decoratorPath, GENERIC_TEMPLATE_TYPE, decorationLocator, decorationLocatorDescriptor);
+            template = getDecoration(decoratorPath, fragmentType);
+        }
+        catch (TemplateLocatorException e)
+        {
+            String parent = decoConf.getString("extends");
+            if(parent != null)
+            {
+                template = getDecoration(parent + "/" + DECORATOR_TYPE + ext, fragmentType);
+            }
         }
         PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
         prd.include(renderRequest, renderResponse);

@@ -76,89 +76,78 @@
 	background:  url(content/jetspeed/images/bottomright.gif);
 }
 
-.Jetspeed .TabLeft
+/**
+	Metal Skin that uses the cascading capability of CSS
+**/
+
+.Metal .PTitleLeft
 {
-	width:12px;
-	height:25px;
-	background:  url(content/jetspeed/images/tableft.gif);
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	
+	/** Always use relative path ! **/
+	background:  url(content/metal/images/titleleft.gif);
 }
 
-.Jetspeed .TabMiddle
+.Metal .PTitle
 {
-	font-weight:bold;
-	font-size: 9pt;
-	background:  url(content/jetspeed/images/tabmiddle.gif);	
-}
-
-.Jetspeed .TabRight
-{
-	width:12px;
-	background:  url(content/jetspeed/images/tabright.gif);
-}
-
-
-.Jetspeed .TabLeftLow
-{
-	width:12px;
-	background:  url(content/jetspeed/images/tableft_low.gif);
-}
-
-.Jetspeed .TabMiddleLow
-{
-	font-weight:bold;
-	background:  url(content/jetspeed/images/tabmiddle_low.gif);	
-}
-
-.Jetspeed .TabRightLow
-{
-	width:12px;
-	background:  url(content/jetspeed/images/tabright_low.gif);
+	/**
+	Specify the height of the image used
+	else it will use the text height	
+	**/
+	height:16px;
+	color:#FFFFFF;
+	background:  url(content/metal/images/title.gif);
 }
  
-.Jetspeed .TabLink
+.Metal .PTitleRight
 {
-	text-decoration:none;
-	font-size:6pt;
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	background:  url(content/metal/images/titleright.gif);
 }
 
-a:link.TabLink { color:black;font-size:9pt;font-weight:normal; }
-a:visited.TabLink { color:black;font-size:9pt;font-weight:normal; }
-a:hover.TabLink { color:#6F6F6F;font-size:9pt;font-weight:normal; }
-
-
-.Jetspeed .MenuLeft
+.Metal .PContentLeft
 {
-	width:12px;
-	background:  url(content/jetspeed/images/tabmiddle.gif);
+	width:10px;
+	background:  url(content/metal/images/contentleft.gif);
 }
 
-
-.Jetspeed .MenuMiddle
+.Metal .PContent
 {
-	font-size:9pt;
-	font-weight:bold;
-	background:  url(content/jetspeed/images/tabmiddle.gif);
+
 }
 
-.Jetspeed .MenuRight
+.Metal .PContentRight
 {
-	background:  url(content/jetspeed/images/tabmiddle.gif);
+	width:10px;
+	background:  url(content/metal/images/contentright.gif);
 }
 
-.Jetspeed .MenuLeftLow
+.Metal .PBottomLeft
 {
-	width:12px;
-	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+	width:10px;
+	background:  url(content/metal/images/bottomleft.gif);
 }
 
-
-.Jetspeed .MenuMiddleLow
+.Metal .PBottom
 {
-	font-size:8pt;
-	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+	/**
+	Specify the height of the image used
+	else it won't appear
+	**/
+	height:13px;
+	background:  url(content/metal/images/bottom.gif);
 }
 
-.Jetspeed .MenuRightLow
+.Metal .PBottomRight
 {
-	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+	width:10px;
+	background:  url(content/metal/images/bottomright.gif);
 }

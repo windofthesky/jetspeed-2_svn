@@ -10,7 +10,11 @@
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="pe002" entity="5" type="portlet" name="HW_App::PreferencePortlet">
+    <fragment id="pe002" 
+     entity="5" 
+     type="portlet" 
+     name="HW_App::PreferencePortlet"
+     decorator="metal">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
