@@ -81,6 +81,10 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
 
     public JetspeedRequestDispatcher(RequestDispatcher requestDispatcher)
     {
+    	if(requestDispatcher == null)
+    	{
+    		throw new IllegalArgumentException("RequestDispatcher cannot be null for JetspeedRequestDispatcher.");
+    	}
         this.requestDispatcher = requestDispatcher;
     }
 
@@ -97,11 +101,7 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
             this.requestDispatcher.include(servletRequest, servletResponse);
 
         }
-        catch (java.io.IOException e)
-        {
-            throw e;
-        }
-        catch (javax.servlet.ServletException e)
+        catch (Exception e)
         {
             PrintWriter pw = null;
             if (servletResponse != null)
@@ -117,25 +117,27 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
             log.error(
                 "Begin: ******************************************* JetspeedRequestDispatcher Failure Report******************************************");
             log.error("Cause: " + e.getMessage(), e);
-            if (e.getRootCause() != null)
+            if (e.getCause() != null)
             {
-                log.error("Root Cause: " + e.getRootCause().getMessage(), e.getRootCause());
+                log.error("Root Cause: " + e.getCause().getMessage(), e.getCause());
                 if (pw != null)
                 {
                     pw.write("<p>Root Cause: </p>");
-                    pw.write("Message: " + e.getRootCause().getMessage() + " <br/>");
-                    pw.write("Exception: " + e.getRootCause().getClass().getName() + " <br/>");
-                    writeStackTrace(e.getRootCause().getStackTrace(), pw);
+                    pw.write("Message: " + e.getCause().getMessage() + " <br/>");
+                    pw.write("Exception: " + e.getCause().getClass().getName() + " <br/>");
+                    writeStackTrace(e.getCause().getStackTrace(), pw);
                 }
 
                 log.error(
                     "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
-                throw new PortletException(e.getRootCause());
+                pw.flush();
+                throw new PortletException(e);
             }
             else
             {
                 log.error(
                     "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
+				pw.flush();
                 throw new PortletException(e);
             }
         }
