@@ -31,6 +31,8 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
 
 import org.apache.jetspeed.cache.file.FileCache
+import org.apache.jetspeed.profiler.Profiler
+import org.apache.jetspeed.profiler.impl.JetspeedProfiler
 
 
 // WARNING!!!!!!

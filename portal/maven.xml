@@ -5,7 +5,7 @@
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.profiler.TestProfiler'/>
+<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
 
   <!-- ================================================================ -->
   <!-- Set System properties for junit                                  -->
