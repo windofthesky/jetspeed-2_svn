@@ -37,14 +37,33 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
     
     /**
      * <p>
-     * Sets user principal in a given authentication provider.
+     * Returns the authentication provider of a user principal.
+     * @param userName
+     * @return The authentication provider or null if user is unknown.
+     */
+    String getAuthenticationProvider(String userName);
+    
+    /**
+     * <p>
+     * Adds a new user principal in a given authentication provider.
+     * </p>
+     * 
+     * @param userPrincipal The new user principal.
+     * @param authenticationProvider The authentication provider name.
+     * @throws SecurityException Throws a security exception.
+     */
+    void addUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException;
+
+    /**
+     * <p>
+     * Updates user principal in a given authentication provider.
      * </p>
      * 
      * @param userPrincipal The user principal.
      * @param authenticationProvider The authentication provider name.
      * @throws SecurityException Throws a security exception.
      */
-    void setUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException;
+    void updateUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException;
 
     /**
      * <p>
@@ -57,6 +76,20 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
      */
     void removeUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException;
 
+    /**
+     * <p>
+     * Create a new {@link PasswordCredential} in a given authentication provider
+     * </p>
+     * 
+     * @param userName The username
+     * @param password The password
+     * @param authenticationProvider The authentication provider name.
+     * @return The new PasswordCredential
+     * @throws SecurityException if the UserPrincipal doesn't exists or the password isn't valid.
+     */
+    PasswordCredential createPasswordCredential(String userName, char[] password, 
+            String authenticationProvider) throws SecurityException;
+    
     /**
      * <p>
      * Sets public password credential in a given authentication provider.

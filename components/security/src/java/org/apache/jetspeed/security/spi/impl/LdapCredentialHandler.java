@@ -64,15 +64,15 @@ public class LdapCredentialHandler implements CredentialHandler
         Set privateCredentials = new HashSet();
         if (username.equals("ldap1"))
         {
-            privateCredentials.add(new PasswordCredential(username, "password".toCharArray()));
+            privateCredentials.add(new DefaultPasswordCredentialImpl(username, "password".toCharArray()));
         }
         else if (username.equals("ldap2"))
         {
-            privateCredentials.add(new PasswordCredential(username, "password".toCharArray()));
+            privateCredentials.add(new DefaultPasswordCredentialImpl(username, "password".toCharArray()));
         }
         else if (username.equals("ldap2"))
         {
-            privateCredentials.add(new PasswordCredential(username, "password".toCharArray()));
+            privateCredentials.add(new DefaultPasswordCredentialImpl(username, "password".toCharArray()));
         }
         return privateCredentials;
     }
@@ -85,6 +85,14 @@ public class LdapCredentialHandler implements CredentialHandler
     {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#createPasswordCredential(java.lang.String, char[])
+     */
+    public PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException
+    {
+        return new DefaultPasswordCredentialImpl(userName,password);
     }
 
 }

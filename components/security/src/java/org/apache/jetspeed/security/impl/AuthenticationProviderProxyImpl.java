@@ -26,8 +26,6 @@ import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @see org.apache.jetspeed.security.AuthenticationProviderProxy
@@ -43,12 +41,6 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /** The default authentication provider name. */
     private String defaultAuthenticationProvider = null;
 
-    /** The list of {@link UserSecurityHandler}. */
-    private List userSecurityHandlers = new ArrayList();
-
-    /** The list of {@link CredentialHandler}. */
-    private List credentialHandlers = new ArrayList();
-
     /**
      * <p>
      * Constructor given a list of {@link AuthenticationProvider}.
@@ -61,16 +53,27 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     {
         this.authenticationProviders = authenticationProviders;
         this.defaultAuthenticationProvider = defaultAuthenticationProvider;
-
-        for (int i = 0; i < authenticationProviders.size(); i++)
-        {
-            userSecurityHandlers.add(((AuthenticationProvider) authenticationProviders.get(i)).getUserSecurityHandler());
-            credentialHandlers.add(((AuthenticationProvider) authenticationProviders.get(i)).getCredentialHandler());
-        }
     }
     
+    protected AuthenticationProvider getAuthenticationProviderByName(String providerName)
+    {
+        AuthenticationProvider provider = null;
+        
+        for (int i = 0; i < authenticationProviders.size(); i++)
+        {
+            provider = (AuthenticationProvider) authenticationProviders.get(i);
+            if (providerName.equals(provider.getProviderName()))
+            {
+                break;
+            }
+            else
+            {
+                provider = null;
+            }
+        }
+        return provider;
+    }
     
-
     /**
      * @see org.apache.jetspeed.security.AuthenticationProviderProxy#getDefaultAuthenticationProvider()
      */
@@ -80,14 +83,54 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     }
     
     /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#getAuthenticationProvider(java.lang.String)
+     */
+    public String getAuthenticationProvider(String userName)
+    {
+        AuthenticationProvider authenticationProvider;
+        String providerName = null;
+        
+        for (int i = 0; i < authenticationProviders.size(); i++)
+        {
+            authenticationProvider = (AuthenticationProvider)authenticationProviders.get(i);
+            if (authenticationProvider.getUserSecurityHandler().isUserPrincipal(userName))
+            {
+                providerName = authenticationProvider.getProviderName();
+                break;
+            }
+        }
+        return providerName;
+    }    
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#isUserPrincipal(java.lang.String)
+     */
+    public boolean isUserPrincipal(String userName)
+    {
+        boolean exists = false;
+        
+        for (int i = 0; i < authenticationProviders.size(); i++)
+        {
+            exists = ((AuthenticationProvider)authenticationProviders.get(i)).getUserSecurityHandler().isUserPrincipal(userName);
+            if (exists)
+            {
+                break;
+            }
+        }
+        return exists;
+    }
+    
+    
+    
+    /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
     public Principal getUserPrincipal(String username)
     {
         Principal userPrincipal = null;
-        for (int i = 0; i < userSecurityHandlers.size(); i++)
+        for (int i = 0; i < authenticationProviders.size(); i++)
         {
-            userPrincipal = ((UserSecurityHandler) userSecurityHandlers.get(i)).getUserPrincipal(username);
+            userPrincipal = ((AuthenticationProvider)authenticationProviders.get(i)).getUserSecurityHandler().getUserPrincipal(username);
             if (null != userPrincipal)
             {
                 break;
@@ -102,35 +145,77 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public List getUserPrincipals(String filter)
     {
         List userPrincipals = new LinkedList();
-        for (int i = 0; i < userSecurityHandlers.size(); i++)
+        for (int i = 0; i < authenticationProviders.size(); i++)
         {
-            userPrincipals.addAll(((UserSecurityHandler) userSecurityHandlers.get(i)).getUserPrincipals(filter));
+            userPrincipals.addAll(((AuthenticationProvider)authenticationProviders.get(i)).getUserSecurityHandler().getUserPrincipals(filter));
         }
         return userPrincipals;
     }
 
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#setUserPrincipal(org.apache.jetspeed.security.UserPrincipal,
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#addUserPrincipal(org.apache.jetspeed.security.UserPrincipal,
      *      java.lang.String)
      */
-    public void setUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException
+    public void addUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException
     {
-        for (int i = 0; i < authenticationProviders.size(); i++)
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
         {
-            AuthenticationProvider currAuthenticationProvider = (AuthenticationProvider) authenticationProviders.get(i);
-            if (authenticationProvider.equals(currAuthenticationProvider.getProviderName()))
-            {
-                currAuthenticationProvider.getUserSecurityHandler().setUserPrincipal(userPrincipal);
-            }
+            provider.getUserSecurityHandler().updateUserPrincipal(userPrincipal);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
         }
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#setUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#addUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
      */
-    public void setUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    public void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        setUserPrincipal(userPrincipal, this.defaultAuthenticationProvider);
+        String providerName = getAuthenticationProvider(userPrincipal.getName());
+        if ( providerName == null )
+        {
+            updateUserPrincipal(userPrincipal, defaultAuthenticationProvider);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#updateUserPrincipal(org.apache.jetspeed.security.UserPrincipal,
+     *      java.lang.String)
+     */
+    public void updateUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException
+    {
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
+        {
+            provider.getUserSecurityHandler().updateUserPrincipal(userPrincipal);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#updateUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     */
+    public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    {
+        String providerName = getAuthenticationProvider(userPrincipal.getName());
+        if ( providerName != null )
+        {
+            updateUserPrincipal(userPrincipal, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+        }
     }
 
     /**
@@ -139,13 +224,14 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
      */
     public void removeUserPrincipal(UserPrincipal userPrincipal, String authenticationProvider) throws SecurityException
     {
-        for (int i = 0; i < authenticationProviders.size(); i++)
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
         {
-            AuthenticationProvider currAuthenticationProvider = (AuthenticationProvider) authenticationProviders.get(i);
-            if (authenticationProvider.equals(currAuthenticationProvider.getProviderName()))
-            {
-                currAuthenticationProvider.getUserSecurityHandler().removeUserPrincipal(userPrincipal);
-            }
+            provider.getUserSecurityHandler().removeUserPrincipal(userPrincipal);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
         }
     }
 
@@ -154,18 +240,58 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
      */
     public void removeUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        removeUserPrincipal(userPrincipal, this.defaultAuthenticationProvider);
+        String providerName = getAuthenticationProvider(userPrincipal.getName());
+        if ( providerName != null )
+        {
+            removeUserPrincipal(userPrincipal, providerName);
+        }
     }
 
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#createPasswordCredential(java.lang.String, char[])
+     */
+    public PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException
+    {
+        String providerName = getAuthenticationProvider(userName);
+        if ( providerName != null )
+        {
+            return createPasswordCredential(userName, password, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+        }
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#createPasswordCredential(java.lang.String, char[], java.lang.String)
+     */
+    public PasswordCredential createPasswordCredential(String userName, char[] password, String authenticationProvider) throws SecurityException
+    {
+        PasswordCredential pwc = null;
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
+        {
+            pwc = provider.getCredentialHandler().createPasswordCredential(userName,password);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+        }
+        return pwc;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPublicCredentials(java.lang.String)
      */
     public Set getPublicCredentials(String username)
     {
         Set publicCredentials = new HashSet();
-        for (int i = 0; i < credentialHandlers.size(); i++)
+        String providerName = getAuthenticationProvider(username);
+        if ( providerName != null )
         {
-            publicCredentials.addAll(((CredentialHandler) credentialHandlers.get(i)).getPublicCredentials(username));
+            AuthenticationProvider provider = getAuthenticationProviderByName(providerName);
+            publicCredentials.addAll(provider.getCredentialHandler().getPublicCredentials(username));
         }
         return publicCredentials;
     }
@@ -177,14 +303,15 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential,
             String authenticationProvider) throws SecurityException
     {
-        for (int i = 0; i < authenticationProviders.size(); i++)
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
         {
-            AuthenticationProvider currAuthenticationProvider = (AuthenticationProvider) authenticationProviders.get(i);
-            if (authenticationProvider.equals(currAuthenticationProvider.getProviderName()))
-            {
-                currAuthenticationProvider.getCredentialHandler().setPublicPasswordCredential(oldPwdCredential,
-                        newPwdCredential);
-            }
+            provider.getCredentialHandler().setPublicPasswordCredential(oldPwdCredential,
+                    newPwdCredential);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
         }
     }
 
@@ -195,7 +322,15 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
             throws SecurityException
     {
-        setPublicPasswordCredential(oldPwdCredential, newPwdCredential, this.defaultAuthenticationProvider);
+        String providerName = getAuthenticationProvider(newPwdCredential.getUserName());
+        if ( providerName != null )
+        {
+            setPublicPasswordCredential(oldPwdCredential, newPwdCredential, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+        }
     }
 
     /**
@@ -204,9 +339,11 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public Set getPrivateCredentials(String username)
     {
         Set privateCredentials = new HashSet();
-        for (int i = 0; i < credentialHandlers.size(); i++)
+        String providerName = getAuthenticationProvider(username);
+        if ( providerName != null )
         {
-            privateCredentials.addAll(((CredentialHandler) credentialHandlers.get(i)).getPrivateCredentials(username));
+            AuthenticationProvider provider = getAuthenticationProviderByName(providerName);
+            privateCredentials.addAll(provider.getCredentialHandler().getPrivateCredentials(username));
         }
         return privateCredentials;
     }
@@ -218,14 +355,15 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential,
             String authenticationProvider) throws SecurityException
     {
-        for (int i = 0; i < authenticationProviders.size(); i++)
+        AuthenticationProvider provider = getAuthenticationProviderByName(authenticationProvider);
+        if ( provider != null )
         {
-            AuthenticationProvider currAuthenticationProvider = (AuthenticationProvider) authenticationProviders.get(i);
-            if (authenticationProvider.equals(currAuthenticationProvider.getProviderName()))
-            {
-                currAuthenticationProvider.getCredentialHandler().setPrivatePasswordCredential(oldPwdCredential,
-                        newPwdCredential);
-            }
+            provider.getCredentialHandler().setPrivatePasswordCredential(oldPwdCredential,
+                    newPwdCredential);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
         }
     }
 
@@ -236,7 +374,14 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     public void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
             throws SecurityException
     {
-        setPrivatePasswordCredential(oldPwdCredential, newPwdCredential, this.defaultAuthenticationProvider);
+        String providerName = getAuthenticationProvider(newPwdCredential.getUserName());
+        if ( providerName != null )
+        {
+            setPrivatePasswordCredential(oldPwdCredential, newPwdCredential, providerName);
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+        }
     }
-
 }

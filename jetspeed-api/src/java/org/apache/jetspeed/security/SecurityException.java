@@ -51,8 +51,14 @@ public class SecurityException extends JetspeedException
     /** <p>Invalid password exception message.</p> */
     public static final String INVALID_PASSWORD = "Invalid password.";
 
+    /** <p>Incorrect password exception message.</p> */
+    public static final String INCORRECT_PASSWORD = "Incorrect password.";
+
     /** <p>Password required exception message.</p> */
     public static final String PASSWORD_REQUIRED = "Invalid password.";
+    
+    /** <p>Invalid authentication provider exception message.</p> */
+    public static final String INVALID_AUTHENTICATION_PROVIDER = "Invalid authentication provider.";    
 
     /**
      * <p>Default Constructor.</p>

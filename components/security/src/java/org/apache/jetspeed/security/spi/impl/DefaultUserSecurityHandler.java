@@ -44,6 +44,14 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     }
     
     /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#isUserPrincipal(java.lang.String)
+     */
+    public boolean isUserPrincipal(String userName)
+    {
+        return commonQueries.getInternalUserPrincipal(userName, false) != null;
+    }
+    
+    /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
     public Principal getUserPrincipal(String username)
@@ -78,9 +86,19 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#setUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#addUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
      */
-    public void setUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    public void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    {
+        String fullPath = userPrincipal.getFullPath();
+        InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
+        commonQueries.setInternalUserPrincipal(internalUser, false);        
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#updateUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     */
+    public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         String fullPath = userPrincipal.getFullPath();
         InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);

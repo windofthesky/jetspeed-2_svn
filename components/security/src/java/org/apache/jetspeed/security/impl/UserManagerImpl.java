@@ -94,23 +94,30 @@ public class UserManagerImpl implements UserManager
         Set privateCredentials = atnProviderProxy.getPrivateCredentials(username);
 
         Iterator privateCredIter = privateCredentials.iterator();
-        PasswordCredential authPwdCred = new PasswordCredential(username, password.toCharArray());
-        while (privateCredIter.hasNext())
+        try
         {
-            Object currPrivateCred = privateCredIter.next();
-            if (currPrivateCred instanceof PasswordCredential)
+            PasswordCredential authPwdCred = atnProviderProxy.createPasswordCredential(username, password.toCharArray());
+            while (privateCredIter.hasNext())
             {
-                PasswordCredential currPwdCred = (PasswordCredential) currPrivateCred;
-                if (currPrivateCred.equals(authPwdCred))
+                Object currPrivateCred = privateCredIter.next();
+                if (currPrivateCred instanceof PasswordCredential)
                 {
-                    if (log.isDebugEnabled())
+                    PasswordCredential currPwdCred = (PasswordCredential) currPrivateCred;
+                    if (currPrivateCred.equals(authPwdCred))
                     {
-                        log.debug("Authenticated user: " + username);
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug("Authenticated user: " + username);
+                        }
+                        authenticated = true;
+                        break;
                     }
-                    authenticated = true;
-                    break;
                 }
             }
+        }
+        catch (SecurityException e)
+        {
+            // ignore: not authenticated
         }
         return authenticated;
     }
@@ -155,9 +162,9 @@ public class UserManagerImpl implements UserManager
             if ((null != preferences) && preferences.absolutePath().equals(fullPath))
             {
                 // Add user principal.
-                atnProviderProxy.setUserPrincipal(userPrincipal);
+                atnProviderProxy.addUserPrincipal(userPrincipal);
                 // Set security credentials
-                PasswordCredential pwdCredential = new PasswordCredential(username, password.toCharArray());
+                PasswordCredential pwdCredential = atnProviderProxy.createPasswordCredential(username, password.toCharArray());
                 atnProviderProxy.setPrivatePasswordCredential(null, pwdCredential, atnProviderName);
                 if (log.isDebugEnabled())
                 {
@@ -328,8 +335,8 @@ public class UserManagerImpl implements UserManager
         ArgUtil.notNull(new Object[] { username, oldPassword, newPassword }, new String[] { "username", "oldPassword",
                 "newPassword" }, "setPassword(java.lang.String, java.lang.String, java.lang.String)");
 
-        PasswordCredential oldPwdCredential = new PasswordCredential(username, oldPassword.toCharArray());
-        PasswordCredential newPwdCredential = new PasswordCredential(username, newPassword.toCharArray());
+        PasswordCredential oldPwdCredential = atnProviderProxy.createPasswordCredential(username, oldPassword.toCharArray());
+        PasswordCredential newPwdCredential = atnProviderProxy.createPasswordCredential(username, newPassword.toCharArray());
 
         atnProviderProxy.setPrivatePasswordCredential(oldPwdCredential, newPwdCredential);
     }

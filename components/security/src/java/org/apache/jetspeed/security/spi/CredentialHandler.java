@@ -38,6 +38,18 @@ public interface CredentialHandler
 {
     /**
      * <p>
+     * Factory method to create a new, CredentialHandler specific, {@link PasswordCredential}.
+     * </p>
+     * 
+     * @param userName The username
+     * @param password The password
+     * @return The new PasswordCredential
+     * @throws SecurityException if the UserPrincipal doesn't exists or the password isn't valid.
+     */
+    PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException;
+    
+    /**
+     * <p>
      * Gets the public credentials for the user.
      * </p>
      * 

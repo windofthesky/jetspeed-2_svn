@@ -56,6 +56,7 @@ public class TestUserManager extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
+        destroyUserObject();
     }
 
     /**

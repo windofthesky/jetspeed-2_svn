@@ -38,6 +38,13 @@ import org.apache.jetspeed.security.UserPrincipal;
  */
 public interface UserSecurityHandler
 {
+    /**
+     * <p>
+     * Checks if a UserPrincipal exists 
+     * @param userName
+     * @return true if a UserPrincipal exists
+     */
+    boolean isUserPrincipal(String userName);
     
     /**
      * <p>
@@ -61,13 +68,23 @@ public interface UserSecurityHandler
     
     /**
      * <p>
-     * Sets the user principal in the backing store.
+     * Adds a new user principal in the backing store.
+     * </p>
+     * 
+     * @param userPrincipal The new <code>UserPrincipal</code>.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException;
+    
+    /**
+     * <p>
+     * Updates the user principal in the backing store.
      * </p>
      * 
      * @param userPrincipal The <code>UserPrincipal</code>.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setUserPrincipal(UserPrincipal userPrincipal) throws SecurityException;
+    void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException;
     
     /**
      * <p>

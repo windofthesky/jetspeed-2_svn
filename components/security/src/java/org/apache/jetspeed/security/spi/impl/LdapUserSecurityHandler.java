@@ -39,6 +39,14 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     }
     
     /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#isUserPrincipal(java.lang.String)
+     */
+    public boolean isUserPrincipal(String userName)
+    {
+        return userName.equals("ldap1") || userName.equals("ldap2") || userName.equals("ldap3");
+    }
+    
+    /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
     public Principal getUserPrincipal(String username)
@@ -73,9 +81,17 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#setUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#addUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
      */
-    public void setUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    public void addUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
+    {
+        // To implement.
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.UserSecurityHandler#updateUserPrincipal(org.apache.jetspeed.security.UserPrincipal)
+     */
+    public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         // To implement.
     }

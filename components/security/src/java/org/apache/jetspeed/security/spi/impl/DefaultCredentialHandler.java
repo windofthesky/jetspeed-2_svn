@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
@@ -34,6 +36,8 @@ import org.apache.jetspeed.security.spi.CredentialHandler;
  */
 public class DefaultCredentialHandler implements CredentialHandler
 {
+    private static final Log log = LogFactory.getLog(DefaultCredentialHandler.class);
+
     /** Private credentials. */
     private static final int PRIVATE = 0;
 
@@ -51,6 +55,38 @@ public class DefaultCredentialHandler implements CredentialHandler
     public DefaultCredentialHandler(CommonQueries commonQueries)
     {
         this.commonQueries = commonQueries;
+    }
+    
+    protected Class getPasswordCredentialClass()
+    {
+        return DefaultPasswordCredentialImpl.class;
+    }
+    
+    protected char[] validatePassword(InternalUserPrincipal internalUser, String userName, char[] password) throws SecurityException
+    {
+        if (null == password)
+        {
+            throw new SecurityException(SecurityException.INVALID_PASSWORD);
+        }
+        return password;
+    }
+
+    protected PasswordCredential createPasswordCredential(InternalUserPrincipal internalUser, String userName, char[] password) throws SecurityException
+    {
+        return new DefaultPasswordCredentialImpl(userName, validatePassword(internalUser, userName, password));
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#createPasswordCredential(java.lang.String, char[])
+     */
+    public PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(userName, false);
+        if (null == internalUser)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+        }
+        return createPasswordCredential(internalUser, userName, password);
     }
 
     /**
@@ -115,11 +151,19 @@ public class DefaultCredentialHandler implements CredentialHandler
                 {
                     // PasswordCredential support.
                     if ((null != credential.getClassname())
-                            && (credential.getClassname().equals((PasswordCredential.class).getName())))
+                            && (credential.getClassname().equals(getPasswordCredentialClass().getName())))
                     {
-                        PasswordCredential pwdCred = new PasswordCredential(username, credential.getValue()
-                                .toCharArray());
-                        credentials.add(pwdCred);
+                        try
+                        {
+                            PasswordCredential pwdCred = createPasswordCredential(internalUser, username, credential.getValue()
+                                    .toCharArray());
+                            credentials.add(pwdCred);
+                        }
+                        catch (SecurityException e)
+                        {
+                            if ( log.isErrorEnabled() )
+                                log.error("Failure creating PasswordCredential from InternalCredential "+credential, e);
+                        }
                     }
                 }
             }

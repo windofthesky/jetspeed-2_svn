@@ -114,8 +114,8 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
     {
         initUser();
         // Replace existing password credential.
-        PasswordCredential oldPwdCred = new PasswordCredential("testcred", ("password").toCharArray());
-        PasswordCredential newPwdCred = new PasswordCredential("testcred", ("newpassword").toCharArray());
+        PasswordCredential oldPwdCred = ch.createPasswordCredential("testcred", ("password").toCharArray());
+        PasswordCredential newPwdCred = ch.createPasswordCredential("testcred", ("newpassword").toCharArray());
         ch.setPrivatePasswordCredential(oldPwdCred, newPwdCred);
         // Test that the credential was properly set.
         Set privateCredentials = ch.getPrivateCredentials("testcred");
@@ -126,7 +126,7 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
         assertEquals("newpassword", new String(pwdCreds[0].getPassword()));
         // Add password credential.
         oldPwdCred = null;
-        PasswordCredential anotherPwdCred = new PasswordCredential("testcred", ("anotherpassword").toCharArray());
+        PasswordCredential anotherPwdCred = ch.createPasswordCredential("testcred", ("anotherpassword").toCharArray());
         ch.setPrivatePasswordCredential(newPwdCred, anotherPwdCred);
         // Test that the credential was properly set.
         privateCredentials = ch.getPrivateCredentials("testcred");
