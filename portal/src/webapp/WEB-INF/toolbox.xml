@@ -24,12 +24,13 @@ limitations under the License.
      <scope>application</scope>
      <class>org.apache.velocity.tools.generic.DateTool</class>
    </tool>
- 
+ <!--
   <tool>
    <key>jetspeed</key>
    <scope>request</scope>
    <class>org.apache.jetspeed.velocity.JetspeedPowerTool</class>
  </tool>
+  -->
   
   <tool>
    <key>remoteContent</key>
