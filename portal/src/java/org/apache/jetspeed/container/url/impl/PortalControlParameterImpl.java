@@ -315,15 +315,27 @@ public class PortalControlParameterImpl implements PortalControlParameter
 
     private String decodeValue(String value)
     {
-        value = StringUtils.replace(value, "0x1", "_");
-        value = StringUtils.replace(value, "0x2", ".");
+        value = StringUtils.replace(value, "0x1", "_" );
+        value = StringUtils.replace(value, "0x2", "." );
+        value = StringUtils.replace(value, "0x3", "/" );
+        value = StringUtils.replace(value, "0x4", "\r" );
+        value = StringUtils.replace(value, "0x5", "\n" );
+        value = StringUtils.replace(value, "0x6", "<" );
+        value = StringUtils.replace(value, "0x7", ">" );
+        value = StringUtils.replace(value, "0x8", " " );
         return value;
     }
 
     private String encodeValue(String value)
     {
-        value = StringUtils.replace(value, "_", "0x1");
-        value = StringUtils.replace(value, ".", "0x2");
+        value = StringUtils.replace(value, "_", "0x1" );
+        value = StringUtils.replace(value, ".", "0x2" );
+        value = StringUtils.replace(value, "/", "0x3" );
+        value = StringUtils.replace(value, "\r", "0x4" );
+        value = StringUtils.replace(value, "\n", "0x5" );
+        value = StringUtils.replace(value, "<", "0x6" );
+        value = StringUtils.replace(value, ">", "0x7" );
+        value = StringUtils.replace(value, " ", "0x8" );        
         return value;
     }
     
