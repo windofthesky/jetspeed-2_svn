@@ -184,7 +184,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
             try
             {
                 Portlet portlet = JetspeedPortletFactoryProxy.loadPortletClass(def.getClassName());
-                assertNotNull(portlet);
+                assertNotNull("Could not load portlet class: "+def.getClassName(), portlet);
             }
             catch (Exception e)
             {
