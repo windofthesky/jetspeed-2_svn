@@ -26,6 +26,9 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 
@@ -48,6 +51,9 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class ServletRequestImpl extends HttpServletRequestWrapper
 {
+    /** Logger */
+    private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
+    
     PortletWindow portletWindow = null;
 
     private Map portletParameters;
@@ -57,7 +63,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         super(servletRequest);
 
         this.portletWindow = window;
-        System.out.println("Constructing SRI: " + window.getId());
     }
 
     private HttpServletRequest _getHttpServletRequest()
@@ -211,23 +216,13 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
                 PortletApplicationDefinition portletAppDef = entity.getPortletDefinition().getPortletApplicationDefinition();
                 
-                // if (null != portletAppEntity)
                 if (null != portletAppDef)
                 {
-                    // PortletApplicationDefinition portletAppDef = portletAppEntity.getPortletApplicationDefinition();
                     value = context.getUserInfoMap(portletAppDef.getId());
-                    if ( value != null )
-                    {
-                        System.out.println("_____________HERE0: " + ((Map) value).size());
-                    }
-                    else
-                    {
-                        System.out.println("_____________HERE1: UserInfoMap NULL");
-                    }
                 }
                 else
                 {                    
-                    System.out.println("_____________HERE2: Entity is null!!!! " + entityID);
+                    log.error("Entity is null:" + entityID);
                 }
                   
             }
