@@ -290,15 +290,16 @@ insert into RULE_CRITERION values (5, 'j1', 4, 'country', 'country', null, 1);
 insert into PROFILING_RULE values ('role-fallback', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
      'A role based fallback algorithm based on Jetspeed-1 role-based fallback');
-insert into RULE_CRITERION values (6, 'role-fallback', 0, 'request.session', 'page', 'default-page', 0);
-insert into RULE_CRITERION values (7, 'role-fallback', 1, 'role', 'role', null, 2);
+insert into RULE_CRITERION values (6, 'role-fallback', 0, 'role', 'role', null, 2);
+insert into RULE_CRITERION values (7, 'role-fallback', 1, 'request.session', 'page', 'default-page', 0);
 
 insert into PROFILING_RULE values ('path', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'use a path to locate.');
 insert into RULE_CRITERION values (10, 'path', 0, 'path', 'path', '/', 0);
 
-insert into PRINCIPAL_RULE_ASSOC values ( 'anon', 'j1' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'j1' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'role-fallback' );
 
 
 
