@@ -60,7 +60,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
     protected long portletId;
 
-    protected static final String RESOURCE_BUNDLE_NAME = "portalResources";
+    protected static final String RESOURCE_BUNDLE_NAME = "portlet";
 
     public LanguageImpl()
     {
@@ -115,7 +115,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public ResourceBundle getResourceBundle()
     {
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, getLocale());
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, getLocale(), Thread.currentThread().getContextClassLoader());
     }
 
     /**

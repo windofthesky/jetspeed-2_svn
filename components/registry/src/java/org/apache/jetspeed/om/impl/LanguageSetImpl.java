@@ -93,6 +93,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable
         while (searchItr.hasNext())
         {
 			Language lang = (Language) searchItr.next();
+            
             if (lang.getLocale().equals(locale))
             {
                 return lang;
@@ -103,7 +104,10 @@ public class LanguageSetImpl implements LanguageSet, Serializable
             }
 
         }
-
+        if (fallBack == null)
+        {
+            fallBack = new LanguageImpl(locale, "");
+        }
         return fallBack;
     }
 
