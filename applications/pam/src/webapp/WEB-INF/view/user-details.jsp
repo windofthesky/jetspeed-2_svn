@@ -56,9 +56,60 @@ limitations under the License.
 <%--TODO:  switch to c:choose --%>
 <c:if test="${currentTab.id == 'user_attributes'}">
   <div id="attributes">	
-  </div>
-  <h3>USER ATTRIBUTES</h3>
-      
+  <portlet:actionURL var="edit_user_attr_link" />
+  
+	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.edit_user_attribute"/>
+		
+		<table>
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="security.name"/></th>
+				<th><fmt:message key="security.value"/></th>
+			</tr>
+		<c:forEach var="userAttr" items="${user.attributes}">
+			<tr>
+			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
+			
+				<td>
+					<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
+				</td>
+				<td>
+					<c:out value="${userAttr.name}"/>
+				</td>
+				<td>
+					<input type="text" name="<c:out value="${userAttr.name}"/>:value" value="<c:out value="${userAttr.value}"/>"/>
+				</td>
+			</tr>
+		</c:forEach>
+		</table>
+		<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_attribute'"/>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_attribute'"/>
+	</form>
+	<form name="Add_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.add_user_attribute"/>
+		
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="security.name"/>
+				</td>
+				<td>
+					<input type="text" name="user_attr_name" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="security.value"/>
+				</td>
+				<td>
+					<input type="text" name="user_attr_value" value=""/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="security.add"/>"/>
+	</form>
+  </div>	
 </c:if>
 <%--End of User Attributes tab data--%>
 

@@ -16,7 +16,11 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
 
@@ -31,13 +35,25 @@ import org.apache.jetspeed.security.UserPrincipal;
  */
 public class JetspeedUserBean
 {
-    private String principal;
+    private String principal;    
+    private List attributes = new ArrayList();
     
     public JetspeedUserBean(User user)
     {
         Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);             
-        
         this.principal = userPrincipal.getName();
+        try
+        {
+            Preferences userAttributes = user.getUserAttributes();
+            String[] keys = userAttributes.keys();
+            for (int ix = 0; ix < keys.length; ix++)
+            {
+                attributes.add(new StringAttribute(keys[ix], userAttributes.get(keys[ix], "n/a")));
+            }
+        }
+        catch (BackingStoreException e)
+        {
+        }
     }
     
     /**
@@ -71,4 +87,42 @@ public class JetspeedUserBean
         return principal;
     }
     
+    /**
+     * @return Returns the attributes.
+     */
+    public List getAttributes()
+    {
+        return attributes;
+    }
+    
+    /**
+     * TODO: support all attributes types (int, double, date, etc..)
+     * @author David Sean Taylor
+     *
+     */
+    public class StringAttribute
+    {
+        private String name;
+        private String value;
+        
+        public StringAttribute(String name, String value)
+        {
+            this.name = name;
+            this.value = value;
+        }
+        /**
+         * @return Returns the name.
+         */
+        public String getName()
+        {
+            return name;
+        }
+        /**
+         * @return Returns the value.
+         */
+        public String getValue()
+        {
+            return value;
+        }
+    }
 }

@@ -16,7 +16,11 @@
 package org.apache.jetspeed.portlets.security;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -30,6 +34,7 @@ import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
+import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 
@@ -44,6 +49,10 @@ import org.apache.jetspeed.security.UserManager;
 public class UserDetailsPortlet extends ServletPortlet
 {
     private final String VIEW_USER = "user"; 
+    private final String USER_ACTION_PREFIX = "security_user.";
+    private final String ACTION_UPDATE_ATTRIBUTE = "update_user_attribute";
+    private final String ACTION_REMOVE_ATTRIBUTE = "remove_user_attribute";
+    private final String ACTION_ADD_ATTRIBUTE = "add_user_attribute";
     
     private UserManager manager;
 
@@ -115,9 +124,117 @@ public class UserDetailsPortlet extends ServletPortlet
                 actionRequest.getPortletSession().setAttribute(
                         PortletApplicationResources.REQUEST_SELECT_TAB, tab);
             }            
-        }                        
+        }             
+        String action = actionRequest.getParameter(PortletApplicationResources.PORTLET_ACTION);
+        if (action != null && isUserPortletAction(action))
+        {
+            action = getAction(USER_ACTION_PREFIX, action);                
+            if (action.endsWith(ACTION_UPDATE_ATTRIBUTE))
+            {
+                updateUserAttribute(actionRequest, actionResponse);
+            }
+            else if(action.endsWith(ACTION_REMOVE_ATTRIBUTE))
+            {
+                removeUserAttributes(actionRequest, actionResponse);
+            }
+            else if(action.endsWith(ACTION_ADD_ATTRIBUTE))
+            {
+                addUserAttribute(actionRequest, actionResponse);
+            }
+        }        
     }    
 
+    private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                 PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
+            if(userAttrNames != null)
+            {                
+                for (int i=0; i<userAttrNames.length; i++)
+                {
+                    String userAttrName = userAttrNames[i];
+                    String value = actionRequest.getParameter(userAttrName + ":value");
+                    user.getUserAttributes().put(userAttrName, value);
+                }                
+            }        
+        }
+    }
+    
+    private void addUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String userAttrName = actionRequest.getParameter("user_attr_name");
+            String userAttrValue = actionRequest.getParameter("user_attr_value");
+            if (userAttrName != null && userAttrName.trim().length() > 0)
+            {
+                Preferences attributes = user.getUserAttributes();
+                attributes.put(userAttrName, userAttrValue);
+            }
+        }
+    }
+
+    private void removeUserAttributes(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        List deletes = new LinkedList();
+        
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
+
+            if(userAttrNames != null)
+            {
+                JetspeedUserBean bean = new JetspeedUserBean(user);
+                Preferences attributes = user.getUserAttributes();
+                Iterator userAttrIter = bean.getAttributes().iterator();
+                while (userAttrIter.hasNext())
+                {
+                    StringAttribute userAttr = (StringAttribute) userAttrIter.next();
+                    for(int ix = 0; ix < userAttrNames.length; ix++)
+                    {
+                        String userAttrName = userAttrNames[ix];
+                        if(userAttr.getName().equals(userAttrName))
+                        {
+                            deletes.add(userAttrName);
+                            break;
+                        }
+                    }
+                }
+                Iterator it = deletes.iterator();            
+                while (it.hasNext())
+                {
+                    String attribute = (String)it.next();
+                    attributes.remove(attribute);
+                }
+                
+            }            
+        }
+    }
+    
+    private String getAction(String prefix, String action)
+    {
+        return action.substring(prefix.length());
+    }
+
+    private boolean isUserPortletAction(String action)
+    {
+        return action.startsWith(USER_ACTION_PREFIX);
+    }
+    
     private User lookupUser(String userName)
     {
         User user = null;
