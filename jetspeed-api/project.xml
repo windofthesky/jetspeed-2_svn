@@ -23,7 +23,7 @@ limitations under the License.
   <id>jetspeed-api</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Core API</name>
-  <currentVersion>2.0-a1-dev</currentVersion>
+  <currentVersion>2.0-M1</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  Core API for implmeneting Jetspeed

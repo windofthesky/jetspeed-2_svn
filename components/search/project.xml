@@ -23,7 +23,7 @@ limitations under the License.
   <id>jetspeed-search</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Search Component</name>
-  <currentVersion>2.0-a1-dev</currentVersion>
+  <currentVersion>2.0-M1</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  Search component for Jetspeed.
@@ -41,14 +41,14 @@ limitations under the License.
   	<dependency>
       <id>jetspeed-api</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
+      <version>2.0-M1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>
-      <version>2.0-a1-dev</version>
+      <version>2.0-M1</version>
     </dependency>
     <dependency>
       <id>commons-httpclient</id>

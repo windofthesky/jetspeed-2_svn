@@ -120,7 +120,7 @@ example:
 NOTE: im experience a problem where the portlet-container jar isn't the latest one copied into the HW_APP webapp
       this causes HelloPortlet to not display any info
       Its easily fixed by manually copying 
-  ${maven.repo.home}/jetspeed2/jars/jetspeed-container-2.0-a1-dev.jar ${catalina.home}/webapps/HW_APP/WEB-INF/lib/
+  ${maven.repo.home}/jetspeed2/jars/jetspeed-container-2.0-M1.jar ${catalina.home}/webapps/HW_APP/WEB-INF/lib/
 
   I also think that this jar should not be put in the WAR during WAR creation, but should either be:
     a) in catalina shared

@@ -5,9 +5,9 @@
   </classpathentry>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-api-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-api-2.0-M1.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-registry-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-registry-2.0-M1.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc1.jar">
   </classpathentry>
@@ -21,9 +21,9 @@
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.3.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-M1.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed2-taglib-treecontrol-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed2-taglib-treecontrol-2.0-M1.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar">
   </classpathentry>
@@ -55,7 +55,7 @@
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-web-content-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-web-content-2.0-M1.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/hsqldb/jars/hsqldb-1.7.1.jar">
   </classpathentry>

@@ -484,8 +484,8 @@ limitations under the License.
 
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
-    <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="../jetspeed-api/target/jetspeed-api-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../commons/target/jetspeed-commons-2.0-M1.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../jetspeed-api/target/jetspeed-api-2.0-M1.jar" todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 

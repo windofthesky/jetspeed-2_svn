@@ -20,7 +20,7 @@ limitations under the License.
   <id>jetspeed2-taglibs</id>
   <name>Jetspeed 2 TagLibs</name>
   <groupId>jetspeed2</groupId>
-  <currentVersion>2.0-a1-dev</currentVersion>
+  <currentVersion>2.0-M1</currentVersion>
 
   <organization>
     <name>Apache Software Foundation</name>

@@ -2,7 +2,7 @@
     <pomVersion>3</pomVersion>
     <name>Jetspeed 2 Enterprise Portal</name>
     <groupId>jetspeed2</groupId>
-    <currentVersion>2.0-a1-dev</currentVersion>
+    <currentVersion>2.0-M1</currentVersion>
     <organization>
         <name>Apache Software Foundation</name>
         <url>http://portals.apache.org/</url>

@@ -25,7 +25,7 @@
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-M1.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/commons-httpclient/jars/commons-httpclient-2.0.jar">
   </classpathentry>

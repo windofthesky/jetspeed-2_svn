@@ -24,7 +24,7 @@ limitations under the License.
   <pomVersion>3</pomVersion>
   <id>jsf-demo</id>
   <name>JSF Portlet Demo</name>
-  <currentVersion>2.0-a1-dev</currentVersion>
+  <currentVersion>2.0-M1</currentVersion>
   <package>org.apache.portals.webapp.example</package>
   <description>JSF Portlet Demo</description>
   <shortDescription>JSF Portlet Demo</shortDescription>

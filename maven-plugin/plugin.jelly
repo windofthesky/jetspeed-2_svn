@@ -170,7 +170,7 @@ limitations under the License.
        <!-- END OF TO BE REMOVED -->
     </j:forEach>
    <echo>Copying Jetspeed 2 portal files...</echo>
-  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-a1-dev.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
+  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-M1.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
   	<copy todir="${maven.war.webapp.dir}" failonerror="true" overwrite="false">
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />            	       	       
      </copy>	  
@@ -209,7 +209,7 @@ limitations under the License.
   	
 	
     <echo>Copying Jetspeed 2 portal files...</echo>
-  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-a1-dev.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
+  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-M1.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
   	<copy todir="${basedir}/target/debug" failonerror="true" overwrite="false">
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />            	       	       
      </copy>	  
