@@ -14,10 +14,10 @@
     <maven:reactor
                basedir="${basedir}"
                includes="*/project.xml,applications/*/project.xml"
-               excludes="applications/project.xml"
+               excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
-               ignoreFailures="false"/>
+               ignoreFailures="true"/>
   </goal>
 
   <goal name="allSite"
