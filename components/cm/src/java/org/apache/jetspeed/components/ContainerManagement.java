@@ -17,8 +17,6 @@ package org.apache.jetspeed.components;
 
 import java.util.Collection;
 
-import org.picocontainer.MutablePicoContainer;
-
 /**
  * ContainerManagement
  *
@@ -28,9 +26,9 @@ import org.picocontainer.MutablePicoContainer;
 public interface ContainerManagement
 {
     
-    MutablePicoContainer getContainer(String containerName);
+    Object getContainer(String containerName);
     
-    MutablePicoContainer getRootContainer();
+    Object getRootContainer();
     
     Collection getContainers();
     

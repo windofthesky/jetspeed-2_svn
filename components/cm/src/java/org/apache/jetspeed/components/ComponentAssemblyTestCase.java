@@ -84,7 +84,7 @@ public abstract class ComponentAssemblyTestCase extends TestCase
         File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
         assertTrue(containerAssembler.exists());
         
-        componentManager = new  ComponentManager(containerAssembler, null, "TEST_SCOPE");     
+        componentManager = new  PicoComponentManager(containerAssembler, null, "TEST_SCOPE");     
         
         
         assertNotNull(componentManager.getRootContainer());
