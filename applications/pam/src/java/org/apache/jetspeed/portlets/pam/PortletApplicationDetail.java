@@ -33,6 +33,7 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
@@ -284,9 +285,19 @@ public class PortletApplicationDetail extends ServletPortlet
             String userAttrDesc = actionRequest.getParameter("user_attr_desc");
             if(userAttrName != null)
             {
-                pa.addUserAttribute(userAttrName, userAttrDesc);
-	            
-	            registry.getPersistenceStore().getTransaction().commit();
+                try
+                {
+                    Transaction tx = registry.getPersistenceStore().getTransaction();
+                    tx.begin();
+                    registry.getPersistenceStore().lockForWrite(pa);
+                    pa.addUserAttribute(userAttrName, userAttrDesc);	            
+    	            tx.commit();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    
+                }
             }
         }
         else if(action.equals("remove_user_attribute"))
