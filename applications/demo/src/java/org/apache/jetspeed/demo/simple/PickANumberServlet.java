@@ -196,7 +196,12 @@ public class PickANumberServlet extends ServletPortlet
         }
         if (targetValue == null)
         {
-            targetValue = new Long(Math.round(Math.random() * getHighRange(request)));
+            long random = (Math.round(Math.random() * getHighRange(request)));
+            if (random == 0)
+            {
+                random = 1; // don;t allow 0
+            }
+            targetValue = new Long(random);
             System.out.println("cheater: target value = " + targetValue);
             guessCount = new Long(0);
             session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
