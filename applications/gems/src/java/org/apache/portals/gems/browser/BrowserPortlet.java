@@ -54,7 +54,7 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 
     protected static final String CUSTOMIZE_TEMPLATE = "customizeTemplate";
 
-    protected static final String WINDOW_SIZE = "windowSize";
+    protected static final String WINDOW_SIZE = "WindowSize";
 
     protected static final String USER_OBJECT_NAMES = "user-object-names";
 
@@ -217,6 +217,7 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         if (request.getPortletMode() == PortletMode.EDIT)
         {
             processPreferencesAction(request, response);
+            clearBrowserIterator(request);            
         } else
         {
             String browserAction = request.getParameter("db.browser.action");

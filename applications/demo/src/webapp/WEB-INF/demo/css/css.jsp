@@ -54,7 +54,7 @@ portlet-section-text <fmt:message key="css.label.style"/>: <div class="portlet-s
 <div class="portlet-section-subheader"><fmt:message key="css.label.PLTC5"/></div><br/>
 <div class="portlet-section-text">
 portlet-form-label <fmt:message key="css.label.style"/>: <font class="portlet-form-label"><fmt:message key="css.label.ThisIsForm"/></font><br/>
-portlet-form-label-field <fmt:message key="css.label.style"/>: <input type="text" value="<fmt:message key="css.label.Value"/>" class="portlet-form-label"/><br/>
+portlet-form-field-label <fmt:message key="css.label.style"/>: <input type="text" value="<fmt:message key="css.label.Value"/>" class="portlet-form-label"/><br/>
 portlet-form-button <fmt:message key="css.label.style"/>: <input type="button" value="<fmt:message key="css.label.Button"/>" class="portlet-form-button"/><br/>
 portlet-icon-label <fmt:message key="css.label.style"/>: <font class="portlet-icon-label"><fmt:message key="css.label.Save"/></font><br/>
 portlet-dlg-icon-label <fmt:message key="css.label.style"/>: <font class="portlet-dlg-icon-label"><fmt:message key="css.label.OK"/></font><br/>
@@ -81,14 +81,14 @@ portlet-menu-caption <fmt:message key="css.label.style"/>: <div class="portlet-m
   <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label"><fmt:message key="css.label.JetspeedID"/></font></th>
     <td>
-      <input type="text" name="#" value="admin" size="15" maxlength="15"  class="portlet-form-label-field"/>
+      <input type="text" name="#" value="admin" size="15" maxlength="15"  class="portlet-form-field-label"/>
       <p class="portlet-form-field"><fmt:message key="css.label.IDConsistsOf"/></p>
     </td>
   </tr>
   <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label"><fmt:message key="css.label.Password"/></font></th>
     <td>
-      <input type="password" name="#" value="abcdefg" size="10" maxlength="10" class="portlet-form-label-field"/> 
+      <input type="password" name="#" value="abcdefg" size="10" maxlength="10" class="portlet-form-field-label"/> 
     </td>
   </tr>
   <tr>

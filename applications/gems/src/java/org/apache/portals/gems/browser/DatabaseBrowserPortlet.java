@@ -15,9 +15,8 @@
  */
 package org.apache.portals.gems.browser;
 
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,9 +29,16 @@ import java.util.List;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
 
 /**
  * DatabaseBrowserPortlet
@@ -70,7 +76,7 @@ public class DatabaseBrowserPortlet
             String poolname = getPreference(request, POOLNAME, null);
             if (poolname == null || poolname.length() == 0)
             {
-                con = getConnection();
+                con = getConnection(request);
             } 
             else
             {
@@ -209,56 +215,53 @@ public class DatabaseBrowserPortlet
     /*
      * Connection Management: TODO: rethink this, current impl is a quick prototype
      */
-    
-    private boolean driverRegistered = false;
-    
-    public Connection getConnection()
-    {
         
+    public Connection getConnection(RenderRequest request)
+    throws Exception // TODO: switch to Edit Mode on failure
+    {
         Connection con = null;
-        try 
+        try
         {
-            if (driverRegistered == false)
+            PortletPreferences prefs = request.getPreferences();
+            String dsType = prefs.getValue("DatasourceType", null);
+            if (dsType == null)
             {
-                Class driverClass = Class.forName("com.mysql.jdbc.Driver");
-                //Class driverClass = Class.forName("org.hsqldb.jdbcDriver");
-                Driver driver = (Driver)driverClass.newInstance();
-                DriverManager.registerDriver(driver);
-                driverRegistered = true;
+                throw new SQLException("No DataSource provided"); 
             }
-            //con = DriverManager.getConnection("jdbc:mysql://192.168.2.55/GWLogDB", "david", "david");
-            //con = DriverManager.getConnection("jdbc:hsqldb:hsql://127.0.0.1:9001", "sa", "");
-            con = DriverManager.getConnection("jdbc:mysql://j2-server/j2", "j2", "digital");
-            
-            Context ctx = new InitialContext();
-            DataSource ds = (DataSource)ctx.lookup("java:/jdbc/jetspeed");            
-            System.out.println("Got DataSource: " + ds);
-            
+            if (dsType.equals("jndi"))
+            {
+                Context ctx = new InitialContext();
+                DataSource ds = (DataSource)ctx.lookup(prefs.getValue("JndiDatasource", ""));
+//              DataSource ds = (DataSource)ctx.lookup("java:/jdbc/jetspeed");
+                con = ds.getConnection();
+            }
+            else if (dsType.equals("dbcp"))
+            {
+                BasicDataSource ds = new BasicDataSource();
+                  ds.setDriverClassName(prefs.getValue("JdbcDriver", ""));
+                  ds.setUrl(prefs.getValue("JdbcConnection", ""));                                                                                      
+                  ds.setUsername(prefs.getValue("JdbcUsername", ""));
+                  ds.setPassword(prefs.getValue("JdbcPassword", ""));
+    //            ds.setUrl("jdbc:mysql://j2-server/j2");
+                  con = ds.getConnection();                  
+            }
+            else if (dsType.equals("sso"))
+            {
+                // TODO: write this
+            }
+            else
+            {
+                throw new SQLException("No DataSource provided");                 
+            }
+                        
         }
-        catch (NamingException ne)
+        catch (Exception e)
         {
-            System.err.println("error getting datas source " + ne);
-            log.error("Cant get jetspeed data source", ne);                                   
+            throw new Exception("Failed to connect", e); // TODO: complete this 
         }
-        catch (ClassNotFoundException cnfe) 
-        {
-            log.error("Cant get class for JDBC driver", cnfe);            
-        }
-        catch (InstantiationException ie) 
-        {
-            log.error("Cant instantiate class for JDBC driver", ie);            
-        }
-        catch (IllegalAccessException iae) 
-        {
-            log.error("Illegal Access for JDBC driver", iae);            
-        }        
-        catch (SQLException se) 
-        {
-            log.error("Cant get connection", se);
-        }         
-       return con; 
+        return con;
     }
-    
+        
     public Connection getConnection(String poolName)
     {
         return null;
@@ -276,4 +279,21 @@ public class DatabaseBrowserPortlet
         }         
         
     }
+    
+    
+    public void processAction(ActionRequest request, ActionResponse response)
+    throws PortletException, IOException
+    {
+        if (request.getPortletMode() == PortletMode.EDIT)
+        {
+            String test = request.getParameter("Test");
+            if (test != null && test.equals("Test"))
+            {
+                // test the connection - TODO: write this tomorrow :)
+                System.out.println("Handle TEST processing");
+            }
+        }
+        super.processAction(request, response);
+    }
+    
 }

@@ -1,0 +1,163 @@
+#set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set ($dst = $prefsMap.get('DatasourceType'))
+#set ($disableDS = "disabled")
+#set ($disableDBCP = "disabled")
+#set ($disableSSO = "disabled")
+#if ($!dst == 'jndi')
+#set ($disableDS = "")
+#elseif ($!dst == 'dbcp')
+#set ($disableDBCP = "")
+#elseif ($!dst == 'sso')
+#set ($disableSSO = "")
+#end
+
+<h3 class="portlet-section-header">$MESSAGES.getString('label.prefs')</h3>
+
+<form name='J2DBEdit' action="$renderResponse.createActionURL()" method="post">
+<table border="0" cellspacing="2" cellpadding="3">
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString('label.datasource.type')</font></th>
+    <td>
+      <div>
+        <input type="radio" default name="DatasourceType" value='jndi' #if ($dst == 'jndi') checked #end onClick="javascript:chooseDS();"/> <font class="portlet-form-field-label">$MESSAGES.getString("label.datasource.jndi")</font>
+      </div>
+      <div>
+        <input type="radio" name="DatasourceType" value='dbcp' #if ($dst == 'dbcp') checked #end onClick="javascript:chooseDBCP();"/> <font class="portlet-form-field-label">$MESSAGES.getString("label.datasource.dbcp")</font>
+      </div>
+      <div>
+        <input type="radio" name="DatasourceType" value='sso' #if ($dst == 'sso') checked #end onClick="javascript:chooseSSO();"/> <font class="portlet-form-field-label">$MESSAGES.getString("label.datasource.sso")</font>
+      </div>
+      <p class="portlet-form-field">$MESSAGES.getString('label.select.ds')</p>
+    </td>
+  </tr>
+</table>
+
+<h4 class="portlet-section-header">$MESSAGES.getString('label.jndi.settings')</h4>
+
+<table border="0" cellspacing="2" cellpadding="3">
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jndi")</font></th>
+    <td>
+      <input name='JndiDatasource' $!disableDS type="input" value="$!prefsMap.get('JndiDatasource')" size="30" maxlength="30" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+</table>
+
+<h4 class="portlet-section-header">$MESSAGES.getString('label.dbcp.settings')</h4>
+
+<table border="0" cellspacing="2" cellpadding="3">  
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.driver")</font></th>
+    <td>
+      <input type="input" name="JdbcDriver" $!disableDBCP  value="$!prefsMap.get('JdbcDriver')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.connection")</font></th>
+    <td>
+      <input type="input" name="JdbcConnection" $!disableDBCP value="$!prefsMap.get('JdbcConnection')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.username")</font></th>
+    <td>
+      <input type="input" name="JdbcUsername" $!disableDBCP value="$!prefsMap.get('JdbcUsername')" size="30" maxlength="30" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.password")</font></th>
+    <td>
+      <input type="password" name="JdbcPassword" $!disableDBCP value="$!prefsMap.get('JdbcPassword')" size="30" maxlength="30" class="portlet-form-field-label"/> 
+    </td>
+  </tr>  
+</table>
+
+<h4 class="portlet-section-header">$MESSAGES.getString('label.sso.settings')</h4>
+
+<table border="0" cellspacing="2" cellpadding="3">
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">SSO Site</font></th>
+    <td>
+      <input type="input" name="SSOSite" $!disableSSO value="$!prefsMap.get('SSOSite')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">SSO Remote Principal</font></th>
+    <td>
+      <input type="input" name="SSOPrincipal" $!disableSSO value="$!prefsMap.get('SSOPrincipal')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  </tr>  
+</table>
+
+<h4 class="portlet-section-header">$MESSAGES.getString('label.general.settings')</h4>
+<table border="0" cellspacing="2" cellpadding="3">
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.window.size")</font></th>
+    <td>
+      <input type="input" name="windowSize" value="$!prefsMap.get('windowSize')" size="5" maxlength="5" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.sql")</font></th>
+    <td>
+      <textarea name="sql" cols='60' rows='8' class="portlet-form-field-label">$!prefsMap.get('sql')</textarea>
+    </td>
+  </tr>
+</table>
+
+<input type="submit" name="Save" value="Save" onClick="javascript:presave();"/>
+<input type="submit" name="Test" value="Test" onClick="javascript:presave();"/>
+
+</form>
+
+<script language="JavaScript">
+
+  function chooseDS() 
+  {
+    disableDS(false);
+    disableDBCP(true);
+    disableSSO(true);
+  }
+
+  function chooseDBCP() 
+  {
+    disableDS(true);
+    disableDBCP(false);
+    disableSSO(true);
+  }
+
+  function chooseSSO() 
+  {
+    disableDS(true);
+    disableDBCP(true);
+    disableSSO(false);
+  }
+
+  function disableDS(flag) 
+  {
+    document.forms['J2DBEdit'].JndiDatasource.disabled = flag;            
+  }
+
+  function disableDBCP(flag) 
+  {
+    document.forms['J2DBEdit'].JdbcDriver.disabled = flag;            
+    document.forms['J2DBEdit'].JdbcConnection.disabled = flag;            
+    document.forms['J2DBEdit'].JdbcUsername.disabled = flag;            
+    document.forms['J2DBEdit'].JdbcPassword.disabled = flag;            
+  }
+
+  function disableSSO(flag) 
+  {
+    document.forms['J2DBEdit'].SSOSite.disabled = flag;            
+    document.forms['J2DBEdit'].SSOPrincipal.disabled = flag;                
+  }
+
+  function presave()
+  {
+    disableDS(false);
+    disableDBCP(false);
+    disableSSO(false);
+  }
+
+</script>

@@ -1,1 +1,15 @@
-<b>TODO: write help</b>
+<p>TODO: arguably the long descriptive strings here shouldn't be localized by resource bundles but by file i.e. database-help_en.vm etc </b>
+
+<h3 class="portlet-section-header">$MESSAGES.getString('label.prefs')</h3>
+
+<table border="0" cellspacing="2" cellpadding="3">
+<tr>
+  <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jndi")</font></th>
+    <td>
+      <input type="input" name="jndi.ds" value="" size="30" maxlength="30" class="portlet-form-field-label"/> 
+    </td>  
+    <td>
+      <input type="input" name="jndi.ds" value="" size="30" maxlength="30" class="portlet-form-field-label"/> 
+    </td>      
+</tr>
+</table>
