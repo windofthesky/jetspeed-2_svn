@@ -16,10 +16,8 @@
 package org.apache.jetspeed.container.services.log;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.LogConfigurationException;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.services.log.LogService;
 import org.apache.pluto.services.log.Logger;
 
@@ -36,48 +34,12 @@ import org.apache.pluto.services.log.Logger;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$  
  */
-public class ContainerLogAdaptorServiceImpl
-    extends BaseCommonService
-    implements ContainerLogAdaptorService, LogService
+public class PlutoLogService    
+    implements  LogService
 {
-    private final static Log defaultLog = LogFactory.getLog(ContainerLogAdaptorServiceImpl.class);
+    private final static Log defaultLog = LogFactory.getLog(PlutoLogService.class);
     
-    public ContainerLogAdaptorServiceImpl()
-    {
-    }
 
-    /**
-     * This is the early initialization method called by the 
-     * <code>Service</code> framework
-     * @param conf The <code>ServletConfig</code>
-     * @exception throws a <code>InitializationException</code> if the service
-     * fails to initialize
-     */
-    public void init() 
-        throws CPSInitializationException 
-    {
-        defaultLog.info("ContainerLogAdaptor init");
-        
-        if (isInitialized()) 
-        {
-            return;        
-        }
-
-        // initialization done
-        setInit(true);
-
-     }
-
-    /**
-     * This is the shutdown method called by the 
-     * Turbine <code>Service</code> framework
-     */
-    public void shutdown() 
-    {
-        defaultLog.info("Shutdown for ContainerLogAdaptor called ");
-    }
-    
-    
 
     /* (non-Javadoc)
      * @see org.apache.pluto.services.log.LogService#getLogger(java.lang.String)
