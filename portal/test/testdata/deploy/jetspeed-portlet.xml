@@ -1,45 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <portlet-app id="HW_App" version="1.0" 
-	xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
-	xmlns:js="http://portals.apache.org/jetspeed" 
-	xmlns:dc="http://www.purl.org/dc">
-	
-	<dc:title>Title 1</dc:title>
-	<dc:title xml:lang="en">Eng Title</dc:title>
-	<dc:title xml:lang="fr">Fr Title</dc:title>
-	<dc:subject xml:lang="sp">Spanish Subject</dc:subject>
-	<dc:creator>Default Jeremy Ford</dc:creator>
-	<dc:coverage>Default Coverage</dc:coverage>
-	<dc:contributor>Default Contributor</dc:contributor>
-	<dc:description>Default Description</dc:description>
-	<dc:format>Default Format</dc:format>
-	<dc:identifer>Default Identifier</dc:identifer>
-	<dc:language>Default Language</dc:language>
-	<dc:publisher>Default Publisher</dc:publisher>
-	<dc:relation>Default Relation</dc:relation>
-	<dc:right>Default Right</dc:right>
-	<dc:source>Default Source</dc:source>
-	<dc:type>Default Type</dc:type>
-	<js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
-	
-	<portlet id="HelloPortlet">
-		<portlet-name>HelloWorld Portlet</portlet-name>
-		<dc:title>HP Title 1</dc:title>
-		<dc:title xml:lang="en">HP Eng Title</dc:title>
-		<dc:title xml:lang="fr">HP Fr Title</dc:title>
-		<dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
-		<dc:creator>HP Default Jeremy Ford</dc:creator>
-		<dc:coverage>HP Default Coverage</dc:coverage>
-		<dc:contributor>HP Default Contributor</dc:contributor>
-		<dc:description>HP Default Description</dc:description>
-		<dc:format>HP Default Format</dc:format>
-		<dc:identifer>HP Default Identifier</dc:identifer>
-		<dc:language>HP Default Language</dc:language>
-		<dc:publisher>HP Default Publisher</dc:publisher>
-		<dc:relation>HP Default Relation</dc:relation>
-		<dc:right>HP Default Right</dc:right>
-		<dc:source>HP Default Source</dc:source>
-		<dc:type>HP Default Type</dc:type>
-		<js:metadata name="my_metadata" xml:lang="en">HP English My_Metadata</js:metadata>
-	</portlet>
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
+    xmlns:js="http://portals.apache.org/jetspeed" 
+    xmlns:dc="http://www.purl.org/dc">
+    
+    <dc:title>Title 1</dc:title>
+    <dc:title xml:lang="en">Eng Title</dc:title>
+    <dc:title xml:lang="fr">Fr Title</dc:title>
+    <dc:subject xml:lang="sp">Spanish Subject</dc:subject>
+    <dc:creator>Default Jeremy Ford</dc:creator>
+    <dc:coverage>Default Coverage</dc:coverage>
+    <dc:contributor>Default Contributor</dc:contributor>
+    <dc:description>Default Description</dc:description>
+    <dc:format>Default Format</dc:format>
+    <dc:identifer>Default Identifier</dc:identifer>
+    <dc:language>Default Language</dc:language>
+    <dc:publisher>Default Publisher</dc:publisher>
+    <dc:relation>Default Relation</dc:relation>
+    <dc:right>Default Right</dc:right>
+    <dc:source>Default Source</dc:source>
+    <dc:type>Default Type</dc:type>
+    <js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
+    
+    <portlet>
+        <portlet-name>HelloWorld Portlet</portlet-name>
+        <dc:title>HelloWorldTitle</dc:title>
+        <dc:title xml:lang="en">HP Eng Title</dc:title>
+        <dc:title xml:lang="fr">HP Fr Title</dc:title>
+        <dc:title xml:lang="sp">HP Sp Title</dc:title>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>Display the Portlet Request Information</portlet-name>
+        <dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
+        <dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
+        <dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
+        <dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
+        <dc:subject xml:lang="sp">HP Spanish Subject</dc:subject>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>PortletThatDoesNotExist</portlet-name>
+        <js:metadata name="field1" xml:lang="en">Value 1</js:metadata>
+        <js:metadata name="field1" xml:lang="en">Value 2</js:metadata>
+        <js:metadata name="field1" xml:lang="en">Value 3</js:metadata>
+        <js:metadata name="field2" xml:lang="en">Value 1</js:metadata>
+        <js:metadata name="field2" xml:lang="en">Value 2</js:metadata>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>Pick a number game</portlet-name>
+        <dc:creator>Scott</dc:creator>
+        <dc:creator>DST</dc:creator>
+        <dc:creator>DLS</dc:creator>
+        <dc:creator>Jeremy</dc:creator>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>Attribute Scope Demo</portlet-name>
+        <js:metadata name="field1" xml:lang="en">Value 1</js:metadata>
+        <js:metadata name="field1" xml:lang="en">Value 2</js:metadata>
+        <js:metadata name="field1" xml:lang="en">Value 3</js:metadata>
+        <js:metadata name="field2" xml:lang="en">Value 1</js:metadata>
+        <js:metadata name="field2" xml:lang="en">Value 2</js:metadata>
+    </portlet>
 </portlet-app>
