@@ -17,7 +17,7 @@ limitations under the License.
   <!-- The jndi name of the DataSource, it is prefixed with java:/ -->
   <!-- Datasources are not available outside the virtual machine -->
   <jndi-name>JetspeedDS</jndi-name>
-  <connection-url>jdbc:mysql://localhost/jetspeed/connection-url>
+  <connection-url>jdbc:mysql://localhost/jetspeed</connection-url>
   <!-- The driver class -->
   <driver-class>com.mysql.jdbc.Driver</driver-class>
   <!-- The login and password -->
