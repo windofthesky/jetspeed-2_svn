@@ -374,9 +374,71 @@ limitations under the License.
 </c:if>
 <c:if test="${selectedPortletTab.id == 'pd_security'}">
 	<c:set var="roleSet" value="${selectedPDef.initSecurityRoleRefSet}"/>
-	<c:forEach var="therole" items="${roleSet.innerCollection}">
-		<c:out value="${therole.roleName}"/>  <br />
-	</c:forEach>
+	
+	<portlet:actionURL var="edit_security_link" >
+    </portlet:actionURL>
+
+	<c:if test="${! empty roleSet.innerCollection}">
+	<form action="<c:out value="${edit_security_link}"/>">
+		<input type="hidden" name="portlet_action" value=""/>	
+	
+		<table border="1">
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="pam.details.role_name"/></th>
+				<th><fmt:message key="pam.details_role_link"/></th>
+			</tr>
+		<c:forEach var="therole" items="${roleSet.innerCollection}">
+			<tr>
+				<td>
+					<input type="checkbox" name="security_remove_id" value="<c:out value="${therole.roleName}"/>"/>
+				</td>
+				<td>
+					<input type="hidden" name="security_edit_id" value="<c:out value="${therole.roleName}"/>"/>
+					<input type="text" name="<c:out value="${therole.roleName}"/>:name" value="<c:out value="${therole.roleName}"/>"/>
+				</td>
+				<td>
+					<input type="text" name="<c:out value="${therole.roleName}"/>:link" value="<c:out value="${therole.roleLink}"/>"/>
+				</td>
+			</tr>
+		</c:forEach>
+		</table>
+	
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet.edit_security'"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_security'"/>
+	
+	</form>
+	</c:if>
+
+	<form action="<c:out value="${edit_security_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.add_security"/>
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.role_name"/>
+				</td>
+				<td>
+					<input type="text" name="name" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.role_name.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.role_link"/>
+				</td>
+				<td>
+					<input type="text" name="link" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.role_link.description"/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="pam.details.add_security"/>"/>
+	</form>
+
 </c:if>
 
 <c:if test="${selectedPortletTab.id == 'pd_content_type'}">
@@ -391,4 +453,3 @@ limitations under the License.
 		<br />
 	</c:forEach>
 </c:if>
-

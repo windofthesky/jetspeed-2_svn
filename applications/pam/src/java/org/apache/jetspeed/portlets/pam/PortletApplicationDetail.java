@@ -38,11 +38,13 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
@@ -216,6 +218,10 @@ public class PortletApplicationDetail extends ServletPortlet
                 else if(action.endsWith("parameter"))
                 {
                     processParameter(actionRequest, actionResponse, pa, pdef, action);
+                }
+                else if(action.endsWith("security"))
+                {
+                    processSecurity(actionRequest, actionResponse, pa, pdef, action);
                 }
             }
         }
@@ -667,6 +673,83 @@ public class PortletApplicationDetail extends ServletPortlet
 	                    }
 	                }
 	            }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+    }
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param pdef
+     * @param action
+     */
+    private void processSecurity(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    {
+        if(action.equals("add_security"))
+        {
+            String name = actionRequest.getParameter("name");
+            String link = actionRequest.getParameter("link");
+            
+            if(name != null && link != null)
+            {
+	            registry.getPersistenceStore().getTransaction().begin();
+	            
+	            SecurityRoleRefImpl securityRoleRef = new SecurityRoleRefImpl();
+	            securityRoleRef.setRoleName(name);
+	            securityRoleRef.setRoleLink(link);
+	            //securityRoleRef.addDescription(description);
+	            portlet.addSecurityRoleRef(securityRoleRef);
+	            
+	            registry.getPersistenceStore().getTransaction().commit();
+            }
+        }
+        else if(action.equals("edit_security"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            Iterator securityIter = portlet.getInitSecurityRoleRefSet().iterator();
+            while (securityIter.hasNext())
+            {
+                SecurityRoleRefComposite secRef = (SecurityRoleRefComposite) securityIter.next();
+                String name = secRef.getRoleName();
+                
+                //TODO:  should this be editable
+                String newName = actionRequest.getParameter(name + ":name");
+                String link = actionRequest.getParameter(name + ":link");
+                
+                if(!secRef.getRoleLink().equals(link))
+                {
+                    secRef.setRoleLink(link);
+                }
+            }
+            
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("remove_security"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String[] securityIds = actionRequest.getParameterValues("security_remove_id");
+            if(securityIds != null)
+            {
+                Iterator securityIter = portlet.getInitSecurityRoleRefSet().iterator();
+                while (securityIter.hasNext())
+                {
+                    SecurityRoleRefComposite secRef = (SecurityRoleRefComposite) securityIter.next();
+                    for(int i=0; i<securityIds.length; i++)
+                    {
+                        String id = securityIds[i];
+                        if(secRef.getRoleName().equals(id))
+                        {
+                            securityIter.remove();
+                            break;
+                        }
+                    }
+                }
             }
             
             registry.getPersistenceStore().getTransaction().commit();
