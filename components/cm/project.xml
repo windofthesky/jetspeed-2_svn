@@ -13,89 +13,7 @@
   </description>
   <shortDescription>Common Manager</shortDescription>
   <dependencies>
-  	 	 <dependency>
-      <id>jetspeed-registry-services</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    
-     <dependency>
-      <id>jetspeed-commons</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
-    
-     <dependency>
-      <id>commons-beanutils</id>
-      <version>1.6.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    
-     <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc5</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    
-     <dependency>
-      <id>pluto</id>
-      <groupId>pluto</groupId>
-      <version>1.0</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-     </dependency>
-  	
-  	 <dependency>
-      <id>commons-pool</id>
-      <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>commons-dbcp</id>
-      <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>   
-    
-    <dependency>
-      <id>tyrex</id>
-      <version>1.0.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>hsqldb</id>
-      <version>1.7.1</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
-    
-    <dependency>
-      <id>commons-lang</id>
-      <version>2.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-  	
-  	
-    <dependency>
+  	<dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
@@ -147,15 +65,11 @@
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+    <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     <unitTest>
        <includes>
         <include>**/Test*.java</include>
       </includes>
-      <excludes> 
-      	<exclude>**/TestRegistry.java</exclude>
-      	<exclude>**/TestPersistenceContainer.java</exclude>
-      </excludes>
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>
@@ -165,6 +79,15 @@
         </resource>
       </resources>
     </unitTest>
+    
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
     
   </build>
 </project>
