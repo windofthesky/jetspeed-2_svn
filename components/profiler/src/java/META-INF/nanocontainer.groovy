@@ -30,7 +30,7 @@ import org.apache.jetspeed.components.ComponentAssemblyTestCase
 import java.io.File
 import java.util.Properties
 
-applicationRoot = ComponentAssemblyTestCase.getApplicationRoot("portal", "test")
+applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./")
 
 // create the root container
 container = new DefaultPicoContainer()

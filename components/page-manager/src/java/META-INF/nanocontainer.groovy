@@ -25,19 +25,17 @@ import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler
-import org.apache.jetspeed.components.ComponentAssemblyTestCase
+
 
 import java.io.File
 import java.util.Properties
 
-applicationRoot = ComponentAssemblyTestCase.getApplicationRoot("portal", "test")
+applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./")
 
-// create the root container
+
 container = new DefaultPicoContainer()
 
-//
-// Page Manager
-//
+
 root = applicationRoot + "/testdata/pages"
 Long scanRate = 120
 cacheSize = 100
