@@ -102,10 +102,12 @@ public class PBStore implements PersistenceStore
      */
     public void close()
     {
+        invoker.beforeClose();
         if (!pb.isClosed())
         {
             pb.close();
         }
+        invoker.afterClose();
 
     }
 
@@ -144,6 +146,10 @@ public class PBStore implements PersistenceStore
         invoker.beforeLookup();
         try
         {
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             return pb.getCollectionByQuery((Query) query);
         }
         finally
@@ -169,6 +175,10 @@ public class PBStore implements PersistenceStore
         invoker.beforeLookup();
         try
         {
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             return pb.getObjectByQuery((Query) query);
         }
         finally
@@ -193,6 +203,10 @@ public class PBStore implements PersistenceStore
         invoker.beforeLookup();
         try
         {
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             return pb.getObjectByIdentity(new Identity(object, pb));
         }
         finally
@@ -215,8 +229,11 @@ public class PBStore implements PersistenceStore
      */
     public int getCount(Object query)
     {
-       
-            return pb.getCount((Query) query);
+        if (pb.isClosed())
+        {
+            PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+        }
+        return pb.getCount((Query) query);
        
     }
 
@@ -228,6 +245,10 @@ public class PBStore implements PersistenceStore
         invoker.beforeLookup();
         try
         {
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             return pb.getIteratorByQuery((Query) query);
         }
         finally
@@ -322,6 +343,10 @@ public class PBStore implements PersistenceStore
         try
         {
             invoker.beforeMakePersistent();
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             pb.store(obj);
             invoker.afterMakePersistent();
         }
@@ -356,6 +381,10 @@ public class PBStore implements PersistenceStore
         invoker.beforeLookup();
         try
         {
+            if(pb.isClosed())
+            {
+                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
             return pb.getCollectionByQuery(QueryFactory.newQuery(clazz, new Criteria()));
         }
         finally
@@ -376,6 +405,10 @@ public class PBStore implements PersistenceStore
      */
     public void invalidateAll() throws LockFailedException
     {
+        if(pb.isClosed())
+        {
+            PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+        }
         pb.clearCache();
     }
     
