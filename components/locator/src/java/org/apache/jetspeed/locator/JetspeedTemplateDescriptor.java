@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.locator;
 
+import java.io.File;
+
 /**
  * Jetspeed default Template Descriptor implementation
  *
@@ -53,7 +55,7 @@ public class JetspeedTemplateDescriptor extends JetspeedLocatorDescriptor implem
      */
     public void setAbsolutePath(String path)
     {
-        this.absolutePath = path;
+        this.absolutePath = (new File(path)).getAbsolutePath();
     }
     
     

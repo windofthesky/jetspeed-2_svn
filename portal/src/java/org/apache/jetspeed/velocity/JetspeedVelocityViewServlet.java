@@ -367,7 +367,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     synchronized (velocityEngineCache)
                     {
                         // use cached velocity engine if available
-                        VelocityEngine velocity = (VelocityEngine) velocityEngineCache.get(config.macros.getPath());
+                        VelocityEngine velocity = (VelocityEngine) velocityEngineCache.get(config.macros.getAbsolutePath());
                         if (velocity != null)
                         {
                             return velocity;
@@ -480,7 +480,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             if (((macrosDescriptor == null) && (config.macros != null)) ||
                 ((macrosDescriptor != null) && (config.macros == null)) ||
                 ((macrosDescriptor != null) && (config.macros != null) &&
-                 (!macrosDescriptor.getAbsolutePath().equals(config.macros.getPath()) ||
+                 (!macrosDescriptor.getAbsolutePath().equals(config.macros.getAbsolutePath()) ||
                   (config.macros.lastModified() != config.macrosLastModified))))
             {
                 // set or reset configuration cache entry
@@ -518,7 +518,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     if (!forceVelocityEngineRefresh)
                     {
                         // use cached velocity engine
-                        velocity = (VelocityEngine) velocityEngineCache.get(config.macros.getPath());
+                        velocity = (VelocityEngine) velocityEngineCache.get(config.macros.getAbsolutePath());
                     }
                     if (velocity == null)
                     {
@@ -526,7 +526,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                         velocity = initVelocity(macrosDescriptor);
                         if (velocity != null)
                         {
-                            velocityEngineCache.put(config.macros.getPath(), velocity);
+                            velocityEngineCache.put(config.macros.getAbsolutePath(), velocity);
                         }
                     }
                 }
