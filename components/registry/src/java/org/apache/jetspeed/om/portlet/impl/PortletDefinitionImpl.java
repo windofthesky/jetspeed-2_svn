@@ -52,14 +52,12 @@
  * <http://www.apache.org/>.
  */
 package org.apache.jetspeed.om.portlet.impl;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
@@ -104,42 +102,33 @@ import org.odmg.DList;
  * 
  * PortletDefinitionImpl
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @version $Id: PortletDefinitionImpl.java,v 1.1 2004/02/23 13:13:46 weaver
+ *          Exp $
+ *  
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
-
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
     private int id;
     private String className;
     private String name;
     private String portletIdentifier;
-
     private Collection languageSet = null;
     private LanguageSetImpl langListWrapper = new LanguageSetImpl();
-
     private Collection parameterSet;
     private ParameterSetImpl paramListWrapper = new PortletParameterSetImpl();
-
     private Collection securityRoleRefSet;
     private SecurityRoleRefSetImpl secListWrapper = new SecurityRoleRefSetImpl();
-
     private String preferenceValidatorClassname;
-
     private Collection displayNames;
     private DisplayNameSetImpl DNListWrapper = new DisplayNameSetImpl();
-
     private Collection descriptions;
     private DescriptionSetImpl descListWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_PORTLET);
-
     private Collection prefSet = null;
     private PreferenceSetImpl prefListWrapper = new PreferenceSetImpl();
-
     private Collection contentTypes;
     private ContentTypeSetImpl ctListWrapper = new ContentTypeSetImpl();
-
     protected List portletEntities;
 
     /** PortletApplicationDefinition this PortletDefinition belongs to */
@@ -147,21 +136,16 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     /** UID of the PortletApplicationDefinition */
     // protected ObjectID appId;
     protected long appId;
-
     private ClassLoader portletClassLoader;
-
     private String expirationCache;
-
     public PortletDefinitionImpl()
     {
         super();
-
         try
         {
             parameterSet = new ArrayList();
             securityRoleRefSet = new ArrayList();
             contentTypes = new ArrayList();
-
         }
         catch (RuntimeException e)
         {
@@ -226,11 +210,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public PreferenceSet getPreferenceSet()
     {
-    	if(prefSet == null)
-    	{
-    		prefSet = new ArrayList();
-    	}
-        prefListWrapper.setInnerCollection(prefSet);        
+        if (prefSet == null)
+        {
+            prefSet = new ArrayList();
+        }
+        prefListWrapper.setInnerCollection(prefSet);
         return prefListWrapper;
     }
 
@@ -298,7 +282,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public void setClassName(String className)
     {
         this.className = className;
-
     }
 
     /**
@@ -344,7 +327,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public void setInitParameterSet(ParameterSet parameters)
     {
         this.parameterSet = ((ParameterSetImpl) parameters).getInnerCollection();
-
     }
 
     /**
@@ -364,19 +346,19 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String, java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String,
+     *      java.lang.String, java.lang.String)
      */
     public ParameterComposite addInitParameter(String name, String value, DescriptionSet description)
     {
         ParameterComposite pc = addInitParameter(name, value);
         pc.setDescriptionSet(description);
-
         return pc;
-
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addInitParameter(java.lang.String, java.lang.String, java.lang.String, java.util.Locale)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addInitParameter(java.lang.String,
+     *      java.lang.String, java.lang.String, java.util.Locale)
      */
     public ParameterComposite addInitParameter(String name, String value, String description, Locale locale)
     {
@@ -384,14 +366,14 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         param.addDescription(locale, description);
         return param;
     }
-
     public void addInitParameter(Parameter parameter)
     {
         parameterSet.add(parameter);
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String,
+     *      java.lang.String)
      */
     public ParameterComposite addInitParameter(String name, String value)
     {
@@ -417,7 +399,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(java.lang.String, java.util.Collection)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(java.lang.String,
+     *      java.util.Collection)
      */
     public PreferenceComposite addPreference(String name, String[] values)
     {
@@ -433,24 +416,19 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
                 prefSet = new ArrayList();
             }
             addPreference(pref);
-
             return pref;
-
         }
         catch (Exception e)
         {
             String msg = "Unable to instantiate Preference implementor, " + e.toString();
             log.error(msg, e);
             throw new IllegalStateException(msg);
-
         }
     }
-
     public void setPortletIdentifier(String portletIdentifier)
     {
         this.portletIdentifier = portletIdentifier;
     }
-
     public String getPortletIdentifier()
     {
         return this.portletIdentifier;
@@ -472,20 +450,16 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         if (obj != null && obj.getClass().equals(getClass()))
         {
             PortletDefinitionImpl pd = (PortletDefinitionImpl) obj;
-			boolean sameId = (id != 0 && id == pd.id);
-			if(sameId)
-			{ 
-				return true;
-			}
-            
+            boolean sameId = (id != 0 && id == pd.id);
+            if (sameId)
+            {
+                return true;
+            }
             boolean sameAppId = (appId == pd.appId);
-           
             boolean sameName = (pd.getName() != null && name != null && pd.getName().equals(name));
             return sameName && sameAppId;
         }
-
         return false;
-
     }
 
     /**
@@ -515,7 +489,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             return null;
         }
-
     }
 
     /**
@@ -541,7 +514,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
             DNListWrapper.setInnerCollection(displayNames);
             return DNListWrapper.get(arg0);
         }
-
         return null;
     }
 
@@ -550,9 +522,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void setDescriptions(DescriptionSet arg0)
     {
-
         this.descriptions = ((DescriptionSetImpl) arg0).getInnerCollection();
-
     }
 
     /**
@@ -566,9 +536,10 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     /**
      * Returns localized text of this PortletDefinitions display name.
      * 
-     * @param locale Locale to get the display name for
+     * @param locale
+     *            Locale to get the display name for
      * @return Localized text string of the display name or <code>null</code>
-     * if no DisplayName exists for this locale
+     *         if no DisplayName exists for this locale
      */
     public String getDisplayNameText(Locale locale)
     {
@@ -583,9 +554,10 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     /**
      * Returns localized text of this PortletDefinitions description.
      * 
-     * @param locale Locale to get the description for
+     * @param locale
+     *            Locale to get the description for
      * @return Localized text string of the display name or <code>null</code>
-     * if no Description exists for this locale
+     *         if no Description exists for this locale
      */
     public String getDescriptionText(Locale locale)
     {
@@ -595,11 +567,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
             return desc.getDescription();
         }
         return null;
-
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDescription(java.util.Locale, java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDescription(java.util.Locale,
+     *      java.lang.String)
      */
     public void addDescription(Locale locale, String description)
     {
@@ -608,36 +580,25 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
             descriptions = new ArrayList();
         }
         descListWrapper.setInnerCollection(descriptions);
-        try
-        {
-            MutableDescription descObj = new PortletDescriptionImpl();
-                
-            descObj.setLocale(locale);
-            descObj.setDescription(description);
-            descListWrapper.addDescription(descObj);
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to instantiate Description implementor, " + e.toString();
-            log.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
+        MutableDescription descObj = new PortletDescriptionImpl();
+        descObj.setLocale(locale);
+        descObj.setDescription(description);
+        descListWrapper.addDescription(descObj);
     }
-
+    
     public void addDescription(Description description)
     {
         if (descriptions == null)
         {
             descriptions = new ArrayList();
         }
-
         descListWrapper.setInnerCollection(descriptions);
         descListWrapper.addDescription(description);
-
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDisplayName(java.util.Locale, java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDisplayName(java.util.Locale,
+     *      java.lang.String)
      */
     public void addDisplayName(Locale locale, String displayName)
     {
@@ -646,38 +607,25 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
             displayNames = new ArrayList();
         }
         DNListWrapper.setInnerCollection(displayNames);
-        try
-        {
-            MutableDisplayName dn = new PortletDisplayNameImpl();
-                
-            dn.setLocale(locale);
-            dn.setDisplayName(displayName);
-            DNListWrapper.addDisplayName(dn);
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to instantiate DisplayName implementor, " + e.toString();
-            log.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
-
+        MutableDisplayName dn = new PortletDisplayNameImpl();
+        dn.setLocale(locale);
+        dn.setDisplayName(displayName);
+        DNListWrapper.addDisplayName(dn);
     }
-
     public void addDisplayName(DisplayName displayName)
     {
         if (displayNames == null)
         {
             displayNames = new ArrayList();
         }
-
         DNListWrapper.setInnerCollection(displayNames);
         DNListWrapper.addDisplayName(displayName);
     }
 
-    /** 
+    /**
      * <p>
-     * store will attempt to perform an atomic persistence call against
-     * this portletDefinition.
+     * store will attempt to perform an atomic persistence call against this
+     * portletDefinition.
      * </p>
      * 
      * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#store()
@@ -685,9 +633,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void store() throws IOException
     {
-       throw new UnsupportedOperationException("PortletDefinitionImpl.store() is not supported." +
-                  "Use the StoreablePortletDefinitionDelegate class to wrap the PortletDefinition to store");
-
+        throw new UnsupportedOperationException("PortletDefinitionImpl.store() is not supported." + 
+        "Use the StoreablePortletDefinitionDelegate class to wrap the PortletDefinition to store");
     }
 
     /**
@@ -696,7 +643,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      * </p>
      * 
      * @return
-     * 
      */
     public String getPreferenceValidatorClassname()
     {
@@ -709,14 +655,14 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      * </p>
      * 
      * @param string
-     * 
+     *  
      */
     public void setPreferenceValidatorClassname(String string)
     {
         preferenceValidatorClassname = string;
     }
 
-    /** 
+    /**
      * <p>
      * addPreference
      * </p>
@@ -730,13 +676,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             prefSet = new ArrayList();
         }
-
         prefListWrapper.setInnerCollection(prefSet);
         prefListWrapper.add(preference);
-
     }
 
-    /** 
+    /**
      * <p>
      * addSecurityRoleRef
      * </p>
@@ -749,5 +693,4 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         secListWrapper.setInnerCollection(securityRoleRefSet);
         secListWrapper.add(securityRef);
     }
-
 }
