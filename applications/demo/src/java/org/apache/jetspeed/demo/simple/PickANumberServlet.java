@@ -20,7 +20,14 @@ import java.io.IOException;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.ReadOnlyException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
 import org.apache.jetspeed.portlet.ServletPortlet;
 
 /**
@@ -52,7 +59,7 @@ public class PickANumberServlet extends ServletPortlet
      *
      * @see org.apache.jetspeed.portlet.ServletPortlet#doEdit
      */
-    private static final String DEFAULT_EDIT_PAGE = null;
+    private static final String DEFAULT_EDIT_PAGE = "/WEB-INF/demo/simple/PickANumberEdit.jsp";
     
     /**
      * Default help page when preference does not exist
@@ -90,6 +97,11 @@ public class PickANumberServlet extends ServletPortlet
     private static final String TARGET_VALUE_NAME = "TargetValue";
     
     /**
+     * Attribute name of Top Range Value (in Edit Mode)
+     */
+    private static final String TOP_RANGE_NAME = "TopRange";
+    
+    /**
      * Set default page values when class is created
      */
     public PickANumberServlet()
@@ -99,6 +111,52 @@ public class PickANumberServlet extends ServletPortlet
         setDefaultEditPage(DEFAULT_EDIT_PAGE);
         setDefaultHelpPage(DEFAULT_HELP_PAGE);
         setDefaultViewPage(DEFAULT_VIEW_PAGE);
+    }
+
+            
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        PortletSession session = request.getPortletSession();
+        Long guessCount = null;
+        Long targetValue = null;
+        Long lastGuess = null;
+        
+        // Get target value
+        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.APPLICATION_SCOPE);
+        if (lastGuess == null)
+        {
+            lastGuess = new Long(0);
+            session.setAttribute(LAST_GUESS_NAME, guessCount, PortletSession.APPLICATION_SCOPE);            
+        }
+
+        // Get target value
+
+        targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, PortletSession.APPLICATION_SCOPE);
+        if (targetValue == null)
+        {            
+            targetValue = new Long(Math.round(Math.random() * getHighRange(request)));
+            System.out.println("cheater: target value = " + targetValue);
+            guessCount = new Long(0);
+            session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
+            long highRange = getHighRange(request);
+            session.setAttribute( TOP_RANGE_NAME, new Long(highRange), PortletSession.APPLICATION_SCOPE);
+        }
+
+        guessCount = (Long)session.getAttribute(GUESS_COUNT_NAME, PortletSession.APPLICATION_SCOPE);
+        if (guessCount == null)
+        {
+            guessCount = new Long(0);
+            session.setAttribute( GUESS_COUNT_NAME, guessCount, PortletSession.APPLICATION_SCOPE);            
+        }
+
+        Long highRange = (Long)session.getAttribute(TOP_RANGE_NAME, PortletSession.APPLICATION_SCOPE);
+        if (highRange == null)
+        {
+            long range = getHighRange(request);
+            session.setAttribute( TOP_RANGE_NAME, new Long(range), PortletSession.APPLICATION_SCOPE);
+        }
+        
+        super.doView(request, response);
     }
     
     /**
@@ -110,6 +168,13 @@ public class PickANumberServlet extends ServletPortlet
     public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
+        // Is it an edit (customize) action
+        if (isEditAction(request))
+        {
+            savePreferences(request);
+            return;
+        }
+        
         Long guessCount = null;
         Long targetValue = null;
         Long currentGuess = null;
@@ -125,11 +190,14 @@ public class PickANumberServlet extends ServletPortlet
         if ((targetValue != null) && (lastGuess != null))
         {
             if (targetValue.equals(lastGuess))
+            {
                 targetValue = null; // Since the number as guesed, start a new game
+            }
         }
         if (targetValue == null)
         {
-            targetValue = new Long(Math.round(Math.random() * 10.0));
+            targetValue = new Long(Math.round(Math.random() * getHighRange(request)));
+            System.out.println("cheater: target value = " + targetValue);
             guessCount = new Long(0);
             session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
         }
@@ -165,7 +233,48 @@ public class PickANumberServlet extends ServletPortlet
         // Update the attribute values
         session.setAttribute( GUESS_COUNT_NAME, guessCount, PortletSession.APPLICATION_SCOPE);
         session.setAttribute( LAST_GUESS_NAME, currentGuess, PortletSession.APPLICATION_SCOPE);
-        actionResponse.setProperty(LAST_GUESS_NAME, currentGuess.toString());
+        //actionResponse.setRenderParameter(LAST_GUESS_NAME, lastGuess.toString());        
         return;
     }
+    
+    private long getHighRange(PortletRequest request)
+    {
+        PortletPreferences prefs = request.getPreferences();
+        String highRangePref = prefs.getValue("TopRange", "102");
+        long range = Long.parseLong(highRangePref);
+        if (range < 2)
+        {
+            range = 102;
+        }
+        return range;
+    }
+    
+    private boolean isEditAction(ActionRequest request)
+    {
+        return (request.getParameter(TOP_RANGE_NAME) != null);        
+    }
+    
+    private void savePreferences(PortletRequest request)
+    {
+        String topRange = request.getParameter(TOP_RANGE_NAME);
+        long range = Long.parseLong(topRange);
+        if (range < 2)
+        {
+            // TODO: throw validation exception
+            return;
+        }
+        PortletPreferences prefs = request.getPreferences();
+        try
+        {
+            prefs.setValue(TOP_RANGE_NAME, topRange);
+            prefs.store();
+            PortletSession session = request.getPortletSession();            
+            session.setAttribute( TOP_RANGE_NAME, new Long(range), PortletSession.APPLICATION_SCOPE);            
+        }
+        catch (Exception e)
+        {
+            // TODO: throw validation exception and redirect to error 
+        }
+    }
+    
 }

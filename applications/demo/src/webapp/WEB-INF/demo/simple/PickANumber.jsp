@@ -23,55 +23,75 @@ limitations under the License.
 	<portlet:param name="myParam" value="testParam"/>
 </portlet:actionURL>
 
-<c:if test="${empty targetValue}">
-  <c:set var="targetValue" scope="session" value="5"/>
-  <c:set var="guessCount" scope="session" value="0"/>
-</c:if>
-
 <%
     PortletSession portletSession = renderRequest.getPortletSession(true);
-    Long lg = (Long)portletSession.getAttribute("LastGuess", PortletSession.APPLICATION_SCOPE);
-    String lastGuess = "50";
-    if (lg != null)
+    Long value = (Long)portletSession.getAttribute("LastGuess", PortletSession.APPLICATION_SCOPE);    
+    long lastGuess = 0;
+    if (value != null)
     {
-    	lastGuess = lg.toString();
+    	lastGuess = value.longValue();
     }
-    else
-    {
-    	lg = new Long(50);
-    	lastGuess = "50";
-    }    	
+        	
 %>
 
-<c:set var="guessCount" scope="session" value="${guessCount + 1}"/>
+<c:set var="guessCount" scope="session" value="${GuessCount}"/>
+<c:set var="targetValue" scope="session" value="${TargetValue}"/>
+<c:set var="lastGuess" scope="session" value="${LastGuess}"/>
+<c:set var="topRange" scope="session" value="${TopRange}"/>
 
-target =  <c:out value="${targetValue}"/>
-<br/>
+<h2>
+Pick a Number Guess Count Game 
+</h2>
 
-last guess =  <c:out value="${param.Guess}"/>
+<c:choose>
+<c:when test="${empty guessCount}">
+</c:when>
+<c:when test="${targetValue == lastGuess}">
+</c:when>
+<c:otherwise>
+You have made <c:out value="${guessCount}"/> guess thus far.
+</c:otherwise>
+</c:choose>
 
-<br/>
+<c:choose>
+<c:when test="${targetValue == lastGuess}">
+<p>
+Start a new Game now!<br/>Enter a number between 1 and <c:out value="${TopRange}"/>
+</p>
+</c:when>
+<c:otherwise>
+<p>
+Enter a number between 1 and <c:out value="${TopRange}"/>
+</p>
+</c:otherwise>
+</c:choose>
 
-<div>
-  You guessed <%=lastGuess%>
-  <br/>
-  Guess Count <c:out value="${guessCount}"/>
-  <br/>
+<p>
   <c:choose>
-    <c:when test="${targetValue == (param.Guess + 0)}">
-      <center><strong>You have guessed the number!!!!</strong></center>
+    <c:when test="${empty targetValue}">
+       Ready to start a New game.
+    </c:when>  
+    <c:when test="${empty lastGuess}">
+       Ready to start a New game.
+    </c:when>      
+    <c:when test="${targetValue == lastGuess}">
+      <center><strong><%=lastGuess%> is correct! You have guessed the number in <c:out value="${guessCount}"/> guesses!!!!</strong></center>
       <c:remove var="targetValue" scope="session"/> 
     </c:when>
-    <c:when test="${targetValue < (param.Guess + 0)}">
-      You have guessed to high.  Try a lower Number
+    <c:when test="${targetValue < lastGuess}">
+      You have guessed to high.  Try a lower Number 
     </c:when>
-    <c:when test="${targetValue > (param.Guess + 0)}">
+    <c:when test="${targetValue > lastGuess}">
       You have guessed to low.  Try a higher Number
     </c:when>
+    <c:otherwise>
+       Ready to start a New game.    
+    </c:otherwise>
   </c:choose>
-  <br/>
+</p>
+<p>
   <form action="<%=myAction%>" method="POST">
-    <input type="text" name="Guess" value="<%=lastGuess%>">
-    <input type="submit">
+    <input type="text" name="Guess" value="<%=lastGuess%>"/>
+    <input type="submit" value='Guess'/>
   </form>
-</div>
+</p>

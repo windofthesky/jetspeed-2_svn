@@ -112,6 +112,10 @@ limitations under the License.
       <name>HelpPage</name>
       <value>/WEB-INF/demo/simple/PickANumberHelp.jsp</value>
     </init-param>          
+    <init-param>
+      <name>EditPage</name>
+      <value>/WEB-INF/demo/simple/PickANumberEdit.jsp</value>
+    </init-param>              
     <portlet-name>PickANumberPortlet</portlet-name>
     <display-name>Pick a number game</display-name>
     <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
@@ -124,6 +128,12 @@ limitations under the License.
     <portlet-info>
       <title>Pick a Number</title>
     </portlet-info>
+    <portlet-preferences>
+       <preference>
+         <name>TopRange</name>
+         <value>100</value>
+        </preference>
+    </portlet-preferences>    
   </portlet>
 
   <portlet id="AttributeScopePortlet">
