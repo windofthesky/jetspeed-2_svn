@@ -15,12 +15,15 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.contentserver.ContentFilter;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.cps.CPSInitializationException;
@@ -129,6 +132,35 @@ public class PageAggregator extends BaseCommonService implements Aggregator
         {
             throw new JetspeedException("No root Fragment found in Page");
         }
+        
+        String layoutDecorator = currentFragment.getDecorator();
+        if(layoutDecorator == null)
+        {
+            layoutDecorator = page.getDefaultDecorator(currentFragment.getType());
+        }
+        
+        //TODO: Remove hard coding of locations and use CM + TL
+        List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
+        
+        if(contentPathes == null)
+        {
+            contentPathes = new ArrayList(2);
+            context.setSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR, contentPathes);
+        }
+        
+        if(contentPathes.size() < 1)
+        {
+            // define the lookup order
+            contentPathes.add(currentFragment.getType()+"/html/"+layoutDecorator);
+            contentPathes.add("portlet/html");
+            contentPathes.add("generic/html");
+            contentPathes.add("/html");
+        }
+        else
+        {
+            contentPathes.set(0, currentFragment.getType()+"/html/"+layoutDecorator);
+        }
+        
 
         if (checkAccess(context,(currentFragment.getAcl()!=null)?currentFragment.getAcl():acl, "render"))
         {
