@@ -75,7 +75,15 @@ import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
  */
 public class PortletRegistryComponentImpl implements PortletRegistryComponent
 {
+    /** The logger. */
     private static final Log log = LogFactory.getLog(PortletRegistryComponentImpl.class);
+    
+    /** 
+     * The separator used to create a unique portlet name as
+     * {portletApplication}::{portlet}
+     */
+    static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
+
     protected static final String KEY_STORE_NAME = "persistence.store.name";
     private PersistenceStoreContainer storeContainer;
     private String jetspeedStoreName;
@@ -278,15 +286,8 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
 
-        //parse out names
-        int split = name.indexOf("::");
-        if (split < 1)
-        {
-            throw new IllegalArgumentException(
-                "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
-        }
-        String appName = name.substring(0, split);
-        String portletName = name.substring((split + 2), name.length());
+        String appName = PortletRegistryHelper.parseAppName(name);
+        String portletName = PortletRegistryHelper.parsePortletName(name);
 
         // build filter
         Filter filter = store.newFilter();
