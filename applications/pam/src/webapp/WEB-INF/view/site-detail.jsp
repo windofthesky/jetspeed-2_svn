@@ -58,7 +58,7 @@ limitations under the License.
 	<c:set var="node" value="${page}"/>
 </c:if>
 
-<c:if test="${currentTab.id == 'site_details'}">
+<c:if test="${currentTab.id == 'site_details' && node != null}">
 	Name (Node): <c:out value="${node.name}"/> <br />
 	Path (Node): <c:out value="${node.path}"/> <br />
 	Title (BaseElement): <c:out value="${node.title}"/> <br />
@@ -95,7 +95,7 @@ limitations under the License.
 	</c:choose>
 </c:if>
 
-<c:if test="${currentTab.id == 'site_security'}">
+<c:if test="${currentTab.id == 'site_security'  && node != null}">
 		<portlet:actionURL var="edit_page_link" />
 
 		<form action="<c:out value="${edit_page_link}"/>">
