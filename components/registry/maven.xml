@@ -73,9 +73,19 @@
     <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
     <attainGoal name="db.create" />
   </goal>
+  
+  <goal name="db.test.create.server">
+    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
+    <attainGoal name="db.create" />
+  </goal>
 
   <goal name="db.test.drop">
     <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
+    <attainGoal name="db.drop" />
+  </goal>
+  
+  <goal name="db.test.drop.server">
+    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
     <attainGoal name="db.drop" />
   </goal>
 
@@ -84,17 +94,30 @@
     <attainGoal name="db.test.create" />
   </goal>
   
+  <goal name="db.test.recreate.server">
+    <attainGoal name="db.test.drop.server" />
+    <attainGoal name="db.test.create.server" />
+  </goal>
+  
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
 
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
   
-  <goal name="build_registry">
+  <goal name="build.registry">
   	<attainGoal name="db.recreate"/>
   	<attainGoal name="db.test.recreate"/>
   	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
-</goal>
+ </goal>
+ 
+   <goal name="build.registry.server">
+  	<attainGoal name="db.recreate"/>
+  	<attainGoal name="db.test.recreate.server"/>
+  	<attainGoal name="ojb.registry"/>
+  	<attainGoal name="jar:install"/>
+ </goal>
+ 
 
 </project>
