@@ -201,10 +201,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
             request.setAttribute(VIEW_USER, bean);
             if (selectedTab.getId().equals(TAB_ROLE))
             {                
-                request.setAttribute(VIEW_ROLES, getRoles(userName));
+                Collection userRoles = getRoles(userName);
+                request.setAttribute(VIEW_ROLES, userRoles );
                 
                 // check for refresh on roles list
-                String refreshRoles = (String)PortletMessaging.consume(request, "roles", "refresh");
+                String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.USER_BROWSER, "roles");
                 List roles = null;
                 if (refreshRoles == null)
                 {        
@@ -229,16 +230,28 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 catch (SecurityException se)
                 {
                     throw new PortletException(se);
-                }        
-                request.setAttribute(ROLES_CONTROL, roles);
+                }
+                ArrayList selectableRoles = new ArrayList(roles);
+                Iterator rolesIter = userRoles.iterator();
+                while ( rolesIter.hasNext() )
+                {
+                    Role role = (Role)rolesIter.next();
+                    int index = selectableRoles.indexOf(role.getPrincipal().getName());
+                    if (index != -1)
+                    {
+                        selectableRoles.remove(index);
+                    }
+                }
+                request.setAttribute(ROLES_CONTROL, selectableRoles);
                 
             }
             else if (selectedTab.getId().equals(TAB_GROUP))
             {
-                request.setAttribute(VIEW_GROUPS, getGroups(userName));
+                Collection userGroups = getGroups(userName);
+                request.setAttribute(VIEW_GROUPS, userGroups);
                 
                 // check for refresh on groups list
-                String refreshGroups = (String)PortletMessaging.consume(request, "groups", "refresh");
+                String refreshGroups = (String)PortletMessaging.consume(request, SecurityResources.USER_BROWSER, "groups");
                 List groups = null;
                 if (refreshGroups == null)
                 {        
@@ -264,7 +277,18 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     throw new PortletException(se);
                 }        
-                request.setAttribute(GROUPS_CONTROL, groups);
+                ArrayList selectableGroups = new ArrayList(groups);
+                Iterator groupsIter = userGroups.iterator();
+                while ( groupsIter.hasNext() )
+                {
+                    Group group = (Group)groupsIter.next();
+                    int index = selectableGroups.indexOf(group.getPrincipal().getName());
+                    if (index != -1)
+                    {
+                        selectableGroups.remove(index);
+                    }
+                }
+                request.setAttribute(GROUPS_CONTROL, selectableGroups);
                 
             }
             else if (selectedTab.getId().equals(TAB_PROFILE))

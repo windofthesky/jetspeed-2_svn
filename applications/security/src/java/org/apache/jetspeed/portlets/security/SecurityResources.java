@@ -41,6 +41,9 @@ public interface SecurityResources
     public final static String REQUEST_SELECT_PORTLET = "select_portlet";
     public final static String REQUEST_SELECT_TAB = "selected_tab";
     public final static String PORTLET_ACTION = "portlet_action";
+    
+    // UserDetailsPortlet message topic
+    public final static String USER_BROWSER = "user_browser";
 
     /** the selected non-leaf node in the tree view */
     public final static String REQUEST_NODE = "node";

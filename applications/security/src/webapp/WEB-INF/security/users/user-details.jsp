@@ -241,7 +241,8 @@ limitations under the License.
 		</table>
 		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_role'" class="portlet-form-button" />
     </form>
-	<form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
+    <c:if test="${not empty jetspeedRoles}">
+  	  <form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_role"/>
 		
 		<table>
@@ -261,8 +262,8 @@ limitations under the License.
 			</tr>
 		</table>
 		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
-	</form>
-    
+	  </form>
+    </c:if>
   </div>  
 </c:if>
 <%--End of Security Role tab data--%>
@@ -301,7 +302,8 @@ limitations under the License.
 		</table>
 		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_group'" class="portlet-form-button" />
     </form>
-	<form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
+    <c:if test="${not empty jetspeedGroups}">
+	  <form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_group"/>
 		
 		<table>
@@ -321,8 +323,8 @@ limitations under the License.
 			</tr>
 		</table>
 		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
-	</form>
-    
+	  </form>
+    </c:if>
   </div>  
 </c:if>
 <%--End of Security Group tab data--%>

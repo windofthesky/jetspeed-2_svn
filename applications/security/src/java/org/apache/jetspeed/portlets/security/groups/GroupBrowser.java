@@ -154,6 +154,7 @@ public class GroupBrowser extends BrowserPortlet
                         groupManager.removeGroup(delete);
                         this.clearBrowserIterator(request);
                         PortletMessaging.cancel(request, "group", "selected");
+                        PortletMessaging.publish(request, SecurityResources.USER_BROWSER, "groups", "refresh");
                     }
                 }
                 catch (Exception e)
@@ -193,6 +194,7 @@ public class GroupBrowser extends BrowserPortlet
                             groupManager.addGroup(groupName);
                             this.clearBrowserIterator(request);
                         }
+                        PortletMessaging.publish(request, SecurityResources.USER_BROWSER, "groups", "refresh");
                     }
                     catch (Exception e)
                     {
