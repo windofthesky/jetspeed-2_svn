@@ -637,9 +637,7 @@
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-
-
-         
+         autoincrement="true"         
       />
       <field-descriptor
          name="ojbConcreteClass"
@@ -1123,9 +1121,7 @@
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-
-
-   
+         autoincrement="true"   
       />
       
       <field-descriptor
