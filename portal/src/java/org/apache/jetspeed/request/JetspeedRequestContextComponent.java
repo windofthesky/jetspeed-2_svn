@@ -100,7 +100,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
      */
     public RequestContext getRequestContext(HttpServletRequest request)
     {
-        return (RequestContext) request.getAttribute(JetspeedRequestContext.REQUEST_PORTALENV);
+        return (RequestContext) request.getAttribute(RequestContext.REQUEST_PORTALENV);
     }
 
 }
