@@ -53,8 +53,10 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfilerService;
@@ -69,9 +71,9 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public abstract class AbstractProfilingRule implements ProfilingRule
 {
-    private SortedMap criteria = new TreeMap();
-    private String id;
-    private String title;
+    protected Collection criteria = new Vector();
+    protected String id;
+    protected String title;
     protected String ojbConcreteClass;
     
     /* (non-Javadoc)
@@ -82,7 +84,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#getRuleCriterion()
      */
-    public SortedMap getRuleCriteria()
+    public Collection getRuleCriteria()
     {
         return criteria;
     }

@@ -30,12 +30,11 @@
      jdbc-type="VARCHAR"
     />    
     <collection-descriptor
-      name="criterion" 
-      element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
-      indirection-table="RULE_CRITERION">
-      <fk-pointing-to-this-class column="RULE_ID"/>
-      <fk-pointing-to-element-class column="CRITERION_ID"/>
-    </collection-descriptor>              
+         name="criteria"
+         element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
+    >
+    <inverse-foreignkey field-ref="ruleId"/>
+    </collection-descriptor>
 
 </class-descriptor>
 
@@ -61,13 +60,11 @@
      jdbc-type="VARCHAR"
     />    
     <collection-descriptor
-      name="criterion" 
-      element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
-      indirection-table="RULE_CRITERION">
-      <fk-pointing-to-this-class column="RULE_ID"/>
-      <fk-pointing-to-element-class column="CRITERION_ID"/>
-    </collection-descriptor>              
-
+         name="criteria"
+         element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
+    >
+    <inverse-foreignkey field-ref="ruleId"/>
+    </collection-descriptor>
 </class-descriptor>
 
 <!--
@@ -80,6 +77,13 @@
 >     
     <field-descriptor
      name="id"
+     column="CRITERION_ID"
+     jdbc-type="VARCHAR"
+     primarykey="true"
+     autoincrement="true"         
+    />
+    <field-descriptor
+     name="ruleId"
      column="RULE_ID"
      jdbc-type="VARCHAR"
     />

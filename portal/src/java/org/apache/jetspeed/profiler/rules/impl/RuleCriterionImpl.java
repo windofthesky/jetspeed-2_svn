@@ -64,6 +64,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 public class RuleCriterionImpl implements RuleCriterion
 {
     private String id;
+    private String ruleId;
     private String type;
     private String name;
     private String value;
@@ -102,19 +103,19 @@ public class RuleCriterionImpl implements RuleCriterion
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#getId()
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#getRuleId()
      */
-    public String getId()
+    public String getRuleId()
     {
-        return id;
+        return ruleId;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#setId(java.lang.String)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#setRuleId(java.lang.String)
      */
-    public void setId(String id)
+    public void setRuleId(String ruleId)
     {
-        this.id = id;
+        this.ruleId = ruleId;
     }
 
     /* (non-Javadoc)

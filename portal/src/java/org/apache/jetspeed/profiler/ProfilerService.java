@@ -54,6 +54,7 @@
 package org.apache.jetspeed.profiler;
 
 import java.security.Principal;
+import java.util.Collection;
 
 import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.om.desktop.Desktop;
@@ -83,7 +84,7 @@ import org.apache.jetspeed.request.RequestContext;
 public interface ProfilerService extends CommonService
 {
     /** The name of this service */
-    public String SERVICE_NAME = "Profiler";
+    public String SERVICE_NAME = "profiler";
    
     /**
      *  Get the Profile object using the request parameters.
@@ -134,5 +135,10 @@ public interface ProfilerService extends CommonService
      * @return The portal's default profiling rule.
      */
     ProfilingRule getDefaultRule();
-          
+              
+    /**
+     * @return
+     */
+    Collection getRules();
+                  
 }

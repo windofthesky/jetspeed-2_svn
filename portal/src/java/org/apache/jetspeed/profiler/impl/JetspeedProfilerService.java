@@ -54,6 +54,7 @@
 package org.apache.jetspeed.profiler.impl;
 
 import java.security.Principal;
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,7 +113,7 @@ public class JetspeedProfilerService
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
             plugin = ps.getPersistencePlugin(pluginName);                        
             setInit(true);
-        }
+        }        
     }
     
     /* (non-Javadoc)
@@ -235,5 +236,14 @@ public class JetspeedProfilerService
      {
          return (ProfileLocator)this.createObject(locatorClass);
      }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getRules()
+     */
+    public  Collection getRules()
+    {
+        return plugin.getExtent(profilingRuleClass);
+    }
     
 }

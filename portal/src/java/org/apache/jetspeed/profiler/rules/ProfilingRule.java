@@ -53,6 +53,7 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.util.Collection;
 import java.util.SortedMap;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
@@ -123,7 +124,7 @@ public interface ProfilingRule
      * 
      * @return a sorted map of rule criteria.
      */         
-    SortedMap getRuleCriteria();
+    Collection getRuleCriteria();
                      
     /**
      * Gets the unique identifier for this rule

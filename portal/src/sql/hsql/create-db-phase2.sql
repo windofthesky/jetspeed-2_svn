@@ -14,6 +14,24 @@ CREATE TABLE DESKTOP
     UNIQUE(DESKTOP_ID)
 );
 
+-- associates a desktop with its top level pages
+CREATE TABLE DESKTOP_PAGES
+(
+    DESKTOP_ID VARCHAR(80) NOT NULL,
+    PAGE_ID VARCHAR(80) NOT NULL
+);
+
+CREATE INDEX IX_DESKTOP_PAGES_1 ON DESKTOP_PAGES (DESKTOP_ID, PAGE_ID);
+
+-- associates a page with its sub group pages
+CREATE TABLE SUB_PAGES
+(
+    PAGE_ID VARCHAR(80) NOT NULL,
+    SUB_PAGE_ID VARCHAR(80) NOT NULL
+);
+
+CREATE INDEX IX_SUB_PAGES_1 ON SUB_PAGES (PAGE_ID, SUB_PAGE_ID);
+
 ----------------------------------------------------------------------------
 -- Page Definitions
 ----------------------------------------------------------------------------
@@ -100,6 +118,7 @@ CREATE TABLE PROFILING_RULE
 
 CREATE TABLE RULE_CRITERION
 (
+    CRITERION_ID VARCHAR(80) PRIMARY KEY,
     RULE_ID VARCHAR(80) NOT NULL,        
     FALLBACK_ORDER INTEGER,
     REQUEST_TYPE VARCHAR(40) NOT NULL,

@@ -77,7 +77,7 @@ public class StandardProfilingRule
      */    
     public ProfileLocator apply(RequestContext context, ProfilerService service)
     {
-        Iterator criteria = this.getRuleCriteria().values().iterator();
+        Iterator criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
