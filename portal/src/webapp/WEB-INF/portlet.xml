@@ -73,5 +73,37 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityThreeColumns">
+    <portlet-name>VelocityThreeColumns</portlet-name>
+    <display-name>Three Columns Layout Using Velocity</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>3</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>33%,33%,33%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>VelocityThreeColumns</title>
+      <short-title>ThreeColumns</short-title>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 
