@@ -64,6 +64,6 @@
 <html:javascript formName="LogonForm"
         dynamicJavascript="true"
          staticJavascript="false" cdata="false"/>
-<script language="Javascript1.1" src="<html:rewrite href="/staticJavascript.jsp" resourceURL="true"/>"/>
+<script language="Javascript1.1" src="<html:rewrite href="staticJavascript.jsp" resourceURL="true"/>"/>
 
 <jsp:include page="footer.jsp" />
