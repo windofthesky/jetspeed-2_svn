@@ -14,28 +14,15 @@
 package org.apache.jetspeed.sso;
 
 import java.util.Collection;
-
-import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.sso.SSOPrincipal;
 
 /**
+ * Interface SSOSite
+ * 
  * @author rruttimann
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public interface SSOSite {
-
-	/**
-	 * @return Returns the credentials.
-	 */
-	public Collection getCredentials() ;
-	
-	/**
-	 * @param credentials The credentials to set.
-	 */
-	public void setCredentials(Collection credentials);
-	
+public interface SSOSite {	
 	/**
 	 * @return Returns the isAllowUserSet.
 	 */
@@ -96,23 +83,10 @@ public interface SSOSite {
 	 */
 	public void setSiteURL(String siteURL) ;
 	
-	/**
-	 * Utility functions
-	 * addCredential()
-	 * Adds the credentail to the credentials collection
-	 *
-	 */
-	public void addCredential(InternalCredential credential) throws SSOException;
+	
 	
 	/**
-	* removeCredential()
-	 * removes a credentail from the credentials collection
-	 *
-	 */
-	public void removeCredential(InternalCredential credential) throws SSOException;
-	
-	/**
-	 * Adds the credentail to the credentials collection
+	 * Adds the SSOPrincipal to the principals collection
 	 *
 	 */
 	public void addPrincipal(SSOPrincipal principal) throws SSOException;

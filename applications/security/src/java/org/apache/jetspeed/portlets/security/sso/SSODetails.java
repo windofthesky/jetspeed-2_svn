@@ -74,9 +74,9 @@ public class SSODetails extends BrowserPortlet
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
         groupManager = (GroupManager) getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
-        if (null == userManager)
+        if (null == groupManager)
         {
-            throw new PortletException("Failed to find the User Manager on portlet initialization");
+            throw new PortletException("Failed to find the Group Manager on portlet initialization");
         }        
     }
        
@@ -169,7 +169,7 @@ public class SSODetails extends BrowserPortlet
             String refresh = request.getParameter("sso.refresh");
             String add = request.getParameter("sso.add");
             String delete = request.getParameter("ssoDelete");
-            
+           
             if (refresh != null)
             {
                 this.clearBrowserIterator(request);
@@ -180,17 +180,37 @@ public class SSODetails extends BrowserPortlet
                 {
                     String siteName = (String)PortletMessaging.receive(request, "site", "selectedUrl");                                            
                     SSOSite site = sso.getSite(siteName);
-                    User user = userManager.getUser(delete);                        
-                    if (site != null && user != null)
-                    {                            
-                        Subject subject = user.getSubject(); 
-                        sso.removeCredentialsForSite(subject, site.getSiteURL());
-                        this.clearBrowserIterator(request);
+                    User user = null;
+                    try
+                    {
+                        user = userManager.getUser(delete);   
                     }
-                }
-                catch (SecurityException e)
-                {
-                    publishStatusMessage(request, "SSODetails", "status", e, "Could not remove credentials");
+                    catch(SecurityException se)
+                    {
+                        // User doesn't exist -- maybe a group
+                        user =null;
+                    }
+                    
+                    if ( site != null )
+                    {
+                        /*
+	                     * If the user is null try to remove a group
+	                     */
+	                    if ( user != null)
+	                    {
+	                        // Remove USER
+	                        Subject subject = user.getSubject(); 
+	                        sso.removeCredentialsForSite(subject, site.getSiteURL());
+	                        this.clearBrowserIterator(request);
+	                    }
+	                    else
+	                    {
+	                        // Try group removal
+	                        String fullPath = "/group/" + delete;
+	                        sso.removeCredentialsForSite(fullPath, site.getSiteURL());
+	                        this.clearBrowserIterator(request);
+	                    }  
+	                 }
                 }
                 catch (SSOException e)
                 {
@@ -200,21 +220,44 @@ public class SSODetails extends BrowserPortlet
             else if (add != null)
             {
                 // Roger: here is the principal type
-                String principalType = request.getParameter("principal.type");
+                String principalType = request.getParameter("principal.type");  //group user
                 String portalPrincipal = request.getParameter("portal.principal");                
                 String remotePrincipal = request.getParameter("remote.principal");
                 String remoteCredential = request.getParameter("remote.credential");
+                
+                // The principal type can benull if the user just typed the name instead of
+                // using the choosers.
+                
+                if (principalType == null || principalType.length() == 0 )
+                    principalType = "user";
+                
                 if (!(isEmpty(remotePrincipal) || isEmpty(remotePrincipal) || isEmpty(remoteCredential)))
                 {
                     try
                     {
                         String siteName = (String)PortletMessaging.receive(request, "site", "selectedUrl");                        
                         SSOSite site = sso.getSite(siteName);
-                        User user = userManager.getUser(portalPrincipal);                        
-                        if (site != null && user != null)
-                        {                            
-                            Subject subject = user.getSubject(); 
-                            sso.addCredentialsForSite(subject, remotePrincipal, site.getSiteURL(), remoteCredential);
+                        Subject subject = null;
+                        String groupFullPath = null;
+                        
+                        if (principalType.compareTo("user") == 0)
+                        {
+                            User user = userManager.getUser(portalPrincipal);    
+                            subject = user.getSubject();
+                        }
+                        else
+                        {
+                            // Create fullPath
+                            groupFullPath = "/group/" + portalPrincipal;
+                          }
+                        
+                        if (site != null && (subject != null || groupFullPath != null) )
+                        {
+                            if (subject != null )
+                                sso.addCredentialsForSite(subject, remotePrincipal, site.getSiteURL(), remoteCredential);
+                            else
+                                sso.addCredentialsForSite(groupFullPath, remotePrincipal, site.getSiteURL(), remoteCredential);
+                            
                             this.clearBrowserIterator(request);
                         }
                     }

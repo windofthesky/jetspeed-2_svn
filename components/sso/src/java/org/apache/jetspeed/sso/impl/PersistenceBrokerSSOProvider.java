@@ -15,11 +15,14 @@
  */
 package org.apache.jetspeed.sso.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.jetspeed.security.UserPrincipal;
@@ -40,9 +43,13 @@ import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
 
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
 
@@ -60,6 +67,10 @@ public class PersistenceBrokerSSOProvider extends
 		InitablePersistenceBrokerDaoSupport implements SSOProvider 
 {	
 	private Hashtable mapSite = new Hashtable();	
+	
+    private String USER_PATH = "/user/";
+    private String GROUP_PATH = "/group/";
+
   	/**
      * PersitenceBrokerSSOProvider()
      * @param repository Location of repository mapping file.  Must be available within the classpath.
@@ -80,6 +91,103 @@ public class PersistenceBrokerSSOProvider extends
         Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
         return c.iterator();        
     }
+	
+	/**
+     * addCredentialsForSite()
+     * @param fullPath
+     * @param remoteUser
+     * @param site
+     * @param pwd
+     * @throws SSOException
+     */
+    public void addCredentialsForSite(String fullPath, String remoteUser, String site, String pwd) throws SSOException
+    {
+        // Create a Subject for the given path and forward it to the API addCredentialsForSite()
+        Principal principal = null;
+        String name = null;
+        
+        // Group or User
+        if (fullPath.indexOf("/group/") > -1 )
+        {
+            name = fullPath.substring(GROUP_PATH.length());
+            principal = new GroupPrincipalImpl(name);
+        }
+        else
+        {
+            name = fullPath.substring(USER_PATH.length());
+            principal = new UserPrincipalImpl(name);
+        }
+ 
+        // Create Subject
+        Set principals = new HashSet();
+        principals.add(principal);
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());	
+        
+        // Call into the API
+        addCredentialsForSite(subject, remoteUser, site, pwd);
+    }
+    
+    /**
+     * removeCredentialsForSite()
+     * @param fullPath
+     * @param site
+     * @throws SSOException
+     */
+    public void removeCredentialsForSite(String fullPath, String site) throws SSOException
+    {
+        // Create a Subject for the given path and forward it to the API addCredentialsForSite()
+        Principal principal = null;
+        String name = null;
+        
+        // Group or User
+        if (fullPath.indexOf("/group/") > -1 )
+        {
+            name = fullPath.substring(GROUP_PATH.length());
+            principal = new GroupPrincipalImpl(name);
+        }
+        else
+        {
+            name = fullPath.substring(USER_PATH.length());
+            principal = new UserPrincipalImpl(name);
+        }
+ 
+        // Create Subject
+        Set principals = new HashSet();
+        principals.add(principal);
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());	
+    
+        // Call into the API
+        this.removeCredentialsForSite(subject,site);
+    }
+    
+    
+    /** Retrive site information
+     * 
+     *  getSiteURL
+     */
+    
+    public String getSiteURL(String site)
+    {
+        // The site is the URL
+        return site;
+    }
+    
+    /**
+     * getSiteName
+     */
+    public String getSiteName(String site)
+    {
+        SSOSite ssoSite = getSSOSiteObject(site);
+		
+		if ( ssoSite == null)
+		{
+			return ssoSite.getName();
+		}
+		else
+		{
+		    return null;
+		}
+    }
     
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.sso.SSOProvider#hasSSOCredentials(javax.security.auth.Subject, java.lang.String)
@@ -97,9 +205,10 @@ public class PersistenceBrokerSSOProvider extends
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
 		String fullPath = principal.getFullPath();
 		
+				
 		// Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
-		Collection principalsForSite = ssoSite.getPrincipals();
-		Collection remoteForSite = ssoSite.getRemotePrincipals();
+		Collection remoteForSite		= ssoSite.getRemotePrincipals();
+		Collection principalsForSite	= ssoSite.getPrincipals();	// Users
 		
 		// If any of them don't exist just return
 		if (principalsForSite == null || remoteForSite== null )
@@ -174,19 +283,25 @@ public class PersistenceBrokerSSOProvider extends
 		
 		if (principal == null )
 		{
-		    principal = getSSOPrincipa(fullPath);
+		    principal = getSSOPrincipal(fullPath);
 		    ssoSite.addPrincipal(principal);
 		}
 		else
 		{
 		    // Check if the entry the user likes to update exists already
 		    Collection remoteForSite = ssoSite.getRemotePrincipals();
-		    if ( remoteForSite != null)
+		    Collection principalsForSite = ssoSite.getPrincipals();
+		    
+		    if ( remoteForSite != null && principalsForSite != null)
 		    {
-		        if (findRemoteMatch(principal.getRemotePrincipals(), remoteForSite) != null )
+		        Collection remoteForPrincipals = this.getRemotePrincipalsForPrincipal(principalsForSite, fullPath);
+		        if ( remoteForPrincipals != null)
 		        {
-		            // Entry exists can't to an add has to call update
-		            throw new SSOException(SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
+			        if (findRemoteMatch(remoteForPrincipals, remoteForSite) != null )
+			        {
+			            // Entry exists can't to an add has to call update
+			            throw new SSOException(SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
+			        }
 		        }
 		    }
 		}
@@ -196,7 +311,16 @@ public class PersistenceBrokerSSOProvider extends
 		
 		// Create a remote principal and credentials
 		InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(remoteUser);
-		remotePrincipal.setFullPath("/sso/user/"+ principalName + "/" + remoteUser);
+		
+		/*
+		 * The RemotePrincipal (class InternalUserPrincipal) will have a fullPath that identifies the entry as an SSO credential.
+		 * The entry has to be unique for a site and principal  (GROUP -or- USER ) an therefore it needs to be encoded as following:
+		 * The convention for the path is the following: /sso/SiteID/{user|group}/{user name | group name}/remote user name
+		 */
+		if ( fullPath.indexOf("/group/") > -1)
+		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/group/"+  principalName + "/" + remoteUser);
+		else
+		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser);
 	
 		// New credential object for remote principal
 		 InternalCredentialImpl credential = 
@@ -271,7 +395,7 @@ public class PersistenceBrokerSSOProvider extends
 			
 			// Update assocation tables
 			ssoSite.getRemotePrincipals().remove(remotePrincipal);
-			getRemotePrincipalsForPrincipal(principalsForSite, fullPath).remove(remotePrincipal);
+			remoteForPrincipals.remove(remotePrincipal);
 		    
 			// delete the remote Principal from the SECURITY_PRINCIPAL table
 		    getPersistenceBrokerTemplate().delete(remotePrincipal);
@@ -328,8 +452,8 @@ public class PersistenceBrokerSSOProvider extends
 			String principalName  = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
 			
 			//	Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
-			Collection principalsForSite = ssoSite.getPrincipals();
-			Collection remoteForSite = ssoSite.getRemotePrincipals();
+			Collection principalsForSite	= ssoSite.getPrincipals();
+			Collection remoteForSite		= ssoSite.getRemotePrincipals();
 			
 			// If any of them don't exist just return
 			if (principalsForSite == null || remoteForSite== null )
@@ -436,7 +560,7 @@ public class PersistenceBrokerSSOProvider extends
 		Collection remoteForSite = ssoSite.getRemotePrincipals();
 		
 		// If any of them don't exist just return
-		if (principalsForSite == null || remoteForSite== null )
+		if ( principalsForSite == null  || remoteForSite== null )
 		    return null;	// no entry
 		
 		Collection remoteForPrincipals = getRemotePrincipalsForPrincipal(principalsForSite, fullPath);
@@ -499,8 +623,7 @@ public class PersistenceBrokerSSOProvider extends
 		{
 			SSOPrincipal principal = (SSOPrincipal)ixPrincipals.next();
 			if (         principal != null 
-			        && principal.getFullPath().compareToIgnoreCase(fullPath) == 0
-			        && principal.getSiteID() == ssoSite.getSiteId())
+			        && principal.getFullPath().compareToIgnoreCase(fullPath) == 0 )
 			{
 				// Found Principal -- extract remote principals 
 				return principal.getRemotePrincipals();
@@ -518,16 +641,16 @@ public class PersistenceBrokerSSOProvider extends
 	private SSOPrincipal getPrincipalForSite(SSOSite ssoSite, String fullPath)
 	{
 		SSOPrincipal principal = null;
+		Collection principalsForSite = ssoSite.getPrincipals();
 		
-		if ( ssoSite.getPrincipals() != null)
+		if ( principalsForSite != null)
 		{
-			Iterator itPrincipals = ssoSite.getPrincipals().iterator();
+			Iterator itPrincipals = principalsForSite.iterator();
 			while (itPrincipals.hasNext() && principal == null)
 			{
 				SSOPrincipal tmp  = (SSOPrincipal)itPrincipals.next();
 				if ( 		 tmp != null 
-				       && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0 
-				       && tmp.getSiteID() == ssoSite.getSiteId())
+				       && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0 )
 					principal = tmp;	// Found existing entry
 			}
 		}
@@ -535,7 +658,7 @@ public class PersistenceBrokerSSOProvider extends
 		return principal;
 	}
 	
-	private SSOPrincipal getSSOPrincipa(String fullPath)
+	private SSOPrincipal getSSOPrincipal(String fullPath)
 	{
 	    // FInd if the principal exists in the SECURITY_PRINCIPAL table
 	    SSOPrincipal principal = null;
@@ -559,27 +682,7 @@ public class PersistenceBrokerSSOProvider extends
 		return principal;		
 	}
 	
-	/**
-	 * getCredentialForPrincipal
-	 * @param site
-	 * @param principalId
-	 * @return InternalCredential for the principal ID
-	 */
-	private InternalCredential getCredentialForPrincipal(SSOSite site, long principalId)
-	{
-		if ( site.getCredentials() != null)
-		{
-			Iterator itCredentials = site.getCredentials().iterator();
-			while(itCredentials.hasNext() )
-			{
-				InternalCredential tmp = (InternalCredential)itCredentials.next();
-				if ( tmp != null && tmp.getPrincipalId() == principalId)
-					return tmp;
-			}
-		}
 	
-		return null;
-	}
 	
 	/**
 	 * removeRemotePrincipalForPrincipal
@@ -597,8 +700,7 @@ public class PersistenceBrokerSSOProvider extends
 			while (itPrincipals.hasNext())
 			{
 				SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
-				if (tmp.getFullPath().compareToIgnoreCase(fullPath) == 0
-				        && tmp.getSiteID() == site.getSiteId())
+				if (tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
 				{
 					// Found -- get the remotePrincipal
 					Collection collRemotePrincipals = tmp.getRemotePrincipals() ;
@@ -647,18 +749,64 @@ public class PersistenceBrokerSSOProvider extends
 	    return null;
 	}
 	
+	/*
+	 * getRemotePrincipalsForPrincipals
+	 * Checks if the user has any remote principals. If the principal is a group expand the group and
+	 * check if the requesting user is a part of the group.
+	 */
 	private Collection getRemotePrincipalsForPrincipal(Collection principalsForSite, String fullPath)
 	{
-	    if (principalsForSite == null )
-	        return null;
-	    
-	    Iterator itPrincipalsForSite = principalsForSite.iterator();
-	    while (itPrincipalsForSite.hasNext())
+	    if (principalsForSite != null )
 	    {
-	        SSOPrincipal principal = (SSOPrincipal)itPrincipalsForSite.next();
-	        if ( principal.getFullPath().compareToIgnoreCase(fullPath) == 0)
-	            return principal.getRemotePrincipals();
+		    Iterator itPrincipalsForSite = principalsForSite.iterator();
+		    while (itPrincipalsForSite.hasNext())
+		    {
+		        String principalFullPath = null;
+		        SSOPrincipal principal = (SSOPrincipal)itPrincipalsForSite.next();
+		        principalFullPath = principal.getFullPath();
+		        
+		        /* If the Principal is for a Group expand the Group and check if the user identified
+		        * by the fullPath is a member of the Group. If the user is a member of the Group
+		        * return the remote Credentials for the current Principal.
+		        */
+		        if ( principalFullPath.indexOf("/group/") == -1)
+		        {
+		            // USER
+		            if ( principalFullPath.compareToIgnoreCase(fullPath) == 0)
+		                return principal.getRemotePrincipals();
+		        }
+		        else
+		        {
+		            /* GROUP 
+		             * If the full path is for a group (delete/add) just return the the list of remotePrincipals
+		             * For a lookup (hasCredentials) the user needs to be mapped against each member of the group
+		            */
+		            if ( principalFullPath.compareToIgnoreCase(fullPath) == 0)
+		                return principal.getRemotePrincipals();
+		            
+		            /* Expand the Group and find a match */
+			        InternalGroupPrincipal  groupPrincipal = getGroupPrincipals(principalFullPath);
+			        
+			        // Found Group that matches the name
+			        if (groupPrincipal != null)
+		            {
+			            Collection usersInGroup = groupPrincipal.getUserPrincipals();
+			            Iterator itUsers = usersInGroup.iterator();
+		                while (itUsers.hasNext())
+		                {
+		                    InternalUserPrincipal user = (InternalUserPrincipal)itUsers.next();
+		                    if (user.getFullPath().compareToIgnoreCase(fullPath) == 0)
+		                    {
+		                        // User is member of the group
+		                        return principal.getRemotePrincipals();
+		                    }
+		                }
+		            }
+		        }  
+		    }
 	    }
+	    
+	    // No match found
 	    return null;
 	}
     
@@ -754,15 +902,25 @@ public class PersistenceBrokerSSOProvider extends
         while (tokenizer.hasMoreTokens())
         {
             String token = tokenizer.nextToken();
-            if (token.equals("user"))
+            if (token.equals("user") || token.equals("group"))
             {
-                if (tokenizer.hasMoreTokens())
+                 if (tokenizer.hasMoreTokens())
                 {
                     return tokenizer.nextToken();
                 }
             }
         }
         return fullPath;        
+    }
+    
+    private InternalGroupPrincipal  getGroupPrincipals(String principalFullPath)
+    {
+        // Get to the backend to return the group that matches the full path
+        Criteria filter = new Criteria();
+        filter.addEqualTo("fullPath", principalFullPath);
+        Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, filter);
+        InternalGroupPrincipal group = (InternalGroupPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        return group;       
     }
     
 }

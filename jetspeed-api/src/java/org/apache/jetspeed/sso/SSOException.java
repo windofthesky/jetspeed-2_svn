@@ -50,7 +50,7 @@ public class SSOException extends JetspeedException {
    public static final String FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE = "Could not add Principal from SITE mapping table.";
    
    /** <p>Site/principal has remote principal. Calll update.</p> */
-   public static final String REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE = "Site/principal has remote principal. Calll update";
+   public static final String REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE = "Remote principal for site/principal already exists. Call update instead";
    
    /**
     * <p>Default Constructor.</p>

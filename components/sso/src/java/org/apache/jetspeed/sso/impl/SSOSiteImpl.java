@@ -22,7 +22,6 @@ import java.util.Vector;
 
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOSite;
-import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.sso.SSOPrincipal;
 
 /**
@@ -43,7 +42,6 @@ public class SSOSiteImpl implements SSOSite {
 	private boolean	isAllowUserSet;
 	private boolean isCertificateRequired;
 	
-	private Collection	credentials = new Vector();
 	private Collection	principals = new Vector();
 	private Collection	remotePrincipals = new Vector();
 	
@@ -59,18 +57,6 @@ public class SSOSiteImpl implements SSOSite {
 	 * Setters and getters for member variables
 	 */
 	
-	/**
-	 * @return Returns the credentials.
-	 */
-	public Collection getCredentials() {
-		return this.credentials;
-	}
-	/**
-	 * @param credentials The credentials to set.
-	 */
-	public void setCredentials(Collection credentials) {
-		this.credentials.addAll(credentials);
-	}
 	/**
 	 * @return Returns the isAllowUserSet.
 	 */
@@ -150,49 +136,12 @@ public class SSOSiteImpl implements SSOSite {
 	 * Adds the credentail to the credentials collection
 	 *
 	 */
-	public void addCredential(InternalCredential credential) throws SSOException
-	{
-		boolean bStatus = false;
-		
-		try
-		{
-			bStatus = credentials.add(credential);
-		}
-		catch(Exception e)
-		{
-			// Adding credentail to coollection failed -- notify caller with SSOException
-			throw new SSOException(SSOException.FAILED_ADDING_CREDENTIALS_FOR_SITE + e.getMessage()); 
-		}
-		
-		if ( bStatus == false)
-			throw new SSOException(SSOException.FAILED_ADDING_CREDENTIALS_FOR_SITE ); 
-	}
 	
-	/**
-	* removeCredential()
-	 * removes a credentail from the credentials collection
-	 *
-	 */
-	public void removeCredential(InternalCredential credential) throws SSOException
-	{
-		boolean bStatus = false;
-		
-		try
-		{
-			bStatus = credentials.remove(credential);
-		}
-		catch(Exception e)
-		{
-			// Adding credentail to coollection failed -- notify caller with SSOException
-			throw new SSOException(SSOException.FAILED_REMOVING_CREDENTIALS_FOR_SITE + e.getMessage()); 
-		}
-		
-		if ( bStatus == false)
-			throw new SSOException(SSOException.FAILED_REMOVING_CREDENTIALS_FOR_SITE ); 
-	}
+	
 	
 		/**
-		 * Adds the credentail to the credentials collection
+		 * addPrincipal
+		 * Adds the SSOPrincipal to the principals collection
 		 *
 		 */
 		public void addPrincipal(SSOPrincipal principal) throws SSOException {
@@ -231,9 +180,7 @@ public class SSOSiteImpl implements SSOSite {
 				
 					try
 					{
-						// TODO: Removing results in an OJB exception. Ignore it for the moment but it needs to be fixed soon...
 						bStatus = principals.remove(principalObj);
-						//bStatus = true;
 					}
 					catch(Exception e)
 					{
@@ -259,4 +206,5 @@ public class SSOSiteImpl implements SSOSite {
     public void setRemotePrincipals(Collection remotePrincipals) {
         this.remotePrincipals = remotePrincipals;
     }
+    
 }

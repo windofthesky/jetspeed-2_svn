@@ -71,4 +71,26 @@ public interface SSOProvider
     
     void removeSite(SSOSite site) throws SSOException;
     
+    /**
+     * addCredentialsForSite()
+     * @param fullPath
+     * @param remoteUser
+     * @param site
+     * @param pwd
+     * @throws SSOException
+     */
+    void addCredentialsForSite(String fullPath, String remoteUser, String site, String pwd) throws SSOException;
+    
+    /**
+     * removeCredentialsForSite()
+     * @param fullPath
+     * @param site
+     * @throws SSOException
+     */
+    void removeCredentialsForSite(String fullPath, String site) throws SSOException;
+
+    /* Retrive site information */
+    String getSiteURL(String site);
+    String getSiteName(String site); 
+    
 }
