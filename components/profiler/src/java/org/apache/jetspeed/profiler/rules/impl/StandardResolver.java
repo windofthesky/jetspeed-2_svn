@@ -64,6 +64,11 @@ public class StandardResolver implements RuleCriterionResolver
         }
         return true;
     }
+
+    public boolean isNavigation(RuleCriterion criterion)
+    {
+        return false;
+    }
     
     protected String resolvePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
     {

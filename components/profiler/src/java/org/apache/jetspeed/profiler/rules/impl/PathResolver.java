@@ -59,4 +59,10 @@ public class PathResolver implements RuleCriterionResolver
     {
         return false;
     }
+    
+    public boolean isNavigation(RuleCriterion criterion)
+    {
+        return false;
+    }
+    
 }

@@ -115,6 +115,7 @@ public class RoleFallbackProfilingRule
             {
                 String value = resolver.resolve(context, criterion);
                 boolean isControl = resolver.isControl(criterion);
+                boolean isNavigation = resolver.isNavigation(criterion);
                 if (value != null && (resolver instanceof RoleCriterionResolver ||
                         resolver instanceof GroupCriterionResolver))
                     {
@@ -122,12 +123,12 @@ public class RoleFallbackProfilingRule
                         while (tokenizer.hasMoreTokens())
                         {
                             String token = (String)tokenizer.nextToken();
-                            locator.add(criterion, isControl, token);
+                            locator.add(criterion, isControl, isNavigation, token);
                         }
                     }
                     else
                     {
-                        locator.add(criterion, isControl, value);
+                        locator.add(criterion, isControl, isNavigation, value);
                     }
             }                
         }               

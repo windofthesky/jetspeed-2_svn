@@ -98,7 +98,8 @@ public class StandardProfilingRule
             {
                 String value = resolver.resolve(context, criterion);
                 boolean isControl = resolver.isControl(criterion);
-                locator.add(criterion, isControl, value);
+                boolean isNavigation = resolver.isNavigation(criterion);                
+                locator.add(criterion, isControl, isNavigation, value);
             }                
         }               
              

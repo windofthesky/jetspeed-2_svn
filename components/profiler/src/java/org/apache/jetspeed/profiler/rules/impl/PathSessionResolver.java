@@ -64,4 +64,10 @@ public class PathSessionResolver implements RuleCriterionResolver
     {
         return false;
     }
+    
+    public boolean isNavigation(RuleCriterion criterion)
+    {
+        return false;
+    }
+    
 }
