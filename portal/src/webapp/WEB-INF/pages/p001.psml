@@ -21,20 +21,20 @@ limitations under the License.
      portlet-decorator="portletstd"
   />
   <title>My First PSML Page</title>
-  <fragment id="xx1" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="xx3" type="portlet" name="HW_App::HelloPortlet">
+  <fragment id="xx1.0" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="xx1.3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="xx4" type="portlet" name="PAM::PortletApplicationBrowser">
+    <fragment id="xx1.4" type="portlet" name="PAM::PortletApplicationBrowser">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="xx5" type="portlet" name="HW_App::PreferencePortlet">
+    <fragment id="xx1.5" type="portlet" name="HW_App::PreferencePortlet">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="xx9" type="portlet" name="HW_App::CustomerList">
+    <fragment id="xx1.9" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

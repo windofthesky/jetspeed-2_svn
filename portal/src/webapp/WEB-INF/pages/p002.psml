@@ -21,9 +21,9 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>My Second PSML page</title>
-  <fragment id="xx2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="xx2.0" type="layout" name="jetspeed::VelocityTwoColumns">
   
-	  <fragment id="xx9" type="portlet" name="HW_App::CustomerList"/>
+	  <fragment id="xx2.1" type="portlet" name="HW_App::CustomerList"/>
 
   </fragment>
   <metadata name="title" xml:lang="ja">
