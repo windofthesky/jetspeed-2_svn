@@ -38,6 +38,10 @@ limitations under the License.
       <version>2.0-a1-dev</version>
     </dependency>
     <dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
+    <dependency>
      <id>picocontainer</id>
       <version>1.0-beta-5</version>
     </dependency>
