@@ -111,7 +111,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
 
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
 
-            plugin = ps.getPlugin(pluginName);
+            plugin = ps.getPersistencePlugin(pluginName);
 
             setInit(true);
         }
@@ -383,7 +383,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
             "registerPortletApplication(PortletApplicationDefinition newApp, String system)");
 
         PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
-        PersistencePlugin usePlugin = ps.getPlugin(system);
+        PersistencePlugin usePlugin = ps.getPersistencePlugin(system);
         registerPortletApplication(newApp, usePlugin);
     }
 
@@ -430,7 +430,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
         {
             PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
             originalPlugin = this.plugin;
-            this.plugin = ps.getPlugin(system);
+            this.plugin = ps.getPersistencePlugin(system);
         }
 
         if (alias != null)
