@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Iterator;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.portals.bridges.common.ScriptPostProcess;
 
 
 /**
@@ -69,11 +70,8 @@ public class PerlPortlet extends GenericPortlet {
 	 * DemoMode on or off
 	 */
 	public static final String PARAM_DEMO_MODE	=	"DemoMode";
-	
-	   
-    // Local variables
-    private final String ACTION_PARAMETER_PERL = "_PERL";
-    
+
+//  Local variables
 	private String perlScript	=	"perl-demo.cgi";
     private String	scriptPath	=	"cgi-bin";
     
@@ -122,19 +120,23 @@ public class PerlPortlet extends GenericPortlet {
      */
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
-    	String perlParameter = actionRequest.getParameter(ACTION_PARAMETER_PERL);
-    	//System.out.println("Action parameter for perl " + perlParameter);
+    	String perlParameter = actionRequest.getParameter(PerlParameters.ACTION_PARAMETER_PERL);
+    	//TODO: Remove Debug
+		System.out.println("Action parameter for perl " + perlParameter);
+		
     	/*
     	 * If the perlParameter is not empty create a PerlParameter object and attach it to the session
     	 */
     	if ( perlParameter != null && perlParameter.length() > 0)
     	{
+    		// Perl Parameter Object
+    		PerlParameters cgi = new PerlParameters();
+    		
     		// Separate the values before and after the Query Mark ?
     		int ixQuery = perlParameter.indexOf('?');
     		if ( ixQuery != -1)
     		{
-    			PerlParameters cgi = new PerlParameters();
-    			cgi.setPerlScript(perlParameter.substring(0,ixQuery));
+    			cgi.setScriptName(perlParameter.substring(0,ixQuery));
     			
     			String queryArguments = perlParameter.substring(ixQuery+1);
     			System.out.println("ProcessRequest -- Script " + perlParameter.substring(0,ixQuery) + " Query string " + queryArguments);
@@ -150,8 +152,33 @@ public class PerlPortlet extends GenericPortlet {
     			cgi.addQueryArgument(queryArguments);
     			
     			// Add the PerlParameters to the session
-    			actionRequest.getPortletSession().setAttribute("SELECTED_VIEW", cgi, PortletSession.APPLICATION_SCOPE);
+    			actionRequest.getPortletSession().setAttribute(PerlParameters.PERL_PARAMETER, cgi, PortletSession.APPLICATION_SCOPE);
     		}
+    		else
+    		{
+    			// No query string just the script name
+    			cgi.setScriptName(perlParameter);
+    			
+    			// Get all the parameters from the request and add them as query arguments
+    			Enumeration enum = actionRequest.getParameterNames();
+    			String name, value;
+    			while (enum.hasMoreElements())
+    			{
+    				name = (String)enum.nextElement();
+    				// PERL_PARAMETER already processed just ignore it
+    				if (name.compareToIgnoreCase(PerlParameters.ACTION_PARAMETER_PERL) != 0)
+    				{
+    					value = actionRequest.getParameter(name);
+    					
+    					// TODO: Remove debug
+    					System.out.println("Query: " + name + "=" + value );
+    					
+    					cgi.addQueryArgument(name + "=" + value);
+    				}
+    			}
+    			// Add the PerlParameters to the session
+    			actionRequest.getPortletSession().setAttribute(PerlParameters.PERL_PARAMETER, cgi, PortletSession.APPLICATION_SCOPE);
+     		}
     	}
 	}
     /**
@@ -162,6 +189,9 @@ public class PerlPortlet extends GenericPortlet {
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
 	{
+    	// TODO: Remove debug
+    	System.out.println("Path info for request " + ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getPathInfo());
+    	
     	// Set the content type
     	response.setContentType("text/html");
     	
@@ -195,7 +225,7 @@ public class PerlPortlet extends GenericPortlet {
     	{
     		try
 			{
-	    		perlParam = (PerlParameters)request.getPortletSession().getAttribute("SELECTED_VIEW", PortletSession.APPLICATION_SCOPE);
+	    		perlParam = (PerlParameters)request.getPortletSession().getAttribute(PerlParameters.PERL_PARAMETER, PortletSession.APPLICATION_SCOPE);
 			}
 	    	catch (Exception e )
 			{
@@ -205,21 +235,18 @@ public class PerlPortlet extends GenericPortlet {
 	    	if (perlParam != null)
 	    	{
 	    		query = perlParam.getQueryString();
-	    		perlScript = perlParam.getPerlScript();
+	    		perlScript = perlParam.getScriptName();
 	    		
 	    	}
     	}
     	
     	// Open the perl script and extract the perl executable path. It's the same way as apache HTTP executes PERL
+    	String perlExecutable = null;
+    	
     	String pathTranslated = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getPathTranslated();
     	String contextPath =   request.getContextPath();
     	
     	contextPath = pathTranslated.substring(0, pathTranslated.indexOf("webapps") + 7) + contextPath + "/";
-        	
-    	//String contextPath	=	((JetspeedPortletContext)this.getPortletContext()).getServletContext().getRealPath( ((HttpServletRequestWrapper) request).getServletPath());
-    	String perlExecutable = null;
-    	
-    	//String rootContextPath = contextPath.substring(0, contextPath.lastIndexOf("container") ) ;
     	contextPath += scriptPath;
     	
     	contextPath += "/";
@@ -228,8 +255,7 @@ public class PerlPortlet extends GenericPortlet {
     	
     	// command to execute
     	String command = null;
-    	
-    	
+    		
     	// Open the script and read the first line to get the executable !/usr/bin/perl OR !c:\bin\perl\perl.exe
     	try
 		{
@@ -338,16 +364,15 @@ public class PerlPortlet extends GenericPortlet {
 				perlResult.close();	
 				
 				// Post Process for generated page
-				// Any HREFs should be extended with the ActionURL
+				// Any HREFs and Form actions should be extended with the ActionURL
 				PortletURL actionURL = response.createActionURL();
-
-				String finalPage = processHREFS("<a", ">", "href=", "\'", page.toString(), actionURL);
 				
-				finalPage = processHREFS("<A", ">", "HREF=", "\'", finalPage, actionURL);
-				finalPage = processHREFS("<AREA", ">", "href=", "\'", finalPage, actionURL);
+				ScriptPostProcess processor = new ScriptPostProcess();
+				processor.setInitalPage(page);
+				processor.postProcessPage(actionURL, PerlParameters.ACTION_PARAMETER_PERL);
+				String finalPage = processor.getFinalizedPage();
 				
 				// Write the page
-				//writer.println(page.toString());
 				writer.println(finalPage);
 			}
 			catch(IOException ioe)
@@ -356,65 +381,5 @@ public class PerlPortlet extends GenericPortlet {
 			}
 		}	
 	} 
-    
-    private String processHREFS(String startTag, String endTag, String ref, String quote, String inputPage, PortletURL actionURL)
-    {
-    	StringBuffer finalPage = new StringBuffer();
-		String page = inputPage;
-		
-		int ixTagOpen, ixTagEnd, ixRefStart, ixRefEnd;
-		ref = ref + quote;
-		
-		// Start search
-		ixTagOpen = page.indexOf(startTag);
-		
-	try
-		{
-			while (ixTagOpen != -1 )
-			{
-				finalPage.append(page.substring(0, ixTagOpen));
-				page = page.substring(ixTagOpen);
-				
-				ixTagEnd = page.indexOf(endTag);
-				ixRefStart = page.indexOf(ref);
-				
-				//If reference start tag is after endTag it means that the Tag doesn't include any source links
-				// just continue...
-				if ( ixRefStart == -1 || ixRefStart > ixTagEnd )
-				{
-					finalPage.append(page.substring(0, ixTagEnd));
-					page = page.substring(ixTagEnd);
-				}
-				else
-				{
-					ixRefStart = ixRefStart + ref.length();
-					finalPage.append(page.substring(0, ixRefStart));
-					page = page.substring(ixRefStart);
-					ixRefEnd = page.indexOf(quote);
-						
-					// Extract the URL
-					String url = page.substring(0, ixRefEnd);
-						
-					// Prepend the Action URL
-					actionURL.setParameter(ACTION_PARAMETER_PERL, url);
-					
-					finalPage.append(actionURL.toString()).append(quote);
-					
-					//Remainder
-					page = page.substring(ixRefEnd+1);
-				}
-				
-				// Continue scan
-				ixTagOpen = page.indexOf(startTag);
-			}
-			
-			finalPage.append(page);
-			}catch(Exception e)
-			{
-				System.out.println("ERROR: Exception in processHREFS " + e.getMessage() );
-			}
-			
-			return finalPage.toString();
-    }
 }
 	

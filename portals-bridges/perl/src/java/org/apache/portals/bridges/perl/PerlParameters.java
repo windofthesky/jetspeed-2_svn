@@ -15,6 +15,8 @@
 */
 package org.apache.portals.bridges.perl;
 
+import org.apache.portals.bridges.common.ScriptRuntimeData;
+
 /**
 * PerlParameters
 * Class holding information about the perl script to execute.This class is typically attached to a PortletAction (as an attribute).
@@ -23,13 +25,28 @@ package org.apache.portals.bridges.perl;
 * @version $Id$
 */
 
-public class PerlParameters {
+public class PerlParameters extends ScriptRuntimeData{
+	
+	/** 
+	 * Action Parameter for Perl requests
+	 */   
+    public static  final String ACTION_PARAMETER_PERL = "_PERL";
+    
+    /**
+     * Session variable for Perl Parameters
+     */
+    public static  final String PERL_PARAMETER = "PerlParameter";
+	
 	private String requestMethod = "GET";
 	private String queryString = null;
 	private String perlScript = null;
 	private String displayMessage = null;
 	
-
+	// Constructor
+	public  PerlParameters() {
+		setSessionParameterName(PERL_PARAMETER);
+	}
+	
 	// Getters and setters
 	public void setRequestMethod(String requestMethod)
 	{
@@ -41,41 +58,4 @@ public class PerlParameters {
 		return this.requestMethod;
 	}
 	
-	public void addQueryArgument(String query)
-	{
-		if (queryString == null)
-		{
-			queryString = query;
-		}
-		else
-		{
-			queryString += '&';
-			queryString += query;
-		}	
-	}
-	
-	public String getQueryString()
-	{
-		return this.queryString;
-	}
-	
-	public void setPerlScript(String script)
-	{
-		this.perlScript = script;
-	}
-	
-	public String getPerlScript()
-	{
-		return this.perlScript;
-	}
-	
-	public void setDisplayMessage(String msg)
-	{
-		this.displayMessage = msg;
-	}
-	
-	public String getDisplayMessage()
-	{
-		return this.displayMessage;
-	}
 }
