@@ -96,15 +96,14 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    <!--
     <dependency>
       <id>ojb:db-ojb</id>
-      <version>1.0.rc5</version>
+      <version>1.0.rc5-PATCHED</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    -->
+    <!--
     <dependency>
       <id>ojb</id>
       <version>1.0.rc4</version>
@@ -112,6 +111,7 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    -->
      <dependency>
       <id>commons-pool</id>
       <version>1.1</version>
