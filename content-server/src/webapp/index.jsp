@@ -41,8 +41,12 @@ limitations under the License.
    <p>
    	 This is a normal, static image: <img src="images/myimage.gif" align="middle"/>
    </p>
+
       <p>
    	 This is  image was located and served by the content server filter: <img src="content/images/myimage.gif" align="middle"/>
+   </p>
+      <p>
+   	 This is a non-exist: <img src="content/images/nosuchimage.gif" align="middle"/>
    </p>
    <p>
      Current theme is: <%=session.getAttribute("org.apache.jetspeed.theme")%>
