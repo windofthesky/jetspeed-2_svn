@@ -69,6 +69,13 @@
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/content-server"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the content server jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/components/rdbms"
                includes="project.xml"
                goals="jar:install"
