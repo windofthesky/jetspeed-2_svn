@@ -21,7 +21,7 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Manager Role Page</title>
-  <fragment id="mrp-xx1" type="layout" name="jetspeed::TwoColumns">
+  <fragment id="mrp-xx1" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="mrp-xx3" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
