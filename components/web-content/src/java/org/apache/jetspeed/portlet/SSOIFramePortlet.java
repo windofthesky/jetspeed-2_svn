@@ -54,6 +54,12 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
     public static final String SSO_REQUEST_ATTRIBUTE_USERNAME = "sso.ra.username";
     public static final String SSO_REQUEST_ATTRIBUTE_PASSWORD = "sso.ra.password";
 
+    /*
+     * The constants must be used in your HTML form for the SSO principal and credential
+     */
+    public static final String SSO_FORM_PRINCIPAL = "ssoPrincipal";
+    public static final String SSO_FORM_CREDENTIAL = "ssoCredential";
+    
     private PortletContext context;
     private SSOProvider sso;
 
@@ -76,8 +82,8 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             Subject subject = getSubject();                 
             String site = request.getPreferences().getValue("SRC", "");
             SSOContext context = sso.getCredentials(subject, site);
-            getContext(request).put("ssoUserName", context.getUserName());
-            getContext(request).put("ssoCredential", context.getPassword());
+            getContext(request).put(SSO_FORM_PRINCIPAL, context.getUserName());
+            getContext(request).put(SSO_FORM_CREDENTIAL, context.getPassword());
         }
         catch (SSOException e)
         {
@@ -85,8 +91,8 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             {
                 // no credentials configured in SSO store
                 // switch to SSO Configure View
-                getContext(request).put("ssoUserName", "");
-                getContext(request).put("ssoCredential", "");
+                getContext(request).put(SSO_FORM_PRINCIPAL, "");
+                getContext(request).put(SSO_FORM_CREDENTIAL, "");
             }
             else
             {
@@ -140,20 +146,21 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         // save the prefs
         super.processAction(request, actionResponse);
         
-        // save the SSO params
-        String ssoUserName = request.getParameter("ssoUserName");
-        String ssoCredential = request.getParameter("ssoCredential");
+        // get the POST params -- requires HTML post params named
+        // ssoUserName 
+        String ssoPrincipal = request.getParameter(SSO_FORM_PRINCIPAL);
+        String ssoCredential = request.getParameter(SSO_FORM_CREDENTIAL);
         String site = request.getPreferences().getValue("SRC", "");
         try
         {
             Subject subject = getSubject();
             if (sso.hasSSOCredentials(subject, site))
             {
-                sso.updateCredentialsForSite(getSubject(), "TODO", site, ssoCredential);
+                sso.updateCredentialsForSite(getSubject(), ssoPrincipal, site, ssoCredential);
             }
             else
             {
-                sso.addCredentialsForSite(getSubject(), "TODO", site, ssoCredential);
+                sso.addCredentialsForSite(getSubject(), ssoPrincipal, site, ssoCredential);
             }
         }
         catch (SSOException e)
