@@ -195,7 +195,17 @@ public class PageAggregator extends BaseCommonService implements Aggregator
                     {
                         if (currentFragment.getType().equals("portlet"))
                         {
-                            renderer.render(currentFragment,context);
+                        	// make the page aggreator less fragile
+                        	// by preventing failed rendering from screwing up the
+                        	// whole process
+                           try
+                            {
+                                 renderer.render(currentFragment,context);
+                            }
+                            catch (Exception e)
+                            {
+                                log.error("Failed to render portlet \""+currentFragment+"\": "+e.toString());
+                            }
                         }
 
                         // push the children frgaments on the rendering stack
