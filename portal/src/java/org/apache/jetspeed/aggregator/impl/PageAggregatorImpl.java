@@ -199,8 +199,11 @@ public class PageAggregatorImpl implements PageAggregator
             }
             try
             {
-                renderer.renderNow(maxedFragment, context);
-                renderer.renderNow(layoutFragment, context);
+                renderer.render(maxedFragment, context);
+                ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
+                dispatcher.sync(maxedFragment);
+                renderer.render(layoutFragment, context);              
+                dispatcher.sync(layoutFragment);
             }
             catch (Exception e)
             {
