@@ -103,6 +103,8 @@ public class JetspeedDeploy
             // write the web.xml and portlet.xml files
             addFile("WEB-INF/web.xml", webXml, jout);
             addFile("WEB-INF/portlet.xml", portletXml, jout);
+            
+            jout.close();
         } 
         catch (IOException e) 
         {
