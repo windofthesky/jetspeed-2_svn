@@ -17,7 +17,7 @@
 package org.apache.jetspeed.om.preference.impl;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class DefaultPreferenceImpl extends AbstractPreference implements Seriali
     private static final String CLASS_NAME = DefaultPreferenceImpl.class.getName();
     protected String ojbConcreteClass = CLASS_NAME;
 
-    public Collection getValuesCollection()
+    public List getValuesCollection()
     {
         return values;
     }

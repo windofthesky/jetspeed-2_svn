@@ -114,12 +114,12 @@ public abstract class AbstractPreference implements PreferenceComposite, Cloneab
     }
 
     /**
-         * @see org.apache.pluto.om.common.PreferenceCtrl#setValues(java.util.Collection)
+         * @see org.apache.pluto.om.common.PreferenceCtrl#setValues(java.util.List)
          */
-    public void setValues(Collection values)
+    public void setValues(List values)
     {
-        log.debug("setValues(Collection) was invoked.");
-        System.out.println("Values collection " + values);
+        log.debug("setValues(List) was invoked.");
+        System.out.println("Values List " + values);
         if (values == null)
         {
             this.values = null;

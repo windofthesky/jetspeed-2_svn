@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.portlet.PreferencesValidator;
@@ -75,9 +76,9 @@ public class PreferenceSetImpl implements PreferenceSetComposite, Serializable
     }
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#add(java.lang.String, java.util.Collection)
+     * @see org.apache.pluto.om.common.PreferenceSetCtrl#add(java.lang.String, java.util.List)
      */
-    public Preference add(String name, Collection values)
+    public Preference add(String name, List values)
     {
         DefaultPreferenceImpl pref = new DefaultPreferenceImpl();
 
