@@ -39,9 +39,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JARObjectHandlerImpl implements FSObjectHandler
 {
-	private File jar;
-	private JarInputStream content;
-	
+    private File jar;
+    private JarInputStream content;
+    
     private JarFile jarFile;
     
     private static final Log log = LogFactory.getLog("deployment"); 
@@ -72,26 +72,26 @@ public class JARObjectHandlerImpl implements FSObjectHandler
         // On undeployment, the archive will not exist
         if(jar.exists())
         {
-			jarFile = new JarFile(jar);
+            jarFile = new JarFile(jar);
         }
-		
+        
     }
     
-	public File getFile()
-	{        
-		return jar;
-	}
+    public File getFile()
+    {        
+        return jar;
+    }
 
     /**
      * @see org.apache.jetspeed.deployment.fs.FSObjectHandler#getAsStream()
      */
     public InputStream getAsStream() throws IOException
     {        
-    	if(content == null)
-    	{
-			content = new JarInputStream(new FileInputStream(jar));
+        if(content == null)
+        {
+            content = new JarInputStream(new FileInputStream(jar));
             
-    	}
+        }
         return content;
     }
 
@@ -107,17 +107,17 @@ public class JARObjectHandlerImpl implements FSObjectHandler
      */
     public void close() throws IOException
     {
-    	// prevent resource leaking
-    	if(jarFile != null)
-    	{
-			jarFile.close();
-    	}    	
-    	jar=null;
-    	jarFile=null;
+        // prevent resource leaking
+        if(jarFile != null)
+        {
+            jarFile.close();
+        }        
+        jar=null;
+        jarFile=null;
         if(content != null)
         {
-        	content.close();
-        	content = null;
+            content.close();
+            content = null;
         }
 
     }
@@ -127,15 +127,15 @@ public class JARObjectHandlerImpl implements FSObjectHandler
      */
     public InputStream getConfiguration(String configPath) throws IOException
     {
-    	JarEntry jarEntry = jarFile.getJarEntry(configPath);
-    	// null indicates this is probably not a deployment
-    	// we need to be concerned about 
-    	if(jarEntry == null)
-    	{
-    		return null;
-    	}
-    	return jarFile.getInputStream(jarEntry);
-		
+        JarEntry jarEntry = jarFile.getJarEntry(configPath);
+        // null indicates this is probably not a deployment
+        // we need to be concerned about 
+        if(jarEntry == null)
+        {
+            return null;
+        }
+        return jarFile.getInputStream(jarEntry);
+        
     }
 
 }
