@@ -243,7 +243,14 @@
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"
       >         
-         <inverse-foreignkey field-ref="portletId"/>
+         <inverse-foreignkey field-ref="parentId"/>
+          <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+          <attribute
+            attribute-name="type"
+            attribute-value="default preference"
+           />
+          </query-customizer>
       </collection-descriptor>
       
      <collection-descriptor
@@ -536,8 +543,8 @@
       />
       
       <field-descriptor
-         name="portletId"
-         column="PORTLET_ID"
+         name="parentId"
+         column="PARENT_ID"
          jdbc-type="INTEGER"
 
       />
@@ -548,6 +555,11 @@
          jdbc-type="VARCHAR"
       />
       
+        <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />  
       
       <collection-descriptor
          name="valueObjects"
@@ -555,6 +567,7 @@
          auto-delete="true"
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
+        
       </collection-descriptor>
       
       <collection-descriptor
@@ -595,6 +608,8 @@
          column="PREFERENCE_ID"
          jdbc-type="INTEGER"         
       />
+      
+    
       
       <field-descriptor
          name="value"
