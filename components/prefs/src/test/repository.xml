@@ -21,8 +21,6 @@ limitations under the License.
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
-<!ENTITY prefs SYSTEM "repository_prefs.xml">
-
 
 ]>
 
