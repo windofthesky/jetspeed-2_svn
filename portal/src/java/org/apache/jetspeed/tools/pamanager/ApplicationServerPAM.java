@@ -216,7 +216,8 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
     private void checkResponse( String response ) throws PortletApplicationException
     {
         if (response == null
-                || (!response.startsWith("OK") && response.indexOf("Application already exists at path") == -1))
+                || (!response.startsWith("OK") && response.indexOf("Application already exists at path") == -1)
+                    && response.indexOf("No context exists for path") == -1)
         {
             if (response == null)
             {
@@ -265,7 +266,13 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
             String paName = paWar.getPortletApplicationName();
             if(isServerAvailable())
             {
-                checkResponse(appServerManager.reload("/" + paName));
+                String response = appServerManager.reload("/" + paName);
+                // This means the context may have been deleted, so now let's try
+                // and do a full deploy.
+                if(!response.startsWith("OK") )
+                {
+                    deploy(paWar);
+                }
             }
 
         }
