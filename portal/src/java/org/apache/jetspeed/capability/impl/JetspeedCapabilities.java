@@ -136,9 +136,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
      * @see org.apache.jetspeed.services.capability.CapabilityService#getCapabilityMap(java.lang.String)
      */
     public CapabilityMap getCapabilityMap(String userAgent)
-    {
-        log.error("*****************************HELLO*****************");
-        
+    {        
         CapabilityMap map = null;
         boolean bClientFound = false;
 
