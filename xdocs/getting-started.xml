@@ -51,6 +51,11 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
     <th>what is it?</th>
   </tr>
   <tr> 
+    <td>org.apache.jetspeed.project.home</td>
+    <td>/home/apache/jakarta-jetspeed-2/</td>
+    <td>The root of your Jetspeed-2 source installation (see example on left).</td>
+  </tr>  
+  <tr> 
     <td>org.apache.jetspeed.server.home</td>
     <td>${CATALINA_HOME}/</td>
     <td>The root of your Tomcat server installation.</td>
