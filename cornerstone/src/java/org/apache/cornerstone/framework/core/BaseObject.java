@@ -19,9 +19,7 @@ package org.apache.cornerstone.framework.core;
 import java.util.*;
 import org.apache.cornerstone.framework.api.config.IConfigurable;
 import org.apache.cornerstone.framework.api.core.IObject;
-import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.constant.Constant;
-import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.OrderedProperties;
 import org.apache.log4j.Logger;
 
@@ -187,18 +185,6 @@ public abstract class BaseObject implements IObject, IConfigurable
 	protected BaseObject()
 	{
         init();
-
-        String configIsSingleton = getConfigProperty(CONFIG_META_INSTANCE_IS_SINGLETON);
-        Boolean isSingleton = new Boolean(configIsSingleton);
-
-        // does singleton already exist?
-        if (isSingleton == Boolean.TRUE)
-        {
-        	ISingletonManager singletonManager = (ISingletonManager) Cornerstone.getImplementation(ISingletonManager.class);
-        	Object existingInstance = singletonManager.getSingleton(getClass().getName());
-            if (existingInstance != null)
-                throw new RuntimeException("singleton already exists; cannot create another instance");
-        }
 	}
 
     protected String getClassVariableKey(String name)
