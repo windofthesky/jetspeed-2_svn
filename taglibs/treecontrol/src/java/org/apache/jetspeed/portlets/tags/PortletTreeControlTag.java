@@ -225,7 +225,17 @@ public class PortletTreeControlTag extends TreeControlTag
         // Render the icon for this node (if any)
         out.print("    <td colspan=\"");
         out.print(width - level + 1);
-        out.print("\">");
+        out.print("\"");
+        
+        if(node.getLabel() != null)
+        {
+            //make sure text does not wrap
+            out.print(" style=\"");
+            out.print("white-space:nowrap;");
+            out.print("\"");
+        }
+        
+        out.print(">");
         if (node.getIcon() != null) {
             if (hyperlink != null) {
                 out.print("<a href=\"");
@@ -280,6 +290,7 @@ public class PortletTreeControlTag extends TreeControlTag
                     out.print(labelStyle);
                     out.print("\"");
                 }
+                
                 /* Invalid, not used, and not usefull
                 // to refresh the tree in the same 'self' frame
                 out.print(" onclick=\"");
