@@ -30,6 +30,7 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
@@ -86,6 +87,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     
     public PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow
     {
+        ArgUtil.assertNotNull(Fragment.class, fragment, this, "getPortletWindow(Fragment fragment)");
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
         {
@@ -103,6 +105,8 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     
     public PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException
     {
+        ArgUtil.assertNotNull(Fragment.class, fragment, this, "getPortletWindow(Fragment fragment, String principal)");
+        ArgUtil.assertNotNull(String.class, principal, this, "getPortletWindow(Fragment fragment, String principal)");
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
         {
