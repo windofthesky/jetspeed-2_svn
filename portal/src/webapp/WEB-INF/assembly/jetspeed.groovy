@@ -124,11 +124,11 @@ container.registerComponentImplementation(Capabilities, JetspeedCapabilities, ne
 // Navigational State component
 //
 // navigationKeys: prefix, action, mode, state, renderparam, pid, prev_mode, prev_state, key_delim
-// navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
-navigationKeys = "_,a,m,s,r,i,pm,ps,:"
+navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
+//navigationKeys = "_,a,m,s,r,i,pm,ps,:"
 
-// navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
-navStateClass = "org.apache.jetspeed.container.session.impl.SessionNavigationalState"
+navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
+//navStateClass = "org.apache.jetspeed.container.session.impl.SessionNavigationalState"
 container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
                new Parameter[] {new ConstantParameter(navStateClass), new ConstantParameter(navigationKeys)} )
 
