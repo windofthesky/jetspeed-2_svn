@@ -196,8 +196,8 @@ limitations under the License.
       <collection-descriptor
          name="userAttributes"
          element-class-ref="org.apache.jetspeed.om.impl.UserAttributeImpl"
-         auto-delete="false"
-         auto-update = "true"
+         auto-delete="object"
+         auto-update = "object"
          auto-retrieve = "true"
        >
          <inverse-foreignkey field-ref="appId"/>
@@ -206,7 +206,7 @@ limitations under the License.
       <collection-descriptor
          name="userAttributeRefs"
          element-class-ref="org.apache.jetspeed.om.impl.UserAttributeRefImpl"
-         auto-delete="false"
+         auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
        >
@@ -1280,7 +1280,7 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
-         access="anonymous"
+	     indexed="true"         
       />
 
       <field-descriptor
