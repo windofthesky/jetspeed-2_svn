@@ -17,16 +17,21 @@ package org.apache.jetspeed.prefs.impl;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
 public class PreferencesProviderImpl implements PreferencesProvider
 {
+    /** Logger. */
+    private static final Log log = LogFactory.getLog(PreferencesProviderImpl.class);
 
     /** The {@link PreferencesProvider} instance. */
     static PreferencesProvider prefProvider;
-    
+
     /** The persistence store container. */
     private PersistenceStoreContainer storeContainer;
 
@@ -39,8 +44,9 @@ public class PreferencesProviderImpl implements PreferencesProvider
      */
     public PreferencesProviderImpl(PersistenceStoreContainer storeContainer, String storeKeyName, String prefsFactoryImpl)
     {
-        this.storeKeyName = storeKeyName;
+        if (log.isDebugEnabled()) log.debug("Constructing PreferencesProviderImpl...");
         this.storeContainer = storeContainer;
+        this.storeKeyName = storeKeyName;
         System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
         PreferencesProviderImpl.prefProvider = this;
 
@@ -61,4 +67,5 @@ public class PreferencesProviderImpl implements PreferencesProvider
     {
         return this.storeKeyName;
     }
+
 }
