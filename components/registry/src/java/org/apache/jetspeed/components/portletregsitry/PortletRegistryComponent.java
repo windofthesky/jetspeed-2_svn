@@ -119,6 +119,10 @@ public interface PortletRegistryComponent
      * on the returned <code>PortletEntityInstance</code>
      * @param ident Unique id for this portlet
      * @return Portlet matching this unique id.
+     * @throws java.lang.IllegalStateException If <code>PortletDefinitionComposite != null</code> AND
+     *  <code>PortletDefinitionComposite.getPortletApplicationDefinition() ==  null</code>.
+     * The reason for this is that every PortletDefinition is required to
+     * have a parent PortletApplicationDefinition
      */
     PortletDefinitionComposite getPortletDefinitionByIndetifier(String ident);
     /**
@@ -134,6 +138,11 @@ public interface PortletRegistryComponent
      * on the returned <code>PortletEntityInstance</code> 
      * @param name portlets unique name.  
      * @return Portlet that matches the unique name 
+     * @throws java.lang.IllegalStateException If <code>PortletDefinitionComposite != null</code> AND
+     *  <code>PortletDefinitionComposite.getPortletApplicationDefinition() ==  null</code>.
+     * The reason for this is that every PortletDefinition is required to
+     * have a parent PortletApplicationDefinition
+     * 
      */
     PortletDefinitionComposite getPortletDefinitionByUniqueName(String name);
  

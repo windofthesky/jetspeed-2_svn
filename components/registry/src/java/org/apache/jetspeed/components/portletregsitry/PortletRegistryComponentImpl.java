@@ -58,7 +58,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -82,46 +83,37 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * Component for accessing the Portlet registry.
  * </p>
  * 
- *  <table border="1">
- *    <tr>
- *     <th>Configuration Key</th>
- *     <th>Optional?</th>
- *     <th>Default</th>
- *     <th>Description</th>
- *    </tr>
- *    <tr>
- *     <td>
- *      persistence.store.name
- *     </td>
- *     <td>
- *      true 
- *     </td>
- *     <td>
- *      jetspeed
- *     </td>
- *     <td>
- *      Name of the persistence store that will be  
- *      used for persistence operations.
- *     </td>
- *    </tr>
- *   </table>
- *
-
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * <table border="1">
+ * <tr>
+ * <th>Configuration Key</th>
+ * <th>Optional?</th>
+ * <th>Default</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>persistence.store.name</td>
+ * <td>true</td>
+ * <td>jetspeed</td>
+ * <td>Name of the persistence store that will be used for persistence operations.</td>
+ * </tr>
+ * </table>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $ $
- *
+ *  
  */
 public class PortletRegistryComponentImpl implements org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent
 {
-
+    private static final Log log = LogFactory.getLog(PortletRegistryComponentImpl.class);
     protected static final String KEY_STORE_NAME = "persistence.store.name";
     private PersistenceStoreContainer storeContainer;
     private String jetspeedStoreName;
     private Class portletDefClass;
     private Class portletAppClass;
 
+
     /**
-     * 
+     *  
      */
     public PortletRegistryComponentImpl(PersistenceStoreContainer storeContainer, String keyStoreName) throws RegistryException
     {
@@ -129,34 +121,30 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         {
             throw new IllegalArgumentException("storeContainer cannot be null for PortletRegistryComponentImpl");
         }
-
         this.storeContainer = storeContainer;
-
         jetspeedStoreName = keyStoreName;
-
         portletDefClass = PortletDefinitionImpl.class;
         portletAppClass = PortletApplicationDefinitionImpl.class;
-
     }
 
-    /** 
+    /**
      * <p>
      * createLanguage
      * </p>
      * 
-     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#createLanguage(java.util.Locale, java.lang.String, java.lang.String, java.lang.String, java.util.Collection)
+     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#createLanguage(java.util.Locale, java.lang.String,
+     *      java.lang.String, java.lang.String, java.util.Collection)
      * @param locale
      * @param title
      * @param shortTitle
      * @param description
      * @param keywords
-     * @return
-     * @throws RegistryException
+     * @return @throws
+     *         RegistryException
      */
     public Language createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords)
-        throws RegistryException
+    throws RegistryException
     {
-
         try
         {
             MutableLanguage lc = new LanguageImpl();
@@ -164,17 +152,15 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
             lc.setTitle(title);
             lc.setShortTitle(shortTitle);
             lc.setKeywords(keywords);
-
             return lc;
         }
         catch (Exception e)
         {
             throw new RegistryException("Unable to create language object.");
         }
-
     }
 
-    /** 
+    /**
      * <p>
      * getAllPortletDefinitions
      * </p>
@@ -194,7 +180,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return storeContainer.getStoreForThread(jetspeedStoreName);
     }
 
-    /** 
+    /**
      * <p>
      * getPortletApplication
      * </p>
@@ -221,7 +207,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         }
     }
 
-    /** 
+    /**
      * <p>
      * getPortletApplication
      * </p>
@@ -240,7 +226,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return (MutablePortletApplication) store.getObjectByQuery(query);
     }
 
-    /** 
+    /**
      * <p>
      * getPortletApplicationByIndetifier
      * </p>
@@ -259,7 +245,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return (MutablePortletApplication) store.getObjectByQuery(query);
     }
 
-    /** 
+    /**
      * <p>
      * getPortletApplications
      * </p>
@@ -274,7 +260,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return new ArrayList(store.getExtent(portletAppClass));
     }
 
-    /** 
+    /**
      * <p>
      * getPortletDefinitionByIndetifier
      * </p>
@@ -290,10 +276,24 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         Filter filter = store.newFilter();
         filter.addEqualTo("portletIdentifier", ident);
         Object query = store.newQuery(portletDefClass, filter);
-        return getStoreableInstance((PortletDefinitionComposite) store.getObjectByQuery(query));
+        PortletDefinitionComposite portlet = (PortletDefinitionComposite) store.getObjectByQuery(query);
+        if (portlet != null)
+        {
+            if (portlet.getPortletApplicationDefinition() == null)
+            {
+                final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
+                log.error(msg);
+                throw new IllegalStateException(msg);
+            }
+            return getStoreableInstance(portlet);
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    /** 
+    /**
      * <p>
      * getPortletDefinitionByUniqueName
      * </p>
@@ -306,29 +306,40 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-    
+
         //parse out names
         int split = name.indexOf("::");
         if (split < 1)
         {
             throw new IllegalArgumentException(
-                "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
+            "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
         }
-    
         String appName = name.substring(0, split);
         String portletName = name.substring((split + 2), name.length());
-    
+
         // build filter
         Filter filter = store.newFilter();
         filter.addEqualTo("app.name", appName);
         filter.addEqualTo("name", portletName);
         Object query = store.newQuery(portletDefClass, filter);
-        PortletDefinitionComposite pdc = (PortletDefinitionComposite) store.getObjectByQuery(query);
-    
-        return getStoreableInstance(pdc);
+        PortletDefinitionComposite portlet = (PortletDefinitionComposite) store.getObjectByQuery(query);
+        if (portlet != null)
+        {
+            if (portlet.getPortletApplicationDefinition() == null)
+            {
+                final String msg = "getPortletDefinitionByUniqueName() returned a PortletDefinition that has no parent PortletApplication.";
+                log.error(msg);
+                throw new IllegalStateException(msg);
+            }
+            return getStoreableInstance(portlet);
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    /** 
+    /**
      * <p>
      * portletApplicationExists
      * </p>
@@ -342,7 +353,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return getPortletApplicationByIndetifier(appIentity) != null;
     }
 
-    /** 
+    /**
      * <p>
      * portletDefinitionExists
      * </p>
@@ -356,23 +367,23 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return getPortletDefinitionByIndetifier(portletIndentity) != null;
     }
 
-    /** 
+    /**
      * <p>
      * portletDefinitionExists
      * </p>
      * 
-     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#portletDefinitionExists(java.lang.String, org.apache.jetspeed.om.common.portlet.MutablePortletApplication)
+     * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#portletDefinitionExists(java.lang.String,
+     *      org.apache.jetspeed.om.common.portlet.MutablePortletApplication)
      * @param portletName
      * @param app
      * @return
      */
     public boolean portletDefinitionExists(String portletName, MutablePortletApplication app)
     {
-
         return getPortletDefinitionByUniqueName(app.getName() + "::" + portletName) != null;
     }
 
-    /** 
+    /**
      * <p>
      * registerPortletApplication
      * </p>
@@ -385,7 +396,6 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-
         try
         {
             store.makePersistent(newApp);
@@ -395,10 +405,9 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         {
             throw new RegistryException("Unable to lock PortletApplicaiton for makePersistent: " + e.toString(), e);
         }
-
     }
 
-    /** 
+    /**
      * <p>
      * removeApplication
      * </p>
@@ -411,29 +420,25 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-
         try
-        {   
+        {
             Iterator portlets = app.getPortletDefinitionList().iterator();
-            while(portlets.hasNext())
+            while (portlets.hasNext())
             {
                 // portlets are getting cascade deleted but
                 // content type and langs asocciated are not
                 store.deletePersistent(portlets.next());
             }
             store.deletePersistent(app);
-            
             store.getTransaction().checkpoint();
         }
         catch (LockFailedException e)
         {
             throw new RegistryException("Unable to lock PortletApplication for deletion: " + e.toString(), e);
-
         }
-
     }
 
-    /** 
+    /**
      * <p>
      * updatePortletApplication
      * </p>
@@ -455,7 +460,6 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         {
             throw new RegistryException("Unable to lock PortletApplicaiton for update: " + e.toString(), e);
         }
-
     }
 
     public PortletDefinitionComposite getStoreableInstance(PortletDefinitionComposite portlet)
@@ -468,7 +472,5 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         {
             return null;
         }
-
     }
-
 }
