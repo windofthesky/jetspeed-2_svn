@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.bridges.frameworks.messaging;
+package org.apache.portals.messaging;
 
 import java.io.NotSerializableException;
 import java.io.Serializable;
@@ -24,13 +24,13 @@ import javax.portlet.PortletSession;
 
 /**
  * PortletMessageComponent
- * Naive implementation of Porlet Messages as an abstraction and a place holder for when the next 
+ * Throwaway Naive implementation of Porlet Messages as an abstraction and a place holder for when the next 
  * spec covers inter-portlet communication
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletMessageComponent
+public class PortletMessaging
 {
     public static final void publish(PortletRequest request, String portletTopic, String messageName, Object message)
     throws NotSerializableException
@@ -68,6 +68,45 @@ public class PortletMessageComponent
     throws NotSerializableException
     {
         String key = portletTopic + ":" + messageName;
+        request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);
+    }
+
+    public static final void publish(PortletRequest request, String messageName, Object message)
+    throws NotSerializableException
+    {
+        String key = messageName;
+        if (message instanceof Serializable)
+        {
+            request.getPortletSession().setAttribute(key, message, PortletSession.PORTLET_SCOPE);
+        }
+        else
+        {
+            throw new NotSerializableException("Message not serializable for " + key);
+        }
+    }
+
+    public static final Object consume(PortletRequest request, String messageName)
+    throws NotSerializableException
+    {
+        String key = messageName;
+        Object object = request.getPortletSession().getAttribute(key, PortletSession.PORTLET_SCOPE);
+        // consume it
+        request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);        
+        return object;
+    }
+
+    public static final Object receive(PortletRequest request, String messageName)
+    throws NotSerializableException
+    {
+        String key = messageName;
+        Object object = request.getPortletSession().getAttribute(key, PortletSession.PORTLET_SCOPE);
+        return object;
+    }
+    
+    public static final void cancel(PortletRequest request, String messageName)
+    throws NotSerializableException
+    {
+        String key = messageName;
         request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);
     }
     
