@@ -68,6 +68,7 @@ import org.apache.commons.pool.impl.GenericObjectPool
 import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
 import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
+import org.apache.jetspeed.components.persistence.store.PersistenceStore
 
 // Portlet Registry and Entity
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl
@@ -231,7 +232,7 @@ pContainer.registerComponent( new ConstructorComponentAdapter(
  * (will replace PersistenceStoreContainer above)                            *
  * ******************************************************** */
 
-container.registerComponent(makeThreadLocalAdapter("jetspeed", PBStore.class,  new Parameter[]{new ConstantParameter("jetspeed")}))
+container.registerComponent(makeThreadLocalAdapter(PersistenceStore, PBStore,  new Parameter[]{new ConstantParameter("jetspeed")}))
 
 
 /* **********************************************************
@@ -240,7 +241,7 @@ container.registerComponent(makeThreadLocalAdapter("jetspeed", PBStore.class,  n
  container.registerComponentImplementation(
                             PortletRegistryComponent, 
                             PortletRegistryComponentImpl, 
-                            doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+                            doParams([cmpParam(PersistenceStore)])
 )
 
 /* **********************************************************
@@ -249,7 +250,7 @@ container.registerComponent(makeThreadLocalAdapter("jetspeed", PBStore.class,  n
 container.registerComponentImplementation(
                            PortletEntityAccessComponent, 
                            PortletEntityAccessComponentImpl,
-                           doParams([cmpParam(PersistenceStoreContainer),  cstParam("jetspeed")])
+                           doParams([cmpParam(PersistenceStore)])
 )
 
 /* **********************************************************
@@ -258,7 +259,7 @@ container.registerComponentImplementation(
 container.registerComponentImplementation(
                        Profiler, 
                        JetspeedProfiler, 
-                       doParams([cmpParam(PersistenceStoreContainer), cmpParam(PageManager)])
+                       doParams([cmpParam(PersistenceStore), cmpParam(PageManager)])
 )
 
 /* **********************************************************
@@ -276,14 +277,13 @@ container.registerComponentImplementation(
 container.registerComponentImplementation(
 	                      PropertyManager, 
 	                      PropertyManagerImpl, 
-	                      doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+	                      doParams([cmpParam(PersistenceStore)])
 )
 	
 container.registerComponentImplementation(
                        PreferencesProvider, 
                        PreferencesProviderImpl, 
-                       doParams([cmpParam(PersistenceStoreContainer),
-                                        cstParam("jetspeed"), 
+                       doParams([cmpParam(PersistenceStore), 
                                         cstParam("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl")]
                                        )
 )	
@@ -295,25 +295,25 @@ container.registerComponentImplementation(
 container.registerComponentImplementation(
                      UserManager, 
                      UserManagerImpl, 
-                     doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+                     doParams([cmpParam(PersistenceStore)])
 )
 
 container.registerComponentImplementation(
                     GroupManager, 
                     GroupManagerImpl, 
-                    doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+                    doParams([cmpParam(PersistenceStore)])
 )
 
 container.registerComponentImplementation(
                       RoleManager, 
                       RoleManagerImpl,
-                      doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+                      doParams([cmpParam(PersistenceStore)])
 )
 
 container.registerComponentImplementation(
                       PermissionManager, 
                       PermissionManagerImpl, 
-                      doParams([cmpParam(PersistenceStoreContainer), cstParam("jetspeed")])
+                      doParams([cmpParam(PersistenceStore)])
 )
 
 container.registerComponentImplementation(
@@ -349,7 +349,7 @@ container.registerComponentImplementation(
  * ******************************************************** */
 // navigationKeys: prefix, action, mode, state, renderparam, pid, prev_mode, prev_state, key_delim
 // navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
-navigationKeys = "_,a,m,s,r,i,pm,ps,:"
+// navigationKeys = "_,a,m,s,r,i,pm,ps,:"
 
 container.registerComponentInstance("navigationKeys", "_,a,m,s,r,i,pm,ps,:")
 
