@@ -181,6 +181,14 @@ limitations under the License.
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
+               
+     <maven:reactor
+               basedir="${basedir}/maven-plugin"
+               includes="project.xml"
+               goals="plugin:deploy"
+               banner="Build and deploy the Jetspeed 2 Maven plugin"
+               postProcessing="false"
+               ignoreFailures="false"/>
 
      <!-- Build war files -->
      <maven:reactor
