@@ -24,7 +24,7 @@
 //-->
 
 <%
-   if (pageContext.getAttribute("treeModel", PageContext.SESSION_SCOPE) == null) {
+   if (pageContext.getAttribute("treeModel2", PageContext.SESSION_SCOPE) == null) {
       DefaultMutableTreeNode root = new DefaultMutableTreeNode("XY");
       DefaultMutableTreeNode a = new DefaultMutableTreeNode("A");
       root.insert(a);
@@ -46,13 +46,13 @@
       node = new DefaultMutableTreeNode("x2");
       a.insert(node);
 
-      pageContext.setAttribute("treeModel", new DefaultTreeModel(root), PageContext.SESSION_SCOPE);
+      pageContext.setAttribute("treeModel2", new DefaultTreeModel(root), PageContext.SESSION_SCOPE);
    }
 %>
 
 <f:view>
 	<h:form>
-                <x:tree id="tree" value="#{treeModel}"
+                <x:tree id="tree" value="#{treeModel2}"
                         styleClass="tree"
                         nodeClass="treenode"
                         selectedNodeClass="treenodeSelected"
