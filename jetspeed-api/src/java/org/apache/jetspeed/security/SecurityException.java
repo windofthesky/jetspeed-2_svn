@@ -48,6 +48,12 @@ public class SecurityException extends JetspeedException
     /** <p>Group principal does not exist exception message.</p> */
     public static final String GROUP_DOES_NOT_EXIST = "The group does not exist.";
 
+    /** <p>Invalid password exception message.</p> */
+    public static final String INVALID_PASSWORD = "Invalid password.";
+
+    /** <p>Password required exception message.</p> */
+    public static final String PASSWORD_REQUIRED = "Invalid password.";
+
     /**
      * <p>Default Constructor.</p>
      */
