@@ -50,7 +50,7 @@ public class SessionPortalURL
         
     public boolean isStateFullParameter(String param)
     {
-        return false;
+        return isRenderParameter(param);
     }
     
 }

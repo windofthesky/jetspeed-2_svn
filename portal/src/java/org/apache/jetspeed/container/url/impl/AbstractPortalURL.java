@@ -119,6 +119,16 @@ public abstract class AbstractPortalURL implements PortalURL
         return token.startsWith(nsc.getNavigationKey(NavigationalStateComponent.PREFIX));
     }    
     
+    public boolean isRenderParameter(String token)
+    {
+        String prefix = nsc.getNavigationKey(NavigationalStateComponent.PREFIX);
+        if ( token != null && (token.startsWith(prefix + nsc.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
+        {
+            return true;
+        }
+        return false;    
+    }
+    
     public String getRenderParamKey(PortletWindow window)
     {
         return nsc.getNavigationKey(NavigationalStateComponent.RENDER_PARAM) + "_" + window.getId().toString();
