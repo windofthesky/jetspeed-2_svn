@@ -36,8 +36,6 @@ import org.apache.jetspeed.util.JetspeedObjectID;
 public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Serializable
 {
     private ObjectID objectId = null;
-    private int id;
-    private int portletEntityId;
     private PortletEntity portletEntity = null;
 
     //counter used to generate unique id's
@@ -45,7 +43,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
 
     public PortletWindowImpl(String id)
     {
-        this.id = JetspeedObjectID.createFromString(id).intValue();
+        this.objectId = JetspeedObjectID.createFromString(id);
     }
 
     public PortletWindowImpl(ObjectID oid)
@@ -65,10 +63,6 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
     **/
     public ObjectID getId()
     {
-        if (objectId == null)
-        {
-            objectId = new JetspeedObjectID(id);
-        }
         return objectId;
     }
     /**
@@ -89,8 +83,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
      */
     public void setId(String id)
     {
-        this.id = JetspeedObjectID.createFromString(id).intValue();
-        objectId = null;
+        objectId = JetspeedObjectID.createFromString(id);
     }
 
     /**

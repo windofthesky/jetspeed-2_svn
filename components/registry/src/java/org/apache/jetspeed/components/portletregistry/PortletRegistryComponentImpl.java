@@ -391,8 +391,8 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 // content type and langs asocciated are not
                 store.deletePersistent(portlets.next());
             }
-            store.deletePersistent(app);
-            store.getTransaction().checkpoint();
+            store.deletePersistent(app);            
+            store.getTransaction().checkpoint();            
         }
         catch (LockFailedException e)
         {

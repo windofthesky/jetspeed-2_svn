@@ -44,19 +44,19 @@ import org.apache.pluto.util.StringUtils;
 public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
 {
 
-    private long id;
+    private long oid;
     private long portletId;
 
-    private JetspeedObjectID oid;
+    private JetspeedObjectID id;
 
     public ObjectID getId()
     {
-        return oid;
+        return id;
     }
 
     public void setId(String id)
     {
-        this.oid = JetspeedObjectID.createFromString(id);
+        this.id = JetspeedObjectID.createFromString(id);
     }
 
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);

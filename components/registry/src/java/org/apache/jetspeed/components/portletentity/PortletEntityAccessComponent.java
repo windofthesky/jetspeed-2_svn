@@ -33,7 +33,7 @@ public interface PortletEntityAccessComponent
 	StoreablePortletEntityDelegate getPortletEntity(ObjectID id);
 
 
-	StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String portletName);
+//	StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String portletName);
        
 
 	StoreablePortletEntityDelegate newPortletEntityInstance(PortletDefinition portletDefinition);
@@ -43,6 +43,5 @@ public interface PortletEntityAccessComponent
 
 
 	void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException;
-
 
 }

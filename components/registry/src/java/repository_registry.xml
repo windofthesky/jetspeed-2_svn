@@ -1214,8 +1214,8 @@
    >
       
         <field-descriptor
-         name="id"
-         column="ID"
+         name="oid"
+         column="OID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
@@ -1230,10 +1230,10 @@
       />
       
       <field-descriptor
-         name="oid"
-         column="GUID"
+         name="id"
+         column="ID"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion" 
       />
       
      <reference-descriptor 

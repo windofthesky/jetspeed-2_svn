@@ -77,7 +77,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             prepareTransaction(store);
             
             Filter filter = store.newFilter();
-            filter.addEqualTo("oid", entityId.toString());
+            filter.addEqualTo("id", entityId.toString());
             Object q = store.newQuery(PortletEntityImpl.class, filter);
             PortletEntity portletEntity = (PortletEntity) store.getObjectByQuery(q);
             if(portletEntity == null)
@@ -94,7 +94,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.portlet.PortletDefinition, java.lang.String)
-     */
+     *
     public StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String entityName)
     {
         ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, entityName);
@@ -106,7 +106,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         }
         return (StoreablePortletEntityDelegate)portletEntity; //wrapEntity(portletEntity);
     }
-
+    */
+    
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#newPortletEntityInstance(org.apache.pluto.om.portlet.PortletDefinition)
      */
