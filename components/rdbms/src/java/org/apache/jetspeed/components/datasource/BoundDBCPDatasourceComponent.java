@@ -67,10 +67,15 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
         super.start();
         try
         {
+            //  jndi.bindToCurrentThread();
             jndi.bindObject("comp/env/jdbc/"+bindName, getDatasource());
+            jndi.bindToCurrentThread();
+            System.out.println("BoundDBCPDatasource was started.");
+            
         }
         catch (NamingException e)
         {
+            e.printStackTrace();
             new IllegalStateException("Naming exception "+e.toString());
         }
     }
