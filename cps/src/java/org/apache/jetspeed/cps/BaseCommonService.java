@@ -64,6 +64,6 @@ import org.apache.fulcrum.BaseService;
  * @version $Id$
  * 
  */
-public abstract class BaseCommonService extends BaseService
+public abstract class BaseCommonService extends BaseService implements CommonService
 {
 }
