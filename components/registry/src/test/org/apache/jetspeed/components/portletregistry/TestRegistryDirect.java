@@ -190,6 +190,6 @@ public class TestRegistryDirect extends AbstractRegistryTest
     
     public void testData() throws Exception
     {
-        verifyData();
+        verifyData(false);
     }
 }

@@ -126,7 +126,7 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
         persistenceStore.getTransaction().commit();
     }
 
-    protected void verifyData() throws Exception
+    protected void verifyData(boolean afterUpdates) throws Exception
     {
         PortletApplicationDefinitionImpl app;
         WebApplicationDefinitionImpl webApp;
@@ -152,7 +152,15 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
-        assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
+        if (!afterUpdates)
+        {
+            assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
+        }
+        else
+        {
+            assertTrue("\"user.name.family\" and user.pets user attributes were not found.", app.getUserAttributes().size() == 2);
+            
+        }
 
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
 

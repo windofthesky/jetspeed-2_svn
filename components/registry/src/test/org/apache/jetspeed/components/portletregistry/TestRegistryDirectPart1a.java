@@ -21,22 +21,23 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.jetspeed.om.common.UserAttribute;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 
 /**
  * 
- * TestRegistry runs a suite tests creating, updating, retreiving and deleting
- * portlet information from the registry.
+ * TestRegistry runs a suite updating PAs
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  *  
  */
-public class TestRegistryDirectPart2 extends AbstractRegistryTest
+public class TestRegistryDirectPart1a extends AbstractRegistryTest
 {
-
     /*
      * (non-Javadoc)
      * 
@@ -44,9 +45,7 @@ public class TestRegistryDirectPart2 extends AbstractRegistryTest
      */
     protected void setUp() throws Exception
     {
-        super.setUp();
-        PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        super.setUp();                
     }
 
     /*
@@ -56,36 +55,38 @@ public class TestRegistryDirectPart2 extends AbstractRegistryTest
      */
     protected void tearDown() throws Exception
     {
-        
-        persistenceStore.getTransaction().begin();
-        
-        Iterator itr = registry.getPortletApplications().iterator();
-        while(itr.hasNext())
-        {        
-            registry.removeApplication((PortletApplicationDefinition)itr.next());
-        }
-        
-        persistenceStore.getTransaction().commit(); 
-        
-        super.tearDown();
-    }
-
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRegistryDirectPart2.class);
+       //  super.tearDown();
     }
 
     /**
      * @param testName
      */
-    public TestRegistryDirectPart2(String testName)
+    public TestRegistryDirectPart1a(String testName)
     {
         super(testName);
     }
-    
-    public void testData() throws Exception
+
+    public static Test suite()
     {
-        verifyData(true);
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRegistryDirectPart1a.class);
     }
+    
+    public void testUpdates() throws Exception
+    {
+        Transaction tx = persistenceStore.getTransaction();
+        tx.begin();
+        Filter filter = persistenceStore.newFilter();
+        PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
+        assertNotNull("PA App_1 is NULL", app);
+
+        app.addUserAttribute("user.pets.doggie", "Busby");
+        
+        registry.getPersistenceStore().lockForWrite(app);
+        
+        tx.commit();
+                        
+        System.out.println("PA update test complete");
+    }
+    
 }
