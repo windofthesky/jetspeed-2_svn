@@ -15,6 +15,11 @@
  */
 package org.apache.jetspeed.exception;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.apache.jetspeed.i18n.KeyedMessage;
+
 
 /**
  * Occurs when anything unexpected happens within Jetspeed.Any defined exceptions
@@ -26,7 +31,10 @@ package org.apache.jetspeed.exception;
 
 public class JetspeedException extends Exception 
 {
-
+    public static final String KEYED_MESSAGE_BUNDLE = "org.apache.jetspeed.exception.JetspeedExceptionMessages";
+    
+    private KeyedMessage keyedMessage;
+    
     public JetspeedException() 
     {
         super();
@@ -35,6 +43,12 @@ public class JetspeedException extends Exception
     public JetspeedException(String message) 
     {
         super(message);
+    }
+    
+    public JetspeedException(KeyedMessage typedMessage) 
+    {
+        super(typedMessage.getMessage());
+        this.keyedMessage = typedMessage;
     }
     
     public JetspeedException(Throwable nested)
@@ -47,6 +61,41 @@ public class JetspeedException extends Exception
         super(msg, nested);
     }
     
+    public JetspeedException(KeyedMessage keyedMessage, Throwable nested)
+    {
+        super(keyedMessage.getMessage(), nested);
+        this.keyedMessage = keyedMessage;
+    }
+    
+    public KeyedMessage getKeyedMessage()
+    {
+        return keyedMessage;
+    }
+    
+    public String getMessage()
+    {
+        if ( keyedMessage != null )
+        {
+            return keyedMessage.getMessage();
+        }
+        return super.getMessage();
+    }
+    
+    public String getMessage(ResourceBundle bundle)
+    {
+        if ( keyedMessage != null )
+        {
+            return keyedMessage.getMessage(bundle);
+        }
+        return super.getMessage();
+    }
 
-
+    public String getMessage(Locale locale)
+    {
+        if ( keyedMessage != null )
+        {
+            return keyedMessage.getMessage(locale);
+        }
+        return super.getMessage();
+    }
 }
