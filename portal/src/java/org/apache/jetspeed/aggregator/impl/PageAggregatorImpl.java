@@ -273,12 +273,12 @@ public class PageAggregatorImpl implements PageAggregator
     
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
-        Set cssUrls = (Set) context.getSessionAttribute("cssUrls");
+        Set cssUrls = (Set) context.getAttribute("cssUrls");
 
         if (cssUrls == null)
         {
             cssUrls = new HashSet();
-            context.setSessionAttribute("cssUrls", cssUrls);
+            context.setAttribute("cssUrls", cssUrls);
         }
         
         if(decoratorType.equals(Fragment.LAYOUT))

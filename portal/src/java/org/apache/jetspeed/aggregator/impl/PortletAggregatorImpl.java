@@ -84,12 +84,12 @@ public class PortletAggregatorImpl implements PortletAggregator
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
         log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
-        Set cssUrls = (Set) context.getSessionAttribute("cssUrls");
+        Set cssUrls = (Set) context.getAttribute("cssUrls");
 
         if (cssUrls == null)
         {
             cssUrls = new HashSet();
-            context.setSessionAttribute("cssUrls", cssUrls);
+            context.setAttribute("cssUrls", cssUrls);
         }
         
         //cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");
