@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -191,7 +191,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
                 classLoaders.put(portletApplicationName, loader);
             }
             Thread.currentThread().setContextClassLoader(loader);                 
-            portlet = JetspeedPortletFactory.getPortlet(jetspeedConfig, portletDefinition);            
+            portlet = JetspeedPortletFactoryProxy.getPortlet(jetspeedConfig, portletDefinition);            
         }
         catch (Exception e)
         {
