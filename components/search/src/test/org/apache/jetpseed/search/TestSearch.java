@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
 import org.apache.jetspeed.search.lucene.SearchEngineImpl;
 
@@ -134,12 +135,13 @@ public class TestSearch extends TestCase
         //because tear down deletes files, need to do add again
         testPutWebPage();
         
-        Iterator results  = searchEngine.search("YourResultsBelongToUs");
+        SearchResults results  = searchEngine.search("YourResultsBelongToUs");
         //System.out.println("Query 'YourResultsBelongToUs' hits = " + results.size());
-        assertTrue(" Hit count == 0", results.hasNext() == false);
-        while (results.hasNext())
+        assertTrue(" Hit count == 0", results.size() == 0);
+        Iterator resultIter = results.iterator();
+        while (resultIter.hasNext())
         {
-            ParsedObject result = (ParsedObject) results.next();
+            ParsedObject result = (ParsedObject) resultIter.next();
             
             System.out.println("Score = " + result.getScore());
             System.out.println("title = " + result.getTitle());
@@ -153,11 +155,13 @@ public class TestSearch extends TestCase
 //      because tear down deletes files, need to do add again
         testPutWebPage();
         
-        Iterator results  = searchEngine.search("Jetspeed");
-        assertTrue(" Hit count == 0", results.hasNext());
-        while (results.hasNext())
+        SearchResults results  = searchEngine.search("Jetspeed");
+        assertTrue(" Hit count == 0", results.size() > 0);
+        
+        Iterator resultIter = results.iterator();
+        while (resultIter.hasNext())
         {
-            ParsedObject result = (ParsedObject) results.next();
+            ParsedObject result = (ParsedObject) resultIter.next();
             System.out.println("Score = " + result.getScore());
             System.out.println("title = " + result.getTitle());
             System.out.println("summary = " + result.getDescription());
@@ -170,11 +174,13 @@ public class TestSearch extends TestCase
 //      because tear down deletes files, need to do add again
         testPutWebPage();
         
-        Iterator results  = searchEngine.search("community");
-        assertTrue(" Hit count == 0", results.hasNext());
-        while (results.hasNext())
+        SearchResults results  = searchEngine.search("community");
+        assertTrue(" Hit count == 0", results.size() > 0);
+        
+        Iterator resultIter = results.iterator();
+        while (resultIter.hasNext())
         {
-            ParsedObject result = (ParsedObject) results.next();
+            ParsedObject result = (ParsedObject) resultIter.next();
             System.out.println("Score = " + result.getScore());
             System.out.println("title = " + result.getTitle());
             System.out.println("summary = " + result.getDescription());

@@ -15,26 +15,22 @@
  */
 package org.apache.jetspeed.search;
 
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
+ *
  */
-public interface SearchEngine
+public interface SearchResults
 {
-    boolean add(Object o);
+    public int size();
     
-    boolean add(Collection objects);
+    public Iterator iterator();
     
-    boolean remove(Object o);
+    public ParsedObject get(int index);
     
-    boolean remove(Collection objects);
+    public List getResults();
     
-    boolean update(Object o);
-    
-    boolean update(Collection objects);
-    
-    boolean optimize();
-    
-    SearchResults search(String query);
+    public List getResults(int fromIndex, int toIndex);
 }

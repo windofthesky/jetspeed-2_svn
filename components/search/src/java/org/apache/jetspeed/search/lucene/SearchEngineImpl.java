@@ -32,6 +32,7 @@ import org.apache.jetspeed.search.HandlerFactory;
 import org.apache.jetspeed.search.ObjectHandler;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.search.SearchResults;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -360,7 +361,7 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String)
      */
-    public Iterator search(String queryString)
+    public SearchResults search(String queryString)
     {        
         Searcher searcher = null;
         Hits hits = null;
@@ -405,7 +406,7 @@ public class SearchEngineImpl implements SearchEngine
         }
 
         int hitNum = hits.length();
-        ArrayList results = new ArrayList(hitNum);
+        ArrayList resultList = new ArrayList(hitNum);
         for(int i=0; i<hitNum; i++)
         {
             ParsedObject result = new BaseParsedObject();
@@ -464,7 +465,7 @@ public class SearchEngineImpl implements SearchEngine
 		            result.setURL(new URL(url.stringValue()));
 		        }
 		        
-		        results.add(i, result);
+		        resultList.add(i, result);
             }
             catch(IOException e)
             {
@@ -483,7 +484,9 @@ public class SearchEngineImpl implements SearchEngine
                 //logger.error("Closing Searcher", ioe);
             }
         }
-        return results.iterator();
+        
+        SearchResults results = new SearchResultsImpl(resultList);
+        return results;
     }
     
     private Analyzer newAnalyzer() {

@@ -36,6 +36,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.search.SearchResults;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.webapp.admin.TreeControl;
@@ -99,8 +100,8 @@ public class PortletApplicationBrowser extends GenericServletPortlet
 		    String searchString = actionRequest.getParameter("query");
 		    if(searchString != null)
 		    {
-		        Iterator results = searchEngine.search(searchString);
-		        actionRequest.getPortletSession().setAttribute("search_results", results);
+		        SearchResults results = searchEngine.search(searchString);
+		        actionRequest.getPortletSession().setAttribute("search_results", results.getResults());
 		    }
 		    
 			String node = actionRequest.getParameter("node");
