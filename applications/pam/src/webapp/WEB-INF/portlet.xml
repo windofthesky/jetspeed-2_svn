@@ -38,9 +38,9 @@ limitations under the License.
       <short-title>Apps</short-title>
       <keywords>applications,apps,PAM</keywords>
     </portlet-info>
-</portlet>
+  </portlet>
 
-<portlet id="PortletApplicationDetail">
+  <portlet id="PortletApplicationDetail">
     <init-param>
       <description>This parameter sets the template used in view mode.</description>
       <name>ViewPage</name>
@@ -57,6 +57,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
     <portlet-info>
       <title>Portlet Application Detail</title>
       <short-title>PAD</short-title>

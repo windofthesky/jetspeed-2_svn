@@ -16,8 +16,8 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import javax.portlet.ActionRequest;
@@ -58,8 +58,8 @@ public class PortletApplicationDetail extends ServletPortlet
 
     private PortletContext context;
     private PortletRegistryComponent registry;
-    private HashMap paTabMap = new HashMap();
-    private HashMap pdTabMap = new HashMap();
+    private LinkedHashMap paTabMap = new LinkedHashMap();
+    private LinkedHashMap pdTabMap = new LinkedHashMap();
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -72,23 +72,23 @@ public class PortletApplicationDetail extends ServletPortlet
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
         }
         
-        TabBean tb1 = new TabBean("Details", "Details");
-        TabBean tb2 = new TabBean("Metadata", "Metadata");
-        TabBean tb3 = new TabBean("Portlets", "Portlets");
-        TabBean tb4 = new TabBean("UserAttr", "User Attributes");
+        TabBean tb1 = new TabBean("pa_details");
+        TabBean tb2 = new TabBean("pa_metadata");
+        TabBean tb3 = new TabBean("pa_portlets");
+        TabBean tb4 = new TabBean("pa_user_attribtues");
         
         paTabMap.put(tb1.getId(), tb1);
         paTabMap.put(tb2.getId(), tb2);
         paTabMap.put(tb3.getId(), tb3);
         paTabMap.put(tb4.getId(), tb4);
         
-        TabBean tb_1 = new TabBean("Details", "Details");
-        TabBean tb_2 = new TabBean("Metadata", "Metadata");
-        TabBean tb_3 = new TabBean("Preferences", "Preferences");
-        TabBean tb_4 = new TabBean("Languages", "Languages/PortletInfo");
-        TabBean tb_5 = new TabBean("Parameters", "Initial Parameters");
-        TabBean tb_6 = new TabBean("Security", "Security");
-        TabBean tb_7 = new TabBean("ContentType", "ContentType/Supports");
+        TabBean tb_1 = new TabBean("pd_details");
+        TabBean tb_2 = new TabBean("pd_metadata");
+        TabBean tb_3 = new TabBean("pd_preferences");
+        TabBean tb_4 = new TabBean("pd_languages");
+        TabBean tb_5 = new TabBean("pd_parameters");
+        TabBean tb_6 = new TabBean("pd_security");
+        TabBean tb_7 = new TabBean("pd_content_type");
         
         pdTabMap.put(tb_1.getId(), tb_1);
         pdTabMap.put(tb_2.getId(), tb_2);
@@ -126,7 +126,7 @@ public class PortletApplicationDetail extends ServletPortlet
             }
             
             //this supports tabs for portlets
-            if(selectedTab.getId().equals("Portlets"))
+            if(selectedTab.getId().equals("pa_portlets"))
             {
                 TabBean selectedPortletTab = (TabBean) request.getPortletSession().getAttribute("selected_portlet_tab");
                 if(selectedPortletTab == null)

@@ -23,34 +23,17 @@ package org.apache.jetspeed.portlets.pam.beans;
 public class TabBean
 {
     private String id;
-    private String messageId;
-    private String description;
     
     public TabBean()
     {
         
     }
     
-    public TabBean(String id, String description)
+    public TabBean(String id)
     {
         this.id = id;
-        this.description = description;
     }
 
-    /**
-     * @return Returns the description.
-     */
-    public String getDescription()
-    {
-        return description;
-    }
-    /**
-     * @param description The description to set.
-     */
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
     /**
      * @return Returns the id.
      */
@@ -64,20 +47,6 @@ public class TabBean
     public void setId(String id)
     {
         this.id = id;
-    }
-    /**
-     * @return Returns the messageId.
-     */
-    public String getMessageId()
-    {
-        return messageId;
-    }
-    /**
-     * @param messageId The messageId to set.
-     */
-    public void setMessageId(String messageId)
-    {
-        this.messageId = messageId;
     }
     
     public boolean equals(Object obj)
