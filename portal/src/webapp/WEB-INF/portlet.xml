@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright 2004 The Apache Software Foundation
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -14,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<portlet-app id="jetspeed" version="1.0">
 
-  <portlet id="TwoColumns">
+<portlet-app id="jetspeed" version="1.0">
+    <portlet id="TwoColumns">
     <portlet-name>TwoColumns</portlet-name>
     <display-name>Two Columns Layout</display-name>
     <init-param>
@@ -41,14 +40,18 @@ limitations under the License.
       <title>TwoColumns</title>
       <short-title>TwoColumns</short-title>
     </portlet-info>
-  </portlet>
-  
-  <portlet id="VelocityTwoColumns">
+</portlet>
+
+<portlet id="VelocityTwoColumns">
     <portlet-name>VelocityTwoColumns</portlet-name>
     <display-name>Two Columns Layout Using Velocity</display-name>
     <init-param>
       <name>ViewPage</name>
       <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
     </init-param>
     <init-param>
       <name>columns</name>
@@ -68,12 +71,12 @@ limitations under the License.
       <title>VelocityTwoColumns</title>
       <short-title>TwoColumns</short-title>
     </portlet-info>
-  </portlet>
-  
-  <portlet id="PortletApplicationBrowser">
+</portlet>
+
+<portlet id="PortletApplicationBrowser">
     <init-param>
-			<description>This parameter sets the template used in view mode.</description>
-			<name>ViewPage</name>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
 			<value>/pages/pam/pam-browser.jsp</value>
      </init-param>   
     <portlet-name>PortletApplicationBrowser</portlet-name>
@@ -92,9 +95,13 @@ limitations under the License.
       <short-title>Apps</short-title>
       <keywords>applications,apps,PAM</keywords>
     </portlet-info>
-  </portlet>
+</portlet>
 
-  <portlet id="PortletApplicationDetail">
+
+
+
+
+<portlet id="PortletApplicationDetail">
     <init-param>
       <description>This parameter sets the template used in view mode.</description>
       <name>ViewPage</name>

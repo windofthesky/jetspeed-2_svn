@@ -20,6 +20,8 @@ limitations under the License.
 
 #set($myPE = $jetspeed.currentPortletEntity)
 
+#set($actions = $jetspeed.DecoratorActions)
+
 
 <!-- Begin portlet/html/jetspeed/decorator.vm  -->
 
@@ -36,6 +38,12 @@ limitations under the License.
     <td align="left" valign="middle" class="PTitle" >
        ${myPE.portletDefinition.name}
     </td>
+    <td align="right" valign="middle" class="PTitle" >
+      #foreach ($action in $actions)
+      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      #end
+    </td>
+    
     
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
@@ -47,6 +55,8 @@ limitations under the License.
     <td align="left" valign="middle" class="PContent" >
        state = $jetspeed.windowState  mode = $jetspeed.portletMode
     </td>
+
+    <td align="right" valign="middle" class="PContent" />
     
     <td class="PContentRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>  
   </tr>
@@ -62,6 +72,8 @@ limitations under the License.
        $jetspeed.include($myF)
     </td>   
     
+    <td align="right" valign="middle" class="PContent" />
+        
     <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>
    
   </tr>
@@ -74,6 +86,7 @@ limitations under the License.
   <tr>
     <td class="PBottomLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
     <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>        
     <td class="PBottomRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 </table>

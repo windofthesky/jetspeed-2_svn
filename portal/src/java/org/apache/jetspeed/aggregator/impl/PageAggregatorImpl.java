@@ -20,16 +20,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.contentserver.ContentFilter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 import org.picocontainer.Startable;
 
 /**
@@ -134,6 +137,21 @@ public class PageAggregatorImpl implements PageAggregator, Startable
 
         if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
         {
+            // handle maximized state
+            NavigationalState nav = context.getNavigationalState();
+            PortletWindow window = nav.getMaximizedWindow(context.getPage());
+            if (null != window)
+            {
+                Fragment fragment = page.getFragmentById(window.getId().toString());
+                if (checkAccess(context, (fragment.getAcl() != null) ? fragment.getAcl() : acl, "render"))
+                {
+                    context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
+                    renderer.renderNow(page.getRootFragment(), context);                      
+                    context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Fragment");
+                }
+                return;
+            }
+            
             if (strategy == STRATEGY_PARALLEL)
             {
                 // initializes the rendering stack with root children

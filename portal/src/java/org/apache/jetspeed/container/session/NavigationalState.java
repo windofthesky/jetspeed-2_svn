@@ -18,6 +18,7 @@ package org.apache.jetspeed.container.session;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -91,5 +92,15 @@ public interface NavigationalState
      * @param context 
      */
     void init(RequestContext context);
+    
+    
+    /**
+     * For a given page, return the maximized window or
+     * return null no windows are maximized.
+     * 
+     * @param page
+     * @return The maximized window or null
+     */
+    PortletWindow getMaximizedWindow(Page page);
     
 }

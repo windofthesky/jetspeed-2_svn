@@ -25,7 +25,7 @@ import java.util.List;
  * </p>
  *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id $
+ * @version $Id$
  *
  */
 public interface ContentLocator

@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
- * @version $Id $
+ * @version $Id$
  *  
  */
 public class SimpleContentLocator implements ContentLocator

@@ -27,8 +27,12 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,7 +64,17 @@ public class MultiColumnPortlet extends LayoutPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        List[] columns = buildColumns(getFragment(request), this.numColumns);
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
+        
+        // if (targetState != null && targetState.isMaximized())
+        if (window != null)
+        {
+            super.doView(request,response);
+            return;
+        }
+        
+        List[] columns = buildColumns(getFragment(request, false), this.numColumns);
 
         request.setAttribute("columns", columns);
 

@@ -19,6 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.StringTokenizer;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -200,4 +202,37 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         return tokenizer.nextToken();                
     }
         
+    public WindowState lookupWindowState(String name)
+    {
+        if (name.equals(WindowState.MAXIMIZED.toString()))
+        {
+            return WindowState.MAXIMIZED;
+        }
+        else if (name.equals(WindowState.MAXIMIZED.toString()))
+        {
+            return WindowState.MINIMIZED;
+        }
+        else if (name.equals(WindowState.NORMAL.toString()))
+        {
+            return WindowState.NORMAL;
+        }
+        return new WindowState(name);
+    }
+
+    public PortletMode lookupPortletMode(String name)
+    {
+        if (name.equals(PortletMode.VIEW.toString()))
+        {
+            return PortletMode.VIEW;
+        }        
+        else if (name.equals(PortletMode.EDIT.toString()))
+        {
+            return PortletMode.EDIT;
+        }
+        else if (name.equals(PortletMode.HELP.toString()))
+        {
+            return PortletMode.HELP;
+        }        
+        return new PortletMode(name);
+    }
 }

@@ -105,6 +105,11 @@ public class ServletPortlet extends GenericPortlet
     public static final String PARAM_VIEW_PAGE   = "ViewPage";
 
     /**
+     * Name of portlet preference for View page
+     */
+    public static final String PARAM_MAX_PAGE   = "MaxPage";
+    
+    /**
      * Allow preferences to be set by preferences.
      */
     private boolean allowPreferences = false;

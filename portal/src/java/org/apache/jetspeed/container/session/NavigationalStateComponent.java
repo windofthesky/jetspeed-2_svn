@@ -104,7 +104,7 @@ public interface NavigationalStateComponent
      * @param name The string representation of the window state.
      * @return The corresponding WindowState object
      */
-    //WindowState lookupWindowState(String name);
+    WindowState lookupWindowState(String name);
 
     /**
      * Given a portlet mode name, look up its object.
@@ -114,6 +114,6 @@ public interface NavigationalStateComponent
      * @param name The string representation of the portlet mode.
      * @return The corresponding PortletMode object
      */    
-    //PortletMode lookupPortletMode(String name);
+    PortletMode lookupPortletMode(String name);
     
 }

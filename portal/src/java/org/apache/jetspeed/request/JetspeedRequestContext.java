@@ -66,6 +66,7 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow actionWindow;
     private String encoding;
     private String requestPath = null;
+               
     
     public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
 
@@ -426,5 +427,5 @@ public class JetspeedRequestContext implements RequestContext
     {
         return url;
     }
-    
+            
 }

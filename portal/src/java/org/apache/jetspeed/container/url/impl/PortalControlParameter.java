@@ -78,9 +78,13 @@ public class PortalControlParameter
     {
         String mode = (String) stateFullControlParameter.get(url.getModeKey(window));
         if (mode != null)
-            return new PortletMode(mode);
+        {
+            return nav.lookupPortletMode(mode);
+        }
         else
+        {
             return PortletMode.VIEW;
+        }
     }
 
     public PortletWindow getPortletWindowOfAction() 
@@ -107,18 +111,26 @@ public class PortalControlParameter
     {
         String mode = (String) stateFullControlParameter.get(url.getPrevModeKey(window));
         if (mode != null)
-            return new PortletMode(mode);
+        {
+            return nav.lookupPortletMode(mode);
+        }
         else
+        {
             return null;
+        }
     }
 
     public WindowState getPrevState(PortletWindow window)
     {
         String state = (String) stateFullControlParameter.get(url.getPrevStateKey(window));
         if (state != null)
-            return new WindowState(state);
+        {
+            return nav.lookupWindowState(state);
+        }
         else
+        {
             return null;
+        }
     }
     
     public Iterator getRenderParamNames(PortletWindow window)
@@ -150,9 +162,13 @@ public class PortalControlParameter
     {
         String state = (String) stateFullControlParameter.get(url.getStateKey(window));
         if (state != null)
-            return new WindowState(state);
+        {
+            return nav.lookupWindowState(state);
+        }
         else
+        {
             return WindowState.NORMAL;
+        }
     }
 
     public Map getStateFullControlParameter()

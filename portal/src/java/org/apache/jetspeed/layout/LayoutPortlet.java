@@ -27,11 +27,14 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  */
@@ -49,8 +52,12 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     {
         response.setContentType("text/html");
 
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
+        boolean maximized = (window != null);
+        
         request.setAttribute("page", getPage(request));
-        request.setAttribute("fragment", getFragment(request));
+        request.setAttribute("fragment", getFragment(request, maximized));
         request.setAttribute("dispatcher", getDispatcher(request));
 
         // now invoke the JSP associated with this portlet
@@ -61,9 +68,22 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
             String absViewPage = null;
             try
             {
-                String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
-                // Need to retreive layout.properties instead of hard-coding ".vm" 
-                absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+                if (maximized)
+                {
+                    String viewPage = prefs.getValue(PARAM_MAX_PAGE, "maximized");
+                    
+                    // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
+                    absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", 
+                                                  JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();                    
+                }
+                else
+                {
+                    String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
+                    
+                    // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
+                    absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", 
+                                                  JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+                }
                 log.debug("Path to view page for LayoutPortlet "+absViewPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
             }
@@ -80,11 +100,12 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         request.removeAttribute("dispatcher");
     }
 
-    protected Fragment getFragment(RenderRequest request)
+    protected Fragment getFragment(RenderRequest request, boolean maximized)
     {
         // Very ugly and Pluto dependant but I don't see anything better right now
         ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        Fragment fragment = (Fragment) innerRequest.getAttribute("org.apache.jetspeed.Fragment");
+        String attribute = (maximized) ? "org.apache.jetspeed.maximized.Fragment" : "org.apache.jetspeed.Fragment";
+        Fragment fragment = (Fragment) innerRequest.getAttribute(attribute);
 
         return fragment;
     }

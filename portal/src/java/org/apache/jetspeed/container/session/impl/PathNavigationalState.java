@@ -15,12 +15,19 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.container.url.impl.PortalControlParameter;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -88,5 +95,37 @@ public class PathNavigationalState
     public void sync()
     {
         // do nothing
+    }
+    
+    public PortletWindow getMaximizedWindow(Page page)
+    {
+        PortalControlParameter pcp = url.getControlParameters();
+        Iterator stateful = pcp.getStateFullControlParameter().entrySet().iterator();
+        while (stateful.hasNext())
+        {
+            Map.Entry entry = (Map.Entry)stateful.next();
+            String key = (String)entry.getKey();
+            String windowId = nav.getWindowIdFromKey(key);
+            if (null == windowId)
+            {
+                continue;
+            }
+            if (key.startsWith(nav.getNavigationKey(NavigationalStateComponent.STATE)))
+            {
+                String windowState = (String)entry.getValue();
+                WindowState state = nav.lookupWindowState(windowState);
+                
+                if (state == WindowState.MAXIMIZED)
+                {
+                    PortletWindowAccessor accessor = (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+                    PortletWindow window = accessor.getPortletWindow(windowId);
+                    return window;
+                }
+                else
+                {
+                }
+            }
+        }
+        return null;
     }
 }

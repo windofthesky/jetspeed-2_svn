@@ -22,10 +22,13 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.url.impl.PortalControlParameter;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -46,6 +49,7 @@ public class SessionNavigationalState
     private Map pstates;
     private Map pmodes;
     private String portalPath = null;
+    private Map pages;
 
     static public final boolean SESSION_BASED = true;
     
@@ -56,7 +60,8 @@ public class SessionNavigationalState
         states = new HashMap();
         modes = new HashMap();
         pstates = new HashMap();            
-        pmodes = new HashMap(); 
+        pmodes = new HashMap();
+        pages = new HashMap();
     }
         
     public WindowState getState(PortletWindow window) 
@@ -145,7 +150,22 @@ public class SessionNavigationalState
                 {
                     pstates.put(windowId, previousState);
                 }
-                states.put(windowId, new WindowState (windowState));
+                WindowState state = nav.lookupWindowState(windowState);
+                states.put(windowId, state);
+                
+                if (state == WindowState.MAXIMIZED)
+                {
+                    PortletWindowAccessor accessor = (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+                    PortletWindow window = accessor.getPortletWindow(windowId);
+                    
+                    Page page = context.getPage();
+                    pages.put(page.getId(), window);
+                }
+                else
+                {
+                    Page page = context.getPage();
+                    pages.put(page.getId(), null);
+                }
                 // System.out.println("STATE UPDATED = " + windowId + ", = " + windowState);                
             }
             else if (key.startsWith(nav.getNavigationKey(NavigationalStateComponent.MODE)))
@@ -156,11 +176,17 @@ public class SessionNavigationalState
                 {
                     pmodes.put(windowId, previousMode);
                 }
-                modes.put(windowId, new PortletMode(mode));
+                PortletMode portletMode = nav.lookupPortletMode(mode);
+                modes.put(windowId, portletMode);
+                PortletWindowAccessor accessor = (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+                PortletWindow window = accessor.getPortletWindow(windowId);
                 // System.out.println("MODE UPDATED = " + windowId + ", = " + mode);
-            }
-            
+            }           
         }
     }
     
+    public PortletWindow getMaximizedWindow(Page page)
+    {
+        return (PortletWindow)pages.get(page.getId());
+    }
 }
