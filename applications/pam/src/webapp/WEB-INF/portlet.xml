@@ -64,7 +64,7 @@ limitations under the License.
       <keywords>applications,apps,PAM</keywords>
     </portlet-info>
   </portlet>
-
+<!--
 <portlet id="PortalSiteBrowser">
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
@@ -84,6 +84,54 @@ limitations under the License.
     </supports>
     <portlet-info>
       <title>Portal Site Browser</title>
+      <short-title>Site</short-title>
+      <keywords>admin,site</keywords>
+    </portlet-info>
+</portlet>
+-->
+<portlet id="PortalSiteBrowser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/site-browser.jsp</value>
+     </init-param>   
+    <portlet-name>PortalSiteBrowser</portlet-name>
+    <display-name>Portal Site Browser</display-name>
+    <description>The Portal Site Browser displays a hierarchical view of the portal site. From here you can add, edit, and delete folders and pages.</description>
+    <portlet-class>org.apache.jetspeed.portlets.site.SiteBrowserPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portal Site Browser</title>
+      <short-title>Site</short-title>
+      <keywords>admin,site</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="PortalSiteDetail">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/site-detail.jsp</value>
+     </init-param>   
+    <portlet-name>PortalSiteDetail</portlet-name>
+    <display-name>Portal Site Detail</display-name>
+    <description>The Portal Site Detail portlet displays the details of a selected folder/page.  From here you can add, edit, and delete folders and pages.</description>
+    <portlet-class>org.apache.jetspeed.portlets.site.SiteDetailPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portal Site Detail</title>
       <short-title>Site</short-title>
       <keywords>admin,site</keywords>
     </portlet-info>
