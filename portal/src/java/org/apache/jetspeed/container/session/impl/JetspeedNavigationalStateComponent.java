@@ -38,8 +38,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * JetspeedNavigationalStateComponent
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
- * @version $Id: JetspeedNavigationalStateComponent.java,v 1.10 2004/07/20
- *          13:52:01 weaver Exp $
+ * @version $Id$
  */
 public class JetspeedNavigationalStateComponent implements NavigationalStateComponent
 {
