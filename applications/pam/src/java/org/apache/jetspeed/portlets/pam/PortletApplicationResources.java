@@ -44,4 +44,5 @@ public final class PortletApplicationResources
     public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";
     public final static String REQUEST_SELECT_USER = "select_user";    
     public final static String PORTLET_ACTION = "portlet_action";
+    public static final String REQUEST_SELECT_SITE_TAB = "selected_site_tab";
 }

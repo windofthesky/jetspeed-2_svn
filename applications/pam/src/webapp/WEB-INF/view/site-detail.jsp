@@ -49,7 +49,7 @@ limitations under the License.
 <div id="tabs">
 	<c:set var="tab_items" value="${requestScope.tabs}"/>
 	<c:set var="currentTab" value="${selectedTab}"/>
-	<c:set var="url_param_name" value="selected_tab"/>
+	<c:set var="url_param_name" value="selected_site_tab"/>
 	<%@ include file="tabs.jsp"%>
 </div>
 

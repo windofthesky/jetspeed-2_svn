@@ -119,7 +119,7 @@ public class SiteDetailPortlet extends ServletPortlet
         
         request.setAttribute("tabs", tabMap.values());
         
-        TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, PortletSession.APPLICATION_SCOPE);
+        TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_SITE_TAB, PortletSession.APPLICATION_SCOPE);
         if(selectedTab == null)
         {
             selectedTab = (TabBean) tabMap.values().iterator().next();
@@ -133,11 +133,11 @@ public class SiteDetailPortlet extends ServletPortlet
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
         
-        String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
+        String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_SITE_TAB);
         if(selectedTab != null)
         {
             TabBean tab = (TabBean) tabMap.get(selectedTab);
-            actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, tab, PortletSession.APPLICATION_SCOPE);
+            actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_SITE_TAB, tab, PortletSession.APPLICATION_SCOPE);
         }
         
         String actionType = actionRequest.getParameter("action_type");
