@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
@@ -1016,4 +1018,17 @@ public class JetspeedPowerTool
                 relativePath).toString();
     }
 
+    public Subject getSubject()
+    {
+        return requestContext.getSubject();
+    }
+    
+    public boolean getLoggedOn()
+    {
+        Principal principal = requestContext.getRequest().getUserPrincipal();
+        return (principal != null);
+    }
+    
+    
+    
 }
