@@ -58,7 +58,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.jetspeed.om.common.PreferenceComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;

@@ -55,7 +55,7 @@ package org.apache.jetspeed.tools.castor.om.common;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.PreferenceImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 
 /**
  * Used to help Castor in mapping XML preferences to Java objects 

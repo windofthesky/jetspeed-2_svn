@@ -57,10 +57,10 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor;
 import org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor;
 import org.apache.jetspeed.om.common.LanguageSetImpl;
-import org.apache.jetspeed.om.common.PreferenceSetImpl;
 
 /**
  * Used to help Castor in mapping XML portlet types to Java objects 
