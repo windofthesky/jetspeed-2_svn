@@ -67,6 +67,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -75,6 +76,7 @@ import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.log4j.PropertyConfigurator;
@@ -342,26 +344,32 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
 
     }
 
-    public void xtestWritingToDB() throws Exception
+    public void testWritingToDB() throws Exception
     {
+        PersistenceStore store = registry.getPersistenceStore();
+        store.getTransaction().begin();
         MutablePortletApplication app = registry.getPortletApplication("HW_App");
         if (app != null)
-        {                
-            registry.removeApplication(app);                           
+        {            
+            registry.removeApplication(app);
+            store.getTransaction().commit();
+            store.getTransaction().begin();
         }
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
-
-        app.setName("HW_App");
-	    registry.registerPortletApplication(app);
-     
-      
-        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-        PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
         
-
+        app.setName("HW_App");
+                
+        store.getTransaction().begin();
+	    registry.registerPortletApplication(app);
+	    store.getTransaction().commit();
+	   // store.invalidateAll();
+	    
+	    store.getTransaction().begin();
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
-        assertNotNull(pd);
-
+        store.getTransaction().commit();
+        assertNotNull(pd);       
+       
+        
         assertNotNull(pd.getPreferenceSet());
 
         Preference pref1 = pd.getPreferenceSet().get("pref1");
@@ -377,9 +385,15 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         }
 
         assertTrue(count > 0);
-
-     	
-        registry.removeApplication(app);
+        
+        store.getTransaction().begin();
+        pd = registry.getPortletDefinitionByUniqueName("HW_App::PickANumberPortlet");
+        store.getTransaction().commit();
+        assertNotNull(pd);
+        
+        store.getTransaction().begin();
+        registry.removeApplication(app);        
+        store.getTransaction().commit();
 			
      
 
