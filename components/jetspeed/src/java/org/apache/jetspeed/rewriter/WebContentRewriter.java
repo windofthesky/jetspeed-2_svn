@@ -63,7 +63,7 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
          String modifiedURL = url;
         
         // Any relative URL needs to be converted to a full URL
-        if (url.startsWith("/") ) 
+        if (url.startsWith("/") || (!url.startsWith("http:") && !url.startsWith("https:"))) 
         {
             try
             {
