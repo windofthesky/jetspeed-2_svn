@@ -71,7 +71,7 @@ import org.apache.jetspeed.request.JetspeedRequestContext;
 /**
  * As part of its content, a portlet may need to create URLs that reference the portlet itself.
  * For example, when a user acts on a URL that references a portlet (i.e., by clicking a link
- * or submitting a form) the result is a new client request to the portal targeted to the portlet. 5
+ * or submitting a form) the result is a new client request to the portal targeted to the portlet.
  * Those URLs are called portlet URLs.
  * 
  * NOTE: parts of this code was borrowed from Pluto's portal implementation.

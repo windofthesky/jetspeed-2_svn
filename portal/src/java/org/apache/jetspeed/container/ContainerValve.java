@@ -83,7 +83,7 @@ public class ContainerValve
     {
         try
         {  
-            PortalURL currentURL = request.getRequestedPortalURL();            
+            PortalURL currentURL = request.getRequestedPortalURL();
             //PortletContainerServices.prepare();
             PortalControlParameter control = new PortalControlParameter(currentURL);
             PortletWindow actionWindow = control.getPortletWindowOfAction();

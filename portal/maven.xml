@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
+<property name='testcase' value='org.apache.jetspeed.container.TestPortletURL'/>
 
 <!--
   <goal name="jaxb:portlet"
@@ -82,6 +82,25 @@
             <arg value="HW_App" />
             <arg value="-warfilename" />
             <arg value="../applications/demo/target/demo.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+        </java>
+  </goal>
+
+ <goal name="pam.tsdeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="testsuite" />
+            <arg value="-warfilename" />
+            <arg value="../../jakarta-pluto/testsuite/target/testsuite.war" />
             <arg value="-webappDir" />
             <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />

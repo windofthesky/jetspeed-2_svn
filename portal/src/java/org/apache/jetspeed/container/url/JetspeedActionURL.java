@@ -51,19 +51,19 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container;
+package org.apache.jetspeed.container.url;
 
 
 
 /**
- * This is the RenderURL Implementation
+ * This is the ActionURL implementation
  * 
  */
-public class JetspeedRenderURL extends JetspeedPortletURL
+public class JetspeedActionURL extends JetspeedPortletURL
 {
-    protected JetspeedRenderURL(String contextPath, String peid, boolean secure )
+    protected JetspeedActionURL( String contextPath, String peid, boolean secure )
     {
-        super(contextPath, peid, secure, false);
+        super(contextPath, peid, secure, true);
     }
 
 }
