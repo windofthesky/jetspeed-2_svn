@@ -1342,7 +1342,7 @@ limitations under the License.
         <field-descriptor
          name="id"
          column="ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
          access="anonymous"
@@ -1352,7 +1352,7 @@ limitations under the License.
       <field-descriptor
          name="portletId"
          column="PORTLET_DEFINITION_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="BIGINT"
          access="anonymous"
 
       />
