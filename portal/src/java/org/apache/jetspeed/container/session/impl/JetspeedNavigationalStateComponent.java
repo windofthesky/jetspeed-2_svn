@@ -29,7 +29,6 @@ import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.picocontainer.Startable;
 
 /**
  * JetspeedNavigationalStateComponent
@@ -37,7 +36,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedNavigationalStateComponent implements NavigationalStateComponent, Startable 
+public class JetspeedNavigationalStateComponent implements NavigationalStateComponent
 {
     static private final String PREFIX = "_";    
     static private final String ACTION = "ac";
@@ -75,20 +74,13 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         this.navClassName = navClassName;
         this.urlClassName  = urlClassName;
         this.navigationKeys = navigationKeys;
-    }
-            
-    public void start()
-    {        
+        
         StringTokenizer tokenizer = new StringTokenizer(navigationKeys, ", ");
         for (int ix = 0; tokenizer.hasMoreTokens() && ix < NavigationalStateComponent.NAV_MAX; ix++)
         {
             String token = tokenizer.nextToken();
             navigationKeyNames[ix] = token;
         }
-    }
-    
-    public void stop()
-    {
     }
         
     public NavigationalState create(RequestContext context)
