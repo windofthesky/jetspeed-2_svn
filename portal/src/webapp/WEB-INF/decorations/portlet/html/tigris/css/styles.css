@@ -525,7 +525,8 @@ limitations under the License.
 	vertical-align: top;
 	font-size: small;
 	border: none;
-	white-space: nowrap;
+	/* action buttons shifts right a few millimeters by the following */
+	/*white-space: nowrap;*/
 }
 
 .portlet-tigris .portlet-table-header {
