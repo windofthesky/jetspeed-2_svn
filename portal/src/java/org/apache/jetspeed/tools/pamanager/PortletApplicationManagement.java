@@ -10,7 +10,7 @@ package org.apache.jetspeed.tools.pamanager;
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public interface PortletApplicationManagement extends Deployment, Registration
+public interface PortletApplicationManagement extends Deployment, Registration // , Lifecycle
 {
 
 }
