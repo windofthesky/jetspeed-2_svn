@@ -17,8 +17,6 @@ package org.apache.jetspeed.om.common;
 import java.util.Collection ;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.ObjectID;
-
 /**
  * DublinCore
  * <br/>
@@ -87,14 +85,4 @@ public interface DublinCore extends java.io.Serializable
     public Collection getTypes();
     public void setTypes(Collection types);
     void addType(Locale locale, String type);
-    
-    /**
-     * @param objectID
-     */
-    void setId(String objectID);
-    
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getId()
-     */
-    public ObjectID getId();
 }
