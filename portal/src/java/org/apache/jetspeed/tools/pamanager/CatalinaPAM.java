@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
+
 /**
  * This is the catalina specific implemenation for deplyment of Portlet Applications.
  *
@@ -60,17 +62,37 @@ package org.apache.jetspeed.tools.pamanager;
   * @version $Id$
  */
 
-public class CatalinaPAM implements Deployment, Lifecycle
+public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
 {
     // Implementaion of deplyment interface
 
-    // Interface not supported by this implementation 
-    public void deploy(String webAppsDir, 
-                       String warFile ,
-                       String paName
-                       ) throws PortletApplicationException
+    private TomcatManager tomcatManager;
+
+    public CatalinaPAM(int port, String user, String password) throws PortletApplicationException
     {
-        System.out.println("Not supported");
+        try
+        {
+            tomcatManager = new TomcatManager("localhost", port, user, password);
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
+
+    }
+
+    // Interface not supported by this implementation 
+    public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
+    {
+        super.deploy(webAppsDir, warFile, paName);
+        try
+        {
+            checkResponse(tomcatManager.install(warFile, paName));
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
     }
 
     /**
@@ -82,10 +104,18 @@ public class CatalinaPAM implements Deployment, Lifecycle
      * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
-    
-    public void deploy(String warFile,
-                       String paName) throws PortletApplicationException
+
+    public void deploy(String warFile, String paName) throws PortletApplicationException
     {
+        super.deploy(warFile, paName);
+        try
+        {
+            checkResponse(tomcatManager.install(warFile, paName));
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
     }
 
     /**
@@ -94,35 +124,63 @@ public class CatalinaPAM implements Deployment, Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    
+
     public void undeploy(String paName) throws PortletApplicationException
     {
+        try
+        {
+            checkResponse(tomcatManager.remove(paName));
+            super.undeploy(paName);
+        }
+        catch (UnsupportedOperationException usoe)
+        {
+            // ignore FS PAM not suporting this
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
     }
 
-   /** Undeploys application.
-   * 
-   * @param webAppsDir The webapps directory inside the Application Server
-   * @param paName The Portlet Application name 
-   * @throws PortletApplicationException
-   */
+    /** Undeploys application.
+    * 
+    * @param webAppsDir The webapps directory inside the Application Server
+    * @param paName The Portlet Application name 
+    * @throws PortletApplicationException
+    */
 
-  public void undeploy(String webAppsDir,
-                       String paName) throws PortletApplicationException
-      {
-        System.out.println("Not supported");
-      }
-    
+    public void undeploy(String webAppsDir, String paName) throws PortletApplicationException
+    {
+        try
+        {
+            checkResponse(tomcatManager.remove(paName));
+            super.undeploy(webAppsDir, paName);
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
+    }
 
     // Implementaion of Lifecycle interface
-       /**
-     * Starts the specified Portlet Application on the Application Server
-     * 
-     * @param paName The Portlet Application name 
-     * @throws PortletApplicationException
-     */
-    
+    /**
+    * Starts the specified Portlet Application on the Application Server
+    * 
+    * @param paName The Portlet Application name 
+    * @throws PortletApplicationException
+    */
+
     public void start(String paName) throws PortletApplicationException
     {
+        try
+        {
+            checkResponse(tomcatManager.start(paName));
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
+
     }
 
     /**
@@ -131,9 +189,17 @@ public class CatalinaPAM implements Deployment, Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    
+
     public void stop(String paName) throws PortletApplicationException
     {
+        try
+        {
+            checkResponse(tomcatManager.stop(paName));
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
     }
 
     /**
@@ -142,10 +208,25 @@ public class CatalinaPAM implements Deployment, Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    
+
     public void reload(String paName) throws PortletApplicationException
     {
+        try
+        {
+            checkResponse(tomcatManager.reload(paName));
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
+    }
+
+    private void checkResponse(String response) throws PortletApplicationException
+    {
+        if (response == null || !response.startsWith("OK"))
+        {
+            throw new PortletApplicationException("Catalina container action failed, \"" + response + "\"");
+        }
     }
 
 }
-
