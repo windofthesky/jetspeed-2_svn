@@ -193,5 +193,7 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
      *
      */
     void addSecurityRoleRef(SecurityRoleRef securityRef);
+    
+    SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink);
 
 }

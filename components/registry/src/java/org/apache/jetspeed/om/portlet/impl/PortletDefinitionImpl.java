@@ -47,6 +47,7 @@ import org.apache.jetspeed.om.impl.ParameterSetImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
 import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
+import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
@@ -753,6 +754,20 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         secListWrapper.setInnerCollection(securityRoleRefSet);
         secListWrapper.add(securityRef);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(java.lang.String, java.lang.String)
+     */
+    public SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink)
+    {
+        SecurityRoleRefImpl ref = new SecurityRoleRefImpl();
+        ref.setRoleName(name);
+        ref.setRoleLink(roleLink);
+        
+        addSecurityRoleRef(ref);
+        
+        return ref;
     }
 
     /**

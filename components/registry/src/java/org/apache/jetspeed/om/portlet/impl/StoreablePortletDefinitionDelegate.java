@@ -434,6 +434,14 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
 		portlet.addSecurityRoleRef(securityRef);
 
     }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(java.lang.String, java.lang.String)
+     */
+    public SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink)
+    {
+        return portlet.addSecurityRoleRef(roleName, roleLink);
+    }
 
     /** 
      * <p>

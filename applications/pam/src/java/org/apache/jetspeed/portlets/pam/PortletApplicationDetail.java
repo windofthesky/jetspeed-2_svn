@@ -45,8 +45,6 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.impl.LanguageImpl;
-import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
@@ -731,10 +729,7 @@ public class PortletApplicationDetail extends ServletPortlet
 	            SecurityRoleRefComposite securityRoleRef = (SecurityRoleRefComposite) portlet.getInitSecurityRoleRefSet().get(name);
 	            if(securityRoleRef == null && link != null)
 	            {
-		            securityRoleRef = new SecurityRoleRefImpl();
-		            securityRoleRef.setRoleName(name);
-		            securityRoleRef.setRoleLink(link);
-		            portlet.addSecurityRoleRef(securityRoleRef);
+	                securityRoleRef = (SecurityRoleRefComposite) portlet.addSecurityRoleRef(name, link);
 	            }
 	            
 	            if(securityRoleRef != null)
@@ -855,8 +850,7 @@ public class PortletApplicationDetail extends ServletPortlet
 	                    contentTypeImpl.addPortletMode(mode);
 	                }
 	            }
-	            
-	            
+
 	            String customModes = actionRequest.getParameter("custom_modes");
 	            StringTokenizer tok = new StringTokenizer(customModes, ",");
 	            while (tok.hasMoreTokens())
