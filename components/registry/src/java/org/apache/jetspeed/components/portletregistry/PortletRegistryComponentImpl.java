@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -458,13 +457,6 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 filter = store.newFilter();
                 filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
-                store.getTransaction().checkpoint();
-
-                
-                
-                filter = store.newFilter();
-                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(PortletEntityImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
