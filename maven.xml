@@ -136,14 +136,14 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}/components/prefs"
                includes="project.xml"
-               goals="build.prefs"
+               goals="jar:install"
                banner="Build and Install the Preferences Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/components/security"
                includes="project.xml"
-               goals="build.security"
+               goals="jar:install"
                banner="Build and Install the Security Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
