@@ -25,25 +25,22 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.Enumerator;
 import org.apache.pluto.util.NamespaceMapper;
@@ -58,6 +55,7 @@ import org.apache.pluto.util.NamespaceMapperAccess;
  */
 public class ServletRequestImpl extends HttpServletRequestWrapper
 {
+    public static final String ACCEPT_LANGUAGE = "Accept_Language";
     /** Logger */
     private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
 
@@ -70,7 +68,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     {
         super(servletRequest);
         nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
-        this.portletWindow = window;
+        this.portletWindow = window;        
     }
 
     protected HttpServletRequest _getHttpServletRequest()
@@ -266,7 +264,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Locale getLocale()
     {
-        Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+        //Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(RequestContext.REQUEST_PORTALENV);
+        Locale preferedLocale = requestContext.getLocale();
         if (preferedLocale != null)
         {
             return preferedLocale;
@@ -280,21 +280,35 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Enumeration getLocales()
     {
-        Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(RequestContext.REQUEST_PORTALENV);
+        Locale preferedLocale = requestContext.getLocale();
         if (preferedLocale != null)
         {
-            ArrayList locales = new ArrayList();
-            locales.add(preferedLocale);
-            Enumeration enum = super.getLocales();
-            while (enum.hasMoreElements())
-            {
-                locales.add(enum.nextElement());
-            }
-            Iterator i = locales.iterator();
-            return new Enumerator(locales);
+            return getLocaleEnum(preferedLocale);
         }
 
         return super.getLocales();
+    }
+
+    /**
+     * <p>
+     * getLocaleEnum
+     * </p>
+     *
+     * @param preferedLocale
+     * @return
+     */
+    protected Enumeration getLocaleEnum( Locale preferedLocale )
+    {
+        ArrayList locales = new ArrayList();
+        locales.add(preferedLocale);
+        Enumeration enum = super.getLocales();
+        while (enum.hasMoreElements())
+        {
+            locales.add(enum.nextElement());
+        }
+        Iterator i = locales.iterator();
+        return new Enumerator(locales);
     }
 
     /**
@@ -302,9 +316,14 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public String getHeader( String name )
     {
-        // TODO: replace accept-language header
-
-        return super.getHeader(name);
+        if(name.equals(ACCEPT_LANGUAGE))
+        {
+            return getLocale().getLanguage();   
+        }
+        else
+        {
+            return super.getHeader(name);
+        }
     }
 
     /**
@@ -312,9 +331,15 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Enumeration getHeaders( String name )
     {
-        // TODO: replace accept-language header
+        if(name.equals(ACCEPT_LANGUAGE))
+        {      
+            return getLocaleEnum(getLocale());         
+        }
+        else
+        {
+            return super.getHeaders(name);
+        }        
 
-        return super.getHeaders(name);
     }
 
     /**
@@ -349,5 +374,17 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
         }
         super.setAttribute(name, value);
+    }
+    /**
+     * <p>
+     * getHeaderNames
+     * </p>
+     *
+     * @see javax.servlet.http.HttpServletRequest#getHeaderNames()
+     * @return
+     */
+    public Enumeration getHeaderNames()
+    {
+        return super.getHeaderNames();
     }
 }
