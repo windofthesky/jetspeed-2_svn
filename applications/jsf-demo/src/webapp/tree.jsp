@@ -1,9 +1,9 @@
-<%@ page import="net.sourceforge.myfaces.custom.tree.DefaultMutableTreeNode,
-                 net.sourceforge.myfaces.custom.tree.model.DefaultTreeModel"%>
+<%@ page import="org.apache.myfaces.custom.tree.DefaultMutableTreeNode,
+                 org.apache.myfaces.custom.tree.model.DefaultTreeModel"%>
 <%@ page session="true" contentType="text/html;charset=utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.sourceforge.net/tld/myfaces_ext_0_9.tld" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
 
 <!--
 /*
@@ -63,7 +63,7 @@
         <f:verbatim><br></f:verbatim>
    </h:form>
 
-    <h:commandLink id="goHome" action="guessGameStart">
+    <h:commandLink id="goHome" action="guessGameStartFromTree">
         <h:outputText value="Return to Guess Game"/>
     </h:commandLink>
      

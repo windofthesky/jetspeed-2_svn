@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+]>
+
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -67,30 +71,7 @@ limitations under the License.
       <version>2.3</version>
     </dependency>
 
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-jsf-api</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-components</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+    &myfaces-deps;
 
     <dependency>
       <groupId>portals-bridges</groupId>

@@ -68,11 +68,38 @@ limitations under the License.
       <to-view-id>/tree.jsp</to-view-id>
     </navigation-case>
   </navigation-rule>
+  
+  <navigation-rule>
+    <description>
+        The decision rule used by the NavigationHandler to
+        determine which view must be displayed after the
+        current view, greeting.jsp is processed.
+    </description>
+    <from-view-id>/greeting.jsp</from-view-id>
+    <navigation-case>
+        <description>
+            Indicates to the NavigationHandler that the response.jsp
+            view must be displayed if the Action referenced by a 
+            UICommand component on the greeting.jsp view returns 
+            the outcome "treeView".
+        </description>
+      <from-outcome>treeTableView</from-outcome>
+      <to-view-id>/treeTable.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
 
   <navigation-rule>
     <from-view-id>/tree.jsp</from-view-id>
     <navigation-case>
-      <from-outcome>guessGameStart</from-outcome>
+      <from-outcome>guessGameStartFromTree</from-outcome>
+      <to-view-id>/greeting.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+  
+  <navigation-rule>
+    <from-view-id>/treeTable.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>guessGameStartFromTreeTable</from-outcome>
       <to-view-id>/greeting.jsp</to-view-id>
     </navigation-case>
   </navigation-rule>
@@ -115,6 +142,14 @@ limitations under the License.
     </managed-property>
 
   </managed-bean>
+  
+  <!-- Managed bean for tree -->
+  <managed-bean>
+    <managed-bean-name>treeTable</managed-bean-name>
+    <managed-bean-class>guessNumber.TreeTable</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+  
 
 
 </faces-config>

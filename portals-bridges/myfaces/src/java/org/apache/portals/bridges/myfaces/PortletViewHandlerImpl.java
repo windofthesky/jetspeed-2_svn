@@ -113,7 +113,14 @@ public class PortletViewHandlerImpl extends ViewHandler
      */
     public String getResourceURL(FacesContext facesContext, String path)
     {
-        return handler.getResourceURL(facesContext, path);
+        if (path.length() > 0 && path.charAt(0) == '/')
+        {
+            return facesContext.getExternalContext().getRequestContextPath() + path;
+        }
+        else
+        {
+            return facesContext.getExternalContext().getRequestContextPath() + "/" + path;
+        }
     }
 
     /**

@@ -37,8 +37,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import net.sourceforge.myfaces.util.EnumerationIterator;
-
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -377,6 +375,10 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public String encodeResourceURL(String s)
     {
+        if ((null != s) && (!s.startsWith("http") && (!s.startsWith("/"))))
+        {
+            s = "/" + s;
+        }
         return this.portletResponse.encodeURL(s);
     }
 

@@ -35,6 +35,10 @@ limitations under the License.
     <h2>Wanna see a tree?</h2>
     <br>
     <h:commandLink id="treeLink" action="treeView">
-        <h:outputText value="Click Here"/>
+        <h:outputText value="Click Here for Tree"/>
+    </h:commandLink>
+    &nbsp;|&nbsp;
+    <h:commandLink id="treeTableLink" action="treeTableView">
+        <h:outputText value="Click Here for Tree Table"/>
     </h:commandLink>
 </f:view>  

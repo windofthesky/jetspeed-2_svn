@@ -39,8 +39,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 
-import net.sourceforge.myfaces.util.NullIterator;
-
 /**
  * <p>
  * See MyFaces project for servlet implementation.

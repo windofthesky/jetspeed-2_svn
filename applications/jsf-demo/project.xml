@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -85,44 +88,17 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-jsf-api</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-components</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>portals-bridges</groupId>
-      <artifactId>portals-bridges-myfaces</artifactId>
-      <version>0.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
       <id>log4j</id>
       <version>1.2.8</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
-    </dependency>    
+    </dependency>
+    
+    &myfaces-deps;
+    
+    &myfaces-bridge-deps;
+    
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -164,20 +140,8 @@ limitations under the License.
   </build>
 
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+    
+    &j2-reports;
+    
   </reports>  
 </project>
