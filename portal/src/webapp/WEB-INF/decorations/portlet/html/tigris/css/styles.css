@@ -21,7 +21,7 @@ limitations under the License.
 
 .portlet-tigris .PTitle
 {
-    padding: 8px;
+    padding: 2px;
     border: 1px solid #999999;
     color: #990000;
     background-color: #dddddd;
@@ -48,7 +48,7 @@ limitations under the License.
 
 .portlet-tigris .PContent
 {
-    padding: 2px;
+    padding: 3px;
     overflow : scroll;
 	border: 1px solid #999999
 }
