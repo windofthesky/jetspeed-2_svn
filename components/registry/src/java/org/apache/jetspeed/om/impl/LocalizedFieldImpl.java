@@ -98,9 +98,31 @@ public class LocalizedFieldImpl implements LocalizedField
         id = JetspeedObjectID.createFromString(oid).longValue();
     }
     
-    public void setLanguage(String lang)
+    public void setLanguage(String language)
     {
-        this.locale = new Locale(lang);
+		if (language != null)
+        {
+            String[] localeArray = language.split("[-|_]");
+            String country = "";
+            String variant = "";
+            for (int i = 0; i < localeArray.length; i++)
+            {
+                if (i == 0)
+                {
+                    language = localeArray[i];
+                }
+                else if (i == 1)
+                {
+                    country = localeArray[i];
+                }
+                else if (i == 2)
+                {
+                    variant = localeArray[i];
+                }
+            }
+
+            this.locale = new Locale(language, country, variant);
+        }
     }
 
     /* (non-Javadoc)
