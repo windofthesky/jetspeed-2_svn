@@ -19,22 +19,22 @@ limitations under the License.
 
 <portlet:defineObjects/>
 
-<h3>User roles</h3>
+<h3>User attributes</h3>
 
 <c:choose>
 
   <c:when test="${empty renderRequest.userPrincipal}">
-	  Login to see the roles you've been assigned
+	  Login to see the user attributes available.
   </c:when>
 
   <c:otherwise>
     User: <c:out value='${renderRequest.userPrincipal.name}'/><br>
-    <br>
-    <b>Portlet Request - User info:</b>
-    <br>Render request: <%= renderRequest.getAttribute(PortletRequest.USER_INFO) %>
-    <br>Request: <%= request.getAttribute(PortletRequest.USER_INFO) %>
+    <% /**
+    <br>Render request: renderRequest.getAttribute(PortletRequest.USER_INFO) 
+    <br>Request: request.getAttribute(PortletRequest.USER_INFO) 
+	*/ %>
   </c:otherwise>
 
 </c:choose>
 <br>
-For help on role configuration select the help icon.
+For help on user attributes configuration select the help icon.
