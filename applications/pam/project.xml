@@ -100,7 +100,8 @@
     
     <!--taglibs-->
     <dependency>
-      <id>jetspeed2:jetspeed2-taglib-treecontrol</id>
+      <id>jetspeed2-taglib-treecontrol</id>
+      <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
         <war.bundle>true</war.bundle>
