@@ -51,7 +51,6 @@ limitations under the License.
 				{
 					if(id instanceof Collection)
 					{
-						out.write("IT's A CoLLCTION");
 						Collection coll = (Collection)id;
 						name = (String) coll.iterator().next();
 					}
@@ -69,7 +68,6 @@ limitations under the License.
 					{
 						if(id instanceof Collection)
 						{
-							out.write("IT's A CoLLCTION");
 							Collection coll = (Collection)pa;
 							paName = (String) coll.iterator().next();
 						}
