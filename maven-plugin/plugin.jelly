@@ -106,7 +106,7 @@ limitations under the License.
   
   <goal name="jetspeed2:build.portal"> 
   	
-  	  <copy todir="${basedir}/etc/project-dependencies" overwrite="true" failonerror="true">
+  	 <copy todir="${basedir}/etc/project-dependencies" overwrite="true" failonerror="true">
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-dependencies" />
      </copy>
      <copy todir="${basedir}/etc/project-resources" overwrite="true" failonerror="true">
@@ -160,6 +160,8 @@ limitations under the License.
      
        <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
         <filterset begintoken="@" endtoken="@">
+          <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}"/>
+          <filter token="AUTODEPLOYMENT_PORT" value="${org.apache.jetspeed.services.autodeployment.port}"/>
           <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
           <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
         </filterset>
@@ -226,6 +228,22 @@ limitations under the License.
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
   </goal>
   
+  <!-- This currently DOES NOT WORK, even after getting SCP to work in ant 1.6.2 -->
+  <goal name='jetspeed2:deploy.shared.scp'>
+    <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared} using SCP...</echo>
+    
+    <j:set var="portal_project_desc_path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml" /> 	
+  	 	
+  	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
+    <echo>Pluto: ${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}</echo>
+    <scp file="${portal_project.getDependencyPath('pluto')}" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true" verbose="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>
+    <ant:scp file="${portal_project.getDependencyPath('jetspeed2:jetspeed-commons')}" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>
+    <ant:scp file="${portal_project.getDependencyPath('portlet-api')}" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>  	  
+    <ant:scp file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>    
+    <ant:scp file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>    
+    <ant:scp file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.1.jar" todir="${org.apache.jetspeed.scp.user}@${org.apache.jetspeed.server.shared}" failonerror="true"  keyfile="${org.apache.jetspeed.key.file}" passphrase="${org.apache.jetspeed.key.passphrase}"/>    
+  </goal>
+  
   <goal name="jetspeed2:deploy.portal">  	
   	
 	<attainGoal name='jetspeed2:deploy.shared'/>  	
@@ -239,7 +257,9 @@ limitations under the License.
 	<attainGoal name='jetspeed2:copy.context'/>
 	          
      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
-     <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
+     <j:if test="${org.apache.jetspeed.explode.war}">
+       <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
+     </j:if>
      
      <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
       <echo>Build jetspeed.xml for Tomcat version ${catalina_version_major}</echo>
