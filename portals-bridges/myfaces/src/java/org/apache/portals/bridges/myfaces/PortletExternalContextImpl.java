@@ -21,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -272,10 +271,10 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public Map getRequestHeaderMap()
     {
-        // TODO Hack to fix issue with MyFaces 1.0.6
         if (this.requestHeaderMap == null)
         {
-            requestHeaderMap = new HashMap();
+            requestHeaderMap = new RequestHeaderMap(this.portletRequest);
+            // TODO Hack to fix issue with MyFaces 1.0.6
             requestHeaderMap.put("Content-Type", portletRequest.getResponseContentType());
         }
         return requestHeaderMap;
@@ -286,6 +285,10 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public Map getRequestHeaderValuesMap()
     {
+        if (this.requestHeaderValuesMap == null)
+        {
+            requestHeaderValuesMap = new RequestHeaderValuesMap(this.portletRequest);
+        }
         return requestHeaderValuesMap;
     }
 

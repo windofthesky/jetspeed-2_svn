@@ -57,6 +57,10 @@ public class FacesPortlet extends GenericPortlet
 
     /** The VIEW_ID used for externalContext.getRequestServletPath(). */
     public static final String VIEW_ID = "org.apache.portals.bridges.myfaces.VIEW_ID";
+    
+    /** The JSF_VIEW_ID used to maintain the state of the view action. */
+    // TODO Is this myfaces specific?
+    public static final String JSF_VIEW_ID = "jsf_viewid";
 
     /** Name of portlet preference for Action page. */
     public static final String PARAM_ACTION_PAGE = "ActionPage";
@@ -461,22 +465,38 @@ public class FacesPortlet extends GenericPortlet
         PortletRequest portletRequest = (PortletRequest) facesContext.getExternalContext().getRequest();
         if (portletRequest instanceof ActionRequest)
         {
+            String actionView = null;
+            
+            // Used by Myfaces (specific?) to provide the state of the current
+            // page.  How do we know when to stay on a page or when to navigate?
+            //if (null != portletRequest.getParameter(JSF_VIEW_ID))
+            //{
+            //    actionView = portletRequest.getParameter(JSF_VIEW_ID);
+            //}
             if ((null != facesContext.getViewRoot()) && (null != facesContext.getViewRoot().getViewId()))
             {
+                actionView = facesContext.getViewRoot().getViewId();
+            }
+            
+            if (null != actionView)
+            {
                 ((ActionResponse) facesContext.getExternalContext().getResponse()).setRenderParameter(
-                        FacesPortlet.VIEW_ID, facesContext.getViewRoot().getViewId());
+                        FacesPortlet.VIEW_ID, actionView);
             }
         }
         if ((portletRequest instanceof RenderRequest) && (null != portletRequest.getParameter(FacesPortlet.VIEW_ID)))
         {
             defaultView = portletRequest.getParameter(FacesPortlet.VIEW_ID);
         }
+        
+        // Return if we alreay have the viewid for the RenderRequest.
         if ((null != portletRequest.getAttribute(FacesPortlet.VIEW_ID))
                 && (!portletRequest.getAttribute(FacesPortlet.VIEW_ID).equals(defaultView)))
         {
             return;
         }
-        if (facesContext.getViewRoot() == null)
+        
+        if (null == facesContext.getViewRoot())
         {
             facesContext.setViewRoot(new UIViewRoot());
             if (log.isDebugEnabled())
