@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <folder>
   <title>Public Folders</title>  
-  <security-constraints>
-    <security-constraint>
-      <users>*</users>
-      <permissions>view, edit</permissions>
-    </security-constraint>
-  </security-constraints>  
-</folder>
 
+  <security-constraints>
+    <security-constraints-ref>public-edit</security-constraints-ref>
+  </security-constraints>
+</folder>

@@ -31,4 +31,8 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">
         PSML ページ 2
   </metadata>  
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </page>

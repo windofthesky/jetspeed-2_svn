@@ -35,7 +35,6 @@ limitations under the License.
         テストスイートページ
   </metadata>
 
-  <!-- allow engineering to view, but disable all access for accounting and marketing groups -->
   <security-constraints>
     <security-constraint>
       <groups>accounting, marketing</groups>

@@ -25,8 +25,8 @@
   <document-order>pages.ds</document-order>
   <document-order>non-java.ds</document-order>
 
-  <!-- define user as owner -->
   <security-constraints>
     <owner>user</owner>
+    <security-constraints-ref>manager</security-constraints-ref>
   </security-constraints>
 </folder>

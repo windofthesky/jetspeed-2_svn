@@ -23,16 +23,11 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
-  <!-- allow all users to view 
-       TODO: restrict to logged on users only (but how?)
-  -->
+
   <security-constraints>
     <security-constraint>
       <users>guest</users>
     </security-constraint>
-    <security-constraint>
-      <users>*</users>
-      <permissions>view</permissions>
-    </security-constraint>
+    <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
 </page>

@@ -26,5 +26,9 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">
         CSS デモ
   </metadata>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </page>
 

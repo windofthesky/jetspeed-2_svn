@@ -18,4 +18,26 @@
     </security-constraint>
   </security-constraints-def>
 
+  <!-- define user constraints -->
+  <security-constraints-def name="users">
+    <security-constraint>
+      <roles>user, manager</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints-def>
+
+  <!-- define public constraints -->
+  <security-constraints-def name="public-view">
+    <security-constraint>
+      <users>*</users>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints-def>
+  <security-constraints-def name="public-edit">
+    <security-constraint>
+      <users>*</users>
+      <permissions>view, edit</permissions>
+    </security-constraint>
+  </security-constraints-def>
+
 </page-security>

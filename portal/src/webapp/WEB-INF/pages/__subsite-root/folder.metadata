@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+
+  <title>Subsite Root Folder</title>  
+
+  <document-order>subsite2-default-page.psml</document-order>
+  <document-order>subsite2-bookmarks.psml</document-order>
+  <document-order>subsite-bookmarks.psml</document-order>
+  <document-order>subsite-default-page.psml</document-order>
+
+  <security-constraints>
+    <security-constraint>
+      <roles>subsite, subsite2</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints>
+  
+</folder>

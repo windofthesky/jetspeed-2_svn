@@ -35,4 +35,8 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">
         JSF 数当てポートレット
   </metadata>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </page>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+
+  <title>Subsite2 Root Folder</title>  
+
+  <default-page>subsite2-default-page.psml</default-page>
+
+  <security-constraints>
+    <owner>subsite2</owner>
+    <security-constraint>
+      <roles>subsite, subsite2</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints>
+
+</folder>

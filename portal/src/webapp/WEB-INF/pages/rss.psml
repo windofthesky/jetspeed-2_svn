@@ -27,12 +27,8 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
-  <!-- allow all users to view -->
+
   <security-constraints>
-    <security-constraint>
-      <users>*</users>
-      <permissions>view</permissions>
-    </security-constraint>
+    <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
-  
 </page>

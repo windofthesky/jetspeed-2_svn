@@ -3,4 +3,8 @@
   <title >Third Party Portlets</title>  
   <metadata name="title" xml:lang="fr">Portlets de contributeurs externes</metadata>
   <metadata name="title" xml:lang="ja">サードパーティポートレット</metadata>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </folder>

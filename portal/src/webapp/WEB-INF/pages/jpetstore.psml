@@ -20,4 +20,8 @@ limitations under the License.
   <fragment id="jp-1" type="layout" name="jetspeed::VelocityOneColumn">
     <fragment id="jp-2" type="portlet" name="jpetstore::JPetstorePortlet"/>
   </fragment>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </page>

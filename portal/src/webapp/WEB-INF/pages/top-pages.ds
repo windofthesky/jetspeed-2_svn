@@ -4,4 +4,8 @@
   <metadata name="title" xml:lang="fr">Page haut</metadata>
   <profile-locator>docset</profile-locator>
   <document-path>/Administrative</document-path>
+
+  <security-constraints>
+    <security-constraints-ref>users</security-constraints-ref>
+  </security-constraints>
 </document-set>

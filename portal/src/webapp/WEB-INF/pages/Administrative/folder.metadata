@@ -2,7 +2,7 @@
 <folder>
   <title >Jetspeed Administrative Portlets</title>  
   <metadata name="title" xml:lang="fr">Jetspeed Portlets Administratif</metadata>
-  <metadata name="title" xml:lang="ja">Jetspeed 管�?��?ートレット</metadata>
+  <metadata name="title" xml:lang="ja">Jetspeed 管理ポートレット</metadata>
 
   <document-order>user-mgt.psml</document-order>
   <document-order>role-group.psml</document-order>
@@ -12,7 +12,6 @@
   <document-order>profiler.psml</document-order>
   <document-order>role-mgt.psml</document-order>
 
-  <!-- allow only manager role -->
   <security-constraints>
     <security-constraints-ref>manager</security-constraints-ref>
   </security-constraints>

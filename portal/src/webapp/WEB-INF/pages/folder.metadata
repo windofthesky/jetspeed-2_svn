@@ -9,22 +9,7 @@
   <document-order>apache_portals.link</document-order>
   <document-order>apache.link</document-order>
 
-  <!-- allow user role to view and allow manager role by default -->
-  <!--
   <security-constraints>
-    <security-constraint>
-      <roles>user</roles>
-      <permissions>view</permissions>
-    </security-constraint>
-    <security-constraints-ref>manager</security-constraints-ref>
+    <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
-      -->
-
-  <security-constraints>
-    <security-constraint>
-      <users>*</users>
-      <permissions>view</permissions>
-    </security-constraint>
-  </security-constraints>
-  
 </folder>
