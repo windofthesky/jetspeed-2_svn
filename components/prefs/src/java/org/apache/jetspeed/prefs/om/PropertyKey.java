@@ -38,18 +38,6 @@ public interface PropertyKey extends Serializable, Cloneable
     void setPropertyKeyId(int propertyKeyId);
 
     /**
-     * <p>Getter for the property set definition id.</p>
-     * @return The property set definition id.
-     */
-    int getPropertySetDefId();
-
-    /**
-     * <p>Setter for the property set definition id.</p>
-     * @param propertySetDefId The property set definition id.
-     */
-    void setPropertySetDefId(int propertySetDefId);
-
-    /**
      * <p>Getter for the property key name.</p>
      * @return The property key name.
      */

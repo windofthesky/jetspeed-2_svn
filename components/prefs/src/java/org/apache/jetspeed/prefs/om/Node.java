@@ -55,39 +55,27 @@ public interface Node extends Serializable, Cloneable
 
     /**
      * <p>Getter for the node properties.</p>
-     * @return The property set properties.
+     * @return The node properties.
      */
-    Collection getProperties();
+    Collection getNodeProperties();
 
     /**
      * <p>Setter for the node properties.</p>
-     * @param properties The property set properties.
+     * @param properties The node properties.
      */
-    void setProperties(Collection properties);
+    void setNodeProperties(Collection nodeProperties);
 
     /**
-     * <p>Getter for the property set definition id.</p>
-     * @return The property set definition id.
+     * <p>Getter for the keys associated to a specific nodes.</p>
+     * @return The node keys.
      */
-    Integer getPropertySetDefId();
+    Collection getNodeKeys();
 
     /**
-     * <p>Setter for the property set definition id.</p>
-     * @param propertySetDefId The property set definition id.
+     * <p>Setter for the keys associated to a specific nodes.</p>
+     * @param nodeKeys The node keys.
      */
-    void setPropertySetDefId(Integer propertySetDefId);
-
-    /**
-     * <p>Getter for the property set definition.</p>
-     * @return The property set definition.
-     */
-    PropertySetDef getPropertySetDef();
-
-    /**
-     * <p>Setter for the property set definition.</p>
-     * @param propertySetDef The property set definition.
-     */
-    void setPropertySetDef(PropertySetDef propertySetDef);
+    void setNodeKeys(Collection nodeKeys);
 
     /**
      * <p>Getter for the node name.</p>
