@@ -128,19 +128,19 @@ public class JetspeedDeploy
             if(rewriter.isPortletTaglibAdded())
             {
                 System.out.println("Attempting to add portlet.tld to war...");
-                File portletTld = new File("../../portal/src/webapp/WEB-INF/tld/portlet.tld");
-                System.out.println("Looking for portlet.tld in " + portletTld);
-                if(portletTld.exists())
+                //File portletTld = new File("../../portal/src/webapp/WEB-INF/tld/portlet.tld");
+                //System.out.println("Looking for portlet.tld in " + portletTld);
+                InputStream is = this.getClass().getResourceAsStream("/org/apache/jetspeed/tools/deploy/portlet.tld");
+                if(is == null)
                 {
-                    System.out.println("Adding portlet.tld to war...");
-	                FileInputStream fis = new FileInputStream(portletTld);
-	                
-	                addFile("WEB-INF/tld/portlet.tld", fis, jout);
-	                fis.close();
+                    System.out.println("Failed to find portlet.tld in classpath");
                 }
                 else
                 {
-                    System.out.println("Failed to find portlet.tld...  Skipping...");
+	                System.out.println("Adding portlet.tld to war...");
+	                
+	                addFile("WEB-INF/tld/portlet.tld", is, jout);
+	                is.close();
                 }
             }
             
