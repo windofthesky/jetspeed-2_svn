@@ -89,7 +89,7 @@ limitations under the License.
     
     <dependency>
       <id>picocontainer</id>
-      <version>1.0-beta-5-SNAPSHOT</version>
+      <version>1.0-RC-1-SNAPSHOT</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>

@@ -21,7 +21,7 @@ import java.util.Locale;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -79,8 +79,10 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletEntityAccessComponent.class);
-        suite.setScript("org/apache/jetspeed/containers/test-entity.groovy");
+        //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletEntityAccessComponent.class);
+        //suite.setScript("org/apache/jetspeed/containers/test-entity.groovy");
+        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPortletEntityAccessComponent.class);
+        
         
         return suite;
     }

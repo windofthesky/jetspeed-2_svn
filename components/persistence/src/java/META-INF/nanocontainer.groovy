@@ -6,7 +6,6 @@ import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceS
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.picocontainer.ComponentAdapter
 import org.picocontainer.defaults.ConstructorInjectionComponentAdapter
-import org.apache.jetspeed.components.MultiStartPicoContainerWrapper
 
 
 container = new DefaultPersistenceStoreContainer(15000, 10000)
@@ -23,4 +22,4 @@ ComponentAdapter ca = new ConstructorInjectionComponentAdapter("jetspeed", PBSto
 container.registerComponent(ca)
 
 
-return new MultiStartPicoContainerWrapper(container)
+return container

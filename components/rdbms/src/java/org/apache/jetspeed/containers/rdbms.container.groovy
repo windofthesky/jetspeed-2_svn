@@ -9,8 +9,9 @@ import org.apache.commons.pool.impl.GenericObjectPool
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.ComponentAdapter
-import org.picocontainer.defaults.ConstructorComponentAdapter
+import org.picocontainer.defaults.ConstructorInjectionComponentAdapter
 import java.io.File
+import org.apache.jetspeed.components.MultiStartPicoContainerWrapper
 
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
@@ -40,4 +41,4 @@ if(url != null)
 
 
 
-return container
+return new MultiStartPicoContainerWrapper(container)

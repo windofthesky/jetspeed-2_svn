@@ -43,30 +43,18 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
 {
     
     private MutablePicoContainer rootContainer;
+    protected ScriptedContainerBuilder containerBuilder;
 
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @throws java.io.IOException
-     * @throws java.lang.ClassNotFoundException
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.ContainerManagement#killContainer()
      */
-    public ComponentManager(File arg0, PicoContainer arg1, ClassLoader arg2) throws IOException, ClassNotFoundException
+    public void killContainer()
     {
-        super(arg0, arg1, arg2);        
+        ObjectReference ref = new SimpleReference();
+        ref.set(rootContainer);
+        containerBuilder.killContainer(ref);
     }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @throws java.io.IOException
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(File arg0, PicoContainer arg1) throws IOException, ClassNotFoundException
-    {
-        super(arg0, arg1);        
-    }
-
+    
     /**
      * @param arg0
      * @throws java.io.IOException
@@ -85,7 +73,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
      */
     public ComponentManager(Reader arg0, String arg1, ClassLoader arg2) throws ClassNotFoundException
     {
-        super(arg0, arg1, arg2);        
+        super(arg0, arg1.startsWith(".")?getBuilderClassName(arg1):arg1, arg2);        
     }
 
     /**
@@ -95,20 +83,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
      */
     public ComponentManager(Reader arg0, String arg1) throws ClassNotFoundException
     {
-        super(arg0, arg1);        
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(Reader arg0, String arg1, PicoContainer arg2, ClassLoader arg3) throws ClassNotFoundException
-    {
-        super(arg0, arg1, arg2, arg3);
-        
+        super(arg0, arg1.startsWith(".")?getBuilderClassName(arg1):arg1);        
     }
 
     /**
@@ -125,8 +100,8 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
         if(rootContainer == null)
         {
             ObjectReference containerRef = new SimpleReference();
-            ScriptedContainerBuilder scb = this.getContainerBuilder();
-            scb.buildContainer(containerRef, null, "jetspeed");
+            containerBuilder = this.getContainerBuilder();
+            containerBuilder.buildContainer(containerRef, null, "jetspeed");
             rootContainer = (MutablePicoContainer) containerRef.get();            
         }
         

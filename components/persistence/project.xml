@@ -72,6 +72,20 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
+      <id>commons-vfs</id>
+      <version>SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>nanocontainer:nanocontainer-deployer</id>
+      <version>1.0-beta-1-SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency> 
+    <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
       <properties>
@@ -189,7 +203,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>picocontainer</id>
-      <version>1.0-beta-5-SNAPSHOT</version>
+      <version>1.0-RC-1-SNAPSHOT</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>

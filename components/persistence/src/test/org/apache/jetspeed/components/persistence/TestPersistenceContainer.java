@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components.persistence;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -52,10 +54,14 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
         // TODO Auto-generated constructor stub
     }
 
-    public static Test suite()
+    public static Test suite() throws MalformedURLException
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPersistenceContainer.class);
-        suite.setScript("org/apache/jetspeed/containers/test.persistence.groovy");
+       // ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPersistenceContainer.class);
+       //  suite.setScript("org/apache/jetspeed/containers/test.persistence.groovy");
+
+        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPersistenceContainer.class);
+        // suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
+        
         
         return suite;
     }

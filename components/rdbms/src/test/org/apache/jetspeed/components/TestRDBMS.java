@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components;
+import java.io.File;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
@@ -34,12 +35,15 @@ import org.picocontainer.MutablePicoContainer;
  */
 public class TestRDBMS extends AbstractComponentAwareTestCase
 {
-    public static Test suite()
+    public static Test suite() throws Exception
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRDBMS.class);
-        suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
+        //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRDBMS.class);
+        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRDBMS.class);
+        // suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
+        suite.setApplicationFolders(new String[] {new File("./target/classes").toURL().toString()});
         return suite;
     }
+    
     /**
      * Defines the testcase name for JUnit.
      * 
@@ -54,7 +58,8 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
     public void testDBCP_1() throws Exception
     {
         assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));
-        MutablePicoContainer defaultContainer = getComponentManager().getRootContainer();
+        // MutablePicoContainer defaultContainer = getComponentManager().getRootContainer();
+        MutablePicoContainer defaultContainer = getContainer();
         DatasourceComponent dsc = (DatasourceComponent) defaultContainer
         .getComponentInstance(DatasourceComponent.class);
         assertNotNull(dsc);

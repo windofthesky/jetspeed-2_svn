@@ -15,18 +15,18 @@
  */
 package org.apache.jetspeed.components;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.PicoInitializationException;
 import org.picocontainer.PicoIntrospectionException;
 import org.picocontainer.defaults.AssignabilityRegistrationException;
+import org.picocontainer.defaults.ClassHierarchyIntrospector;
 import org.picocontainer.defaults.ImplementationHidingComponentAdapter;
-import org.picocontainer.defaults.InterfaceFinder;
 import org.picocontainer.defaults.NotConcreteRegistrationException;
 import org.picocontainer.defaults.Swappable;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * InterceptorAdaptor
@@ -40,7 +40,7 @@ public class InterceptorAdapter extends ImplementationHidingComponentAdapter // 
     {
         super(delegate);
     }
-    private final InterfaceFinder interfaceFinder = new InterfaceFinder();
+    
     public Object getComponentInstance()
         throws
             PicoInitializationException,
@@ -58,7 +58,7 @@ public class InterceptorAdapter extends ImplementationHidingComponentAdapter // 
         else
         {
             interfaces =
-                interfaceFinder.getInterfaces(
+                ClassHierarchyIntrospector.getAllInterfaces(
                     getDelegate().getComponentImplementation());
         }
         Class[] swappableAugmentedInterfaces = new Class[interfaces.length + 1];
@@ -103,7 +103,7 @@ public class InterceptorAdapter extends ImplementationHidingComponentAdapter // 
             Class declaringClass = method.getDeclaringClass();
             if (declaringClass.equals(Object.class))
             {
-                if (method.equals(InterfaceFinder.hashCode))
+                if (method.equals(ClassHierarchyIntrospector.hashCode))
                 {
                     // Return the hashCode of ourself, as Proxy.newProxyInstance() may
                     // return cached proxies. We want a unique hashCode for each created proxy!
@@ -111,7 +111,8 @@ public class InterceptorAdapter extends ImplementationHidingComponentAdapter // 
                         System.identityHashCode(
                             DelegatingInvocationHandler.this));
                 }
-                if (method.equals(InterfaceFinder.equals))
+                if (method.equals(ClassHierarchyIntrospector.equals))
+                    
                 {
                     return new Boolean(proxy == args[0]);
                 }
@@ -132,7 +133,7 @@ public class InterceptorAdapter extends ImplementationHidingComponentAdapter // 
                     return method.invoke(delegatedInstance, args);
                 }
         }
-        public Object __hotSwap(Object newSubject)
+        public Object hotswap(Object newSubject)
         {
             Object result = delegatedInstance;
             delegatedInstance = newSubject;

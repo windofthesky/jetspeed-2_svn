@@ -52,5 +52,10 @@ limitations under the License.
   	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
  </goal> 
+ 
+  <preGoal name="test:test">
+  	 <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-rdbms-2.0-a1-dev.jar" />
+     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-persistence-2.0-a1-dev.jar" />
+  </preGoal>
 
 </project>

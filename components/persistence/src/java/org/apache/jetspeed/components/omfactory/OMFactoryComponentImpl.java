@@ -20,10 +20,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.picocontainer.defaults.ConstructorComponentAdapterFactory;
+import org.picocontainer.defaults.ConstructorInjectionComponentAdapterFactory;
 import org.picocontainer.defaults.DefaultPicoContainer;
 
 
@@ -46,7 +45,7 @@ public class OMFactoryComponentImpl extends DefaultPicoContainer implements OMFa
     public OMFactoryComponentImpl(Properties props)
     {
         // We allways want new instance of the object model
-        super(new ConstructorComponentAdapterFactory());
+        super(new ConstructorInjectionComponentAdapterFactory());
         this.props = props;
         this.classMap = new HashMap();
     }

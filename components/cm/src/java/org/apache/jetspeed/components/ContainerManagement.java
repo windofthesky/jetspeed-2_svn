@@ -34,6 +34,8 @@ public interface ContainerManagement
     
     Collection getContainers();
     
+    void killContainer();
+    
     // void addContainer(String containerName, MutablePicoContainer container);
     
     // void removeContainer(String containerName);

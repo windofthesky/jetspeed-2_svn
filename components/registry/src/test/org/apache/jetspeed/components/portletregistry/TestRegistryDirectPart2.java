@@ -20,11 +20,10 @@ import java.util.Locale;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -95,8 +94,9 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirectPart2.class);
-        suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
+       // ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirectPart2.class);
+       // suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
+        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRegistryDirectPart2.class);
         return suite;
     }
 

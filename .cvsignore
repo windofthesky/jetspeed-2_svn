@@ -4,3 +4,5 @@ target
 .classpath
 hsqldb
 bin
+*.1
+*.out

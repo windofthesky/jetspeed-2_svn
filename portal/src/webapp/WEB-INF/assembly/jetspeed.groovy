@@ -16,7 +16,7 @@
 import org.picocontainer.defaults.DefaultPicoContainer
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.ComponentAdapter
-import org.picocontainer.defaults.ConstructorComponentAdapter
+import org.picocontainer.defaults.ConstructorInjectionComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ComponentParameter
 import org.apache.jetspeed.locator.JetspeedTemplateLocator
