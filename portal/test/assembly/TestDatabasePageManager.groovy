@@ -24,6 +24,6 @@ container.registerComponentInstance("IdGenerator", idgenerator)
 // Page Manager
 //
 container.registerComponentInstance("DatabasePageManager", 
-                                     new DatabasePageManager(null, idgenerator))
+                                     new DatabasePageManager(null, idgenerator, null))
 
 return container

@@ -62,6 +62,7 @@ import javax.portlet.PortletMode;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
@@ -126,6 +127,15 @@ public class TestRegistry extends JetspeedTest
 		// TODO Auto-generated constructor stub
 	}
     
+	public void testNothing()
+	{
+	    // keeps empty test from failing for now
+	}
+	
+    public static Test suite()
+    {
+        return new TestSuite(TestRegistry.class);
+    }
 
 //    public static Test suite()
 //    {

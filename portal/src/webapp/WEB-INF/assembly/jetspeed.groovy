@@ -5,12 +5,19 @@ import org.picocontainer.defaults.ConstructorComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
+import org.hsqldb.jdbcDriver
 import org.apache.jetspeed.locator.JetspeedTemplateLocator
 import org.apache.jetspeed.components.ComponentAssemblyTestCase
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
 import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.Jetspeed
 import org.apache.jetspeed.components.hsql.HSQLServerComponent
+import org.apache.jetspeed.components.hsql.HSQLServerComponent
+import org.apache.jetspeed.components.jndi.JNDIComponent
+import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
+import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
+import org.apache.jetspeed.components.datasource.DatasourceComponent
+import org.apache.commons.pool.impl.GenericObjectPool
 import org.apache.jetspeed.components.persistence.store.ojb.OJBTypeIntializer
 import org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl
 import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
@@ -64,10 +71,21 @@ container.registerComponentInstance("CastorXmlPageManager",
                                      new CastorXmlPageManager(idgenerator, mapping, root))
 
 //
-// HSQL Server (no datasource support)
+// HSQL Server 
 //                
 
 container.registerComponentInstance(new HSQLServerComponent(9001, "sa","",applicationRoot+"WEB-INF/db/hsql/Registry",false, true))                     
+
+
+// This JNDI component helps us publish the datasource
+Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
+Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
+container.registerComponentImplementation(jndiClass, tyrexJndiClass)
+
+// Create a datasource based on the HSQL server we just created
+Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
+container.registerComponentInstance(dsClass, new DBCPDatasourceComponent("sa","", "org.hsqldb.jdbcDriver", "jdbc:hsqldb:hsql://127.0.0.1", 5, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+
 
 //
 // Persistence component
