@@ -65,6 +65,8 @@ public class TestEngine extends TestCase
     protected void setUp() throws Exception
     {        
         super.setUp();
+        // need to flag internal JNDI on...
+        System.setProperty("portal.use.internal.jndi", "true");
         PropertiesConfiguration config = new  PropertiesConfiguration();
         config.load(new FileInputStream("./src/webapp/WEB-INF/conf/jetspeed.properties")); 
         Jetspeed.createEngine(config, "./src/webapp", null);

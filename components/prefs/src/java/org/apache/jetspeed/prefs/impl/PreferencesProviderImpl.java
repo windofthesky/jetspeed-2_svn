@@ -101,22 +101,18 @@ public class PreferencesProviderImpl implements PreferencesProvider, Startable
     {
         // This will make sure that we are loaded into the vm immediately
         log.debug("Loading prefernces api into classloader...");
-       // ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
         try
-        {
-         //   Thread.currentThread().setContextClassLoader(PreferencesFactoryImpl.class.getClassLoader());
-            new PreferencesFactoryImpl().systemRoot();
-            new PreferencesFactoryImpl().userRoot();
+        {     // Initializes the static systemRoot and userRoot        
+              Class prefImplClass = PreferencesImpl.class;
+            
         }
         catch(Throwable e)
         {
             log.fatal("Failed to initialize prefs api.  "+e.toString(), e);
             throw new RuntimeException("Failed to initialize prefs api.  "+e.toString());
         }
-        finally
-        {
-        //    Thread.currentThread().setContextClassLoader(cl);
-        }
+   
     
     }
     /**
