@@ -125,8 +125,8 @@ limitations under the License.
   <goal name ="jetspeed2:jar:install">
     <maven:reactor
                basedir="${basedir}"
-               includes="portlet-api/project.xml,commons/project.xml,cps/project.xml,content-server/project.xml,jetspeed-api/project.xml,portal-bridges/project.xml,portal/project.xml,components/**/project.xml"
-               excludes="/project.xml,maven-plugin/**,cornerstone-jmx/**,cornerstone-jmx-demo/**,layout-portlets/**,applications/**,applications/**/**,site/project.xml,design-docs/project.xml,"
+               includes="${jar.includes}"
+               excludes="${jar.excludes}"
                goals="jar:install"
                banner="Build and Install all Jetspeed 2 jars"
                postProcessing="false"
