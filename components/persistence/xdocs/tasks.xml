@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" ?>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -14,13 +14,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project>
+<document>
+  <properties>
+    <title>Tasks</title>
+  </properties>
   <body>
-    <links>
-      <item name="Jetspeed 2" href="../../index.html"/>
-    </links>
-    <menu name="Misc.">
-      <item name="Tasks" href="tasks.html"/>
-    </menu>
+    <section name="Tasks">
+      <p>
+        Currently this is just a listing of tasks.
+      </p>
+      <p>
+        <ul>
+<li>
+  Remove unused classes.
+</li>
+        </ul>
+      </p>
+    </section>
   </body>
-</project>
+</document>
+
