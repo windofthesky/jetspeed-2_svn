@@ -122,7 +122,7 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
             }
             catch (UnsupportedDocumentTypeException e)
             {
-                int lastSlash = documentPath.lastIndexOf("/");
+                int lastSlash = documentPath.lastIndexOf(Node.PATH_SEPARATOR);
                 if(lastSlash < 0)
                 {
                     lastSlash = 0;

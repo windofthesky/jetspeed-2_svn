@@ -167,14 +167,14 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             try
             {
-                if (path.endsWith("/"))
+                if (path.endsWith(Folder.PATH_SEPARATOR))
                 {
                     Object obj = metadataDocHandler.getDocument(path + FolderMetaData.DOCUMENT_TYPE);
                     metadata = (FolderMetaData) obj;
                 }
                 else
                 {
-                    Object obj =(FolderMetaData) metadataDocHandler.getDocument(path + "/"
+                    Object obj =(FolderMetaData) metadataDocHandler.getDocument(path + Folder.PATH_SEPARATOR
                             + FolderMetaData.DOCUMENT_TYPE);
                     metadata = (FolderMetaData) obj;
                 }
@@ -185,13 +185,13 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
                 folder = new FolderImpl(path, handlerFactory, this);
             }
 
-            if (!path.equals("/") && path.indexOf('/') > -1)
+            if (!path.equals(Folder.PATH_SEPARATOR) && path.indexOf(Folder.PATH_SEPARATOR_CHAR) > -1)
             {
-                folder.setParent(getFolder(path.substring(0, path.lastIndexOf('/'))));
+                folder.setParent(getFolder(path.substring(0, path.lastIndexOf(Folder.PATH_SEPARATOR_CHAR))));
             }
-            else if (!path.equals("/") && path.indexOf('/') < 0)
+            else if (!path.equals(Folder.PATH_SEPARATOR) && path.indexOf(Folder.PATH_SEPARATOR_CHAR) < 0)
             {
-                folder.setParent(getFolder("/"));
+                folder.setParent(getFolder(Folder.PATH_SEPARATOR));
             }
         }
 
@@ -229,13 +229,13 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             NodeSetImpl folders = new NodeSetImpl(path);
             for (int i = 0; i < children.length; i++)
             {
-                if (path.endsWith("/"))
+                if (path.endsWith(Folder.PATH_SEPARATOR))
                 {
                     folders.add(getFolder(path + children[i]));
                 }
                 else
                 {
-                    folders.add(getFolder(path + "/" + children[i]));
+                    folders.add(getFolder(path + Folder.PATH_SEPARATOR + children[i]));
                 }
             }
             return folders;
@@ -338,20 +338,22 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         throws FolderNotFoundException, InvalidFolderException, NodeException
     {
         // path must be valid absolute path
-        if ((path == null) || ! path.startsWith("/"))
+        if ((path == null) || ! path.startsWith(Folder.PATH_SEPARATOR))
         {
             throw new InvalidFolderException( "Invalid path specified " + path );
         }
 
         // traverse folders and parse path from root,
         // accumualting matches in node set
-        Folder folder = getFolder("/");
+        Folder folder = getFolder(Folder.PATH_SEPARATOR);
         NodeSetImpl matched = new NodeSetImpl(null);
         getNodes(folder,path,regexp,matched);
 
         // return matched nodes filtered by document type
         if (documentType != null)
+        {
             return matched.subset(documentType);
+        }
         return matched;
     }
 
@@ -359,23 +361,25 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         throws FolderNotFoundException, InvalidFolderException, NodeException
     {
         // test for trivial folder match
-        if (path.equals("/"))
+        if (path.equals(Folder.PATH_SEPARATOR))
         {
             matched.add(folder);
             return;
         }
 
         // remove leading separator
-        if (path.startsWith("/"))
+        if (path.startsWith(Folder.PATH_SEPARATOR))
+        {
             path = path.substring(1);
+        }
 
         // parse path for folder path match
-        int separatorIndex = path.indexOf("/");
+        int separatorIndex = path.indexOf(Folder.PATH_SEPARATOR);
         if (separatorIndex != -1)
         {
             // match folder name
             String folderName = path.substring(0,separatorIndex);
-            String folderPath = (folder.getPath().endsWith("/") ? folder.getPath() : folder.getPath() + "/") + folderName;
+            String folderPath = (folder.getPath().endsWith(Folder.PATH_SEPARATOR) ? folder.getPath() : folder.getPath() + Folder.PATH_SEPARATOR) + folderName;
             NodeSet matchedFolders = null;
             if (regexp)
             {
@@ -410,13 +414,15 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
         // match node name
         String nodeName = path;
-        String nodePath = (folder.getPath().endsWith("/") ? folder.getPath() : folder.getPath() + "/") + nodeName;
+        String nodePath = (folder.getPath().endsWith(Folder.PATH_SEPARATOR) ? folder.getPath() : folder.getPath() + Folder.PATH_SEPARATOR) + nodeName;
         if (regexp)
         {
             // get regexp matched nodes
             Iterator addIter = folder.getAllNodes().inclusiveSubset(nodePath).iterator();
             while (addIter.hasNext())
+            {
                 matched.add((Node) addIter.next());
+            }
         }
         else
         {

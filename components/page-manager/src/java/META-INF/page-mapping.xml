@@ -131,10 +131,6 @@
   <class name="org.apache.jetspeed.om.folder.impl.DocumentSetImpl">
     <map-to xml="documentSet"/>
 
-    <field name="documentSetName" type="java.lang.String">
-      <bind-xml name="name" />
-    </field>
-
     <field name="profileLocatorName" type="java.lang.String">
       <bind-xml name="profileLocator" />
     </field>

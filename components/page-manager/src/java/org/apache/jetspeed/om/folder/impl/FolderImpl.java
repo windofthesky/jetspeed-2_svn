@@ -243,13 +243,13 @@ public class FolderImpl extends AbstractNode implements Folder
         {            
             if(metadata.getDocumentOrder() != null)
             {
-                if (getPath().endsWith("/"))
+                if (getPath().endsWith(PATH_SEPARATOR))
                 {
                     allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath()));
                 }
                 else
                 {
-                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath()+"/"));
+                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath() + PATH_SEPARATOR));
                 }
             }
             else
@@ -265,7 +265,7 @@ public class FolderImpl extends AbstractNode implements Folder
                 Node node = null;
                 try
                 {
-                    if (getPath().endsWith("/"))
+                    if (getPath().endsWith(PATH_SEPARATOR))
                     {
                         if(nodeNames[i].indexOf(".") > -1)
                         {    
@@ -281,11 +281,11 @@ public class FolderImpl extends AbstractNode implements Folder
                         
                         if(nodeNames[i].indexOf(".") > -1)
                         {    
-                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() +"/"+ nodeNames[i]);
+                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
                         }
                         else
                         {
-                            node = folderHandler.getFolder(getPath() +"/"+ nodeNames[i]);
+                            node = folderHandler.getFolder(getPath() + PATH_SEPARATOR + nodeNames[i]);
                         }
                     }
                     

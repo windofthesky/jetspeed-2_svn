@@ -31,7 +31,6 @@ import org.apache.jetspeed.page.document.AbstractNode;
  */
 public class DocumentSetImpl extends AbstractNode implements DocumentSet
 {
-    private String documentSetName;
     private String profileLocatorName;
     private Vector documentPaths;
      
@@ -51,31 +50,6 @@ public class DocumentSetImpl extends AbstractNode implements DocumentSet
     public String getType()
     {
         return DOCUMENT_TYPE;
-    }
-
-    /**
-     * <p>
-     * getDocumentSetName
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.folder.DocumentSet#getDocumentSetName()
-     * @return name
-     */
-    public String getDocumentSetName()
-    {
-        return documentSetName;
-    }
-    /**
-     * <p>
-     * setDocumentSetName
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.folder.DocumentSet#setDocumentSetName(java.lang.String)
-     * @param setName
-     */
-    public void setDocumentSetName( String setName )
-    {
-        this.documentSetName = setName;
     }
 
     /**
@@ -142,7 +116,12 @@ public class DocumentSetImpl extends AbstractNode implements DocumentSet
         {
             // default document set paths
             DocumentSetPath defaultPath = new DocumentSetPathImpl();
-            defaultPath.setPath("/" + documentSetName + "/*.*");
+            String name = getName();
+            if (name.endsWith(DOCUMENT_TYPE))
+            {
+                name = name.substring(0, name.length() - DOCUMENT_TYPE.length());
+            }
+            defaultPath.setPath(PATH_SEPARATOR + name + PATH_SEPARATOR + "*.*");
             defaultPath.setRegexp(true);
             documentPaths.add(defaultPath);
         }

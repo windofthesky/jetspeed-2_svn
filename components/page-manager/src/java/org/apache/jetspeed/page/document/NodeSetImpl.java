@@ -81,13 +81,13 @@ public class NodeSetImpl implements NodeSet
         }
         else if (resolveToPath != null)
         {
-            if (resolveToPath.endsWith("/"))
+            if (resolveToPath.endsWith(Node.PATH_SEPARATOR))
             {
                 return (Node) nodes.get(resolveToPath + name);
             }
             else
             {
-                return (Node) nodes.get(resolveToPath + "/" + name);
+                return (Node) nodes.get(resolveToPath + Node.PATH_SEPARATOR + name);
             }
         }
 

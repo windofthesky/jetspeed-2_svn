@@ -50,10 +50,10 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     private String path;
     private String url;
     private boolean hidden=false;
+    private String profiledPath;
 
     public AbstractNode()
     {
-
     }
 
     public GenericMetadata getMetadata()
@@ -184,9 +184,9 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
         if(getParent() != null)
         {
             parentName = getParent().getPath();
-            if (! parentName.endsWith("/"))
+            if (! parentName.endsWith(PATH_SEPARATOR))
             {
-                parentName += "/";
+                parentName += PATH_SEPARATOR;
             }
         }
         
@@ -262,5 +262,20 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     public void setHidden( boolean hidden )
     {
         this.hidden = hidden;
+    }
+
+    /**
+     * @return Returns the profiled path.
+     */
+    public String getProfiledPath()
+    {
+        return profiledPath;
+    }
+    /**
+     * @param path The profiled path to set.
+     */
+    public void setProfiledPath( String profiledPath )
+    {
+        this.profiledPath = profiledPath;
     }
 }

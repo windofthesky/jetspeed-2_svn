@@ -140,7 +140,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         {
             // copy profiled page context from cached page context and return
             copyProfiledPageContext(cachedPageContext, pageContext);
-            return ;
+            return;
         }
 
         // determine profiled page context using profile locator; get
@@ -172,22 +172,57 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             List searchPaths = generateProfilingSearchPaths(requestPath, locator, false);
 
             // find page in page manager content using search paths
-            boolean profiled = findProfiledPageAndFolders(searchPaths, profiledFolder, profiledPage, profiledFolders, searchProfiledFolders);
+            boolean profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
 
             // profile fallback to default root folder to locate folder/page
             boolean rootFallback = false;
-            if (rootFallback = (! profiled && ! requestPath.equals("/")))
+            if (rootFallback = (! profiled && ! requestPath.equals(Folder.PATH_SEPARATOR)))
             {
-                log.warn("computeProfiledPageContext(): Falling back to profiled root default page for " + requestPath);
-                searchPaths = generateProfilingSearchPaths("/", locator, true);
-                profiled = findProfiledPageAndFolders(searchPaths, profiledFolder, profiledPage, profiledFolders, searchProfiledFolders);
+                // profile default root folder, (ignoring request path)
+                searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, locator, true);
+                profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
+
+                // if profiled successfully at root fallback but failed previous
+                // attempt, profile request path against available alternate profile
+                // locators. This is used only to select a page: all other context
+                // information remains determined from fallback.
+                if (profiled && (pageContext.getLocators().size() > 1))
+                {
+                    // profile to locate request path using alternate locators
+                    Page [] alternateProfiledPage = new Page[1];
+                    Iterator locatorsIter = selectAlternatePageProfileLocators(pageContext.getLocators()).iterator();
+                    while ((alternateProfiledPage[0] == null) && locatorsIter.hasNext())
+                    {
+                        ProfileLocator alternateLocator = (ProfileLocator) locatorsIter.next();
+                        List alternateSearchPaths = generateProfilingSearchPaths(requestPath, alternateLocator, false);
+                        findProfiledPageAndFolders(alternateSearchPaths, alternateProfiledPage);
+                    }
+
+                    // if request path matched, use just profiled page; note: page is
+                    // not used to generate page context, (fallback default root folder
+                    // is used instead); otherwise continue with root default page match
+                    if (alternateProfiledPage[0] != null)
+                    {
+                        log.debug("computeProfiledPageContext(): Using alternate locator match " + alternateProfiledPage[0] + " for " + requestPath);
+                        profiledPage[0] = alternateProfiledPage[0];
+                    }
+                    else
+                    {
+                        log.warn("computeProfiledPageContext(): No alternate locator match: falling back to profiled root default page for " + requestPath);
+                    }
+                }
+                else
+                {
+                    // fallback to root default page
+                    log.warn("computeProfiledPageContext(): Falling back to profiled root default page for " + requestPath);
+                }
             }
 
             // profiled folder and page
             if (profiled)
             {
-                folder = (Folder) setProfiledNodeUrl(profiledFolder[0]);
-                page = (Page) setProfiledNodeUrl(profiledPage[0]);
+                folder = (Folder) setProfiledNodePathAndUrl((AbstractNode) profiledFolder[0]);
+                page = (Page) setProfiledNodePathAndUrl((AbstractNode) profiledPage[0]);
             }
 
             // profile page context
@@ -198,7 +233,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 Iterator foldersIter = searchProfiledFolders.iterator();
                 while ((documentOrder == null) && foldersIter.hasNext())
                 {
-                    FolderImpl profiledPageFolder = (FolderImpl) setProfiledNodeUrl((Node) foldersIter.next());
+                    FolderImpl profiledPageFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
                     if ((profiledPageFolder.getMetaData() != null) && (profiledPageFolder.getMetaData().getDocumentOrder() != null) &&
                         ! profiledPageFolder.getMetaData().getDocumentOrder().isEmpty())
                     {
@@ -218,14 +253,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregatePagesIter = aggregatePages.iterator();
                     while (aggregatePagesIter.hasNext())
                     {
-                        siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingPages, setProfiledNodeUrl((Node) aggregatePagesIter.next()));
+                        siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingPages, setProfiledNodePathAndUrl((AbstractNode) aggregatePagesIter.next()));
                     }
                 }
 
                 // profile parent folder using profiled parent
-                if ((folder.getParent() != null) && ! folder.getUrl().equals("/"))
+                if ((folder.getParent() != null) && ! ((AbstractNode) folder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
                 {
-                    parentFolder = (Folder) setProfiledNodeUrl(folder.getParent());
+                    parentFolder = (Folder) setProfiledNodePathAndUrl((AbstractNode) folder.getParent());
                 }
 
                 // profile sibling folders by aggregating all siblings in profiled folders
@@ -239,7 +274,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregateFoldersIter = aggregateFolders.iterator();
                     while (aggregateFoldersIter.hasNext())
                     {
-                        siblingFolders = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingFolders, setProfiledNodeUrl((Node) aggregateFoldersIter.next()));
+                        siblingFolders = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingFolders, setProfiledNodePathAndUrl((AbstractNode) aggregateFoldersIter.next()));
                     }
                 }
 
@@ -254,10 +289,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregateFolderDocumentSetsIter = aggregateFolderDocumentSets.iterator();
                     while (aggregateFolderDocumentSetsIter.hasNext())
                     {
-                        DocumentSet documentSet = (DocumentSet) aggregateFolderDocumentSetsIter.next();
-                        if (! aggregateDocumentSets.containsKey(documentSet.getDocumentSetName()))
+                        DocumentSet documentSet = (DocumentSet) setProfiledNodePathAndUrl((AbstractNode) aggregateFolderDocumentSetsIter.next());
+                        String documentSetProfiledPath = ((AbstractNode) documentSet).getProfiledPath();
+                        if (! aggregateDocumentSets.containsKey(documentSetProfiledPath))
                         {
-                            aggregateDocumentSets.put(documentSet.getDocumentSetName(), documentSet);
+                            aggregateDocumentSets.put(documentSetProfiledPath, documentSet);
                         }
                     }
                 }
@@ -279,18 +315,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         documentSetNodes = expandAndProfileDocumentSet(pageContext.getLocators(), documentSet, documentSetNodes);
                         if ((documentSetNodes != null) && (documentSetNodes.size() > 0))
                         {
-                            documentSets.add(setProfiledNodeUrl(documentSet));
+                            documentSets.add(documentSet);
                             documentSetNodeSets.put(documentSet, documentSetNodes);
                         }
                     }
                 }
 
                 // profile root links by aggregating all links in profiled root folders
-                if (! rootFallback && ! requestPath.equals("/"))
+                if (! rootFallback && ! requestPath.equals(Folder.PATH_SEPARATOR))
                 {
                     // profile root folders if required
-                    searchPaths = generateProfilingSearchPaths("/", locator, true);
-                    profiled = findProfiledPageAndFolders(searchPaths, profiledFolder, profiledPage, profiledFolders, searchProfiledFolders);
+                    searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, locator, true);
+                    profiled = findProfiledPageAndFolders(searchPaths, profiledPage, profiledFolder, profiledFolders, searchProfiledFolders);
                 }
                 if (profiled)
                 {
@@ -299,8 +335,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     foldersIter = profiledFolders.iterator();
                     while ((linkDocumentOrder == null) && foldersIter.hasNext())
                     {
-                        FolderImpl profiledRootFolder = (FolderImpl) setProfiledNodeUrl((Node) foldersIter.next());
-                        if (profiledRootFolder.getUrl().equals("/") && 
+                        FolderImpl profiledRootFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
+                        if (((AbstractNode) profiledRootFolder).getProfiledPath().equals(Folder.PATH_SEPARATOR) && 
                             (profiledRootFolder.getMetaData() != null) && (profiledRootFolder.getMetaData().getDocumentOrder() != null) &&
                             ! profiledRootFolder.getMetaData().getDocumentOrder().isEmpty())
                         {
@@ -314,14 +350,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     foldersIter = profiledFolders.iterator();
                     while (foldersIter.hasNext())
                     {
-                        Folder aggregateLinksFolder = (Folder) setProfiledNodeUrl((Node) foldersIter.next());
-                        if (aggregateLinksFolder.getUrl().equals("/"))
+                        Folder aggregateLinksFolder = (Folder) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
+                        if (((AbstractNode) aggregateLinksFolder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
                         {
                             NodeSet aggregateLinks = aggregateLinksFolder.getLinks();
                             Iterator aggregateLinksIter = aggregateLinks.iterator();
                             while (aggregateLinksIter.hasNext())
                             {
-                                rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl) rootLinks, (Node) aggregateLinksIter.next());
+                                rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl) rootLinks, setProfiledNodePathAndUrl((AbstractNode) aggregateLinksIter.next()));
                             }
                         }
                     }
@@ -347,16 +383,16 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             {
                 // retrieve managed folder and page from request
                 String folderPath = requestPath;
-                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith("/"))
+                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith(Folder.PATH_SEPARATOR))
                 {
-                    int lastSlashIndex = folderPath.lastIndexOf('/');
+                    int lastSlashIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
                     if (lastSlashIndex > 0)
                     {
                         folderPath = folderPath.substring(0, lastSlashIndex);
                     }
                     else
                     {
-                        folderPath = "/";
+                        folderPath = Folder.PATH_SEPARATOR;
                     }
                 }
                 folder = getFolder(folderPath);
@@ -376,7 +412,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 log.warn("computeProfiledPageContext(): Falling back to managed root default page for " + requestPath);
                 try
                 {
-                    folder = getFolder("/");
+                    folder = getFolder(Folder.PATH_SEPARATOR);
                     String pagePath = folder.getDefaultPage(true);
                     page = folder.getPage(pagePath);
                 }
@@ -394,7 +430,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 siblingFolders = folder.getFolders();
                 try
                 {
-                    Folder rootFolder = getFolder("/");
+                    Folder rootFolder = getFolder(Folder.PATH_SEPARATOR);
                     rootLinks = rootFolder.getLinks();
                 }
                 catch (NodeException ne)
@@ -417,18 +453,19 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         while (documentSetsIter.hasNext())
                         {
                             DocumentSet documentSet = (DocumentSet) documentSetsIter.next();
+                            String documentSetPath = documentSet.getPath();
 
                             // aggregate document sets
-                            if (! documentSetNames.contains(documentSet.getDocumentSetName()))
+                            if (! documentSetNames.contains(documentSetPath))
                             {
-                                documentSetNames.add(documentSet.getDocumentSetName());
+                                documentSetNames.add(documentSetPath);
 
                                 // expand document set using default document set order
                                 NodeSetImpl documentSetNodes = new NodeSetImpl(null, documentComparator);
                                 documentSetNodes = expandDocumentSet(documentSet, documentSetNodes);
                                 if ((documentSetNodes != null) && (documentSetNodes.size() > 0))
                                 {
-                                    documentSets.add(setProfiledNodeUrl(documentSet));
+                                    documentSets.add(documentSet);
                                     documentSetNodeSets.put(documentSet, documentSetNodes);
                                 }
                             }
@@ -469,7 +506,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
 
         // generate search paths for profile locator from root
-        List searchPaths = generateProfilingSearchPaths("/", navigationLocator, true);
+        List searchPaths = generateProfilingSearchPaths(Folder.PATH_SEPARATOR, navigationLocator, true);
         if (log.isDebugEnabled())
         {
             Iterator pathsIter = searchPaths.iterator();
@@ -488,13 +525,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             while ((documentOrder == null) && pathsIter.hasNext())
             {
                 String folderPath = (String) pathsIter.next();
-                if (folderPath.endsWith("/") && (folderPath.length() > 1))
+                if (folderPath.endsWith(Folder.PATH_SEPARATOR) && (folderPath.length() > 1))
                 {
                     folderPath = folderPath.substring(0, folderPath.length()-1);
                 }
                 try
                 {
-                    FolderImpl folder = (FolderImpl) setProfiledNodeUrl((Node) getFolder(folderPath));
+                    FolderImpl folder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) getFolder(folderPath));
                     if ((folder.getMetaData() != null) && (folder.getMetaData().getDocumentOrder() != null) &&
                         ! folder.getMetaData().getDocumentOrder().isEmpty())
                     {
@@ -536,7 +573,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 String searchPath = (String) pathsIter.next();
 
                 // prefix document set path with search path
-                if (searchPath.endsWith("/"))
+                if (searchPath.endsWith(Folder.PATH_SEPARATOR))
                 {
                     searchPath += path.substring(1);
                 }
@@ -552,7 +589,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator pathNodesIter = filterDocumentSet(getNodes(searchPath, regexp, null)).iterator();
                     while (pathNodesIter.hasNext())
                     {
-                        expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, (Node) pathNodesIter.next());
+                        expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, setProfiledNodePathAndUrl((AbstractNode) pathNodesIter.next()));
                     }
                 }
                 catch (NodeException ne)
@@ -578,7 +615,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             
             // get folder and page locator path elements
             List locatorPaths = new ArrayList();
-            locatorPaths.add(new StringBuffer("/"));
+            locatorPaths.add(new StringBuffer(Folder.PATH_SEPARATOR));
             int lastLocatorPathsCount = 0;
             String lastLocatorPropertyName = null;
             int lastLocatorPropertyValueLength = 0;
@@ -599,7 +636,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         if (locatorPropertyName.equals(lastLocatorPropertyName))
                         {
                             // duplicate last locator paths set, stripping last matching
-                            // control value from each, appending nevw value, and adding new
+                            // control value from each, appending new value, and adding new
                             // valued set to collection of locatorPaths
                             ArrayList multipleValueLocatorPaths = new ArrayList(lastLocatorPathsCount);
                             Iterator locatorPathsIter = locatorPaths.iterator();
@@ -609,7 +646,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                 StringBuffer multipleValueLocatorPath = new StringBuffer(locatorPath.toString());
                                 multipleValueLocatorPath.setLength(multipleValueLocatorPath.length() - lastLocatorPropertyValueLength - 1);
                                 multipleValueLocatorPath.append(locatorPropertyValue);
-                                multipleValueLocatorPath.append('/');
+                                multipleValueLocatorPath.append(Folder.PATH_SEPARATOR_CHAR);
                                 multipleValueLocatorPaths.add(multipleValueLocatorPath);
                             }
                             locatorPaths.addAll(multipleValueLocatorPaths);
@@ -623,9 +660,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                 StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
                                 locatorPath.append(PROFILE_PROPERTY_FOLDER_PREFIX);
                                 locatorPath.append(locatorPropertyName);
-                                locatorPath.append('/');
+                                locatorPath.append(Folder.PATH_SEPARATOR_CHAR);
                                 locatorPath.append(locatorPropertyValue);
-                                locatorPath.append('/');
+                                locatorPath.append(Folder.PATH_SEPARATOR_CHAR);
                             }
 
                             // reset last locator property vars
@@ -657,7 +694,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
                 if (pagePath != null)
                 {
-                    if (pagePath.startsWith("/"))
+                    if (pagePath.startsWith(Folder.PATH_SEPARATOR))
                     {
                         locatorPath.append(pagePath.substring(1));
                     }
@@ -673,9 +710,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // add default page path with no locator path to paths
         if (pagePath != null)
         {
-            if (! pagePath.startsWith("/"))
+            if (! pagePath.startsWith(Folder.PATH_SEPARATOR))
             {
-                paths.add("/" + pagePath);
+                paths.add(Folder.PATH_SEPARATOR + pagePath);
             }
             else
             {
@@ -698,7 +735,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
 
         // append page extension if required
-        if ((pagePath.indexOf("/") == -1) && ! pagePath.endsWith(Page.DOCUMENT_TYPE))
+        if ((pagePath.indexOf(Folder.PATH_SEPARATOR) == -1) && ! pagePath.endsWith(Page.DOCUMENT_TYPE))
         {
             pagePath = pagePath + Page.DOCUMENT_TYPE;
         }
@@ -716,23 +753,23 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // not a page); the empty page path here forces a folder path
         // to be created with a trailing slash... the folder then will
         // choose its default page name according to its own rules.
-        if (! pagePath.startsWith("/"))
+        if (! pagePath.startsWith(Folder.PATH_SEPARATOR))
         {
             if ((pagePath.length() > 0) || ! requestPath.endsWith(Page.DOCUMENT_TYPE))
             {
                 // append page path to request path
-                int lastSlashIndex = requestPath.lastIndexOf('/');
+                int lastSlashIndex = requestPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
                 if (lastSlashIndex > 0)
                 {
-                    pagePath = requestPath.substring(0, lastSlashIndex) + "/" + pagePath;
+                    pagePath = requestPath.substring(0, lastSlashIndex) + Folder.PATH_SEPARATOR + pagePath;
                 }
                 else if (requestPath.length() > 1)
                 {
-                    pagePath = requestPath + "/" + pagePath;
+                    pagePath = requestPath + Folder.PATH_SEPARATOR + pagePath;
                 }
                 else
                 {
-                    pagePath = "/" + pagePath;
+                    pagePath = Folder.PATH_SEPARATOR + pagePath;
                 }
             }
             else
@@ -745,12 +782,27 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return pagePath;
     }
 
-    private boolean findProfiledPageAndFolders(List pageSearchPaths, Folder [] folder, Page [] page, List folders, List searchFolders)
+    private boolean findProfiledPageAndFolders(List pageSearchPaths, Page [] page)
     {
-        folder[0] = null;
+        return findProfiledPageAndFolders(pageSearchPaths, page, null, null, null);
+    }
+
+    private boolean findProfiledPageAndFolders(List pageSearchPaths, Page [] page, Folder [] folder, List folders, List searchFolders)
+    {
+        // reset profiled results
         page[0] = null;
-        folders.clear();
-        searchFolders.clear();
+        if (folder != null)
+        {
+            folder[0] = null;
+        }
+        if (folders != null)
+        {
+            folders.clear();
+        }
+        if (searchFolders != null)
+        {
+            searchFolders.clear();
+        }
 
         // iterate through search paths looking for page in page manager content
         int numSearchFoldersFound = 0;
@@ -770,16 +822,16 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             try
             {
                 // match folder
-                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith("/"))
+                if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith(Folder.PATH_SEPARATOR))
                 {
-                    int lastSlashIndex = folderPath.lastIndexOf('/');
+                    int lastSlashIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
                     if (lastSlashIndex > 0)
                     {
                         folderPath = folderPath.substring(0, lastSlashIndex);
                     }
                     else
                     {
-                        folderPath = "/";
+                        folderPath = Folder.PATH_SEPARATOR;
                     }
                 }
                 searchFolder = getFolder(folderPath);
@@ -794,7 +846,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         // trying to find page as last resort in root directory;
                         // otherwise, return only fallback page or explicitly
                         // specified default page name
-                        boolean allowDefaulting = folderPath.equals( "/" );
+                        boolean allowDefaulting = folderPath.equals( Folder.PATH_SEPARATOR );
                         pagePath = searchFolder.getDefaultPage(allowDefaulting);
                         
                         // if page path not fallback default page, profile again
@@ -809,19 +861,19 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             while (pageSearchPathsIter.hasNext())
                             {
                                 String pageSearchPath = (String) pageSearchPathsIter.next();
-                                if (pageSearchPath.endsWith( "/" ))
+                                if (pageSearchPath.endsWith( Folder.PATH_SEPARATOR ))
                                 {
                                     pageSearchPathsIter.set(pageSearchPath + pagePath);
                                 }
                                 else
                                 {
-                                    pageSearchPathsIter.set(pageSearchPath + "/" + pagePath);
+                                    pageSearchPathsIter.set(pageSearchPath + Folder.PATH_SEPARATOR + pagePath);
                                 }
                             }
 
                             // profile default page
                             log.debug("findProfiledPageAndFolders(): invoking again with default page: " + pagePath);
-                            return findProfiledPageAndFolders(pageSearchPaths, folder, page, folders, searchFolders);
+                            return findProfiledPageAndFolders(pageSearchPaths, page, folder, folders, searchFolders);
                         }
                     }
 
@@ -853,8 +905,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             if ((page[0] == null) && (searchPage != null))
             {
                 // matched profiled folder/page
-                folder[0] = searchFolder;
                 page[0] = searchPage;
+                if (folder != null)
+                {
+                    folder[0] = searchFolder;
+                }
                 
                 log.debug("findProfiledPageAndFolders(), using matched searchFolder = " + searchFolder);
                 log.debug("findProfiledPageAndFolders(), using matched searchPage = " + searchPage);
@@ -863,77 +918,80 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             // return profiled folders and search profiled folders; the search
             // profiled folders are used to find other profiled documents, (i.e
             // document sets).
-            if (searchFolder != null)
+            if ((folders != null) && (searchFolders != null))
             {
-                // profiled folder
-                folders.add(searchFolder);
-
-                // parent search profiled folders, (excluding profile property folders)
-                do
+                if (searchFolder != null)
                 {
-                    searchFolders.add(searchFolder);
-                    searchFolder = (Folder) searchFolder.getParent();
-                }
-                while ((searchFolder != null) && ! searchFolder.getName().startsWith(PROFILE_PROPERTY_FOLDER_PREFIX));
-            }
-            else
-            {
-                // add parents of missing profiled folders to search profiled
-                // folders if they exist
-                String searchFolderName = null;
-                do
-                {
-                    // find parent path or folder
-                    if (searchFolder == null)
+                    // profiled folder
+                    folders.add(searchFolder);
+                    
+                    // parent search profiled folders, (excluding profile property folders)
+                    do
                     {
-                        // get parent folder path
-                        int separatorIndex = folderPath.lastIndexOf("/");
-                        if (separatorIndex > 0)
+                        searchFolders.add(searchFolder);
+                        searchFolder = (Folder) searchFolder.getParent();
+                    }
+                    while ((searchFolder != null) && ! searchFolder.getName().startsWith(PROFILE_PROPERTY_FOLDER_PREFIX));
+                }
+                else
+                {
+                    // add parents of missing profiled folders to search profiled
+                    // folders if they exist
+                    String searchFolderName = null;
+                    do
+                    {
+                        // find parent path or folder
+                        if (searchFolder == null)
                         {
-                            folderPath = folderPath.substring(0, separatorIndex);
-                        }
-                        else
-                        {
-                            folderPath = "/";
-                        }
-
-                        // get folder if it exists and folder name
-                        try
-                        {
-                            searchFolder = getFolder(folderPath);
-                            searchFolderName = searchFolder.getName();
-                        }
-                        catch (NodeException ne)
-                        {
-                            separatorIndex = folderPath.lastIndexOf("/");
+                            // get parent folder path
+                            int separatorIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR);
                             if (separatorIndex > 0)
                             {
-                                searchFolderName = folderPath.substring(separatorIndex+1);
+                                folderPath = folderPath.substring(0, separatorIndex);
                             }
                             else
                             {
-                                searchFolderName = "/";
+                                folderPath = Folder.PATH_SEPARATOR;
+                            }
+                            
+                            // get folder if it exists and folder name
+                            try
+                            {
+                                searchFolder = getFolder(folderPath);
+                                searchFolderName = searchFolder.getName();
+                            }
+                            catch (NodeException ne)
+                            {
+                                separatorIndex = folderPath.lastIndexOf(Folder.PATH_SEPARATOR);
+                                if (separatorIndex > 0)
+                                {
+                                    searchFolderName = folderPath.substring(separatorIndex+1);
+                                }
+                                else
+                                {
+                                    searchFolderName = Folder.PATH_SEPARATOR;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        // get folder as parent of search folder
-                        searchFolder = (Folder) searchFolder.getParent();
-                        if (searchFolder != null)
+                        else
                         {
-                            searchFolderName = searchFolder.getName();
+                            // get folder as parent of search folder
+                            searchFolder = (Folder) searchFolder.getParent();
+                            if (searchFolder != null)
+                            {
+                                searchFolderName = searchFolder.getName();
+                            }
+                        }
+                        
+                        // add to search profiled folders if it exists, (excluding
+                        // profile property folders)
+                        if ((searchFolder != null) && ! searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX))
+                        {
+                            searchFolders.add(searchFolder);
                         }
                     }
-
-                    // add to search profiled folders if it exists, (excluding
-                    // profile property folders)
-                    if ((searchFolder != null) && ! searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX))
-                    {
-                        searchFolders.add(searchFolder);
-                    }
+                    while (! searchFolderName.equals(Folder.PATH_SEPARATOR) && ! searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX));
                 }
-                while (! searchFolderName.equals("/") && ! searchFolderName.startsWith(PROFILE_PROPERTY_FOLDER_PREFIX));
             }
         }
 
@@ -942,7 +1000,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // page requested: page selected cannot be ambiguous and using
         // any non root folder default is valid and better than a root
         // fallback default page.
-        if ((page[0] == null) && (numSearchFoldersFound == 1) && ! lastSearchFolderFound.getPath().equals( "/" ) &&
+        if ((page[0] == null) && (numSearchFoldersFound == 1) && ! lastSearchFolderFound.getPath().equals( Folder.PATH_SEPARATOR ) &&
             (! lastSearchFolderFoundPath.endsWith(Page.DOCUMENT_TYPE)))
         {
             // single search folder found: allow aggressive defaulting
@@ -960,34 +1018,38 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             if (lastSearchFolderFoundPage != null)
             {
                 page[0] = lastSearchFolderFoundPage;
-                folder[0] = lastSearchFolderFound;
+                if (folder != null)
+                {
+                    folder[0] = lastSearchFolderFound;
+                }
                 
                 log.debug("findProfiledPageAndFolders(), using matched default searchFolder = " + lastSearchFolderFound);
                 log.debug("findProfiledPageAndFolders(), using matched default searchPage = " + lastSearchFolderFoundPage);
             }
         }
 
-        // return true if profiled page and folder found
-        return ((page[0] != null) && (folder[0] != null));
+        // return true if profiled page found
+        return (page[0] != null);
     }
 
-    private Node setProfiledNodeUrl(Node profiledNode)
+    private AbstractNode setProfiledNodePathAndUrl(AbstractNode profiledNode)
     {
-        // explicitly override profiled node urls to hide real ids and paths
-        // that are artifacts of profiled content in file system
-        if ((profiledNode instanceof AbstractNode) && ! (profiledNode instanceof Link))
+        // explicitly override profiled node paths, urls, and titles to
+        // hide real ids and paths that contain artifacts of profiled
+        // content in file system
+        if (profiledNode.getProfiledPath() == null)
         {
-            AbstractNode profiledAbstractNode = (AbstractNode) profiledNode;
-            if (! profiledAbstractNode.isUrlSet())
+            String profiledPath = stripProfiledPath(profiledNode.getPath());
+            if (profiledPath.startsWith(Folder.PATH_SEPARATOR))
             {
-                String url = stripProfiledPath(profiledAbstractNode.getUrl());
-                if (url.startsWith("/"))
+                profiledNode.setProfiledPath(profiledPath);
+                if (! profiledNode.isUrlSet())
                 {
-                    profiledAbstractNode.setUrl(url);
-                    if (profiledAbstractNode.getPath().equals(profiledAbstractNode.getTitle()))
-                    {
-                        profiledAbstractNode.setTitle(url);
-                    }
+                    profiledNode.setUrl(profiledPath);
+                }
+                if (profiledNode.getPath().equals(profiledNode.getTitle()))
+                {
+                    profiledNode.setTitle(profiledPath);
                 }
             }
         }
@@ -1000,14 +1062,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         if (path != null)
         {
             // find last property pair folders in path
-            int contentPathIndex = path.lastIndexOf("/" + PROFILE_PROPERTY_FOLDER_PREFIX);
+            int contentPathIndex = path.lastIndexOf(Folder.PATH_SEPARATOR + PROFILE_PROPERTY_FOLDER_PREFIX);
             // advance past last property pair folders to base path
             if (contentPathIndex != -1)
             {
-                contentPathIndex = path.indexOf("/", contentPathIndex+1);
+                contentPathIndex = path.indexOf(Folder.PATH_SEPARATOR, contentPathIndex+1);
                 if (contentPathIndex != -1)
                 {
-                    contentPathIndex = path.indexOf("/", contentPathIndex+1);
+                    contentPathIndex = path.indexOf(Folder.PATH_SEPARATOR, contentPathIndex+1);
                     // strip property pairs from base path
                     if (contentPathIndex != -1)
                     {
@@ -1015,7 +1077,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     }
                     else
                     {
-                        path = "/";
+                        path = Folder.PATH_SEPARATOR;
                     }
                 }
             }
@@ -1023,47 +1085,44 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return path;
     }
 
-    private NodeSetImpl addUniqueOrDescribedUrlNode(NodeSetImpl set, Node node)
+    private NodeSetImpl addUniqueOrDescribedUrlNode(NodeSetImpl set, AbstractNode node)
     {
-        // add node to node set only if url set
-        if (node.getUrl() == null)
+        // add node to node set only if profiled path set
+        if (node.getProfiledPath() == null)
             return set;
 
-        // add node to node set if is a link, has a unique url,
+        // add node to node set if has a unique profiled path
         // or has metadata and entry in set does not; returns
         // new set if replace required
-        if (! (node instanceof Link))
+        Iterator setIter = set.iterator();
+        while (setIter.hasNext())
         {
-            Iterator setIter = set.iterator();
-            while (setIter.hasNext())
+            AbstractNode setNode = (AbstractNode) setIter.next();
+            if (node.getProfiledPath().equals(setNode.getProfiledPath()))
             {
-                Node setNode = (Node) setIter.next();
-                if (node.getUrl().equals(setNode.getUrl()))
+                // replace placeholder with described node
+                if ((node.getMetadata() != null) && (setNode.getMetadata() == null))
                 {
-                    // replace placeholder with described node
-                    if ((node.getMetadata() != null) && (setNode.getMetadata() == null))
+                    // cannot remove from NodeSet: copy to replace setNode and return new set
+                    NodeSetImpl newSet = new NodeSetImpl(null, set.getComparator());
+                    Iterator copyIter = set.iterator();
+                    while (copyIter.hasNext())
                     {
-                        // cannot remove from NodeSet: copy to replace setNode and return new set
-                        NodeSetImpl newSet = new NodeSetImpl(null, set.getComparator());
-                        Iterator copyIter = set.iterator();
-                        while (copyIter.hasNext())
+                        Node copyNode = (Node) copyIter.next();
+                        if (copyNode != setNode)
                         {
-                            Node copyNode = (Node) copyIter.next();
-                            if (copyNode != setNode)
-                            {
-                                newSet.add(copyNode);
-                            }
-                            else
-                            {
-                                newSet.add(node);
-                            }
+                            newSet.add(copyNode);
                         }
-                        return newSet;
+                        else
+                        {
+                            newSet.add(node);
+                        }
                     }
-                    
-                    // skip duplicate node
-                    return set;
+                    return newSet;
                 }
+                
+                // skip duplicate node
+                return set;
             }
         }
 
@@ -1085,13 +1144,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         {
             // compare names of links against order or each other by default
             String name1 = rootLink1.toString();
-            int nameIndex1 = name1.lastIndexOf('/');
+            int nameIndex1 = name1.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
             if (nameIndex1 != -1)
             {
                 name1 = name1.substring(nameIndex1 + 1);
             }
             String name2 = rootLink2.toString();
-            int nameIndex2 = name2.lastIndexOf('/');
+            int nameIndex2 = name2.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
             if (nameIndex2 != -1)
             {
                 name2 = name2.substring(nameIndex2 + 1);
@@ -1155,7 +1214,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             {
                 Iterator pathNodesIter = filterDocumentSet(getNodes(path, regexp, null)).iterator();
                 while (pathNodesIter.hasNext())
-                    expandedNodes.add((Node) pathNodesIter.next());
+                    expandedNodes.add((AbstractNode) pathNodesIter.next());
             }
             catch (NodeException ne)
             {
@@ -1169,11 +1228,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // force relative paths to be root absolute
         if (path == null)
         {
-            path = "/";
+            path = Folder.PATH_SEPARATOR;
         }
-        else if (! path.startsWith("/"))
+        else if (! path.startsWith(Folder.PATH_SEPARATOR))
         {
-            path = "/" + path;
+            path = Folder.PATH_SEPARATOR + path;
         }
         return path;
     }
@@ -1205,7 +1264,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         Iterator setIter = set.iterator();
         while (!filterRequired && setIter.hasNext())
         {
-            Node node = (Node) setIter.next();
+            AbstractNode node = (AbstractNode) setIter.next();
             filterRequired = (! (node instanceof Page) && ! (node instanceof Folder) && ! (node instanceof Link));
         }
         if (! filterRequired)
@@ -1218,7 +1277,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         setIter = set.iterator();
         while (setIter.hasNext())
         {
-            Node node = (Node) setIter.next();
+            AbstractNode node = (AbstractNode) setIter.next();
             if ((node instanceof Page) || (node instanceof Folder) || (node instanceof Link))
             {
                 filteredSet.add(node);
@@ -1355,14 +1414,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     protected Node addParent( Node childNode, String nodePath ) throws NodeException, InvalidFolderException
     {
-        int lastSlash = nodePath.indexOf("/");
+        int lastSlash = nodePath.indexOf(Folder.PATH_SEPARATOR);
         if (lastSlash > -1)
         {
             childNode.setParent(folderHandler.getFolder(nodePath.substring(0, lastSlash)));
         }
         else
         {
-            childNode.setParent(folderHandler.getFolder("/"));
+            childNode.setParent(folderHandler.getFolder(Folder.PATH_SEPARATOR));
         }
 
         return childNode;

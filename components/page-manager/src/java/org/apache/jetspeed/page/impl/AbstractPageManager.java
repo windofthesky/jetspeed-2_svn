@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +207,7 @@ public abstract class AbstractPageManager
                 {
                     DocumentSet debug = (DocumentSet) debugIter.next();
                     NodeSet debugNodes = (NodeSet) documentSetNodeSets.get(debug);
-                    String debugMessage = "document set " + debug.getDocumentSetName() + " = {";
+                    String debugMessage = "document set " + debug + " = {";
                     Iterator nodesIter = debugNodes.iterator();
                     if (nodesIter.hasNext())
                     {
@@ -237,8 +238,9 @@ public abstract class AbstractPageManager
             while (documentSetIter.hasNext())
             {
                 DocumentSet documentSet = (DocumentSet) documentSetIter.next();
+                String documentSetName = documentSet.getUrl();
                 NodeSet documentSetNodes = (NodeSet) documentSetNodeSets.get(documentSet);
-                pageContext.setDocumentSet(documentSet.getDocumentSetName(), documentSet, documentSetNodes);
+                pageContext.setDocumentSet(documentSetName, documentSet, documentSetNodes);
             }
         }
     }
@@ -264,6 +266,22 @@ public abstract class AbstractPageManager
     {
         // select page profile locator from session/principal profile locators
         return (ProfileLocator) profileLocators.get(ProfileLocator.PAGE_LOCATOR);
+    }
+
+    protected List selectAlternatePageProfileLocators(Map profileLocators)
+    {
+        // select alternate page profile locators from session/principal profile locators
+        List locators = new ArrayList(4);
+        Iterator locatorsIter = profileLocators.entrySet().iterator();
+        while (locatorsIter.hasNext())
+        {
+            Map.Entry locatorEntry = (Map.Entry) locatorsIter.next();
+            if (! ((String) locatorEntry.getKey()).equals(ProfileLocator.PAGE_LOCATOR))
+            {
+                locators.add(locatorEntry.getValue());
+            }
+        }
+        return locators;
     }
 
     protected ProfileLocator selectNavigationProfileLocator(String profileLocatorName, Map profileLocators)
