@@ -54,10 +54,12 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.impl.AbstractSupportSet;
+
+
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -70,18 +72,32 @@ import org.apache.pluto.om.portlet.PortletDefinitionList;
  * @version $Id$
  *
  */
-public class PortletDefinitionListImpl extends AbstractSupportSet implements PortletDefinitionList, Serializable
+public class PortletDefinitionListImpl implements PortletDefinitionList, Serializable
 {
-    /** Used to build a quick lookup reference */
-    private HashMap portletDefinitionlocator = new HashMap();
-    private HashMap portletByName = new HashMap();
+
+    protected Collection innerCollection;
+
+    /**
+     * 
+     */
+    public PortletDefinitionListImpl()
+    {
+        super();
+        innerCollection = new ArrayList();
+    }
+
+    public PortletDefinitionListImpl(Collection collection)
+    {
+        super();
+        innerCollection = collection;
+    }
 
     /**
      * @see org.apache.pluto.om.portlet.PortletDefinitionList#iterator()
      */
     public Iterator iterator()
     {
-        return super.iterator();
+        return innerCollection.iterator();
     }
 
     /**
@@ -89,7 +105,17 @@ public class PortletDefinitionListImpl extends AbstractSupportSet implements Por
      */
     public PortletDefinition get(ObjectID id)
     {
-        return (PortletDefinition) portletDefinitionlocator.get(id);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            PortletDefinition pd = (PortletDefinition) itr.next();
+            if (pd.getId().equals(id))
+            {
+                return pd;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -101,7 +127,17 @@ public class PortletDefinitionListImpl extends AbstractSupportSet implements Por
      */
     public PortletDefinition get(String name)
     {
-        return (PortletDefinition) portletByName.get(name);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            PortletDefinition pd = (PortletDefinition) itr.next();
+            if (pd.getName().equals(name))
+            {
+                return pd;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -109,10 +145,8 @@ public class PortletDefinitionListImpl extends AbstractSupportSet implements Por
      */
     public boolean add(Object o)
     {
-        PortletDefinition pd = (PortletDefinition) o;
-        portletDefinitionlocator.put(pd.getId(), pd);
-        portletByName.put(pd.getName(), pd);
-        return super.add(pd);
+        PortletDefinition pd = (PortletDefinition) o;        
+        return innerCollection.add(pd);
     }
 
     /**
@@ -120,10 +154,24 @@ public class PortletDefinitionListImpl extends AbstractSupportSet implements Por
      */
     public boolean remove(Object o)
     {
-        PortletDefinition pd = (PortletDefinition) o;
-        portletDefinitionlocator.remove(pd.getName());
-        portletByName.remove(pd.getName());
-        return super.remove(pd);
+        PortletDefinition pd = (PortletDefinition) o;        
+        return innerCollection.remove(pd);
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }

@@ -54,19 +54,21 @@
 package org.apache.jetspeed.om.servlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.MutableDisplayName;
-import org.apache.jetspeed.om.common.MutableDisplayNameSet;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
-import org.apache.jetspeed.om.impl.DisplayNameImpl;
 import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -88,10 +90,16 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
 {
 
     private int id;
-    private MutableDisplayNameSet displayNames;
-    private MutableDescriptionSet descriptions;
+    private Collection displayNames = new ArrayList();
+    private DisplayNameSetImpl DNCollWrapper = new DisplayNameSetImpl();
+
+    private Collection descriptions = new ArrayList();
+    private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_WEB_APP);
+
     private String contextRoot;
     private ParameterSet initParameters;
+
+    private static final Log log = LogFactory.getLog(WebApplicationDefinitionImpl.class);
 
     /**
      * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getId()
@@ -109,7 +117,8 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
 
         if (displayNames != null)
         {
-            return displayNames.get(locale);
+            DNCollWrapper.setInnerCollection(displayNames);
+            return DNCollWrapper.get(locale);
         }
         return null;
 
@@ -122,7 +131,8 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
     {
         if (descriptions != null)
         {
-            return descriptions.get(locale);
+            descCollWrapper.setInnerCollection(descriptions);
+            return descCollWrapper.get(locale);
         }
         return null;
 
@@ -175,7 +185,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public void setDisplayNameSet(DisplayNameSet displayNames)
     {
-        this.displayNames = (MutableDisplayNameSet) displayNames;
+        this.displayNames = ((DisplayNameSetImpl) displayNames).getInnerCollection();
     }
 
     /**
@@ -193,9 +203,23 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
     {
         if (descriptions == null)
         {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_WEB_APP);
+            descriptions = new ArrayList();
         }
-        descriptions.addDescription(new DescriptionImpl(locale, description, MutableDescription.TYPE_WEB_APP));
+        descCollWrapper.setInnerCollection(descriptions);
+        try
+        {
+            MutableDescription descObj =
+                (MutableDescription) JetspeedPortletRegistry.getNewObjectInstance(MutableDescription.TYPE_WEB_APP, true);
+            descObj.setLocale(locale);
+            descObj.setDescription(description);
+            descCollWrapper.addDescription(descObj);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to instantiate Description implementor, " + e.toString();
+            log.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
     }
 
     /**
@@ -205,9 +229,23 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
     {
         if (displayNames == null)
         {
-            displayNames = new DisplayNameSetImpl(MutableDisplayName.TYPE_WEB_APP);
+            displayNames = new ArrayList();
         }
-        displayNames.addDisplayName(new DisplayNameImpl(locale, name, MutableDisplayName.TYPE_WEB_APP));
+        DNCollWrapper.setInnerCollection(displayNames);
+        try
+        {
+            MutableDisplayName dn =
+                (MutableDisplayName) JetspeedPortletRegistry.getNewObjectInstance(MutableDisplayName.TYPE_WEB_APP, false);
+            dn.setLocale(locale);
+            dn.setDisplayName(name);
+            DNCollWrapper.addDisplayName(dn);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to instantiate DisplayName implementor, " + e.toString();
+            log.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
 
     }
 
@@ -216,7 +254,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public void setDescriptionSet(DescriptionSet descriptions)
     {
-        this.descriptions = (MutableDescriptionSet) descriptions;
+        this.descriptions = ((DescriptionSetImpl) descriptions).getInnerCollection();
     }
 
     /**

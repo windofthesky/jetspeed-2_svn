@@ -7,7 +7,6 @@
 package org.apache.jetspeed.deployment.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +16,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
-import org.apache.jetspeed.deployment.DeploymentHandler;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
 import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.tools.pamanager.Deployment;
-import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
+
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -41,18 +39,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
     protected static final Log log = LogFactory.getLog("deployment");
     private String webAppDir;
-    private String dbAalias;
     private Deployment pam;
     private Map appNameToFile;
 
-    public DeployPortletAppEventListener(String webAppDir, String dbAlias, Deployment pam)
-    {
-        this.webAppDir = webAppDir;
-        this.dbAalias = dbAlias;
-        this.pam = pam;
-        this.appNameToFile = new HashMap();
-
-    }
 
     public DeployPortletAppEventListener(String webAppDir, Deployment pam)
     {
@@ -98,14 +87,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     }
 
                     log.info("Preparing to deploy portlet app \"" + id + "\"");
-                    if (dbAalias != null)
-                    {
-                        pam.deploy(webAppDir, handler.getPath(), id, dbAalias, 0);
-                    }
-                    else
-                    {
-                        pam.deploy(webAppDir, handler.getPath(), id);
-                    }
+               
+                    pam.deploy(webAppDir, handler.getPath(), id);
+               
 					
 					appNameToFile.put(handler.getFile().getName(), id);
                     log.info("Portlet app \"" + id + "\" " + "successfuly deployed.");

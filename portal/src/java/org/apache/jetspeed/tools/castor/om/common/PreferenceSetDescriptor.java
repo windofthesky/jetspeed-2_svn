@@ -69,7 +69,7 @@ public class PreferenceSetDescriptor extends PreferenceSetImpl
     
     public Collection getCastorPreferences()
     {
-        return this;
+        return this.getInnerCollection();
     }
         
     public String getPreferenceValidatorClassname()

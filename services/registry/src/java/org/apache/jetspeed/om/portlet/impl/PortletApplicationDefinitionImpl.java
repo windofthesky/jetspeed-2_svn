@@ -55,6 +55,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -98,14 +99,16 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     /** Description */
     private String description;
 
-    private PortletDefinitionListImpl portlets;
+    private Collection portlets;
+    
+    private PortletDefinitionListImpl listWrapper = new PortletDefinitionListImpl();
 
     private int applicationType = MutablePortletApplication.WEBAPP;
     
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
-        portlets = new PortletDefinitionListImpl();
+        portlets = new ArrayList();
     }
 
     /**
@@ -165,7 +168,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public PortletDefinitionList getPortletDefinitionList()
     {
-        return portlets;
+        return new PortletDefinitionListImpl(portlets);
     }
 
     /**
@@ -207,7 +210,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void addPortletDefinition(PortletDefinition pd)
     {
-        ((PortletDefinitionComposite) pd).setPortletApplicationDefinition(this);
+       ((PortletDefinitionComposite) pd).setPortletApplicationDefinition(this);
         portlets.add(pd);
     }
 
@@ -224,7 +227,8 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public PortletDefinition getPortletDefinitionByName(String name)
     {
-        return portlets.get(name);
+    	listWrapper.setInnerCollection(portlets);
+        return listWrapper.get(name);
     }
 
     /**
@@ -232,7 +236,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void setPortletDefinitionList(PortletDefinitionList portlets)
     {
-        this.portlets = (PortletDefinitionListImpl) portlets;
+        this.portlets = ((PortletDefinitionListImpl) portlets).getInnerCollection();
     }
 
     /**

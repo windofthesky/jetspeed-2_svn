@@ -54,23 +54,28 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import org.apache.jetspeed.om.common.portlet.ContentTypeSetComposite;
-import org.apache.jetspeed.om.impl.AbstractSupportSet;
 import org.apache.pluto.om.portlet.ContentType;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a> 
  */
-public class ContentTypeSetImpl extends AbstractSupportSet implements ContentTypeSetComposite, Serializable
+public class ContentTypeSetImpl implements ContentTypeSetComposite, Serializable
 {
 
-    private HashMap cTypeMap = new HashMap();
+    protected Collection innerCollection;
 
     public ContentTypeSetImpl()
     {
-        cTypeMap = new HashMap();
+        innerCollection = new ArrayList();
+    }
+
+    public ContentTypeSetImpl(Collection collection)
+    {
+        innerCollection = collection;
     }
 
     /**
@@ -78,7 +83,17 @@ public class ContentTypeSetImpl extends AbstractSupportSet implements ContentTyp
      */
     public ContentType get(String contentType)
     {
-        return (ContentType) cTypeMap.get(contentType);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            ContentType p = (ContentType) itr.next();
+            if (p.getContentType().equals(contentType))
+            {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -87,8 +102,8 @@ public class ContentTypeSetImpl extends AbstractSupportSet implements ContentTyp
     public boolean add(Object o)
     {
         ContentType cType = (ContentType) o;
-        cTypeMap.put(cType.getContentType(), cType);
-        return super.add(cType);
+        
+        return innerCollection.add(cType);
     }
 
     /**
@@ -97,8 +112,8 @@ public class ContentTypeSetImpl extends AbstractSupportSet implements ContentTyp
     public boolean remove(Object o)
     {
         ContentType cType = (ContentType) o;
-        cTypeMap.remove(cType.getContentType());
-        return super.remove(cType);
+        
+        return innerCollection.remove(cType);
     }
 
     /**
@@ -107,6 +122,30 @@ public class ContentTypeSetImpl extends AbstractSupportSet implements ContentTyp
     public void addContentType(ContentType contentType)
     {
         add(contentType);
+    }
+
+    /**
+     * @see org.apache.pluto.om.portlet.ContentTypeSet#iterator()
+     */
+    public Iterator iterator()
+    {        
+        return innerCollection.iterator();
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }
