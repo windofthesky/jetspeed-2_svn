@@ -131,7 +131,11 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
             try
             {
                 portletEntity = entityAccessor.generateEntityFromFragment(fragment, principal);
-                entityAccessor.storePortletEntity(portletEntity);
+                // not portlet definition most likely means that the portlet has not been deployed so dont worry about storing off the entity
+                if(portletEntity.getPortletDefinition() != null)
+                {
+                    entityAccessor.storePortletEntity(portletEntity);
+                }
             }
             catch (PortletEntityNotGeneratedException e)
             {
