@@ -1,6 +1,6 @@
 <?xml version='1.0' ?>
 <ruleset id='test-set-101'>
-<rule id='merge' use-base='true' suffix='/web' popup='0' ignore-prefixes='javascript:,mailto:'/>
+<rule id='merge' use-base='true' suffix='/web' popup='0' ignore-prefixes='javascript:,mailto:,#'/>
 <tag id='form'>
     <attribute id='action' rule='merge'/>
 </tag>

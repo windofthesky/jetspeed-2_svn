@@ -2,7 +2,7 @@
 <ruleset id='test-set-102' remove-comments='false'>
 
 <!-- standard rewriter link rules -->
-<rule id='base' use-base='true' ignore-prefixes='javascript:,mailto:'/>
+<rule id='base' use-base='true' ignore-prefixes='javascript:,mailto:,#'/>
 
 <!-- remove tags -->
 <tag id='html' remove='true'/>

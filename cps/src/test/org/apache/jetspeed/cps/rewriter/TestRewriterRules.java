@@ -258,6 +258,9 @@ public class TestRewriterRules extends CPSTest
                         testRewriter.getAnchorValue("4").equals("javascript:whatever()"));
         assertTrue("5th rewritten anchor: " + testRewriter.getAnchorValue("5"), 
                         testRewriter.getAnchorValue("5").equals("mailto:david@bluesunrise.com"));
+        assertTrue("6th rewritten anchor: " + testRewriter.getAnchorValue("6"), 
+                        testRewriter.getAnchorValue("6").equals("#INTERNAL"));
+                        
         assertTrue("Paragraph text: " + testRewriter.getParagraph(), testRewriter.getParagraph().equals("This is a test"));
     }
         

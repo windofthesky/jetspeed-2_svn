@@ -379,7 +379,7 @@ public class SwingParserAdaptor implements ParserAdaptor
          */
         public void handleError(java.lang.String str,int param) 
         {
-            System.out.println("Handling error: " + str);
+            // System.out.println("Handling error: " + str);
         }
 
         /*

@@ -1,6 +1,6 @@
 <?xml version='1.0' ?>
 <ruleset id='test-set-102' remove-comments='true'>
-<rule id='base' popup='true' use-base='true' suffix='/suffix' ignore-prefixes='javascript:,mailto:'/>
+<rule id='base' popup='true' use-base='true' suffix='/suffix' ignore-prefixes='javascript:,mailto:,#'/>
 <tag id='HTML' remove='true'/>
 <tag id='body' remove='true'/>
 <tag id='head' strip='true'/>
