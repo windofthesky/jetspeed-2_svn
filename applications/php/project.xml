@@ -16,12 +16,29 @@
   </repository>
 
   <dependencies>
+  <dependency>
+		<id>portals-bridges:portals-bridges-php</id>
+	    <version>0.1</version>
+	     <type>jar</type>
+	    <properties>
+	    	<war.bundle>true</war.bundle>
+	    </properties>
+	</dependency> 
+	<dependency>
+		<id>portals-bridges:portals-bridges-common</id>
+	    <version>0.1</version>
+	     <type>jar</type>
+	    <properties>
+	    	<war.bundle>true</war.bundle>
+	    </properties>
+	</dependency> 
     <dependency>
-      <id>itgroundwork</id>
+      <id>itgroundwork:phpportlet</id>
+      <version>1.0</version>
+      <type>jar</type>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-      <jar>phpportlet.jar</jar>
     </dependency>
     <dependency>
       <id>portlet-api</id>
@@ -38,20 +55,7 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    <dependency>
-      <id>taglibs:standard</id>
-      <version>1.0.2</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>taglibs:request</id>
-      <version>1.0.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+    
     <dependency>
       <id>servletapi</id>
       <version>2.3</version>
@@ -59,24 +63,7 @@
         <war.bundle>false</war.bundle>
       </properties> 
     </dependency>
-    <dependency>
-      <id>jetspeed-commons</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>
-    <!-- warred jars -->
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.6.1</version>
-      <url>http://jakarta.apache.org/commons/beanutils.html</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+    
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -118,15 +105,6 @@
       <artifactId>commons-validator</artifactId>
       <version>1.1.2</version>
       <url>http://jakarta.apache.org/commons/validator/</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <version>2.0.7</version>
-      <url>http://jakarta.apache.org/oro/</url>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

@@ -44,8 +44,8 @@ function show() {
 		<tr>
 		<td class='.$class.'>'.$row[0].'</td>
 		<td class='.$class.'>'.$row[1].'</td>
-		<td class='.$class.' width=10% align=center><a class=std href=/PHP/hosts/index.php?pagedest=interfaces&task=edit&id='.$row[0].'>edit</td>
-		<td class='.$class.' width=10% align=center><a class=std href=/PHP/hosts/index.php?pagedest=interfaces&task=delete&id='.$row[0].'>delete</td>
+		<td class='.$class.' width=10% align=center><a class=std href=hosts/index.php?pagedest=interfaces&task=edit&id='.$row[0].'>edit</td>
+		<td class='.$class.' width=10% align=center><a class=std href=hosts/index.php?pagedest=interfaces&task=delete&id='.$row[0].'>delete</td>
 		</tr>';
 		if ($class == 'row1')
 			$class = 'row2';
@@ -67,7 +67,7 @@ function add() {
 			formSuccess('Service '.$name.' added.');
 		}
 	} else {
-		$action = "/PHP/hosts/index.php";
+		$action = "hosts/index.php";
 		$title = 'Add Interface';
 		$rows = array();
 		$row = array('hidden', 'pagedest', 'interfaces');
@@ -97,7 +97,7 @@ function edit() {
 		}
 	} else {
 		$info = getInterfaceInfo($id);
-		$action = "/PHP/hosts/index.php";
+		$action = "hosts/index.php";
 		$title = 'Modify Interface';
 		$rows = array();
 		$row = array('hidden', 'pagedest', 'interfaces');

@@ -17,39 +17,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <web-app>
- <display-name>PHP Portlets</display-name>
- <description>PHP Portlets</description>
- <servlet>
-	    <servlet-name>
-	      jetspeed-php
-	    </servlet-name>
-	    <servlet-class>
-	      org.apache.jetspeed.portlets.php.phpRedirectorServlet
-	    </servlet-class>
-	  </servlet>
-	  	  
- <servlet>
-    <servlet-name>JetspeedContainer</servlet-name>
-    <display-name>Jetspeed Container</display-name>
-    <description>MVC Servlet for Jetspeed Portlet Applications</description>
-    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>
-      jetspeed-php
-    </servlet-name>
-    <url-pattern>
-      *.php
-    </url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-     <servlet-name>
-        JetspeedContainer
-     </servlet-name>
-     <url-pattern>
-       /container/*
-     </url-pattern>
-  </servlet-mapping>
-</web-app>
+	 <display-name>PHP Portlets</display-name>
+	 <description>PHP Demo Portlet</description>
+ </web-app>

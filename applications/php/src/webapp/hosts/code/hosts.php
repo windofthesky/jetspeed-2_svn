@@ -58,12 +58,12 @@ function show() {
 	echo '
 <table width=100% bgcolor=#dddddd cellpadding=5 celspacing=0 border=0>
 <tr>
-<td class=head><a class=head href=/PHP/hosts/index.php?pagedest=hosts&order=id&sort='.$newsort.'>Id</td>
-<td class=head><a class=head href=/PHP/hosts/index.php?pagedest=hosts&order=name&sort='.$newsort.'>Name</td>
-<td class=head><a class=head href=/PHP/hosts/index.php?pagedest=hosts&order=address&sort='.$newsort.'>Address</td>
-<td class=head><a class=head href=/PHP/hosts/index.php?pagedest=hosts&order=os&sort='.$newsort.'>OS</td>
+<td class=head><a class=head href=hosts/index.php?pagedest=hosts&order=id&sort='.$newsort.'>Id</td>
+<td class=head><a class=head href=hosts/index.php?pagedest=hosts&order=name&sort='.$newsort.'>Name</td>
+<td class=head><a class=head href=hosts/index.php?pagedest=hosts&order=address&sort='.$newsort.'>Address</td>
+<td class=head><a class=head href=hosts/index.php?pagedest=hosts&order=os&sort='.$newsort.'>OS</td>
 <td class=head>Serial</td>
-<td class=head><a class=head href=/PHP/hosts/index.php?pagedest=hosts&order=type&sort='.$newsort.'>Type</td>
+<td class=head><a class=head href=hosts/index.php?pagedest=hosts&order=type&sort='.$newsort.'>Type</td>
 <td class=head colspan=3>Manage</td>
 </tr>';
 	$class = 'row1';
@@ -73,14 +73,14 @@ function show() {
 		echo '
 		<tr>
 		<td class='.$class.'>'.$row[0].'</td>
-		<td class='.$class.'><a class=std href=/PHP/hosts/index.php?pagedest=hosts&task=detail&id='.$row[0].'>'.$row[1].'</a></td>
+		<td class='.$class.'><a class=std href=hosts/index.php?pagedest=hosts&task=detail&id='.$row[0].'>'.$row[1].'</a></td>
 		<td class='.$class.'>'.$row[2].'</td>
 		<td class='.$class.'>'.$row[3].'</td>
 		<td class='.$class.'>'.$row[4].'</td>
 		<td class='.$class.'>'.$row[5].'</td>
-		<td class='.$class.'><a class=std href=/PHP/hosts/index.php?pagedest=hosts&task=detail&id='.$row[0].'>Services / Interfaces</a></td>
-		<td class='.$class.'><a class=std href=/PHP/hosts/index.php?pagedest=hosts&task=edit&id='.$row[0].'>Edit</a></td>
-		<td class='.$class.'><a class=std href=/PHP/hosts/index.php?pagedest=hosts&task=delete&id='.$row[0].'>Delete</a></td>
+		<td class='.$class.'><a class=std href=hosts/index.php?pagedest=hosts&task=detail&id='.$row[0].'>Services / Interfaces</a></td>
+		<td class='.$class.'><a class=std href=hosts/index.php?pagedest=hosts&task=edit&id='.$row[0].'>Edit</a></td>
+		<td class='.$class.'><a class=std href=hosts/index.php?pagedest=hosts&task=delete&id='.$row[0].'>Delete</a></td>
 		</tr>';
 		if ($class == 'row1')
 			$class = 'row2';
@@ -101,7 +101,7 @@ function add() {
 			formSuccess('Host '.$name.' added.');
 		}
 	} else {
-		$action = "/PHP/hosts/index.php";
+		$action = "hosts/index.php";
 		$title = 'Add Host';
 		$rows = array();
 		$row = array('hidden', 'pagedest', '/hosts');
@@ -139,7 +139,7 @@ function edit() {
 		}
 	} else {
 		$info = getHostInfo($id);
-		$action = "/PHP/hosts/index.php";
+		$action = "hosts/index.php";
 		$title = 'Modify Host';
 		$rows = array();
 		$row = array('hidden', 'id', $id);
@@ -214,7 +214,7 @@ function detail($id) {
 <td width=20% align=right><b>IP address:</b></td>
 <td align=left><b>'.$info[1].'</b></td>
 <td align=right rowspan=4>
-	<form action=/PHP/hosts/index.php method=get>
+	<form action=hosts/index.php method=get>
 	<input type=hidden name=pagedest value=hosts>
 	<input type=hidden name=task value=edit>
 	<input type=hidden name=id value='.$id.'>
@@ -222,7 +222,7 @@ function detail($id) {
 	</form>
 </td>
 <td align=left rowspan=4>
-	<form action=/PHP/hosts/index.php method=get>
+	<form action=hosts/index.php method=get>
 	<input type=hidden name=pagedest value=hosts>
 	<input type=hidden name=task value=detail>
 	<input type=hidden name=id value='.$id.'>
@@ -283,7 +283,7 @@ function detail($id) {
 </table>
 <tr>
 <td '.$colspan.' align=left>
-<form action=/PHP/hosts/index.php method=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=/hosts>
 <input type=hidden name=task value=services>
 <input type=hidden name=id value='.$id.'>
@@ -329,7 +329,7 @@ function detail($id) {
 </table>
 <tr>
 <td '.$colspan.' align=left>
-<form action=/PHP/hosts/index.php method=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=/hosts>
 <input type=hidden name=task value=interfaces>
 <input type=hidden name=id value='.$id.'>

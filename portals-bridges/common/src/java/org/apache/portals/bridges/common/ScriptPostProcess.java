@@ -151,7 +151,10 @@ public class ScriptPostProcess {
 					}
 					else
 					{
-						// No quote just the first no ASCII char
+						// Make sure that we don't parse over the tag end
+						ixTagEnd = page.indexOf(endTag);
+						
+						// No quote just the first space or tagEnd index
 						ixRefEnd = 0;
 						StringBuffer nqurl = new StringBuffer();
 						boolean  bEnd = false;
@@ -160,7 +163,7 @@ public class ScriptPostProcess {
 						{
 							char c = page.charAt(ixRefEnd);
 							
-							if ( Character.isSpaceChar(c) == false )
+							if ( (Character.isSpaceChar(c) == false) && (ixRefEnd < ixTagEnd) )
 							{
 								ixRefEnd++;
 								nqurl.append(c);
@@ -173,6 +176,7 @@ public class ScriptPostProcess {
 						}
 						// Get the string
 						url = nqurl.toString();
+						
 					}
 						
 					// Prepend the Action URL

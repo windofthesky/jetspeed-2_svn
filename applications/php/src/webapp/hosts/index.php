@@ -1,6 +1,6 @@
 <?php
 /*******************************************************************************
-**	file:	/PHP/hosts/index.php
+**	file:	hosts/index.php
 ********************************************************************************
 **	author:	Scott Parris
 **	date:	2004/6/2
@@ -36,13 +36,13 @@ echo '
 &nbsp;
 </td>
 <td class=head align=left>
-<a class=head href=/PHP/hosts/index.php>Hosts</a>
+<a class=head href=hosts/index.php>Hosts</a>
 </td>
 <td class=head align=left>
-<a class=head href=/PHP/hosts/index.php?pagedest=services>Services</a>
+<a class=head href=hosts/index.php?pagedest=services>Services</a>
 </td>
 <td class=head align=left>
-<a class=head href=/PHP/hosts/index.php?pagedest=interfaces>Interfaces</a>
+<a class=head href=hosts/index.php?pagedest=interfaces>Interfaces</a>
 </td>
 <td class=head align=center>
 &nbsp;
@@ -77,7 +77,7 @@ switch($page) {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=services>
 <input type=hidden name=task value=add>
 <input type=submit name=submit value="Add Service">
@@ -86,7 +86,7 @@ switch($page) {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=services>
 <input type=hidden name=task value=show>
 <input type=submit name=submit value="List Services">
@@ -121,7 +121,7 @@ switch($page) {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=interfaces>
 <input type=hidden name=task value=add>
 <input type=submit name=nedi value="Add Interface">
@@ -131,7 +131,7 @@ switch($page) {
 <tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=interfaces>
 <input type=hidden name=task value=show>
 <input type=submit name=nedi value="List Interfaces">
@@ -190,7 +190,7 @@ function leftDefault() {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=hosts>
 <input type=hidden name=task value=add>
 <input type=submit name=nedi value="Add Host">
@@ -199,7 +199,7 @@ function leftDefault() {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=hosts>
 <input type=hidden name=task value=show>
 <input type=submit name=nedi value="List Hosts">
@@ -213,7 +213,7 @@ function leftDefault() {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=discovery>
 <input type=submit name=nedi value="Discover Device(s)">
 </form>
@@ -221,7 +221,7 @@ function leftDefault() {
 </tr>
 <tr>
 <td class=nav align=middle>
-<form action=/PHP/hosts/index.php methot=get>
+<form action=hosts/index.php method=get>
 <input type=hidden name=pagedest value=nagios>
 <input type=submit name=nagios value="Gen Nagios Conf">
 </form>
@@ -253,7 +253,7 @@ function main_content($page) {
 			$main = ' ';
 			break;
 		default:
-			$main = "code//hosts.php";
+			$main = "code/hosts.php";
 			break;
 	}
 	return $main;
