@@ -63,7 +63,9 @@ limitations under the License.
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)�?�戻る</a>
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)
+へ戻る
+</a>
 #end
         &nbsp;
       </div>
