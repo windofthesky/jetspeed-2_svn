@@ -255,7 +255,15 @@ public abstract class AbstractEngine implements Engine
             String msg = "JetspeedEngine unable to service request: "
                     + t.toString();
             log.error(msg, t);
-            // throw new JetspeedException(msg, t);
+            try
+            {
+                // throw new JetspeedException(msg, t);
+                t.printStackTrace(context.getResponse().getWriter());
+            }
+            catch (IOException e)
+            {
+                log.error("Failed to write error to response "+e.toString(), e);
+            }
         }
     }
 
