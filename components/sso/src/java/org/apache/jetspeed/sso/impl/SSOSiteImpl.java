@@ -43,8 +43,9 @@ public class SSOSiteImpl implements SSOSite {
 	private boolean	isAllowUserSet;
 	private boolean isCertificateRequired;
 	
-	private Collection	credentials = new Vector();//= new ArrayList(0);
-	private Collection	principals = new Vector();// = new ArrayList(0);
+	private Collection	credentials = new Vector();
+	private Collection	principals = new Vector();
+	private Collection	remotePrincipals = new Vector();
 	
 	/**
 	 * 
@@ -246,4 +247,16 @@ public class SSOSiteImpl implements SSOSite {
 					
 			}
 		}
+    /**
+     * @return Returns the remotePrincipals.
+     */
+    public Collection getRemotePrincipals() {
+        return remotePrincipals;
+    }
+    /**
+     * @param remotePrincipals The remotePrincipals to set.
+     */
+    public void setRemotePrincipals(Collection remotePrincipals) {
+        this.remotePrincipals = remotePrincipals;
+    }
 }

@@ -123,4 +123,14 @@ public interface SSOSite {
 	 *
 	 */
 	public void removePrincipal(long principalId) throws SSOException;
+	
+	 /**
+     * getRemotePrincipals 
+     */
+	public Collection getRemotePrincipals();
+	
+    /**
+     * setRemotePrincipals 
+     */
+    public void setRemotePrincipals(Collection remotePrincipals);
 }

@@ -49,8 +49,10 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
 	 * test url for this UnitTest
 	 */
 	static private String TEST_URL= "http://localhost/jetspeed";
+	static private String TEST_URL2= "http://localhost/jetspeed-2";
 	static private String TEST_USER= "joe";
 	static private String REMOTE_USER= "remoteJS";
+	static private String REMOTE_USER2= "remoteJS-2";
 	static private String REMOTE_PWD_1 = "remote_1";
 	static private String REMOTE_PWD_2 = "remote_2";
 	
@@ -99,11 +101,12 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
      * Test user root.
      * </p>
      */
-    public void testSSO() throws Exception
+  /*  public void testSSO() throws Exception
     {
         // TODO: FIXME: test fails on HSQL Oracle
     }
-    public void XXXtestSSO() throws Exception
+    */
+    public void testSSO() throws Exception
     {
 		// Create a user
 		 try
@@ -143,9 +146,37 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL);
     	}
     	
+    	// Add another remote principal for the same user
+    	if ( ssoBroker.hasSSOCredentials(subject, TEST_URL2) == false)
+    	{
+    		System.out.println("No SSO Credential for user:" + TEST_USER+ " site: " + TEST_URL2);
+    		
+    		// Add credential
+    		try
+			{
+    			ssoBroker.addCredentialsForSite(subject, REMOTE_USER2, TEST_URL2,REMOTE_PWD_1);
+    			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL2);
+			}
+			catch(SSOException ssoex)
+			{
+	    		System.out.println("SSO Credential add FAILED for user:" + TEST_USER+ " site: " + TEST_URL2);
+	    		ssoex.printStackTrace();
+	    		throw new Exception(ssoex.getMessage());
+			}
+    	}
+    	else
+    	{
+    		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL2);
+    	}
+    	
+    	// Test if the credential where persisted
+    	
     	// Test credential update
     	SSOContext ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
-    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword());
+    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword()+ " for site: " + TEST_URL);
+    	
+    	SSOContext ssocontext2 = ssoBroker.getCredentials(subject, TEST_URL2);
+    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword() + " for site: " + TEST_URL2);
     	
     	try
 		{

@@ -157,6 +157,20 @@ limitations under the License.
 	        <fk-pointing-to-this-class column="SITE_ID"/>
 	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
 	    </collection-descriptor>
+	    <collection-descriptor
+	        name="remotePrincipals"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
+	       proxy="true"
+	        refresh="true"
+	        auto-retrieve="true"
+	        auto-update="object"
+	        auto-delete="object"
+	        indirection-table="SSO_SITE_TO_REMOTE"
+	    >
+	        <documentation>This is the reference to principals.</documentation>
+	        <fk-pointing-to-this-class column="SITE_ID"/>
+	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
+	    </collection-descriptor>
 	</class-descriptor>
 	
 </descriptor-repository>
