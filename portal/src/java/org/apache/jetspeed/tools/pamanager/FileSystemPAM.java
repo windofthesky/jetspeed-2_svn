@@ -531,12 +531,14 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     public boolean registerPortletApplication(FileSystemHelper fileSystem,
             String portletApplicationName) 
     throws RegistryException
-    {
-        long checksum = fileSystem.getChecksum(PORTLET_XML);        
+    {        
+        long checksum = fileSystem.getChecksum(PORTLET_XML);
         MutablePortletApplication pa = registry
                 .getPortletApplication(portletApplicationName);
         if (pa != null)
-        {            
+        {
+            System.out.println("CHECKSUM from APP Server: " + checksum);
+            System.out.println("CHECKSUM from Registry  : " + pa.getChecksum());
             if (checksum == pa.getChecksum())
             {
                 System.out.println("PORTLET APPLICATION REGISTRATION: NO CHANGE on CHECKSUM for portlet.xml: " 
@@ -546,6 +548,15 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             }
             System.out.println("PORTLET APPLICATION REGISTRATION: Checksum changed on portlet.xml: " 
                                 + portletApplicationName);
+            try
+            {
+                this.doUnregister(portletApplicationName, false);
+            }
+            catch (Exception e)
+            {
+                
+            }
+            
         }
 
         PortletApplicationWar paWar = null;
@@ -564,8 +575,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
 
         try
         {
-            app = paWar.createPortletApp();
-
+            app = paWar.createPortletApp();            
             if (app == null)
             {
                 String msg = "Error loading portlet.xml: ";
@@ -577,8 +587,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             app.setChecksum(checksum);
 
             // load the web.xml
-            log
-                    .info("Loading web.xml into memory...."
+            log.info("Loading web.xml into memory...."
                             + portletApplicationName);
             MutableWebApplication webapp = paWar.createWebApp();
             paWar.validate();

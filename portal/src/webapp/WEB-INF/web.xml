@@ -83,16 +83,18 @@ limitations under the License.
       <param-value>webContext</param-value>
     </init-param>
     <!-- To enable SpringEngine, uncomment this param and comment out the
-    	 PicoEngine one.    	 
+    	 PicoEngine one.    	 -->
     <init-param>
       <param-name>engine</param-name>
       <param-value>org.apache.jetspeed.engine.SpringEngine</param-value>
     </init-param>
-    -->
+
+	<!--
     <init-param>
       <param-name>engine</param-name>
       <param-value>org.apache.jetspeed.engine.PicoEngine</param-value>
     </init-param>
+	-->
     <load-on-startup>1</load-on-startup>
   </servlet>
 
