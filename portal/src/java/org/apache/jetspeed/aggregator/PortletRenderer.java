@@ -85,11 +85,15 @@ public interface PortletRenderer extends CommonService
      */
     public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response);
 
-    /** Render the specified Page fragment.
-        The method returns before rendering is complete, rendered content can be
-        accessed through the ContentDispatcher
-    */
-    public void render(Fragment fragment, RequestContext request);
+    /** 
+     * 
+     * Render the specified Page fragment.
+     * The method returns before rendering is complete, rendered content can be
+     * accessed through the ContentDispatcher
+     * @throws UnknownPortletDefintionException is the PortletDefinition represented by this
+     * fragment does not exist     .
+     */
+    public void render(Fragment fragment, RequestContext request) throws UnknownPortletDefinitionException;
 
     /**
      * Retrieve the ContentDispatcher for the specified request
