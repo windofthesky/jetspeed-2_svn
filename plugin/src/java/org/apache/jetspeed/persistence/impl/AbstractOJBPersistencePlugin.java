@@ -71,6 +71,7 @@ import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 import org.apache.jetspeed.services.plugin.PluginInitializationException;
+import org.apache.jetspeed.services.plugin.util.CauseExtractor;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PBKey;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -395,9 +396,10 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
 
             log.info(this.getClass().getName() + " initalized!");
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            String message = "Unable create a ojb persistence plugin: " + e.getMessage();
+            String cause = CauseExtractor.getCompositeMessage(e);
+            String message = "Unable create a ojb persistence plugin.  Cause: " + cause;
             log.fatal(message, e);
             throw new PluginInitializationException(message, e);
         }

@@ -63,6 +63,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.services.plugin.util.CauseExtractor;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -196,8 +197,9 @@ public abstract class AbstractPluginFactory extends BaseService
         }
         catch (Exception e)
         {
-            String message = "Unable to create Plugin.";
+            String message = "Unable to create Plugin.Cause: " + e.getMessage();
             log.fatal(message, e);
+            log.fatal(CauseExtractor.getCompositeMessage(e));
             if (!(e instanceof PluginInitializationException))
             {
                 throw new PluginInitializationException(message, e);
