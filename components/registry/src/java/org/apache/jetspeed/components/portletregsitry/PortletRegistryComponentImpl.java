@@ -190,7 +190,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         return new ArrayList(store.getExtent(portletDefClass));
     }
 
-    protected PersistenceStore getPersistenceStore()
+    public PersistenceStore getPersistenceStore()
     {
         return storeContainer.getStoreForThread(jetspeedStoreName);
     }

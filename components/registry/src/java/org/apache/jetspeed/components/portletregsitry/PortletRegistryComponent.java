@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.pluto.om.common.Language;
@@ -189,5 +190,17 @@ public interface PortletRegistryComponent
      *
      */
 	PortletDefinitionComposite getStoreableInstance(PortletDefinitionComposite portlet);
+	
+	/**
+	 * 
+	 * <p>
+	 * getPersistenceStore
+	 * </p>
+	 * 
+	 * @return the PersistenceStore sued to persist registry
+	 * information.
+	 *
+	 */
+	PersistenceStore getPersistenceStore();
 
 }
