@@ -274,11 +274,6 @@ public class TestRewriterRules extends CPSTest
 
     /**
      * Gets a reader for a given filename in the test directory. 
-     * This unit test tries to work from within a Maven reactor or from
-     * within a normal Maven unit test task. This is a hack but I can't find a way to
-     * get Maven to change directories. I thought the basedir attribute would do so, but its 
-     * failing making me think its a bug in maven, or just my misunderstanding of reactors.
-     * TODO: deprecate this when I someone figures out the basedir attribute
      * 
      * @return A file reader to the test rules file
      * @throws IOException
@@ -293,11 +288,6 @@ public class TestRewriterRules extends CPSTest
 
     /**
      * Gets a writer for a given filename in the test directory. 
-     * This unit test tries to work from within a Maven reactor or from
-     * within a normal Maven unit test task. This is a hack but I can't find a way to
-     * get Maven to change directories. I thought the basedir attribute would do so, but its 
-     * failing making me think its a bug in maven, or just my misunderstanding of reactors.
-     * TODO: deprecate this when I someone figures out the basedir attribute
      * 
      * @return A file reader to the test rules file
      * @throws IOException
