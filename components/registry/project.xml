@@ -36,7 +36,11 @@ limitations under the License.
 
   <shortDescription>Registry Components</shortDescription>
   <dependencies>
+  
   	&pico-nano-groovy;
+  	
+  	&db-ojb-deps;
+  	
   	<dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
@@ -142,26 +146,7 @@ limitations under the License.
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc6-PATCHED</version>
-    </dependency>
-    <!--
-    <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc5-PATCHED</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
     
-    <dependency>
-      <id>ojb</id>
-      <version>1.0.rc4</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>-->
      <dependency>
       <id>commons-pool</id>
       <version>1.2</version>
@@ -292,11 +277,16 @@ limitations under the License.
           </excludes>
         </resource>
         <resource>
-        <directory>${basedir}/src/java</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
+          <directory>${basedir}/src/java</directory>
+          <excludes>
+           <exclude>**/*.java</exclude>
+          </excludes>
+        </resource>
+        
+        &db-ojb-resources;
+        
+        &log4j-resources;
+        
       </resources>
     </unitTest>
 
@@ -311,20 +301,8 @@ limitations under the License.
 
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+  
+  	&j2-reports;
+  
   </reports>  
 </project>

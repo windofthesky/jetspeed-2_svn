@@ -244,13 +244,18 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     {
         ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "getGroupsForUser(java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
+        Collection groups = new ArrayList();
+
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
+        Iterator groupPrincipalsIter = groupPrincipals.iterator();
+        while (groupPrincipalsIter.hasNext())
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+            Principal groupPrincipal = (Principal) groupPrincipalsIter.next();
+            Preferences preferences = Preferences.userRoot().node(
+                    GroupPrincipalImpl.getFullPathFromPrincipalName(groupPrincipal.getName()));
+            groups.add(new GroupImpl(groupPrincipal, preferences));
         }
-        Collection omUserGroups = omUser.getGroupPrincipals();
-        return super.getGroups(omUserGroups);
+        return groups;
     }
 
     /**
@@ -370,19 +375,11 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
                 "isUserInGroup(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
-        {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
-        }
         boolean isUserInGroup = false;
-        Collection omGroups = omUser.getGroupPrincipals();
-        if ((null != omGroups) && (omGroups.contains(omGroup)))
+        
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
+        Principal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);       
+        if (groupPrincipals.contains(groupPrincipal))
         {
             isUserInGroup = true;
         }

@@ -71,7 +71,7 @@ public interface UserSecurityHandler
     
     /**
      * <p>
-     * Remove the user principal.
+     * Removes the user principal.
      * </p>
      * 
      * @param userPrincipal The <code>UserPrincipal</code>.

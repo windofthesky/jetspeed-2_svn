@@ -322,7 +322,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             Collection groups = gms.getGroupsForUser("anonuser2");
-            assertEquals("groups size should be == 3", 3, groups.size());
+            // Default hierarchy used in by generalization.
+            assertEquals("groups size should be == 5", 5, groups.size());
         }
         catch (SecurityException sex)
         {

@@ -94,31 +94,38 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
                 "addRole(java.lang.String)");
 
-        RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
-        String fullPath = rolePrincipal.getFullPath();
         // Check if role already exists.
         if (roleExists(roleFullPathName))
         {
             throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS + " " + roleFullPathName);
         }
 
-        // If does not exist, create.
-        InternalRolePrincipal omRole = new InternalRolePrincipalImpl(fullPath);
+        RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
+        String fullPath = rolePrincipal.getFullPath();
+        // Add the preferences.
         Preferences preferences = Preferences.userRoot().node(fullPath);
-        PersistenceStore store = getPersistenceStore();
+        if (log.isDebugEnabled())
+        {
+            log.debug("Added role preferences node: " + fullPath);
+        }
         try
         {
             if ((null != preferences) && preferences.absolutePath().equals(fullPath))
             {
-                store.lockForWrite(omRole);
-                store.getTransaction().checkpoint();
+                // Add role principal.
+                roleSecurityHandler.setRolePrincipal(rolePrincipal);
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Added role: " + fullPath);
+                }
             }
         }
-        catch (Exception e)
+        catch (SecurityException se)
         {
-            String msg = "Unable to lock Role for update.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
+            String msg = "Unable to create the role.";
+            log.error(msg, se);
+
+            // Remove the preferences node.
             try
             {
                 preferences.removeNode();
@@ -127,7 +134,7 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
             {
                 bse.printStackTrace();
             }
-            throw new SecurityException(msg, e);
+            throw new SecurityException(msg, se);
         }
     }
 
@@ -385,19 +392,11 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
                 "isUserInRole(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
-        {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
-        }
         boolean isUserInRole = false;
-        Collection omRoles = omUser.getRolePrincipals();
-        if ((null != omRoles) && (omRoles.contains(omRole)))
+        
+        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
+        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);       
+        if (rolePrincipals.contains(rolePrincipal))
         {
             isUserInRole = true;
         }

@@ -209,15 +209,20 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             rms.removeRole("testrole1.role1");
             Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
-            // because of hierarchical roles
-            //
-            // assertEquals(
-            //     "principal size should be == 3 after removing testrole1.role1, for principals: " + principals.toString(),
-            //     3,
-            //     principals.size());
+            // because of hierarchical roles with generalization strategy.
+            assertEquals(
+                 "principal size should be == 5 after removing testrole1.role1, for principals: " + principals.toString(),
+                 5,
+                 principals.size());
             assertFalse(
                 "anonuser2 should not contain testrole1.role1",
                 principals.contains(new RolePrincipalImpl("testrole1.role1")));
+            // Make sure that the children are removed as well.
+            rms.removeRole("testrole2");
+            boolean roleExists = rms.roleExists("testrole2.role1");
+            assertFalse(roleExists);
+            roleExists = rms.roleExists("testrole2.role2");
+            assertFalse(roleExists);
         }
         catch (SecurityException sex)
         {
@@ -229,7 +234,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             ums.removeUser("anonuser2");
             rms.removeRole("testrole1");
-            rms.removeRole("testrole2");
         }
         catch (SecurityException sex)
         {

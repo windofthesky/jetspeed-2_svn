@@ -17,8 +17,10 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.Principal;
 
 import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
+import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 
 /**
@@ -56,4 +58,25 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
         return rolePrincipal;
     }
 
+    /**
+     * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#setRolePrincipal(org.apache.jetspeed.security.RolePrincipal)
+     */
+    public void setRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException
+    {
+        String fullPath = rolePrincipal.getFullPath();
+        InternalRolePrincipal internalRole = new InternalRolePrincipalImpl(fullPath);
+        commonQueries.setInternalRolePrincipal(internalRole);   
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#removeRolePrincipal(org.apache.jetspeed.security.RolePrincipal)
+     */
+    public void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException
+    {
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(rolePrincipal.getName());
+        if (null != internalRole)
+        {
+            commonQueries.removeInternalRolePrincipal(internalRole);
+        }        
+    }
 }

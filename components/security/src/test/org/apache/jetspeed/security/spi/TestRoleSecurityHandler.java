@@ -14,9 +14,13 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.security.Permissions;
 import java.security.Principal;
 
 import org.apache.jetspeed.security.AbstractSecurityTestcase;
+import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -87,6 +91,32 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
     
     /**
      * <p>
+     * Test <code>removeRolePrincipal</code>.
+     * </p>
+     */
+    /*public void testRemoveRolePrincipal() throws Exception
+    {
+        initMappedRole();
+        rsh.removeRolePrincipal(new RolePrincipalImpl("mappedrole"));
+        // The user should still exist.
+        assertTrue(ums.userExists("mappedroleuser"));
+        // The group should still exist.
+        assertTrue(gms.groupExists("mappedgroup"));
+        // The permission should still exist.
+        // TODO Need permissionExists
+        // The user-role mapping should be gone.
+        assertFalse(rms.isUserInRole("mappedroleuser", "mappedrole"));
+        // The group-role mapping should be gone.
+        assertFalse(rms.isGroupInRole("mappedgroup", "mappedroleuser"));
+        // The permission-role mapping should be gone.
+        Permissions perms = pms.getPermissions(new RolePrincipalImpl("mappedrole"));
+        assertFalse(perms.implies(new PortletPermission("myportlet", "view")));
+        
+        destroyMappedRole();
+    }*/
+    
+    /**
+     * <p>
      * Initialize role test object.
      * </p>
      */
@@ -103,6 +133,25 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
     protected void destroyRole() throws Exception
     {
         rms.removeRole("testusertorole1");
+    }
+    
+    protected void initMappedRole() throws Exception
+    {
+        ums.addUser("mappedroleuser", "password");
+        rms.addRole("mappedrole");
+        rms.addRole("mappedrole.role1");
+        gms.addGroup("mappedgroup");
+        pms.grantPermission(new RolePrincipalImpl("mappedrole"), new PortletPermission("myportlet", "view"));
+        rms.addRoleToUser("mappedroleuser", "mappedrole");
+        rms.addRoleToGroup("mappedrole", "mappedgroup");    
+    }
+    
+    protected void destroyMappedRole() throws Exception
+    {
+        ums.removeUser("mappedroleuser");
+        rms.removeRole("mappedrole");
+        gms.removeGroup("mappedgroup");
+        pms.removePermission(new PortletPermission("myportlet", "view"));   
     }
 
 }

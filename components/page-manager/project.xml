@@ -35,8 +35,12 @@ limitations under the License.
   </repository>
 
   <shortDescription>Page Manager</shortDescription>
-  <dependencies>  
+  <dependencies>
+  
   	&pico-nano-groovy;
+  	
+  	&db-ojb-deps;
+  	
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>
@@ -126,10 +130,7 @@ limitations under the License.
       <id>jta</id>
       <jar>jta1.0.1.jar</jar>
     </dependency>
-    <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc6-PATCHED</version>
-    </dependency>
+    
     <dependency>
       <id>commons-pool</id>
       <version>1.2</version>
@@ -205,12 +206,17 @@ limitations under the License.
           </excludes>
         </resource>
         <resource>
-        <directory>${basedir}/src/java</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-          <exclude>**/META-INF/**</exclude>
-        </excludes>
-      </resource>
+          <directory>${basedir}/src/java</directory>
+          <excludes>
+           <exclude>**/*.java</exclude>
+           <exclude>**/META-INF/**</exclude>
+          </excludes>
+        </resource>
+        
+        &db-ojb-resources;
+        
+        &log4j-resources;
+        
       </resources>
     </unitTest>
     
@@ -225,20 +231,8 @@ limitations under the License.
     
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+    
+    &j2-reports;
+    
   </reports>  
 </project>

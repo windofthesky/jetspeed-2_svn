@@ -16,6 +16,9 @@ package org.apache.jetspeed.security.spi;
 
 import java.security.Principal;
 
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.SecurityException;
+
 /**
  * <p>
  * This interface encapsulates the persistence of security roles.
@@ -44,5 +47,25 @@ public interface RoleSecurityHandler
      * @return The <code>Principal</p>
      */
     Principal getRolePrincipal(String roleFullPathName);
+    
+    /**
+     * <p>
+     * Sets the role principal in the backing store.
+     * </p>
+     * 
+     * @param rolePrincipal The <code>RolePrincipal</code>.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void setRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException;
+    
+    /**
+     * <p>
+     * Removes the role principal.
+     * </p>
+     * 
+     * @param rolePrincipal The <code>RolePrincipal</code>.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException;
 
 }

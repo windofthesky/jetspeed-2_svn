@@ -161,6 +161,130 @@ public class CommonQueries
         InternalRolePrincipal internalRole = (InternalRolePrincipal) persistenceStore.getObjectByQuery(query);
         return internalRole;
     }
+    
+    /**
+     * <p>
+     * Sets the given {@link InternalRolePrincipal}.
+     * </p>
+     * 
+     * @param internalRole The {@link InternalRolePrincipal}.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    public void setInternalRolePrincipal(InternalRolePrincipal internalRole) throws SecurityException
+    {
+        try
+        {
+            persistenceStore.lockForWrite(internalRole);
+            persistenceStore.getTransaction().checkpoint();
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to lock role for update.";
+            log.error(msg, e);
+            persistenceStore.getTransaction().rollback();
+            throw new SecurityException(msg, e);
+        }
+    }
+    
+    /**
+     * <p>
+     * Remove the given {@link InternalRolePrincipal}.
+     * </p>
+     * 
+     * @param internalRole The {@link InternalRolePrincipal}.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    public void removeInternalRolePrincipal(InternalRolePrincipal internalRole) throws SecurityException
+    {
+        try
+        {
+            // Remove role.
+            persistenceStore.deletePersistent(internalRole);
+            persistenceStore.getTransaction().checkpoint();
+            if (log.isDebugEnabled())
+            {
+                log.debug("Deleted role: " + internalRole.getFullPath());
+            }
+
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to lock Role for update.";
+            log.error(msg, e);
+            persistenceStore.getTransaction().rollback();
+            throw new SecurityException(msg, e);
+        }
+        
+        /*InternalRolePrincipal omParentRole = super.getJetspeedRolePrincipal(roleFullPathName);
+        if (null != omParentRole)
+        {
+            PersistenceStore store = getPersistenceStore();
+            Filter filter = store.newFilter();
+            filter.addLike((Object) new String("fullPath"), (Object) (omParentRole.getFullPath() + "/*"));
+            Object query = store.newQuery(InternalRolePrincipalImpl.class, filter);
+            Collection omRoles = store.getCollectionByQuery(query);
+            if (null == omRoles)
+            {
+                omRoles = new ArrayList();
+            }
+            omRoles.add(omParentRole);
+            // Remove each role in the collection.
+            Iterator omRolesIterator = omRoles.iterator();
+            while (omRolesIterator.hasNext())
+            {
+                InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIterator.next();
+                // TODO This should be managed in a transaction.
+                Collection omUsers = omRole.getUserPrincipals();
+                if (null != omUsers)
+                {
+                    omUsers.clear();
+                }
+                Collection omGroups = omRole.getGroupPrincipals();
+                if (null != omGroups)
+                {
+                    omGroups.clear();
+                }
+                Collection omPermissions = omRole.getPermissions();
+                if (null != omPermissions)
+                {
+                    omPermissions.clear();
+                }
+
+                try
+                {
+                    // TODO Can this be done in one shot?
+                    // Remove dependencies.
+                    store.lockForWrite(omRole);
+                    omRole.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                    omRole.setUserPrincipals(omUsers);
+                    omRole.setGroupPrincipals(omGroups);
+                    omRole.setPermissions(omPermissions);
+                    store.getTransaction().checkpoint();
+
+                    // Remove role.
+                    store.deletePersistent(omRole);
+                    store.getTransaction().checkpoint();
+                }
+                catch (Exception e)
+                {
+                    String msg = "Unable to lock Role for update.";
+                    log.error(msg, e);
+                    store.getTransaction().rollback();
+                    throw new SecurityException(msg, e);
+                }
+                // Remove preferences
+                Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
+                try
+                {
+                    preferences.removeNode();
+                }
+                catch (BackingStoreException bse)
+                {
+                    bse.printStackTrace();
+                }
+            }
+        }*/
+    }
 
     /**
      * <p>

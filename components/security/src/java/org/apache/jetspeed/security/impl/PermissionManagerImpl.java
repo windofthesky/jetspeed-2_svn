@@ -292,6 +292,8 @@ public class PermissionManagerImpl implements PermissionManager
             throw new SecurityException(msg, e);
         }
     }
+    
+    // TODO Add a permissionExists method.
 
     /**
      * @see org.apache.jetspeed.security.PermissionManager#revokePermission(java.security.Principal, java.security.Permission)

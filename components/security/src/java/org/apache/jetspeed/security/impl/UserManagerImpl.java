@@ -163,7 +163,6 @@ public class UserManagerImpl implements UserManager
         {
             String msg = "Unable to create the user.";
             log.error(msg, se);
-            // Make sure the user principal is removed.
 
             // Remove the preferences node.
             try
