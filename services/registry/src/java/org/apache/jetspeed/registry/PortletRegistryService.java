@@ -60,12 +60,9 @@ import java.util.Locale;
 
 import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.exception.RegistryException;
-import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -110,9 +107,9 @@ public interface PortletRegistryService extends CommonService
      * unique within it's parent application plus the parent application's
      * unique name within the portlet container using ":" as a delimiter. 
      * <br/>
-     * <strong>FORMAT: </strong> <i>application name</i>:<i>portlet name</i>
+     * <strong>FORMAT: </strong> <i>application name</i>::<i>portlet name</i>
      * <br/>
-     * <strong>EXAMPLE: </strong> com.myapp.portletApp1:weather-portlet
+     * <strong>EXAMPLE: </strong> com.myapp.portletApp1::weather-portlet
      * 
      * @param name portlets unique name.  
      * @return Portlet that matches the unique name 
@@ -167,38 +164,12 @@ public interface PortletRegistryService extends CommonService
 
     List getAllPortletDefinitions();
 
-    MutablePortletApplication newPortletApplication();
-
-    PortletDefinitionComposite newPortletDefinition();
-
-    MutableWebApplication newWebApplication();
-
-    PreferenceComposite newPreference();
-
-    ContentTypeComposite newContentType();
-
-    MutableLanguage newLanguage();
-
     /**
         * Creates a new <code>PortletApplicationDefinition</code> 
         * within the Portal.          
         * @param newApp
         */
     void registerPortletApplication(PortletApplicationDefinition newApp) throws RegistryException;
-
-   /**
-    * Creates a new <code>PortletApplicationDefinition</code> 
-    * within the Portal to the system indicated.  For portals using
-    * PersistentPortletRegistryService this is more than likely the
-    * name of plugin other than the one the service uses by default
-    * which in most cases points to a different RDBMS.
-    * 
-    * @param newApp PortletApplication to deploy
-    * @param system "System" to deploy to.
-    * @throws RegistryException
-    */
-    void registerPortletApplication(PortletApplicationDefinition newApp, String system)
-        throws RegistryException;
 
     /**
         * Makes any changes to the <code>PortletApplicationDefinition</code>
@@ -214,39 +185,61 @@ public interface PortletRegistryService extends CommonService
         String title,
         String shortTitle,
         String description,
-        Collection keywords);
+        Collection keywords)  throws RegistryException;
         
     /**
-     * Changes the "system" the PortletRegistryService will use
-     * to deploy and retreive information about the current portal and
-     * it's portlets.  This is generally used by deployment tools needing
-     * change system locations at run time based on specific user deployment
-     * settings.  
-     * <br/>
-     * A "system" is mostly likley a peristence mechanism.  In Jetspeed's
-     * standard operating mode, the system is actually the named of an
-     * existing <code>PersistencePlugin</code>.  The <code>alias</code>
-     * allows the client to change the location this plugin stores to.  For the
-     * default Jetspeed system this is the database alias used by the peristence
-     * plugin to make JDBC connections to.  The <code>alias</code> parameter
-     * is optional and can be set to <code>null</code> keep the default alias.
-     * 
-     * @param system
-     * @param alias
-     */    
-    void setDeploymentSystem(String system, String alias);
+     * Lists  portlet init parameters within the system
+     * @throws TransactionStateException
+     */
+    List getPortletInitParameters(LookupCriteria criteria);
     
     /**
-     * Resets the deployment system to the original value it was
-     * initialized with.
+     * Clears the registry of any cached information.  Only
+     * required of implementations that use caching on the
+     * registry level.
      *
      */
-    void resetDeploymentSystem();
-    
+    void clearCache();
     
     public void beginTransaction() throws TransactionStateException;
     
 	public void commitTransaction() throws TransactionStateException;
 	
 	public void rollbackTransaction() throws TransactionStateException;
+	
+	public void writeLock(Object object) throws TransactionStateException;
+	
+	public void makeDirty(Object object) throws TransactionStateException;
+	
+	/**
+	 * <p>
+	 * Creates a new instance of the <code>interfaze</code> name.  This may or may not be
+	 * an ectual interface class, it may be a symbolic name.  The reason for this is that an
+	 * interface may have multiple implementations that can be used concurrently.
+	 * </p>
+	 * <p>
+	 *  Specifying <code>persistent</code> create the object and invoke the
+	 *  <code>writeLock()</code> method on it.  This can only be done after
+	 *  <code>beginTransaction()</code> has been called, otherwise a TransactionStateException
+	 * will be thrown.
+	 * </p>
+	 * @param interfaze Interface FQN or a sysmbolic name. 
+	 * @param persistent <code>true</code> will write lock the new object within the 
+	 * existing transaction, <code>false</code> will not.
+	 * @return a new object instance
+	 * @throws RegistryException
+	 * @throws TransactionStateException
+	 */
+	public Object getNewObjectInstance(String interfaze, boolean persistent) throws RegistryException, TransactionStateException;
+    
+    /**
+     * Equivalent to calling: <code>getNewObjectInstance(interface.getName(), boolean)</code>
+     * @param interfaze
+     * @param persistent
+     * @return
+     * @throws RegistryException
+     * @throws TransactionStateException
+     */
+	public Object getNewObjectInstance(Class interfaze, boolean persistent) throws RegistryException, TransactionStateException;
+	
 }

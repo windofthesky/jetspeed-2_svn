@@ -55,9 +55,9 @@ package org.apache.jetspeed.registry.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,21 +66,18 @@ import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
-import org.apache.jetspeed.om.impl.LanguageImpl;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.persistence.TransactionStateException;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.registry.PortletRegistryService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.common.Language;
@@ -184,47 +181,6 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     }
 
     /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newContentType()
-     */
-    public ContentTypeComposite newContentType()
-    {
-
-        return new ContentTypeImpl();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newLanguage()
-     */
-    public MutableLanguage newLanguage()
-    {
-        return new LanguageImpl();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newPortletApplication()
-     */
-    public MutablePortletApplication newPortletApplication()
-    {
-        return new PortletApplicationDefinitionImpl();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newPortletDefinition()
-     */
-    public PortletDefinitionComposite newPortletDefinition()
-    {
-        return new PortletDefinitionImpl();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newWebApplication()
-     */
-    public MutableWebApplication newWebApplication()
-    {
-        return new WebApplicationDefinitionImpl();
-    }
-
-    /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
     public void registerPortletApplication(PortletApplicationDefinition newApp) throws RegistryException
@@ -268,9 +224,21 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
 
         ArgUtil.notNull(new Object[] { name }, new String[] { "name" }, "getPortletDefinitionByUniqueName(String)");
 
-        // TODO: we may need to lookup on appname + name
+        //parse out names
+        int split = name.indexOf("::");
+        if (split < 1)
+        {
+            throw new IllegalArgumentException(
+                "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
+        }
+
+        String appName = name.substring(0, split);
+        String portletName = name.substring((split + 2), name.length());
+
+        // build criteria
         LookupCriteria c = plugin.newLookupCriteria();
-        c.addEqualTo("name", name);
+        c.addEqualTo("app.name", appName);
+        c.addEqualTo("name", portletName);
         Object query = plugin.generateQuery(PortletDefinitionImpl.class, c);
         PortletDefinitionComposite pdc = (PortletDefinitionComposite) plugin.getObjectByQuery(PortletDefinitionImpl.class, query);
 
@@ -281,6 +249,7 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#createLanguage(java.util.Locale, java.lang.String, java.lang.String, java.lang.String)
      */
     public Language createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords)
+        throws RegistryException
     {
 
         ArgUtil.notNull(
@@ -288,7 +257,15 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
             new String[] { "locale" },
             "createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords");
 
-        MutableLanguage lc = newLanguage();
+        MutableLanguage lc;
+        try
+        {
+            lc = (MutableLanguage) getNewObjectInstance(Language.class, true);
+        }
+        catch (TransactionStateException e)
+        {
+            throw new RegistryException("Unable to add Language to a transaction.");
+        }
         lc.setLocale(locale);
         lc.setTitle(title);
         lc.setShortTitle(shortTitle);
@@ -325,18 +302,13 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     {
         ArgUtil.notNull(new Object[] { ident }, new String[] { "ident" }, "getPortletDefinitionByIndetifier(String ident)");
 
-        Iterator appItr = getAllPortletDefinitions().iterator();
-        ArrayList portlets = new ArrayList();
-        while (appItr.hasNext())
-        {
-            PortletDefinitionComposite pd = (PortletDefinitionComposite) appItr.next();
+        LookupCriteria c = plugin.newLookupCriteria();
+        
+        c.addEqualTo("portletIdentifier", ident);
+        Object query = plugin.generateQuery(PortletDefinitionImpl.class, c);
+        PortletDefinitionComposite pdc = (PortletDefinitionComposite) plugin.getObjectByQuery(PortletDefinitionImpl.class, query);
 
-            if (pd.getPortletIdentifier() != null && pd.getPortletIdentifier().equals(ident))
-            {
-                return pd;
-            }
-        }
-        return null;
+        return pdc;        
     }
 
     /**
@@ -376,21 +348,6 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     }
 
     /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition, java.lang.String)
-     */
-    public void registerPortletApplication(PortletApplicationDefinition newApp, String system) throws RegistryException
-    {
-        ArgUtil.notNull(
-            new Object[] { newApp, system },
-            new String[] { "newApp", "system" },
-            "registerPortletApplication(PortletApplicationDefinition newApp, String system)");
-
-        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-        PersistencePlugin usePlugin = ps.getPersistencePlugin(system);
-        registerPortletApplication(newApp, usePlugin);
-    }
-
-    /**
      * Uses a specific pluging to register/deploy the portlet application
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
@@ -418,64 +375,40 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
         }
         else
         {
-            try
-            {
-                plugin.beginTransaction();
-                plugin.prepareForUpdate(pac);
-                plugin.commitTransaction();
-            }
-            catch (TransactionStateException e)
-            {
-               try
-                {
-                     plugin.rollbackTransaction();
-                }
-                catch (TransactionStateException e1)
-                {
-                    log.error("Failed to rollback transaction.", e);
-                }
-                String msg = "Unable to register new portlet application.";
-                log.error(msg, e);
-                throw new RegistryException(msg, e);
-            }
-        }
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#setDeploymentSystem(java.lang.String, java.lang.String)
-     */
-    public void setDeploymentSystem(String system, String alias)
-    {
-
-        if (system != null)
-        {
-            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-            originalPlugin = this.plugin;
-            this.plugin = ps.getPersistencePlugin(system);
-        }
-
-        if (alias != null)
-        {
-            this.originalAlias = plugin.getDbAlias();
-            this.plugin.setDbAlias(alias);
-        }
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#resetDeploymentSystem()
-     */
-    public void resetDeploymentSystem()
-    {
-        if (originalPlugin != null)
-        {
-            plugin = originalPlugin;
-        }
-
-        if (originalAlias != null)
-        {
-            plugin.setDbAlias(originalAlias);
+        	
+			try
+			{
+				plugin.makePersistent(newApp);
+			}
+			catch (TransactionStateException e1)
+			{
+				String msg = "Failed to make new portlet application persistent: "+e1.toString();
+                log.error(msg, e1);
+				throw new RegistryException(msg, e1);
+			}
+// We should never "hide" commiting a transaction like this.  Transaction should
+// be handled out in the open were we can handle exceptions better.  We could 
+// eventually use AOP to "hide" transactions completely yet still be able handle
+// higher level exceptions and transaction rollbacks correctly.        	
+//            try
+//            {
+//                // commit the transaction     
+//                plugin.commitTransaction();
+//            }
+//            catch (TransactionStateException e)
+//            {
+//                try
+//                {
+//                    plugin.rollbackTransaction();
+//                }
+//                catch (TransactionStateException e1)
+//                {
+//                    log.error("Failed to rollback transaction.", e);
+//                }
+//                String msg = "Unable to register new portlet application.";
+//                log.error(msg, e);
+//                throw new RegistryException(msg, e);
+//            }
         }
 
     }
@@ -485,7 +418,7 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
      */
     public void beginTransaction() throws TransactionStateException
     {
-       plugin.beginTransaction();
+        plugin.beginTransaction();
 
     }
 
@@ -504,6 +437,80 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     public void rollbackTransaction() throws TransactionStateException
     {
         plugin.rollbackTransaction();
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.registry.PortletRegistryService#getPorletInitParameters(org.apache.jetspeed.persistence.LookupCriteria)
+     */
+    public List getPortletInitParameters(LookupCriteria criteria)
+    {
+        if (criteria == null)
+        {
+            criteria = plugin.newLookupCriteria();
+        }
+
+        Object query = plugin.generateQuery(PortletInitParameterImpl.class, criteria);
+        return new ArrayList(plugin.getCollectionByQuery(PortletDefinitionImpl.class, query));
+    }
+
+    /**
+     * @see org.apache.jetspeed.registry.PortletRegistryService#clearCache()
+     */
+    public void clearCache()
+    {
+        plugin.clearCache();
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.registry.PortletRegistryService#writeLock(java.lang.Object)
+     */
+    public void writeLock(Object object) throws TransactionStateException
+    {
+        plugin.prepareForUpdate(object);
+
+    }
+
+    public Object getNewObjectInstance(String interfaze, boolean persistent) throws RegistryException, TransactionStateException
+    {
+        String className = "undefined";
+        try
+        {
+            className = configuration.getString("implementation." + interfaze);
+            if (className == null)
+            {
+                throw new RegistryException("No implementation has been defined for " + interfaze);
+            }
+            Class implClazz = Class.forName(className);
+            Object newInstance = implClazz.newInstance();
+            if (persistent)
+            {
+                plugin.makePersistent(newInstance);
+            }
+            return newInstance;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof TransactionStateException)
+            {
+                throw (TransactionStateException) e;
+            }
+            throw new RegistryException("Unable create new " + interfaze + ".  " + e.toString(), e);
+        }
+    }
+
+    public Object getNewObjectInstance(Class interfaze, boolean persistent) throws RegistryException, TransactionStateException
+    {
+        return getNewObjectInstance(interfaze.getName(), persistent);
+    }
+
+    /**
+     * @see org.apache.jetspeed.registry.PortletRegistryService#makeDirty(java.lang.Object)
+     */
+    public void makeDirty(Object object) throws TransactionStateException
+    {
+        plugin.markDirty(object);
 
     }
 

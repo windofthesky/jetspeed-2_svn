@@ -59,12 +59,10 @@ import java.util.Locale;
 
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.RegistryException;
-import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+
+import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.TransactionStateException;
 
 import org.apache.pluto.om.common.Language;
@@ -81,6 +79,16 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public class JetspeedPortletRegistry
 {
+
+	public static Object getNewObjectInstance(String interfaze, boolean persistent) throws RegistryException, TransactionStateException
+	{
+		return getService().getNewObjectInstance(interfaze, persistent);
+	}
+	
+	public static Object getNewObjectInstance(Class interfaze, boolean persistent) throws RegistryException, TransactionStateException
+	{
+		return getService().getNewObjectInstance(interfaze, persistent);
+	}
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#getAllPortletDefinitions()
@@ -120,22 +128,6 @@ public class JetspeedPortletRegistry
     }
 
     /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newContentType()
-     */
-    public static ContentTypeComposite newContentType()
-    {
-        return getService().newContentType();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newLanguage()
-     */
-    public static MutableLanguage newLanguage()
-    {
-        return getService().newLanguage();
-    }
-
-    /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#createLanguage(java.util.Locale, java.lang.String, java.lang.String, java.lang.String)
      */
     public static Language createLanguage(
@@ -143,38 +135,9 @@ public class JetspeedPortletRegistry
         String title,
         String shortTitle,
         String description,
-        Collection keywords)
+        Collection keywords) throws RegistryException
     {
         return getService().createLanguage(locale, title, shortTitle, description, keywords);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newPortletApplication()
-     */
-    public static MutablePortletApplication newPortletApplication()
-    {
-        return getService().newPortletApplication();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newPortletDefinition()
-     */
-    public static PortletDefinitionComposite newPortletDefinition()
-    {
-        return getService().newPortletDefinition();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#newWebApplication()
-     */
-    public static MutableWebApplication newWebApplication()
-    {
-        return getService().newWebApplication();
-    }
-
-    public static PreferenceComposite newPreference()
-    {
-        return getService().newPreference();
     }
 
     /**
@@ -184,16 +147,6 @@ public class JetspeedPortletRegistry
         throws RegistryException
     {
         getService().registerPortletApplication(newApp);
-
-    }
-
-    /**
-      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition, java.lang.String)
-      */
-    public static void registerPortletApplication(PortletApplicationDefinition newApp, String system)
-        throws RegistryException
-    {
-        getService().registerPortletApplication(newApp, system);
 
     }
 
@@ -253,30 +206,24 @@ public class JetspeedPortletRegistry
     {
         return getService().portletDefinitionExists(portletName, app);
     }
+    
+    public static List getPortletInitParameters(LookupCriteria c)
+    {
+    	return getService().getPortletInitParameters(c);
+    }
+    
+	public static void clearCache()
+	{
+		getService().clearCache();
+	}
 
     private static final PortletRegistryService getService()
     {
         return (PortletRegistryService) CommonPortletServices.getPortalService(
             PortletRegistryService.SERVICE_NAME);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#setDeploymentSystem(java.lang.String, java.lang.String)
-     *
-     */
-    public static void setDeploymentSystem(String system, String alias)
-    {
-        getService().setDeploymentSystem(system, alias);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.registry.PortletRegistryService#resetDeploymentSystem()
-     */
-    public static void resetDeploymentSystem()
-    {
-        getService().resetDeploymentSystem();
-    }
+    }  
     
+
 	/**
 	 * @see org.apache.jetspeed.services.registry.PortletRegistryService#beginTransaction()
 	 */
@@ -304,6 +251,16 @@ public class JetspeedPortletRegistry
 	{
 		getService().rollbackTransaction();
 
+	}
+	
+	public static void  writeLock(Object obj) throws TransactionStateException
+	{
+		getService().writeLock(obj); 
+	}
+	
+	public static void  makeDirty(Object obj) throws TransactionStateException
+	{
+		getService().makeDirty(obj); 
 	}
 
 
