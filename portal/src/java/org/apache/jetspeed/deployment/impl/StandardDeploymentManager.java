@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +44,8 @@ import org.picocontainer.Startable;
  * Implementation of {@link org.apache.jetspeed.deployment.DeploymentManager}
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
- * @version $Id$
+ * @version $Id: StandardDeploymentManager.java,v 1.2 2004/07/21 00:46:21 taylor
+ *          Exp $
  *  
  */
 public class StandardDeploymentManager implements Startable, DeploymentManager
@@ -58,26 +60,33 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
 
     protected long scanningDelay;
 
-    protected String stagingDirectory;
+    protected String stagingDirectories;
 
-    protected File stagingDirectoryAsFile;
+    protected File[] stagingDirectoriesAsFiles;
 
     protected Map fileDates;
 
     protected List deployedFiles;
 
-
     /**
      * 
-     * @param stagingDirectory
+     * @param stagingDirectories
      * @param scanningDelay
      * @param deploymentListeners
      */
-    public StandardDeploymentManager( String stagingDirectory, long scanningDelay, Collection deploymentListeners )
+    public StandardDeploymentManager( String stagingDirectories, long scanningDelay, Collection deploymentListeners )
     {
         this.scanningDelay = scanningDelay;
-        this.stagingDirectory = stagingDirectory;
-        this.stagingDirectoryAsFile = new File(stagingDirectory);
+        this.stagingDirectories = stagingDirectories;
+        StringTokenizer dirTokenizer = new StringTokenizer(stagingDirectories, ",");
+        this.stagingDirectoriesAsFiles = new File[dirTokenizer.countTokens()];
+        int i = 0;
+        while (dirTokenizer.hasMoreTokens())
+        {
+            this.stagingDirectoriesAsFiles[i] = new File((String) dirTokenizer.nextToken());
+            i++;
+        }
+
         this.deploymentListeners = deploymentListeners;
         this.deployedFiles = new ArrayList();
         this.fileDates = new HashMap();
@@ -99,13 +108,18 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
 
         log.info("Deployment scanning delay: " + scanningDelay);
 
-        log.info("Deployment staging directory: " + stagingDirectory);
+        log.info("Deployment staging directory: " + stagingDirectories);
 
-        if (!stagingDirectoryAsFile.exists())
+        for (int i = 0; i < stagingDirectoriesAsFiles.length; i++)
         {
-            log.error(stagingDirectoryAsFile.getAbsolutePath() + " does not exist, auto deployment disabled.");
-            stop();
-            return;
+            if (!stagingDirectoriesAsFiles[i].exists())
+            {
+                log
+                        .error(stagingDirectoriesAsFiles[i].getAbsolutePath()
+                                + " does not exist, auto deployment disabled.");
+                stop();
+                return;
+            }
         }
 
         if (scanningDelay > -1)
@@ -158,12 +172,12 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
 
     public void fireDeploymentEvent()
     {
-        String[] stagedFiles = stagingDirectoryAsFile.list();
+        File[] stagedFiles = getAllStagedFiles();
         for (int i = 0; i < stagedFiles.length; i++)
         {
             // check for new deployment
-            File aFile = new File(stagingDirectoryAsFile, stagedFiles[i]);
-            if (!isDeployed(stagedFiles[i]))
+            File aFile = stagedFiles[i];
+            if (!isDeployed(aFile.getAbsolutePath()))
             {
                 DeploymentObject deploymentObject = null;
                 try
@@ -174,7 +188,7 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
                     }
                     catch (FileNotDeployableException e)
                     {
-                        // log.info(e.getMessage());                        
+                        // log.info(e.getMessage());
                         continue;
                     }
 
@@ -182,11 +196,11 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
                     dispatch(event);
                     if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
                     {
-                        deployedFiles.add(stagedFiles[i]);
+                        deployedFiles.add(aFile.getAbsolutePath());
                         // record the lastModified so we can watch for
                         // re-deployment
                         long lastModified = aFile.lastModified();
-                        fileDates.put(stagedFiles[i], new Long(lastModified));
+                        fileDates.put(aFile.getAbsolutePath(), new Long(lastModified));
                     }
                     else
                     {
@@ -228,21 +242,20 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
      */
     public void fireUndeploymentEvent()
     {
-        List fileList = Arrays.asList(StandardDeploymentManager.this.stagingDirectoryAsFile.list());
+        List stagedFileList= Arrays.asList(getAllStagedFiles());
 
         for (int i = 0; i < deployedFiles.size(); i++)
         {
             // get a current list of all the files in the deploy directory
             String fileName = (String) deployedFiles.get(i);
-            File aFile = new File(stagingDirectoryAsFile, fileName);
+            File aFile = new File(fileName);
 
             // File is still on the file system, so skip it
-            if (fileList.contains(fileName))
+            if (stagedFileList.contains(aFile))
             {
                 continue;
             }
 
-       
             try
             {
 
@@ -264,7 +277,7 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
             catch (Exception e1)
             {
                 log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
-            }   
+            }
 
         }
 
@@ -324,13 +337,12 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
      */
     public void fireRedeploymentEvent()
     {
-        List fileList = Arrays.asList(StandardDeploymentManager.this.stagingDirectoryAsFile.list());
-        
+                
         for (int i = 0; i < deployedFiles.size(); i++)
         {
             // get a current list of all the files in the deploy directory
             String fileName = (String) deployedFiles.get(i);
-            File aFile = new File(stagingDirectoryAsFile, fileName);
+            File aFile = new File(fileName);
 
             // File is not on the file system, so skip it
             Long longDateObj = ((Long) fileDates.get(fileName));
@@ -349,12 +361,13 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
                 try
                 {
                     deploymentObject = new StandardDeploymentObject(aFile);
-                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_REDEPLOY, deploymentObject);
-                    log.info("Re-deploying "+aFile.getAbsolutePath());
+                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_REDEPLOY,
+                            deploymentObject);
+                    log.info("Re-deploying " + aFile.getAbsolutePath());
                     dispatch(event);
 
                     if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
-                    {                        
+                    {
                         fileDates.put(fileName, new Long(currentModifiedDate));
                     }
                     else
@@ -403,6 +416,25 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
     {
         return deployedFiles.contains(fileName);
     }
+    
+    /**
+     * 
+     * <p>
+     * getAllStagedFiles
+     * </p>
+     *
+     * @return
+     */
+    protected File[] getAllStagedFiles()
+    {
+        ArrayList fileList = new ArrayList();
+        for (int i = 0; i < stagingDirectoriesAsFiles.length; i++)
+        {
+           fileList.addAll(Arrays.asList(stagingDirectoriesAsFiles[i].listFiles()));
+        }
+        
+        return (File[]) fileList.toArray(new File[fileList.size()]);
+    }
 
     public class FileSystemScanner extends Thread
     {
@@ -448,5 +480,6 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
         }
 
     }
+    
 
 }
