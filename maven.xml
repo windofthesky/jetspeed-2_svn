@@ -36,73 +36,66 @@
         description="Build all jars and war">
     <!-- Build jars -->
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/portlet-api"
                includes="portlet-api/project.xml"
                goals="jar:install"
                banner="Build and Install the Portlet API jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/commons"
                includes="commons/project.xml"
                goals="jar:install"
                banner="Build and Install the common jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/components/cm"
                includes="components/cm/project.xml"
                goals="jar:install"
                banner="Build and Install the Component Manager jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/components/rdbms"
                includes="components/rdbms/project.xml"
                goals="jar:install"
                banner="Build and Install the RDBMS jar"
                postProcessing="false"
                ignoreFailures="false"/>
    <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/components/persistence"
                includes="components/persistence/project.xml"
                goals="jar:install"
                banner="Build and Install the Persistence jar"
                postProcessing="false"
                ignoreFailures="false"/>
    <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/components/registry"
                includes="components/registry/project.xml"
                goals="jar:install"
                banner="Build and Install the Registry jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/components/registry"
                includes="components/jetspeed/project.xml"
                goals="jar:install"
                banner="Build and Install the Jetspeed Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/cps"
                includes="cps/project.xml"
                goals="jar:install"
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/plugin"
                includes="plugin/project.xml"
                goals="jar:install"
                banner="Build and Install the Plugin jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="container/project.xml"
-               goals="jar:install"
-               banner="Build and Install the container jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
@@ -131,7 +124,7 @@
         
 
      <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/applications/demo"
                includes="applications/demo/project.xml"
                excludes="applications/project.xml"
                goals="war:install"
@@ -140,7 +133,7 @@
                ignoreFailures="false"/>
 
      <maven:reactor
-               basedir="${basedir}"
+               basedir="${basedir}/applications/pam"
                includes="applications/pam/project.xml"
                excludes="applications/project.xml"
                goals="war:install"
