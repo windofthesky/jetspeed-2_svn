@@ -521,4 +521,16 @@ public class JetspeedRequestContext implements RequestContext
         return language;
     }
 
+    /**
+     * <p>
+     * setPath
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#setPath(java.lang.String)
+     * @param path
+     */
+    public void setPath( String path )
+    {
+       this.requestPath = path;
+    }
 }

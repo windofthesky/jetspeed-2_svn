@@ -337,6 +337,17 @@ public interface RequestContext
     String getPath();
     
     /**
+     * 
+     * <p>
+     * setPath
+     * </p>
+     * Allows the manual overriding of path Jetspeed 2 will look to resolves pages and folders.
+     *
+     * @param path
+     */
+    void setPath(String path);
+    
+    /**
      * Returns the user info map of user attributes for a given portlet application.</p>
      * @param oid The portlet application object id.
      * @return The PortletRequest.USER_INFO map.

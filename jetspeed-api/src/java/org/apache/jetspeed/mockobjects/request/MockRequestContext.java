@@ -472,4 +472,17 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
+    /**
+     * <p>
+     * setPath
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#setPath(java.lang.String)
+     * @param path
+     */
+    public void setPath( String path )
+    {
+        // TODO Auto-generated method stub
+
+    }
 }
