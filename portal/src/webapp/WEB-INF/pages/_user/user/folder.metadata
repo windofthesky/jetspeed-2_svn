@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <title>[USER] Root Folder</title>  
+  <metadata name="title" xml:lang="fr">[USER] Répertoire racine</metadata>
+
+  <documentOrder>Google.link</documentOrder>
+  <documentOrder>Jetspeed2.link</documentOrder>
+
+  <documentOrder>default-page.psml</documentOrder>
+  <documentOrder>p001.psml</documentOrder>
+  <documentOrder>p002.psml</documentOrder>
+  <documentOrder>p003.psml</documentOrder>
+  <documentOrder>p004.psml</documentOrder>
+  <documentOrder>localeselector.psml</documentOrder>
+  <documentOrder>jsf-demo.psml</documentOrder>
+  <documentOrder>struts-demo.psml</documentOrder>
+
+  <documentOrder>third-party</documentOrder>
+  <documentOrder>non-java</documentOrder>
+  <documentOrder>Administrative</documentOrder>
+</folder>
