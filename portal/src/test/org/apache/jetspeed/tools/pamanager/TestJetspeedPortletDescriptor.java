@@ -30,6 +30,11 @@ public class TestJetspeedPortletDescriptor
     private PortletRegistryComponent registry;
     private MutablePicoContainer container;
     
+    private static final String PORTLET_01 = "HelloWorld Portlet";
+    private static final String PORTLET_02 = "Display the Portlet Request Information";
+    private static final String PORTLET_03 = "Pick a number game";
+    private static final String PORTLET_04 = "Attribute Scope Demo";
+    
     /**
      * Defines the testcase name for JUnit.
      *
@@ -99,13 +104,24 @@ public class TestJetspeedPortletDescriptor
         boolean result = JetspeedDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/jetspeed-portlet.xml", app);
         assertTrue(result);
         
-        PortletDefinitionComposite def = (PortletDefinitionComposite)app.getPortletDefinitionByName("HelloWorld Portlet");
+        PortletDefinitionComposite def1 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_01);
+        PortletDefinitionComposite def2 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_02);
+        PortletDefinitionComposite def3 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_03);
+        PortletDefinitionComposite def4 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_04);
         
         Collection titles = app.getMetadata().getFields("title");
-        Collection defTitles = def.getMetadata().getFields("title");
+        Collection def1Titles = def1.getMetadata().getFields("title");
+        Collection def2Subjects = def2.getMetadata().getFields("subject");
+        Collection def3Creators = def3.getMetadata().getFields("creator");
+        Collection def4Field1 = def4.getMetadata().getFields("field1");
+        Collection def4Fiels2 = def4.getMetadata().getFields("field2");
         
         assertEquals(titles.size(), 3);
-        assertEquals(defTitles.size(), 3);
+        assertEquals(def1Titles.size(), 4);
+        assertEquals(def2Subjects.size(), 5);
+        assertEquals(def3Creators.size(), 4);
+        assertEquals(def4Field1.size(), 3);
+        assertEquals(def4Fiels2.size(), 2);
     }
 
 }
