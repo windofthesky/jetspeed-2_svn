@@ -87,8 +87,19 @@ limitations under the License.
   	<echo>*************************************</echo>
     <echo>*   Executing standard SQL scripts   *</echo>
     <echo>*************************************</echo>
-  	<!-- Run standard SQL scripts -->
+    <!-- Run standard DB-specific SQL scripts -->
     <util:file name="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}" var="sqlSrcDir"/>
+    <j:if test="${sqlSrcDir.exists()}">
+      <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
+        <j:if test="${sqlFile.name.endsWith('.sql')}">
+          <j:set var="database.arg.script" value="${sqlFile.absolutePath}" />
+          <attainGoal name="jetspeed2:db.execute" />
+        </j:if>
+      </j:forEach>
+    </j:if>
+    
+    <!-- Run standard non-DB-specific SQL scripts -->
+    <util:file name="${org.apache.jetspeed.plugin.root}/plugin-resources" var="sqlSrcDir"/>
     <j:if test="${sqlSrcDir.exists()}">
       <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
         <j:if test="${sqlFile.name.endsWith('.sql')}">
