@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.ParameterComposite;
@@ -101,6 +102,12 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     protected long appId;
     private ClassLoader portletClassLoader;
     private String expirationCache;
+    
+    /** Metadata property */
+    private GenericMetadata metadata = new PortletDefinitionMetadataImpl();
+    
+    private Collection metadataFields = null;
+    
     public PortletDefinitionImpl()
     {
         super();
@@ -656,6 +663,49 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         secListWrapper.setInnerCollection(securityRoleRefSet);
         secListWrapper.add(securityRef);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
+     */
+    public GenericMetadata getMetadata()
+    {
+        if(metadata.getFields() == null)
+        {
+            if(metadataFields == null)
+            {
+                metadataFields = new ArrayList();
+            }
+            metadata.setFields(metadataFields);
+        }
+        
+        return metadata;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     */
+    public void setMetadata(GenericMetadata metadata)
+    {
+        this.metadata = metadata;
+        this.metadataFields = metadata.getFields();     
+    }
+
+    /**
+     * @return
+     */
+    public Collection getMetadataFields()
+    {
+        return metadataFields;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setMetadataFields(Collection metadataFields)
+    {
+        this.metadataFields = metadataFields;
+        metadata.setFields(metadataFields);
     }
 
 }

@@ -1,7 +1,19 @@
 ----------------------------------------------------------------------------
--- Create Metadata Fields Table
+-- Create Portlet Application Metadata Fields Table
 ----------------------------------------------------------------------------
-CREATE TABLE METADATA_FIELDS
+CREATE TABLE PA_METADATA_FIELDS
+(
+    ID INTEGER NOT NULL PRIMARY KEY,
+    OBJECT_ID INTEGER NOT NULL,
+    VALUE LONGVARCHAR NOT NULL,
+    NAME VARCHAR(100) NOT NULL,
+    LOCALE_STRING VARCHAR(50) NOT NULL
+);
+
+----------------------------------------------------------------------------
+-- Create Portlet Definition Metadata Fields Table
+----------------------------------------------------------------------------
+CREATE TABLE PD_METADATA_FIELDS
 (
     ID INTEGER NOT NULL PRIMARY KEY,
     OBJECT_ID INTEGER NOT NULL,

@@ -16,11 +16,13 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -721,5 +723,35 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
     public PortletDefinitionComposite getPortlet()
     {
         return portlet;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
+     */
+    public GenericMetadata getMetadata() {
+        return portlet.getMetadata();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     */
+    public void setMetadata(GenericMetadata metadata) {
+        portlet.setMetadata(metadata);  
+    }
+
+    /**
+     * @return
+     */
+    public Collection getMetadataFields()
+    {
+        return portlet.getMetadataFields();
+    }
+
+    /**
+     * @param collection
+     */
+    public void setMetadataFields(Collection metadataFields)
+    {
+        portlet.setMetadataFields(metadataFields);
     }
 }

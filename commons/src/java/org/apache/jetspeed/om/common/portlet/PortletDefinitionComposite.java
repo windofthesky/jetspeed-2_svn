@@ -16,8 +16,10 @@
 package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -45,6 +47,14 @@ import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
  */
 public interface PortletDefinitionComposite extends PortletDefinition, PortletDefinitionCtrl, Serializable
 {
+    GenericMetadata getMetadata();
+    
+    void setMetadata(GenericMetadata metadata);
+    
+    Collection getMetadataFields();
+    
+    void setMetadataFields(Collection metadataFields);
+    
     void addLanguage(Language lang);
 
     void addContentType(ContentType cType);
