@@ -68,11 +68,11 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
 
     private TomcatManager tomcatManager;
 
-    public CatalinaPAM(int port, String user, String password) throws PortletApplicationException
+    public CatalinaPAM(String server, int port, String user, String password) throws PortletApplicationException
     {
         try
         {
-            tomcatManager = new TomcatManager("localhost", port, user, password);
+            tomcatManager = new TomcatManager(server, port, user, password);
         }
         catch (Exception e)
         {
