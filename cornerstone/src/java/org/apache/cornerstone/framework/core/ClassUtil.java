@@ -20,13 +20,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.util.OrderedProperties;
 import org.apache.log4j.Logger;
 
 public class ClassUtil
 {
+	public static final String REVISION = "$Revision$";
+
     public static final String CLASS_VAR_CONFIG = ClassUtil.class.getName() + ".config";
 
     /**
@@ -42,10 +43,6 @@ public class ClassUtil
         OrderedProperties config = (OrderedProperties) getClassVariable(c, CLASS_VAR_CONFIG);
         if (config == null)
         {
-            if (c.getName().endsWith("BaseService"))
-            {
-                int n = 0;
-            }
             OrderedProperties selfConfig = loadClassConfig(c);
             OrderedProperties superConfig = getClassConfig(c.getSuperclass());
             config = new OrderedProperties();
