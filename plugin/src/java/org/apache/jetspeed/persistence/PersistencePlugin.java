@@ -213,4 +213,12 @@ public interface PersistencePlugin extends Plugin
 
     void releaseSqlConnection(Connection sqlConnection);
 
+
+    /**
+     * Invalidates the object in the object cache, effectively forcing the object
+     * to be refreshed from the database.
+     * 
+     * @param object The object to be invalidated from the cache
+     */
+    void invalidateObject(Object object);
 }
