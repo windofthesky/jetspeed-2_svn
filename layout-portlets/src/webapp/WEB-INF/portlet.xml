@@ -159,5 +159,110 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityOneColumnNoActions">
+    <portlet-name>VelocityOneColumnNoActions</portlet-name>
+    <display-name>One Column Layout Using Velocity with No Page Actions allowed</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>1</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>100%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>OneColumn</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>VelocityOneColumn</title>
+      <short-title>OneColumn</short-title>
+    </portlet-info>
+</portlet>
+
+<portlet id="VelocityTwoColumnsNoActions">
+    <portlet-name>VelocityTwoColumnsNoActions</portlet-name>
+    <display-name>Two Columns Layout Using Velocity with No Page Actions allowed</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>50%,50%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>TwoColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>VelocityTwoColumns</title>
+      <short-title>TwoColumns</short-title>
+    </portlet-info>
+</portlet>
+
+<portlet id="VelocityThreeColumnsNoActions">
+    <portlet-name>VelocityThreeColumnsNoActions</portlet-name>
+    <display-name>Three Columns Layout Using Velocity with No Actions allowed</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>3</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>33%,33%,33%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>ThreeColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>VelocityThreeColumns</title>
+      <short-title>ThreeColumns</short-title>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 
