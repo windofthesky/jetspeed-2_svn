@@ -73,7 +73,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         this.portletWindow = window;
     }
 
-    private HttpServletRequest _getHttpServletRequest()
+    protected HttpServletRequest _getHttpServletRequest()
     {
         return (HttpServletRequest) super.getRequest();
     }
@@ -357,7 +357,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         // This makes the portlet non-portable but is a must admin portlets
         if (name.startsWith("org.apache.jetspeed"))
         {
-
             if (value == null)
             {
                 this.removeAttribute(name);
