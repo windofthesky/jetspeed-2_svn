@@ -121,6 +121,17 @@ limitations under the License.
                ignoreFailures="false"/>
   </goal>
   
+  <goal name ="jetspeed2:jar:install">
+    <maven:reactor
+               basedir="${basedir}"
+               includes="**/project.xml"
+               excludes="maven-plugin/**,cornerstone-jmx/**,cornerstone-jmx-demo/**"
+               goals="jar:install"
+               banner="Build and Install all Jetspeed 2 jars"
+               postProcessing="false"
+               ignoreFailures="false"/>
+  </goal>
+  
   <goal name="allBuild"
         description="Build all jars and war">
     <attainGoal name="check.required.properties"/>
