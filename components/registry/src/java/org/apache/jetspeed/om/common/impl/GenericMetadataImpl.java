@@ -84,6 +84,17 @@ public class GenericMetadataImpl implements GenericMetadata
     public void setFields(String name, Collection values)
     {
         fieldMap.remove(name);
+        
+        Iterator fieldIter = fields.iterator();
+        while(fieldIter.hasNext())
+        {
+            LocalizedField field = (LocalizedField)fieldIter.next();
+            if(field != null && field.getName() != null && field.getName().equals(name))
+            {
+                fieldIter.remove();
+            }
+        }
+        
         if(values != null)
         {    
             Iterator iter = values.iterator();
@@ -92,7 +103,8 @@ public class GenericMetadataImpl implements GenericMetadata
                 LocalizedField field = (LocalizedField)iter.next();
                 fieldMap.put(field.getName(), field);
             }
-            fields.removeAll(values);
+            
+            fields.addAll(values);
         }
     }
     
