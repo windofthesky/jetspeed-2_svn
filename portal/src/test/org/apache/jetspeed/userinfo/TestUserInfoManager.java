@@ -95,7 +95,7 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
         pms = new PermissionManagerImpl(persistenceStore);
         new SecurityProviderImpl("login.conf", new RdbmsPolicy(pms), ums);   
         propertyManager = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         uim = new UserInfoManagerImpl(ums, portletRegistry);       
     }
 
