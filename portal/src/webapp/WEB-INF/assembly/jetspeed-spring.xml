@@ -54,7 +54,10 @@ limitations under the License.
   	   	  </entry>
   	   	  <entry key="GroupManager">
   	   	    <ref bean="org.apache.jetspeed.security.GroupManager"/>
-  	   	  </entry>  	   	  
+  	   	  </entry>  	
+  	   	  <entry key="Profiler">
+  	   	  	<ref bean="org.apache.jetspeed.profiler.Profiler"/>
+  	   	  </entry>   	  
   	   	</map>
   	   </constructor-arg>
   </bean>
