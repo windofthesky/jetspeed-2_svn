@@ -17,7 +17,7 @@ limitations under the License.
 <project>
   <extend>${basedir}/../project.xml</extend>
   <id>jetspeed2-design-docs</id>
-  <name>Jetspeed 2 Enterprise Portal Design Documentation</name>
+  <name>Jetspeed-2 Enterprise Portal Design Documentation</name>
 
   <description>
     Jetspeed is an Open Source implementation of an Enterprise Information 
