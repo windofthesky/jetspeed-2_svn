@@ -33,11 +33,10 @@ import javax.portlet.PortletMode;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
-import org.apache.jetspeed.portlets.pam.beans.TabBean;
-import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.persistence.store.Transaction;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+
+import org.apache.jetspeed.components.portletregistry.FailedToStorePortletDefinitionException;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.MutableDescription;
@@ -49,6 +48,8 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
+import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
@@ -72,7 +73,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
     private static final String PORTLET_ACTION_PREFIX = "portlet.";
 
     private PortletContext context;
-    private PortletRegistryComponent registry;
+    private PortletRegistry registry;
     private LinkedHashMap paTabMap = new LinkedHashMap();
     private LinkedHashMap pdTabMap = new LinkedHashMap();
     
@@ -81,7 +82,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
     {
         super.init(config);
         context = getPortletContext();
-        registry = (PortletRegistryComponent)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        registry = (PortletRegistry)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
@@ -214,64 +215,72 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 action = getAction(PORTLET_ACTION_PREFIX, action);
                 String pdefName = (String) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
                 
-                if(action.endsWith("metadata"))
+                try
                 {
-                    processMetadataAction(actionRequest, actionResponse, paName, pdefName, action);
+                    if(action.endsWith("metadata"))
+                    {
+                        processMetadataAction(actionRequest, actionResponse, paName, pdefName, action);
+                    }
+                    else if(action.endsWith("portlet"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processPortletAction(actionRequest, actionResponse, pa, pdef, action);
+                    }
+                    else if(action.endsWith("preference"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
+                    }
+                    else if(action.endsWith("language"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processLanguage(actionRequest, actionResponse, pa, pdef, action);
+                    }
+                    else if(action.endsWith("parameter"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processParameter(actionRequest, actionResponse, pa, pdef, action);
+                    }
+                    else if(action.endsWith("security"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processSecurity(actionRequest, actionResponse, pa, pdef, action);
+                    }
+                    else if(action.endsWith("content_type"))
+                    {
+
+                        MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+
+                        PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                        
+                        processContentType(actionRequest, actionResponse, pa, pdef, action);
+                    }
                 }
-                else if(action.endsWith("portlet"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processPortletAction(actionRequest, actionResponse, pa, pdef, action);
+                catch (RegistryException e)
+                {                    
+                    throw new PortletException("A Registry action has failed.  "+e.getMessage());                    
                 }
-                else if(action.endsWith("preference"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
-                }
-                else if(action.endsWith("language"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processLanguage(actionRequest, actionResponse, pa, pdef, action);
-                }
-                else if(action.endsWith("parameter"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processParameter(actionRequest, actionResponse, pa, pdef, action);
-                }
-                else if(action.endsWith("security"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processSecurity(actionRequest, actionResponse, pa, pdef, action);
-                }
-                else if(action.endsWith("content_type"))
-                {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
-                    // TODO: move this into tx
-                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                    
-                    processContentType(actionRequest, actionResponse, pa, pdef, action);
-                }
+                
             }
         }
     }
@@ -306,8 +315,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
             String userAttrName = "";
             try
             {
-                Transaction tx = registry.getPersistenceStore().getTransaction();
-                tx.begin();
                 MutablePortletApplication mpa = registry.getPortletApplication(paName);
                 boolean modified = false;
                 Iterator userAttrIter = mpa.getUserAttributes().iterator();
@@ -325,11 +332,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
                 if (modified)
                 {
-                    registry.getPersistenceStore().lockForWrite(mpa);
-                    tx.commit();
+                    registry.updatePortletApplication(mpa);
                 }
             }
-            catch (LockFailedException e)
+            catch (RegistryException e)
             {
                 throw new PortletException("Failed update user attribute: " + userAttrName, e);
                 
@@ -343,14 +349,13 @@ public class PortletApplicationDetail extends GenericServletPortlet
             {
                 try
                 {
-                    Transaction tx = registry.getPersistenceStore().getTransaction();
-                    tx.begin();
                     MutablePortletApplication mpa = registry.getPortletApplication(paName);
-                    registry.getPersistenceStore().lockForWrite(mpa);
+                    
                     mpa.addUserAttribute(userAttrName, userAttrDesc);                
-                    tx.commit();
+                    
+                    registry.updatePortletApplication(mpa);
                 }
-                catch (LockFailedException e)
+                catch (RegistryException e)
                 {
                     throw new PortletException("Failed add user attribute: " + userAttrName, e);                    
                 }
@@ -365,8 +370,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 String userAttrName = "";
                 try
                 {
-                    Transaction tx = registry.getPersistenceStore().getTransaction();
-                    tx.begin();
                     int count = 0;
                     MutablePortletApplication mpa = registry.getPortletApplication(paName);
                     Iterator userAttrIter = mpa.getUserAttributes().iterator();
@@ -386,11 +389,11 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }                    
                     if (count > 0)
                     {
-                        registry.getPersistenceStore().lockForWrite(mpa);
-                        tx.commit();
+
+                        registry.updatePortletApplication(mpa);
                     }
                 }
-                catch (LockFailedException e)
+                catch (RegistryException e)
                 {
                     throw new PortletException("Failed remove user attribute: " + userAttrName, e);
                     
@@ -414,8 +417,6 @@ public class PortletApplicationDetail extends GenericServletPortlet
                                        String action)
     throws PortletException, IOException
     {
-        Transaction tx = registry.getPersistenceStore().getTransaction();
-        tx.begin();
         MutablePortletApplication pa = registry.getPortletApplication(paName);
         if (pa == null)
         {
@@ -467,17 +468,16 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 if (modified)
                 {
                     if (pd == null)
-                    {
-                        registry.getPersistenceStore().lockForWrite(pa);
+                    {                        
+                        registry.updatePortletApplication(pa);
                     }
                     else
-                    {
-                        registry.getPersistenceStore().lockForWrite(pd);                        
-                    }   
-                    tx.commit();                        
+                    {                        
+                        registry.savePortletDefinition(pd);
+                    }                                         
                 }
             }
-            catch (LockFailedException e)
+            catch (RegistryException e)
             {
                 throw new PortletException("Failed update meta data attributes: " 
                         + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
@@ -511,17 +511,17 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     if (count > 0)
                     {
                         if (pd == null)
-                        {
-                            registry.getPersistenceStore().lockForWrite(pa);
+                        {                            
+                            registry.updatePortletApplication(pa);
                         }
                         else
-                        {
-                            registry.getPersistenceStore().lockForWrite(pd);                        
+                        {                                
+                            registry.savePortletDefinition(pd);
                         }   
-                        tx.commit();
+                    
                     }                        
                 }
-                catch (LockFailedException e)
+                catch (RegistryException e)
                 {
                     throw new PortletException("Failed remove meta data attributes: " 
                             + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
@@ -544,18 +544,18 @@ public class PortletApplicationDetail extends GenericServletPortlet
             {
                 try
                 {
+                    meta.addField(locale, name, value);   
                     if (pd == null)
                     {
-                        registry.getPersistenceStore().lockForWrite(pa);
+                        registry.updatePortletApplication(pa);
                     }
                     else
                     {
-                        registry.getPersistenceStore().lockForWrite(pd);                        
-                    }   
-                    meta.addField(locale, name, value);                    
-                    tx.commit();
+                        registry.savePortletDefinition(pd);                      
+                    }                                      
+                  
                 }
-                catch (LockFailedException e)
+                catch (RegistryException e)
                 {
                     throw new PortletException("Failed add meta data attribute: " + paName + ", " + name, e);                    
                 }                                                                
@@ -563,7 +563,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
         }
     }
         
-    private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws PortletException, IOException
+    private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws RegistryException
     {
         if(action.equals("edit_portlet"))
         {
@@ -596,9 +596,10 @@ public class PortletApplicationDetail extends GenericServletPortlet
             {
                 String locale = actionRequest.getParameter("locale");
                 portlet.addDisplayName(new Locale(locale), displayNameParam);
-            }
+            }            
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
+        
         }
         else if(action.equals("remove_portlet"))
         {
@@ -616,8 +617,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param pdef
      * @param action
+     * @throws RegistryException
      */
-    private void processPreferenceAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    private void processPreferenceAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws RegistryException
     {
         if(action.equals("add_preference"))
         {
@@ -634,7 +636,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 pref.addValue(value);
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("edit_preference"))
         {
@@ -655,7 +657,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_preference"))
         {
@@ -678,7 +680,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+         // registry.getPersistenceStore().getTransaction().commit();
         }
     }
     
@@ -688,8 +690,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param pdef
      * @param action
+     * @throws RegistryException
      */
-    private void processLanguage(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    private void processLanguage(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws RegistryException
     {
          if(action.equals("add_language"))
          {
@@ -700,7 +703,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
 
              portlet.addLanguage(title, shortTitle, keywords, new Locale(locale));
 
-             registry.getPersistenceStore().getTransaction().commit();
+             registry.savePortletDefinition(portlet);
          }
          else if(action.equals("remove_language"))
          {
@@ -727,7 +730,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                      }
                  }
 
-                 registry.getPersistenceStore().getTransaction().commit();
+                 registry.savePortletDefinition(portlet);
              }
          }
          else if(action.equals("edit_language"))
@@ -739,10 +742,13 @@ public class PortletApplicationDetail extends GenericServletPortlet
                  //technically, the size and set of edit ids should be 
                  //equal to the size and set of the language set
 
-                 int id = 0;
+                 String id;
+                 int index=0;
                  Iterator langIter = portlet.getLanguageSet().iterator();
                  while (langIter.hasNext())
                  {
+                     id = editIds[index];
+                     
                      String title = actionRequest.getParameter("title:" + id);
                      String shortTitle = actionRequest.getParameter("short_title:" + id);
 
@@ -778,7 +784,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
                          lang.setShortTitle(shortTitle);
                      }
 
-                     registry.getPersistenceStore().getTransaction().commit();
+                     registry.savePortletDefinition(portlet);
+                     
+                     index++;
                  }
              }
          }
@@ -790,8 +798,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param pdef
      * @param action
+     * @throws FailedToStorePortletDefinitionException
      */
-    private void processParameter(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    private void processParameter(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws FailedToStorePortletDefinitionException
     {
         if(action.equals("add_parameter"))
         {
@@ -812,7 +821,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     parameter.addDescription(new Locale(locale), description);
                 }
                 
-                registry.getPersistenceStore().getTransaction().commit();
+                registry.savePortletDefinition(portlet);
             }
         }
         else if(action.equals("edit_parameter"))
@@ -855,7 +864,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_parameter"))
         {
@@ -880,7 +889,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
     }
     
@@ -890,8 +899,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param pdef
      * @param action
+     * @throws FailedToStorePortletDefinitionException
      */
-    private void processSecurity(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    private void processSecurity(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws FailedToStorePortletDefinitionException
     {
         if(action.equals("add_security"))
         {
@@ -920,7 +930,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                         securityRoleRef.addDescription(new Locale(locale), description);
                     }
                 }
-                registry.getPersistenceStore().getTransaction().commit();
+                registry.savePortletDefinition(portlet);
             }
         }
         else if(action.equals("edit_security"))
@@ -964,7 +974,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 }
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_security"))
         {
@@ -995,7 +1005,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 */
             }
             
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
     }
     
@@ -1005,8 +1015,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
      * @param pa
      * @param pdef
      * @param action
+     * @throws FailedToStorePortletDefinitionException
      */
-    private void processContentType(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    private void processContentType(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws FailedToStorePortletDefinitionException
     {
         if(action.equals("add_content_type"))
         {
@@ -1023,7 +1034,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     {
                         String mode = modes[i];
                         //contentTypeImpl.addPortletMode(mode);
-                        allModes.add(mode);
+                        allModes.add(new PortletMode(mode));
                     }
                 }
 
@@ -1037,12 +1048,13 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 
                 portlet.addContentType(contentType, allModes);
                 
-                registry.getPersistenceStore().getTransaction().commit();
+                //registry.getPersistenceStore().getTransaction().commit();
+                registry.savePortletDefinition(portlet);
             }
         }
         else if(action.equals("edit_content_type"))
         {
-            registry.getPersistenceStore().getTransaction().commit();
+            registry.savePortletDefinition(portlet);
         }
         else if(action.equals("remove_content_type"))
         {
@@ -1064,7 +1076,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }
                 }
                 
-                registry.getPersistenceStore().getTransaction().commit();
+                registry.savePortletDefinition(portlet);
             }
         }
     }
