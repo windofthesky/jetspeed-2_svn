@@ -125,12 +125,11 @@ public class MBeanManager extends BaseObject implements ISubscriber
         try
         {
             Method getNameMethod = monitoredObject.getClass().getMethod("getName", null);
-            return (String) getNameMethod.invoke(monitoredObject, null);
+           	return (String) getNameMethod.invoke(monitoredObject, null);
         }
         catch (Exception e)
         {
-            _Logger.info("failed to call getName()", e);
-            return null;
+           	return monitoredObject.toString();
         }
     }
 
