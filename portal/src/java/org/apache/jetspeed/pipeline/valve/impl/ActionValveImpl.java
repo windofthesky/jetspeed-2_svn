@@ -18,6 +18,7 @@ package org.apache.jetspeed.pipeline.valve.impl;
 import java.io.IOException;
 
 import javax.portlet.PortletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +57,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
         PortletContainer container;
+        boolean responseCommitted = false;
         try
         {
             // TODO: deprecate this when valves are components
@@ -63,10 +65,14 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {
+                HttpServletResponse response = request.getResponseForWindow(actionWindow);
                 container.processPortletAction(
                     actionWindow,
                     request.getRequestForWindow(actionWindow),
-                    request.getResponseForWindow(actionWindow));
+                    response);
+                // The container redirects the client after PortletAction processing
+                // so there is no need to continue the pipeline
+                responseCommitted = response.isCommitted();
             }
             else
             {
@@ -91,8 +97,17 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         }
         finally
         {
-            // Pass control to the next Valve in the Pipeline
-            context.invokeNext(request);
+            // Check if an action was processed and if its response has been committed
+            // (Pluto will redirect the client after PorletAction processing)
+            if ( responseCommitted )
+            {
+                log.info("Action processed and response committed (pipeline processing stopped)");
+            }
+            else
+            {
+                // Pass control to the next Valve in the Pipeline
+                context.invokeNext(request);
+            }
         }
 
     }
