@@ -614,12 +614,14 @@ public class DatabaseBrowserPortlet extends GenericVelocityPortlet
         {
             if (driverRegistered == false)
             {
-                Class driverClass = Class.forName("com.mysql.jdbc.Driver");
+                // Class driverClass = Class.forName("com.mysql.jdbc.Driver");
+                Class driverClass = Class.forName("org.hsqldb.jdbcDriver");
                 Driver driver = (Driver)driverClass.newInstance();
                 DriverManager.registerDriver(driver);
                 driverRegistered = true;
             }
-            con = DriverManager.getConnection("jdbc:mysql://j2-server/j2", "j2", "digital");
+            //con = DriverManager.getConnection("jdbc:mysql://192.168.2.55/GWLogDB", "david", "david");
+            con = DriverManager.getConnection("jdbc:hsqldb:hsql://127.0.0.1:9001", "sa", "");
         }
         catch (ClassNotFoundException cnfe) 
         {
