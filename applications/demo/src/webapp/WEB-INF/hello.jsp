@@ -18,28 +18,8 @@ limitations under the License.
 <portlet:defineObjects/>
 <p>This is a test line</P>
 <b><portlet:namespace/>test@pluto.org</b>
-<p>Goodbye</p>
-<p>
-<a href="/jetspeed/portal/pam">Portlet Application Manager</a>
-</p>
-<p>
-<a href="/jetspeed/portal/struts-demo">Struts Portlet Demo</a>
-</p>
-<p>
-<a href="/jetspeed/portal/user-mgt">User Management</a>
-</p>
-<p>
-<a href="/jetspeed/portal/php-portlet">PHP Portlet</a>
-</p>
-<p>
-<a href="/jetspeed/portal/perl-portlet">Perl Portlets</a>
-</p>
-<p>
-<a href="/jetspeed/portal/localeselector">Locale Selector</a>
-</p>
-<p>
-<a href="/jetspeed/portal/jsf-demo">MyFaces Portlet Demo</a>
-</p>
+
+<h2>Hello World -- we need to do something better here...</h2>
 <p>
 Portlet Mode is <b><%= renderRequest.getPortletMode().toString() %></b> <br/>
 Window State is <b><%= renderRequest.getWindowState().toString() %></b> <br/>
