@@ -79,7 +79,12 @@ import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * Portlet Invoker implementation, invokes the JetspeedContainerServlet
+ * ServletPortletInvoker invokes portlets in another web application, calling a 
+ * portlet's render or action method via a cross context request dispatcher.
+ * In order for this class to work, a servlet must be special servlet must be 
+ * infused into the web (portlet) application. This servlet knows how to delegate
+ * to portlets and package their response back into a servlet response.
+ * The context name of the servlet should be configurable. The default context name is "/container"
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$

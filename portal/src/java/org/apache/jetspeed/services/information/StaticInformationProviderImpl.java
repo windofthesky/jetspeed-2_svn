@@ -61,7 +61,7 @@ import org.apache.pluto.services.information.StaticInformationProvider;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
-import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 
 /**
  * Provides static information to Pluto Container:

@@ -13,7 +13,7 @@ Page myPage = (Page)renderRequest.getAttribute("page");
 Fragment myFragment = (Fragment)renderRequest.getAttribute("fragment");
 ContentDispatcher dispatcher = (ContentDispatcher)renderRequest.getAttribute("dispatcher");  
 org.apache.pluto.om.entity.PortletEntity portletEntity = 
-          org.apache.jetspeed.services.entity.PortletEntityAccess.getEntity(
+          org.apache.jetspeed.entity.PortletEntityAccess.getEntity(
               org.apache.jetspeed.util.JetspeedObjectID.createFromString(myFragment.getId()));
 
 renderRequest.setAttribute("entity",portletEntity);
@@ -55,7 +55,7 @@ renderRequest.setAttribute("entity",portletEntity);
         {
            Fragment f = (Fragment)it.next();
            org.apache.pluto.om.entity.PortletEntity fPE =
-             org.apache.jetspeed.services.entity.PortletEntityAccess.getEntity(
+             org.apache.jetspeed.entity.PortletEntityAccess.getEntity(
                org.apache.jetspeed.util.JetspeedObjectID.createFromString(f.getId()));
            String fDeco = myPage.getDefaultDecorator(f.getType());
            String fDecoTop = null;

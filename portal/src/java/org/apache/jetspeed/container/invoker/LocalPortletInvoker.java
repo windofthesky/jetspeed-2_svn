@@ -172,7 +172,6 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         }
     }
     
-    static private final String PHONEY_PORTLET_WINDOW = "<P>++++++++++++++++++++++++++++++++++</P>";
     
     /**
      * Invokes the specific request denoted by the <code>method</code> parameter on a portlet.
@@ -252,13 +251,9 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
             RenderResponse renderResponse = (RenderResponse)portletResponse;
             
             renderResponse.setContentType("text/html");            
-            renderResponse.getWriter().print(PHONEY_PORTLET_WINDOW);
             renderResponse.getWriter().print(portletDefinition.getName());
-            renderResponse.getWriter().print(PHONEY_PORTLET_WINDOW);
 
             portlet.render(renderRequest, renderResponse);
-
-            renderResponse.getWriter().print(PHONEY_PORTLET_WINDOW);
         }
 
         Thread.currentThread().setContextClassLoader(oldLoader);                 

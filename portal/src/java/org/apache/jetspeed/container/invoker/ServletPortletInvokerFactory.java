@@ -65,12 +65,14 @@ public class ServletPortletInvokerFactory extends AbstractPortletInvokerFactory
 {
     public final static String INVOKER_SERVLET = "factory.invoker.servlet";
     public final static String INVOKER_SERVLET_POOL_SIZE = "factory.invoker.servlet.pool.size";
+    public final static String INVOKER_SERVLET_CONTEXT = "factory.invoker.servlet.context";
     
     public ServletPortletInvokerFactory(PortalContext pc)
     {    
         super();                
         String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);        
         int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE);
+        //String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);
         init(servletInvokerClass, servletInvokerPoolSize);                
     }
     

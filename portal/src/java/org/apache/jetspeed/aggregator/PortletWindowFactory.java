@@ -54,7 +54,7 @@
 package org.apache.jetspeed.aggregator;
 
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.services.entity.PortletEntityAccess;
+import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;

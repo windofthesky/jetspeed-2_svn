@@ -71,7 +71,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.portlet.PortletDefinition;

@@ -75,8 +75,9 @@ public interface JetspeedPortletInvoker extends PortletInvoker
      * 
      * @param portletDefinition The portlet's definition that is being invoked.
      * @param servletConfig The servlet configuration of the portal. 
+     * @param containerServlet
      */
-    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig);
+    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig); //, String entryPoint);
     
     /**
      * Passivates an invoker, freeing it back to the invoker pool.

@@ -51,48 +51,40 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.exception;
+package org.apache.jetspeed.portlets.decorator;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
+import java.io.IOException;
+
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 /**
- * Base exception for all RuntimeExceptions defined within Jetspeed.
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * GenericDecoratorPortlet
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
-public class JetspeedRuntimeException extends NestableRuntimeException
+public class GenericDecoratorPortlet
+    extends GenericPortlet
+    implements DecoratorPortlet
 {
-
-    /**
-     * 
-     */
-    public JetspeedRuntimeException()
+    public void doView(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
     {
-        super();
-    }
+        PortletContext context = getPortletContext();
+        response.setContentType("text/html");
 
-    /**
-     * @param arg0
-     */
-    public JetspeedRuntimeException(String arg0)
-    {
-        super(arg0);
+//        PortletURL url = response.createRenderURL();
+        // url.addParameter("test", "value");
+        
+        // OK, so this is square one as they say. We're going to need some portlet tools next
+        response.getWriter().println("<br/><b>Decorator Portlet</b>");
+        
+//        PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
+//        rd.include(request, response);        
     }
-
-    /**
-     * @param arg0
-     */
-    public JetspeedRuntimeException(Throwable arg0)
-    {
-        super(arg0);
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     */
-    public JetspeedRuntimeException(String arg0, Throwable arg1)
-    {
-        super(arg0, arg1);
-    }
-
+    
 }

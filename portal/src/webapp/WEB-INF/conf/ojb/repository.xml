@@ -8,6 +8,7 @@
 <!ENTITY internal SYSTEM "repository_internal.xml">
 <!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
 <!ENTITY page SYSTEM "repository_page.xml">
+<!ENTITY registry SYSTEM "repository_registry.xml">
 <!ENTITY preferences SYSTEM "repository_prefs.xml">
 
 ]>
@@ -29,5 +30,8 @@
 
     <!-- include jetspeed defined mappings here -->
     &preferences;
+
+    <!-- include jetspeed registry mapping here -->
+    &registry;
 
 </descriptor-repository>

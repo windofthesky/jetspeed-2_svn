@@ -72,7 +72,7 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.persistence.TransactionStateException;
-import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;

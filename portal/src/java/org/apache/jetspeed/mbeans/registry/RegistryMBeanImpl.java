@@ -59,7 +59,7 @@ import java.util.List;
 
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.services.registry.PortletRegistryService;
+import org.apache.jetspeed.registry.PortletRegistryService;
 
 /**
  * 

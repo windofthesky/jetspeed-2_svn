@@ -60,7 +60,7 @@ import java.io.IOException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;

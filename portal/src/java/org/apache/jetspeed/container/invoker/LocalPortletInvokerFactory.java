@@ -62,10 +62,7 @@ import org.apache.jetspeed.PortalContext;
  * @version $Id$
  */
 public class LocalPortletInvokerFactory extends AbstractPortletInvokerFactory
-{
-    private String localInvokerClass;
-    private int localInvokerPoolSize = 30;
-    
+{    
     public final static String INVOKER_LOCAL = "factory.invoker.local";
     public final static String INVOKER_LOCAL_POOL_SIZE = "factory.invoker.local.pool.size";
 
@@ -78,8 +75,8 @@ public class LocalPortletInvokerFactory extends AbstractPortletInvokerFactory
     public LocalPortletInvokerFactory(PortalContext pc)
     {
         super();        
-        localInvokerClass = pc.getConfigurationProperty(INVOKER_LOCAL);
-        localInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_LOCAL_POOL_SIZE);
+        String localInvokerClass = pc.getConfigurationProperty(INVOKER_LOCAL);
+        int localInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_LOCAL_POOL_SIZE);
         init(localInvokerClass, localInvokerPoolSize);        
     }
         

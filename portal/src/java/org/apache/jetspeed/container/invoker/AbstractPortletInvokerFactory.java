@@ -58,7 +58,9 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.StackObjectPool;
 
 /**
- * AbstractPortletInvokerFactory
+ * AbstractPortletInvokerFactory handles the actual creation fo invokers.
+ * It manages the generic object pooling and objection creation and release patterns
+ * for all invoker implementations. 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$

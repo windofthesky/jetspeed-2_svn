@@ -51,41 +51,16 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.exception;
+package org.apache.jetspeed.portlets.decorator;
 
-import org.apache.commons.lang.exception.NestableException;
+import javax.portlet.Portlet;
 
 /**
- * Occurs when anything unexpected happens within Jetspeed.Any defined exceptions
- * within Jetspeed should always extend from this.
- * 
+ * DecoratorPortlet
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
- **/
-
-public class JetspeedException extends NestableException 
+ */
+public interface DecoratorPortlet extends Portlet
 {
-
-    public JetspeedException() 
-    {
-        super();
-    }
-    
-    public JetspeedException(String message) 
-    {
-        super(message);
-    }
-    
-    public JetspeedException(Throwable nested)
-    {
-        super(nested);
-    }
-    
-    public JetspeedException(String msg, Throwable nested)
-    {
-        super(msg, nested);
-    }
-    
-
-
 }
