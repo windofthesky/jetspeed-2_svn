@@ -15,17 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
-<!--  <extend>${basedir}/../project.xml</extend> -->
+<extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-cm</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed Component Manager</name>
+  <name>Jetspeed-2 Component Manager</name>
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  Component Manager
   </description>
   <shortDescription>Common Manager</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/cm</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/cm/</url>
+  </repository>
+
   <dependencies>
   	<dependency>
       <id>commons-logging</id>
@@ -104,4 +110,24 @@ limitations under the License.
     </resources>
     
   </build>
+
+  <reports>
+    <report>maven-jdepend-plugin</report>
+<!--
+    <report>maven-checkstyle-plugin</report>
+-->
+<!--
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+-->
+  </reports>  
+
 </project>

@@ -15,19 +15,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
-<!--  <extend>${basedir}/../project.xml</extend> -->
+  <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-prefs</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed Preferences SPI Components</name>
-  <currentVersion>2.0-a1-dev</currentVersion>
-  <package>org.apache.jetspeed</package>
+  <name>Jetspeed-2 Preferences SPI Components</name>
+
   <description>
 	  Preferences SPI Components
   </description>
   <shortDescription>Preferences SPI Components</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/perfs</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/perfs/</url>
+  </repository>
+
   <dependencies>  
-  	<dependency>
+    <dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>

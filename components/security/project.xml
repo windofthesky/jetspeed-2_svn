@@ -15,17 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
-<!--  <extend>${basedir}/../project.xml</extend> -->
+  <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-security</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed Security Components</name>
+  <name>Jetspeed-2 Security Components</name>
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  Security Components
   </description>
   <shortDescription>Security Components</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/security</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/security/</url>
+  </repository>
+
   <dependencies>
     <!-- AspectJ -->
     <dependency>

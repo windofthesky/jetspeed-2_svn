@@ -15,17 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
-<!--  <extend>${basedir}/../project.xml</extend> -->
+  <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jetspeed-rdbms</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed RDBMS Components</name>
+  <name>Jetspeed-2 RDBMS Components</name>
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  RDBMS Components
   </description>
   <shortDescription>RDBMS Components</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/rdbms</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/rdbms/</url>
+  </repository>
+
   <dependencies>  
   	<dependency>
       <id>jetspeed-cm</id>
