@@ -644,19 +644,4 @@ limitations under the License.
 	<delete file="${context_dir}/security.xml"/>
   </goal>
 
-<!--
-UNCOMMENT This code out if you get a FileNotException on OJB.properties
-I think there is a bug on Maven and some combination of Operating System
-Anyway Im foo-bared by this one until I can figure out why Maven is not 
-copying over the files, so I need this 'manual' copy in order to deploy
-
-  <postGoal name="java:compile">  	
-    <copy todir="target/classes">
-        <fileset dir="${org.apache.jetspeed.project.home}/etc/db-ojb">
-        </fileset>
-    </copy>
-  </postGoal>
--->
-
-
 </project>
