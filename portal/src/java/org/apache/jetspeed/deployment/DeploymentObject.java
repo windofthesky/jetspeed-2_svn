@@ -17,9 +17,8 @@ package org.apache.jetspeed.deployment;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.jetspeed.util.FileSystemHelper;
 
 /**
  * <p>
@@ -36,15 +35,6 @@ import org.apache.commons.vfs.FileObject;
 public interface DeploymentObject
 {
 
-	/**
-	 * Gets the deployment artifacts content as a Stream
-	 * @return
-	 * @throws IOException
-	 */
-	InputStream getAsStream() throws IOException;
-	
-	Reader getAsReader() throws IOException;
-	
 	/**
 	 * Closes any resources that may have been opend during the use
 	 * of this ObjectHandler.
@@ -92,7 +82,7 @@ public interface DeploymentObject
 	 * @return A <code>org.apache.commons.vfs.FileObject</code> that represents the file structure of the
 	 * object to deploy.  This is usually a LocalFileSystem object or a JarFileSystem object.
 	 */
-	FileObject getFileObject();
+	FileSystemHelper getFileObject();
 		
 
 }
