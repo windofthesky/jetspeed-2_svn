@@ -1,27 +1,27 @@
     <dependency>
       <id>picocontainer</id>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.1-20040709</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>nanocontainer</id>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-20040709</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>nanocontainer:nanocontainer-proxytoys</id>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-20040709</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>proxytoys</id>
-      <version>0.1</version>
+      <version>0.1-20040709</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
