@@ -79,7 +79,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
             //                  After the fix, the RequestContext should be retrieved from the RenderRequest
             //                  and the pluto depedency removed from this project project.xml
             HttpServletRequest req = (HttpServletRequest)((PortletRequestImpl)request).getRequest();
-            RequestContext requestContext = (RequestContext)req.getAttribute(RequestContext.REQUEST_PORTALENV);
+            RequestContext requestContext = (RequestContext)req.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             Integer passwordDaysValid = (Integer)requestContext.getAttribute(PasswordCredential.PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY);
             
             if ( passwordDaysValid != null )
@@ -166,7 +166,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
 
                         // refresh/update Subject in session to reflect the changed PasswordCredential
                         Subject subject = manager.getUser(userName).getSubject();
-                        RequestContext requestContext = (RequestContext)actionRequest.getAttribute(RequestContext.REQUEST_PORTALENV);                  
+                        RequestContext requestContext = (RequestContext)actionRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);                  
                         requestContext.setSessionAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
                     }
                     catch ( SecurityException e)

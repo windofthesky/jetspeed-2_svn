@@ -33,6 +33,15 @@ public final class PortalReservedParameters
     public final static String ACTION_PIPELINE = "action-pipeline";
     
     // Session and Request attribute keys
-    public static final String PAGE_ATTRIBUTE_KEY = "org.apache.jetspeed.Page";
+    public static final String PAGE_ATTRIBUTE = "org.apache.jetspeed.Page";
     public static final String SESSION_KEY_SUBJECT = "org.apache.jetspeed.security.subject";
+    public static final String REQUEST_CONTEXT_ATTRIBUTE = "org.apache.jetspeed.request.RequestContext";
+    public static final String FRAGMENT_ATTRIBUTE = "org.apache.jetspeed.Fragment";
+    public static final String MAXIMIZED_FRAGMENT_ATTRIBUTE = "org.apache.jetspeed.maximized.Fragment";    
+    public static final String MAXIMIZED_LAYOUT_ATTRIBUTE = "org.apache.jetspeed.maximized.Layout";
+    public static final String JETSPEED_POWER_TOOL_REQ_ATTRIBUTE = "org.apache.jetspeed.velocity.JetspeedPowerTool";
+    public static final String PREFERED_LANGUAGE_ATTRIBUTE = "org.apache.jetspeed.prefered.language";
+    public static final String PREFERED_LOCALE_ATTRIBUTE = "org.apache.jetspeed.prefered.locale";
+    public static final String PREFERED_CHARACTERENCODING_ATTRIBUTE = "org.apache.jetspeed.prefered.characterencoding";
+    public static final String CONTENT_DISPATCHER_ATTRIBUTE = "org.apache.jetspeed.ContentDispatcher";
 }
