@@ -18,6 +18,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.Constants;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
@@ -62,7 +63,7 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
         }        
-
+        ctx.put("JS2RequestContext", request.getAttribute(RequestContext.REQUEST_PORTALENV));
         ctx.put("renderRequest", renderRequest);
         ctx.put("renderResponse", renderResponse);
         ctx.put("portletConfig", portletConfig);
