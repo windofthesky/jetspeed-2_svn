@@ -136,7 +136,7 @@ limitations under the License.
       <id>jetspeed2:jetspeed-api</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle.jar>false</war.bundle.jar>
       </properties>
     </dependency>
      <dependency>
@@ -390,7 +390,7 @@ limitations under the License.
     </dependency>
      <dependency>
       <id>jdom</id>
-      <version>b9</version>
+      <version>b10</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
@@ -475,6 +475,29 @@ limitations under the License.
       <version>0.2.7</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    
+      <dependency>
+      <id>saxpath</id>
+      <version>1.0-FCS</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+      <dependency>
+      <id>jaxen</id>
+      <version>1.0-FCS-full</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+   
+     <dependency>
+      <id>commons-vfs</id>
+      <version>SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
 
