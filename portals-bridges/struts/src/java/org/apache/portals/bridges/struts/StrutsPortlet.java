@@ -142,6 +142,8 @@ public class StrutsPortlet extends GenericPortlet
         this.defaultCustomPage = getCustomPageParameter(config);
         this.defaultEditPage = getEditPageParameter(config);
         this.defaultViewPage = getViewPageParameter(config);
+        this.defaultHelpPage = getHelpPageParameter(config);
+        
         if (this.defaultViewPage == null)
         {
             // A Struts Portlet is required to have at least the
@@ -190,6 +192,11 @@ public class StrutsPortlet extends GenericPortlet
     protected String getViewPageParameter(PortletConfig config)
     {
         return config.getInitParameter(PARAM_VIEW_PAGE);
+    }
+    
+    protected String getHelpPageParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_HELP_PAGE);
     }
     
     public void doEdit(RenderRequest request, RenderResponse response)
