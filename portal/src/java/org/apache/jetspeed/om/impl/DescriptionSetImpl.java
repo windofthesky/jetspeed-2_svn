@@ -56,6 +56,7 @@ package org.apache.jetspeed.om.impl;
 import java.util.Iterator;
 import java.util.Locale;
 
+import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.pluto.om.common.Description;
 
@@ -84,17 +85,29 @@ public class DescriptionSetImpl extends AbstractSupportSet implements MutableDes
      */
     public Description get(Locale arg0)
     {
+        if (arg0 == null)
+        {
+            throw new IllegalArgumentException("The Locale argument cannot be null");
+        }
+
         // TODO: This may cause concurrent modification exceptions
         Iterator itr = iterator();
-        while( itr.hasNext())
+        Description fallBack = null;
+        while (itr.hasNext())
         {
-			Description desc =  (Description) itr.next();
+            Description desc = (Description) itr.next();
             if (desc.getLocale().equals(arg0))
             {
                 return desc;
             }
+            // set fall back if we have a Locale that only has
+            // language set.
+            if (desc.getLocale().getLanguage().equals(arg0.getLanguage()))
+            {
+                fallBack = desc;
+            }
         }
-        return null;
+        return fallBack;
     }
 
     /**
@@ -102,6 +115,7 @@ public class DescriptionSetImpl extends AbstractSupportSet implements MutableDes
      */
     public void addDescription(Description description)
     {
+        ((MutableDescription) description).setType(descriptionType);
         add(description);
 
     }

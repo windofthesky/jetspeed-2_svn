@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
 import org.apache.pluto.om.common.DisplayName;
 /**
@@ -70,6 +71,9 @@ public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDis
 {
 
     private Map nameMap = new HashMap();
+
+    /** This is a fall back if language only Locales */
+    private Map langMap = new HashMap();
 
     /** Specifies the type Description we are storing */
     protected String displayNameType;
@@ -85,12 +89,27 @@ public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDis
      */
     public DisplayName get(Locale arg0)
     {
+        if (arg0 == null)
+        {
+            throw new IllegalArgumentException("Locale argument cannot be null");
+        }
 
-        return (DisplayName) nameMap.get(arg0);
+        Object obj = nameMap.get(arg0);
+        if (obj == null)
+        {
+            obj = langMap.get(arg0.getLanguage());
+        }
+
+        return (DisplayName) obj;
     }
 
     public void addDisplayName(DisplayName name)
     {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("DisplayName argument cannot be null");
+        }
+
         add(name);
     }
 
@@ -99,8 +118,10 @@ public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDis
      */
     public boolean add(Object o)
     {
-        DisplayName name = (DisplayName) o;
+        MutableDisplayName name = (MutableDisplayName) o;
+        name.setType(displayNameType);
         nameMap.put(name.getLocale(), name);
+        langMap.put(name.getLocale().getLanguage(), name);
         return super.add(o);
     }
 
