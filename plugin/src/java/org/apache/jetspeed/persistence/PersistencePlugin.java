@@ -96,6 +96,8 @@ public interface PersistencePlugin extends Plugin
     
     void prepareForUpdate(Object obj) throws TransactionStateException;
     
+	void makePersistent(Object obj) throws TransactionStateException;
+    
     void rollbackTransaction() throws TransactionStateException;
     
     /**
