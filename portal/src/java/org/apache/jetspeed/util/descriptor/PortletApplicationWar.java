@@ -69,7 +69,7 @@ public class PortletApplicationWar
     protected static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
     protected static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
-    
+
     public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
 
@@ -84,8 +84,8 @@ public class PortletApplicationWar
     private MutableWebApplication webApp;
     private MutablePortletApplication portletApp;
 
-    
-    
+
+
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
     protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
@@ -118,9 +118,11 @@ public class PortletApplicationWar
                     + "\".  paName cannot be null nor can it begin nor end with any slashes.");
         }
 
-        if (vfsConfigUri != null) {
+        if (vfsConfigUri != null)
+        {
             StandardFileSystemManager standardManager = new StandardFileSystemManager();
             standardManager.setConfiguration(vfsConfigUri);
+            standardManager.init();
             fsManager = standardManager;
         }
         else
@@ -296,8 +298,8 @@ public class PortletApplicationWar
         }
 
         target.copyFrom(warStruct, new AllFileSelector());
-        target.close();        
-       
+        target.close();
+
     }
 
     public void copyWarAndProcessWebXml( String targetAppRoot ) throws IOException, MetaDataException
@@ -339,7 +341,7 @@ public class PortletApplicationWar
 
         try
         {
-            webXmlIn = getInputStream(WEB_XML_PATH);            
+            webXmlIn = getInputStream(WEB_XML_PATH);
             processWebXML(webXmlIn, targetWebXml);
         }
         finally
@@ -472,8 +474,8 @@ public class PortletApplicationWar
             {
                 throw new MetaDataException("Source web.xml has no content!!!");
             }
-            
-            
+
+
             log.debug("web.xml already contains servlet for the JetspeedContainer servlet.");
             log.debug("web.xml already contains servlet-mapping for the JetspeedContainer servlet.");
 
@@ -488,23 +490,23 @@ public class PortletApplicationWar
                 jetspeedServletElement.addContent(servletName);
                 jetspeedServletElement.addContent(servletDspName);
                 jetspeedServletElement.addContent(servletDesc);
-                jetspeedServletElement.addContent(servletClass);                
-                
+                jetspeedServletElement.addContent(servletClass);
+
                insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
                 changed = true;
             }
 
             if (jetspeedServletMapping == null)
             {
-                
+
                 Element jetspeedServletMappingElement = new Element("servlet-mapping");
-                
+
                 Element servletMapName = (Element)  new Element("servlet-name").addContent("JetspeedContainer");
                 Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
 
                 jetspeedServletMappingElement.addContent(servletMapName);
                 jetspeedServletMappingElement.addContent(servletUrlPattern);
-                
+
                 insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
                 changed = true;
             }
@@ -519,9 +521,9 @@ public class PortletApplicationWar
                 webXmlWriter = new FileWriter(targetWebXml);
                 output.output(doc, webXmlWriter);
                 webXmlWriter.flush();
-                
+
             }
-           
+
         }
         catch (Exception e)
         {
@@ -595,17 +597,17 @@ public class PortletApplicationWar
     {
         warStruct.close();
     }
-    
+
     /**
-     * 
+     *
      * <p>
      * createClassloader
      * </p>
-     * 
-     * Use this method to create a classloader based on this wars structure. I.e.  
+     *
+     * Use this method to create a classloader based on this wars structure. I.e.
      * it will create a ClassLoader containing the contents of WEB-INF/classes and
      * WEB-INF/lib and the ClassLoader will be searched in that order.
-     * 
+     *
      *
      * @param parent Parent ClassLoader
      * @return
@@ -613,20 +615,20 @@ public class PortletApplicationWar
      */
     public ClassLoader createClassloader(ClassLoader parent) throws IOException
     {
-        ArrayList fileObjects = new ArrayList();       
+        ArrayList fileObjects = new ArrayList();
         FileObject webInfClasses = null;
         try
         {
             webInfClasses = warStruct.resolveFile("WEB-INF/classes/");
             log.info("Adding "+webInfClasses.getURL()+" to class path.");
-            fileObjects.add(webInfClasses);           
+            fileObjects.add(webInfClasses);
         }
         catch (FileSystemException e)
         {
             log.info("No class dependencies found");
         }
-        
-        
+
+
          try
         {
             FileObject webInfLib = warStruct.resolveFile("WEB-INF/lib");
@@ -635,18 +637,18 @@ public class PortletApplicationWar
             for(int i=0; i<jars.length; i++)
             {
                 FileObject jar = jars[i];
-                log.info("Adding "+jar.getURL()+" to class path.");                
-                fileObjects.add( jar);                
+                log.info("Adding "+jar.getURL()+" to class path.");
+                fileObjects.add( jar);
             }
-            
-            
+
+
         }
         catch (FileSystemException e)
         {
             log.info("No jar dependencies found");
         }
-       
-   
+
+
         return new VFSClassLoader((FileObject[])fileObjects.toArray(new FileObject[fileObjects.size()]), fsManager, parent);
 
     }
