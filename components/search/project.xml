@@ -30,8 +30,8 @@ limitations under the License.
   </description>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/registry</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/registry/</url>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/search</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/search/</url>
   </repository>
 
   <shortDescription>Search</shortDescription>
