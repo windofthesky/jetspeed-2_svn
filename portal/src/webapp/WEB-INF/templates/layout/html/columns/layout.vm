@@ -105,7 +105,7 @@ limitations under the License.
                  </tr>
                  <tr>
                    <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-                        #if($col > 0)            
+                        #if($lastColumn > 0 && $col > 0)            
                          #set($leftUrl = $renderResponse.createRenderURL())    
                          $!leftUrl.setParameter("moveBy","-1,0")
                          $!leftUrl.setParameter("fragmentId","$f.id")    
@@ -116,7 +116,7 @@ limitations under the License.
                       &nbsp;  Position &nbsp;
                    </td>
                    <td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-                        #if($col < $lastColumn )
+                        #if($lastColumn > 0 && $col < $lastColumn)
                          #set($rightUrl = $renderResponse.createRenderURL())    
                          $!rightUrl.setParameter("moveBy","1,0")
                          $!rightUrl.setParameter("fragmentId","$f.id")
