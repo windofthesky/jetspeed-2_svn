@@ -415,4 +415,8 @@ limitations under the License.
       <attainGoal name="db.execute" />
   </goal>
 
+  <preGoal name="war">
+   <attainGoal name= "jar:install"/>
+  </preGoal>
+
 </project>
