@@ -46,6 +46,7 @@ import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.Enumerator;
+import org.apache.pluto.util.NamespaceMapper;
 import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
@@ -61,13 +62,14 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
 
     PortletWindow portletWindow = null;
+    private NamespaceMapper nameSpaceMapper = null;
 
     private Map portletParameters;
 
     public ServletRequestImpl( javax.servlet.http.HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
-
+        nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
         this.portletWindow = window;
     }
 
@@ -343,7 +345,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             else
             {
                 this._getHttpServletRequest().setAttribute(
-                        NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name), value);
+                        nameSpaceMapper.encode(portletWindow.getId(), name), value);
             }
         }
         super.setAttribute(name, value);
