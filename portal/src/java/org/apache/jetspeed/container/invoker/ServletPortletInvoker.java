@@ -55,14 +55,8 @@ package org.apache.jetspeed.container.invoker;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import javax.portlet.ActionResponse;
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -70,18 +64,23 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pluto.invoker.PortletInvoker;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletContextFactory;
+import org.apache.pluto.core.CoreUtils;
 import org.apache.pluto.core.InternalPortletRequest;
 import org.apache.pluto.core.InternalPortletResponse;
 import org.apache.pluto.core.impl.PortletConfigImpl;
-import org.apache.pluto.portlet.PortletUtils;
-import org.apache.jetspeed.container.ContainerConstants;
-import org.apache.jetspeed.container.PortletContextFactory;
+import org.apache.pluto.invoker.PortletInvoker;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * Portlet Invoker implementation, invokes the JetspeedContainerServlet
@@ -160,9 +159,9 @@ public class ServletPortletInvoker implements PortletInvoker
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
         //String portletApplicationName = "/HW_App";
 
-        InternalPortletRequest internalPortletRequest = PortletUtils.getInternalRequest(portletRequest);
+        InternalPortletRequest internalPortletRequest = CoreUtils.getInternalRequest(portletRequest);
 
-        InternalPortletResponse internalPortletResponse = PortletUtils.getInternalResponse(portletResponse);
+        InternalPortletResponse internalPortletResponse = CoreUtils.getInternalResponse(portletResponse);
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) internalPortletRequest).getRequest();
