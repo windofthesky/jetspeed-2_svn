@@ -16,7 +16,6 @@
 package org.apache.jetspeed.engine.servlet;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletRequest;
 
@@ -209,25 +207,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
         }
         return false;
-    }
-
-    public Principal getUserPrincipal()
-    {
-        JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
-        if (context != null)
-        {
-            Set principals = context.getSubject().getPrincipals();
-            if (principals != null)
-            {
-                Iterator it = principals.iterator();
-                if (it.hasNext())
-                {
-                    return (Principal) it.next();
-                }
-            }
-        }
-        return super.getUserPrincipal();
-
     }
 
     /**
