@@ -5,6 +5,7 @@
       <title>Welcome to Jetspeed-2</title>
     </metainfo>
 
+    <entry type="ref" name="LoginPortlet" parent="LoginPortlet"/>
     <entry type="ref" name="HelloPortlet" parent="HelloPortlet"/>
     <entry type="ref" name="DisplayRequestPortlet" parent="DisplayRequestPortlet"/>
     <entry type="ref" name="CustomerList" parent="CustomerList"/>

@@ -46,4 +46,25 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 
+  <!-- Protect LogInRedirectory.jsp.  This will require a login when called --> 
+  <security-constraint> 
+    <web-resource-collection> 
+      <web-resource-name>Login</web-resource-name> 
+      <url-pattern>/LogInRedirector.jsp</url-pattern> 
+    </web-resource-collection> 
+    <auth-constraint> 
+      <role-name>*</role-name> 
+    </auth-constraint> 
+  </security-constraint> 
+
+  <!-- Login configuration uses form-based authentication -->
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>Intranet</realm-name> 
+    <form-login-config>
+      <form-login-page>/login.jsp</form-login-page>
+      <form-error-page>/error.jsp</form-error-page>
+    </form-login-config>
+  </login-config>
+
 </web-app>
