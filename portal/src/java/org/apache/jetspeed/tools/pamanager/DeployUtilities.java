@@ -60,9 +60,12 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.io.FileInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -208,6 +211,21 @@ public class DeployUtilities
               PortletApplicationException e = new PortletApplicationException( "Failed to create an XML DOM!");
               throw e;
             }
+            
+            // Use the local dtd instead of remote dtd. This
+            // allows to deploy the application offline
+			db.setEntityResolver(new EntityResolver() {
+			  public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId)
+					 throws SAXException, java.io.IOException
+			  {
+	
+				if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+				{
+					return new InputSource(new FileInputStream("./web-app_2_3.dtd"));
+				}
+				else return null;
+			  }
+			});
            
             Document doc = db.parse(new File(webXml));
             if ( doc == null)
@@ -299,7 +317,7 @@ public class DeployUtilities
                 format.setIndent(4);
                 // Doctype gets removed by the DOM. Add it otherwise Tomcat throws an exception
                 format.setDoctype
-                  ("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd");
+                  ("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "http://java.sun.com/dtd/web-app_2_3.dtd");
 
                 FileWriter fw = new FileWriter(webXml);
                 
