@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
@@ -31,30 +31,11 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 
 import java.io.File
 
-/**
- * This is the standard assembly for a Regsitry
- * component.  We want the Registry component to be exposed
- * at as high the container hierarchy as possibly so, if a
- * parent container is provided, we will regsiter to the parent
- * and use it as the container for the Regsitry.
- */
 
-// Prior to this, you will need to have an Implementation
-// of org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
-// registered.
-if(parent != null)
-{
-	container = new DefaultPicoContainer(parent)
-	parent.registerComponentImplementation(PortletRegistryComponent, PortletRegistryComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-    parent.registerComponentImplementation(PortletEntityAccessComponent, PortletEntityAccessComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-}
-else
-{
-    container = new DefaultPicoContainer()
-    container.registerComponentImplementation(PortletRegistryComponent, PortletRegistryComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-    container.registerComponentImplementation(PortletEntityAccessComponent, PortletEntityAccessComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-}
+container = new ChildAwareContainer(parent)
+container.registerComponentImplementation(PortletRegistryComponent, PortletRegistryComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
+container.registerComponentImplementation(PortletEntityAccessComponent, PortletEntityAccessComponentImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 
 
-// This will be an empty container if "parent" was not null
+
 return container
