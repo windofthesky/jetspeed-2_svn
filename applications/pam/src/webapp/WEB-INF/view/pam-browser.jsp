@@ -13,6 +13,7 @@ limitations under the License.
 <%@ page language="java" import="javax.portlet.*, java.util.List, java.util.Iterator, org.apache.jetspeed.om.common.portlet.MutablePortletApplication" session="true" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 <portlet:defineObjects/>
 
 <p>This page was invoked from a LOCAL portlet app</P>
@@ -44,4 +45,19 @@ limitations under the License.
 %>
 </table>
 
+<portlet:actionURL windowState="normal" portletMode="view"  var="nodeLink" >
+	<portlet:param name="node" value="${name}" />
+</portlet:actionURL>
+
+<c:out value="${nodeLink}"/>
+
+<pam:tree tree="j2_tree" images="/pam/images"
+          action="<%= nodeLink %>"
+  />
+  
+  <%--
+  style="tree-control"
+        styleSelected="tree-control-selected"
+      styleUnselected="tree-control-unselected"
+      --%>
 

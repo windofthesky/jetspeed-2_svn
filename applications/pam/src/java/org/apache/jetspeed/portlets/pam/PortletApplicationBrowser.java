@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 //import java.io.InputStream;
 
@@ -25,11 +26,15 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.portlet.ServletPortlet;
+import org.apache.webapp.admin.TreeControl;
+import org.apache.webapp.admin.TreeControlNode;
 
 //import org.apache.jetspeed.cps.util.Streams;
 
@@ -70,6 +75,15 @@ public class PortletApplicationBrowser extends ServletPortlet
                 System.out.println("PA = " + pa.getName());                
             }
             */
+            
+            TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
+            if(control == null)
+            {
+                PortletURL actionURL = response.createActionURL();
+            	control = buildTree(apps, actionURL);
+            	request.getPortletSession().setAttribute("j2_tree", control);
+            }
+            request.setAttribute("j2_tree", control);
             request.setAttribute("apps", apps);            
         }        
         super.doView(request, response);
@@ -80,5 +94,57 @@ public class PortletApplicationBrowser extends ServletPortlet
 	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
 		System.out.println("PorletApplicationBrowser: processAction()");
+		
+		TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute("j2_tree");
+		//assert control != null
+		
+		String node = actionRequest.getParameter("node");
+		if(node != null)
+		{
+		    TreeControlNode controlNode = control.findNode(node);
+		    if(controlNode != null)
+		    {
+		        controlNode.setExpanded(!controlNode.isExpanded());
+		    }
+		}
+		
+		String selectedNode = actionRequest.getParameter("select_node");
+		if(selectedNode != null)
+		{
+		    control.selectNode(selectedNode);
+		    //TODO:  signal details portlet that node was selected
+		    
+		    System.out.println("Node Selected: " + selectedNode);
+		}	
+	}
+	
+	private TreeControl buildTree(List apps, PortletURL actionURL) {
+	    
+	    
+	    actionURL.setParameter("select_node", "ROOT-NODE");
+		TreeControlNode root =
+            new TreeControlNode("ROOT-NODE",
+                                null, "J2_ROOT",
+                                actionURL.toString(),
+                                null, true, "J2_DOMAIN");
+		
+		TreeControl control = new TreeControl(root);
+		
+		
+		actionURL.setParameter("select_node", "APP_ROOT");
+		TreeControlNode portletApps = 
+			new TreeControlNode("APP-NODE", null, "APP_ROOT", actionURL.toString(), null, false, "J2_DOMAIN");
+		root.addChild(portletApps);
+		
+		Iterator it = apps.iterator();
+        while (it.hasNext())
+        {
+            MutablePortletApplication pa = (MutablePortletApplication)it.next();
+            actionURL.setParameter("select_node", pa.getName());
+            TreeControlNode appNode = new TreeControlNode(pa.getName(), null, pa.getName(), actionURL.toString(), null, false, "PA_APP_DOMAIN"  );
+            portletApps.addChild(appNode);
+        }
+		
+		return control;
 	}
 }
