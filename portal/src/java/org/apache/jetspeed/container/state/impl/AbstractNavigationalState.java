@@ -60,9 +60,16 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         if ( windowState != null )
         {
-            PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+            String windowId = window.getId().toString();
+            PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
             if (state != null && (state.getWindowState() == null || !state.getWindowState().equals(windowState)))
             {
+                state.setWindowState(windowState);
+            }
+            else
+            {
+                state = new PortletWindowRequestNavigationalState(windowId);
+                requestStates.addPortletWindowNavigationalState(windowId, state);
                 state.setWindowState(windowState);
             }
         }
@@ -72,9 +79,16 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         if ( portletMode != null )
         {
-            PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+            String windowId = window.getId().toString();
+            PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
             if (state != null && (state.getPortletMode() == null || !state.getPortletMode().equals(portletMode)))
             {
+                state.setPortletMode(portletMode);
+            }
+            else
+            {
+                state = new PortletWindowRequestNavigationalState(windowId);
+                requestStates.addPortletWindowNavigationalState(windowId, state);
                 state.setPortletMode(portletMode);
             }
         }
