@@ -139,17 +139,17 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/components/registry"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Regsitry Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
                basedir="${basedir}/components/prefs"
                includes="project.xml"
                goals="jar:install"
                banner="Build and Install the Preferences Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}/components/registry"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Regsitry Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
