@@ -103,6 +103,8 @@ limitations under the License.
     assigned:
     status:
 
+19. All Pluto factory objects such as request, response, dispatchers, invokers, contexts need to be pooled
+
 -----------------
 Services from J1
 ------------------
