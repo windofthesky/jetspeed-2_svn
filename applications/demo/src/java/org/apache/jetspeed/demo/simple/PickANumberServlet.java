@@ -16,9 +16,10 @@
 package org.apache.jetspeed.demo.simple;
 
 import java.io.IOException;
+
+import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import org.apache.jetspeed.portlet.ServletPortlet;
 
@@ -103,10 +104,10 @@ public class PickANumberServlet extends ServletPortlet
     /**
      * Increment attributes in different scopes
      *
-     * @see javax.portlet.GenericPortlet#processAction
+     * @see javax.portlet.GenericPortlet#processActions
      *
      */
-    public void processAction(PortletRequest request, ActionResponse actionResponse)
+    public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
         Long guessCount = null;
@@ -117,10 +118,10 @@ public class PickANumberServlet extends ServletPortlet
         PortletSession session = request.getPortletSession();
         
         // Get target value
-        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.PORTLET_SCOPE);
+        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.APPLICATION_SCOPE);
 
         // Get target value
-        targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, PortletSession.PORTLET_SCOPE);
+        targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, PortletSession.APPLICATION_SCOPE);
         if ((targetValue != null) && (lastGuess != null))
         {
             if (targetValue.equals(lastGuess))
@@ -130,13 +131,13 @@ public class PickANumberServlet extends ServletPortlet
         {
             targetValue = new Long(Math.round(Math.random() * 10.0));
             guessCount = new Long(0);
-            session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.PORTLET_SCOPE);
+            session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.APPLICATION_SCOPE);
         }
 
         // Get the guessCount, if it has not already been set.
         if (guessCount == null)
         {
-            guessCount = (Long)session.getAttribute(GUESS_COUNT_NAME, PortletSession.PORTLET_SCOPE);
+            guessCount = (Long)session.getAttribute(GUESS_COUNT_NAME, PortletSession.APPLICATION_SCOPE);
             if (guessCount == null)
             {
                 guessCount = new Long(0);
@@ -149,7 +150,12 @@ public class PickANumberServlet extends ServletPortlet
         
         try
         {
-            currentGuess = new Long(request.getParameter(GUESS_PARAMETER_NAME));
+            String result = request.getParameter(GUESS_PARAMETER_NAME);
+            // System.out.println("result = " + result);
+            if (result != null)
+            {
+                currentGuess = new Long(result);
+            }
         }
         catch (Exception e)
         {
@@ -157,9 +163,9 @@ public class PickANumberServlet extends ServletPortlet
         }
 
         // Update the attribute values
-        session.setAttribute( GUESS_COUNT_NAME, guessCount, PortletSession.PORTLET_SCOPE);
-        session.setAttribute( LAST_GUESS_NAME, currentGuess, PortletSession.PORTLET_SCOPE);
-        
+        session.setAttribute( GUESS_COUNT_NAME, guessCount, PortletSession.APPLICATION_SCOPE);
+        session.setAttribute( LAST_GUESS_NAME, currentGuess, PortletSession.APPLICATION_SCOPE);
+        actionResponse.setProperty(LAST_GUESS_NAME, currentGuess.toString());
         return;
     }
 }

@@ -104,6 +104,14 @@ limitations under the License.
   </portlet>
 
   <portlet id="PickANumberPortlet">
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/demo/simple/PickANumber.jsp</value>
+    </init-param>    
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/demo/simple/PickANumberHelp.jsp</value>
+    </init-param>          
     <portlet-name>PickANumberPortlet</portlet-name>
     <display-name>Pick a number game</display-name>
     <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
