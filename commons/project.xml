@@ -103,6 +103,15 @@ limitations under the License.
       <artifactId>struts-portlet-spi</artifactId>
       <version>0.1</version>
     </dependency>
+    
+    <dependency>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6-PATCHED</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    
     <!-- we need ojb because of the ManageableCollection interface -->
     <!--
     <dependency>
