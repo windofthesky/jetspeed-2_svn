@@ -61,7 +61,7 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
         if (renderRequest != null)
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
-        }
+        }        
 
         ctx.put("renderRequest", renderRequest);
         ctx.put("renderResponse", renderResponse);
@@ -72,6 +72,10 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
         ctx.put("windowStateNormal", WindowState.NORMAL);
         ctx.put("windowStateMinimized", WindowState.MINIMIZED);
         ctx.put("windowStateMaximized", WindowState.MAXIMIZED);
+        StringBuffer appRoot = new StringBuffer(request.getScheme()).append("://")
+                                   .append(request.getServerName()).append(":")
+                                   .append(request.getServerPort()).append(renderRequest.getContextPath());
+        ctx.put("appRoot", appRoot.toString());
         return super.handleRequest(request, response, ctx);
     }
 
@@ -130,5 +134,4 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
             }
         }
     }
-
 }
