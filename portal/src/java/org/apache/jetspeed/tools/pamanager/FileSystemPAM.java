@@ -781,7 +781,14 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             }
             catch (Exception e)
             {
-                log.info("Did not load extended metadata as it most likely does not exist.  " + e.toString());
+                if ( e instanceof FileNotFoundException )
+                {
+                    log.info("No extended metadata found.");
+                }
+                else
+                {
+                    log.warn("Failed to load existing metadata: " + e.toString());
+                }
             }
             finally
             {
