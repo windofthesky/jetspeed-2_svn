@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.DeploymentRegistration;
@@ -203,7 +203,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             // infuseClasspath();
 
             PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
-            Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
+            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
             portletName = portletDefinition.getName();
             Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
