@@ -22,14 +22,20 @@ import java.util.Locale;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * EmptyHttpServletResponseImpl
+ * EmptyHttpServletResponseWrapper
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class EmptyHttpServletResponseImpl implements HttpServletResponse {
+public class EmptyHttpServletResponseWrapper extends HttpServletResponseWrapper {
+    
+    public EmptyHttpServletResponseWrapper(HttpServletResponse response)
+    {
+        super(response);
+    }
 
     public void addCookie(Cookie cookie) {
     }

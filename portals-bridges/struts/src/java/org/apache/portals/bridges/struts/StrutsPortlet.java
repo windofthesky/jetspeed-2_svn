@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.portals.bridges.common.ServletContextProvider;
 import org.apache.portals.bridges.struts.config.StrutsPortletConfig;
-import org.apache.portals.bridges.struts.util.EmptyHttpServletResponseImpl;
+import org.apache.portals.bridges.struts.util.EmptyHttpServletResponseWrapper;
 
 /**
  * StrutsPortlet
@@ -332,7 +332,7 @@ public class StrutsPortlet extends GenericPortlet
             if (rd != null)
             {
                 if (actionRequest)
-                    res = new EmptyHttpServletResponseImpl();
+                    res = new EmptyHttpServletResponseWrapper(res);
                 if (path != null)
                     req.setAttribute(StrutsPortlet.PAGE_URL, path);
                 req.setAttribute(StrutsPortlet.REQUEST_TYPE, requestType);
