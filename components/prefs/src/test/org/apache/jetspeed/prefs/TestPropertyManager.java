@@ -25,6 +25,7 @@ import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.impl.PropertyException;
+import org.apache.jetspeed.prefs.om.Property;
 
 import org.picocontainer.MutablePicoContainer;
 
@@ -179,10 +180,10 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     {
         // Build a few property keys.
         Map propertyKeys = new HashMap();
-        propertyKeys.put("propertyName0", new Integer("0"));
-        propertyKeys.put("propertyName1", new Integer("1"));
-        propertyKeys.put("propertyName2", new Integer("2"));
-        propertyKeys.put("propertyName3", new Integer("3"));
+        propertyKeys.put("propertyName0", new Integer(Property.BOOLEAN_TYPE));
+        propertyKeys.put("propertyName1", new Integer(Property.LONG_TYPE));
+        propertyKeys.put("propertyName2", new Integer(Property.DOUBLE_TYPE));
+        propertyKeys.put("propertyName3", new Integer(Property.STRING_TYPE));
 
         return propertyKeys;
     }
