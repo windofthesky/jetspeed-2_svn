@@ -1,0 +1,660 @@
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.portals.applications.database;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.portals.applications.database.ActionParameter;
+import org.apache.portals.applications.database.BrowserIterator;
+import org.apache.portals.applications.database.DatabaseBrowserIterator;
+import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
+import org.apache.velocity.context.Context;
+
+/**
+ * DatabaseBrowserPortlet
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @version $Id$
+ */
+public class DatabaseBrowserPortlet extends GenericVelocityPortlet
+{
+
+    protected static final String SQL = "sql";
+
+    protected static final String POOLNAME = "poolname";
+
+    protected static final String START = "start";
+
+    protected static final String CUSTOMIZE_TEMPLATE = "customizeTemplate";
+
+    protected static final String WINDOW_SIZE = "windowSize";
+
+    protected static final String USER_OBJECT_NAMES = "user-object-names";
+
+    protected static final String USER_OBJECT_TYPES = "user-object-types";
+
+    protected static final String USER_OBJECTS = "user-objects";
+
+    protected static final String SQL_PARAM_PREFIX = "sqlparam";
+
+    protected static final String LINKS_READ = "linksRead";
+
+    protected static final String ROW_LINK = "rowLinks";
+
+    protected static final String TABLE_LINK = "tableLinks";
+
+    protected static final String ROW_LINK_IDS = "row-link-ids";
+
+    protected static final String ROW_LINK_TYPES = "row-link-types";
+
+    protected static final String ROW_LINK_TARGETS = "row-link-targets";
+
+    protected static final String TABLE_LINK_IDS = "table-link-ids";
+
+    protected static final String TABLE_LINK_TYPES = "table-link-types";
+
+    protected static final String TABLE_LINK_TARGETS = "table-link-targets";
+
+    protected static final String BROWSER_TABLE_SIZE = "tableSize";
+
+    protected static final String DATABASE_BROWSER_ACTION_KEY = "database_browser_action_key";
+
+    protected static final String BROWSER_ITERATOR = "table";
+
+    protected static final String BROWSER_TITLE_ITERATOR = "title";
+
+    protected static final String NEXT = "next";
+
+    protected static final String PREVIOUS = "prev";
+
+    protected static final String VELOCITY_NULL_ENTRY = "-";
+
+    // portlet entry Id
+    protected static final String PEID = "js_peid";
+
+    protected static final String SORT_COLUMN_NAME = "js_dbcolumn";
+
+    protected List sqlParameters = new Vector();
+
+    /**
+     * Static initialization of the logger for this class
+     */
+    protected Log log = LogFactory.getLog(DatabaseBrowserPortlet.class);
+
+    public void doView(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException
+    {
+        int resultSetSize, next, prev, windowSize;
+
+        response.setContentType("text/html");
+        
+        BrowserIterator iterator = getDatabaseBrowserIterator(request);
+        Context context = this.getContext(request);
+
+        String sortColName = request.getParameter(SORT_COLUMN_NAME);
+        int start = getStartVariable(request, START, sortColName, iterator);
+        PortletPreferences prefs = request.getPreferences();
+
+        windowSize = Integer.parseInt(prefs.getValue(WINDOW_SIZE, "10"));
+        next = start + windowSize;
+        prev = start - windowSize;
+
+        try
+        {
+            if (iterator == null)
+            {
+                String sql = getQueryString(request, context);
+                //System.out.println("buildNormalContext SQL: "+sql);
+                if (sql != null)
+                {
+                    readUserParameters(request, context);
+                    getRows(request, sql, windowSize);
+                    iterator = getDatabaseBrowserIterator(request);
+                } else
+                {
+                    log
+                            .info("The sql query is null, hence not generating the result set.");
+                }
+            } else
+            {
+                if (sortColName != null)
+                {
+                    iterator.sort(sortColName);
+                }
+                iterator.setTop(start);
+            }
+
+            readLinkParameters(request, context);
+
+            if (iterator != null)
+            {
+                resultSetSize = iterator.getResultSetSize();
+
+                if (next < resultSetSize)
+                {
+                    context.put(NEXT, String.valueOf(next));
+                }
+                if (prev <= resultSetSize && prev >= 0)
+                {
+                    context.put(PREVIOUS, String.valueOf(prev));
+                }
+
+                context.put(BROWSER_ITERATOR, iterator);
+                context.put(BROWSER_TITLE_ITERATOR, iterator
+                        .getResultSetTitleList());
+                context.put(BROWSER_TABLE_SIZE, new Integer(resultSetSize));
+
+                /*
+                 * System.out.println("buildNormalContext Sort column name=
+                 * "+sortColName); System.out.println("buildNormalContext
+                 * Iterator: "+iterator); System.out.println("buildNormalContext
+                 * Titles= "+iterator.getResultSetTitleList());
+                 * System.out.println("buildNormalContext
+                 * windowSize="+windowSize+" prev="+prev+ " next="+next+"
+                 * start="+start+" resultSetSize="+resultSetSize);
+                 */
+            }
+
+        } catch (Exception e)
+        {
+            // log the error msg
+            log.error("Exception", e);
+
+            /*
+             * TODO: error logging
+             * 
+             * rundata.setMessage("Error in Jetspeed Database Browser: " +
+             * e.toString()); rundata.setStackTrace(StringUtils.stackTrace(e),
+             * e);
+             * rundata.setScreenTemplate(JetspeedResources.getString("template.error","Error"));
+             */
+        }
+
+        super.doView(request, response);
+    }
+
+    public void doEdit(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException
+    {
+        response.setContentType("text/html");
+        doPreferencesEdit(request, response);
+    }
+
+    public void processAction(ActionRequest request, ActionResponse response) 
+    throws PortletException, IOException
+    {
+        if (request.getPortletMode() == PortletMode.EDIT)
+        {
+            processPreferencesAction(request, response);
+        }
+        else
+        {
+            String browserAction = request.getParameter("db.browser.action");
+            if (browserAction != null)
+            {
+                if (browserAction.equals("refresh"))
+                {
+                    clearDatabaseBrowserIterator(request);                    
+                }
+                String start = request.getParameter("start");
+                if (start != null)
+                {
+                    response.setRenderParameter("start", start);
+                }
+            }
+        }
+        
+    }
+    
+    /**
+     * Centralizes the calls to session - to retrieve the
+     * DatabaseBrowserIterator.
+     * 
+     * @param data
+     *            The turbine rundata context for this request.
+     *  
+     */
+    protected BrowserIterator getDatabaseBrowserIterator(PortletRequest request)
+    {
+        BrowserIterator iterator = (BrowserIterator) request
+                .getPortletSession().getAttribute(DATABASE_BROWSER_ACTION_KEY,
+                        PortletSession.PORTLET_SCOPE);
+        return iterator;
+    }
+
+    /**
+     * Centralizes the calls to session - to set
+     * the DatabaseBrowserIterator.
+     *
+     * @param data The turbine rundata context for this request.
+     * @param iterator.
+     *
+     */
+    protected void setDatabaseBrowserIterator(RenderRequest request,
+                                              BrowserIterator iterator)
+    {
+        request.getPortletSession().setAttribute(DATABASE_BROWSER_ACTION_KEY, iterator);
+    }
+    
+    /**
+     * Centralizes the calls to session - to clear
+     * the DatabaseBrowserIterator from the temp storage.
+     *
+     * @param data The turbine rundata context for this request.
+     *
+     */
+    protected void clearDatabaseBrowserIterator(PortletRequest request)
+    {
+        request.getPortletSession().removeAttribute(DATABASE_BROWSER_ACTION_KEY);
+    }
+    
+    protected int getStartVariable(RenderRequest request, String attrName,
+            String sortColName, BrowserIterator iterator)
+    {
+        int start = -1;
+        // if users want to overwrite how the sorting affects the cursor for
+        // the window
+        if (sortColName != null) start = getStartIndex();
+
+        if (start < 0)
+        {
+            //fallback routine for start
+            String startStr = request.getParameter(attrName);
+            if (startStr != null && startStr.length() > 0)
+            {
+                start = Integer.parseInt(startStr);
+            } else if (start == -1 && iterator != null)
+            {
+                start = iterator.getTop();
+            }
+
+            if (start < 0) start = 0;
+        }
+        return start;
+    }
+
+    /**
+     * to be used if sorting behavior to be overwritten
+     */
+    protected int getStartIndex()
+    {
+        return 0;
+    }
+
+    /**
+     * This method returns the sql from the getQuery method which can be
+     * overwritten according to the needs of the application. If the getQuery()
+     * returns null, then it gets the value from the psml file. If the psml
+     * value is null then it returns the value from the xreg file.
+     *  
+     */
+    protected String getQueryString(RenderRequest request, Context context)
+    {
+        String sql = getQueryString(request);
+        if (null == sql)
+        {
+            sql = getPreference(request, SQL, null);
+        }
+        return sql;
+    }
+    
+    public String getQueryString(RenderRequest request)
+    {
+        return null;
+    }
+
+    protected String getPreference(RenderRequest request,
+            String attrName, String attrDefValue)
+    {        
+        return request.getPreferences().getValue(attrName, attrDefValue);
+    }
+
+    protected void readUserParameters(RenderRequest request, Context context)
+    {
+        List userObjectList;
+        Object userObjRead = request.getPortletSession().getAttribute(
+                USER_OBJECTS, PortletSession.PORTLET_SCOPE);
+        if (userObjRead != null)
+        {
+            context.put(USER_OBJECTS, (List) userObjRead);
+            //System.out.println("userObjectListSize: "+
+            // ((List)userObjRead).size());
+        } else
+        {
+            /*
+             * TODO: implement user parameters
+             * 
+             * String userObjTypes=
+             * getParameterFromRegistry(portlet,USER_OBJECT_TYPES,null); String
+             * userObjNames=
+             * getParameterFromRegistry(portlet,USER_OBJECT_NAMES,null); if(
+             * userObjTypes != null && userObjTypes.length() > 0 ) {
+             * userObjectList = new ArrayList(); int userObjectIndex = 0;
+             * StringTokenizer tokenizer1 = new StringTokenizer(userObjNames,
+             * ","); StringTokenizer tokenizer3 = new
+             * StringTokenizer(userObjTypes, ",");
+             * while(tokenizer1.hasMoreTokens() && tokenizer3.hasMoreTokens()) {
+             * userObjectList.add(userObjectIndex, new
+             * ActionParameter(tokenizer1.nextToken(), null,
+             * tokenizer3.nextToken())); userObjectIndex++; }
+             * context.put(USER_OBJECTS, userObjectList);
+             * setParameterToTemp(portlet, rundata, USER_OBJECTS,
+             * userObjectList); //System.out.println("readLink:
+             * userObjectTypesListSize: "+userObjectList.size()); }
+             */
+        }
+    }
+
+    protected void readLinkParameters(RenderRequest request, Context context)
+    {
+        // TODO: implement me
+    }
+
+    /**
+     * Execute the sql statement as specified by the user or the default, and
+     * store the resultSet in a vector.
+     * 
+     * @param sql
+     *            The sql statement to be executed.
+     * @param data
+     *            The turbine rundata context for this request.
+     */
+    protected void getRows(RenderRequest request, String sql, int windowSize)
+            throws Exception
+    {
+        List resultSetList = new ArrayList();
+        List resultSetTitleList = new ArrayList();
+        List resultSetTypeList = new ArrayList();
+        
+        Connection con = null;
+        PreparedStatement selectStmt = null;
+        ResultSet rs = null;
+        
+        PortletSession session = request.getPortletSession();
+        try
+        {
+            String poolname = getPreference(request, POOLNAME, null);
+            if (poolname == null || poolname.length() == 0)
+            {
+                con = getConnection();
+            } 
+            else
+            {
+                con = getConnection(poolname);
+            }
+            selectStmt = con.prepareStatement(sql);
+
+            readSqlParameters(request);
+            Iterator it = sqlParameters.iterator();
+            int ix = 0;
+            while (it.hasNext())
+            {
+                ix++;
+                Object object = it.next();
+                selectStmt.setObject(ix, object);
+            }
+            rs = selectStmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnNum = rsmd.getColumnCount();
+            /*
+             * get the user object types to be displayed and add them to the
+             * title list as well as the result set list
+             */
+            List userObjList = (List) session.getAttribute(USER_OBJECTS);
+            int userObjListSize = 0;
+            if (userObjList != null)
+            {
+                userObjListSize = userObjList.size();
+            }
+            //System.out.println("User List Size = "+ userObjListSize);
+            /*
+             * the array columnDisplayed maintains a boolean value for each
+             * column index. Only the columns that are set to true are added to
+             * the resultSetList, resultSetTitleList and resultSetTypeList.
+             */
+            boolean[] columnDisplayed = new boolean[columnNum + userObjListSize];
+
+            /*
+             * this for loop constructs the columnDisplayed array as well as
+             * adds to the resultSetTitleList and resultSetTypeList
+             */
+            for (int i = 1; i <= columnNum; i++)
+            {
+                int type = rsmd.getColumnType(i);
+                if (!((type == Types.BLOB) || (type == Types.CLOB)
+                        || (type == Types.BINARY)
+                        || (type == Types.LONGVARBINARY) || (type == Types.VARBINARY)))
+                {
+                    resultSetTitleList.add(rsmd.getColumnName(i));
+                    resultSetTypeList.add(String.valueOf(type));
+                    columnDisplayed[i - 1] = true;
+                } else
+                {
+                    columnDisplayed[i - 1] = false;
+                }
+            }
+
+            for (int i = columnNum; i < columnNum + userObjListSize; i++)
+            {
+                ActionParameter usrObj = (ActionParameter) userObjList.get(i
+                        - columnNum);
+                resultSetTitleList.add(usrObj.getName());
+                resultSetTypeList.add(usrObj.getType());
+                columnDisplayed[i] = true;
+                //System.out.println("User List Name = "+ usrObj.getName()+"
+                // Type = "+usrObj.getType());
+            }
+            /*
+             * this while loop adds each row to the resultSetList
+             */
+            int index = 0;
+            while (rs.next())
+            {
+                List row = new ArrayList(columnNum);
+
+                for (int i = 1; i <= columnNum; i++)
+                {
+                    if (columnDisplayed[i - 1])
+                    {
+                        Object obj = rs.getObject(i);
+                        if (obj == null)
+                        {
+                            obj = VELOCITY_NULL_ENTRY;
+                        }
+                        row.add(obj);
+                    }
+                }
+                for (int i = columnNum; i < columnNum + userObjListSize; i++)
+                {
+                    ActionParameter usrObj = (ActionParameter) userObjList
+                            .get(i - columnNum);
+                    if (columnDisplayed[i])
+                    {
+                        Class c = Class.forName(usrObj.getType());
+                        row.add(c.newInstance());
+                        populate(index, i, row);
+                    }
+                }
+
+                if (filter(row, request))
+                {
+                    continue;
+                }
+
+                resultSetList.add(row);
+                index++;
+            }
+            BrowserIterator iterator = new DatabaseBrowserIterator(
+                    resultSetList, resultSetTitleList, resultSetTypeList,
+                    windowSize);
+            setDatabaseBrowserIterator(request, iterator);
+
+        } catch (SQLException e)
+        {
+            throw e;
+        } finally
+        {
+            try
+            {
+                if (null != selectStmt) selectStmt.close();
+                if (null != rs) rs.close();
+                if (null != con) //closes con also
+                {
+                    closeConnection(con);
+                }
+
+            } catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+    }
+
+    /**
+     * This method should be overwritten every time the user object needs to be
+     * populated with some user specific constraints. As an example if the user wanted
+     * to track the parent of an object based on some calculation per row, it could be
+     * done here.
+     *
+     */
+    public void populate(int rowIndex, int columnIndex, List row)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.modules.actions.portlets.browser.BrowserQuery#filter(java.util.List, RunData)
+     */
+    public boolean filter(List row, RenderRequest request)
+    {
+        return false;
+    }
+    
+    protected void readSqlParameters(RenderRequest request)
+    {
+        List sqlParamList = null;
+
+        int i = 1;
+        while (true)
+        {
+            String param = getPreference(request, SQL_PARAM_PREFIX + i, null);
+            if (param == null)
+            {
+                break;
+            }
+            else
+            {
+                if (sqlParamList == null)
+                {
+                    sqlParamList = new ArrayList();
+                }
+                sqlParamList.add(param);
+            }
+            i++;
+        }
+
+        if (sqlParamList != null)
+        {
+            setSQLParameters(sqlParamList);
+        }
+    }
+
+    public void setSQLParameters(List parameters)
+    {
+        this.sqlParameters = parameters;
+    }
+
+    /*
+     * Connection Management: TODO: rethink this, current impl is a quick prototype
+     */
+    
+    private boolean driverRegistered = false;
+    
+    public Connection getConnection()
+    {
+        Connection con = null;
+        try 
+        {
+            if (driverRegistered == false)
+            {
+                Class driverClass = Class.forName("com.mysql.jdbc.Driver");
+                Driver driver = (Driver)driverClass.newInstance();
+                DriverManager.registerDriver(driver);
+                driverRegistered = true;
+            }
+            con = DriverManager.getConnection("jdbc:mysql://j2-server/j2", "j2", "digital");
+        }
+        catch (ClassNotFoundException cnfe) 
+        {
+            log.error("Cant get class for JDBC driver", cnfe);            
+        }
+        catch (InstantiationException ie) 
+        {
+            log.error("Cant instantiate class for JDBC driver", ie);            
+        }
+        catch (IllegalAccessException iae) 
+        {
+            log.error("Illegal Access for JDBC driver", iae);            
+        }        
+        catch (SQLException se) 
+        {
+            log.error("Cant get connection", se);
+        }         
+       return con; 
+    }
+    
+    public Connection getConnection(String poolName)
+    {
+        return null;
+    }
+    
+    public void closeConnection(Connection con)
+    {
+        try
+        {
+            con.close();
+        }
+        catch (SQLException e) 
+        {
+            log.error("Cant close connection", e);
+        }         
+        
+    }
+}

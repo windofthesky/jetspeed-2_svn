@@ -594,5 +594,44 @@ limitations under the License.
         </portlet-info>
     </portlet>
 
+  <portlet>
+    <description>Database Portlet</description>
+    <portlet-name>DatabasePortlet</portlet-name>
+    <display-name>Database Portlet</display-name>
+    <portlet-class>org.apache.portals.applications.database.DatabaseBrowserPortlet</portlet-class>
+    <init-param>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/database-view.vm</value>
+     </init-param>   
+    <init-param>
+		<name>EditPage</name>
+			<value>/WEB-INF/view/edit-prefs.vm</value>
+     </init-param>   
+    <init-param>
+		<name>HelpPage</name>
+			<value>/WEB-INF/view/database-help.vm</value>
+     </init-param>   
+    <expiration-cache>0</expiration-cache>            
+    <supports>
+      <mime-type>text/html</mime-type>                
+      <portlet-mode>VIEW</portlet-mode>                
+      <portlet-mode>EDIT</portlet-mode>                
+      <portlet-mode>HELP</portlet-mode>                
+    </supports>                                
+    <supported-locale>en</supported-locale>                
+    <supported-locale>de</supported-locale>            
+    <resource-bundle>org.apache.portals.applications.database.resources.DatabaseBrowser</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>windowSize</name>                    
+        <value>8</value>    
+      </preference>                               		
+      <preference>                            
+        <name>sql</name>                    
+        <value>select * from SECURITY_PRINCIPAL</value>    
+      </preference>                               
+    </portlet-preferences>        
+  </portlet>
+
 </portlet-app>
 
