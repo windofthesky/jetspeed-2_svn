@@ -48,7 +48,7 @@
 11. Portlets and decorators (controls) can now be completely hidden if user doesn't have secure access to the portlet.
 </li>
 <li>
-12. GenericMVC portlet now can render in parallel with other portlet on the page
+12. GenericMVC portlet now can render in parallel with other portlets on the page
 </li>
 <li>
 13. Added filtering on portlet registry browser
