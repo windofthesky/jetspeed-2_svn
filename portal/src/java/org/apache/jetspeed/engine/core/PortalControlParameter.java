@@ -25,9 +25,12 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.aggregator.PortletWindowFactory;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
@@ -229,7 +232,6 @@ public class PortalControlParameter
                 if(fragment instanceof PortletFragment) {
                     return ((PortletFragment)fragment).getPortletWindow();
                 }
-                */
 
                 StringTokenizer idTokenizer = new StringTokenizer(id, KEY_DELIMITER);
                 String portletName = idTokenizer.nextToken();
@@ -243,9 +245,23 @@ public class PortalControlParameter
                 {
                     throw new JetspeedException("Failed to load: " + portletName + " from registry");
                 }
+                    */
 
+                // TODO: deprecate this class and reimplment as a NavigationalState component
+
+                PortletWindowAccessor windowAccessor = 
+                    (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+                portletWindow = windowAccessor.getPortletWindow(id);
+                /*
+                PortletEntityAccessComponent entityAccess = 
+                    (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
+                ObjectID entityId = JetspeedObjectID.createFromString(id);
+                
+                PortletEntity entity = entityAccess.getPortletEntity(entityId);
+                portletWindow = entityAccess.getPortletWindow(entity);
+                
                 portletWindow = PortletWindowFactory.getWindow(portletDefinition, entityName);
-
+                    */
             }
         }
 

@@ -25,11 +25,10 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.aggregator.PortletWindowFactory;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
@@ -38,7 +37,6 @@ import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -191,41 +189,19 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
     protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
+        
+        // TODO: make renderer a component, assemble entity accessor in constructor        
         PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
-        // DST: PortletEntity portletEntity = entityAccess.getPortletEntity(oid);
-        PortletEntity portletEntity = null;
-        PortletWindow portletWindow = null;
-
-        if (portletEntity==null)
+        
+        // TODO: make renderer a component, assemble window accessor in constructor
+        PortletWindowAccessor windowAccess = (PortletWindowAccessor)Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
+        
+        PortletWindow portletWindow = windowAccess.getPortletWindow(fragment);
+        if (portletWindow == null)
         {
-			PortletRegistryComponent registry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-            PortletDefinition portletDefinition = registry.getPortletDefinitionByUniqueName(fragment.getName());
-            if (portletDefinition == null)
-            {
-                log.error("Failed to load: " + fragment.getName() + " from registry");
-                throw new UnknownPortletDefinitionException("Could not locate portlet definition \""+fragment.getName()+"\".");
-            }
-            portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
-
- //TODO: DST: Why the hell are we storing an entity on a getter?
- 
-            // fix issues, persist entity and update fragment ID
-            try
-            {
-                entityAccess.storePortletEntity(portletWindow.getPortletEntity());
-            }
-            catch (Exception e)
-            {
-                log.error("Error persisting new portletEntity", e);
-            }
-
-            fragment.setId(portletWindow.getId().toString());
-            oid = portletWindow.getId();
+            throw new UnknownPortletDefinitionException("Portlet Window creation failed for fragment: " + fragment.getId() + ", " + fragment.getName());
         }
-        else
-        {
-            portletWindow = PortletWindowFactory.getWindow(portletEntity, oid);
-        }
+        PortletEntity portletEntity = portletWindow.getPortletEntity();
 
         return portletWindow;
     }

@@ -187,10 +187,6 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      */
     public Object clone()
         throws java.lang.CloneNotSupportedException;
-    
-    public void setEntityId(String id);
-    
-    public String getEntityId();
- 
+     
     
 }

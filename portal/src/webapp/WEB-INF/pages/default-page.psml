@@ -5,24 +5,23 @@
      portlet-decorator="jetspeed"
   />
   <title>My First PSML Page</title>
-  <fragment id="f001" entity="2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="pe001" entity="3" type="portlet" name="HW_App::HelloPortlet">
+  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="pe002" 
-     entity="5" 
+    <fragment id="5" 
      type="portlet" 
      name="HW_App::PreferencePortlet"
      decorator="metal">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe003" entity="9" type="portlet" name="HW_App::CustomerList">
+    <fragment id="9" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe004" entity="13" type="portlet" name="PAM::PortletApplicationBrowser">
+    <fragment id="13" type="portlet" name="PAM::PortletApplicationBrowser">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

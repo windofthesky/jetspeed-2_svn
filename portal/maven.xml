@@ -5,7 +5,7 @@
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager'/> 
+<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/> 
                                                   
  <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />

@@ -6,20 +6,20 @@
      portlet-decorator="portletstd"
   />
   <title>My First PSML Page</title>
-  <fragment id="f001" entity="1" type="layout" name="jetspeed::TwoColumns">
-    <fragment id="pe001" entity="3" type="portlet" name="HW_App::HelloPortlet">
+  <fragment id="1" type="layout" name="jetspeed::TwoColumns">
+    <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe002" entity="4" type="portlet" name="PAM::PortletApplicationBrowser">
+    <fragment id="4" type="portlet" name="PAM::PortletApplicationBrowser">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe003" entity="5" type="portlet" name="HW_App::PreferencePortlet">
+    <fragment id="5" type="portlet" name="HW_App::PreferencePortlet">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe004" entity="9" type="portlet" name="HW_App::CustomerList">
+    <fragment id="9" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

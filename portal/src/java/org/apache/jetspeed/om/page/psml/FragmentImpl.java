@@ -42,20 +42,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private List properties = new Vector();
 
-    private String entityId;
-
     public FragmentImpl()
     {}
-
-    public String getEntityId()
-    {
-        return entityId;
-    }
-
-    public void setEntityId(String id)
-    {
-        this.entityId = id;
-    }
 
     public String getType()
     {

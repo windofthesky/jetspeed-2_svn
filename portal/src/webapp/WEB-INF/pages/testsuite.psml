@@ -5,8 +5,8 @@
      portlet-decorator="portletstd"
   />
   <title>Test Suite Page</title>
-  <fragment id="f002" entity="2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="pe066" entity='18' type="portlet" name="TestPortlet1">
+  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="18" type="portlet" name="TestPortlet1">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>    

@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -42,8 +43,8 @@ public class PortletWindowFactory
         }
         
         PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
-        PortletEntity portletEntity = entityAccess.getPortletEntity(portletDefinition, portletName);
-
+        // PortletEntity portletEntity = entityAccess.getPortletEntity(portletDefinition, portletName);
+        PortletEntity portletEntity = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(portletName));
 
         // TODO: This needs to be changed to support multiple windows per entity
         PortletWindow portletWindow = portletEntity.getPortletWindowList().get(portletEntity.getId());

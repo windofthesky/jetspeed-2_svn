@@ -13,7 +13,10 @@ import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.Jetspeed
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
-
+import org.apache.jetspeed.container.window.PortletWindowAccessor
+import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent
 
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
@@ -90,5 +93,11 @@ container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parame
 //
 //container.registerComponentInstance(Capabilities, new JetspeedCapabilities(pContainer))
 container.registerComponentImplementation(Capabilities, JetspeedCapabilities, new Parameter[] {new ComponentParameter(PersistenceStoreContainer)} )
+
+//
+// Portlet Window component
+//
+container.registerComponentImplementation(PortletWindowAccessor, PortletWindowAccessorImpl, 
+    new Parameter[] {new ComponentParameter(PortletEntityAccessComponent), new ComponentParameter(PortletRegistryComponent)} )
 
 return container
