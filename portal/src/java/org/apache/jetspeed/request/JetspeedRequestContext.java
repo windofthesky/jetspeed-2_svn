@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
@@ -40,7 +41,6 @@ import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
@@ -288,7 +288,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletRequest getRequestForWindow( PortletWindow window )
     {
-        ServletRequestFactory reqFac = (ServletRequestFactory) FactoryManager
+        ServletRequestFactory reqFac = (ServletRequestFactory) Jetspeed.getEngine()
                 .getFactory(javax.servlet.http.HttpServletRequest.class);
         HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
         
@@ -317,7 +317,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletResponse getResponseForWindow( PortletWindow window )
     {
-        ServletResponseFactory rspFac = (ServletResponseFactory) FactoryManager.getFactory(HttpServletResponse.class);
+        ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(HttpServletResponse.class);
         HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
         return wrappedResponse;
     }

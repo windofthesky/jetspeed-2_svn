@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.components.ComponentManager;
@@ -38,7 +39,7 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class PicoEngine extends AbstractEngine implements Engine
 {
-    protected ComponentManager initComponents( Configuration configuration )
+    protected ComponentManager initComponents( Configuration configuration, ServletConfig servletConfig )
             throws IOException, ClassNotFoundException, NamingException
     {
         String applicationRoot = getRealPath("/");

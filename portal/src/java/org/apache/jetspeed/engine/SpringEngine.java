@@ -20,10 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
+import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 
 /**
  * <p>
@@ -52,12 +54,13 @@ public class SpringEngine extends AbstractEngine
      * @throws ClassNotFoundException
      * @throws NamingException
      */
-    protected ComponentManager initComponents( Configuration configuration ) throws IOException, ClassNotFoundException,
+    protected ComponentManager initComponents( Configuration configuration, ServletConfig servletConfig ) throws IOException, ClassNotFoundException,
             NamingException
     {
         
-         String relativeApplicationRoot = getRealPath("/");
-         String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();
+        ServletConfigFactoryBean.setServletConfig(servletConfig);
+        String relativeApplicationRoot = getRealPath("/");
+        String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();
         // String absoluteApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();
         System.setProperty("applicationRoot", absApplicationRoot);
         ArrayList configs = new ArrayList();
@@ -67,7 +70,8 @@ public class SpringEngine extends AbstractEngine
                     "/WEB-INF/assembly/pooled-datasource-support.xml"));
         }
         configs.add("file:///"+absApplicationRoot + configuration.getString("jetspeed.spring.xml", "/WEB-INF/assembly/jetspeed-spring.xml"));
-       
+        configs.add("file:///"+absApplicationRoot + configuration.getString("pluto-factories.xml", "/WEB-INF/assembly/pluto-factories.xml"));
+        
         ComponentManager cm = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
         
         return cm;

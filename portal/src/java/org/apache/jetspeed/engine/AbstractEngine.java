@@ -42,13 +42,13 @@ import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
 import org.apache.jetspeed.pipeline.descriptor.XmlReader;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.factory.FactoryManager;
-import org.apache.jetspeed.services.information.InformationProviderManager;
-import org.apache.jetspeed.services.information.InformationProviderServiceService;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.factory.Factory;
+import org.apache.pluto.services.ContainerService;
+import org.apache.pluto.services.factory.FactoryManagerService;
 import org.apache.pluto.services.information.InformationProviderService;
 
 
@@ -141,7 +141,7 @@ public abstract class AbstractEngine implements Engine
             //
             // bootstrap the initable services
             //
-            componentManager = initComponents(configuration);
+            componentManager = initComponents(configuration, config);
             log.info("Components initialization complete");
             initServices();
             log.info("Service initialization complete");
@@ -196,12 +196,9 @@ public abstract class AbstractEngine implements Engine
                     .getComponent(PortletContainer.class);
             JetspeedContainerServices environment = new JetspeedContainerServices();
             environment.addService(ContainerLogAdaptor.getService());
-            environment.addService(FactoryManager.getService());
-            InformationProviderServiceService ips = InformationProviderManager
-                    .getService();
-            ips.init(config, null);
+            environment.addServiceForClass(FactoryManagerService.class, this);
             environment.addServiceForClass(InformationProviderService.class,
-                    ips);
+                    (ContainerService)getComponentManager().getComponent(InformationProviderService.class));
             //TODO !!! Pluto has changed this siganture There is now a
             // container unique id string and Properties.
             // WE need to figure what these are really for.
@@ -339,7 +336,7 @@ public abstract class AbstractEngine implements Engine
      * @throws ClassNotFoundException
      * @throws NamingException
      */
-    protected abstract ComponentManager initComponents( Configuration configuration )
+    protected abstract ComponentManager initComponents( Configuration configuration, ServletConfig servletConfig )
     throws IOException, ClassNotFoundException, NamingException;
 
     private void initServices() throws CPSInitializationException
@@ -482,5 +479,17 @@ public abstract class AbstractEngine implements Engine
     {
         return this.componentManager;
     }
-
+    /**
+     * <p>
+     * getFactory
+     * </p>
+     *
+     * @see org.apache.pluto.services.factory.FactoryManagerService#getFactory(java.lang.Class)
+     * @param theClass
+     * @return
+     */
+    public Factory getFactory( Class theClass )
+    {        
+        return (Factory) getComponentManager().getComponent(theClass);
+    }
 }
