@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app id="struts-demo" version="1.0">
+  <portlet id="StrutsPortletDemo">
+    <init-param>
+      <name>ServletContextProvider</name>
+      <value>org.apache.jetspeed.portlet.ServletContextProviderImpl</value>
+    </init-param>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/Welcome.do</value>
+    </init-param>
+    <init-param>
+      <name>HelpPage</name>
+      <value>/Tour.do</value>
+    </init-param>
+    <portlet-name>StrutsPortletDemo</portlet-name>
+    <display-name>Struts Portlet Demo</display-name>
+    <description>This is the struts MailReader portlet demo</description>
+    <portlet-class>org.apache.portals.bridges.struts.StrutsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>StrutsPortletTitle</title>
+      <short-title>This is the short title</short-title>
+      <keywords>Struts</keywords>
+    </portlet-info>
+  </portlet>
+</portlet-app>
+
