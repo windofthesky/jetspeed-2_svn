@@ -16,12 +16,14 @@
 package org.apache.jetspeed.page;
 
 // Java imports
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
@@ -109,6 +111,13 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
         assertTrue(testpage.getDefaultSkin().equals("test-skin"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
+        
+        GenericMetadata md = testpage.getMetadata();
+        Collection descriptions = md.getFields("description");
+        Collection subjects = md.getFields("subject");
+        assertEquals(2, descriptions.size());
+        assertEquals(1, subjects.size());
+        
 
         Fragment root = testpage.getRootFragment();
         assertNotNull(root);
@@ -157,6 +166,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
         assertTrue(f.getFragments().size() == 2);
     }
 
+    
     public void testRegisterPage() throws Exception
     {
         PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
