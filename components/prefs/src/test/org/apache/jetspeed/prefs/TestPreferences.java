@@ -72,6 +72,10 @@ public class TestPreferences extends PersistenceSupportedTestCase
         provider = new PreferencesProviderImpl(persistenceStore,
                 "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         provider.start();
+        // Make sure we are starting with a clean slate
+        clearChildren(Preferences.userRoot());
+        clearChildren(Preferences.systemRoot());
+        
     }
 
     /**
@@ -374,6 +378,15 @@ public class TestPreferences extends PersistenceSupportedTestCase
         catch (BackingStoreException bse)
         {
             System.out.println("BackingStoreException" + bse);
+        }
+    }
+    
+    protected void clearChildren(Preferences node) throws Exception
+    {
+        String[] names = node.childrenNames();
+        for(int i=0; i < names.length; i++)
+        {
+            node.node(names[i]).removeNode();
         }
     }
 
