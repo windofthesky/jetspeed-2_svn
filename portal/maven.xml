@@ -246,15 +246,31 @@
     <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
     <attainGoal name="db.create" />
   </goal>
+  
+  <goal name="db.test.create.server">
+    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
+    <attainGoal name="db.create" />
+  </goal>
 
   <goal name="db.test.drop">
     <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
     <attainGoal name="db.drop" />
   </goal>
+  
+  <goal name="db.test.drop.server">
+    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
+    <attainGoal name="db.drop" />
+  </goal>
+  
 
   <goal name="db.test.recreate">
     <attainGoal name="db.test.drop" />
     <attainGoal name="db.test.create" />
+  </goal>
+  
+   <goal name="db.test.recreate.server">
+    <attainGoal name="db.test.drop.server" />
+    <attainGoal name="db.test.create.server" />
   </goal>
 
   <!-- ================================================================ -->
