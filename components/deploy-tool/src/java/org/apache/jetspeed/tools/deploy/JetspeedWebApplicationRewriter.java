@@ -115,9 +115,10 @@ public class JetspeedWebApplicationRewriter
         
             Object jetspeedServlet = XPath.selectSingleNode(document, JETSPEED_SERVLET_XPATH);
             Object jetspeedServletMapping = XPath.selectSingleNode(document, JETSPEED_SERVLET_MAPPING_XPATH);
-            if (document.getRootElement().getChildren().size() == 0)
+            if (!document.hasRootElement())
             {
-                throw new Exception("Source web.xml has no content!!!");
+                root = new Element("web-app");
+                document.setRootElement(root);
             }
         
             if (jetspeedServlet == null)
