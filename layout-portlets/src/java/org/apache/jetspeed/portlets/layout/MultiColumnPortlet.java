@@ -53,14 +53,20 @@ public class MultiColumnPortlet extends LayoutPortlet
     private String colSizes = null;
     private String portletName = null;
     private String layoutType;
-
+    private List columnSizes = null;
     protected PageManager pm;
 
     public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
         this.numColumns = Integer.parseInt(config.getInitParameter(PARAM_NUM_COLUMN));
+        if (0 == numColumns)
+            numColumns = 1;
         this.colSizes = config.getInitParameter(PARAM_COLUMN_SIZES);
+        if (colSizes != null || colSizes.trim().length() > 0)
+        {
+            columnSizes = getCellSizes(colSizes);            
+        }
         this.portletName = config.getPortletName();
         this.layoutType = config.getInitParameter("layoutType");
         pm = (PageManager) Jetspeed.getComponentManager().getComponent(PageManager.class);
@@ -108,12 +114,14 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         request.setAttribute("columns", columns);
         request.setAttribute("numberOfColumns", new Integer(numColumns));
+        request.setAttribute("columnSizes", columnSizes);        
 
         // now invoke the JSP associated with this portlet
         super.doView(request, response);
         
         request.removeAttribute("columns");
         request.removeAttribute("numberOfColumns");
+        request.removeAttribute("columnSizes");
     }
 
     protected List[] buildColumns( Fragment f, int colNum, RenderRequest request ) throws PortletException

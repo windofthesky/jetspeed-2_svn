@@ -15,6 +15,7 @@ limitations under the License.
 *#
 
 #set($table = $jetspeed.columns)
+#set($sizes = $jetspeed.columnSizes)
 
 #set($myPage = $jetspeed.page)
 
@@ -74,8 +75,18 @@ limitations under the License.
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
+     #set ($sizeIndex = 0)
      #foreach($entry in $table)
-    <td valign="top">
+        #if ($sizes)
+          #if ($sizeIndex < $sizes.size())
+             <td valign='top' name='alexi' width='$sizes.get($sizeIndex)'/>
+          #else
+	       <td valign="top">          
+          #end
+        #else
+       <td  valign="top">
+       #end
+       #set ($sizeIndex = $sizeIndex + 1)     
        <table width="100%" class="portal-layout-column">
        #foreach($f in $entry)       
         <tr>

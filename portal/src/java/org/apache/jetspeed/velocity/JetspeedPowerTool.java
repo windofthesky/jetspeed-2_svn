@@ -91,6 +91,7 @@ public class JetspeedPowerTool
     protected static final String RENDER_RESPONSE_ATTR = "javax.portlet.response";
     protected static final String RENDER_REQUEST_ATTR = "javax.portlet.request";
     private static final String COLUMNS_ATTR = "columns";
+    private static final String COLUMN_SIZES = "columnSizes";
 
     private RenderRequest renderRequest;
 
@@ -264,6 +265,15 @@ public class JetspeedPowerTool
         return (List[]) renderRequest.getAttribute(COLUMNS_ATTR);
     }
 
+    public List getColumnSizes()
+    {
+        checkState();
+        Object o = renderRequest.getAttribute(COLUMN_SIZES);
+        if (o == null)
+            return null;
+        return (List) renderRequest.getAttribute(COLUMN_SIZES);
+    }
+    
     /**
      * 
      * @return
