@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.DublinCore;
+import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -98,7 +99,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     protected long webApplicationId;
     
     /** DublinCore property */
-    private DublinCore dublinCore;
+    private DublinCore dublinCore = new DublinCoreImpl();
     /** PK of this DublinCore */
     protected long dublinCoreId;
 
