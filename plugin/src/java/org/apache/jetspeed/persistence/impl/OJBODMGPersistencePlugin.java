@@ -97,6 +97,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
      */
     public void beginTransaction() throws TransactionStateException
     {
+    	super.beginTransaction();
         if (TLtx == null || TLtx.get() == null)
         {
             if (TLtx == null)
@@ -144,6 +145,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             }
 
             tx.commit();
+			super.commitTransaction();
         }
         catch (Exception e)
         {
@@ -156,8 +158,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             if (tx != null)
             {
                 TLtx.set(null);
-
-            }
+            }            
         }
 
     }
@@ -234,6 +235,10 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             }
             throw new TransactionStateException("Unable to rollback transaction " + tx + " " + e.toString(), e);
         }
+        finally
+        {
+        	super.rollbackTransaction();
+        }
     }
 
     protected void initODMG() throws InitializationException
@@ -255,10 +260,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             log.error(message, e);
             throw new InitializationException(message, e);
         }
-        finally
-        {
-            releaseBroker(broker);
-        }
+  
 
     }
 
@@ -310,6 +312,33 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
         	throw new  TransactionStateException("No transaction in progress");
         }
         
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#makePersistent(java.lang.Object)
+     */
+    public void makePersistent(Object obj) throws TransactionStateException
+    {
+		Transaction tx = null;
+		if (TLtx == null || TLtx.get() == null)
+		{
+			throw new TransactionStateException("You can not make objects persistent before a Transaction has been started.");
+		}
+		else
+		{
+			try
+			{
+				tx = (Transaction) TLtx.get();
+				// db.makePersistent(obj);
+				tx.lock(obj, Transaction.WRITE);
+			}
+			catch (Exception e)
+			{
+				throw new TransactionStateException("Unable to make object persistent " + e.toString(), e);
+			}
+		}
+        
+
     }
 
 }

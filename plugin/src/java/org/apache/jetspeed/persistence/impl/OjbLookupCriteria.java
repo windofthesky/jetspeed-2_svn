@@ -166,9 +166,9 @@ public class OjbLookupCriteria implements LookupCriteria
     /**
      * @see org.apache.ojb.broker.query.Criteria#addOrCriteria(org.apache.ojb.broker.query.Criteria)
      */
-    public void addOrCriteria(Criteria arg0)
+    public void addOrCriteria(LookupCriteria arg0)
     {
-        ojbCriteria.addOrCriteria(arg0);
+        ojbCriteria.addOrCriteria(((OjbLookupCriteria)arg0).getOjbCriteria());
     }
 
     /**

@@ -54,8 +54,10 @@
 package org.apache.jetspeed.persistence.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.persistence.TransactionStateException;
@@ -72,6 +74,10 @@ import org.apache.ojb.broker.PersistenceBroker;
 public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
 {
 
+    protected ThreadLocal TLdeletes = new ThreadLocal();
+    protected ThreadLocal TLupdates = new ThreadLocal();
+    protected ThreadLocal TLpb = new ThreadLocal();
+
     /**
      * @see org.apache.jetspeed.services.perisistence.impl.AbstractOJBPersistencePlugin#postInit()
      */
@@ -85,8 +91,8 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void beginTransaction() throws TransactionStateException
     {
-        throw new UnsupportedOperationException("Not Implemented!");
-        
+        super.beginTransaction();
+        getBroker().beginTransaction();
     }
 
     /**
@@ -94,7 +100,31 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void commitTransaction() throws TransactionStateException
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        PersistenceBroker pb = getBroker();
+
+		Collection updates = (Collection) TLupdates.get();
+        if (updates != null)
+        {
+            Iterator itr = updates.iterator();
+            while (itr.hasNext())
+            {
+                pb.store(itr.next());
+            }
+        }
+
+		Collection deletes = (Collection) TLdeletes.get();
+        if (deletes != null)
+        {
+            Iterator itr = deletes.iterator();
+            while (itr.hasNext())
+            {
+                pb.delete(itr.next());
+            }
+        }
+
+        pb.commitTransaction();
+		super.commitTransaction();
+        clearTx();
 
     }
 
@@ -103,7 +133,8 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public Object markDirty(Object obj) throws TransactionStateException
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        prepareForUpdate(obj);
+        return obj;
     }
 
     /**
@@ -111,8 +142,14 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void prepareForDelete(Object obj) throws TransactionStateException
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        HashSet deletes = (HashSet) TLdeletes.get();
+        if (deletes == null)
+        {
+            deletes = new HashSet();
+            TLdeletes.set(deletes);
+        }
 
+        deletes.add(obj);
     }
 
     /**
@@ -120,7 +157,14 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void prepareForUpdate(Object obj) throws TransactionStateException
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        List updates = (List) TLupdates.get();
+        if (updates == null)
+        {
+            updates = new ArrayList();
+            TLupdates.set(updates);
+        }
+
+        updates.add(obj);
 
     }
 
@@ -129,7 +173,39 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void rollbackTransaction() throws TransactionStateException
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        PersistenceBroker pb = getBroker();
+        try
+        {
+            pb.abortTransaction();
+        }
+        finally
+        {
+        	super.rollbackTransaction();
+            clearTx();
+        }
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#makePersistent(java.lang.Object)
+     */
+    public void makePersistent(Object obj) throws TransactionStateException
+    {
+        prepareForUpdate(obj);
+    }
+
+    protected void clearTx()
+    {
+		Collection updates = (Collection) TLupdates.get();
+        if (updates != null)
+        {
+            updates.clear();
+        }
+		Collection deletes = (Collection) TLdeletes.get();
+        if (deletes != null)
+        {
+            deletes.clear();
+        }
 
     }
 

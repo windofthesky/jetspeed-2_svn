@@ -58,10 +58,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,12 +76,17 @@ import org.apache.fulcrum.InitializationException;
 
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 import org.apache.jetspeed.services.plugin.PluginInitializationException;
 import org.apache.jetspeed.services.plugin.util.CauseExtractor;
-import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PBKey;
+import org.apache.ojb.broker.PBLifeCycleEvent;
+import org.apache.ojb.broker.PBLifeCycleListener;
+import org.apache.ojb.broker.PBStateEvent;
+import org.apache.ojb.broker.PBStateListener;
 import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.ojb.broker.PersistenceBrokerFactory;
 import org.apache.ojb.broker.accesslayer.LookupException;
 import org.apache.ojb.broker.metadata.JdbcConnectionDescriptor;
@@ -85,13 +97,25 @@ import org.apache.ojb.broker.query.QueryFactory;
 /**
  * This is a implementation of  <code>PersistencePlugin</code> 
  * that is backed by <a href="http://db.apache.org/ojb">ObjectRelationalBridge (OJB)</a>
+ * <p>
+ *   This plugin is self monitoring in that there is no need for client applications to worry
+ *   about explicitly doing a <code>PersistenceBroker.close()</code> the plug in itself
+ *   will monitor and reclaim inactive PersistenceBrokers.  This also allows to have a single
+ *   <code>PersistnceBroker</code> per thread, for that entire threads lifetime without having
+ *   to worry about resource leakage.
+ * </p>
+ * <p>
+ *   Configuring PersistenceBroker life times:<br\>
+ *   <code>broker.ttl</code> The time the broker will remain open from the last operation defaults to 15000 millis.<br/>
+ *   <code>broker.check.interval</code> How often we check all registered PersistenceBrokers.  Defaults to 10000 millis. 
+ * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
+public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin, PBLifeCycleListener, PBStateListener
 {
     protected static final String RESOLVE_DB_ALIAS = "resolveDbAlias";
-    private static final Log log = LogFactory.getLog(AbstractOJBPersistencePlugin.class);
+    private static final Log log = LogFactory.getLog("org.apache.jetspeed.persistence");
 
     protected static final JetspeedOJBRuntimeException failure(String message, Throwable e)
     {
@@ -101,9 +125,11 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
 
     protected PluginConfiguration configuration;
 
-    private HashMap connectionToPBMap;
+    protected String overrideDefaultJcd;
 
-    private String overrideDefaultJcd;
+    protected Map brokerActivity = new HashMap();
+
+    protected ThreadLocal TLpb = new ThreadLocal();
 
     /**
      * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#deleteByQuery(java.lang.Object)
@@ -115,18 +141,14 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         {
             Query useQuery = (Query) query;
             pb = getBroker();
-            
+
             pb.deleteByQuery(useQuery);
         }
         catch (Throwable e)
         {
             throw failure("Failed to delete by query.", e);
         }
-        finally
-        {
-            // always release the broker
-            releaseBroker(pb);
-        }
+
     }
 
     /**
@@ -161,23 +183,29 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
      */
     public PersistenceBroker getBroker()
     {
-        if (overrideDefaultJcd != null)
+
+        PersistenceBroker pb = (PersistenceBroker) TLpb.get();
+        if (pb == null || pb.isClosed())
         {
-            return getBroker(overrideDefaultJcd);
-        }
-        else
-        {
-            return PersistenceBrokerFactory.defaultPersistenceBroker();
+            if (overrideDefaultJcd != null)
+            {
+                log.info("overriding default JDBC Connection Descriptor with " + overrideDefaultJcd);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(new PBKey(overrideDefaultJcd));
+            }
+            else
+            {
+                pb = PersistenceBrokerFactory.defaultPersistenceBroker();
+            }
+            // Add the plugin as a listener, temporary is fine
+            pb.addListener(this);
+            // Set current thread's broker
+            TLpb.set(pb);
+            // Set up this broker with a last active time stamp
+            brokerActivity.put(pb, new Date());
         }
 
-    }
+        return pb;
 
-    /**
-     * @see org.apache.jetspeed.services.ojb.OJBService#getBroker(java.lang.String)
-     */
-    public PersistenceBroker getBroker(String aliasName)
-    {
-        return PersistenceBrokerFactory.createPersistenceBroker(new PBKey(aliasName));
     }
 
     /**
@@ -203,14 +231,9 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
             throw failure("Failed to retreive Collection", e);
         }
-        finally
-        {
-            // always release the broker
-            releaseBroker(pb);
-        }
+
     }
 
     /**
@@ -227,14 +250,9 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     public String getDbAlias() throws UnsupportedOperationException
     {
         PersistenceBroker pb = getBroker();
-        try
-        {
-            return pb.serviceConnectionManager().getConnectionDescriptor().getDbAlias();
-        }
-        finally
-        {
-            releaseBroker(pb);
-        }
+
+        return pb.serviceConnectionManager().getConnectionDescriptor().getDbAlias();
+
     }
 
     /**
@@ -261,11 +279,6 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         {
             throw failure("Failed to retreive Object.", e);
         }
-        finally
-        {
-            // always release the broker
-            releaseBroker(pb);
-        }
     }
 
     /**
@@ -278,13 +291,10 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         {
             // Retrieve the SQL Connection assoc. with this broker instance
             Connection connection = pb.serviceConnectionManager().getConnection();
-            // record the connection to PB relationship so it can be released correctly
-            connectionToPBMap.put(connection, pb);
             return connection;
         }
         catch (LookupException e)
         {
-            releaseBroker(pb);
             throw failure("Failed to retreive a SQL connection object.", e);
         }
 
@@ -308,9 +318,9 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     {
 
         this.configuration = configuration;
-        connectionToPBMap = new HashMap();
 
         String correctPath = configuration.getPathResolver().getRealPath(configuration.getProperty("OJB.path") + File.separator);
+
         File ojbPropsLocation = new File(correctPath);
         URL ojbUrl = null;
         if (ojbPropsLocation.exists())
@@ -349,24 +359,18 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         {
             // run through and test whether or not we were able
             // to get a pb instance.
-            PersistenceBroker pb = null;
-            if (overrideDefaultJcd != null)
-            {
-                log.info("overriding default JDBC Connection Descriptor with " + overrideDefaultJcd);
-                pb = getBroker(overrideDefaultJcd);
-            }
-            else
-            {
-                pb = getBroker();
-            }
+
+            PersistenceBroker pb = getBroker();
 
             // This helps us support RDBMSes that have file system based aliases
             // like HSQL in stand-alone mode
             boolean resolveAlias = new Boolean(configuration.getProperty(RESOLVE_DB_ALIAS, "false")).booleanValue();
+            JdbcConnectionDescriptor jcd = pb.serviceConnectionManager().getConnectionDescriptor();
+
             if (resolveAlias)
             {
                 log.info("Resolving DB alias to absolute path.");
-                JdbcConnectionDescriptor jcd = pb.serviceConnectionManager().getConnectionDescriptor();
+
                 if (jcd.getDbAlias() != null)
                 {
                     String truePath = configuration.getPathResolver().getRealPath(jcd.getDbAlias());
@@ -375,7 +379,34 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
                 }
             }
 
-            pb.close();
+            String protocol = jcd.getProtocol();
+            String subProtocol = jcd.getSubProtocol();
+            String testalias = jcd.getDbAlias();
+            String jdbcDriver = jcd.getDriver();
+            String jdbcURL = protocol + ":" + subProtocol + ":" + testalias;
+
+            // if we are using a datasource, this will not be available
+
+            if (jdbcDriver != null)
+            {
+
+                Class.forName(jdbcDriver);
+
+                Connection c = DriverManager.getConnection(jdbcURL, jcd.getUserName(), jcd.getPassWord());
+                c.close();
+            }
+            else if (jcd.getDatasourceName() != null)
+            {
+//				InitialContext ctx = new InitialContext();
+//                DataSource ds = (DataSource) ctx.lookup(jcd.getDatasourceName() );
+//                if(ds == null)
+//                {
+//                	throw new IllegalStateException("Unable to retreive the DataSource: "+jcd.getDatasourceName() );
+//                }
+            }
+
+            // We should keep the broker around until we are finished			
+            // pb.close();
 
             // Allow subclasses to init their own stuff
             postInit();
@@ -384,11 +415,23 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         }
         catch (Exception e)
         {
-            String cause = CauseExtractor.getCompositeMessage(e);
-            String message = "Unable create a ojb persistence plugin.  Cause: " + cause;
+
+            String message = "Unable create a ojb persistence plugin: " + e.toString();
             log.fatal(message, e);
             throw new PluginInitializationException(message, e);
         }
+
+        // default to 15 seconds of inactivity, after which the broker is recalimed to the pool
+        int ttl = Integer.parseInt(configuration.getProperty("broker.ttl", "15000"));
+        log.info("PersistenceBroker Time To Live set to " + ttl);
+        int checkInterval = Integer.parseInt(configuration.getProperty("broker.check.interval", "10000"));
+        log.info("PersistenceBrokers will be checked for inactivity every " + (checkInterval / 1000) + " seconds.");
+
+        InactivityMonitor monitor = new InactivityMonitor(ttl, checkInterval);
+        monitor.setDaemon(true);
+        monitor.setPriority(Thread.MIN_PRIORITY);
+        monitor.setContextClassLoader(Thread.currentThread().getContextClassLoader());
+        monitor.start();
 
     }
 
@@ -408,15 +451,37 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
      */
     protected abstract void postInit() throws InitializationException;
 
+    //    protected void releaseCurrentPB()    
+    //    {
+    //        PersistenceBroker pb = (PersistenceBroker) TLpb.get();
+    //        if (pb != null)
+    //        {
+    //            TLpb.set(null);
+    //            if (!pb.isClosed())
+    //            {
+    //                pb.close();
+    //            }
+    //        }
+    //    }
+
     /**
-     * @see org.apache.jetspeed.services.ojb.OJBService#releaseBroker(org.apache.ojb.broker.PersistenceBroker)
+     * Updates the last time the broker was accessed
+     * @param pb
      */
-    public void releaseBroker(PersistenceBroker broker)
+    protected void touchBroker(PersistenceBroker pb)
     
     {
-        if (broker != null)
+        Date lastAccessed = (Date) brokerActivity.get(pb);
+        if (lastAccessed != null)
         {
-            broker.close();
+            //update
+            log.debug("Updating PersistenceBroker " + pb + " last access stamp to now");
+            lastAccessed.setTime(System.currentTimeMillis());
+        }
+        else
+        {
+            // Set up this broker with a last active time stamp
+            brokerActivity.put(pb, new Date());
         }
     }
 
@@ -425,15 +490,11 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
      */
     public void releaseSqlConnection(Connection sqlConnection)
     {
-        PersistenceBroker pb = (PersistenceBroker) connectionToPBMap.get(sqlConnection);
+        PersistenceBroker pb = getBroker();
         if (pb != null)
         {
             // release the assoc. SQL Connection through the broker
             pb.serviceConnectionManager().releaseConnection();
-            // relase the broker back to the pool
-            releaseBroker(pb);
-            // remove mapping
-            connectionToPBMap.remove(sqlConnection);
         }
 
     }
@@ -446,14 +507,8 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     {
 
         PersistenceBroker pb = getBroker();
-        try
-        {
-            pb.removeFromCache(obj);
-        }
-        finally
-        {
-            releaseBroker(pb);
-        }
+
+        pb.removeFromCache(obj);
 
     }
 
@@ -464,16 +519,9 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     {
         PersistenceBroker pb = getBroker();
 
-        try
-        {
-            JdbcConnectionDescriptor jcd = pb.serviceConnectionManager().getConnectionDescriptor();
-            jcd.setDbAlias(dbAlias);
-            log.info("DB Alias changed to " + dbAlias + " for the " + configuration.getName() + " plugin.");
-        }
-        finally
-        {
-            releaseBroker(pb);
-        }
+        JdbcConnectionDescriptor jcd = pb.serviceConnectionManager().getConnectionDescriptor();
+        jcd.setDbAlias(dbAlias);
+        log.info("DB Alias changed to " + dbAlias + " for the " + configuration.getName() + " plugin.");
 
     }
 
@@ -498,8 +546,226 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
      */
     public void clearCache()
     {
-        PersistenceBroker broker = getBroker();
-        broker.clearCache();
+        getBroker().clearCache();
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#beginTransaction()
+     */
+    public void beginTransaction() throws TransactionStateException
+    {
+        getBroker();
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#commitTransaction()
+     */
+    public void commitTransaction() throws TransactionStateException
+    {
+        // nothin
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#rollbackTransaction()
+     */
+    public void rollbackTransaction() throws TransactionStateException
+    {
+        // nothin
+    }
+
+    protected class InactivityMonitor extends Thread
+    {
+        int ttl;
+        int checkInterval;
+        boolean started = true;
+
+        protected InactivityMonitor(int ttl, int checkInterval)
+        {
+            this.ttl = ttl;
+            this.checkInterval = checkInterval;
+            setName("Persistence plugin inactivity monitor [TTL:" + ttl + "] [interval:" + checkInterval + "]");
+        }
+
+        /**
+         * @see java.lang.Runnable#run()
+         */
+        public void run()
+        {
+            while (started)
+            {
+                Iterator keys = brokerActivity.keySet().iterator();
+                while (keys.hasNext())
+                {
+                    PersistenceBroker pb = (PersistenceBroker) keys.next();
+                    Date last = (Date) brokerActivity.get(pb);
+                    Date now = new Date();
+                    if ((now.getTime() - last.getTime()) > ttl)
+                    {
+                        log.debug("PersistenceBroker " + pb + " has exceeded its TTL, attemting to close.");
+                        // broker should now be considered available
+                        try
+                        {
+                            pb.close();
+                            log.debug("PersistenceBroker successfully closed.");
+                        }
+                        catch (Throwable e1)
+                        {
+                            log.error("Unable to close PersistenceBroker " + pb, e1);
+                        }
+                    }
+                }
+
+                try
+                {
+                    sleep(checkInterval);
+                }
+                catch (InterruptedException e)
+                {
+
+                }
+            }
+        }
+
+        public void safeStop()
+        {
+            started = false;
+        }
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#afterDelete(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void afterDelete(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#afterInsert(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void afterInsert(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#afterLookup(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void afterLookup(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#afterUpdate(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void afterUpdate(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#beforeDelete(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void beforeDelete(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#beforeInsert(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void beforeInsert(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBLifeCycleListener#beforeUpdate(org.apache.ojb.broker.PBLifeCycleEvent)
+     */
+    public void beforeUpdate(PBLifeCycleEvent arg0) throws PersistenceBrokerException
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#afterBegin(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void afterBegin(PBStateEvent arg0)
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#afterCommit(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void afterCommit(PBStateEvent arg0)
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#afterOpen(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void afterOpen(PBStateEvent arg0)
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#afterRollback(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void afterRollback(PBStateEvent arg0)
+    {
+        // all touches happen "before" the event
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#beforeBegin(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void beforeBegin(PBStateEvent arg0)
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#beforeClose(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void beforeClose(PBStateEvent arg0)
+    {
+        // not needed at this point
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#beforeCommit(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void beforeCommit(PBStateEvent arg0)
+    {
+        touchBroker(arg0.getTriggeringBroker());
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.PBStateListener#beforeRollback(org.apache.ojb.broker.PBStateEvent)
+     */
+    public void beforeRollback(PBStateEvent arg0)
+    {
+        touchBroker(arg0.getTriggeringBroker());
 
     }
 
