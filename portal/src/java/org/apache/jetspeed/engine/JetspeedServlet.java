@@ -127,7 +127,14 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
 
                 console.info("JetspeedServlet attempting to create the  portlet engine...");
-                engine = Jetspeed.createEngine(properties, applicationRoot, config);
+                String engineClassName = config.getInitParameter("engine");
+                if(engineClassName == null)
+                {
+                    throw new IllegalStateException("You must define the engine init-parameter org.apache.jetspeed.engine.JetspeedServlet servlet.");
+                }
+                Class engineClass = Class.forName(engineClassName);
+                
+                engine = Jetspeed.createEngine(properties, applicationRoot, config, engineClass);
                 if (engine != null)
                 {
                     console.info("JetspeedServlet successfuly created the portal Engine. " + engine);
