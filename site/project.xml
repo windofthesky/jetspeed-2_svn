@@ -17,7 +17,8 @@ limitations under the License.
 <project>
   <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
-
+  <id>site</id>
+  <name>Jetspeed 2 Site</name>
   <dependencies>
     <dependency>
       <id>commons-jelly+tags-velocity</id>

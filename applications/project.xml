@@ -19,6 +19,7 @@ limitations under the License.
 -->
 <project>
   <extend>${basedir}/../project.xml</extend>
+  <id>BAD</id>
   <name>This should not be built</name>
   <dependencies>
 	 <dependency>
