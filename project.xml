@@ -20,24 +20,26 @@ limitations under the License.
   <name>Jetspeed 2 Enterprise Portal</name>
   <groupId>jetspeed2</groupId>
   <currentVersion>2.0-a1-dev</currentVersion>
+
   <organization>
     <name>Apache Software Foundation</name>
-    <url>http://jakarta.apache.org/</url>
-    <logo>/images/jakarta-logo.gif</logo>
+    <url>http://portals.apache.org/</url>
+    <logo>http://portals.apache.org/images/apache-portals.gif</logo>
   </organization>
+
   <inceptionYear>1999</inceptionYear>
   <package>org.apache.jetspeed</package>
-  <logo>/images/blue-logo.gif</logo>
+  <logo></logo>
 
   <!-- Gump integration -->
   <gumpRepositoryId></gumpRepositoryId>
 
   <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
   <shortDescription>Enterprise Information Portal</shortDescription>
-  <url>http://jakarta.apache.org/jetspeed</url>
+  <url>http://portals.apache.org/~paulsp/jetspeed-2</url>
   <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
-  <siteAddress>http://jakarta.apache.org/jetspeed</siteAddress>
-  <siteDirectory></siteDirectory>
+  <siteAddress>portals.apache.org</siteAddress>
+  <siteDirectory>public_html/jetspeed-2</siteDirectory>
   <distributionDirectory></distributionDirectory>
 
   <repository>                 
@@ -142,7 +144,9 @@ limitations under the License.
   <build>
     <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
     <sourceDirectory>src/java</sourceDirectory>
-
-
   </build>
+  <reports>
+    <report>maven-tasklist-plugin</report>
+  </reports>
+
 </project>
