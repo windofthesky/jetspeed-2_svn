@@ -388,7 +388,13 @@ public class DublinCoreImpl implements DublinCore
      * @see org.apache.jetspeed.om.common.DublinCore#addSubject(java.util.Locale, java.lang.String)
      */
     public void addSubject(Locale locale, String subject) {
-        // TODO Auto-generated method stub
+        if (subjects == null)
+        {
+            subjects = new ArrayList();
+        }
+        //descCollWrapper.setInnerCollection(descriptions);
+        
+        addLocalizedFieldToCollection(subjects, locale, subject);
         
     }
     
