@@ -24,11 +24,6 @@ NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/persistence.cont
 // Preferences
 //
 
-NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/prefs.container.groovy", container)
-
-//
-// Do not forget to get component instance.
-//
-//container.getComponentInstance(PreferencesProvider);
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/prefs/containers/prefs.container.groovy", container)
 
 return container

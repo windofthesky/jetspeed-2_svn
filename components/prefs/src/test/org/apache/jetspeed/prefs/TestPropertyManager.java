@@ -93,7 +93,7 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPropertyManager.class);
-        suite.setScript("org/apache/jetspeed/containers/test.prefs.groovy");
+        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
         return suite;
     }
 
