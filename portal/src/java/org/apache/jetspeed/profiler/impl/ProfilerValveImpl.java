@@ -21,9 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
