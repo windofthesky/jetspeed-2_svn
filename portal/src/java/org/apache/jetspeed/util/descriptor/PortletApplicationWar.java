@@ -39,8 +39,11 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.impl.VFSClassLoader;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.services.JetspeedPortletServices;
+import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
@@ -232,19 +235,31 @@ public class PortletApplicationWar
     public MutablePortletApplication createPortletApp() throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
+        PortletServices cps = JetspeedPortletServices.getSingleton();
+        
         try
         {
             PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
             portletApp = paDescriptor.createPortletApplication();
             // validate(portletApplication);
-
+            Reader extMetaDataXml = null;
             try
             {
-                Reader extMetaDataXml = getReader(EXTENDED_PORTLET_XML_PATH);
+                extMetaDataXml = getReader(EXTENDED_PORTLET_XML_PATH);
                 if (extMetaDataXml != null)
                 {
                     ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
                     extMetaData.load();
+                    // validate services
+                    Iterator services = extMetaData.portletApp.getJetspeedServices().iterator();
+                    while (services.hasNext())
+                    {
+                        JetspeedServiceReference jsr = (JetspeedServiceReference)services.next();
+                        if (null == cps.getService(jsr.getName()))
+                        {
+                            throw new PortletApplicationException("Invalid Portlet Service Requested: " + jsr.getName());
+                        }                        
+                    }
                 }
             }
             catch (IOException e)
@@ -254,6 +269,13 @@ public class PortletApplicationWar
             catch (MetaDataException e)
             {
                 log.warn("Failed to load existing metadata.  " + e.toString(), e);
+            }
+            finally
+            {
+                if (null != extMetaDataXml)
+                {
+                    extMetaDataXml.close();
+                }
             }
 
             return portletApp;
