@@ -182,6 +182,14 @@ limitations under the License.
       </properties>
     </dependency> 
     <dependency>
+      <id>portals-bridges-velocity</id>
+      <groupId>portals-bridges</groupId>
+      <version>0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>    
+    <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
       <version>1.0.1-rc1</version>
