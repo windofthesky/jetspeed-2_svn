@@ -11,29 +11,17 @@ import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
 import org.apache.jetspeed.page.PageManager
 import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.Jetspeed
-import org.apache.jetspeed.components.jndi.JNDIComponent
-import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
-import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
-import org.apache.jetspeed.components.datasource.DatasourceComponent
-import org.apache.commons.pool.impl.GenericObjectPool
-import org.apache.jetspeed.components.persistence.store.ojb.OJBTypeIntializer
-// import org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl
-import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
-import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
 
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent
-
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
 
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler
 import org.apache.jetspeed.capability.Capabilities
 import org.apache.jetspeed.capability.impl.JetspeedCapabilities
+
+import org.apache.jetspeed.components.util.NanoQuickAssembler
        
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
@@ -41,6 +29,7 @@ import org.apache.jetspeed.capability.impl.JetspeedCapabilities
 // instead of the requested type!  This causes AssignabilityExceptions
 // in pico.  You need to use Class.forName() instead.
 
+ClassLoader cl = Thread.currentThread().getContextClassLoader()
 
 
 applicationRoot = Jetspeed.getRealPath("/")
@@ -78,68 +67,25 @@ fileCache = new FileCache(scanRate, cacheSize)
 pageManager = new CastorXmlPageManager(idgenerator, fileCache, root)
 container.registerComponentInstance(PageManager, pageManager)
 
-// This JNDI component helps us publish the datasource
-Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
-Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
-container.registerComponentImplementation(jndiClass, tyrexJndiClass)
+// RDBMS Datasource and JNDI registration
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/rdbms.container.groovy", container)
 
-// Create a datasource based on the HSQL server we just created
-Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
-String url = System.getProperty("org.apache.jetspeed.database.url")
-String driver = System.getProperty("org.apache.jetspeed.database.driver")
-String user = System.getProperty("org.apache.jetspeed.database.user")
-String password = System.getProperty("org.apache.jetspeed.database.password")
+// Persistence Store
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/persistence.container.groovy", container)
 
-// Only create a datasource if the properties can be found
-if(url != null)
-{
-	container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
-}
-
-
-//
-// Persistence component
-//
-
-PersistenceContainer pContainer = new DefaultPersistenceStoreContainer(15000, 10000)
-
-// OJBTypeIntializer ojbBootstrap = new OJBTypeIntializer(resourceUtil, "WEB-INF/conf/ojb", "OJB.properties", null)
-
-// pContainer.registerComponentInstance(ojbBootstrap)
-
-
-// ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", OTMStoreClass, new Parameter[] {new ConstantParameter("jetspeed")})
-ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", PBStore, new Parameter[] {new ConstantParameter("jetspeed")})
-
-pContainer.registerComponent(ca)
-
-Class pContainerClass = Class.forName("org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer")
-
-container.registerComponentInstance(pContainerClass, pContainer);
-
-//
-// Portlet Registry
-//
-
-Class registryClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent")
-Class registryImplClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl")
-
-
-// Parameter[] regParams = new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")}
-container.registerComponentImplementation(registryClass, registryImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
-
-Class eaClass = Class.forName("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent")
-Class eaImplClass = Class.forName("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl")
-container.registerComponentImplementation(eaClass, eaImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
+// Portlet Registry and Entity Access
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/registry.container.groovy", container)
 
 //
 // Profiler
 //
-container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer, pageManager))
+// container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer, pageManager))
+container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ComponentParameter(PageManager)} )
 
 //
 // Capabilities
 //
-container.registerComponentInstance(Capabilities, new JetspeedCapabilities(pContainer))
+//container.registerComponentInstance(Capabilities, new JetspeedCapabilities(pContainer))
+container.registerComponentImplementation(Capabilities, JetspeedCapabilities, new Parameter[] {new ComponentParameter(PersistenceStoreContainer)} )
 
 return container
