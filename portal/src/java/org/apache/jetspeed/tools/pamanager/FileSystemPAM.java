@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.channels.FileChannel;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
@@ -921,7 +922,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     }
 
     /**
-     * deleteFile - move and deep file delete utility
+     * deleteFile - move and delete deep file utility
      *
      * @param file
      * @param useTemp
@@ -933,14 +934,72 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         {
             if (useTemp)
             {
+                // move to temp and delete
                 File delete = new File(tempDirectory, file.getName() + "-move-to-delete-" + getUniqueId());
                 if (file.renameTo(delete))
                 {
+                    // delete deep
                     return (new DirectoryHelper(delete)).remove();
                 }
             }
+            // delete deep in place
             return (new DirectoryHelper(file)).remove();
         }
         return file.delete();
+    }
+
+    /**
+     * moveFile - move or copy deep file utility
+     *
+     * @param fromFile
+     * @param toFile
+     */
+    protected boolean moveFile(File fromFile, File toFile)
+    {
+        // move directories if possible, otherwise copy and delete 
+        if (!fromFile.renameTo(toFile))
+        {
+            return (copyFile(fromFile, toFile) && deleteFile(fromFile, false));
+        }
+        return true;
+    }
+
+    /**
+     * copyFile - copy deep file utility
+     *
+     * @param fromFile
+     * @param toFile
+     */
+    protected boolean copyFile(File fromFile, File toFile)
+    {
+        // delete destination and copy if possible
+        deleteFile(toFile, false);
+        if (!toFile.exists())
+        {
+            try
+            {
+                if (fromFile.isDirectory())
+                {
+                    // copy directory deep
+                    (new DirectoryHelper(toFile)).copyFrom(fromFile);
+                }
+                else
+                {
+                    // make destination directory and copy single file
+                    toFile.getParentFile().mkdirs();
+                    toFile.createNewFile();
+                    FileChannel src = new FileInputStream(fromFile).getChannel();
+                    FileChannel dst = new FileOutputStream(toFile).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
+                return true;
+            }
+            catch (IOException ioe)
+            {
+            }
+        }
+        return false;
     }
 }
