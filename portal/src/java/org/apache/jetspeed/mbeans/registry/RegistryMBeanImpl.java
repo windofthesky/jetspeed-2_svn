@@ -59,9 +59,9 @@ public class RegistryMBeanImpl implements RegistryMBean
      */
     public List getPortlets()
     {
-        PortletRegistry regsitry =
+        PortletRegistry registry =
             (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        Collection portlets = regsitry.getAllPortletDefinitions();
+        Collection portlets = registry.getAllPortletDefinitions();
         ArrayList list = new ArrayList(portlets.size());
         Iterator itr = portlets.iterator();
         while (itr.hasNext())
