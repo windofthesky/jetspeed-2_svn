@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.applications.database;
+package org.apache.portals.gems.browser;
 
 import java.io.Serializable;
 

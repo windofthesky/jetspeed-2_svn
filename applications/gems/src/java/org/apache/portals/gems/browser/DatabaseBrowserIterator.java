@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.applications.database;
+package org.apache.portals.gems.browser;
 
 import java.util.List;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class DatabaseBrowserIterator implements BrowserIterator
     /**
      * Static initialization of the logger for this class
      */
-    protected Log log = LogFactory.getLog(DatabaseBrowserIterator.class);
+    transient protected Log log = LogFactory.getLog(DatabaseBrowserIterator.class);
 
     private static final String VELOCITY_NULL_ENTRY = "-";
 
