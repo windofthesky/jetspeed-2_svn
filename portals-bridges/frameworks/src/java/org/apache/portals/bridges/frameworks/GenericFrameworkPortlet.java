@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -31,6 +32,7 @@ import javax.portlet.PortletModeException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletSession;
 import javax.portlet.ReadOnlyException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -66,6 +68,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     private static final String PREFS_SUFFIX = ".prefs";
 
+    private static final String SESSION_ERROR_MESSAGES = "portals.bridges.framework.errors";
     /**
      * Action signature for calling velocity portlet actions
      */
@@ -129,9 +132,12 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         String forward = null;
 
         // (3) validate the bean
-        if (model.validate(bean, view))
+        ResourceBundle bundle = this.getPortletConfig().getResourceBundle(request.getLocale());
+        Map errors = model.validate(bean, view, bundle);
+        if (errors.isEmpty())
         {
-
+            request.getPortletSession().removeAttribute(SESSION_ERROR_MESSAGES, PortletSession.PORTLET_SCOPE);
+            
             // (4) execute the velocity action
             String action = request.getParameter(FrameworkConstants.BRIDGES_ACTION);
             if (null == action)
@@ -154,6 +160,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         else
         {
             // failed validation
+            request.getPortletSession().setAttribute(SESSION_ERROR_MESSAGES, errors, PortletSession.PORTLET_SCOPE);
             forward = model.getForward(view, ForwardConstants.FAILURE);
         }
 
@@ -317,7 +324,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultViewPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, (String)null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String) null);
                 }
                 else
                 {
@@ -329,10 +336,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultEditPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, (String)null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String) null);
                 }
                 else
-                {                
+                {
                     response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
                 }
             }
@@ -340,7 +347,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 if (view == null || view.equals(this.getDefaultHelpPage()))
                 {
-                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, (String)null);                    
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String) null);
                 }
                 else
                 {
@@ -355,10 +362,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultViewPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, (String)null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String) null);
                 }
                 else
-                {                                
+                {
                     response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
                 }
             }
@@ -367,10 +374,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultEditPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, (String)null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String) null);
                 }
                 else
-                {                                
+                {
                     response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
                 }
             }
@@ -378,10 +385,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 if (view == null || view.equals(this.getDefaultHelpPage()))
                 {
-                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, (String)null);                    
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String) null);
                 }
                 else
-                {                
+                {
                     response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
                 }
             }
@@ -513,8 +520,13 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         }
 
         putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
+        Map errors = (Map)request.getPortletSession().getAttribute(SESSION_ERROR_MESSAGES, PortletSession.PORTLET_SCOPE);
+        if (errors != null)
+        {            
+            putRequestVariable(request, "ERRORS", errors);
+        }
         request.setAttribute(FrameworkConstants.MODEL_TOOL, model);
-        
+
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher(template);
         rd.include(request, response);

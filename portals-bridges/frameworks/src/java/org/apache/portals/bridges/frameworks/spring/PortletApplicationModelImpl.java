@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -32,7 +33,6 @@ import org.apache.commons.validator.ValidatorResults;
 import org.apache.portals.bridges.frameworks.model.ModelBean;
 import org.apache.portals.bridges.frameworks.model.PortletApplicationModel;
 import org.apache.portals.bridges.frameworks.spring.ModelBeanImpl;
-import org.apache.portals.bridges.frameworks.spring.validation.ValidationSupport;
 
 
 /**
@@ -242,25 +242,29 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
         return prefs;        
     }
 
-    public boolean validate(Object bean, String view)
+    public Map validate(Object bean, String view, ResourceBundle bundle)
     throws PortletException
     {
+        Map result = new HashMap();
         if (validations == null)
         {
-            return true; // no validation configured
+            return result; // no validation configured
         }
         // Get the bean name from the bean-view map
         String validatorFormName = (String)viewValidatorMap.get(view);
         if (validatorFormName == null)
         {
-            return true; // no validation for this bean
+            return result; // no validation for this bean
         }
 
-        // TODO: do we need to create a validator per request?
         Validator validator = new Validator(validations, validatorFormName);
 
         // Tell the validator which bean to validate against.
         validator.setParameter(Validator.BEAN_PARAM, bean);
+        
+        // Parameters used by our validators
+        validator.setParameter("java.util.Map", result);
+        validator.setParameter("java.util.ResourceBundle", bundle);
         
         ValidatorResults results = null;
                 
@@ -270,16 +274,15 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
             results = validator.validate();
             if (results.isEmpty())
             {
-                return true;
+                return result;
             }
-            ValidationSupport.printResults(bean, results, validations, validatorFormName);
         }
         catch (ValidatorException e)
         {
             throw new PortletException("Error in processing validation: ", e);            
         }
         
-        return false;        
+        return result;        
     }
     
     public String getForward(String view, String status)

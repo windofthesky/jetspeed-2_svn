@@ -16,6 +16,7 @@
 package org.apache.portals.bridges.frameworks.model;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -40,7 +41,7 @@ public interface PortletApplicationModel
     
     Map createPrefsBean(ModelBean mb, Map prefs);
     
-    boolean validate(Object bean, String view)
+    Map validate(Object bean, String view, ResourceBundle bundle)
     throws PortletException;
         
     String getForward(String view, String status);
