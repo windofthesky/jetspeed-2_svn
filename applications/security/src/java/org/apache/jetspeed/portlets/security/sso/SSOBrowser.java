@@ -77,8 +77,8 @@ public class SSOBrowser extends BrowserPortlet
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Site");
-            resultSetTitleList.add("Url");
+            resultSetTitleList.add(0, "Url");
+            resultSetTitleList.add(1, "Site");
 
             //subPopulate(rundata, qResult, repo, folder, null);
 
