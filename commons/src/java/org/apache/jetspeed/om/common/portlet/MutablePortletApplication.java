@@ -50,6 +50,10 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
     
     void setMetadata(GenericMetadata metadata);
     
+    Collection getMetadataFields();
+    
+    void setMetadataFields(Collection metadataFields);
+    
     void setWebApplicationDefinition(WebApplicationDefinition wad);
 
     void setName(String name);

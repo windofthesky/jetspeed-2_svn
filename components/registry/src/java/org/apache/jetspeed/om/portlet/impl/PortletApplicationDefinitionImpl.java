@@ -67,11 +67,11 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     /** PK of this Portlet Application's Web Application */
     protected long webApplicationId;
     
-    /** DublinCore property */
+    /** Metadata property */
     private GenericMetadata metadata = new GenericMetadataImpl();
-    /** PK of this DublinCore */
-    protected long metadataId;
-
+    
+    private Collection metadataFields = null;
+    
     /** Description */
     private String description;
 
@@ -258,7 +258,25 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
     public void setMetadata(GenericMetadata metadata) {
-        this.metadata = metadata;        
+        this.metadata = metadata;
+        this.metadataFields = metadata.getFields();     
+    }
+
+    /**
+     * @return
+     */
+    public Collection getMetadataFields()
+    {
+        return metadataFields;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setMetadataFields(Collection metadataFields)
+    {
+        this.metadataFields = metadataFields;
+        metadata.setFields(metadataFields);
     }
 
 }
