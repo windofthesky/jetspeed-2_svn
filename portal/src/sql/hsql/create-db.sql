@@ -81,8 +81,9 @@ CREATE TABLE PARAMETER(
 ------------------------------------------------------------------------------
 CREATE TABLE PORTLET_PREFERENCE(
     ID INTEGER PRIMARY KEY,
-    PORTLET_ID INTEGER NOT NULL,
-    NAME VARCHAR(80) NOT NULL
+    PARENT_ID INTEGER NOT NULL,
+    NAME VARCHAR(80) NOT NULL,
+    TYPE VARCHAR(30) NOT NULL
 
 );
 
@@ -90,7 +91,6 @@ CREATE TABLE PREFERENCE_VALUE(
     PREFERENCE_ID INTEGER,
 	ID INTEGER,
     VALUE LONGVARCHAR,
-    
     CONSTRAINT PK
  	PRIMARY KEY (PREFERENCE_ID, ID)
 
@@ -104,12 +104,13 @@ CREATE TABLE PREFERENCE_VALUE(
 -------------------------------------------------------------------------------
 CREATE TABLE PORTLET_ENTITY(
     ID INTEGER PRIMARY KEY,
-	PORTLET_DEFINITION_ID INTEGER NOT NULL	
+	PORTLET_DEFINITION_ID INTEGER NOT NULL,
+	GUID VARCHAR(50) NOT NULL
 );
 
 
 ------------------------------------------------------------------------------
--- User Preference and User Preference Values
+-- User Preference 
 ------------------------------------------------------------------------------
 CREATE TABLE USER_PORTLET_PREFERENCE(
     ID INTEGER PRIMARY KEY,
@@ -119,15 +120,7 @@ CREATE TABLE USER_PORTLET_PREFERENCE(
 
 );
 
-CREATE TABLE USER_PREFERENCE_VALUE(
-    PREFERENCE_ID INTEGER,
-	ID INTEGER,
-    VALUE LONGVARCHAR,
-    
-    CONSTRAINT PK
- 	PRIMARY KEY (PREFERENCE_ID, ID)
 
-);
 
 ------------------------------------------------------------------------------
 -- Localized Descriptions
