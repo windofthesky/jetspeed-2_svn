@@ -165,6 +165,14 @@
       </roles>
     </developer>
 
+    <developer>
+      <name>Jun Yang</name>
+      <id>jyang</id>
+      <email>jyang at apache.org</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
 
   </developers>
   <dependencies></dependencies>

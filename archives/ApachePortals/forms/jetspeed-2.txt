@@ -72,6 +72,7 @@ Roger Ruttimann roger.ruttimann@earthlink.net
 David Le Strat dlestrat@apache.org
 Jeremy Ford jford@apache.org
 Glenn Golden ggolden@umich.edu  
+Jun Yang jyang@apache.org
 
 
 [4] Issue Tracker
