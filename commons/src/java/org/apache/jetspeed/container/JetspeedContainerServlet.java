@@ -286,7 +286,11 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         try
         {
             ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
-
+            ClassLoader defaultLoader = Class.class.getClassLoader();
+            
+            System.out.println("thread Loader is " + oldLoader);
+            System.out.println("defaultLoader is " + defaultLoader);
+            /*
             ClassLoader loader; // = (ClassLoader)classLoaders.get(portletApplicationName);            
             //            if (null == loader)
             {
@@ -300,6 +304,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 // classLoaders.put(portletApplicationName, loader);
             }
             Thread.currentThread().setContextClassLoader(loader);
+            */
         }
         catch (Exception e)
         {

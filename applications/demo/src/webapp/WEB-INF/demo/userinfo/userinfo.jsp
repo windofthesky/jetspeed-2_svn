@@ -29,10 +29,10 @@ limitations under the License.
 
   <c:otherwise>
     User: <c:out value='${renderRequest.userPrincipal.name}'/><br>
-    <% /**
-    <br>Render request: renderRequest.getAttribute(PortletRequest.USER_INFO) 
-    <br>Request: request.getAttribute(PortletRequest.USER_INFO) 
-	*/ %>
+    
+    <br>Render request: <% renderRequest.getAttribute(PortletRequest.USER_INFO); %>
+    <br>Request: <% request.getAttribute(PortletRequest.USER_INFO); %>
+	 
   </c:otherwise>
 
 </c:choose>
