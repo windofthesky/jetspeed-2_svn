@@ -90,6 +90,8 @@ public interface NavigationalState
      * Necessary to do so per request invocation.
      * 
      * @param context 
+     * @throws java.lang.IllegalArgumentException if the <code>context</code>
+     * id <code>null</code>.
      */
     void init(RequestContext context);
     
@@ -100,6 +102,8 @@ public interface NavigationalState
      * 
      * @param page
      * @return The maximized window or null
+     * @throws java.lang.IllegalArgumentException if <code>page</code> is
+     * <code>null</code>.
      */
     PortletWindow getMaximizedWindow(Page page);
     

@@ -26,10 +26,10 @@ import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalControlParameter;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.container.url.impl.PortalControlParameterImpl;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.window.PortletWindow;
 
 
@@ -60,7 +60,8 @@ public class PathNavigationalState
     
     public void init(RequestContext context)
     {
-        this.url = context.getPortalURL();               
+        ArgUtil.assertNotNull(RequestContext.class, context, this, "init()");
+        this.url = context.getPortalURL();        
     }
     
     public WindowState getState(PortletWindow window) 
@@ -100,6 +101,7 @@ public class PathNavigationalState
     
     public PortletWindow getMaximizedWindow(Page page)
     {
+        ArgUtil.assertNotNull(Page.class, page, this, "getMaximizedWindow()");
         PortalControlParameter pcp = url.getControlParameters();
         Iterator stateful = pcp.getStateFullControlParameter().entrySet().iterator();
         while (stateful.hasNext())

@@ -31,6 +31,7 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -195,6 +196,7 @@ public class SessionNavigationalState
     
     public PortletWindow getMaximizedWindow(Page page)
     {
+        ArgUtil.assertNotNull(Page.class, page, this, "getMaximizedWindow()");
         return (PortletWindow)pages.get(page.getId());
     }
 }

@@ -37,7 +37,9 @@ public interface NavigationalStateComponent
      * and window states of portlets on a page.
      *  
      * @param context The request context for which this navigational state is valid.
-     * @return A new navigational state context for the given request.
+     * @return A new navigational state context for the given request.  This method will never return <code>null</code>
+     * @throws FailedToCreateNavStateException if the nav state could not be created.  Under normal
+     * circumstances, this should not happen.
      */
     NavigationalState create(RequestContext context);
 
@@ -61,7 +63,9 @@ public interface NavigationalStateComponent
      * Creates a Portlet URL representing the URL of the request.
      * 
      * @param context The ubiqitious request context.
-     * @return A new Portal URL
+     * @return A new Portal URL.  This method will never return <code>null</code>;
+     * @throws FailedToCreatePortalUrlException if the portelt url could not be created.  Under normal
+     * circumstances, this should not happen.
      */
     PortalURL createURL(RequestContext context);
     
