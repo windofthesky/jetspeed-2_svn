@@ -29,6 +29,8 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.request.RequestContext;
+
 /**
  * 
  * 
@@ -92,8 +94,11 @@ public class LocaleSelectorPortlet extends GenericPortlet
             }
 
             // TODO Set the prefered locale to user's persistent storage if not anon user
-
-            session.setAttribute(PREFERED_LOCALE_SESSION_KEY, new Locale(language, country, variant),PortletSession.APPLICATION_SCOPE);
+            Locale preferedLocale = new Locale(language, country, variant);
+            session.setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, preferedLocale,PortletSession.APPLICATION_SCOPE);
+            RequestContext requestContext = (RequestContext) request.getAttribute(RequestContext.REQUEST_PORTALENV);
+            requestContext.setLocale(preferedLocale);
+            requestContext.setSessionAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, preferedLocale);
         }
 
         return;
