@@ -29,7 +29,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.deployment.impl.FileNotDeployableException;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentObject;
 import org.apache.jetspeed.engine.Engine;
@@ -231,8 +231,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             System.out.println("Ready to run PAM implementation: " + className);
             System.out.print("Supporting interfaces: Deployment");
             // Class clas = Class.forName(className);
-            PortletRegistryComponent portletRegistry = (PortletRegistryComponent) engine.getComponentManager()
-                    .getComponent(PortletRegistryComponent.class);
+            PortletRegistry portletRegistry = (PortletRegistry) engine.getComponentManager()
+                    .getComponent(PortletRegistry.class);
             deployer = (Deployment) engine.getComponentManager().getComponent("PAM");
             if (deployer instanceof Registration)
             {                

@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.Aggregator;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -47,11 +47,11 @@ public class BasicAggregator implements Aggregator
     public final static int STRATEGY_PARALLEL = 1;
     private int strategy = STRATEGY_SEQUENTIAL;
     
-    private PortletRegistryComponent registry;
+    private PortletRegistry registry;
     private PortletWindowAccessor windowAccessor;
     private PortletContainer portletContainer;
 
-    public BasicAggregator(PortletRegistryComponent registry, 
+    public BasicAggregator(PortletRegistry registry, 
                            PortletWindowAccessor windowAccessor,
                            PortletContainer portletContainer,
                            int strategy)
@@ -62,7 +62,7 @@ public class BasicAggregator implements Aggregator
         this.portletContainer = portletContainer;
     }
     
-    public BasicAggregator(PortletRegistryComponent registry, 
+    public BasicAggregator(PortletRegistry registry, 
                            PortletWindowAccessor windowAccessor,
                            PortletContainer portletContainer)            
     {

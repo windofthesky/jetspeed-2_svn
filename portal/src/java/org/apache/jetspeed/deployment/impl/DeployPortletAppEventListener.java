@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
@@ -48,7 +48,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private String webAppDir;
     private PortletApplicationManagement pam;
     private Map appNameToFile;
-    protected PortletRegistryComponent registry;
+    protected PortletRegistry registry;
     private PortletFactory portletFactory;
 
 
@@ -61,7 +61,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      *             the <code>webAppDir</code> directory does not exist.
      */
     public DeployPortletAppEventListener( String webAppDir, PortletApplicationManagement pam,
-            PortletRegistryComponent registry, PortletFactory portletFactory  ) throws FileNotFoundException
+            PortletRegistry registry, PortletFactory portletFactory  ) throws FileNotFoundException
     {
         File checkFile = new File(webAppDir);
         this.portletFactory = portletFactory;
