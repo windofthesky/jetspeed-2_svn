@@ -59,6 +59,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 
@@ -128,6 +130,10 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
     public boolean add(Object o)
     {
         Language language = (Language) o;
+        if (language.getLocale() == null)
+        {
+            ((MutableLanguage) o).setLocale(Jetspeed.getDefaultLocale());
+        }
         languageMap.put(language.getLocale(), language);
         return super.add(o);
     }
