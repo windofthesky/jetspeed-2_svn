@@ -115,7 +115,7 @@ public class JetspeedEngine implements Engine
             //
             // bootstrap the initable services
             //
-            initComponents();
+            initComponents(configuration);
             log.info("Components initialization complete");            
             initServices();
             log.info("Service initialization complete");            
@@ -286,10 +286,11 @@ public class JetspeedEngine implements Engine
         }
         return base.concat(path);
     }
-    private void initComponents() throws IOException, ClassNotFoundException, NamingException
+    private void initComponents(Configuration configuration) throws IOException, ClassNotFoundException, NamingException
     {
         String applicationRoot = getRealPath("/");
-        File containerAssembler = new File(applicationRoot + "/WEB-INF/assembly/jetspeed.groovy");
+        String assemblyScript = configuration.getString("jetspeed.root.assembly", "/WEB-INF/assembly/jetspeed.groovy");
+        File containerAssembler = new File(applicationRoot + assemblyScript);
         componentManager = new ComponentManager(containerAssembler);
         ObjectReference rootContainerRef = new SimpleReference();
         componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "PORTAL_SCOPE");
