@@ -24,16 +24,15 @@ limitations under the License.
 
 <c:set var="tabs" value="${requestScope.tabs}"/>
 <c:set var="selectedTab" value="${requestScope.selected_tab}"/>
+<c:set var="selectedPDef" value="${requestScope.portletDefinition}"/>
 
 app.name = <c:out value="${name}"/><br />
 app.version = <c:out value="${version}"/>
 
 <p>TODO: Details</p>
-
-<div id="portlets">
-
+<div id="tabs">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
-	<tr>
+	  <tr>
 		<c:forEach var="tab" items="${tabs}">
 			<td <c:if test="${tab == selectedTab}"> class="LTabLeft" </c:if>
 			    <c:if test="${tab != selectedTab}"> class="LTabLeftLow" </c:if>
@@ -60,30 +59,97 @@ app.version = <c:out value="${version}"/>
                 </td>
             </c:forEach>
         </tr>
-        </table>
+      </table>
+</div>
 
-
-    <c:forEach var="portletDef" items="${pa.portletDefinitions}">
-        <c:set var="pdefName" value="${portletDef.name}"/>
-        
-        <%--We must do this since portlet taglib doesn't support expressions--%>
-        <% String pdefName = (String) pageContext.getAttribute("pdefName"); %>
-        <portlet:actionURL var="select_portlet_link" >
-            <portlet:param name="select_portlet" value="<%= pdefName %>" />
-        </portlet:actionURL>
-        
+<%--Beginning of Portlets tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'Portlets'}">
+  <div id="portlets">
+	
+	<portlet:actionURL var="select_portlet_link" >
+        <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
+    </portlet:actionURL>
+	<form action="<c:out value="${select_portlet_link}"/>">
+		<select name="select_portlet">
+		<c:forEach var="portletDef" items="${pa.portletDefinitions}">
+		    <c:set var="pdefName" value="${portletDef.name}"/>
+		    
+		    <%--We must do this since portlet taglib doesn't support expressions--%>
+		    <% String pdefName = (String) pageContext.getAttribute("pdefName"); %>
+		    
+		    <option value="<c:out value="${portletDef.name}"/>" <c:if test="${selectedPDef.name == portletDef.name}">selected="true"</c:if>>
+			  <c:out value="${portletDef.name}"/>
+		    </option>
+			<%--
+		    <a href="<c:out value="${select_portlet_link}"/>">
+		        <c:out value="${portletDef.name}" /><br />
+		    </a>
+		    --%>
+		</c:forEach>
+		</select>
+		
+		<input type="submit" value="Select"/>
+    </form>
+  </div>
     
-        <a href="<c:out value="${select_portlet_link}"/>">
-            <c:out value="${portletDef.name}" /><br />
-        </a>
-    </c:forEach>
-</div>
-
-<br />
-<br />
-
-<div id="selectedPortlet" class="">
+  <div id="selectedPortlet" class="">
     <span class="portlet-section-header">Selected Portlet</span>
-    <c:set var="pdef" value="${requestScope.portletDefinition}"/>
-    <c:out value="${pdef.name}"/>
-</div>
+    <c:out value="${selectedPDef.name}"/>
+  </div>
+</c:if>
+<%--End of Portlets tab data--%>
+
+<%--Beginning of Metadata tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'Metadata'}">
+	<div id="metadata">
+		<script type="text/javascript">
+			
+		</script>
+	
+	
+		<c:set var="md" value="${pa.metadata}"/>
+		
+		<%
+			//pageContext.getAttribute("md").getClass().getName()
+		%>
+		
+		<portlet:actionURL var="edit_metadata_link" >
+			
+		</portlet:actionURL>
+		
+		<form name="Edit_Metatdata_Form" action="<c:out value="${edit_metadata_link}"/>">
+		<input type="hidden" name="portlet_action" value="edit_metadata"/>
+		<c:forEach var="field" items="${md.fields}">
+		
+			<input type="checkbox" name="metadata_id" value="<c:out value="${field.id}"/>"/>
+			
+			<c:out value="${field.name}"/> | <c:out value="${field.value}"/> | <c:out value="${field.locale}"/> 
+			<%--TODO:  value needs to escaped, or use textarea--%>
+			
+			<input type="text" name="<c:out value="${field.id}"/>:value" value="<c:out value="${field.value}"/>"/>
+				
+			<br />	
+		</c:forEach>
+		
+		<input type="submit" value="Edit" onClick="this.form.portlet_action.value = 'edit_metadata'"/>
+		<input type="submit" value="Remove Selected" onClick="this.form.portlet_action.value = 'remove_metadata'"/>
+		</form>
+		
+		<form action="<c:out value="${edit_metadata_link}"/>">
+			<input type="hidden" name="portlet_action" value="add_metadata"/>
+			
+			Name: <input type="text" name="name" value=""/> <br />
+			Value: <input type="text" name="value" value=""/> <br />
+			Locale: <input type="text" name="locale" value=""/> <br />
+			<input type="submit" value="Add Metadata"/>
+		</form>
+	</div>
+</c:if>
+<%--End of Metadata tab data--%>
+
+<br />
+<br />
+
+

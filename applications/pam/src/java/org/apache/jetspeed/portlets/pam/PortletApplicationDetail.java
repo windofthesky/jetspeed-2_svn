@@ -16,8 +16,9 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -30,7 +31,10 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
@@ -42,6 +46,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class PortletApplicationDetail extends ServletPortlet
 {
+    private static final String PORTLET_ACTION = "portlet_action";
     private final String VIEW_PA = "portletApplication"; 
     private final String VIEW_PD = "portletDefinition";
 
@@ -82,7 +87,7 @@ public class PortletApplicationDetail extends ServletPortlet
         {
             request.setAttribute(VIEW_PA, new PortletApplicationBean(pa));
             
-            PortletDefinition pdef = (PortletDefinition) request.getPortletSession().getAttribute("select_portlet");
+            PortletDefinition pdef = (PortletDefinition) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
             
             request.setAttribute(VIEW_PD, pdef);
             
@@ -100,17 +105,18 @@ public class PortletApplicationDetail extends ServletPortlet
     
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
-        System.out.println("PorletApplicationDetail: processAction()");
+        //System.out.println("PorletApplicationDetail: processAction()");
+        MutablePortletApplication pa = (MutablePortletApplication)
+    	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+                                             PortletSession.APPLICATION_SCOPE);
         
-        String selectedPortlet = actionRequest.getParameter("select_portlet");
+        String selectedPortlet = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_PORTLET);
         if(selectedPortlet != null)
         {
-	        MutablePortletApplication pa = (MutablePortletApplication)
-	        	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
-	                                                 PortletSession.APPLICATION_SCOPE);
+	        
 	        
 	        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
-	        actionRequest.getPortletSession().setAttribute("select_portlet", pdef);
+	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef, PortletSession.APPLICATION_SCOPE);
         }
         
         String selectedTab = actionRequest.getParameter("selected_tab");
@@ -118,6 +124,80 @@ public class PortletApplicationDetail extends ServletPortlet
         {
             TabBean tab = (TabBean) tabMap.get(selectedTab);
             actionRequest.getPortletSession().setAttribute("selected_tab", tab);
+        }
+        
+        String action = actionRequest.getParameter(PORTLET_ACTION);
+        if(action != null)
+        {
+            if(action.equals("edit_metadata"))
+            {
+                GenericMetadata md = pa.getMetadata();
+                Iterator fieldsIter = md.getFields().iterator();
+                
+                registry.getPersistenceStore().getTransaction().begin();
+                
+                while (fieldsIter.hasNext())
+                {
+                    LocalizedField field = (LocalizedField) fieldsIter.next();
+                    String id = field.getId().toString();
+                    String value = actionRequest.getParameter(id + ":value");
+                    if(value != null)
+                    {
+                        if(!value.equals(field.getValue()))
+                        {
+                            field.setValue(value);
+                        }
+                    }
+                }
+                
+                registry.getPersistenceStore().getTransaction().commit();
+            }
+            else if(action.equals("remove_metadata"))
+            {
+                GenericMetadata md = pa.getMetadata();
+                Iterator fieldsIter = md.getFields().iterator();
+                
+                registry.getPersistenceStore().getTransaction().begin();
+                while (fieldsIter.hasNext())
+                {
+                    LocalizedField field = (LocalizedField) fieldsIter.next();
+                    String id = field.getId().toString();
+                    String[] ids = actionRequest.getParameterValues("metadata_id");
+                    if(ids != null)
+                    {
+                        for(int i=0; i<ids.length; i++)
+                        {
+                            String mid = ids[i];
+                            if(mid.equals(id))
+                            {
+                                fieldsIter.remove();
+                            }
+                        }
+                    }
+                }
+                registry.getPersistenceStore().getTransaction().commit();
+            }
+            else if(action.equals("add_metadata"))
+            {
+                GenericMetadata md = pa.getMetadata();
+                
+                PersistenceStore store = registry.getPersistenceStore();
+                System.out.println("Transcation is open: " + store.getTransaction().isOpen());
+                store.getTransaction().begin();
+                System.out.println("Transcation is open: " + store.getTransaction().isOpen());
+                String name = actionRequest.getParameter("name");
+                String value = actionRequest.getParameter("value");
+                String localeParam = actionRequest.getParameter("locale");
+                if(localeParam == null)
+                {
+                    localeParam = "en"; //need to default better
+                }
+                Locale locale = new Locale(localeParam);
+                
+                md.addField(locale, name, value);
+                
+                store.getTransaction().commit();
+            }
         }
 	}
 }

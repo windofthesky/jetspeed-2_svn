@@ -106,6 +106,7 @@ public class PortletApplicationBrowser extends ServletPortlet
             if (null != pa)
             {
                 actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa, PortletSession.APPLICATION_SCOPE);
+                actionRequest.getPortletSession().removeAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
             }
 		}	
 	}
