@@ -54,6 +54,7 @@
 package org.apache.jetspeed.om.common.entity;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -66,11 +67,9 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.util.StringUtils;
 
+import org.apache.jetspeed.om.api.PortletPreferencesImpl;
+import org.apache.jetspeed.om.common.PreferenceSetComposite;
 import org.apache.jetspeed.om.common.PreferenceSetImpl;
-import org.apache.jetspeed.om.common.DescriptionImpl;
-import org.apache.jetspeed.om.common.DescriptionSetImpl;
-import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.window.PortletWindowListImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 
@@ -82,12 +81,12 @@ import org.apache.jetspeed.util.JetspeedObjectID;
  */
 public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java.io.Serializable
 {
-    private String id = "";
-    private String definitionId = "";
-    private String description;
+    private int id;
+    private int definitionId;
 
-    protected PreferenceSetImpl preferences = new PreferenceSetImpl();
-    private PreferenceSetImpl origPreferences = new PreferenceSetImpl();
+    protected PortletPreferencesImpl preferences;
+
+    private PortletPreferencesImpl workingPreferences;
 
     private PortletApplicationEntity applicationEntity = null;
 
@@ -99,32 +98,28 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java
 
     private PortletDefinition portletDefinition = null;
 
-    private MutableDescriptionSet descriptions;
-
-    public PortletEntityImpl(PortletDefinition pd, String id)
+    public PortletEntityImpl(PortletDefinition pd)
     {
         this.portletDefinition = pd;
-        preferences.addAll((PreferenceSetImpl) pd.getPreferenceSet());
-        setId(id);
+        preferences = new PortletPreferencesImpl((PreferenceSetComposite)portletDefinition.getPreferenceSet());
     }
 
     public ObjectID getId()
     {
         if (objectId == null)
         {
-            objectId = JetspeedObjectID.createFromString(id);
+            objectId = new JetspeedObjectID(id);
         }
         return objectId;
     }
 
     public void setId(String id)
     {
-        this.id = id;
-        this.objectId = JetspeedObjectID.createFromString(id);
+        this.id = JetspeedObjectID.createFromString(id).intValue();
     }
 
     public PreferenceSet getPreferenceSet()
-    {
+    {    
         return preferences;
     }
 
@@ -147,77 +142,23 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java
     {
         // TODO: implement this PortletEntityRegistry.store();
 
-        //save preferences as original preferences
-        origPreferences = new PreferenceSetImpl();
-        ((PreferenceSetImpl) origPreferences).addAll((Collection) preferences);
+        //save preferences as original preferences     
+
     }
 
     public void reset() throws java.io.IOException
     {
-        //reset by re-activating original preferences
-        preferences = new PreferenceSetImpl();
-        ((PreferenceSetImpl) preferences).addAll((Collection) origPreferences);
+
     }
 
-    // additional internal methods
-
-    public Collection getCastorPreferences()
-    {
-        return (PreferenceSetImpl) preferences;
-    }
-
-    public void postLoad(Object parameter) throws Exception
-    {
-    }
-    public void preBuild(Object parameter) throws Exception
-    {
-        ((PreferenceSetImpl) origPreferences).addAll((Collection) preferences);
-        setPortletApplicationEntity((PortletApplicationEntity) parameter);
-    }
-    public void postBuild(Object parameter) throws Exception
-    {
-    }
-    public void preStore(Object parameter) throws Exception
-    {
-    }
-    public void postStore(Object parameter) throws Exception
-    {
-    }
-
-    protected void setPortletApplicationEntity(PortletApplicationEntity applicationEntity)
-    {
-        this.applicationEntity = applicationEntity;
-    }
-
-    protected void setPortletWindowList(PortletWindowList portletWindows)
-    {
-        this.portletWindows = portletWindows;
-    }
-
-    // internal methods used for castor only 
-    public String getCastorId()
-    {
-        //ObjectID oid = getId();        
-        //if(oid == null) 
-        //return null;
-
-        //return  oid.toString();
-        return id.length() > 0 ? id : null;
-    }
-
-    public void setCastorId(String id)
-    {
-        setId(id);
-    }
-
-    public String getDefinitionId()
+    public int getDefinitionId()
     {
         return definitionId;
     }
 
     public void setDefinitionId(String definitionId)
     {
-        this.definitionId = definitionId;
+        this.definitionId = JetspeedObjectID.createFromString(definitionId).intValue();
     }
 
     // internal methods used for debugging purposes only
@@ -257,41 +198,7 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java
      */
     public Description getDescription(Locale arg0)
     {
-        if (descriptions != null)
-        {
-            return descriptions.get(arg0);
-        }
-        return null;
-    }
-
-    /**
-     * Remove when Castor is properly mapped
-     * @deprecated
-     * @return
-     */
-    public String getDescription()
-    {
-        Description desc = getDescription(Locale.getDefault());
-        if (desc != null)
-        {
-            return desc.getDescription();
-        }
-        return null;
-    }
-
-    /**
-     * Remove when Castor is properly mapped
-     * @deprecated
-     * @param desc
-     */
-    public void setDescription(String desc)
-    {
-        if (descriptions == null)
-        {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PORTLET);
-
-        }
-        descriptions.addDescription(new DescriptionImpl(Locale.getDefault(), desc, MutableDescription.TYPE_PORTLET));
+        return portletDefinition.getDescription(arg0);
     }
 
 }
