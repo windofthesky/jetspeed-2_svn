@@ -55,14 +55,12 @@ package org.apache.jetspeed.services.page;
 
 // Java imports
 import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.util.ServiceUtil;

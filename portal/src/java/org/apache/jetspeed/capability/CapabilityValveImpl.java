@@ -54,17 +54,12 @@
 
 package org.apache.jetspeed.capability;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.registry.MediaTypeEntry;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.registry.JetspeedRegistry;
-import org.apache.jetspeed.services.registry.RegistryService;
 
 
 /**

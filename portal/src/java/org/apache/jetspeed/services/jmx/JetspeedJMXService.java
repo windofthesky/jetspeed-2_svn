@@ -57,20 +57,14 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-
-import java.rmi.server.ExportException;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.management.MBeanServer;
-
 import javax.management.MalformedObjectNameException;
-
 import javax.management.ObjectName;
-
 import javax.management.modelmbean.ModelMBean;
 import javax.naming.Context;
-
 
 import mx4j.adaptor.rmi.jrmp.JRMPAdaptorMBean;
 import mx4j.tools.naming.NamingService;

@@ -56,7 +56,6 @@ package org.apache.jetspeed.services.entity;
 import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ServiceUtil;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**

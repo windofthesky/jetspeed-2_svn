@@ -61,7 +61,6 @@ import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
-import org.apache.pluto.services.information.InformationProviderService;
 import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;

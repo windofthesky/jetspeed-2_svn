@@ -59,13 +59,12 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.services.information.PortletURLProvider;
-import org.apache.pluto.util.NamespaceMapperAccess;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.services.information.*;
+import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.services.information.PortletURLProvider;
+import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
  * Provides access to the Portal URL manipulation 

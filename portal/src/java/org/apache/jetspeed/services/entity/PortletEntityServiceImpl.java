@@ -59,7 +59,6 @@ import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.JetspeedObjectID;

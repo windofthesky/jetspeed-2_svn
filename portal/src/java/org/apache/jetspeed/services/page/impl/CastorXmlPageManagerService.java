@@ -56,49 +56,40 @@ package org.apache.jetspeed.services.page.impl;
 
 //standard java stuff
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.Reader;
 import java.io.FileReader;
-import java.io.Writer;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-//castor support
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.xml.sax.InputSource;
-
-// serialization support
-import org.apache.xml.serialize.Serializer;
-import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xml.serialize.OutputFormat;
-
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.FragmentImpl;
-import org.apache.jetspeed.om.page.psml.PropertyImpl;
-
+import org.apache.fulcrum.BaseService;
+import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.cache.file.FileCache;
-import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
+import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.om.page.psml.FragmentImpl;
+import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.Serializer;
+import org.apache.xml.serialize.XMLSerializer;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.InputSource;
 
 /**
  * This service is responsible for loading and saving PSML pages

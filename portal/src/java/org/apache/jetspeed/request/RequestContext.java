@@ -62,7 +62,6 @@ import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.util.MimeType;
 import org.apache.pluto.om.window.PortletWindow;
 /**
  * Portal Request Context is associated with each request 

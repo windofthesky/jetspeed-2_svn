@@ -62,20 +62,11 @@ import java.util.StringTokenizer;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.entity.PortletEntityAccess;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
-import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
 import org.apache.pluto.util.StringUtils;
 
 /**

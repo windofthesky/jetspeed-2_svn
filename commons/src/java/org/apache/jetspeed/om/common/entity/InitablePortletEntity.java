@@ -55,7 +55,6 @@ package org.apache.jetspeed.om.common.entity;
 
 import java.io.Serializable;
 
-import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;

@@ -54,27 +54,26 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.util.Iterator;
-import java.util.Locale;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.pluto.om.portlet.PortletDefinitionList;
-import org.apache.pluto.om.portlet.ContentTypeSet;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.MutableLanguage;
+import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.pluto.om.common.DisplayName;
+import org.apache.pluto.om.common.LanguageSet;
+import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.portlet.PortletDefinitionList;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor

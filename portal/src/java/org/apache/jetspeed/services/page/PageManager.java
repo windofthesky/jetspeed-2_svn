@@ -54,12 +54,12 @@
 
 package org.apache.jetspeed.services.page;
 
-import java.util.Iterator;
 import java.util.List;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
+
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.util.ServiceUtil;
 
 /**

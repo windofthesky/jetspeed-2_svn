@@ -53,8 +53,6 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.util.Iterator;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
 import org.apache.jetspeed.om.common.window.PortletWindowImpl;
