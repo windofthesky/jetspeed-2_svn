@@ -33,6 +33,7 @@ public interface FrameworkConstants
      * The name of the forward tool
      */
     final String FORWARD_TOOL = "forward";
+    final String MODEL_TOOL = "bridges.model";
     
     /**
      * The name of the prefs variable

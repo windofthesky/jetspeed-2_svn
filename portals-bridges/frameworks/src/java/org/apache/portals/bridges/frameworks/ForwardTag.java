@@ -53,7 +53,7 @@ public class ForwardTag extends TagSupport
                 out.print("request response not found");
                 return SKIP_BODY;
             }
-            PortletApplicationModel model = (PortletApplicationModel)request.getAttribute("model");
+            PortletApplicationModel model = (PortletApplicationModel)request.getAttribute(FrameworkConstants.MODEL_TOOL);
             if (model == null)
             {
                 JspWriter out = pageContext.getOut();

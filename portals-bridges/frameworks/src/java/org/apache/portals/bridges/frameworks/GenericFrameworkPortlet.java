@@ -314,30 +314,76 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         {
             if (request.getPortletMode().equals(PortletMode.VIEW))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
+                if (view == null || view.equals(this.getDefaultViewPage()))
+                {
+                    // clear it
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, (String)null);
+                }
+                else
+                {
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
+                }
             }
-            else if (request.getPortletMode().equals(PortletMode.EDIT))
+            else if (view == null || request.getPortletMode().equals(PortletMode.EDIT))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
+                if (view == null || view.equals(this.getDefaultEditPage()))
+                {
+                    // clear it
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, (String)null);
+                }
+                else
+                {                
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
+                }
             }
-            else if (request.getPortletMode().equals(PortletMode.HELP))
+            else if (view == null || request.getPortletMode().equals(PortletMode.HELP))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
+                if (view == null || view.equals(this.getDefaultHelpPage()))
+                {
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, (String)null);                    
+                }
+                else
+                {
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
+                }
             }
         }
         else
         {
             if (newMode.equals(PortletMode.VIEW))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
+                if (view == null || view.equals(this.getDefaultViewPage()))
+                {
+                    // clear it
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, (String)null);
+                }
+                else
+                {                                
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
+                }
             }
             else if (newMode.equals(PortletMode.EDIT))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
+                if (view == null || view.equals(this.getDefaultEditPage()))
+                {
+                    // clear it
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, (String)null);
+                }
+                else
+                {                                
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
+                }
             }
             else if (newMode.equals(PortletMode.HELP))
             {
-                response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
+                if (view == null || view.equals(this.getDefaultHelpPage()))
+                {
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, (String)null);                    
+                }
+                else
+                {                
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
+                }
             }
         }
     }
@@ -467,7 +513,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         }
 
         putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
-        request.setAttribute("model", model);
+        request.setAttribute(FrameworkConstants.MODEL_TOOL, model);
         
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher(template);
