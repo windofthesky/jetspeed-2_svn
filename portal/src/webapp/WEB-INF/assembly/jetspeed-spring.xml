@@ -17,7 +17,6 @@ limitations under the License.
 -->
 <beans>
    
-   
    <!-- Commons configuration object generated from jetspeed.properties -->
    <bean id="portal_configuration"
       class="org.apache.commons.configuration.PropertiesConfiguration">
@@ -172,28 +171,44 @@ limitations under the License.
   	   <constructor-arg type="boolean"><value>false</value></constructor-arg>  	     	   
   </bean>
   
-  <!-- Security: User Manager -->
-  <bean id="org.apache.jetspeed.security.UserManager" 
-  	   class="org.apache.jetspeed.security.impl.UserManagerImpl"
+  <!-- Security SPI: CommonQueries -->
+  <bean id="org.apache.jetspeed.security.spi.impl.CommonQueries" 
+  	   class="org.apache.jetspeed.security.spi.impl.CommonQueries"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
   </bean>
   
-   <!-- Security: Group Manager -->
-  <bean id="org.apache.jetspeed.security.GroupManager" 
-  	   class="org.apache.jetspeed.security.impl.GroupManagerImpl"
+  <!-- Security SPI: CredentialHandler -->
+  <bean id="org.apache.jetspeed.security.spi.CredentialHandler" 
+  	   class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>  	   
   </bean>
   
-  <!-- Security: Role Manager -->
-  <bean id="org.apache.jetspeed.security.RoleManager" 
-  	   class="org.apache.jetspeed.security.impl.RoleManagerImpl"
+  <!-- Security SPI: UserSecurityHandler -->
+  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" 
+  	   class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>  	   
   </bean>
   
- <!-- Security: Permission Manager -->
+  <!-- Security SPI: RoleSecurityHandler -->
+  <bean id="org.apache.jetspeed.security.spi.RoleSecurityHandler" 
+  	   class="org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>
+  	   <!-- Default hierarchy strategy is by generalization.  Add contructor-arg to change the strategy. -->
+  </bean>
+  
+  <!-- Security SPI: GroupSecurityHandler -->
+  <bean id="org.apache.jetspeed.security.spi.GroupSecurityHandler" 
+  	   class="org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>
+  	   <!-- Default hierarchy strategy is by generalization.  Add contructor-arg to change the strategy. -->
+  </bean>
+  
+  <!-- Security: Permission Manager -->
   <bean id="org.apache.jetspeed.security.PermissionManager" 
   	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"
   >  	   
@@ -211,8 +226,39 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.SecurityProvider" 
   	   class="org.apache.jetspeed.security.impl.SecurityProviderImpl"
   >  	   
-  	   <constructor-arg ><value>login.conf</value></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.RoleSecurityHandler"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.GroupSecurityHandler"/></constructor-arg>
+  </bean>
+  
+  <!-- Security: User Manager -->
+  <bean id="org.apache.jetspeed.security.UserManager" 
+  	   class="org.apache.jetspeed.security.impl.UserManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>
+  </bean>
+  
+   <!-- Security: Group Manager -->
+  <bean id="org.apache.jetspeed.security.GroupManager" 
+  	   class="org.apache.jetspeed.security.impl.GroupManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: Role Manager -->
+  <bean id="org.apache.jetspeed.security.RoleManager" 
+  	   class="org.apache.jetspeed.security.impl.RoleManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: Authentication Provider -->
+  <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
+  	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl"
+  >  	   
+  	   <constructor-arg ><value>login.conf</value></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
   </bean>
   

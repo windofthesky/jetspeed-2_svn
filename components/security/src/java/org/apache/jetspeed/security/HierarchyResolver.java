@@ -14,16 +14,21 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.prefs.Preferences;
+
 /**
- * <p>Utility component used to configure the security component.</p>
- * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>This class allows to implement different types of groups/roles hierarchy.</p>
+ * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
+ * @version $Id$
  */
-public interface SecurityProvider
+public interface HierarchyResolver 
 {
+    
     /**
-     * <p>Getter for the {@link UserManager}.</p>
-     * @return The UserManager.
+     * <p>Returns absolute path names of the dependcy roles/groups.</p>  
+     * @param prefs Preferences for the role/group
+     * @return Returns absolute path names of the dependcy roles/groups.
      */
-    UserManager getUserManager();
+    public String[] resolve( Preferences prefs );
+        
 }

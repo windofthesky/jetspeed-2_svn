@@ -16,31 +16,31 @@ package org.apache.jetspeed.security.om.impl;
 
 import java.sql.Timestamp;
 
-import org.apache.jetspeed.security.om.JetspeedCredential;
+import org.apache.jetspeed.security.om.InternalCredential;
 
 /**
- * <p>{@link JetspeedCredential} interface implementation.</p>
+ * <p>{@link InternalCredential} interface implementation.</p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedCredentialImpl implements JetspeedCredential
+public class InternalCredentialImpl implements InternalCredential
 {
 
     /**
-     * <p>JetspeedCredential implementation default constructor.</p>
+     * <p>InternalCredential implementation default constructor.</p>
      */
-    public JetspeedCredentialImpl()
+    public InternalCredentialImpl()
     {
     }
 
     /**
-     * <p>JetspeedPrincipal constructor given a value, type and classname.</p>
+     * <p>InternalPrincipal constructor given a value, type and classname.</p>
      * @param principalId The principal id.
      * @param value The value.
      * @param type The type.
      * @param classname The classname.
      */
-    public JetspeedCredentialImpl(long principalId, String value, int type, String classname)
+    public InternalCredentialImpl(long principalId, String value, int type, String classname)
     {
         this.principalId = principalId;
         this.value = value;
@@ -53,7 +53,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private long credentialId;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getCredentialId()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getCredentialId()
      */
     public long getCredentialId()
     {
@@ -61,7 +61,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setCredentialId(long)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setCredentialId(long)
      */
     public void setCredentialId(long credentialId)
     {
@@ -71,7 +71,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private long principalId;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getPrincipalId()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getPrincipalId()
      */
     public long getPrincipalId()
     {
@@ -79,7 +79,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setPrincipalId(long)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setPrincipalId(long)
      */
     public void setPrincipalId(long principalId)
     {
@@ -89,7 +89,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private String value;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getValue()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getValue()
      */
     public String getValue()
     {
@@ -97,7 +97,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setValue(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setValue(java.lang.String)
      */
     public void setValue(String value)
     {
@@ -107,7 +107,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private int type;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getType()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getType()
      */
     public int getType()
     {
@@ -115,7 +115,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setType(int)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setType(int)
      */
     public void setType(int type)
     {
@@ -125,7 +125,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private String classname;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getClassname()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getClassname()
      */
     public String getClassname()
     {
@@ -133,7 +133,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setClassname(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setClassname(java.lang.String)
      */
     public void setClassname(String classname)
     {
@@ -143,7 +143,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private Timestamp creationDate;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getCreationDate()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getCreationDate()
      */
     public Timestamp getCreationDate()
     {
@@ -151,7 +151,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setCreationDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setCreationDate(java.sql.Timestamp)
      */
     public void setCreationDate(Timestamp creationDate)
     {
@@ -161,7 +161,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     private Timestamp modifiedDate;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#getModifiedDate()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getModifiedDate()
      */
     public Timestamp getModifiedDate()
     {
@@ -169,7 +169,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setModifiedDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setModifiedDate(java.sql.Timestamp)
      */
     public void setModifiedDate(Timestamp modifiedDate)
     {
@@ -177,16 +177,16 @@ public class JetspeedCredentialImpl implements JetspeedCredential
     }
 
     /**
-     * <p>Compares this {@link JetspeedCredential} to the provided credential
+     * <p>Compares this {@link InternalCredential} to the provided credential
      * and check if they are equal.</p>
-     * return Whether the {@link JetspeedCredential} are equal.
+     * return Whether the {@link InternalCredential} are equal.
      */
     public boolean equals(Object object)
     {  
-        if (!(object instanceof JetspeedCredential))
+        if (!(object instanceof InternalCredential))
             return false;
 
-        JetspeedCredential c = (JetspeedCredential) object;
+        InternalCredential c = (InternalCredential) object;
         boolean isEqual = ((c.getValue().equals(this.getValue())) && (c.getType() == this.getType()) && ((null == c.getClassname()) || (c.getClassname().equals(this.getClassname()))));
         return isEqual;
     }

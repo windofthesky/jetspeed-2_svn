@@ -67,17 +67,21 @@ public interface UserManager
     /**
      * <p>An iterator of {@link User} finding users matching the
      * corresponding filter criteria.</p>
+     * <p>Current implementation only allows for getting back all users with
+     * "" as a fitler.</p>
+     * TODO Complete filter implementation.
+     * 
      * @param filter The filter used to retrieve matching users.
      * @return The Iterator of {@link User}.
      */
-    Iterator getUsers(String filter);
+    Iterator getUsers(String filter) throws SecurityException;
 
     /**
      * <p>Set the user password.</p>
      * @param username The user name.
-     * @param password The password.
+     * @param oldPassword The old password.
+     * @param newPassword The new password.
      * @throws Throws a security exception.
-     * TODO This method should be changed to support multiple credentials.
      */
-    void setPassword(String username, String password) throws SecurityException;
+    void setPassword(String username, String oldPassword, String newPassword) throws SecurityException;
 }

@@ -23,8 +23,6 @@ import org.apache.jetspeed.security.UserPrincipal;
  */
 public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipal
 {
-    /** <p>The Preferences role root node</p> */
-    static String  PREFS_USER_ROOT = "/user/";
 
     /**
      * <p>The user principal constructor.</p>

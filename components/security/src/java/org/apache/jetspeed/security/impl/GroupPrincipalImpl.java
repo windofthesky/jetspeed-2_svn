@@ -24,9 +24,6 @@ import org.apache.jetspeed.security.GroupPrincipal;
 public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrincipal
 {
 
-    /** <p>The Preferences group root node</p> */
-    static String PREFS_GROUP_ROOT = "/group/";
-
     /**
      * <p>The group principal constructor.</p>
      * @param groupName The group principal name.

@@ -12,23 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.impl;
-
-import java.util.prefs.Preferences;
+package org.apache.jetspeed.security;
 
 /**
- * <p>This class allows to implement different types of groups/roles hierarchy.</p>
- * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
- * @version $Id$
+ * <p>Utility component used as a bridge between the login module and the security component.</p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface HierarchyResolver 
+public interface AuthenticationProvider
 {
-    
     /**
-     * <p>Returns absolute path names of the dependcy roles/groups.</p>  
-     * @param prefs Preferences for the role/group
-     * @return Returns absolute path names of the dependcy roles/groups.
+     * <p>Getter for the {@link UserManager}.</p>
+     * @return The UserManager.
      */
-    public String[] resolve( Preferences prefs );
-        
+    UserManager getUserManager();
 }

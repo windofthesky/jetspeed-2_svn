@@ -23,6 +23,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.UserManagerImpl;
 
 /**
  * <p>Unit testing for {@link GeneralizationHierarchyResolver}.</p>
@@ -41,7 +42,15 @@ public class TestGeneralizationHierarchy extends AbstractSecurityTestcase
     {
         super(testName);
     }
-
+    
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        ums = new UserManagerImpl(securityProvider, new GeneralizationHierarchyResolver(), new GeneralizationHierarchyResolver());
+    }
    
     /**
      * @see junit.framework.TestCase#tearDown()
@@ -63,7 +72,7 @@ public class TestGeneralizationHierarchy extends AbstractSecurityTestcase
     /**
      * <p>Test RoleManager.</p>
      */
-    public void testRoleMenager()
+    public void testRoleManager()
     {
         
         User user = null;
@@ -97,8 +106,8 @@ public class TestGeneralizationHierarchy extends AbstractSecurityTestcase
             user = ums.getUser("test");
             Subject subject = user.getSubject();
             assertNotNull("subject is null", subject);
-            Collection principals=getPrincipals(subject,RolePrincipal.class);
-            assertEquals("shoud have one principal;", 1,principals.size());
+            Collection principals = getPrincipals(subject, RolePrincipal.class);
+            assertEquals("shoud have one principal;", 1 , principals.size());
             
             assertTrue(
                     "should contain rootrole",

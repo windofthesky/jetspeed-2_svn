@@ -35,7 +35,7 @@ import java.sql.Timestamp;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * TODO Add multiple credentials support.
  */
-public interface JetspeedCredential extends Serializable, Cloneable
+public interface InternalCredential extends Serializable, Cloneable
 {
     /**
      * <p>Getter for the credential id.</p>

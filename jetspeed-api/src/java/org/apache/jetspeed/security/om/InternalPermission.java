@@ -24,8 +24,8 @@ import java.util.Collection;
  * policy according to JAAS where permission are used in JAAS:</p>
  * <pre>
  * <code>grant [SignedBy "signer_names"] [, CodeBase "URL"]
- *             [, JetspeedPrincipal [principal_class_name] "principal_name"]
- *             [, JetspeedPrincipal [principal_class_name] "principal_name"] ... 
+ *             [, InternalPrincipal [principal_class_name] "principal_name"]
+ *             [, InternalPrincipal [principal_class_name] "principal_name"] ... 
  *       {
  *                  permission permission_class_name [ "target_name" ] 
  *                                                   [, "action"] [, SignedBy "signer_names"];
@@ -35,7 +35,7 @@ import java.util.Collection;
  * </pre>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface JetspeedPermission extends Serializable, Cloneable
+public interface InternalPermission extends Serializable, Cloneable
 {
 
     /**
@@ -123,7 +123,7 @@ public interface JetspeedPermission extends Serializable, Cloneable
     void setModifiedDate(Timestamp modifiedDate);
 
     /**
-     * <p>Equals method used to appropriately compare 2 {@link JetspeedPermission} objects.</p>
+     * <p>Equals method used to appropriately compare 2 {@link InternalPermission} objects.</p>
      * @param object The object to compare with.
      * @return The comparison result.
      */

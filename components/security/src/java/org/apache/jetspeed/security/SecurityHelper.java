@@ -36,7 +36,7 @@ public class SecurityHelper
      * <p>Given a subject, finds the first principal of the given classe for that subject.
      * If a principal of the given classe is not found, null is returned.</p>
      * @param subject The subject supplying the principals.
-     * @param classe A class or interface derived from java.security.JetspeedPrincipal.
+     * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
      */
     public static Principal getPrincipal(Subject subject, Class classe)
@@ -60,7 +60,7 @@ public class SecurityHelper
      * If a principal of the given classe is not found, then the first
      * other principal is returned. If the list is empty, null is returned.</p>
      * @param subject The subject supplying the principals.
-     * @param classe A class or interface derived from java.security.JetspeedPrincipal.
+     * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
      */
     public static Principal getBestPrincipal(Subject subject, Class classe)

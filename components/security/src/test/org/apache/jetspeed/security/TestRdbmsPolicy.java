@@ -50,8 +50,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
      */
     public void setUp() throws Exception
     {
-        super.setUp();
-       
+        super.setUp();      
         initUser();
 
         // Let's login in.
@@ -107,12 +106,12 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
      * }
      * </code></pre>
      * <p>Such an entry would also test the Rdbms defaulting behavior if no
-     * entry is provided in the database for the tested Subject JetspeedUserPrincipal.</p>
+     * entry is provided in the database for the tested Subject InternalUserPrincipal.</p>
      */
     /*
     public void testPermissionWithSubjectInContructor()
     {
-        // JetspeedPermission should be granted.
+        // InternalPermission should be granted.
         PortletPermission perm1 = new PortletPermission("myportlet", "view", loginContext.getSubject());
         try
         {
@@ -123,7 +122,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
             assertTrue("did not authorize view permission on the portlet.", false);
         }
     
-        // JetspeedPermission should be denied.
+        // InternalPermission should be denied.
         PortletPermission perm2 = new PortletPermission("myportlet", "edit", loginContext.getSubject());
         try
         {
@@ -134,7 +133,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         {
         }
     
-        // Subject is omitted. JetspeedPermission should be denied.
+        // Subject is omitted. InternalPermission should be denied.
         PortletPermission perm3 = new PortletPermission("myportlet", "view");
         try
         {
@@ -149,7 +148,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
 
     public void testPermissionWithSubjectInAccessControlContext()
     {
-        // JetspeedPermission should be granted.
+        // InternalPermission should be granted.
         try
         {
             Subject.doAs(loginContext.getSubject(), new PrivilegedAction()

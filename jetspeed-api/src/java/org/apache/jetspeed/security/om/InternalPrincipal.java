@@ -24,8 +24,8 @@ import java.sql.Timestamp;
  * which permissions are applied on which principal according to the JAAS policy:</p>
  * <pre>
  * <code>grant [SignedBy "signer_names"] [, CodeBase "URL"]
- *             [, JetspeedPrincipal [principal_class_name] "principal_name"]
- *             [, JetspeedPrincipal [principal_class_name] "principal_name"] ... 
+ *             [, InternalPrincipal [principal_class_name] "principal_name"]
+ *             [, InternalPrincipal [principal_class_name] "principal_name"] ... 
  *       {
  *                  permission permission_class_name [ "target_name" ] 
  *                                                   [, "action"] [, SignedBy "signer_names"];
@@ -35,7 +35,7 @@ import java.sql.Timestamp;
  * </pre>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface JetspeedPrincipal extends Serializable, Cloneable
+public interface InternalPrincipal extends Serializable, Cloneable
 {
 
     /**

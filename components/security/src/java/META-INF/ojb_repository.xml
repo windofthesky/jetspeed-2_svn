@@ -20,7 +20,7 @@ limitations under the License.
 	   - S E C U R I T Y  U S E R
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
 	    proxy="dynamic"
 	    table="SECURITY_PRINCIPAL"
 	>
@@ -66,7 +66,7 @@ limitations under the License.
 	    </field-descriptor>
 	    <collection-descriptor
 	        name="credentials"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedCredentialImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
 	        auto-retrieve="true"
 	        auto-update="true"
 	        auto-delete="true"
@@ -76,7 +76,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="rolePrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -90,7 +90,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="groupPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -104,7 +104,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
@@ -122,7 +122,7 @@ limitations under the License.
 	   - S E C U R I T Y  C R E D E N T I A L
 	-->
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedCredentialImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
 	    proxy="dynamic"
 	    table="SECURITY_CREDENTIAL"
 	>
@@ -184,7 +184,7 @@ limitations under the License.
 	   - S E C U R I T Y  R O L E
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
 	    proxy="dynamic"
 	    table="SECURITY_PRINCIPAL"
 	>
@@ -230,7 +230,7 @@ limitations under the License.
 	    </field-descriptor>
 	    <collection-descriptor
 	        name="userPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -244,7 +244,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="groupPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -258,7 +258,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
@@ -276,7 +276,7 @@ limitations under the License.
 	   - S E C U R I T Y  G R O U P
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
 	    proxy="dynamic"
 	    table="SECURITY_PRINCIPAL"
 	>
@@ -322,7 +322,7 @@ limitations under the License.
 	    </field-descriptor>
 	    <collection-descriptor
 	        name="userPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -336,7 +336,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="rolePrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -350,7 +350,7 @@ limitations under the License.
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
@@ -368,7 +368,7 @@ limitations under the License.
 	   - S E C U R I T Y  P R I N C I P A L
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedPrincipalImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalPrincipalImpl"
 	    proxy="dynamic"
 	    table="SECURITY_PRINCIPAL"
 	>
@@ -414,7 +414,7 @@ limitations under the License.
 	    </field-descriptor>
 	    <collection-descriptor
 	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -432,7 +432,7 @@ limitations under the License.
 	   - S E C U R I T Y  P E R M I S S I O N
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl"
+	    class="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
 	    proxy="dynamic"
 	    table="SECURITY_PERMISSION"
 	>
@@ -486,7 +486,7 @@ limitations under the License.
 	    </field-descriptor>
 	        <collection-descriptor
 	        name="principals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.JetspeedPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPrincipalImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"

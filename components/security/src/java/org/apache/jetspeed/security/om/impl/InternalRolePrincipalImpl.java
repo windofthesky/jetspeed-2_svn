@@ -16,22 +16,22 @@ package org.apache.jetspeed.security.om.impl;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
+import org.apache.jetspeed.security.om.InternalRolePrincipal;
 
 /**
- * <p>{@link JetspeedRolePrincipal} interface implementation.</p>
+ * <p>{@link InternalRolePrincipal} interface implementation.</p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements JetspeedRolePrincipal
+public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements InternalRolePrincipal
 {
     /** <p>Role principal security class.</p> */
-    static String ROLE_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.JetspeedRolePrincipalImpl";
+    static String ROLE_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalRolePrincipalImpl";
 
     /**
      * <p>Role principal implementation default constructor.</p>
      */
-    public JetspeedRolePrincipalImpl()
+    public InternalRolePrincipalImpl()
     {
         super();
     }
@@ -40,7 +40,7 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
      * <p>Constructor to create a new role principal.</p>
      * @param fullPath The role full path.
      */
-    public JetspeedRolePrincipalImpl(String fullPath)
+    public InternalRolePrincipalImpl(String fullPath)
     {
         super(ROLE_PRINCIPAL_CLASSNAME, fullPath);
     }
@@ -48,7 +48,7 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
     private Collection userPrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedRolePrincipal#getUserPrincipals()
+     * @see org.apache.jetspeed.security.om.InternalRolePrincipal#getUserPrincipals()
      */
     public Collection getUserPrincipals()
     {
@@ -56,7 +56,7 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedRolePrincipal#setUserPrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalRolePrincipal#setUserPrincipals(java.util.Collection)
      */
     public void setUserPrincipals(Collection userPrincipals)
     {
@@ -66,7 +66,7 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
     private Collection groupPrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedRolePrincipal#getGroupPrincipals()
+     * @see org.apache.jetspeed.security.om.InternalRolePrincipal#getGroupPrincipals()
      */
     public Collection getGroupPrincipals()
     {
@@ -74,7 +74,7 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedRolePrincipal#setGroupPrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalRolePrincipal#setGroupPrincipals(java.util.Collection)
      */
     public void setGroupPrincipals(Collection groupPrincipals)
     {
@@ -82,16 +82,16 @@ public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * <p>Compares this {@link JetspeedRolePrincipal} to the provided role principal
+     * <p>Compares this {@link InternalRolePrincipal} to the provided role principal
      * and check if they are equal.</p>
-     * return Whether the {@link JetspeedRolePrincipal} are equal.
+     * return Whether the {@link InternalRolePrincipal} are equal.
      */
     public boolean equals(Object object)
     {  
-        if (!(object instanceof JetspeedRolePrincipal))
+        if (!(object instanceof InternalRolePrincipal))
             return false;
 
-        JetspeedRolePrincipal r = (JetspeedRolePrincipal) object;
+        InternalRolePrincipal r = (InternalRolePrincipal) object;
         boolean isEqual = (r.getFullPath().equals(this.getFullPath()));
         return isEqual;
     }

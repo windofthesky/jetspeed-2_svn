@@ -22,69 +22,64 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.AggregationHierarchyResolver;
-import org.apache.jetspeed.security.impl.GroupManagerImpl;
-import org.apache.jetspeed.security.impl.PermissionManagerImpl;
-import org.apache.jetspeed.security.impl.RdbmsPolicy;
-import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
 
 /**
- * <p>Unit testing for {@link AggregationHierarchyResolver}.</p>
- *
- * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
+ * <p>
+ * Unit testing for {@link AggregationHierarchyResolver}.
+ * </p>
+ * 
+ * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
  * @version $Id$
  */
 public class TestAggregationHierarchy extends AbstractSecurityTestcase
 {
 
     /**
-     * <p>Defines the test case name for junit.</p>
+     * <p>
+     * Defines the test case name for junit.
+     * </p>
+     * 
      * @param testName The test case name.
      */
     public TestAggregationHierarchy(String testName)
     {
         super(testName);
     }
-    
+
     /**
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
-        ums = new UserManagerImpl(persistenceStore, new AggregationHierarchyResolver(),new AggregationHierarchyResolver());
-        gms = new GroupManagerImpl(persistenceStore);
-        rms =new RoleManagerImpl(persistenceStore);
-        pms = new PermissionManagerImpl(persistenceStore);
-        new SecurityProviderImpl("login.conf", new RdbmsPolicy(pms), ums);   
+        ums = new UserManagerImpl(securityProvider, new AggregationHierarchyResolver(),
+                new AggregationHierarchyResolver());
     }
 
-   
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
-    {       
+    {
         destroyUserObject();
         super.tearDown();
     }
 
-  
-    
     public static Test suite()
     {
-           return new TestSuite(TestAggregationHierarchy.class);
+        return new TestSuite(TestAggregationHierarchy.class);
     }
 
-
     /**
-     * <p>Test RoleManager.</p>
+     * <p>
+     * Test RoleManager.
+     * </p>
      */
-    public void testRoleMenager()
+    public void testRoleManager()
     {
-        
+
         User user = null;
         try
         {
@@ -96,94 +91,86 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         assertNotNull("user is null", user);
-        
+
         try
         {
             rms.addRole("rootrole");
             rms.addRole("rootrole.childrole1");
             rms.addRole("rootrole.childrole2");
-    
+
         }
         catch (SecurityException sex)
         {
             assertTrue("add roles. should not have thrown an exception.", false);
         }
-        
+
         try
         {
-            rms.addRoleToUser("test","rootrole");
-        
+            rms.addRoleToUser("test", "rootrole");
+
             user = ums.getUser("test");
             Subject subject = user.getSubject();
             assertNotNull("subject is null", subject);
-            Collection principals=getPrincipals(subject,RolePrincipal.class);
-            assertEquals("should have 3 principals;", 3,principals.size());
-            assertTrue(
-                    "should contain rootrole",
-                    principals.contains(new RolePrincipalImpl("rootrole")));
-            assertTrue(
-                    "should contain rootrole.childrole1",
-                    principals.contains(new RolePrincipalImpl("rootrole.childrole1")));
-            assertTrue(
-                    "should contain rootrole.childrole2",
-                    principals.contains(new RolePrincipalImpl("rootrole.childrole2")));
-            
-            
-            rms.removeRoleFromUser("test","rootrole");
-            
+            Collection principals = getPrincipals(subject, RolePrincipal.class);
+            assertEquals("should have 3 principals;", 3, principals.size());
+            assertTrue("should contain rootrole", principals.contains(new RolePrincipalImpl("rootrole")));
+            assertTrue("should contain rootrole.childrole1", principals.contains(new RolePrincipalImpl(
+                    "rootrole.childrole1")));
+            assertTrue("should contain rootrole.childrole2", principals.contains(new RolePrincipalImpl(
+                    "rootrole.childrole2")));
+
+            rms.removeRoleFromUser("test", "rootrole");
+
             user = ums.getUser("test");
-            principals= getPrincipals(user.getSubject(),RolePrincipal.class);
-            assertEquals("should not have any principals;", 0,principals.size());
-            
+            principals = getPrincipals(user.getSubject(), RolePrincipal.class);
+            assertEquals("should not have any principals;", 0, principals.size());
+
         }
         catch (SecurityException sex)
         {
-            assertTrue("test with parent role "+sex.getMessage(), false);
+            assertTrue("test with parent role " + sex.getMessage(), false);
         }
-        
+
         try
         {
-            rms.addRoleToUser("test","rootrole.childrole1");
-        
+            rms.addRoleToUser("test", "rootrole.childrole1");
+
             user = ums.getUser("test");
             Subject subject = user.getSubject();
             assertNotNull("subject is null", subject);
-            Collection principals=getPrincipals(subject,RolePrincipal.class);
-            assertEquals("shoud have 1 principal;", 1,principals.size());
-            
-            assertTrue(
-                    "should contain rootrole.childrole1",
-                    principals.contains(new RolePrincipalImpl("rootrole.childrole1")));
-            
-            
-            rms.removeRoleFromUser("test","rootrole.childrole1");
-            
+            Collection principals = getPrincipals(subject, RolePrincipal.class);
+            assertEquals("shoud have 1 principal;", 1, principals.size());
+
+            assertTrue("should contain rootrole.childrole1", principals.contains(new RolePrincipalImpl(
+                    "rootrole.childrole1")));
+
+            rms.removeRoleFromUser("test", "rootrole.childrole1");
+
             user = ums.getUser("test");
-            principals=getPrincipals(user.getSubject(),RolePrincipal.class);
-            assertEquals("should not have any principals;", 0,principals.size());
-            
+            principals = getPrincipals(user.getSubject(), RolePrincipal.class);
+            assertEquals("should not have any principals;", 0, principals.size());
+
         }
         catch (SecurityException sex)
         {
-            assertTrue("test with child role "+sex.getMessage(), false);
+            assertTrue("test with child role " + sex.getMessage(), false);
         }
-        
-        
+
     }
 
-   
     /**
-     * <p>Destroy user test object.</p>
+     * <p>
+     * Destroy user test object.
+     * </p>
      */
     protected void destroyUserObject()
     {
         try
         {
-            
-            if (ums.userExists("test")) ums.removeUser("test");
-            if (rms.roleExists("rootrole")) rms.removeRole("rootrole");
-           
-            
+            if (ums.userExists("test"))
+                ums.removeUser("test");
+            if (rms.roleExists("rootrole"))
+                rms.removeRole("rootrole");
         }
         catch (SecurityException sex)
         {

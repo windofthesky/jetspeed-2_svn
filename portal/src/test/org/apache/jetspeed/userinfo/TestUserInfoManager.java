@@ -35,14 +35,23 @@ import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.GroupManagerImpl;
 import org.apache.jetspeed.security.impl.PermissionManagerImpl;
-import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.UserSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.CommonQueries;
+import org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler;
+import org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler;
 import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -89,11 +98,18 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         PortletCache portletCache = new PortletCache();
         new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
         
-        ums = new UserManagerImpl(persistenceStore);
+        CommonQueries cq = new CommonQueries(persistenceStore);
+        CredentialHandler ch = new DefaultCredentialHandler(cq);
+        UserSecurityHandler ush = new DefaultUserSecurityHandler(cq);
+        RoleSecurityHandler rsh = new DefaultRoleSecurityHandler(cq);
+        GroupSecurityHandler gsh = new DefaultGroupSecurityHandler(cq);
+        SecurityProvider securityProvider = new SecurityProviderImpl(ch, ush, rsh, gsh);
+        
+        ums = new UserManagerImpl(securityProvider);
         gms = new GroupManagerImpl(persistenceStore);
-        rms =new RoleManagerImpl(persistenceStore);
-        pms = new PermissionManagerImpl(persistenceStore);
-        new SecurityProviderImpl("login.conf", new RdbmsPolicy(pms), ums);   
+        rms = new RoleManagerImpl(persistenceStore);
+        
+        ums = new UserManagerImpl(securityProvider);
         uim = new UserInfoManagerImpl(ums, portletRegistry); 
     
     }

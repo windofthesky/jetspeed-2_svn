@@ -47,7 +47,7 @@ public class RdbmsPolicy extends Policy
     /** <p>Default Policy.</p> */
     private static String defaultPolicy = "sun.security.provider.PolicyFile";
 
-    /** <p>JetspeedPermission Manager Service.</p> */
+    /** <p>InternalPermission Manager Service.</p> */
     private PermissionManager pms = null;
 
     /**

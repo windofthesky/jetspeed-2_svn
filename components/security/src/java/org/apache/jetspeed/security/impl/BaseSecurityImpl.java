@@ -27,16 +27,17 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
-import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
-import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
-import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalRolePrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
+import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
+import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 
 /**
  * <p>Base class for the security services.</p> 
@@ -75,11 +76,11 @@ public class BaseSecurityImpl
     }
 
     /**
-     * <p>Returns the {@link JetspeedGroupPrincipal} from the group full path name.</p>
+     * <p>Returns the {@link InternalGroupPrincipal} from the group full path name.</p>
      * @param groupFullPathName The group full path name.
-     * @return The {@link JetspeedGroupPrincipal}.
+     * @return The {@link InternalGroupPrincipal}.
      */
-    JetspeedGroupPrincipal getJetspeedGroupPrincipal(String groupFullPathName)
+    InternalGroupPrincipal getJetspeedGroupPrincipal(String groupFullPathName)
     {
         GroupPrincipal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);
         String fullPath = groupPrincipal.getFullPath();
@@ -87,17 +88,17 @@ public class BaseSecurityImpl
         PersistenceStore store = getPersistenceStore();       
         Filter filter = store.newFilter();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = store.newQuery(JetspeedGroupPrincipalImpl.class, filter);
-        JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) store.getObjectByQuery(query);
+        Object query = store.newQuery(InternalGroupPrincipalImpl.class, filter);
+        InternalGroupPrincipal omGroup = (InternalGroupPrincipal) store.getObjectByQuery(query);
         return omGroup;
     }
 
     /**
-     * <p>Returns the {@link JetspeedUserPrincipal} from the user name.</p>
+     * <p>Returns the {@link InternalUserPrincipal} from the user name.</p>
      * @param username The user name.
-     * @return The {@link JetspeedUserPrincipal}.
+     * @return The {@link InternalUserPrincipal}.
      */
-    JetspeedUserPrincipal getJetspeedUserPrincipal(String username)
+    InternalUserPrincipal getJetspeedUserPrincipal(String username)
     {
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
@@ -105,17 +106,17 @@ public class BaseSecurityImpl
         PersistenceStore store = getPersistenceStore();       
         Filter filter = store.newFilter();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = store.newQuery(JetspeedUserPrincipalImpl.class, filter);
-        JetspeedUserPrincipal omUser = (JetspeedUserPrincipal) store.getObjectByQuery(query);
+        Object query = store.newQuery(InternalUserPrincipalImpl.class, filter);
+        InternalUserPrincipal omUser = (InternalUserPrincipal) store.getObjectByQuery(query);
         return omUser;
     }
 
     /**
-     * <p>Returns the {@link JetspeedRolePrincipal} from the role full path name.</p>
+     * <p>Returns the {@link InternalRolePrincipal} from the role full path name.</p>
      * @param username The role full path name.
-     * @return The {@link JetspeedRolePrincipal}.
+     * @return The {@link InternalRolePrincipal}.
      */
-    JetspeedRolePrincipal getJetspeedRolePrincipal(String roleFullPathName)
+    InternalRolePrincipal getJetspeedRolePrincipal(String roleFullPathName)
     {
         RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
         String fullPath = rolePrincipal.getFullPath();
@@ -123,17 +124,17 @@ public class BaseSecurityImpl
         PersistenceStore store = getPersistenceStore();       
         Filter filter = store.newFilter();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = store.newQuery(JetspeedRolePrincipalImpl.class, filter);
-        JetspeedRolePrincipal omRole = (JetspeedRolePrincipal) store.getObjectByQuery(query);
+        Object query = store.newQuery(InternalRolePrincipalImpl.class, filter);
+        InternalRolePrincipal omRole = (InternalRolePrincipal) store.getObjectByQuery(query);
         return omRole;
     }
 
     /**
-     * <p>Returns a {@link User} object provided a {@link JetspeedUserPrincipal}
-     * @param omUser The {@link JetspeedUserPrincipal}
+     * <p>Returns a {@link User} object provided a {@link InternalUserPrincipal}
+     * @param omUser The {@link InternalUserPrincipal}
      * @return The {@link User}
      */
-    User getUser(JetspeedUserPrincipal omUser)
+    User getUser(InternalUserPrincipal omUser)
     {
         UserPrincipal userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(omUser.getFullPath()));
         String fullPath = userPrincipal.getFullPath();
@@ -160,8 +161,8 @@ public class BaseSecurityImpl
 
     /**
      * <p>Returns a collection of {@link User} from a collection of
-     * {@link JetspeedUserPrincipal}.</p>
-     * @param omUsers The collection of {@link JetspeedUserPrincipal}.
+     * {@link InternalUserPrincipal}.</p>
+     * @param omUsers The collection of {@link InternalUserPrincipal}.
      * @return The collection of {@link User}.
      */
     Collection getUsers(Collection omUsers)
@@ -172,7 +173,7 @@ public class BaseSecurityImpl
             Iterator omUsersIterator = omUsers.iterator();
             while (omUsersIterator.hasNext())
             {
-                JetspeedUserPrincipal omUser = (JetspeedUserPrincipal) omUsersIterator.next();
+                InternalUserPrincipal omUser = (InternalUserPrincipal) omUsersIterator.next();
                 users.add(getUser(omUser));
             }
         }
@@ -180,11 +181,11 @@ public class BaseSecurityImpl
     }
 
     /**
-     * <p>Returns a {@link Role} object provided a {@link JetspeedRolePrincipal}.</p>
-     * @param omRole The {@link JetspeedRolePrincipal}
+     * <p>Returns a {@link Role} object provided a {@link InternalRolePrincipal}.</p>
+     * @param omRole The {@link InternalRolePrincipal}
      * @return The {@link Role}
      */
-    Role getRole(JetspeedRolePrincipal omRole)
+    Role getRole(InternalRolePrincipal omRole)
     {
         RolePrincipal rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl.getPrincipalNameFromFullPath(omRole.getFullPath()));
         Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
@@ -194,8 +195,8 @@ public class BaseSecurityImpl
 
     /**
      * <p>Returns a collection of {@link Role} from a collection of
-     * {@link JetspeedRolePrincipal}.</p>
-     * @param omRoles The collection of {@link JetspeedRolePrincipal}.
+     * {@link InternalRolePrincipal}.</p>
+     * @param omRoles The collection of {@link InternalRolePrincipal}.
      * @return The collection of {@link Role}.
      */
     Collection getRoles(Collection omRoles)
@@ -206,7 +207,7 @@ public class BaseSecurityImpl
             Iterator omRolesIterator = omRoles.iterator();
             while (omRolesIterator.hasNext())
             {
-                JetspeedRolePrincipal omRole = (JetspeedRolePrincipal) omRolesIterator.next();
+                InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIterator.next();
                 roles.add(getRole(omRole));
             }
         }
@@ -215,10 +216,10 @@ public class BaseSecurityImpl
 
     /**
      * <p>Given a role full path, removes the matching role from a given
-     * {@JetspeedRolePrincipal} collection.</p>
-     * @param omRoles The collection of {@JetspeedRolePrincipal}.
+     * {@InternalRolePrincipal} collection.</p>
+     * @param omRoles The collection of {@InternalRolePrincipal}.
      * @param roleFullPathName The full path of the role to remove.
-     * @return The new collection of {@JetspeedRolePrincipal}.
+     * @return The new collection of {@InternalRolePrincipal}.
      */
     Collection removeRole(Collection omRoles, String roleFullPathName)
     {
@@ -226,7 +227,7 @@ public class BaseSecurityImpl
         Iterator omRolesIterator = omRoles.iterator();
         while (omRolesIterator.hasNext())
         {
-            JetspeedRolePrincipal omRole = (JetspeedRolePrincipal) omRolesIterator.next();
+            InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIterator.next();
             if (!(omRole.getFullPath().equals(RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName))))
             {
                 newOmRoles.add(omRole);
@@ -236,11 +237,11 @@ public class BaseSecurityImpl
     }
 
     /**
-     * <p>Returns a {@link Group} object provided a {@link JetspeedGroupPrincipal}
-     * @param omGroup The {@link JetspeedGroupPrincipal}
+     * <p>Returns a {@link Group} object provided a {@link InternalGroupPrincipal}
+     * @param omGroup The {@link InternalGroupPrincipal}
      * @return The {@link Group}
      */
-    Group getGroup(JetspeedGroupPrincipal omGroup)
+    Group getGroup(InternalGroupPrincipal omGroup)
     {
         GroupPrincipal groupPrincipal =
             new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(omGroup.getFullPath()));
@@ -251,9 +252,9 @@ public class BaseSecurityImpl
 
     /**
      * <p>Returns a collection of {@link Group} from a collection of
-     * {@link JetspeedGroupPrincipal}.</p>
+     * {@link InternalGroupPrincipal}.</p>
      * @param omGroups The collection of {@link Group}.
-     * @return The collection of {@link JetspeedGroupPrincipal}.
+     * @return The collection of {@link InternalGroupPrincipal}.
      */
     Collection getGroups(Collection omGroups)
     {
@@ -263,7 +264,7 @@ public class BaseSecurityImpl
             Iterator omGroupsIterator = omGroups.iterator();
             while (omGroupsIterator.hasNext())
             {
-                JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) omGroupsIterator.next();
+                InternalGroupPrincipal omGroup = (InternalGroupPrincipal) omGroupsIterator.next();
                 groups.add(getGroup(omGroup));
             }
         }
@@ -272,10 +273,10 @@ public class BaseSecurityImpl
 
     /**
      * <p>Given a group full path, removes the matching group from a given
-     * {@JetspeedGroupPrincipal} collection.</p>
-     * @param omGroups The collection of {@JetspeedGroupPrincipal}.
+     * {@InternalGroupPrincipal} collection.</p>
+     * @param omGroups The collection of {@InternalGroupPrincipal}.
      * @param groupFullPathName The full path of the group to remove.
-     * @return The new collection of {@JetspeedGroupPrincipal}.
+     * @return The new collection of {@InternalGroupPrincipal}.
      */
     Collection removeGroup(Collection omGroups, String groupFullPathName)
     {
@@ -283,7 +284,7 @@ public class BaseSecurityImpl
         Iterator omGroupsIterator = omGroups.iterator();
         while (omGroupsIterator.hasNext())
         {
-            JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) omGroupsIterator.next();
+            InternalGroupPrincipal omGroup = (InternalGroupPrincipal) omGroupsIterator.next();
             if (!(omGroup.getFullPath().equals(GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName))))
             {
                 newOmGroups.add(omGroup);
@@ -294,7 +295,7 @@ public class BaseSecurityImpl
 
     /**
      * <p>Utility method to get a set of {@link RolePrincipal} from 
-     * a collection of {@link JetspeedRolePrincipal} object model.</p>
+     * a collection of {@link InternalRolePrincipal} object model.</p>
      * @param omRoles The roles.
      * @return The role principals.
      */
@@ -307,7 +308,7 @@ public class BaseSecurityImpl
             Iterator omRolesIter = omRoles.iterator();
             while (omRolesIter.hasNext())
             {
-                JetspeedRolePrincipal omRole = (JetspeedRolePrincipal) omRolesIter.next();
+                InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIter.next();
                 Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
                 String [] fullPaths=roleHierarchyResolver.resolve(preferences);
                 for (int i = 0; i < fullPaths.length; i++)
@@ -321,7 +322,7 @@ public class BaseSecurityImpl
 
     /**
      * <p>Utility method to get a set of {@link GroupPrincipal} from 
-     * a collection of {@link JetspeedGroupPrincipal} object model.</p>
+     * a collection of {@link InternalGroupPrincipal} object model.</p>
      * @param groups The groups.
      * @return The group principals.
      */
@@ -334,7 +335,7 @@ public class BaseSecurityImpl
             Iterator omGroupsIter = omGroups.iterator();
             while (omGroupsIter.hasNext())
             {
-                JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) omGroupsIter.next();
+                InternalGroupPrincipal omGroup = (InternalGroupPrincipal) omGroupsIter.next();
                 
                 Preferences preferences = Preferences.userRoot().node(omGroup.getFullPath());
                 String [] fullPaths=groupHierarchyResolver.resolve(preferences);

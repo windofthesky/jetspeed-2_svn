@@ -48,8 +48,6 @@ public class TestLoginModule extends AbstractSecurityTestcase
     public void setUp() throws Exception
     {
         super.setUp();
-       
-    
         initUserObject();
 
         // Set up login context.

@@ -30,10 +30,10 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.om.JetspeedPermission;
-import org.apache.jetspeed.security.om.JetspeedPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedPermissionImpl;
-import org.apache.jetspeed.security.om.impl.JetspeedPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalPermission;
+import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalPermissionImpl;
+import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -77,7 +77,7 @@ public class PermissionManagerImpl implements PermissionManager
         ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
-        JetspeedPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
+        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
         Collection omPermissions = new ArrayList();
         if (null != omPrincipal)
         {
@@ -100,12 +100,12 @@ public class PermissionManagerImpl implements PermissionManager
             PersistenceStore store = getPersistenceStore();
             Filter filter = store.newFilter();
             filter.addIn("fullPath", principalsFullPath);
-            Object query = store.newQuery(JetspeedPrincipalImpl.class, filter);
+            Object query = store.newQuery(InternalPrincipalImpl.class, filter);
             Collection omPrincipals = store.getCollectionByQuery(query);
             Iterator omPrincipalsIterator = omPrincipals.iterator();
             while (omPrincipalsIterator.hasNext())
             {
-                JetspeedPrincipal omPrincipal = (JetspeedPrincipal) omPrincipalsIterator.next();
+                InternalPrincipal omPrincipal = (InternalPrincipal) omPrincipalsIterator.next();
                 Collection omPermissions = omPrincipal.getPermissions();
                 if (null != omPermissions)
                 {
@@ -138,9 +138,9 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
-     * <p>Iterate through a collection of {@link JetspeedPermission}
+     * <p>Iterate through a collection of {@link InternalPermission}
      * and build a collection of {@link java.security.Permission}.</p>
-     * @param omPermissions The collection of {@link JetspeedPermission}.
+     * @param omPermissions The collection of {@link InternalPermission}.
      * @return The collection of {@link java.security.Permission}.
      */
     private Permissions getSecurityPermissions(Collection omPermissions)
@@ -149,7 +149,7 @@ public class PermissionManagerImpl implements PermissionManager
         Iterator omPermissionsIterator = omPermissions.iterator();
         while (omPermissionsIterator.hasNext())
         {
-            JetspeedPermission omPermission = (JetspeedPermission) omPermissionsIterator.next();
+            InternalPermission omPermission = (InternalPermission) omPermissionsIterator.next();
             Permission permission = null;
             try
             {
@@ -175,7 +175,7 @@ public class PermissionManagerImpl implements PermissionManager
     {
         ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" }, "removePermission(java.security.Permission)");
 
-        JetspeedPermission omPermission = getJetspeedPermission(permission);
+        InternalPermission omPermission = getJetspeedPermission(permission);
         if (null != omPermission)
         {
             Collection omPrincipals = omPermission.getPrincipals();
@@ -216,7 +216,7 @@ public class PermissionManagerImpl implements PermissionManager
         ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
-        JetspeedPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
+        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
         if (null != omPrincipal)
         {
             Collection omPermissions = omPrincipal.getPermissions();
@@ -230,10 +230,6 @@ public class PermissionManagerImpl implements PermissionManager
                 store.lockForWrite(omPrincipal);
                 omPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 omPrincipal.setPermissions(omPermissions);
-                store.getTransaction().checkpoint();
-
-                // Remove principal.
-                store.deletePersistent(omPrincipal);
                 store.getTransaction().checkpoint();
             }
             catch (Exception e)
@@ -260,16 +256,16 @@ public class PermissionManagerImpl implements PermissionManager
         boolean createPermission = true;
         Collection omPermissions = new ArrayList();
 
-        JetspeedPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
+        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
         if (null == omPrincipal)
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST + ": " + principal.getName());
         }
-        JetspeedPermission omPermission = getJetspeedPermission(permission);
+        InternalPermission omPermission = getJetspeedPermission(permission);
         if (null == omPermission)
         {
             omPermission =
-                new JetspeedPermissionImpl(permission.getClass().getName(), permission.getName(), permission.getActions());
+                new InternalPermissionImpl(permission.getClass().getName(), permission.getName(), permission.getActions());
         }
 
         if (null != omPrincipal.getPermissions())
@@ -309,7 +305,7 @@ public class PermissionManagerImpl implements PermissionManager
             "revokePermission(java.security.Principal, java.security.Permission)");
 
         // Remove permissions on principal.
-        JetspeedPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
+        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
         if (null != omPrincipal)
         {
             Collection omPermissions = omPrincipal.getPermissions();
@@ -320,7 +316,7 @@ public class PermissionManagerImpl implements PermissionManager
                 Iterator omPermissionsIterator = omPermissions.iterator();
                 while (omPermissionsIterator.hasNext())
                 {
-                    JetspeedPermission omPermission = (JetspeedPermission) omPermissionsIterator.next();
+                    InternalPermission omPermission = (InternalPermission) omPermissionsIterator.next();
                     if (!((omPermission.getClassname().equals(permission.getClass().getName()))
                         && (omPermission.getName().equals(permission.getName()))
                         && (omPermission.getActions().equals(permission.getActions()))))
@@ -355,34 +351,34 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
-     * <p>Returns the {@link JetspeedPrincipal} from the full path.</p>
+     * <p>Returns the {@link InternalPrincipal} from the full path.</p>
      * @param fullPath The full path.
-     * @return The {@link JetspeedPrincipal}.
+     * @return The {@link InternalPrincipal}.
      */
-    JetspeedPrincipal getJetspeedPrincipal(String fullPath)
+    InternalPrincipal getJetspeedPrincipal(String fullPath)
     {
         PersistenceStore store = getPersistenceStore();
         Filter filter = store.newFilter();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = store.newQuery(JetspeedPrincipalImpl.class, filter);
-        JetspeedPrincipal omPrincipal = (JetspeedPrincipal) store.getObjectByQuery(query);
+        Object query = store.newQuery(InternalPrincipalImpl.class, filter);
+        InternalPrincipal omPrincipal = (InternalPrincipal) store.getObjectByQuery(query);
         return omPrincipal;
     }
 
     /**
-     * <p>Returns the {@link JetspeedPermission} from the full path.</p>
+     * <p>Returns the {@link InternalPermission} from the full path.</p>
      * @param fullPath The full path.
-     * @return The {@link JetspeedPermission}.
+     * @return The {@link InternalPermission}.
      */
-    JetspeedPermission getJetspeedPermission(Permission permission)
+    InternalPermission getJetspeedPermission(Permission permission)
     {
         PersistenceStore store = getPersistenceStore();
         Filter filter = store.newFilter();
         filter.addEqualTo("classname", permission.getClass().getName());
         filter.addEqualTo("name", permission.getName());
         filter.addEqualTo("actions", permission.getActions());
-        Object query = store.newQuery(JetspeedPermissionImpl.class, filter);
-        JetspeedPermission omPermission = (JetspeedPermission) store.getObjectByQuery(query);
+        Object query = store.newQuery(InternalPermissionImpl.class, filter);
+        InternalPermission omPermission = (InternalPermission) store.getObjectByQuery(query);
         return omPermission;
     }
 

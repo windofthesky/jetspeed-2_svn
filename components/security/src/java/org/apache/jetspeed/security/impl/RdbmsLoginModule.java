@@ -24,7 +24,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.UserManager;
 
 /**
@@ -65,7 +65,7 @@ public class RdbmsLoginModule implements LoginModule
     /** <p>Options specified in the login Configuration for this particular LoginModule.</p> */
     private Map options;
 
-    /** <p>JetspeedUserPrincipal manager service.</p> */
+    /** <p>InternalUserPrincipal manager service.</p> */
     private UserManager ums;
 
     /** <p>The user name.</p> */
@@ -76,8 +76,8 @@ public class RdbmsLoginModule implements LoginModule
      */
     public RdbmsLoginModule()
     {
-        SecurityProvider securityProvider = SecurityProviderImpl.securityProvider;
-        this.ums = securityProvider.getUserManager();
+        AuthenticationProvider authenticationProvider = AuthenticationProviderImpl.authenticationProvider;
+        this.ums = authenticationProvider.getUserManager();
         debug = false;
         success = false;
         commitSuccess = false;

@@ -17,30 +17,30 @@ package org.apache.jetspeed.security.om.impl;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-import org.apache.jetspeed.security.om.JetspeedPermission;
+import org.apache.jetspeed.security.om.InternalPermission;
 
 /**
- * <p>{@link JetspeedPermission} interface implementation.</p>
+ * <p>{@link InternalPermission} interface implementation.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedPermissionImpl implements JetspeedPermission
+public class InternalPermissionImpl implements InternalPermission
 {
 
     /**
-     * <p>JetspeedPermission implementation default constructor.</p>
+     * <p>InternalPermission implementation default constructor.</p>
      */
-    public JetspeedPermissionImpl()
+    public InternalPermissionImpl()
     {
     }
 
     /**
-     * <p>JetspeedPermission constructor.</p>
+     * <p>InternalPermission constructor.</p>
      * @param classname The classname.
      * @param name The name.
      * @param actions The actions.
      */
-    public JetspeedPermissionImpl(String classname, String name, String actions)
+    public InternalPermissionImpl(String classname, String name, String actions)
     {
         this.classname = classname;
         this.name = name;
@@ -52,7 +52,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private long permissionId;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getPermissionId()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getPermissionId()
      */
     public long getPermissionId()
     {
@@ -60,7 +60,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setPermissionId(long)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setPermissionId(long)
      */
     public void setPermissionId(long permissionId)
     {
@@ -70,7 +70,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private String classname;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getClassname()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getClassname()
      */
     public String getClassname()
     {
@@ -78,7 +78,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setClassname(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setClassname(java.lang.String)
      */
     public void setClassname(String classname)
     {
@@ -88,7 +88,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private String name;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getName()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getName()
      */
     public String getName()
     {
@@ -96,7 +96,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setName(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setName(java.lang.String)
      */
     public void setName(String name)
     {
@@ -106,7 +106,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private String actions;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getActions()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getActions()
      */
     public String getActions()
     {
@@ -114,7 +114,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setActions(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setActions(java.lang.String)
      */
     public void setActions(String actions)
     {
@@ -124,7 +124,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private Collection principals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getPrincipals()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getPrincipals()
      */
     public Collection getPrincipals()
     {
@@ -132,7 +132,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setPrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setPrincipals(java.util.Collection)
      */
     public void setPrincipals(Collection principals)
     {
@@ -142,7 +142,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private Timestamp creationDate;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getCreationDate()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getCreationDate()
      */
     public Timestamp getCreationDate()
     {
@@ -150,7 +150,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setCreationDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setCreationDate(java.sql.Timestamp)
      */
     public void setCreationDate(Timestamp creationDate)
     {
@@ -160,7 +160,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     private Timestamp modifiedDate;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#getModifiedDate()
+     * @see org.apache.jetspeed.security.om.InternalPermission#getModifiedDate()
      */
     public Timestamp getModifiedDate()
     {
@@ -168,7 +168,7 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setModifiedDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalPermission#setModifiedDate(java.sql.Timestamp)
      */
     public void setModifiedDate(Timestamp modifiedDate)
     {
@@ -176,14 +176,14 @@ public class JetspeedPermissionImpl implements JetspeedPermission
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#equals(java.lang.Object)
+     * @see org.apache.jetspeed.security.om.InternalPermission#equals(java.lang.Object)
      */
     public boolean equals(Object object)
     {  
-        if (!(object instanceof JetspeedPermission))
+        if (!(object instanceof InternalPermission))
             return false;
 
-        JetspeedPermission p = (JetspeedPermission) object;
+        InternalPermission p = (InternalPermission) object;
         boolean isEqual =
             ((p.getClassname().equals(this.getClassname())) && (p.getName().equals(this.getName())) && (p.getActions().equals(this.getActions())));
         return isEqual;

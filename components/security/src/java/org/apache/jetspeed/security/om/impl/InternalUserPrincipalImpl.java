@@ -16,22 +16,22 @@ package org.apache.jetspeed.security.om.impl;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
 
 /**
- * <p>{@link JetspeedUserPrincipal} interface implementation.</p>
+ * <p>{@link InternalUserPrincipal} interface implementation.</p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements JetspeedUserPrincipal
+public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements InternalUserPrincipal
 {
     /** <p>User principal security class.</p> */
-    static String USER_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.JetspeedUserPrincipalImpl";
+    static String USER_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalUserPrincipalImpl";
 
     /**
-     * <p>JetspeedUserPrincipal implementation default constructor.</p>
+     * <p>InternalUserPrincipal implementation default constructor.</p>
      */
-    public JetspeedUserPrincipalImpl()
+    public InternalUserPrincipalImpl()
     {
         super();
     }
@@ -41,7 +41,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
      * a username and password.</p>
      * @param username The username.
      */
-    public JetspeedUserPrincipalImpl(String username)
+    public InternalUserPrincipalImpl(String username)
     {
         super(USER_PRINCIPAL_CLASSNAME, username);
     }
@@ -49,7 +49,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     private Collection credentials;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#getCredentials()
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getCredentials()
      */
     public Collection getCredentials()
     {
@@ -57,7 +57,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#setCredentials(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setCredentials(java.util.Collection)
      */
     public void setCredentials(Collection credentials)
     {
@@ -67,7 +67,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     private Collection rolePrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#getRolePrincipals()
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getRolePrincipals()
      */
     public Collection getRolePrincipals()
     {
@@ -75,7 +75,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#setRolePrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setRolePrincipals(java.util.Collection)
      */
     public void setRolePrincipals(Collection rolePrincipals)
     {
@@ -85,7 +85,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     private Collection groupPrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#getGroupPrincipals()
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getGroupPrincipals()
      */
     public Collection getGroupPrincipals()
     {
@@ -93,7 +93,7 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedUserPrincipal#setGroupPrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setGroupPrincipals(java.util.Collection)
      */
     public void setGroupPrincipals(Collection groupPrincipals)
     {
@@ -101,16 +101,16 @@ public class JetspeedUserPrincipalImpl extends JetspeedPrincipalImpl implements 
     }
 
     /**
-     * <p>Compares this {@link JetspeedUserPrincipal} to the provided user principal
+     * <p>Compares this {@link InternalUserPrincipal} to the provided user principal
      * and check if they are equal.</p>
-     * return Whether the {@link JetspeedUserPrincipal} are equal.
+     * return Whether the {@link InternalUserPrincipal} are equal.
      */
     public boolean equals(Object object)
     {  
-        if (!(object instanceof JetspeedUserPrincipal))
+        if (!(object instanceof InternalUserPrincipal))
             return false;
 
-        JetspeedUserPrincipal r = (JetspeedUserPrincipal) object;
+        InternalUserPrincipal r = (InternalUserPrincipal) object;
         boolean isEqual = (r.getFullPath().equals(this.getFullPath()));
         return isEqual;
     }

@@ -17,14 +17,14 @@ package org.apache.jetspeed.security.om.impl;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-import org.apache.jetspeed.security.om.JetspeedPrincipal;
+import org.apache.jetspeed.security.om.InternalPrincipal;
 
 /**
- * <p>{@link JetspeedPrincipal} interface implementation.</p>
+ * <p>{@link InternalPrincipal} interface implementation.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedPrincipalImpl implements JetspeedPrincipal
+public class InternalPrincipalImpl implements InternalPrincipal
 {
     /** 
      * <p>The special attribute telling OJB the object's concrete type.</p>
@@ -33,18 +33,18 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     protected String ojbConcreteClass;
 
     /**
-     * <p>JetspeedPrincipal implementation default constructor.</p>
+     * <p>InternalPrincipal implementation default constructor.</p>
      */
-    public JetspeedPrincipalImpl()
+    public InternalPrincipalImpl()
     {
     }
 
     /**
-     * <p>JetspeedPrincipal constructor given a classname and name.</p>
+     * <p>InternalPrincipal constructor given a classname and name.</p>
      * @param classname The classname.
      * @param fullPath The full path.
      */
-    public JetspeedPrincipalImpl(String classname, String fullPath)
+    public InternalPrincipalImpl(String classname, String fullPath)
     {
         this.ojbConcreteClass = classname;
         this.classname = classname;
@@ -56,7 +56,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private long principalId;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getPrincipalId()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getPrincipalId()
      */
     public long getPrincipalId()
     {
@@ -64,7 +64,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setPrincipalId(int)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setPrincipalId(int)
      */
     public void setPrincipalId(long principalId)
     {
@@ -74,7 +74,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private String classname;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getClassname()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getClassname()
      */
     public String getClassname()
     {
@@ -82,7 +82,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setClassname(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setClassname(java.lang.String)
      */
     public void setClassname(String classname)
     {
@@ -93,7 +93,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private String fullPath;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getFullPath()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getFullPath()
      */
     public String getFullPath()
     {
@@ -101,7 +101,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setFullPath(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setFullPath(java.lang.String)
      */
     public void setFullPath(String fullPath)
     {
@@ -111,7 +111,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private Collection permissions;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getPermissions()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getPermissions()
      */
     public Collection getPermissions()
     {
@@ -119,7 +119,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setPermissions(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setPermissions(java.util.Collection)
      */
     public void setPermissions(Collection permissions)
     {
@@ -129,7 +129,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private Timestamp creationDate;
  
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getCreationDate()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getCreationDate()
      */
     public Timestamp getCreationDate()
     {
@@ -137,7 +137,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setCreationDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setCreationDate(java.sql.Timestamp)
      */
     public void setCreationDate(Timestamp creationDate)
     {
@@ -147,7 +147,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     private Timestamp modifiedDate;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getModifiedDate()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getModifiedDate()
      */
     public Timestamp getModifiedDate()
     {
@@ -155,7 +155,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setModifiedDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setModifiedDate(java.sql.Timestamp)
      */
     public void setModifiedDate(Timestamp modifiedDate)
     {

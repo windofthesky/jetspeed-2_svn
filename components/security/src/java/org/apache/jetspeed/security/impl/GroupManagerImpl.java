@@ -29,9 +29,9 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -72,7 +72,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         }
 
         // If does not exist, create.
-        JetspeedGroupPrincipal omGroup = new JetspeedGroupPrincipalImpl(fullPath);
+        InternalGroupPrincipal omGroup = new InternalGroupPrincipalImpl(fullPath);
         Preferences preferences = Preferences.userRoot().node(fullPath);
         PersistenceStore store = getPersistenceStore();
         try
@@ -99,13 +99,13 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     {
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "removeGroup(java.lang.String)");
 
-        JetspeedGroupPrincipal omParentGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omParentGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null != omParentGroup)
         {
             PersistenceStore store = getPersistenceStore();
             Filter filter = store.newFilter();
             filter.addLike("fullPath", omParentGroup.getFullPath() + "/*");
-            Object query = store.newQuery(JetspeedGroupPrincipalImpl.class, filter);
+            Object query = store.newQuery(InternalGroupPrincipalImpl.class, filter);
             Collection omGroups = store.getCollectionByQuery(query);
             if (null == omGroups)
             {
@@ -116,7 +116,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
             Iterator omGroupsIterator = omGroups.iterator();
             while (omGroupsIterator.hasNext())
             {
-                JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) omGroupsIterator.next();
+                InternalGroupPrincipal omGroup = (InternalGroupPrincipal) omGroupsIterator.next();
                 // TODO This should be managed in a transaction.
                 Collection omUsers = omGroup.getUserPrincipals();
                 if (null != omUsers)
@@ -175,7 +175,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     {
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "groupExists(java.lang.String)");
 
-        JetspeedGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         boolean groupExists = (null != omGroup);
         return groupExists;
     }
@@ -187,7 +187,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     {
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "getGroup(java.lang.String)");
 
-        JetspeedGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
@@ -202,7 +202,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     {
         ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "getGroupsForUser(java.lang.String)");
 
-        JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
+        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
@@ -221,7 +221,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
             new String[] { "groupFullPathName" },
             "getUsersInGroup(java.lang.String)");
 
-        JetspeedGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
@@ -241,13 +241,13 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
             new String[] { "username", "groupFullPathName" },
             "addUserToGroup(java.lang.String, java.lang.String)");
 
-        JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
+        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
         }
 
-        JetspeedGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
@@ -289,7 +289,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
             new String[] { "username", "groupFullPathName" },
             "removeUserFromGroup(java.lang.String, java.lang.String)");
 
-        JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
+        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         // TODO This should be managed in a transaction.
         if (null != omUser)
         {
@@ -329,12 +329,12 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
             new String[] { "username", "groupFullPathName" },
             "isUserInGroup(java.lang.String, java.lang.String)");
 
-        JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
+        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
         }
-        JetspeedGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
+        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);

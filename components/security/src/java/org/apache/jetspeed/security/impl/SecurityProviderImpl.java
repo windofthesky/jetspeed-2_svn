@@ -14,67 +14,119 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.net.URL;
 import java.security.Policy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.components.util.system.SystemResourceUtil;
-import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
 import org.apache.jetspeed.security.SecurityProvider;
-import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
- * @author <a href="">David Le Strat</a>
- *
+ * @author <a href="">David Le Strat </a>
+ *  
  */
 public class SecurityProviderImpl implements SecurityProvider
 {
 
     private static final Log log = LogFactory.getLog(SecurityProviderImpl.class);
 
-    /** The {@link SecurityProvider} instance. */
-    static SecurityProvider securityProvider;
+    /** The {@link CredentialHandler}. */
+    private CredentialHandler credHandler;
 
-    /** The user manager. */
-    private UserManager userMgr;
-        
+    /** The {@link UserSecurityHandler}. */
+    private UserSecurityHandler userSecurityHandler;
+
+    /** The {@link RoleSecurityHandler}. */
+    private RoleSecurityHandler roleSecurityHandler;
+
+    /** The {@link GroupSecurityHandler}. */
+    private GroupSecurityHandler groupSecurityHandler;
+
     /**
-     * <p>Constructor configuring the security service with the correct
-     * <code>java.security.auth.login.config</code> and {@link Policy}.</p>
+     * <p>
+     * Constructor configuring the security services with the correct
+     * security handlers.
+     * </p>
+     * 
+     * @param credHandler The credential handler.
+     * @param userSecurityHandler The user security handler.
+     * @param roleSecurityHandler The role security handler.
+     * @param groupSecurityHandler The group security handler.
      */
-    public SecurityProviderImpl(String loginConfig, Policy policy, UserManager userMgr)
+    public SecurityProviderImpl(CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
+            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler)
     {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        SystemResourceUtil resourceUtil = new ClassLoaderSystemResourceUtilImpl(cl);
-        URL loginConfigUrl = null;
-        try
-        {
-            loginConfigUrl = resourceUtil.getURL(loginConfig);
-        }
-        catch (Exception e)
-        {
-            throw new IllegalStateException("Could not locate the login config.  Bad URL. " + e.toString());
-        }
-        if (null != loginConfigUrl)
-        {
-            if (log.isDebugEnabled()) 
-                log.debug("java.security.auth.login.config = " + loginConfigUrl.toString());
-            System.setProperty("java.security.auth.login.config", loginConfigUrl.toString());
-        }
+        // The credential handler.
+        this.credHandler = credHandler;
+        // The user security handler.
+        this.userSecurityHandler = userSecurityHandler;
+        // The role security handler.
+        this.roleSecurityHandler = roleSecurityHandler;
+        // The group security handler.
+        this.groupSecurityHandler = groupSecurityHandler;
+    }
+    
+    /**
+     * <p>
+     * Constructor configuring the security services with the correct
+     * {@link Policy}and security handlers.
+     * </p>
+     * 
+     * @param policy The policy.
+     * @param credHandler The credential handler.
+     * @param userSecurityHandler The user security handler.
+     * @param roleSecurityHandler The role security handler.
+     * @param groupSecurityHandler The group security handler.
+     */
+    public SecurityProviderImpl(Policy policy, CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
+            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler)
+    {
+        // The policy.
         Policy.setPolicy(policy);
         Policy.getPolicy().refresh();
-        this.userMgr = userMgr;
-        SecurityProviderImpl.securityProvider = this;
+        // The credential handler.
+        this.credHandler = credHandler;
+        // The user security handler.
+        this.userSecurityHandler = userSecurityHandler;
+        // The role security handler.
+        this.roleSecurityHandler = roleSecurityHandler;
+        // The group security handler.
+        this.groupSecurityHandler = groupSecurityHandler;
     }
 
     /**
-     * @see org.apache.jetspeed.security.SecurityProvider#getUserManager()
+     * @see org.apache.jetspeed.security.SecurityProvider#getCredentialHandler()
      */
-    public UserManager getUserManager()
+    public CredentialHandler getCredentialHandler()
     {
-        return this.userMgr;
+        return this.credHandler;
     }
 
+    /**
+     * @see org.apache.jetspeed.security.SecurityProvider#getUserSecurityHandler()
+     */
+    public UserSecurityHandler getUserSecurityHandler()
+    {
+        return this.userSecurityHandler;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.SecurityProvider#getRoleSecurityHandler()
+     */
+    public RoleSecurityHandler getRoleSecurityHandler()
+    {
+        return this.roleSecurityHandler;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.SecurityProvider#getGroupSecurityHandler()
+     */
+    public GroupSecurityHandler getGroupSecurityHandler()
+    {
+        return this.groupSecurityHandler;
+    }
 }

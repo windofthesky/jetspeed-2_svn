@@ -20,7 +20,7 @@ import java.util.Collection;
  * <p>Interface representing Jetspeed security role principal object model.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface JetspeedRolePrincipal extends JetspeedPrincipal
+public interface InternalRolePrincipal extends InternalPrincipal
 {
     /**
      * <p>Getter for the user principals.</p>

@@ -24,9 +24,6 @@ import org.apache.jetspeed.security.RolePrincipal;
 public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipal
 {
 
-    /** <p>The Preferences role root node</p> */
-    static String  PREFS_ROLE_ROOT = "/role/";
-
     /**
      * <p>The role principal constructor.</p>
      * @param roleName The role principal name.

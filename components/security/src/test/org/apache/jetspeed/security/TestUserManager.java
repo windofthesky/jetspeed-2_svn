@@ -16,7 +16,6 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
@@ -26,12 +25,7 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 
 /**
  * <p>Unit testing for {@link UserManager}.</p>
@@ -49,7 +43,14 @@ public class TestUserManager extends AbstractSecurityTestcase
     {
         super(testName);
     }
-
+    
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+    }
    
     /**
      * @see junit.framework.TestCase#tearDown()
@@ -155,7 +156,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         try
         {
             ums.addUser("anon", "password");
-            ums.setPassword("anon", "newpassword");
+            ums.setPassword("anon", "password", "newpassword");
 
             LoginContext loginContext = null;
             // Test that the user can log in with the new password.
@@ -177,8 +178,11 @@ public class TestUserManager extends AbstractSecurityTestcase
         }
     }
 
-    public void testGetUsers()
-    throws Exception
+	/**
+	 * <p>Test get users.</p>
+	 * @throws Exception Throws an exception.
+	 */
+    public void testGetUsers() throws Exception
     {
         ums.addUser("one", "one-pw");
         ums.addUser("two", "two-pw");
@@ -212,6 +216,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         ums.removeUser("two");
         ums.removeUser("three");
     }
+
     /**
      * <p>Destroy user test object.</p>
      */

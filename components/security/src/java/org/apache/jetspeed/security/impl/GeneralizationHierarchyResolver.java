@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -37,7 +38,7 @@ public class GeneralizationHierarchyResolver implements HierarchyResolver
 {
     
     /**
-     * @see org.apache.jetspeed.security.impl.HierarchyResolver#resolve()
+     * @see org.apache.jetspeed.security.HierarchyResolver#resolve()
      */
     public String[] resolve( Preferences prefs ) {
         ArgUtil.notNull(

@@ -24,6 +24,15 @@ import java.security.Principal;
 */
 public interface BasePrincipal extends Principal, Serializable
 {
+    /** <p>The Preferences user root node</p> */
+    final static String  PREFS_USER_ROOT = "/user/";
+    
+    /** <p>The Preferences group root node</p> */
+    final static String PREFS_GROUP_ROOT = "/group/";
+    
+    /** <p>The Preferences role root node</p> */
+    final static String  PREFS_ROLE_ROOT = "/role/";
+    
     /**
      * <p>Provides the principal full path prepending PREFS_{PRINCPAL}_ROOT if not prepended.</p>
      * @return The principal full path.

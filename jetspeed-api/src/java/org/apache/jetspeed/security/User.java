@@ -25,6 +25,13 @@ import javax.security.auth.Subject;
 public interface User
 {
     /**
+     * <p>
+     * The default user attributes property set.
+     * </p>
+     */
+    final static String USER_INFO_PROPERTY_SET = "userinfo";
+    
+    /**
      * <p>Getter for the user {@link Subject} populated with the 
      * application principals.</p>
      * @return The {@link Subject}.

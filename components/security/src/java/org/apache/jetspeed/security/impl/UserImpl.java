@@ -83,7 +83,7 @@ public class UserImpl implements User
     {
         if (preferences != null)
         {
-            return preferences.node("userinfo");
+            return preferences.node(USER_INFO_PROPERTY_SET);
         }
         return null;
     }

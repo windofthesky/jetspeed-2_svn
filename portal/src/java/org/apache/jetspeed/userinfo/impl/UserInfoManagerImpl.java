@@ -61,19 +61,15 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     /** Map used to cache user info maps for each mapped portlet application. */
     private static Map userInfoMapCache;
 
-    /**
-     * <p>
-     * The default user attributes property set.
-     * </p>
-     */
-    static String USER_INFO_PROPERTY_SET = "userinfo";
-
     /** The user information property set. */
     String userInfoPropertySet;
+
     /** The user manager */
     UserManager userMgr;
+
     /** The portlet registry. */
     PortletRegistryComponent registry;
+
     /** The object id of the portlet application being processed. */
     String oid;
 
@@ -82,16 +78,14 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * Constructor providing access to the {@link UserManager}.
      * </p>
      * 
-     * @param userMgr
-     *            The user manager.
-     * @param registry
-     *            The portlet registry component.
+     * @param userMgr The user manager.
+     * @param registry The portlet registry component.
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry)
     {
         this.userMgr = userMgr;
         this.registry = registry;
-        this.userInfoPropertySet = USER_INFO_PROPERTY_SET;
+        this.userInfoPropertySet = User.USER_INFO_PROPERTY_SET;
         initUserInfoMapCache();
     }
 
@@ -101,12 +95,9 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * which property set to use for user information.
      * </p>
      * 
-     * @param userMgr
-     *            The user manager.
-     * @param registry
-     *            The portlet registry component.
-     * @param userInfoPropertySet
-     *            The user information property set.
+     * @param userMgr The user manager.
+     * @param registry The portlet registry component.
+     * @param userInfoPropertySet The user information property set.
      *  
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry, String userInfoPropertySet)
@@ -159,13 +150,10 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * user info attribute declared in the portlet.xml descriptor.
      * </p>
      * 
-     * @param userInfoPrefs
-     *            The user info preferences.
-     * @param userAttributes
-     *            The declarative portlet user attributes.
-     * @param userAttributeRefs
-     *            The declarative jetspeed portlet extension user attributes
-     *            reference.
+     * @param userInfoPrefs The user info preferences.
+     * @param userAttributes The declarative portlet user attributes.
+     * @param userAttributeRefs The declarative jetspeed portlet extension user
+     *            attributes reference.
      * @return The user info map.
      */
     private Map mapUserInfo(Preferences userInfoPrefs, Collection userAttributes, Collection userAttributeRefs)
@@ -224,7 +212,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         return userInfoMap;
     }
 
-
     /**
      * <p>
      * Gets the user preferences from the user's request.
@@ -233,8 +220,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * If no user is logged in, return null.
      * </p>
      * 
-     * @param context
-     *            The request context.
+     * @param context The request context.
      * @return The user preferences.
      */
     private Preferences getUserPreferences(RequestContext context)

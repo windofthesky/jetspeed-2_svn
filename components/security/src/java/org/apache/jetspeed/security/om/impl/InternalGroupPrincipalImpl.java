@@ -16,22 +16,22 @@ package org.apache.jetspeed.security.om.impl;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 
 /**
- * <p>{@link JetspeedGroupPrincipal} interface implementation.</p>
+ * <p>{@link InternalGroupPrincipal} interface implementation.</p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements JetspeedGroupPrincipal
+public class InternalGroupPrincipalImpl extends InternalPrincipalImpl implements InternalGroupPrincipal
 {
     /** <p>Group principal security class.</p> */
-    static String GROUP_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.JetspeedGroupPrincipalImpl";
+    static String GROUP_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalGroupPrincipalImpl";
 
     /**
      * <p>Group principal implementation default constructor.</p>
      */
-    public JetspeedGroupPrincipalImpl()
+    public InternalGroupPrincipalImpl()
     {
         super();
     }
@@ -40,7 +40,7 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
      * <p>Constructor to create a new group principal.</p>
      * @param fullPath The group full path.
      */
-    public JetspeedGroupPrincipalImpl(String fullPath)
+    public InternalGroupPrincipalImpl(String fullPath)
     {
         super(GROUP_PRINCIPAL_CLASSNAME, fullPath);  
     }
@@ -48,7 +48,7 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
     private Collection userPrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedGroupPrincipal#getUserPrincipals()
+     * @see org.apache.jetspeed.security.om.InternalGroupPrincipal#getUserPrincipals()
      */
     public Collection getUserPrincipals()
     {
@@ -56,7 +56,7 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedGroupPrincipal#setUserPrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalGroupPrincipal#setUserPrincipals(java.util.Collection)
      */
     public void setUserPrincipals(Collection userPrincipals)
     {
@@ -66,7 +66,7 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
     private Collection rolePrincipals;
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedGroupPrincipal#getRolePrincipals()
+     * @see org.apache.jetspeed.security.om.InternalGroupPrincipal#getRolePrincipals()
      */
     public Collection getRolePrincipals()
     {
@@ -74,7 +74,7 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedGroupPrincipal#setRolePrincipals(java.util.Collection)
+     * @see org.apache.jetspeed.security.om.InternalGroupPrincipal#setRolePrincipals(java.util.Collection)
      */
     public void setRolePrincipals(Collection rolePrincipals)
     {
@@ -82,16 +82,16 @@ public class JetspeedGroupPrincipalImpl extends JetspeedPrincipalImpl implements
     }
 
     /**
-     * <p>Compares this {@link JetspeedGroupPrincipal} to the provided group principal
+     * <p>Compares this {@link InternalGroupPrincipal} to the provided group principal
      * and check if they are equal.</p>
-     * return Whether the {@link JetspeedGroupPrincipal} are equal.
+     * return Whether the {@link InternalGroupPrincipal} are equal.
      */
     public boolean equals(Object object)
     {  
-        if (!(object instanceof JetspeedGroupPrincipal))
+        if (!(object instanceof InternalGroupPrincipal))
             return false;
 
-        JetspeedGroupPrincipal r = (JetspeedGroupPrincipal) object;
+        InternalGroupPrincipal r = (InternalGroupPrincipal) object;
         boolean isEqual = (r.getFullPath().equals(this.getFullPath()));
         return isEqual;
     }
