@@ -23,12 +23,6 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  <servlet>
-    <servlet-name>JetspeedContainer</servlet-name>
-    <display-name>Jetspeed Container</display-name>
-    <description>MVC Servlet for Jetspeed Portlet Applications</description>
-    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
-  </servlet>
 
   <servlet>
     <servlet-name>JetspeedContainer</servlet-name>
