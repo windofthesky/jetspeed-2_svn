@@ -34,9 +34,6 @@ limitations under the License.
      <valveDescriptor>
       <className>org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl</className>
     </valveDescriptor>
-     <valveDescriptor>
-      <className>org.apache.jetspeed.pipeline.valve.impl.VerySimpleLayoutValveImpl</className>
-    </valveDescriptor>
     <valveDescriptor>
       <className>org.apache.jetspeed.aggregator.AggregatorValve</className>
     </valveDescriptor>
