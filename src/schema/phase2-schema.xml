@@ -156,7 +156,7 @@ limitations under the License.
     </table>
     
     <table name="PRINCIPAL_RULE_ASSOC">
-        <column name="PRINCIPAL_NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="PRINCIPAL_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>
         <column name="RULE_ID" required="true" size="80" type="VARCHAR"/>
     </table>
     
