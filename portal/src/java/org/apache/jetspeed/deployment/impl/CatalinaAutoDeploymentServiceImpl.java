@@ -127,7 +127,7 @@ public class CatalinaAutoDeploymentServiceImpl extends BaseCommonService impleme
         }
         catch (Exception e)
         {
-            log.error("Unable to intialize Catalina Portlet Application Manager.  Auto deployment will be disabled: " + e.toString(), e);
+            log.warn("Unable to intialize Catalina Portlet Application Manager.  Auto deployment will be disabled: " + e.toString(), e);
             setInit(false);
             shutdown();
             return;
