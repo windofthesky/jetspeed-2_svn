@@ -52,26 +52,11 @@
 
 <f:view>
 	<x:panelLayout id="page">
-        <f:facet name="body">
             <f:verbatim><h2>Here is a tree?</h2></f:verbatim>
             
-            <h:panelGroup id="body">
+	<h:form>
 
                 <x:tree id="tree" value="#{treeModel}"
-                		iconLine="/images/tree/line.gif"
-        				iconNoline="/images/tree/noline.gif"
-				        iconChild="/images/tree/folder.gif"
-				        iconChildFirst="/images/tree/line_first.gif"
-				        iconChildMiddle="/images/tree/line_middle.gif"
-				        iconChildLast="/images/tree/line_last.gif"
-				        iconNodeOpen="/images/tree/node_open.gif"
-				        iconNodeOpenFirst="/images/tree/node_open_first.gif"
-				        iconNodeOpenMiddle="/images/tree/node_open_middle.gif"
-				        iconNodeOpenLast="/images/tree/node_open_last.gif"
-				        iconNodeClose="/images/tree/node_close.gif"
-				        iconNodeCloseFirst="/images/tree/node_close_first.gif"
-				        iconNodeCloseMiddle="/images/tree/node_close_middle.gif"
-				        iconNodeCloseLast="/images/tree/node_close_last.gif"
                         styleClass="tree"
                         nodeClass="treenode"
                         selectedNodeClass="treenodeSelected"
@@ -79,8 +64,7 @@
                 </x:tree>
                 <f:verbatim><br></f:verbatim>
 
-            </h:panelGroup>
-        </f:facet>
+	</h:form>
 	</x:panelLayout>
 
 </f:view>
