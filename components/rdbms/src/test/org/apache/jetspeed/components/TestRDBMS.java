@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.components;
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javax.sql.DataSource;
 
@@ -23,7 +22,6 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
-import org.hsqldb.jdbcDriver;
 import org.picocontainer.MutablePicoContainer;
 /**
  * <p>
@@ -38,8 +36,9 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
 {
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new DatasourceEnabledTestSuite(TestRDBMS.class);
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRDBMS.class);
+        suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
+        return suite;
     }
     /**
      * Defines the testcase name for JUnit.
@@ -51,6 +50,7 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
     {
         super(name, "./src/test/Log4j.properties");
     }
+    
     public void testDBCP_1() throws Exception
     {
         assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));
