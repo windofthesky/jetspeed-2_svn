@@ -1079,6 +1079,8 @@ public class JetspeedPowerTool implements ViewTool
     {
         try
         {
+            // TODO: it may be better to check the PagePermission for the outer most
+            // fragment (i.e. the PSML page)
             AccessController.checkPermission(new PortletPermission(resource, action));            
         }
         catch (AccessControlException e)
