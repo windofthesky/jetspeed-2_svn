@@ -26,6 +26,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.pluto.om.common.SecurityRole;
+import org.apache.pluto.om.common.SecurityRoleRef;
+import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -135,4 +140,46 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return (String[]) this.getParameterMap().get(name);
     }
 
+    /**
+     * @see javax.servlet.http.HttpServletRequest#isUserInRole(java.lang.String)
+     */
+    public boolean isUserInRole(String roleName)
+    {
+        // will result in a NullPointerException if roleName == null which is
+        // just as well I guess.
+        if (roleName.length() > 0)
+        {
+            PortletDefinition portletDefinition = portletWindow
+                    .getPortletEntity().getPortletDefinition();
+            SecurityRoleRefSet roleRefSet = portletDefinition
+                    .getInitSecurityRoleRefSet();
+            SecurityRoleSet roleSet = portletDefinition
+                    .getPortletApplicationDefinition()
+                    .getWebApplicationDefinition().getSecurityRoles();
+
+            Iterator roleRefIter = roleRefSet.iterator();
+            while (roleRefIter.hasNext())
+            {
+                SecurityRoleRef roleRef = (SecurityRoleRef) roleRefIter.next();
+                if (roleName.equals(roleRef.getRoleName()))
+                {
+                    String roleLinkName = roleRef.getRoleLink();
+                    if (roleLinkName == null || roleLinkName.length() == 0)
+                    {
+                        roleLinkName = roleName;
+                    }
+                    Iterator roleIter = roleSet.iterator();
+                    while (roleIter.hasNext())
+                    {
+                        SecurityRole role = (SecurityRole) roleIter.next();
+                        if (roleLinkName.equals(role.getRoleName()))
+                                return super.isUserInRole(roleLinkName);
+                    }
+                    return false;
+                }
+
+            }
+        }
+        return false;
+    }
 }

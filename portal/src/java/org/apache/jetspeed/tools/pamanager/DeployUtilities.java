@@ -256,26 +256,35 @@ public class DeployUtilities
 
             // Add the <welcome-file-list> node to the document
 
-            if (bWelcomeFileExists == false)
-            {
-                log.info("Adding <welcome-file-list> element to web.xml...");
-                bDocUpdated = true;
-
-                // Create Welcome-file node
-                Element eWelcomeFile = doc.createElement("welcome-file");
-                Text txt = doc.createTextNode("Index.jsp");
-                eWelcomeFile.appendChild(txt);
-
-                // Create welcome-file-list node
-                Element eWelcomeList = doc.createElement("welcome-file-list");
-
-                // Add welcome-file node to welcome-file-list node
-                eWelcomeList.appendChild(eWelcomeFile);
-
-                // Add the welcome-file-list to the document
-                doc.getDocumentElement().appendChild(eWelcomeList);
-
-            }
+            // TODO: Investigate why a welcome file is needed.
+            //       It's not needed for spec compliance and never used if the
+            //       portlet is accessed as portlet as it should.
+            //       The current implementation of adding a welcome file is wrong
+            //       when other elements are defined in the web.xml which must be
+            //       located AFTER the welcome file list. Just adding it to the
+            //       end just won't do.
+            //       For now, commented out adding one.
+            //       2004-05-14: ate@douma.nu
+//            if (bWelcomeFileExists == false)
+//            {
+//                log.info("Adding <welcome-file-list> element to web.xml...");
+//                bDocUpdated = true;
+//
+//                // Create Welcome-file node
+//                Element eWelcomeFile = doc.createElement("welcome-file");
+//                Text txt = doc.createTextNode("Index.jsp");
+//                eWelcomeFile.appendChild(txt);
+//
+//                // Create welcome-file-list node
+//                Element eWelcomeList = doc.createElement("welcome-file-list");
+//
+//                // Add welcome-file node to welcome-file-list node
+//                eWelcomeList.appendChild(eWelcomeFile);
+//
+//                // Add the welcome-file-list to the document
+//                doc.getDocumentElement().appendChild(eWelcomeList);
+//
+//            }
 
             // Persit DOM Docuemnt to disk
             if (bDocUpdated == true)
