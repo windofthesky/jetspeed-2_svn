@@ -33,7 +33,9 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
@@ -113,7 +115,6 @@ public class SiteDetailPortlet extends ServletPortlet
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
         }
         
         request.setAttribute("tabs", tabMap.values());
@@ -145,34 +146,40 @@ public class SiteDetailPortlet extends ServletPortlet
             actionType = "folder";
         }
         
-        if(actionType.equals("folder"))
+        String acl = actionRequest.getParameter("acl");
+        String nodeName = actionRequest.getParameter("node_name");
+        
+        if(nodeName != null)
         {
-            String folderName = actionRequest.getParameter("folder_name");
-            if(folderName != null)
+            try
             {
-                try
+                Node node = null;
+                if(actionType.equals("folder"))
                 {
-                    Folder folder = pageManager.getFolder(folderName);
-                    String acl = actionRequest.getParameter("acl");
-                    folder.setAcl(acl);
-                    
-                    //how to store ??
-                } catch (FolderNotFoundException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (InvalidFolderException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (NodeException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    node = pageManager.getFolder(nodeName);
                 }
-                String acl = actionRequest.getParameter("acl");
+                else
+                {
+                    node = pageManager.getPage(nodeName);
+                }
+                
+                if(node != null)
+                {
+                    node.setAcl(acl);
+                }
+                
+                //how to store ??
             }
-            
+            catch (NodeNotFoundException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (NodeException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 	}
 }
