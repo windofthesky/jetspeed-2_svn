@@ -29,9 +29,6 @@ import java.io.File
  * and use it as the container for the Security.
  */
 
-// Prior to this, you will need to have an Implementation
-// of org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
-// registered.
 if(parent != null)
 {
 	container = new DefaultPicoContainer(parent)
@@ -40,8 +37,7 @@ if(parent != null)
 	parent.registerComponentImplementation(RoleManager, RoleManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	parent.registerComponentImplementation(PermissionManager, PermissionManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	parent.registerComponentImplementation(RdbmsPolicy, RdbmsPolicy)
-	ComponentAdapter ca = new ConstructorComponentAdapter(SecurityProvider, SecurityProviderImpl, new Parameter[] {new ConstantParameter("login.conf"), new ComponentParameter(RdbmsPolicy), new ComponentParameter(UserManager)})
-	parent.registerComponent(ca)
+	parent.registerComponentImplementation(SecurityProvider, SecurityProviderImpl, new Parameter[] {new ConstantParameter("login.conf"), new ComponentParameter(RdbmsPolicy), new ComponentParameter(UserManager)})
 }
 else
 {
@@ -50,8 +46,7 @@ else
 	container.registerComponentImplementation(GroupManager, GroupManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	container.registerComponentImplementation(RoleManager, RoleManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	container.registerComponentImplementation(PermissionManager, PermissionManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-	ComponentAdapter ca = new ConstructorComponentAdapter(SecurityProvider, SecurityProviderImpl, new Parameter[] {new ConstantParameter("login.conf"), new ComponentParameter(RdbmsPolicy), new ComponentParameter(UserManager)})
-	container.registerComponent(ca)
+	container.registerComponentImplementation(SecurityProvider, SecurityProviderImpl, new Parameter[] {new ConstantParameter("login.conf"), new ComponentParameter(RdbmsPolicy), new ComponentParameter(UserManager)})
 }	
 	
 // This will be an empty container if "parent" was not null
