@@ -407,6 +407,7 @@
         <exclude>org/apache/jetspeed/aggregator/TestAggregator.java</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
+        <exclude>org/apache/jetspeed/services/jmx/TestJMX</exclude>
         <!-- Excluded due to persistence plugin issues -->
         <exclude>org/apache/jetspeed/security/Test*.java</exclude>
         <!-- End Excluded due to persistence plugin issues -->

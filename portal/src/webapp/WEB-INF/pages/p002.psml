@@ -13,7 +13,7 @@
     <fragment id="p002-04" entity="9" type="portlet" name="HW_App::CustomerList"/>
     <fragment id="p002-05" entity="10" type="portlet" name="HW_App::CustomerInfo"/>
     <fragment id="p002-06" entity="11" type="portlet" name="HW_App::CustomerDetail"/>
-    <fragment id="p002-07" entity="4" type="portlet" name="HW_App::JMXPortlet"/>
+    <fragment id="p002-07" entity="4" type="portlet" name="PAM::PortletApplicationBrowser"/>
     <fragment id="p002-08" entity="5" type="portlet" name="HW_App::PreferencePortlet"/>
   </fragment>
 </page>

@@ -45,7 +45,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.services.information.InformationProviderManager;
 import org.apache.jetspeed.services.information.InformationProviderServiceService;
-import org.apache.jetspeed.services.jmx.JMX;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -137,9 +136,9 @@ public class JetspeedEngine implements Engine
             // 
             // Make sure JMX is init'd
             //
-            log.info("Jump starting JMX MBean services...");
-            JMX.startJMX();
-            log.info("JMX services sucessfully started.");
+            // log.info("Jump starting JMX MBean services...");
+            // JMX.startJMX();
+            // log.info("JMX services sucessfully started.");
         }
         catch (Throwable e)
         {

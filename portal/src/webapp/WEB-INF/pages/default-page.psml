@@ -10,21 +10,17 @@
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="pe002" entity="4" type="portlet" name="HW_App::JMXPortlet">
+    <fragment id="pe002" entity="5" type="portlet" name="HW_App::PreferencePortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe003" entity="5" type="portlet" name="HW_App::PreferencePortlet">
+    <fragment id="pe003" entity="9" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe004" entity="9" type="portlet" name="HW_App::CustomerList">
+    <fragment id="pe004" entity="13" type="portlet" name="PAM::PortletApplicationBrowser">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
-    </fragment>
-    <fragment id="pe005" entity="13" type="portlet" name="PAM::PortletApplicationBrowser">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="2" />
     </fragment>
   </fragment>
 </page>
