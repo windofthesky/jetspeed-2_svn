@@ -13,7 +13,6 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/localeselector/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
 	<classpathentry kind="src" path="components/capability/src/java"/>
