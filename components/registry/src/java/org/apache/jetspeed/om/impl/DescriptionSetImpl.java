@@ -63,6 +63,7 @@ public class DescriptionSetImpl  implements MutableDescriptionSet, Serializable
     {
         super();
         this.descriptionType = descriptionType;
+        this.innerCollection = new ArrayList();
     }
 
     /**
