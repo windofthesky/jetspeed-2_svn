@@ -22,6 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.Storeable;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -32,6 +34,7 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.picocontainer.Startable;
 
 /**
  * <p>
@@ -42,7 +45,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public class PortletEntityAccessComponentImpl implements PortletEntityAccessComponent
+public class PortletEntityAccessComponentImpl implements PortletEntityAccessComponent, PersistenceStoreEventListener, Startable
 {
     protected final static Log log = LogFactory.getLog(PortletEntityAccessComponentImpl.class);
 
@@ -65,6 +68,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         this.persistenceStore = persistenceStore;
         this.registry = registry;
+        
     }
     
 
@@ -243,6 +247,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         {
             prepareTransaction(store);
             
+            entityCache.remove(portletEntity.getId());
+            
             store.deletePersistent(portletEntity);            
 
             store.getTransaction().checkpoint();
@@ -257,6 +263,11 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             throw new PortletEntityNotDeletedException(msg, e);
         }
 
+    }
+    
+    public void removeFromCache(PortletEntity entity)
+    {
+       entityCache.remove(entity.getId());
     }
 
     /**
@@ -311,5 +322,219 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     protected PersistenceStore getPersistenceStore()
     {
         return persistenceStore;
+    }
+    /**
+     * <p>
+     * afterClose
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterClose(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterClose( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterDeletePersistent
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterDeletePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterDeletePersistent( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterLookup
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterLookup(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterLookup( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterMakePersistent
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterMakePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterMakePersistent( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeClose
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeClose(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeClose( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeDeletePersistent
+     * </p>
+     * Removes the entity being deleted from the internal entity cache.
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeDeletePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeDeletePersistent( PersistenceStoreEvent event )
+    {
+        Object target = event.getTarget();
+        if(target != null && target instanceof MutablePortletEntity)
+        {
+            MutablePortletEntity entity = (MutablePortletEntity) target;
+            removeFromCache(entity);            
+        }
+
+    }
+    /**
+     * <p>
+     * beforeLookup
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeLookup(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeLookup( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeMakePersistent
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeMakePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeMakePersistent( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterBegin
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#afterBegin(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterBegin( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterCommit
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#afterCommit(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterCommit( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * afterRollback
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#afterRollback(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void afterRollback( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeBegin
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#beforeBegin(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeBegin( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeCommit
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#beforeCommit(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeCommit( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * beforeRollback
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.TransactionEventListener#beforeRollback(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
+     * @param event
+     */
+    public void beforeRollback( PersistenceStoreEvent event )
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /**
+     * <p>
+     * start
+     * </p>
+     *
+     * @see org.picocontainer.Startable#start()
+     * 
+     */
+    public void start()
+    {
+        persistenceStore.addEventListener(this);
+
+    }
+    /**
+     * <p>
+     * stop
+     * </p>
+     *
+     * @see org.picocontainer.Startable#stop()
+     * 
+     */
+    public void stop()
+    {
+        // TODO Auto-generated method stub
+
     }
 }
