@@ -15,10 +15,9 @@
  */
 package org.apache.jetspeed.localization.impl;
 
+import java.util.Enumeration;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.fulcrum.localization.LocaleTokenizer;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
@@ -27,45 +26,48 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * LocalizationValveImpl
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class LocalizationValveImpl
-    extends AbstractValve
-    implements LocalizationValve
+public class LocalizationValveImpl extends AbstractValve implements LocalizationValve
 {
-    public static final String ACCEPT_LANGUAGE = "Accept-Language";
-    
-    private static final Locale defaultLocate = new Locale("en", "US");
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext,
+     *      org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public void invoke(RequestContext request, ValveContext context)
-        throws PipelineException
+    public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
-        Locale locale = defaultLocate;
-        String header = request.getRequest().getHeader(ACCEPT_LANGUAGE);
-        if (!StringUtils.isEmpty(header))
+
+        Locale locale = request.getRequest().getLocale();
+
+        if (locale == null)
         {
-            LocaleTokenizer tok = new LocaleTokenizer(header);
-            if (tok.hasNext())
+            Enumeration preferedLocales = request.getRequest().getLocales();
+            while (preferedLocales.hasMoreElements() && locale == null)
             {
-                locale = (Locale) tok.next();
+                locale = (Locale) preferedLocales.nextElement();
             }
         }
 
+        if (locale == null)
+        {
+            locale = Locale.getDefault();
+        }
+
         request.setLocale(locale);
-        
+
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
-        
+
     }
-    
+
     public String toString()
     {
         return "LocalizationValve";
     }
-    
+
 }
