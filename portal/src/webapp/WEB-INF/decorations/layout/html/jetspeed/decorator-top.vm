@@ -18,7 +18,7 @@ limitations under the License.
 
 <html>
 <head>
-    <title>Welcome to Jetspeed 2</title>
+    <title>$jetspeed.page.title</title>
 #set($cssUrls = $renderRequest.getPortletSession().getAttribute("cssUrls"))
 #foreach($cssUrl in $cssUrls)
     <link rel="stylesheet" type="text/css" media="all" href="$cssUrl" />

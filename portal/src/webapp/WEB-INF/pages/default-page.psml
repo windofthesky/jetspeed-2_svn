@@ -19,7 +19,7 @@ limitations under the License.
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
-  <title>My First PSML Page</title>
+  <title>Welcome to Jetspeed 2</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
