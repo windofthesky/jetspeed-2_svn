@@ -23,9 +23,11 @@ limitations under the License.
   	<attainGoal name="db.recreate"/>
   </preGoal>
 <property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryDirect'/> 
+<property name='testcase' value='org.apache.jetspeed.components.portletentity.TestPortletEntityAccessComponent'/> 
 
 -->  
-<property name='testcase' value='org.apache.jetspeed.components.portletentity.TestPortletEntityAccessComponent'/> 
+<property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryDirect'/> 
+
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>

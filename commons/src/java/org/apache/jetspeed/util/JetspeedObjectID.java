@@ -15,10 +15,6 @@
  */
 package org.apache.jetspeed.util;
 
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -31,21 +27,21 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public class JetspeedObjectID implements ObjectID, java.io.Serializable
+public class JetspeedObjectID implements PortalObjectID, java.io.Serializable
 {
     private String stringOID = null;
-    private int intOID;
+    private long oid;
 
-    public JetspeedObjectID(int oid)
+    public JetspeedObjectID(long oid)
     {
         stringOID = String.valueOf(oid);
-        intOID = oid;
+        this.oid = oid;
     }
 
-    public JetspeedObjectID(int oid, String stringOID)
+    public JetspeedObjectID(long oid, String stringOID)
     {
         this.stringOID = stringOID;
-        intOID = oid;
+        this.oid  = oid;
     }
 
     public boolean equals(Object object)
@@ -53,17 +49,27 @@ public class JetspeedObjectID implements ObjectID, java.io.Serializable
         boolean result = false;
 
         if (object instanceof JetspeedObjectID)
-            result = (intOID == ((JetspeedObjectID) object).intOID);
+        {
+            result = (oid == ((JetspeedObjectID) object).oid);
+        }
         else if (object instanceof String)
+        {
             result = stringOID.equals(object);
+        }
+        else if (object instanceof Long)
+        {
+            result = (oid == ((Long) object).longValue());
+        }                
         else if (object instanceof Integer)
-            result = (intOID == ((Integer) object).intValue());
+        {
+            result = (oid == ((Integer) object).intValue());
+        }        
         return (result);
     }
 
     public int hashCode()
     {
-        return (intOID);
+        return (int)oid; // TODO: this could be a problem slicing a long to an int
     }
 
     public String toString()
@@ -71,27 +77,27 @@ public class JetspeedObjectID implements ObjectID, java.io.Serializable
         return (stringOID);
     }
 
-    public int intValue()
+    public long longValue()
     {
-        return (intOID);
+        return oid;
     }
 
+/*    
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException
     {
-        intOID = stream.readInt();
-
-        stringOID = String.valueOf(intOID);
+        oid = stream.readLong();
+        stringOID = String.valueOf(oid);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException
     {
-        stream.write(intOID);
+        stream.write((int)oid);
     }
-
+*/
     static public JetspeedObjectID createFromString(String idStr)
     {
         char[] id = idStr.toCharArray();
-        int _id = 1;
+        long _id = 1;
         for (int i = 0; i < id.length; i++)
         {
             if ((i % 2) == 0)
@@ -112,5 +118,10 @@ public class JetspeedObjectID implements ObjectID, java.io.Serializable
     {
         // return createFromString(portletDefinition.getId().toString());
         return createFromString(portletDefinition.getName() + ":" + portletDefinition.getId().toString() + ":" + instanceName);
+    }
+    
+    public long getOID()
+    {
+        return oid;
     }
 }

@@ -108,7 +108,7 @@ limitations under the License.
         auto-retrieve="false"
         auto-update="true"
         auto-delete="false"
-        indirection-table="SECURITY_PRINCIPAL_PERMISSION"
+        indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a policy permission.</documentation>
         <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
@@ -262,7 +262,7 @@ limitations under the License.
         auto-retrieve="false"
         auto-update="true"
         auto-delete="false"
-        indirection-table="SECURITY_PRINCIPAL_PERMISSION"
+        indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a policy permission.</documentation>
         <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
@@ -354,7 +354,7 @@ limitations under the License.
         auto-retrieve="false"
         auto-update="true"
         auto-delete="false"
-        indirection-table="SECURITY_PRINCIPAL_PERMISSION"
+        indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a policy permission.</documentation>
         <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
@@ -418,7 +418,7 @@ limitations under the License.
         auto-retrieve="true"
         auto-update="true"
         auto-delete="false"
-        indirection-table="SECURITY_PRINCIPAL_PERMISSION"
+        indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a policy permission.</documentation>
         <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
@@ -490,7 +490,7 @@ limitations under the License.
         auto-retrieve="true"
         auto-update="true"
         auto-delete="false"
-        indirection-table="SECURITY_PRINCIPAL_PERMISSION"
+        indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a permission principals.</documentation>
         <fk-pointing-to-this-class column="PERMISSION_ID"/>

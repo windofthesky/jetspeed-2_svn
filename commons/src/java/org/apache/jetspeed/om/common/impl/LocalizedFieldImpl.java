@@ -36,7 +36,7 @@ public class LocalizedFieldImpl implements LocalizedField
     protected Locale locale;
     
     protected long parentId;
-    protected int id;
+    protected long id;
     
 
     public LocalizedFieldImpl()
@@ -95,7 +95,7 @@ public class LocalizedFieldImpl implements LocalizedField
      */
     public void setId(String oid)
     {
-        id = JetspeedObjectID.createFromString(oid).intValue();
+        id = JetspeedObjectID.createFromString(oid).longValue();
     }
     
     public void setLanguage(String lang)

@@ -52,7 +52,7 @@ import org.apache.pluto.om.servlet.ServletDefinitionList;
 public class WebApplicationDefinitionImpl implements MutableWebApplication, Serializable
 {
 
-    private int id;
+    private long id;
     private Collection displayNames = new ArrayList();
     private DisplayNameSetImpl DNCollWrapper = new DisplayNameSetImpl();
 
@@ -69,7 +69,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public ObjectID getId()
     {
-        return new JetspeedObjectID(id);
+        return new JetspeedObjectID((int)id);
     }
 
     /**
@@ -140,7 +140,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public void setId(String oid)
     {
-        id = JetspeedObjectID.createFromString(oid).intValue();
+        id = JetspeedObjectID.createFromString(oid).longValue();
     }
 
     /**

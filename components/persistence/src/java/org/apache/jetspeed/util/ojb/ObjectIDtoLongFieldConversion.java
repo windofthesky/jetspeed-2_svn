@@ -40,7 +40,7 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
         {
             JetspeedObjectID oid = (JetspeedObjectID) arg0;
 
-            return new Integer(oid.intValue());
+            return new Long(oid.longValue());
         }
         else
         {
@@ -57,7 +57,7 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
         if (arg0 instanceof Number)
         {
             
-            return new JetspeedObjectID(((Number)arg0).intValue());
+            return new JetspeedObjectID(((Number)arg0).longValue());
         }
         else
         {

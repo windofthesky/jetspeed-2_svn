@@ -43,7 +43,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      * and in any caching of this object.
      */
     // private ObjectID id;
-    private int id;
+    private long id;
 
     /** Holds value of property name. */
     private String name;
@@ -159,7 +159,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public void setId(String objectID)
     {
         //((ObjectIDImpl) id).setValue(objectID);
-        id = JetspeedObjectID.createFromString(objectID).intValue();
+        id = JetspeedObjectID.createFromString(objectID).longValue();
     }
 
     /**

@@ -55,7 +55,7 @@ public abstract class AbstractPreference implements PreferenceComposite, Cloneab
 
     protected boolean readOnly;
 
-    protected int id;
+    protected long id;
 
     protected long parentId;
 

@@ -98,6 +98,9 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
     public void testEntities() throws Exception
     {
         assertNotNull(container);
+
+        PersistenceStore store = registry.getPersistenceStore();
+        store.getTransaction().begin();
         
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
         assertNotNull("Portlet Application", pa);
@@ -130,6 +133,10 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
         assertNotNull(entity6);
         System.out.println("reget : " + entity6.getId());        
         
+        entityAccess.removePortletEntity(entity6);
+        
+        store.getTransaction().commit();              
+        
         // TODO: test preferences
         System.out.println("PortletEntity Test completed.");
     }
@@ -140,14 +147,15 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
         // TODO: this should strictly use the registry api only         
         PersistenceStore store = registry.getPersistenceStore();
         store.getTransaction().begin();
+        
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName(TEST_APP);
         app.setApplicationIdentifier(TEST_APP);
                 
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
         webApp.setContextRoot("/app1");
-        webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: La fromage est dans ma pantalon!");
+        webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
+        webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
         
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
         portlet.setClassName("org.apache.Portlet");
@@ -157,8 +165,10 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
         
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
                         
-        app.addPortletDefinition(portlet);
+        app.addPortletDefinition(portlet);      
+  
         app.setWebApplicationDefinition(webApp);
+        
         store.makePersistent(app);
         store.getTransaction().commit();              
     }
@@ -166,16 +176,24 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
     private void teardownTestData()
     throws Exception
     {
+        PersistenceStore store = registry.getPersistenceStore();
+        store.getTransaction().begin();
+        
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
+        System.out.println("pa == " + pa);
         if (pa != null)
         {
             registry.removeApplication(pa);
         }
         StoreablePortletEntityDelegate entity = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(TEST_ENTITY));
+        System.out.println("entity == " + entity);
+        
         if (entity != null)
         {
             entityAccess.removePortletEntity(entity);
         }
+                
+        store.getTransaction().commit();              
 
     }
     

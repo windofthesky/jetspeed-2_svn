@@ -408,52 +408,52 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
             {
                 PortletDefinitionImpl curPortlet = (PortletDefinitionImpl) portlets.next();
 
-                filter.addEqualTo("parentId", curPortlet.getId());
+                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(PortletDefinitionLocalizedFieldImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("parentId", curPortlet.getId());
+                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(PortletDisplayNameImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("portletId", curPortlet.getId());
+                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(LanguageImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("portletId", curPortlet.getId());
+                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(ContentTypeImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("parentId", curPortlet.getId());
+                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(PortletInitParameterImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("parentId", curPortlet.getId());
+                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(DefaultPreferenceImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("portletId", curPortlet.getId());
+                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("parentId", curPortlet.getId());
+                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(PortletDescriptionImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();
-                filter.addEqualTo("id", curPortlet.getId());
+                filter.addEqualTo("id", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(PortletDefinitionImpl.class, filter));
                 store.getTransaction().checkpoint();
-            }
+            }            
             filter = store.newFilter();
-            filter.addEqualTo("id", app.getId());
+            filter.addEqualTo("id", new Long(app.getId().toString()));
             store.deleteAll(store.newQuery(MutablePortletApplication.class, filter));
             store.getTransaction().checkpoint();
         }

@@ -43,6 +43,7 @@ import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.PortalObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -74,7 +75,7 @@ import org.odmg.DList;
 public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
-    private int id;
+    private long id;
     private String className;
     private String name;
     private String portletIdentifier;
@@ -130,6 +131,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         return new JetspeedObjectID(id);
     }
 
+    public long getOID()
+    {
+        return id;
+    }
+    
     /**
      * @see org.apache.pluto.om.portlet.PortletDefinition#getClassName()
      */
@@ -241,7 +247,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void setId(String oid)
     {
-        id = JetspeedObjectID.createFromString(oid).intValue();
+        id = JetspeedObjectID.createFromString(oid).longValue();
     }
 
     /**
