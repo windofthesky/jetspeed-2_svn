@@ -39,7 +39,7 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  * @since 1.0
  */
-public class PortletApplicationDefinitionImpl implements MutablePortletApplication //, Serializable
+public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable
 { 
     /**
      * Unique id of the application.  This serves as the primary key in database

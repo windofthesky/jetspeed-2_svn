@@ -44,7 +44,7 @@ import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
  * @version $Id$
  *
  */
-public interface PortletDefinitionComposite extends PortletDefinition, PortletDefinitionCtrl //, Serializable
+public interface PortletDefinitionComposite extends PortletDefinition, PortletDefinitionCtrl, Serializable
 {
     public static final String PORTLETS_PREFS_ROOT = "portlets";
 

@@ -76,7 +76,7 @@ import org.odmg.DList;
  * @version $Id$
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite // , Serializable
+public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
     private long id;

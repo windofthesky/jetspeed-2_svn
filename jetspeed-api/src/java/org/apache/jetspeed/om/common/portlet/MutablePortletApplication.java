@@ -38,7 +38,7 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  *
  */
-public interface MutablePortletApplication extends PortletApplication // Serializable
+public interface MutablePortletApplication extends PortletApplication, Serializable
 {
     public static final String PREFS_ROOT ="portlet_application";
         
