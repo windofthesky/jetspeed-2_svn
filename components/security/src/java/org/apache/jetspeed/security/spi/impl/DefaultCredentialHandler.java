@@ -24,6 +24,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.InvalidNewPasswordException;
+import org.apache.jetspeed.security.InvalidPasswordException;
+import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
@@ -145,29 +148,35 @@ public class DefaultCredentialHandler implements CredentialHandler
             credentials = new ArrayList();
         }
 
+        InternalCredential credential = getPasswordCredential(internalUser, userName );
+        
         if (null != oldPassword)
         {
-            if ( pcProvider.getValidator() != null )
-            {
-                pcProvider.getValidator().validate(oldPassword);
-            }
-            if ( pcProvider.getEncoder() != null )
+            if ( credential != null && 
+                    credential.getValue() != null && 
+                    credential.isEncoded() && 
+                    pcProvider.getEncoder() != null )
             {
                 oldPassword = pcProvider.getEncoder().encode(userName, oldPassword);
             }
         }
         
-        InternalCredential credential = getPasswordCredential(internalUser, userName );
-        
         if (oldPassword != null && (credential == null || credential.getValue() == null || !credential.getValue().equals(oldPassword)))
         {
             // supplied PasswordCredential not defined for this user
-            throw new SecurityException(SecurityException.INVALID_PASSWORD);
+            throw new InvalidPasswordException();
         }
         
         if ( pcProvider.getValidator() != null )
         {
-            pcProvider.getValidator().validate(newPassword);
+            try
+            {
+                pcProvider.getValidator().validate(newPassword);
+            }
+            catch (InvalidPasswordException ipe)
+            {
+                throw new InvalidNewPasswordException();
+            }
         }
         
         boolean encoded = false;
@@ -196,7 +205,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         }
         else if ( oldPassword.equals(newPassword) )
         {
-            throw new SecurityException(SecurityException.INVALID_PASSWORD);
+            throw new PasswordAlreadyUsedException();
         }
 
         if ( ipcInterceptor != null )
@@ -256,6 +265,11 @@ public class DefaultCredentialHandler implements CredentialHandler
             InternalCredential credential = getPasswordCredential(internalUser, userName );
             if ( credential != null && !credential.isExpired() && credential.isUpdateRequired() != updateRequired )
             {
+                // only allow setting updateRequired off if (non-Encoded) password is valid
+                if ( !updateRequired && !credential.isEncoded() && pcProvider.getValidator() != null )
+                {
+                    pcProvider.getValidator().validate(credential.getValue());
+                }
                 credential.setUpdateRequired(updateRequired);
                 long time = new Date().getTime();
                 credential.setModifiedDate(new Timestamp(time));
