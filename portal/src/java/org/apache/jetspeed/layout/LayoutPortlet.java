@@ -54,26 +54,22 @@
 package org.apache.jetspeed.layout;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Collections;
 
-import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.cps.template.TemplateLocatorException;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.velocity.JetspeedPowerTool;
 
 /**
  */
@@ -82,14 +78,12 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
 
-    public void init(PortletConfig config)
-    throws PortletException
+    public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
     }
 
-    public void doView(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         response.setContentType("text/html");
 
@@ -98,7 +92,25 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         request.setAttribute("dispatcher", getDispatcher(request));
 
         // now invoke the JSP associated with this portlet
-        super.doView(request,response);
+        JetspeedPowerTool jpt = new JetspeedPowerTool(request, response, getPortletConfig());
+        PortletPreferences prefs = request.getPreferences();
+        if (prefs != null)
+        {
+            String absViewPage = null;
+            try
+            {
+                String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns.vm");
+                absViewPage = jpt.getTemplate(viewPage).getAppRelativePath();
+                log.debug("Path to view page for LayoutPortlet "+absViewPage);
+                request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
+            }
+            catch (TemplateLocatorException e)
+            {
+                throw new PortletException("Unable to locate view page " + absViewPage, e);
+            }
+        }
+
+        super.doView(request, response);
 
         request.removeAttribute("page");
         request.removeAttribute("fragment");
@@ -108,8 +120,8 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     protected Fragment getFragment(RenderRequest request)
     {
         // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
-        Fragment fragment = (Fragment)innerRequest.getAttribute("org.apache.jetspeed.Fragment");
+        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
+        Fragment fragment = (Fragment) innerRequest.getAttribute("org.apache.jetspeed.Fragment");
 
         return fragment;
     }
@@ -117,8 +129,8 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     protected Page getPage(RenderRequest request)
     {
         // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
-        Page page = (Page)innerRequest.getAttribute("org.apache.jetspeed.Page");
+        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
+        Page page = (Page) innerRequest.getAttribute("org.apache.jetspeed.Page");
 
         return page;
     }
@@ -126,8 +138,8 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
     protected ContentDispatcher getDispatcher(RenderRequest request)
     {
         // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
-        ContentDispatcher dispatcher = (ContentDispatcher)innerRequest.getAttribute("org.apache.jetspeed.ContentDispatcher");
+        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
+        ContentDispatcher dispatcher = (ContentDispatcher) innerRequest.getAttribute("org.apache.jetspeed.ContentDispatcher");
 
         return dispatcher;
     }
