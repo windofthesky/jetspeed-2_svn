@@ -53,7 +53,7 @@
  */
 package org.apache.jetspeed.util.ojb;
 
-import org.apache.jetspeed.om.common.ObjectIDImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
@@ -73,12 +73,12 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
      * @see org.apache.ojb.broker.accesslayer.conversions.FieldConversion#javaToSql(java.lang.Object)
      */
     public Object javaToSql(Object arg0) throws ConversionException
-    {        
-        if (arg0 instanceof ObjectIDImpl)
+    {
+        if (arg0 instanceof JetspeedObjectID)
         {
-            ObjectIDImpl oid = (ObjectIDImpl) arg0;
-            Long longValue = new Long(oid.getValue().toString());
-            return longValue;
+            JetspeedObjectID oid = (JetspeedObjectID) arg0;
+
+            return new Integer(oid.intValue());
         }
         else
         {
@@ -94,9 +94,8 @@ public class ObjectIDtoLongFieldConversion implements FieldConversion
     {
         if (arg0 instanceof Number)
         {
-            ObjectIDImpl oid = new ObjectIDImpl();
-            oid.setValue(((Number) arg0).longValue());
-            return oid;
+            
+            return new JetspeedObjectID(((Number)arg0).intValue());
         }
         else
         {
