@@ -59,18 +59,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.persistence.LookupCriteria;
-import org.apache.jetspeed.persistence.PersistencePlugin;
-import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.persistence.store.PersistenceStore;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.apache.jetspeed.persistence.LookupCriteria;
+import org.apache.jetspeed.persistence.PersistencePlugin;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.picocontainer.Startable;
 
 /**
@@ -92,8 +90,16 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
 
-
-    public DatabasePageManager(PersistenceStore store, IdGenerator generator)
+	/**
+	 * 
+	 * @param pContainer PersistenceStoreContainer that will be used to look up 
+	 * the <code>PersistenceStore</code> to use for persistence operations
+	 * @param generator ID generator that will be used to generate unique page ids
+	 * @param storeName Name of the <code>PersistenceStore</code> that will be used
+	 * by the <code>PersistenceStoreContainer.getStoreForThread(String)</code>
+	 * method to obtain the current persistence for this thread.
+	 */
+    public DatabasePageManager(PersistenceStoreContainer pContainer, IdGenerator generator, String storeName)
     {
         super(generator);
     }
