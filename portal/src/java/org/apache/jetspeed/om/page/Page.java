@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.common.GenericMetadata;
+
 /**
  * This interface represents a complete page document used by Jetspeed
  * to layout a user-customizable portal page.
@@ -23,6 +25,9 @@ package org.apache.jetspeed.om.page;
  */
 public interface Page extends BaseElement, java.io.Serializable, Cloneable
 {
+	public GenericMetadata getMetadata();
+	
+	public void setMetadata(GenericMetadata metadata);
 
     /**
      * Returns the name of the default skin that applies to this
