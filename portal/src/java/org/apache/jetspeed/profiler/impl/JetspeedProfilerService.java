@@ -62,6 +62,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.desktop.Desktop;
@@ -78,7 +79,7 @@ import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.services.page.PageManager;
+import org.apache.jetspeed.page.PageManager;
 
 /**
  * JetspeedProfilerService
@@ -259,7 +260,10 @@ public class JetspeedProfilerService
     public Page getPage(ProfileLocator locator)
     {
         // TODO: under construction, for now use the name
-        return PageManager.getPage(locator);
+        
+        // TODO: NEXT load the page manager as a dependency when i make the profiler a service
+        PageManager pm = (PageManager)Jetspeed.getComponentManager().getComponent("CastorXmlPageManager");
+        return pm.getPage(locator);
         
         /*
         Page page = null;

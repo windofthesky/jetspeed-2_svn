@@ -27,6 +27,7 @@ container.registerComponentInstance("IdGenerator", new JetspeedIdGenerator(count
 // Page Manager
 //
 root = applicationRoot + "/WEB-INF/pages"
+// TODO: move this into a class loader resource
 mapping = applicationRoot + "/WEB-INF/conf/page-mapping.xml"
 // TODO: modelclasses, extension, scanrate, cachesize
 container.registerComponentInstance("CastorXmlPageManager", 
