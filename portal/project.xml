@@ -22,7 +22,6 @@
     </dependency>
     <dependency>
       <id>pluto</id>
-      <groupId>pluto-container</groupId>
       <version>1.0</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
