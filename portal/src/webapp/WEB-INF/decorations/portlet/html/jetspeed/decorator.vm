@@ -20,6 +20,7 @@ limitations under the License.
 
 #set($myPE = $jetspeed.currentPortletEntity)
 
+#set($actions = $jetspeed.DecoratorActions)
 
 <!-- Begin portlet/html/jetspeed/decorator.vm  -->
 
@@ -36,17 +37,24 @@ limitations under the License.
     <td align="left" valign="middle" class="PTitle" >
        ${myPE.portletDefinition.name} 
     </td>
+    <td align="right" valign="middle" class="PTitle" >
+      #foreach ($action in $actions)
+      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      #end
+    </td>
     
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 
-### testing, this weill be removed  
+### testing, this will be removed  
   <tr>
     <td class="PContentLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
 
     <td align="left" valign="middle" class="PContent" >
        state = $jetspeed.windowState  mode = $jetspeed.portletMode
     </td>
+
+    <td align="right" valign="middle" class="PContent" />
     
     <td class="PContentRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>  
   </tr>
@@ -54,13 +62,15 @@ limitations under the License.
 ##
 ## Portlet Content
 ##
-#if (!$jetspeed.isHidden($myF))
+#if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <tr>
     <td  nowrap="nowrap"><div class="PContentLeft" >&nbsp;</div></td>
     
     <td class="PContent" >
        $jetspeed.include($myF)
     </td>   
+
+    <td align="right" valign="middle" class="PContent" />
     
     <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>
    
@@ -74,6 +84,7 @@ limitations under the License.
   <tr>
     <td class="PBottomLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
     <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>    
     <td class="PBottomRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 </table>
