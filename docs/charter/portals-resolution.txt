@@ -32,7 +32,7 @@ WHEREAS, the Board of Directors deems it to be in
   * Stefan Hepper <sthepper@apache.org>
   * Julie MacNaught <jmacna@apache.org>
   * Davanum Srinivas <dims@apache.org>
-  * David Sean Taylor <tayllor@apache.org>
+  * David Sean Taylor <taylor@apache.org>
   * Scott Weaver <weaver@apache.org>
   * Carsten Ziegeler <cziegeler@apache.org>
 
