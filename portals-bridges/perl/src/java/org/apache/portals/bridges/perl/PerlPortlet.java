@@ -297,7 +297,15 @@ public class PerlPortlet extends GenericPortlet {
     			int ix = lnExecutable.indexOf('!');
     			if ( ix != -1 && px != -1 )
     			{
-    				perlExecutable = lnExecutable.substring(ix+1, lnExecutable.indexOf(' ',ix));
+                    int ex = lnExecutable.indexOf(' ',ix);
+                    if ( ex >= 0 )
+                    {
+                        perlExecutable = lnExecutable.substring(ix+1, ex);
+                    }
+                    else
+                    {
+                        perlExecutable = lnExecutable.substring(ix+1);
+                    }
     			} 
     		}
     		//Close file
