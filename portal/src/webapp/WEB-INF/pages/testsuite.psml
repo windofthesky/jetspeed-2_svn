@@ -22,11 +22,11 @@ limitations under the License.
 
   <title>Test Suite Page</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="testsuite_page:1" type="portlet" name="testsuite::TestPortlet1">
+    <fragment id="ts-1" type="portlet" name="testsuite::TestPortlet1">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="testsuite_page:2" type="portlet" name="testsuite::TestPortlet2">
+    <fragment id="ts-2" type="portlet" name="testsuite::TestPortlet2">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
