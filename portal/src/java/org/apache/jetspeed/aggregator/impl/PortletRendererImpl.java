@@ -63,10 +63,9 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
+import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.entity.PortletEntityAccess;
@@ -189,7 +188,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
         The method returns before rendering is complete, rendered content can be
         accessed through the ContentDispatcher
     */
-    public void render(Fragment fragment, RequestContext request)
+    public void render(Fragment fragment, RequestContext request) throws UnknownPortletDefinitionException
     {
         RenderingJob rJob = new RenderingJob();
 
@@ -229,7 +228,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
         return (ContentDispatcherCtrl)request.getContentDispatcher();
     }
 
-    protected PortletWindow getPortletWindow(Fragment fragment)
+    protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
         PortletEntity portletEntity = PortletEntityAccess.getEntity(oid);
@@ -241,6 +240,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             if (portletDefinition == null)
             {
                 log.error("Failed to load: " + fragment.getName() + " from registry");
+                throw new UnknownPortletDefinitionException("Could not locate portlet definition \""+fragment.getName()+"\".");
             }
             portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
 
