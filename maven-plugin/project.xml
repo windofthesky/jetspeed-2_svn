@@ -56,6 +56,7 @@ limitations under the License.
                     <include>plugin.properties</include> 
                     <include>project.properties</include> 
                     <include>project.xml</include> 
+                    <include>locator.ent</include> 
                 </includes> 
             </resource> 
       </resources> 

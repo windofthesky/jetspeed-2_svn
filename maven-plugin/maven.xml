@@ -18,17 +18,18 @@ limitations under the License.
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
          
- <preGoal name="plugin:deploy">
+ <preGoal name="java:jar-resources">
+ 	 <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
+         <fileset dir="../etc/project-dependencies" />            	       	       
+     </copy>
+     <copy file="../locator.ent" tofile="${basedir}/target/classes/plugin-resources/locator.ent" overwrite="true" failonerror="true"/> 
  	 <attainGoal name="copyDb" />
  	 <attainGoal name="copyPortlaWebApp" />
      <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
+      
  </preGoal>        
  
-  <preGoal name="plugin:install">
- 	 <attainGoal name="copyDb" />
- 	 <attainGoal name="copyPortlaWebApp" />
- 	 <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
- </preGoal>   
+
  
   <goal name="deploy-plugin">
 	<!-- determine if the plugin is already installed and is of the correct version -->
@@ -98,6 +99,7 @@ limitations under the License.
          <fileset dir="../portal/src/resources" />            	       	       
      </copy>
      <copy file="../layout-portlets/target/jetspeed-layouts.war" todir="target/classes/plugin-resources/webapp/WEB-INF/deploy" overwrite="true" failonerror="true" />
+
 </goal>
 
   <goal name="db.execute">
