@@ -17,10 +17,13 @@ package org.apache.jetspeed.page.document;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +43,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * <p>
@@ -237,13 +241,15 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
             throw new PageNotFoundException("Document not found: " + path);
         }
 
-        FileReader reader = null;
-
         try
         {
-            reader = new FileReader(f);
+            DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = dbfactory.newDocumentBuilder();
+
+            org.w3c.dom.Document d = builder.parse(f);
+
             Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-            document = (Document) unmarshaller.unmarshal(reader);
+            document = (Document) unmarshaller.unmarshal((org.w3c.dom.Node) d);
             document.setId(path);
             document.setPath(path);
         }
@@ -263,16 +269,15 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         {
             throw new DocumentNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
         }
-        finally
-        {
-            try
+        catch (SAXException e)
             {
-                reader.close();
+            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
             }
-            catch (IOException e)
+        catch (ParserConfigurationException e)
             {
+            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
             }
-        }
+        
 
         if (document == null)
         {
