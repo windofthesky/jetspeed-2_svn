@@ -39,8 +39,9 @@ container = new DefaultPicoContainer()
 root = applicationRoot + "/testdata/pages"
 Long scanRate = 120
 cacheSize = 100
-fileCache = new FileCache(scanRate, cacheSize)
-pageManager = new CastorXmlPageManager(idgenerator, fileCache, root)
+// fileCache = new FileCache(scanRate, cacheSize)
+pageManager = new CastorXmlPageManager(parent.getComponentInstance("IdGenerator"), parent.getComponentInstance(FileCache), root)
 container.registerComponentInstance(PageManager, pageManager)
+// container.registerComponentImplementation(PageManager, CastorXmlPageManager, new Parameter[] {new ComponentParameter("IdGenerator"), new ComponentParameter(FileCache), new ConstantParameter(root)})
 
 return container
