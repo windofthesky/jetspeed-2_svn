@@ -2,7 +2,6 @@
 <documentSet>
   <title>Top Pages</title>
   <metadata name="title" xml:lang="fr">Page haut</metadata>
-  <name>top_pages</name>
   <profileLocator>docset</profileLocator>
   <documentPath>/Administrative</documentPath>
 </documentSet>
