@@ -16,12 +16,9 @@
  */
 
 
-import org.picocontainer.Parameter
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl
 
-ps = parameters[0].resolveAdapter(picoContainer, PersistenceStoreContainer).getComponentInstance();	
-storeName = parameters[1].resolveAdapter(picoContainer, String).getComponentInstance();	
 
-return new PortletRegistryComponentImpl(ps, storeName);
+return new PortletRegistryComponentImpl(picoContainer.getComponentInstance(PersistenceStoreContainer), "jetspeed")
 

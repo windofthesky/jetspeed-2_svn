@@ -1,0 +1,8 @@
+package.id=PageManger
+
+component=org.apache.jetspeed.page.PageManager
+
+
+org.apache.jetspeed.page.PageManager.key.as.class=true
+org.apache.jetspeed.page.PageManager.is.singleton=true
+org.apache.jetspeed.page.PageManager.classname=org.apache.jetspeed.page.impl.CastorXmlPageManager

@@ -1,0 +1,15 @@
+package.id=Profiler
+
+component=org.apache.jetspeed.profiler.Profiler
+
+
+org.apache.jetspeed.profiler.Profiler.key.as.class=true
+org.apache.jetspeed.profiler.Profiler.is.singleton=true
+org.apache.jetspeed.profiler.Profiler.classname=org.apache.jetspeed.profiler.impl.JetspeedProfiler
+
+org.apache.jetspeed.profiler.Profiler.cfg.persistenceStore=jetspeed
+org.apache.jetspeed.profiler.Profiler.cfg.defaultRule=j1
+org.apache.jetspeed.profiler.Profiler.cfg.anonymousUser=anon
+org.apache.jetspeed.profiler.Profiler.cfg.locator.impl=org.apache.jetspeed.profiler.impl.JetspeedProfileLocator
+org.apache.jetspeed.profiler.Profiler.cfg.principalRule.impl=org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl
+org.apache.jetspeed.profiler.Profiler.cfg.profilingRule.impl=org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule

@@ -1,0 +1,12 @@
+package.id=RDBMS
+
+component=org.apache.jetspeed.components.datasource.DatasourceComponent
+component=org.apache.jetspeed.components.jndi.JNDIComponent
+
+org.apache.jetspeed.components.jndi.JNDIComponent.key.as.class=true
+org.apache.jetspeed.components.jndi.JNDIComponent.is.singleton=true
+org.apache.jetspeed.components.jndi.JNDIComponent.classname=org.apache.jetspeed.components.jndi.TyrexJNDIComponent
+
+org.apache.jetspeed.components.datasource.DatasourceComponent.key.as.class=true
+org.apache.jetspeed.components.datasource.DatasourceComponent.is.singleton=true
+org.apache.jetspeed.components.datasource.DatasourceComponent.classname=org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent

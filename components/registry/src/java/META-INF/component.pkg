@@ -1,0 +1,12 @@
+package.id=Registry
+
+component=org.apache.jetspeed.components.portletregistry.PortletRegistryComponent,org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
+
+
+org.apache.jetspeed.components.portletregistry.PortletRegistryComponent.key.as.class=true
+org.apache.jetspeed.components.portletregistry.PortletRegistryComponent.is.singleton=true
+org.apache.jetspeed.components.portletregistry.PortletRegistryComponent.classname=org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl
+
+org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent.key.as.class=true
+org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent.is.singleton=true
+org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent.classname=org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
