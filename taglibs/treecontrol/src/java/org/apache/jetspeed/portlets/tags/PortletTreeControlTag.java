@@ -274,7 +274,7 @@ public class PortletTreeControlTag extends TreeControlTag
         // Render the label for this node (if any)
 
         if (node.getLabel() != null) {
-            String labelStyle = null;
+            String labelStyle = node.getCSSClass();
             if (node.isSelected() && (styleSelected != null))
                 labelStyle = styleSelected;
             else if (!node.isSelected() && (styleUnselected != null))
@@ -296,6 +296,10 @@ public class PortletTreeControlTag extends TreeControlTag
                     out.print(labelStyle);
                     out.print("\"");
                 }
+                
+                out.print(" title=\"");
+                out.print(node.getLabel());
+                out.print("\"");
                 
                 /* Invalid, not used, and not usefull
                 // to refresh the tree in the same 'self' frame

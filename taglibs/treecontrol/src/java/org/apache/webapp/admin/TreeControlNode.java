@@ -54,12 +54,40 @@ public class TreeControlNode implements Serializable {
      *  hyperlink's results will be displayed, or <code>null</code> for
      *  the current window
      * @param expanded Should this node be expanded?
+     * @param domain Identifier for the kind of node.
      */
 	public TreeControlNode(String name,
             String icon, String label,
             String action, String target,
             boolean expanded, String domain) {
-		this(name, icon, label, action, target, expanded, domain, false);
+		this(name, icon, label, action, target, expanded, domain, null, false);
+	}
+	
+	/**
+     * Construct a new TreeControlNode with the specified parameters.
+     *
+     * @param name Internal name of this node (must be unique within
+     *  the entire tree)
+     * @param icon Pathname of the image file for the icon to be displayed
+     *  when this node is visible, relative to the image directory
+     *  for our images
+     * @param label The label that will be displayed to the user if
+     *  this node is visible
+     * @param action The hyperlink to be selected if the user
+     *  selects this node, or <code>null</code> if this node's label should
+     *  not be a hyperlink
+     * @param target The window target in which the <code>action</code>
+     *  hyperlink's results will be displayed, or <code>null</code> for
+     *  the current window
+     * @param expanded Should this node be expanded?
+     * @param domain Identifier for the kind of node.
+     * @param CSSClass The css class to apply to the node
+     */
+	public TreeControlNode(String name,
+            String icon, String label,
+            String action, String target,
+            boolean expanded, String domain, String CSSClass) {
+		this(name, icon, label, action, target, expanded, domain, CSSClass, false);
 	}
 
     /**
@@ -79,12 +107,14 @@ public class TreeControlNode implements Serializable {
      *  hyperlink's results will be displayed, or <code>null</code> for
      *  the current window
      * @param expanded Should this node be expanded?
+     * @param domain Identifier for the kind of node.
+     * @param CSSClass The css class to apply to the node
      * @param lazy Is this node's children lazy loaded?
      */
     public TreeControlNode(String name,
                            String icon, String label,
                            String action, String target,
-                           boolean expanded, String domain,
+                           boolean expanded, String domain, String CSSClass,
 						   boolean lazy) {
 
         super();
@@ -95,6 +125,7 @@ public class TreeControlNode implements Serializable {
         this.target = target;
         this.expanded = expanded;
         this.domain = domain;
+        this.CSSClass = CSSClass;
         this.lazy = lazy;
         this.loaded = false;
     }
@@ -302,6 +333,22 @@ public class TreeControlNode implements Serializable {
     public int getWidth() {
         return (this.width);
     }
+    
+    protected String CSSClass;
+    
+    /**
+	 * @return Returns the cSSClass.
+	 */
+	public String getCSSClass() {
+		return CSSClass;
+	}
+	/**
+	 * @param class1 The cSSClass to set.
+	 */
+	public void setCSSClass(String CSSClass) {
+		this.CSSClass = CSSClass;
+	}
+    
 
     // --------------------------------------------------------- Public Methods
 
@@ -424,6 +471,4 @@ public class TreeControlNode implements Serializable {
         }
 
     }
-
-
 }
