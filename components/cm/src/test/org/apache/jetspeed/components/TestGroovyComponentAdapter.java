@@ -36,8 +36,8 @@ public class TestGroovyComponentAdapter extends TestCase
         MutablePicoContainer container = new DefaultPicoContainer();
         Parameter v1 = new ConstantParameter(new Integer(69));
         Parameter v2 = new ConstantParameter("Some Value");     
-        ComponentAdapter adp1 = new GroovyComponentAdapter("multipleObjects", MockComponent.class, new Parameter[] {v1, v2}, false);
-        ComponentAdapter adp2 = new GroovyComponentAdapter("singletonObject", MockComponent.class, new Parameter[] {v1, v2}, true);
+        ComponentAdapter adp1 = new GroovyComponentAdapter("multipleObjects", MockComponent.class, new Parameter[] {v1, v2}, false, null, null);
+        ComponentAdapter adp2 = new GroovyComponentAdapter("singletonObject", MockComponent.class, new Parameter[] {v1, v2}, true, null, null);
         
         container.registerComponent(adp1);
         container.registerComponent(adp2);
