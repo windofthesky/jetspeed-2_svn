@@ -94,7 +94,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      *       is defined it requires in additionthe WebappDir.
      *       All other actions require the PortletAppName. If the ApplicationServer
      *       is not defined it will use catalina as default.
-
+    
      */
 
     public static void main(String args[])
@@ -111,6 +111,10 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         String strAppServer = "";
         String strPortalName = "jetspeed";
         String applicationType = "webapp";
+		String strUserName = "";
+		String strPassword = "";
+		String strServer = "localhost";
+		int intServerPort = 8080;
 
         while (i < args.length && args[i].startsWith("-"))
         {
@@ -146,6 +150,26 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             {
                 if (i < args.length)
                     strPortalName = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-UserName"))
+            {
+                if (i < args.length)
+                    strUserName = args[i++];
+            }
+			else if (arg.equalsIgnoreCase("-Password"))
+			{
+				if (i < args.length)
+					strPassword = args[i++];
+			}
+			else if (arg.equalsIgnoreCase("-Server"))
+			{
+				if (i < args.length)
+					strServer= args[i++];
+			}
+            else if (arg.equalsIgnoreCase("-ServerPort"))
+            {
+                if (i < args.length)
+                    intServerPort = Integer.parseInt(args[i++]);
             }
             else if (arg.equalsIgnoreCase("-ApplicationType"))
             {
@@ -234,7 +258,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 else
                 {
                     // Uses war file and applicationServerName
-                    deployServer(strWarFileName, strAppServer, strPortletAppName);
+                    deployServer(strWarFileName, strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
                 }
             }
         }
@@ -243,8 +267,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             // Requires WebAppDir
             if (strWebAppDir.length() == 0)
             {
-                System.out.println(
-                    "\nRegister action requires the definition of the Web application directory.");
+                System.out.println("\nRegister action requires the definition of the Web application directory.");
                 return;
             }
 
@@ -258,22 +281,22 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         else if (strAction.compareToIgnoreCase("undeploy") == 0)
         {
             // Application server can be null -- using Catalina as default
-            undeploy(strWebAppDir, strPortletAppName, strAppServer);
+            undeploy(strWebAppDir, strPortletAppName, strAppServer, strServer, intServerPort, strUserName, strPassword);
         }
         else if (strAction.compareToIgnoreCase("start") == 0)
         {
             // Application server can be null -- using Catalina as default
-            start(strAppServer, strPortletAppName);
+            start(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
         }
         else if (strAction.compareToIgnoreCase("stop") == 0)
         {
             // Application server can be null -- using Catalina as default
-            stop(strAppServer, strPortletAppName);
+            stop(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
         }
         else if (strAction.compareToIgnoreCase("reload") == 0)
         {
             // Application server can be null -- using Catalina as default
-            reload(strAppServer, strPortletAppName);
+            reload(strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
         }
         else
         {
@@ -293,8 +316,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             System.out.println("Failed shutting down the engine. Error: " + e1.getMessage());
         }
         System.out.println("Done");
-       // return;
-      System.exit(0);
+        // return;
+        System.exit(0);
     }
 
     public static void helpScreen()
@@ -406,14 +429,15 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @throws PortletApplicationException
      */
 
-    public static void deployServer(String warFile, String appServer, String strPortletAppName)
+    public static void deployServer(String warFile, String appServer, String strPortletAppName, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
         if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
         {
-            dc = new CatalinaPAM();
+            
             try
             {
+				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                 ((Deployment) dc).deploy(warFile, strPortletAppName);
             }
             catch (PortletApplicationException e)
@@ -435,16 +459,16 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @throws PortletApplicationException
      */
 
-    public static void undeploy(String strWebAppDir, String paName, String appServer)
+    public static void undeploy(String strWebAppDir, String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
         if (strWebAppDir.length() == 0)
         {
             if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-            {
-                dc = new CatalinaPAM();
+            {                
                 try
                 {
+					dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                     ((Deployment) dc).undeploy(paName);
                 }
                 catch (PortletApplicationException e)
@@ -481,14 +505,15 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     * @throws PortletApplicationException
     */
 
-    public static void start(String paName, String appServer)
+    public static void start(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
         if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
         {
-            dc = new CatalinaPAM();
+            
             try
             {
+				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                 ((Lifecycle) dc).start(paName);
             }
             catch (PortletApplicationException e)
@@ -511,14 +536,14 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @throws PortletApplicationException
      */
 
-    public static void stop(String paName, String appServer)
+    public static void stop(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
         if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-        {
-            dc = new CatalinaPAM();
+        {            
             try
             {
+				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                 ((Lifecycle) dc).stop(paName);
             }
             catch (PortletApplicationException e)
@@ -541,14 +566,14 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @throws PortletApplicationException
      */
 
-    public static void reload(String paName, String appServer)
+    public static void reload(String paName, String appServer, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
         if (appServer == null || (appServer.compareToIgnoreCase("catalina") == 0))
-        {
-            dc = new CatalinaPAM();
+        {            
             try
             {
+				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                 ((Lifecycle) dc).reload(paName);
             }
             catch (PortletApplicationException e)
