@@ -49,41 +49,39 @@ public class PageAggregatorImpl implements PageAggregator, Startable
     private int strategy = STRATEGY_SEQUENTIAL;
     private PortletRenderer renderer;
 
-    public PageAggregatorImpl( PortletRenderer renderer, 
-                           int strategy)
+    public PageAggregatorImpl(PortletRenderer renderer, int strategy)
     {
         this.renderer = renderer;
-        this.strategy = strategy;        
+        this.strategy = strategy;
     }
-    
-    public PageAggregatorImpl(PortletRenderer renderer) 
+
+    public PageAggregatorImpl(PortletRenderer renderer)
     {
         this(renderer, STRATEGY_SEQUENTIAL);
     }
-    
+
     public void start()
     {
     }
-    
+
     public void stop()
     {
-        
+
     }
-    
+
     /**
      * Builds the portlet set defined in the context into a portlet tree.
      *
      * @return Unique Portlet Entity ID
      */
-    public void build(RequestContext context)
-        throws JetspeedException
+    public void build(RequestContext context) throws JetspeedException
     {
         Page page = context.getPage();
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin PageAggregator.build");
         }
-        
+
         //Set default acl
         String acl = page.getAcl();
         if (acl == null)
@@ -99,50 +97,50 @@ public class PageAggregatorImpl implements PageAggregator, Startable
         {
             throw new JetspeedException("No root Fragment found in Page");
         }
-        
+
         String layoutDecorator = currentFragment.getDecorator();
-        if(layoutDecorator == null)
+        if (layoutDecorator == null)
         {
             layoutDecorator = page.getDefaultDecorator(currentFragment.getType());
         }
-       
+
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //TODO: Remove hard coding of locations and use CM + TL
         //      DST: Im going to encapsulate this into a class, which can be accessed by 
         //           the PowerTool when aggregating content, and make sure to modify the search path
         //           according to the current decorator. Assigned issue to JiRa JS2-24        
         List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
-        
-        if(contentPathes == null)
+
+        if (contentPathes == null)
         {
             contentPathes = new ArrayList(2);
             context.setSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR, contentPathes);
         }
-        
-        if(contentPathes.size() < 1)
+
+        if (contentPathes.size() < 1)
         {
             // define the lookup order
-            contentPathes.add(currentFragment.getType()+"/html/"+layoutDecorator);
+            contentPathes.add(currentFragment.getType() + "/html/" + layoutDecorator);
             contentPathes.add("portlet/html/jetspeed");
-            contentPathes.add("portlet/html");            
+            contentPathes.add("portlet/html");
             contentPathes.add("generic/html");
             contentPathes.add("/html");
         }
         else
         {
-            contentPathes.set(0, currentFragment.getType()+"/html/"+layoutDecorator);
-        }        
+            contentPathes.set(0, currentFragment.getType() + "/html/" + layoutDecorator);
+        }
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (checkAccess(context,(currentFragment.getAcl()!=null)?currentFragment.getAcl():acl, "render"))
+        if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
         {
             if (strategy == STRATEGY_PARALLEL)
             {
                 // initializes the rendering stack with root children
                 // root fragement is always treated synchronously
-                for(Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
+                for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
                 {
-                    Fragment f = (Fragment)i.next();
+                    Fragment f = (Fragment) i.next();
 
                     if (!"hidden".equals(f.getState()))
                     {
@@ -154,31 +152,40 @@ public class PageAggregatorImpl implements PageAggregator, Startable
                 // fragment
                 while (!stack.isEmpty())
                 {
-                    currentFragment = (Fragment)stack.pop();
+                    currentFragment = (Fragment) stack.pop();
 
-                    if (checkAccess(context,
-                                    ((currentFragment.getAcl()!=null)?currentFragment.getAcl():acl),
-                                    "render"))
+                    if (checkAccess(context, ((currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl), "render"))
                     {
                         if (currentFragment.getType().equals("portlet"))
                         {
-                        	// make the page aggreator less fragile
-                        	// by preventing failed rendering from screwing up the
-                        	// whole process
-                           try
+                            // make the page aggreator less fragile
+                            // by preventing failed rendering from screwing up the
+                            // whole process
+                            try
                             {
-                                 renderer.render(currentFragment,context);
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug(
+                                        "Rendering portlet fragment: [[name, "
+                                            + currentFragment.getName()
+                                            + "], [id, "
+                                            + currentFragment.getId()
+                                            + "]]");
+                                }
+                                // TODO This is where we add User Info.
+                                RequestContext portletContext = context;
+                                renderer.render(currentFragment, portletContext);
                             }
                             catch (Exception e)
                             {
-                                log.error("Failed to render portlet \""+currentFragment+"\": "+e.toString());
+                                log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
                             }
                         }
 
                         // push the children frgaments on the rendering stack
-                        for(Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
+                        for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
                         {
-                            Fragment f = (Fragment)i.next();
+                            Fragment f = (Fragment) i.next();
 
                             if (!"hidden".equals(f.getState()))
                             {
@@ -188,7 +195,7 @@ public class PageAggregatorImpl implements PageAggregator, Startable
                     }
                     else
                     {
-                        log.warn("Access denied RENDER fragment "+currentFragment);
+                        log.warn("Access denied RENDER fragment " + currentFragment);
                     }
                 }
             }
@@ -196,31 +203,30 @@ public class PageAggregatorImpl implements PageAggregator, Startable
             // Retrieves the content dispatcher appropriate for sequential
             // or parallel rendering
 
-            ContentDispatcher dispatcher = renderer.getDispatcher(context,(strategy==STRATEGY_PARALLEL));
-
+            ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
 
             // Now synchronously trigger the rendering of the whole page
             renderer.renderNow(page.getRootFragment(), context);
 
             // DEBUG Testing: Use ContentDispatcher to display all children
             // of root fragment
-/*
-            for(Iterator i = page.getRootFragment().getFragments().iterator(); i.hasNext();)
-            {
-                Fragment fragment = (Fragment)i.next();
-
-                if (!"hidden".equals(fragment.getState()))
-                {
-                    dispatcher.include(fragment, context.getRequest(), context.getResponse());
-                }
-            }
-*/            
+            /*
+                        for(Iterator i = page.getRootFragment().getFragments().iterator(); i.hasNext();)
+                        {
+                            Fragment fragment = (Fragment)i.next();
+            
+                            if (!"hidden".equals(fragment.getState()))
+                            {
+                                dispatcher.include(fragment, context.getRequest(), context.getResponse());
+                            }
+                        }
+            */
         }
         else
         {
-            log.warn("Access denied RENDER page "+page);
+            log.warn("Access denied RENDER page " + page);
         }
-        
+
     }
 
     public boolean checkAccess(RequestContext context, String acl, String action)
