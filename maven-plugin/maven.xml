@@ -30,6 +30,39 @@ limitations under the License.
  	 <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
  </preGoal>   
  
+  <goal name="deploy-plugin">
+	<!-- determine if the plugin is already installed and is of the correct version -->
+    <j:set var="pluginManager" value="${pom.context.getMavenSession().getPluginManager()}"/>
+    <j:set var="plugins" value="${pluginManager.pluginList}"/>
+    <j:set var="currentVersion" value="${maven.final.name}"/>
+    <j:set var="installed" value="false"/>
+    <j:set var="update" value="false"/>
+    <j:forEach var="plugin" items="${plugins}">
+      <j:if test="${plugin.equals(currentVersion)}">
+        <j:set var="installed" value="true"/>
+        <j:break/>
+      </j:if>
+      <j:if test="${plugin.startsWith(pom.artifactId)}">
+        <j:set var="update" value="true"/>
+        <j:break/>
+      </j:if>
+    </j:forEach>
+    <j:choose>
+      <j:when test="${installed}">
+      	<!-- only deploy needed -->
+        <attainGoal name="plugin:deploy"/>
+      </j:when>
+      <j:when test="${update}">
+      	<!-- installed but not the correct version -->
+        <attainGoal name="plugin:uninstall"/>
+        <attainGoal name="plugin:install"/>
+      </j:when>
+      <j:otherwise>
+      	<!-- not installed yet -->
+        <attainGoal name="plugin:install"/>
+      </j:otherwise>
+    </j:choose>
+  </goal>
 
    <goal name="copyDb">
 	 <copy todir="target/classes/plugin-resources" overwrite="true" failonerror="true">

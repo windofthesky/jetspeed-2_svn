@@ -239,7 +239,7 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}/maven-plugin"
                includes="project.xml"
-               goals="plugin:deploy"
+               goals="deploy-plugin"
                banner="Build and deploy the Jetspeed 2 Maven plugin"
                postProcessing="false"
                ignoreFailures="false"/>
