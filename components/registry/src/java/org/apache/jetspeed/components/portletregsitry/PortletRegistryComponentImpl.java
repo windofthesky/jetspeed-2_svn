@@ -58,7 +58,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.jetspeed.components.omfactory.OMFactory;
+import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
+import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -66,14 +69,9 @@ import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * <p>
