@@ -55,6 +55,7 @@ package org.apache.jetspeed.aggregator;
 
 import java.util.Iterator;
 
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,6 +64,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.profile.Entry;
 import org.apache.jetspeed.om.profile.PSMLDocument;
@@ -198,6 +200,9 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
 
                 HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
                 HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
+
+                PortalControlParameter control = new PortalControlParameter(request.getRequestedPortalURL());
+                WindowState windowState = control.getState(portletWindow);
 
                 container.renderPortlet(portletWindow, servletRequest, servletResponse);
             }

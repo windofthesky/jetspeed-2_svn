@@ -62,10 +62,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
-import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.services.information.InformationProviderAccess;
 
 /**
  * This request wrappers the servlet request and is used 
@@ -88,7 +87,8 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         super(servletRequest);
 
         this.portletWindow = window;
-        control = new PortalControlParameter(new PortalURL(servletRequest));
+        // control = new PortalControlParameter(new PortalURLImpl(servletRequest));
+		control = new PortalControlParameter(Jetspeed.getCurrentRequestContext().getRequestedPortalURL());
 
     }
 

@@ -70,7 +70,8 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
 
 /**
- * Encode portlet control parameters into URLs using Pluto's portal method
+ * Encode portlet control parameters into URLs using Pluto's portal method.  
+ * It also can decode the same parameters.
  * 
  * NOTE: parts of this code were borrowed from Pluto's portal implementation.
  *
@@ -208,8 +209,8 @@ public class PortalControlParameter
     public PortalControlParameter(PortalURL url)
     {
         this.url = url;
-        stateFullControlParameter = this.url.getClonedStateFullControlParameter();
-        stateLessControlParameter = this.url.getClonedStateLessControlParameter();
+        stateFullControlParameter = ((PortalURLImpl)this.url).getClonedStateFullControlParameter();
+        stateLessControlParameter = ((PortalURLImpl) this.url).getClonedStateLessControlParameter();
     }
 
     public void clearRenderParameters(PortletWindow portletWindow)

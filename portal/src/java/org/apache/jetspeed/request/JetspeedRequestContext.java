@@ -63,6 +63,7 @@ import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.engine.core.PortalURLImpl;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.om.window.PortletWindow;
@@ -115,7 +116,7 @@ public class JetspeedRequestContext implements RequestContext
         {
             this.request.setAttribute(REQUEST_PORTALENV, this);
         }
-        requestedPortalURL = new PortalURL(this);
+        requestedPortalURL = new PortalURLImpl(this);
     }
 
     private JetspeedRequestContext()
