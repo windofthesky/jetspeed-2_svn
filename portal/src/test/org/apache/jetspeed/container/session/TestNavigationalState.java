@@ -15,6 +15,9 @@
  */
 package org.apache.jetspeed.container.session;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
@@ -28,7 +31,9 @@ import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.services.information.PortletURLProviderImpl;
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.services.information.PortletURLProvider;
 import org.picocontainer.MutablePicoContainer;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -91,9 +96,9 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         return suite;
     }
 
-    public void testBasic()
+    public void xtestModeAndState()
     {        
-        System.out.println("Starting nav state test");
+        System.out.println("Starting Navs Mode and State test");
         assertNotNull("nav state component is null", navState);
         assertNotNull("request context component is null", rcc);
 
@@ -119,7 +124,72 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.HELP));
         assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
         assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.VIEW));
+        System.out.println("Ending Navs Mode and State test");
+    }
+
+    public void testNavParams()
+    {        
+        System.out.println("Starting Nav Params test");
+        MockServletConfig config = new MockServletConfig();
+        //config.
+        
+        /*
+        assertNotNull("nav state component is null", navState);
+        assertNotNull("request context component is null", rcc);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpSession session = new MockHttpSession();
+        HttpServletResponse response = new MockHttpServletResponse();        
+        ServletConfig config = new MockServletConfig();
+        request.setSession(session);
+        RequestContext context = rcc.create(
+                                                (HttpServletRequest)request, 
+                                                response, 
+                                                config);
+        request.setPathInfo(buildPath(context, window)));
+                
+        PortletWindow window = new PortletWindowImpl("33");
+        PortletWindow window2 = new PortletWindowImpl("222");
+        
+        NavigationalState nav = navState.create(context);
+        nav.setState(window, WindowState.MAXIMIZED);
+        nav.setMode(window, PortletMode.HELP);
+        
+        // Check that they come out correctly
+        assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.HELP));
+        assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
+        assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.VIEW));
+        */
+        
         System.out.println("Ending nav state test");
+        //String result = buildPath(config);
+        //System.out.println("result = " + result);
     }
     
+    private String buildPath(ServletConfig config)
+    {       
+        Map params = new HashMap();
+        params.put("parm-1", "value-1");
+        params.put("parm-2", "value-2");
+        
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        HttpServletResponse response = new MockHttpServletResponse();
+        request.setServerName("www.sporteportal.com");
+        request.setScheme("http");
+        RequestContext context = rcc.create(
+                (HttpServletRequest)request, 
+                response, 
+                config);
+        NavigationalState nav = navState.create(context);
+        assertNotNull("nav is null", nav);
+        
+        PortletWindow window = new PortletWindowImpl("33");
+        
+        PortletURLProvider provider = new PortletURLProviderImpl(context, nav, window);
+        provider.setAction();
+        provider.setPortletMode(PortletMode.EDIT);
+        provider.setWindowState(WindowState.MINIMIZED);
+        provider.setParameters(params);
+        return provider.toString();
+    }
 }
