@@ -54,12 +54,12 @@
 package org.apache.jetspeed.components.persistence;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.components.hsql.HSQLServerComponent;
+import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.defaults.DefaultPicoContainer;
 import org.picocontainer.defaults.ObjectReference;
 import org.picocontainer.defaults.SimpleReference;
@@ -75,8 +75,11 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 {
+
     private ComponentManager persistenceCm;
     private ComponentManager rdbmsCm;
+    private MutablePicoContainer rdbmsContainer;
+    private MutablePicoContainer persistenceContainer;
     private DefaultPicoContainer parent;
 
 
@@ -88,12 +91,13 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
         super(arg0);
         // TODO Auto-generated constructor stub
     }
+
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestPersistenceContainer.class);
     }
-    
+
     public void testStartContainer()
     {
         assertNotNull(rdbmsCm);
@@ -569,33 +573,45 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 
 
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
+        System.out.println("============== SET UP");
+        // Set up the db path
+        String scriptPath = System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH);
+        if (scriptPath == null)
+        {
+            System.setProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH, "../../portal/test/db/hsql/Registry");
+        }
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Reader rdbmsScript = new InputStreamReader(cl.getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
-        Reader persistenceScript = new InputStreamReader(cl.getResourceAsStream("org/apache/jetspeed/containers/persistence.container.groovy"));
+        Reader rdbmsScript = new InputStreamReader(cl
+                .getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
+        Reader persistenceScript = new InputStreamReader(cl
+                .getResourceAsStream("org/apache/jetspeed/containers/persistence.container.groovy"));
         rdbmsCm = new ComponentManager(rdbmsScript, ComponentManager.GROOVY);
-        persistenceCm = new ComponentManager(persistenceScript, ComponentManager.GROOVY);
-        parent = new DefaultPicoContainer();
+        persistenceCm = new ComponentManager(persistenceScript, ComponentManager.GROOVY);        
         ObjectReference parentRef = new SimpleReference();
         ObjectReference rdbmsRef = new SimpleReference();
         ObjectReference persistenceRef = new SimpleReference();
         parentRef.set(parent);
         rdbmsCm.getContainerBuilder().buildContainer(rdbmsRef, parentRef, "TEST_PERSISTENCE");
         persistenceCm.getContainerBuilder().buildContainer(persistenceRef, parentRef, "TEST_PERSISTENCE");
+        rdbmsContainer = (MutablePicoContainer) rdbmsRef.get();
+        persistenceContainer = (MutablePicoContainer) persistenceRef.get();
+        
     }
 
-   
     protected void tearDown() throws Exception
     {
-
+        System.out.println("============== TEAR DOWN");
+        // parent.stop();
+        rdbmsContainer.stop();
+        persistenceContainer.stop();
         super.tearDown();
-        rdbmsCm.killContainer();
-        persistenceCm.killContainer();
     }
-
 }
