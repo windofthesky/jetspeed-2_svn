@@ -17,6 +17,8 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 
+<fmt:setBundle basename="org.apache.jetspeed.portlets.site.resources.SiteResources" />
+
 <!--
 /*
  * Copyright 2004 The Apache Software Foundation.
