@@ -36,7 +36,6 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.Fragment;
@@ -47,7 +46,6 @@ import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -86,7 +84,6 @@ public class JetspeedRequestContext implements RequestContext
     private Fragment rootFragment;
     private Map fragments;
     private JetspeedPowerTool jpt;
-    private PortletFactory portletFactory;
 
     /**
      * Create a new Request Context
@@ -97,7 +94,7 @@ public class JetspeedRequestContext implements RequestContext
      * @param config
      */
     public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
-            UserInfoManager userInfoMgr, PortletFactory portletFactory )
+            UserInfoManager userInfoMgr )
     {
         this.request = request;
         this.response = response;
@@ -106,7 +103,6 @@ public class JetspeedRequestContext implements RequestContext
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
         this.fragments = new LinkedHashMap();
-        this.portletFactory = portletFactory;
 
         // set context in Request for later use
         if (null != this.request)
@@ -494,7 +490,6 @@ public class JetspeedRequestContext implements RequestContext
         // {
         //     return language;
         // }
-        ((PortletDefinitionCtrl) portlet).setPortletClassLoader(portletFactory.getPortletClassLoader(portlet));
         LanguageSet languageSet = portlet.getLanguageSet();
         Language language = languageSet.get(locale);
 

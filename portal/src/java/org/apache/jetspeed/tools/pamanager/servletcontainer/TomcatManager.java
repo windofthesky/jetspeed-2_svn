@@ -16,8 +16,6 @@
 package org.apache.jetspeed.tools.pamanager.servletcontainer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -26,7 +24,6 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -34,11 +31,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 /**
  * <p>
@@ -51,27 +43,23 @@ import org.jdom.output.XMLOutputter;
  */
 public class TomcatManager implements ApplicationServerManager
 {
-    private static final String DEFUALT_MANAGER_APP_PATH = "/manager";
-    private static final String EMBEDDED_CONTEXT_FILE_PATH = "/META-INF/tomcat-context.xml";
+    private static final String DEFAULT_MANAGER_APP_PATH = "/manager";
     protected static final Log log = LogFactory.getLog("deployment");
 
     private String catalinaBase;
     private String catalinaEngine;
-    private int catalinaVersionMajor;
+    private String catalinaContextPath;
     private String hostUrl;
     private int hostPort;
     private String userName;
     private String password;
     
-    private String catalinaContextPath;
     
-    private String managerAppPath = DEFUALT_MANAGER_APP_PATH;
+    private String managerAppPath = DEFAULT_MANAGER_APP_PATH;
     private String stopPath = managerAppPath + "/stop";
     private String startPath = managerAppPath + "/start";
-    private String removePath = managerAppPath + "/remove";
     private String deployPath = managerAppPath + "/deploy";
     private String undeployPath = managerAppPath + "/undeploy";
-    private String installPath = managerAppPath + "/install";
     private String reloadPath = managerAppPath + "/reload";
     private String serverInfoPath = managerAppPath + "/serverinfo";
 
@@ -83,13 +71,13 @@ public class TomcatManager implements ApplicationServerManager
 
     private HttpMethod reload;
 
-    private HttpMethod remove;
+    private HttpMethod undeploy;
 
     private PutMethod deploy;
 
     private HttpMethod install;
 
-    public TomcatManager(String catalinaBase, String catalinaEngine, int catalinaVersionMajor, String hostName, int hostPort, String userName, String password) throws HttpException, IOException
+    public TomcatManager(String catalinaBase, String catalinaEngine, String hostName, int hostPort, String userName, String password) throws IOException
     {
         super();
         
@@ -102,15 +90,27 @@ public class TomcatManager implements ApplicationServerManager
             this.catalinaBase = catalinaBase;
         }    
         this.catalinaEngine = catalinaEngine;
-        this.catalinaVersionMajor = catalinaVersionMajor;
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;
         this.password = password;        
         
-        if ( catalinaVersionMajor > 4 )
+        this.catalinaContextPath = this.catalinaBase + "/conf/" + this.catalinaEngine + "/" + this.hostUrl + "/";
+    }
+    
+    private ApplicationServerManagerResult parseResult(String responseBody)
+    {
+        if ( responseBody.startsWith("OK - "))
         {
-            catalinaContextPath = this.catalinaBase + "/conf/" + this.catalinaEngine + "/" + this.hostUrl + "/";
+            return new ApplicationServerManagerResult(true, responseBody.substring(5), responseBody);
+        }
+        else if ( responseBody.startsWith("FAIL - "))
+        {
+            return new ApplicationServerManagerResult(false, responseBody.substring(7), responseBody);
+        }
+        else
+        {
+            return new ApplicationServerManagerResult(false, responseBody, responseBody);
         }
     }
 
@@ -126,28 +126,20 @@ public class TomcatManager implements ApplicationServerManager
         client.getState().setAuthenticationPreemptive(true);
         client.getState().setCredentials(null, hostUrl, new UsernamePasswordCredentials(userName, password));
 
-        if ( catalinaVersionMajor > 4 )
-        {
-            // Tomcat 5 deprecated manager/install and manager/remove.
-            // Those are now handled by manager/deploy and manager/undeploy respectively.
-            installPath = deployPath;
-            removePath = undeployPath;
-        }
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
-        remove = new GetMethod(removePath);
-        install = new GetMethod(installPath);
         reload = new GetMethod(reloadPath);
+        undeploy = new GetMethod(undeployPath);
         deploy = new PutMethod(deployPath);
     }
 
-    public String start(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult start(String appPath) throws IOException
     {
         try
         {
             start.setQueryString(buildPathQueryArgs(appPath));
             client.executeMethod(start);
-            return start.getResponseBodyAsString();
+            return parseResult(start.getResponseBodyAsString());
         }
         finally
         {
@@ -156,13 +148,13 @@ public class TomcatManager implements ApplicationServerManager
         }
     }
 
-    public String stop(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult stop(String appPath) throws IOException
     {
         try
         {
             stop.setQueryString(buildPathQueryArgs(appPath));
             client.executeMethod(stop);
-            return stop.getResponseBodyAsString();
+            return parseResult(stop.getResponseBodyAsString());
         }
         finally
         {
@@ -171,7 +163,7 @@ public class TomcatManager implements ApplicationServerManager
         }
     }
 
-    public String reload(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult reload(String appPath) throws IOException
     {
         try
         {
@@ -184,111 +176,33 @@ public class TomcatManager implements ApplicationServerManager
         }
         catch (InterruptedException e)
         {
-            return "FAIL - "+e.toString();
+            return parseResult("FAIL - "+e.toString());
         }
         finally
         {
             stop.recycle();
-            stop.setPath(reloadPath);
+            stop.setPath(stopPath);
             start.recycle();
-            start.setPath(reloadPath);
+            start.setPath(startPath);
         }
     }
 
-    public String remove(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult undeploy(String appPath) throws IOException
     {
         try
         {
-            remove.setQueryString(buildPathQueryArgs(appPath));
-            client.executeMethod(remove);
-            return remove.getResponseBodyAsString();
+            undeploy.setQueryString(buildPathQueryArgs(appPath));
+            client.executeMethod(undeploy);
+            return parseResult(undeploy.getResponseBodyAsString());
         }
         finally
         {
-            remove.recycle();
-            remove.setPath(removePath);
+            undeploy.recycle();
+            undeploy.setPath(undeployPath);
         }
     }
 
-    public String install(String warPath, String contextPath) throws HttpException, IOException
-    {
-        try
-        {
-            File contextFile = new File(warPath+EMBEDDED_CONTEXT_FILE_PATH);
-            File warPathFile = new File(warPath);
-            String canonicalWarPath = warPathFile.getCanonicalPath();
-
-            if ( contextPath == null )
-            {
-                contextPath = "/"+ warPathFile.getName();
-            }
-            else if (!contextPath.startsWith("/"))
-            {
-                contextPath = "/" + contextPath;
-            }
-
-            if ( contextFile.exists() )
-            {
-                FileInputStream fileInputStream = null;
-                FileOutputStream fileOutputStream = null;
-                
-                try
-                {
-                    SAXBuilder saxBuilder = new SAXBuilder();
-                    fileInputStream = new FileInputStream(contextFile);
-                    Document document = saxBuilder.build(fileInputStream);
-                    if (!document.getRootElement().getName().equals("Context"))
-                    {
-                        throw new IOException(EMBEDDED_CONTEXT_FILE_PATH+" invalid!!!");
-                    }
-                    document.getRootElement().setAttribute("path", contextPath);
-                    document.getRootElement().setAttribute("docBase", canonicalWarPath);
-                    XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-                    
-                    File newContextFile = null;
-                    if ( catalinaVersionMajor > 4 )
-                    {
-                        newContextFile = new File( catalinaContextPath+warPathFile.getName()+".xml");
-                    }
-                    else 
-                    {
-                        newContextFile = new File( warPathFile.getParentFile(), warPathFile.getName()+".xml");
-                    }
-                    fileOutputStream = new FileOutputStream(newContextFile);
-                    output.output(document, fileOutputStream);
-                    fileOutputStream.flush();
-                    
-                    install.setQueryString(buildConfigQueryArgs(newContextFile.getCanonicalPath(), contextPath));
-                }
-                catch (JDOMException e)
-                {
-                    IOException ioe = new IOException(EMBEDDED_CONTEXT_FILE_PATH+" invalid");
-                    ioe.initCause(e);
-                    throw ioe;
-                }
-                finally
-                {
-                    if ( fileInputStream != null )
-                        fileInputStream.close();
-                    if ( fileOutputStream != null )
-                        fileOutputStream.close();
-                }
-            }
-            else
-                install.setQueryString(buildWarQueryArgs(canonicalWarPath, contextPath));
-
-            client.executeMethod(install);
-            return install.getResponseBodyAsString();
-        }
-        finally
-        {
-            install.recycle();
-            install.setPath(installPath);
-        }
-
-    }
-
-    public String deploy(String appPath, InputStream is, int size) throws HttpException, IOException
+    public ApplicationServerManagerResult deploy(String appPath, InputStream is, int size) throws IOException
     {
         try
         {
@@ -303,7 +217,7 @@ public class TomcatManager implements ApplicationServerManager
             deploy.setRequestBody(is);
 
             client.executeMethod(deploy);
-            return deploy.getResponseBodyAsString();
+            return parseResult(deploy.getResponseBodyAsString());
         }
         finally
         {
@@ -369,13 +283,13 @@ public class TomcatManager implements ApplicationServerManager
         }
         catch (UnknownHostException e1)
         {
-            log.warn("Unknown server, CatalinaPAM will only function as FileSystemPAM: " + e1.toString());
+            log.error("Unknown server: " + e1.toString());
 
             return false;
         }
         catch (IOException e1)
         {
-            log.warn("IOException, CatalinaPAM will only function as FileSystemPAM: " + e1.toString());
+            log.error("IOException: " + e1.toString());
 
             return false;
         }

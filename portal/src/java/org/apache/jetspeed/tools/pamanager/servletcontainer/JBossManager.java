@@ -18,8 +18,6 @@ package org.apache.jetspeed.tools.pamanager.servletcontainer;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.HttpException;
-
 /**
  * JBoss application server management
  *
@@ -32,7 +30,7 @@ public class JBossManager implements ApplicationServerManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#start(java.lang.String)
      */
-    public String start(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult start(String appPath) throws IOException
     {
         // TODO Auto-generated method stub
         return null;
@@ -41,7 +39,7 @@ public class JBossManager implements ApplicationServerManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#stop(java.lang.String)
      */
-    public String stop(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult stop(String appPath) throws IOException
     {
         // TODO Auto-generated method stub
         return null;
@@ -50,26 +48,16 @@ public class JBossManager implements ApplicationServerManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#reload(java.lang.String)
      */
-    public String reload(String appPath) throws HttpException, IOException
+    public ApplicationServerManagerResult reload(String appPath) throws IOException
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#remove(java.lang.String)
+     * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#undeploy(java.lang.String)
      */
-    public String remove(String appPath) throws HttpException, IOException
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#install(java.lang.String, java.lang.String)
-     */
-    public String install(String warPath, String contexPath)
-            throws HttpException, IOException
+    public ApplicationServerManagerResult undeploy(String appPath) throws IOException
     {
         // TODO Auto-generated method stub
         return null;
@@ -78,8 +66,8 @@ public class JBossManager implements ApplicationServerManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#deploy(java.lang.String, java.io.InputStream, int)
      */
-    public String deploy(String appPath, InputStream is, int size)
-            throws HttpException, IOException
+    public ApplicationServerManagerResult deploy(String appPath, InputStream is, int size)
+            throws IOException
     {
         // TODO Auto-generated method stub
         return null;

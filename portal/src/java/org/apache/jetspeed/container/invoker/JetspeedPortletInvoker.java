@@ -17,6 +17,7 @@ package org.apache.jetspeed.container.invoker;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -34,23 +35,25 @@ public interface JetspeedPortletInvoker extends PortletInvoker
      * Activating an invoker makes it ready to invoke portlets.
      * If an invoker's state is not activated, it can not invoke.
      * 
+     * @param portletFactory The factory to get access to the portlet being invoked.
      * @param portletDefinition The portlet's definition that is being invoked.
      * @param servletConfig The servlet configuration of the portal. 
      * @param containerServlet
      */
-    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig);
+    void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig);
 
     /**
      * Activating an invoker makes it ready to invoke portlets.
      * If an invoker's state is not activated, it can not invoke.
      * This second signature allows for activating with an extra property.
      * 
+     * @param portletFactory The factory to get access to the portlet being invoked.
      * @param portletDefinition The portlet's definition that is being invoked.
      * @param servletConfig The servlet configuration of the portal. 
      * @param property Implementation specific property
      * @param containerServlet
      */
-    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig, String property);
+    void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig, String property);
     
     /**
      * Passivates an invoker, freeing it back to the invoker pool.
