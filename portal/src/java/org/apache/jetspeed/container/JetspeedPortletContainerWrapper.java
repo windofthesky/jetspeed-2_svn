@@ -54,6 +54,7 @@
 package org.apache.jetspeed.container;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -72,64 +73,71 @@ import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPortletContainerWrapper 
-    implements PortletContainer
+public class JetspeedPortletContainerWrapper implements PortletContainer
 {
+    private boolean initialiized = false;
 
-    public void init(ServletConfig servletConfig,
-                     PortletContainerEnvironment environment)
-    throws PortletContainerException
-    {        
-        PortletContainerFactory.
-            getPortletContainerOriginal().
-                init(servletConfig, 
-                     environment);
-    }
-
-    public void destroy() throws PortletContainerException
+    public void init(
+        String uniqueContainerId,
+        ServletConfig servletConfig,
+        PortletContainerEnvironment environment,
+        Properties props)
+        throws PortletContainerException
     {
-        PortletContainerFactory.
-            getPortletContainerOriginal().
-                destroy();
+
+        PortletContainerFactory.getPortletContainerOriginal().init(uniqueContainerId, servletConfig, environment, props);
+        initialiized = true;
     }
 
-
-    public void renderPortlet ( PortletWindow portletWindow,
-                                 HttpServletRequest servletRequest,
-                                 HttpServletResponse servletResponse )
-    throws PortletException, IOException, PortletContainerException
+    public void shutdown() throws PortletContainerException
     {
-        PortletContainerFactory.
-            getPortletContainerOriginal().
-                renderPortlet(portletWindow, servletRequest, servletResponse);
-// TODO: figure out how to access pluto-services before container kicks in
-//                              ServletObjectAccess.getServletRequest(servletRequest), 
-//                              ServletObjectAccess.getServletResponse(servletResponse));
+        //        PortletContainerFactory.
+        //            getPortletContainerOriginal().
+        //                destroy();
+        initialiized = false;
+        PortletContainerFactory.getPortletContainerOriginal().shutdown();
     }
 
-    public void processPortletAction( PortletWindow portletWindow,
-                                      HttpServletRequest servletRequest,
-                                      HttpServletResponse servletResponse )
-    throws PortletException, IOException, PortletContainerException
+    public void renderPortlet(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+        throws PortletException, IOException, PortletContainerException
     {
-        PortletContainerFactory.
-            getPortletContainerOriginal().
-                processPortletAction(portletWindow,
-                                     servletRequest, servletResponse);                                      
-//                                     ServletObjectAccess.getServletRequest(servletRequest),
-//                                     ServletObjectAccess.getServletResponse(servletResponse));
+        PortletContainerFactory.getPortletContainerOriginal().renderPortlet(portletWindow, servletRequest, servletResponse);
+        // TODO: figure out how to access pluto-services before container kicks in
+        //                              ServletObjectAccess.getServletRequest(servletRequest), 
+        //                              ServletObjectAccess.getServletResponse(servletResponse));
     }
 
-    public void portletLoad ( PortletWindow portletWindow,
-                              HttpServletRequest servletRequest,
-                              HttpServletResponse servletResponse )
-    throws PortletException, PortletContainerException
+    public void processPortletAction(
+        PortletWindow portletWindow,
+        HttpServletRequest servletRequest,
+        HttpServletResponse servletResponse)
+        throws PortletException, IOException, PortletContainerException
     {
-        PortletContainerFactory.
-            getPortletContainerOriginal().
-                portletLoad(portletWindow,
-                            ServletObjectAccess.getServletRequest(servletRequest),
-                            ServletObjectAccess.getServletResponse(servletResponse));
+        PortletContainerFactory.getPortletContainerOriginal().processPortletAction(portletWindow, servletRequest, servletResponse);
+        //                                     ServletObjectAccess.getServletRequest(servletRequest),
+        //                                     ServletObjectAccess.getServletResponse(servletResponse));
     }
-    
+
+    public void portletLoad(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+        throws PortletException, PortletContainerException
+    {
+        PortletContainerFactory.getPortletContainerOriginal().portletLoad(
+            portletWindow,
+            ServletObjectAccess.getServletRequest(servletRequest),
+            ServletObjectAccess.getServletResponse(servletResponse));
+    }
+
+    /** 
+     * <p>
+     * isInitialized
+     * </p>
+     * 
+     * @see org.apache.pluto.PortletContainer#isInitialized()
+     * @return
+     */
+    public boolean isInitialized()
+    {
+        return initialiized;
+    }
+
 }
