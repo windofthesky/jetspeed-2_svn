@@ -177,6 +177,34 @@ public class JetspeedDeploy implements Deploy
             }
             new File(outputName).delete();
         }
+        finally
+        {
+            if (jin != null) 
+            {
+                try 
+                {
+                    jin.close();
+                    jin = null;
+                } 
+                catch (IOException e1) 
+                {
+                    // ignore
+                }
+            }
+            if (jout != null) 
+            {
+                try 
+                {
+                    jout.close();
+                    jout = null;
+                } 
+                catch (IOException e1) 
+                {
+                    // ignore
+                }
+            }            
+            
+        }
     }
         
     private Document parseXml(InputStream jin) throws Exception {
