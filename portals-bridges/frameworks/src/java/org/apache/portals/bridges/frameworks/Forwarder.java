@@ -86,7 +86,7 @@ public class Forwarder
     {
         String forwardName = model.getForward(actionForward);
         PortletURL url = response.createRenderURL();
-        
+        buildLink(forwardName, url);
         return url;
     }
 
