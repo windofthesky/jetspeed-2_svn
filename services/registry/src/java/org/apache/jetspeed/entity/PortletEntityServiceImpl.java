@@ -111,7 +111,7 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
      */
     public PortletEntity getPortletEntity(ObjectID entityId)
     {
-        if (entityCache.containsKey(entityId))
+        if (entityCache.get(entityId) != null)
         {
             return (PortletEntity) entityCache.get(entityId);
         }
