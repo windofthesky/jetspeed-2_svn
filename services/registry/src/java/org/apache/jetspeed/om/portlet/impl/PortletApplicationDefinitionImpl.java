@@ -58,6 +58,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -206,7 +207,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void addPortletDefinition(PortletDefinition pd)
     {
-        //((PortletDefinitionComposite) pd).setPortletApplicationDefinition(this);
+        ((PortletDefinitionComposite) pd).setPortletApplicationDefinition(this);
         portlets.add(pd);
     }
 
