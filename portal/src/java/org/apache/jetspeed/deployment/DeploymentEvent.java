@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.deployment;
 
+
 /**
  * <p>
  * DeploymentEvent
@@ -48,25 +49,42 @@ public interface DeploymentEvent
 	String getEventType();
 	
 	/**
-	 * This is the absolute path where content for this event should be deployed to.
-	 * @return String absolute path to the final home of the deployed content.
+	 * 
+	 * <p>
+	 * getDeploymentObject
+	 * </p>
+	 * @see org.apache.jetspeed.deployment.DeploymentObject
+	 *
+	 * @return An instance of <code>org.apache.jetspeed.deployment.DeploymentObject</code>
 	 */
-	String getDeploymentRoot();
+	DeploymentObject getDeploymentObject();
 	
-	void setDeploymentRoot(String deploymentRoot);
-	
-
 	/**
-	 * Returns an <code>java.io.InputStream</code> containing the deployed content.  Most often
-	 * this will be a <code>java.utiljar.JARInputStream</code>.
-	 * @return InputStream containing the information to be deployed.
-	 */	
-	DeploymentHandler getHandler();
-	
+	 * 
+	 * <p>
+	 * getStatus
+	 * </p>
+	 *
+	 * @return The status of the deployment. <code>STATUS_OKAY</code> if the deployment was successful,
+	 * <code>STATUS_FAILED</code> if there was a problem deploying the deployment object or <code>-1</code>
+	 * if the status was never set (i.e. this event was never acted upon by a listener).
+	 */
 	int getStatus();
 	
+	/**
+	 * 
+	 * <p>
+	 * setStatus
+	 * </p>
+	 *
+	 * Sets the status of this event. @see getEvent()
+	 * @param status
+	 */
 	void setStatus(int status);
 	
+	String getName();
+	
+	String getPath();
 	
 	
 }
