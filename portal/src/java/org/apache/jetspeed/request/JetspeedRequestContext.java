@@ -521,6 +521,11 @@ public class JetspeedRequestContext implements RequestContext
         {
             language = (Language) langItr.next();
         }
+        
+        if (language == null)
+        {
+            language = languageSet.get(languageSet.getDefaultLocale());
+        }
 
         if (language == null)
         {
