@@ -313,11 +313,7 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public String getRequestPathInfo()
     {
-        if (null == this.requestPathInfo)
-        {
-            this.requestPathInfo = (String) this.portletRequest.getAttribute("javax.servlet.include.path_info");
-        }
-        return this.requestPathInfo;
+        return null;
     }
 
     /**
@@ -429,7 +425,7 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public String getRequestServletPath()
     {
-        return (String) this.portletRequest.getAttribute(FacesPortlet.VIEW_ID);
+        return (String) this.portletRequest.getAttribute(FacesPortlet.REQUEST_SERVLET_PATH);
     }
 
     /**
