@@ -16,7 +16,11 @@
 package org.apache.jetspeed.profiler.impl;
 
 import java.io.IOException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -27,10 +31,14 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.impl.JetspeedProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * ProfilerValveImpl
@@ -63,16 +71,29 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     {
         try
         {
-            // perform profiling to get profiled page context using
-            // the profiler and page manager
-            ProfileLocator locator = profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR);
-            ProfiledPageContext profiledPageContext = pageManager.getProfiledPageContext(locator);
-            if ((profiledPageContext == null) || (profiledPageContext.getPage() == null) || (profiledPageContext.getLocator() == null)) 
+            // get profiler locators for request subject/principal using the profiler
+            Subject subject = request.getSubject();
+            if (subject == null)
+                throw new ProfilerException("Missing subject for request: " + request.getPath());
+            Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
+            if (principal == null)
+                throw new ProfilerException("Missing principal for request: " + request.getPath());
+            String [] locatorNames = profiler.getLocatorNamesForPrincipal(principal);
+            if ((locatorNames == null) || (locatorNames.length == 0))
+                locatorNames = new String[]{ProfileLocator.PAGE_LOCATOR};
+            Map locators = (Map) new HashMap(16);
+            for (int i = 0; (i < locatorNames.length); i++)
+                locators.put(locatorNames[i], profiler.getProfile(request,locatorNames[i]));
+
+            // get profiled page context using the profiler and page manager
+            ProfiledPageContext profiledPageContext = profiler.createProfiledPageContext(locators);
+            pageManager.computeProfiledPageContext(profiledPageContext);
+            if (profiledPageContext.getPage() == null)
                 throw new NodeNotFoundException("Unable to profile request: " + request.getPath());
 
             // set request page and profile locator
             request.setPage(profiledPageContext.getPage());
-            request.setProfileLocator(profiledPageContext.getLocator());
+            request.setProfileLocators(profiledPageContext.getLocators());
 
             // return profiled page context in request attribute
             HttpServletRequest httpRequest = request.getRequest();
@@ -95,6 +116,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         catch (Exception e)
         {
+            log.error("Exception in request pipeline: " + e.getMessage(), e);
             throw new PipelineException(e.toString(), e);
         }
     }
