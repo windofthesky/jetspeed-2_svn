@@ -260,6 +260,8 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
      * @return ExtendedProperties loaded with Velocity runtime configuration values.
      * @throws IOException I/O problem accessing the specified file, if specified.
      */
+    /* DST: FIX ME, sorry i had to pull this out, on Tomcat5/windows this is causing profusive errors in my catalina.out (stdout)
+    
     protected ExtendedProperties loadConfiguration(ServletConfig config)
         throws IOException
     {
@@ -270,7 +272,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         configuration.setProperty("runtime.log.logsystem.log4j.category", "velocity");
         return configuration;
     }
-
+*/
     /**
      * Get VelocityEngine for template access.
      *
