@@ -51,34 +51,95 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Set;
+
+import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.common.LanguageSet;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * LanguageSetImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    /** Contains all loaded langauges, keyed by <code>java.util.Locale</code> */
+    private HashMap languageMap = new HashMap();
+
+    /**
+     * 
+     * @param wrappedSet
+     */
+    public LanguageSetImpl(Set wrappedSet)
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        super(wrappedSet);
     }
+
+    public LanguageSetImpl()
+    {
+        super();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.LanguageSet#iterator()
+     */
+    public Iterator iterator()
+    {
+        return super.iterator();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.LanguageSet#getLocales()
+     */
+    public Iterator getLocales()
+    {
+        return languageMap.keySet().iterator();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.LanguageSet#get(java.util.Locale)
+     */
+    public Language get(Locale locale)
+    {
+        return (Language) languageMap.get(locale);
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.LanguageSet#getDefaultLocale()
+     */
+    public Locale getDefaultLocale()
+    {
+        return Locale.getDefault();
+    }
+
+    /**
+     * @see java.util.Collection#add(java.lang.Object)
+     */
+    public boolean add(Object o)
+    {
+        Language language = (Language) o;
+        languageMap.put(language.getLocale(), language);
+        return super.add(o);
+    }
+
+    /**
+     * @see java.util.Collection#remove(java.lang.Object)
+     */
+    public boolean remove(Object o)
+    {
+        Language language = (Language) o;
+        languageMap.remove(language.getLocale());
+        return super.remove(language);
+    }
+
 }

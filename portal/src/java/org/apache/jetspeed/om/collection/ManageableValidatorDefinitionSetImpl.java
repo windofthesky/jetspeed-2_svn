@@ -51,34 +51,65 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.collection;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.jetspeed.om.common.ValidatorDefinitionSetImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.common.ValidatorDefinitionSet;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public class PortletWindowFactory
+public class ManageableValidatorDefinitionSetImpl
+    extends ValidatorDefinitionSetImpl
+    implements ValidatorDefinitionSet, ManageableCollection
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    private HashMap validatorMap;
+
+    public ManageableValidatorDefinitionSetImpl()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        validatorMap = new HashMap();
     }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
+     */
+    public void ojbAdd(Object arg0)
+    {
+        add(arg0);
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
+     */
+    public void ojbAddAll(ManageableCollection arg0)
+    {
+        addAll((ManageableValidatorDefinitionSetImpl) arg0);
+
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
+     */
+    public Iterator ojbIterator()
+    {
+        return iterator();
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        // nothin'
+
+    }
+
 }

@@ -55,7 +55,7 @@ package org.apache.jetspeed.tools.castor.om.common.portlet;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.portlet.BaseContentType;
+import org.apache.jetspeed.om.common.portlet.ContentTypeImpl;
 
 /**
  * Used to help Castor in mapping XML portlet types to Java objects 
@@ -63,7 +63,7 @@ import org.apache.jetspeed.om.common.portlet.BaseContentType;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ContentTypeDescriptor extends BaseContentType
+public class ContentTypeDescriptor extends ContentTypeImpl
 {
     public Collection getCastorPortletModes() 
     {

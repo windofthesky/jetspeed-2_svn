@@ -51,34 +51,60 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.io.Serializable;
+import java.util.HashMap;
+import org.apache.pluto.om.common.ValidatorDefinition;
+import org.apache.pluto.om.common.ValidatorDefinitionSet;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * ValidatorDefinitionSetImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class ValidatorDefinitionSetImpl
+    extends AbstractSupportSet
+    implements ValidatorDefinitionSet, Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    private HashMap validatorMap;
+
+    public ValidatorDefinitionSetImpl()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        validatorMap = new HashMap();
     }
+
+    /**
+     * @see org.apache.pluto.om.common.ValidatorDefinitionSet#get(java.lang.String)
+     */
+    public ValidatorDefinition get(String name)
+    {
+
+        return (ValidatorDefinition) validatorMap.get(name);
+    }
+
+    /**
+     * @see java.util.Collection#add(java.lang.Object)
+     */
+    public boolean add(Object o)
+    {
+        ValidatorDefinition vd = (ValidatorDefinition) o;
+        validatorMap.put(vd.getClassName(), vd);
+        return super.add(vd);
+    }
+
+    /**
+     * @see java.util.Collection#remove(java.lang.Object)
+     */
+    public boolean remove(Object o)
+    {
+        ValidatorDefinition vd = (ValidatorDefinition) o;
+        validatorMap.remove(vd.getClassName());
+        return super.remove(o);
+    }
+
 }

@@ -56,11 +56,11 @@ package org.apache.jetspeed.tools.castor.om.common.portlet;
 import java.util.Collection;
 import java.util.ArrayList;
 
-import org.apache.jetspeed.om.common.portlet.BasePortletDefinition;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor;
 import org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor;
-import org.apache.jetspeed.om.common.BaseLanguageSet;
-import org.apache.jetspeed.om.common.BasePreferenceSet;
+import org.apache.jetspeed.om.common.LanguageSetImpl;
+import org.apache.jetspeed.om.common.PreferenceSetImpl;
 
 /**
  * Used to help Castor in mapping XML portlet types to Java objects 
@@ -68,7 +68,7 @@ import org.apache.jetspeed.om.common.BasePreferenceSet;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletDefinitionDescriptor extends BasePortletDefinition
+public class PortletDefinitionDescriptor extends PortletDefinitionImpl
 {
     // NOTE: this needs to be mapped later in a post load phase
     private ArrayList castorSupportedLocales = new ArrayList();   
@@ -96,7 +96,7 @@ public class PortletDefinitionDescriptor extends BasePortletDefinition
 
     public Collection getCastorResources()
     {
-        BaseLanguageSet bls = (BaseLanguageSet)this.getLanguageSet();
+        LanguageSetImpl bls = (LanguageSetImpl)this.getLanguageSet();
         if (null == bls)
         {
             bls = new LanguageSetDescriptor();
@@ -117,7 +117,7 @@ public class PortletDefinitionDescriptor extends BasePortletDefinition
     
     public Collection getCastorPreferences()
     {
-        BasePreferenceSet bps = (BasePreferenceSet)this.getPreferenceSet();
+        PreferenceSetImpl bps = (PreferenceSetImpl)this.getPreferenceSet();
         if (null == bps)
         {
             bps = new PreferenceSetDescriptor();

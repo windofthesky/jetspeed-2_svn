@@ -3,7 +3,7 @@
                            "http://castor.exolab.org/mapping.dtd">
 <mapping>
 
-  <class name="org.apache.jetspeed.om.common.BaseSecurityRoleRef">
+  <class name="org.apache.jetspeed.om.common.SecurityRoleRefImpl">
 
    <!-- STW Test
     <field name="description" type="java.lang.String">
@@ -19,8 +19,8 @@
     </field>
   </class>
 
-  <!-- <class name="org.apache.jetspeed.om.common.BaseParameter"> -->
-  <class name="org.apache.jetspeed.om.common.extended.PortletInitParameter">
+  <!-- <class name="org.apache.jetspeed.om.common.ParameterImpl"> -->
+  <class name="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl">
 
     <field name="description" type="java.lang.String">
       <bind-xml name="description" node="element"/>
@@ -117,7 +117,7 @@
       <bind-xml name="portlet-class" node="element"/>
     </field>
     <field name="castorInitParams"
-           type="org.apache.jetspeed.om.common.extended.PortletInitParameter"
+           type="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl"
            collection="collection">
       <bind-xml name="init-param" node="element"/>
     </field>
@@ -145,14 +145,14 @@
       <bind-xml name="portlet-preferences" node="element"/>
     </field>
     <field name="castorInitSecurityRoleRefs"
-           type="org.apache.jetspeed.om.common.BaseSecurityRoleRef"
+           type="org.apache.jetspeed.om.common.SecurityRoleRefImpl"
            collection="collection">
       <bind-xml name="security-role-ref" node="element"/>
     </field>
 
   </class>
 
-  <class name="org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition">
+  <class name="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl">
     <map-to xml="portlet-app"/>
 
     <field name="version" type="java.lang.String">

@@ -64,7 +64,7 @@ import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
-import org.apache.jetspeed.om.common.servlet.BaseWebApplicationDefinition;
+import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 
 /**
@@ -131,7 +131,7 @@ public class FileSystemPAM implements Deployment
             }
 
             // create the web application 
-            MutableWebApplication webapp = new BaseWebApplicationDefinition();
+            MutableWebApplication webapp = new WebApplicationDefinitionImpl();
             if (paName.startsWith("/"))
             {
                 webapp.setContextRoot(paName);

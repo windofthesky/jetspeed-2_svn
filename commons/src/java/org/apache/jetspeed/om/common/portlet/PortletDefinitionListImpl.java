@@ -51,34 +51,79 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common.portlet;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.jetspeed.om.common.AbstractSupportSet;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import org.apache.pluto.om.portlet.PortletDefinitionList;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * PortletDefinitionListImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class PortletDefinitionListImpl extends AbstractSupportSet implements PortletDefinitionList, Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+    /** Used to build a quick lookup reference */
+    private HashMap portletDefinitionlocator = new HashMap();
+    private HashMap portletByName = new HashMap();
+
+    /**
+     * @see org.apache.pluto.om.portlet.PortletDefinitionList#iterator()
+     */
+    public Iterator iterator()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        return super.iterator();
     }
+
+    /**
+     * @see org.apache.pluto.om.portlet.PortletDefinitionList#get(org.apache.pluto.om.common.ObjectID)
+     */
+    public PortletDefinition get(ObjectID id)
+    {
+        return (PortletDefinition) portletDefinitionlocator.get(id);
+    }
+
+    /**
+     * Retrieves a <code>PortletDefinition</code> from this 
+     * collection by the PortletDefinitions proper name
+     * @param name Proper name of PortletDefinition to locate.
+     * @return PortletDefinition matching <code>name</code> or <code>null</code>
+     * if no PortletDefinition within this PortletApplication has that name.
+     */
+    public PortletDefinition get(String name)
+    {
+        return (PortletDefinition) portletByName.get(name);
+    }
+
+    /**
+     * @see java.util.Collection#add(java.lang.Object)
+     */
+    public boolean add(Object o)
+    {
+        PortletDefinition pd = (PortletDefinition) o;
+        portletDefinitionlocator.put(pd.getId(), pd);
+        portletByName.put(pd.getName(), pd);
+        return super.add(pd);
+    }
+
+    /**
+     * @see java.util.Collection#remove(java.lang.Object)
+     */
+    public boolean remove(Object o)
+    {
+        PortletDefinition pd = (PortletDefinition) o;
+        portletDefinitionlocator.remove(pd.getName());
+        portletByName.remove(pd.getName());
+        return super.remove(pd);
+    }
+
 }

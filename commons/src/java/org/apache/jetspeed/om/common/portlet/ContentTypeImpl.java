@@ -51,34 +51,113 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common.portlet;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.pluto.om.portlet.ContentType;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * ContentTypeImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class ContentTypeImpl implements ContentTypeComposite, Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    private String contentType;
+    protected Collection portletModes; 
+    /**
+     *  field that represents a FK relationship to the parent portlet.
+     * Required by some O/R tools like OJB.
+     */
+    protected long portletId;
+
+    protected long contentTypeId;
+
+    public ContentTypeImpl()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        portletModes = new HashSet();
     }
+
+    /**
+     * @see org.apache.pluto.om.portlet.ContentType#getContentType()
+     */
+    public String getContentType()
+    {
+        return contentType;
+    }
+
+    /**
+     * @see org.apache.pluto.om.portlet.ContentType#getPortletModes()
+     */
+    public Iterator getPortletModes()
+    {
+        return portletModes.iterator();
+    }
+
+    /**
+     * @see org.apache.pluto.om.portlet.ContentTypeCtrl#setContentType(java.lang.String)
+     */
+    public void setContentType(String contentType)
+    {
+        this.contentType = contentType;
+    }
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj)
+    {
+        if (obj != null && obj instanceof ContentType)
+        {
+            ContentType cType = (ContentType) obj;
+            return this.getContentType().equals(cType.getContentType());
+        }
+
+        return false;
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(27, 87);
+        hasher.append(contentType);
+        return hasher.toHashCode();
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#addMode(java.lang.String)
+     */
+    public void addPortletMode(String mode)
+    {
+        portletModes.add(mode);
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#setModes(java.util.Collection)
+     */
+    public void setPortletModes(Collection modes)
+    {
+        portletModes = modes;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#supportsPortletMode(java.lang.String)
+     */
+    public boolean supportsPortletMode(String mode)
+    {
+        return portletModes.contains(mode);
+    }
+
 }

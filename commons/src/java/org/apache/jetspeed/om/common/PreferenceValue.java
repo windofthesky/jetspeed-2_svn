@@ -51,34 +51,30 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
-
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+package org.apache.jetspeed.om.common;
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * PreferenceValue
+ * <br />
+ * Represents an individual value for a preference which could
+ * either be the default preferences from a portlet's deployment descriptor
+ * or a preference value for a specific user.  This class should only be
+ * accessed by Jetspeed internals as Preference values are really
+ * only String values.  The use of preference value objects helps
+ * facilitate the use object relational tools in terms of persistence operations. 
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public interface PreferenceValue
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
-    {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
-    }
+    /**
+     * @return
+     */
+    public abstract String getValue();
+    /**
+     * @param string
+     */
+    public abstract void setValue(String string);
 }

@@ -51,34 +51,100 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+package org.apache.jetspeed.om.common;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+
+import java.util.Set;
+
+import org.apache.pluto.om.common.Preference;
+
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * PreferenceSetImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceSetComposite, Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    private HashMap prefMap = new HashMap();
+
+    /**
+     * @param wrappedSet
+     */
+    public PreferenceSetImpl(Set wrappedSet)
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        super(wrappedSet);
     }
+
+    public PreferenceSetImpl()
+    {
+        prefMap = new HashMap();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceSet#get(java.lang.String)
+     */
+    public Preference get(String name)
+    {
+        return (Preference) prefMap.get(name);
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceSetCtrl#add(java.lang.String, java.util.Collection)
+     */
+    public Preference add(String name, Collection values)
+    {
+        PreferenceImpl pref = new PreferenceImpl();
+        pref.setName(name);
+        pref.setValues(values);
+        add(pref);
+        return pref;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(java.lang.String)
+     */
+    public Preference remove(String name)
+    {
+        Preference pref = (Preference) prefMap.get(name);
+        remove(pref);
+        return pref;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(org.apache.pluto.om.common.Preference)
+     */
+    public void remove(Preference preference)
+    {
+        remove((Object) preference);
+    }
+
+    /**
+     * @see java.util.Collection#add(java.lang.Object)
+     */
+    public boolean add(Object o)
+    {
+        Preference pref = (Preference) o;
+        prefMap.put(pref.getName(), pref);
+        return super.add(pref);
+    }
+
+    /**
+     * @see java.util.Collection#remove(java.lang.Object)
+     */
+    public boolean remove(Object o)
+    {
+        Preference pref = (Preference) o;
+        prefMap.remove(pref.getName());
+        return super.remove(o);
+    }
+
 }

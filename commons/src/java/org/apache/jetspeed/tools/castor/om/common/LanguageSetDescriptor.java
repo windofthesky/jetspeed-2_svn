@@ -62,8 +62,8 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
 import org.apache.pluto.om.common.Language;
-import org.apache.jetspeed.om.common.BaseLanguage;
-import org.apache.jetspeed.om.common.BaseLanguageSet;
+import org.apache.jetspeed.om.common.LanguageImpl;
+import org.apache.jetspeed.om.common.LanguageSetImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
 
 /**
@@ -74,7 +74,7 @@ import org.apache.jetspeed.om.common.MutableLanguage;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class LanguageSetDescriptor extends BaseLanguageSet
+public class LanguageSetDescriptor extends LanguageSetImpl
 {
     private String shortTitle;
     private String title;
@@ -127,7 +127,7 @@ public class LanguageSetDescriptor extends BaseLanguageSet
         if (locale != null && title != null)
         {
 
-            MutableLanguage lang = new BaseLanguage(locale, title);
+            MutableLanguage lang = new LanguageImpl(locale, title);
 
             lang.setLocale(locale);
             lang.setTitle(title);
@@ -139,7 +139,7 @@ public class LanguageSetDescriptor extends BaseLanguageSet
             {
                 keywords.add(tokenizer.nextToken());
             }
-            ((BaseLanguage) lang).setKeywords(keywords);
+            ((LanguageImpl) lang).setKeywords(keywords);
 
             return (Language) lang;
         }

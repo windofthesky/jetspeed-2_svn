@@ -61,13 +61,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.om.common.BaseLanguage;
+import org.apache.jetspeed.om.common.LanguageImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition;
-import org.apache.jetspeed.om.common.portlet.BasePortletDefinition;
+import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.servlet.BaseWebApplicationDefinition;
+import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.services.perisistence.LookupCriteria;
 import org.apache.jetspeed.services.perisistence.PersistencePlugin;
@@ -126,15 +126,15 @@ public class TestPersistenceService extends JetspeedTest
     {
         //        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
         //        Object query =
-        //            plugin.generateQuery(BasePortletApplicationDefinition.class, new SimpleCriteria());
+        //            plugin.generateQuery(PortletApplicationDefinitionImpl.class, new SimpleCriteria());
         //        Collection extent =
-        //            plugin.getCollectionByQuery(BasePortletApplicationDefinition.class, query);
+        //            plugin.getCollectionByQuery(PortletApplicationDefinitionImpl.class, query);
         //        assertNotNull(extent);
         //        assertTrue(extent.size() > 0);
         //        Iterator itr = extent.iterator();
         //        while (itr.hasNext())
         //        {
-        //            BasePortletApplicationDefinition app = (BasePortletApplicationDefinition) itr.next();
+        //            PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) itr.next();
         //            System.out.println("Application Name: " + app.getName());
         //        }
 
@@ -145,13 +145,13 @@ public class TestPersistenceService extends JetspeedTest
         //        PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
         //        SimpleCriteria crit = new SimpleCriteria();
         //        crit.addComparsion("name", "demo", SimpleCriteria.EQUAL);
-        //        Object query = plugin.generateQuery(BasePortletApplicationDefinition.class, crit);
+        //        Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, crit);
         //        Collection extent =
-        //            plugin.getCollectionByQuery(BasePortletApplicationDefinition.class, query);
+        //            plugin.getCollectionByQuery(PortletApplicationDefinitionImpl.class, query);
         //        assertNotNull(extent);
         //        assertTrue(extent.size() == 1);
-        //        BasePortletApplicationDefinition app =
-        //            (BasePortletApplicationDefinition) extent.toArray()[0];
+        //        PortletApplicationDefinitionImpl app =
+        //            (PortletApplicationDefinitionImpl) extent.toArray()[0];
         //        System.out.println("Only Application Name: " + app.getName());
     }
 
@@ -191,7 +191,7 @@ public class TestPersistenceService extends JetspeedTest
 
         PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
 
-        BasePortletApplicationDefinition app = getTestObject1();
+        PortletApplicationDefinitionImpl app = getTestObject1();
 
         assertNotNull(app);
 
@@ -219,7 +219,7 @@ public class TestPersistenceService extends JetspeedTest
     {
         initTestObject();
 
-        BasePortletApplicationDefinition app = getTestObject1();
+        PortletApplicationDefinitionImpl app = getTestObject1();
 
         assertNotNull(app);
 
@@ -245,23 +245,23 @@ public class TestPersistenceService extends JetspeedTest
     {
 
         PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
-        MutablePortletApplication app = new BasePortletApplicationDefinition();
+        MutablePortletApplication app = new PortletApplicationDefinitionImpl();
         app.setName("test adding object");
         app.setVersion("1.0");
         app.setDescription("This is a test from persistence layer");
         // create a web application
-        MutableWebApplication wad = new BaseWebApplicationDefinition();
+        MutableWebApplication wad = new WebApplicationDefinitionImpl();
         wad.addDescription(getEnglishLanguage().getLocale(), "This is an english desrcitpion");
         wad.addDisplayName(getEnglishLanguage().getLocale(), "This is an english display name");
         wad.setContextRoot("/test");
         app.setWebApplicationDefinition(wad);
 
         // Create some Portlets 
-        PortletDefinitionComposite pdc = new BasePortletDefinition();
+        PortletDefinitionComposite pdc = new PortletDefinitionImpl();
         pdc.setClassName("com.bogus.Class1");
         pdc.setName("Portlet 1");
 
-        PortletDefinitionComposite pdc2 = new BasePortletDefinition();
+        PortletDefinitionComposite pdc2 = new PortletDefinitionImpl();
         pdc2.setClassName("com.bogus.Class2");
         pdc2.setName("Portlet 2");
 
@@ -274,7 +274,7 @@ public class TestPersistenceService extends JetspeedTest
     protected Language getEnglishLanguage()
     {
         PersistencePlugin plugin = service.getPlugin("jetspeed-test");
-        MutableLanguage lang = new BaseLanguage();
+        MutableLanguage lang = new LanguageImpl();
         
         lang.setTitle("Portlet Title");
         lang.setShortTitle("Portlet Short Title");
@@ -284,7 +284,7 @@ public class TestPersistenceService extends JetspeedTest
 
     }
 
-    protected BasePortletApplicationDefinition getTestObject1()
+    protected PortletApplicationDefinitionImpl getTestObject1()
     {
         PersistencePlugin plugin = getService().getPlugin("jetspeed-test");
         LookupCriteria c = plugin.newLookupCriteria();
@@ -292,10 +292,10 @@ public class TestPersistenceService extends JetspeedTest
 
         Object obj =
             plugin.getObjectByQuery(
-                BasePortletApplicationDefinition.class,
-                plugin.generateQuery(BasePortletApplicationDefinition.class, c));
+                PortletApplicationDefinitionImpl.class,
+                plugin.generateQuery(PortletApplicationDefinitionImpl.class, c));
 
-        return (BasePortletApplicationDefinition) obj;
+        return (PortletApplicationDefinitionImpl) obj;
     }
 
     protected void destroyTestObject()
@@ -305,8 +305,8 @@ public class TestPersistenceService extends JetspeedTest
         c.addEqualTo("name", "test adding object");
         Collection removeUs =
             plugin.getCollectionByQuery(
-                BasePortletApplicationDefinition.class,
-                plugin.generateQuery(BasePortletApplicationDefinition.class, c));
+                PortletApplicationDefinitionImpl.class,
+                plugin.generateQuery(PortletApplicationDefinitionImpl.class, c));
 
         Iterator itr = removeUs.iterator();
         while (itr.hasNext())

@@ -56,7 +56,7 @@ package org.apache.jetspeed.om.registry;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition;
+import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
 
 /**
  * This entry describes all the properties that should be present in
@@ -174,14 +174,14 @@ public interface PortletEntry extends PortletInfoEntry
      * @return Value of property application.
      *
      */
-    public BasePortletApplicationDefinition getApplication();
+    public PortletApplicationDefinitionImpl getApplication();
     
     /**
      * Setter for property application.
      * @param application New value of property application.
      *
      */
-    public void setApplication(BasePortletApplicationDefinition application);
+    public void setApplication(PortletApplicationDefinitionImpl application);
     
     /**
      * Getter for property descriptions.

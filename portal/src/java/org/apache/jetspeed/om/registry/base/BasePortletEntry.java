@@ -61,7 +61,7 @@ import java.util.Map;
 import java.util.Vector;
 
 
-import org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition;
+import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.registry.CachedParameter;
 import org.apache.jetspeed.om.registry.Category;
 import org.apache.jetspeed.om.registry.ContentURL;
@@ -78,13 +78,13 @@ import org.apache.jetspeed.services.registry.RegistryService;
  *
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
- * @deprecated use org.apache.jetspeed.om.common.base.BasePortletEntity
+ * @deprecated use org.apache.jetspeed.om.common.base.PortletEntityImpl
  */
 public class BasePortletEntry extends BasePortletInfoEntry
    implements PortletEntry, java.io.Serializable
 {
 
-    private BasePortletApplicationDefinition application = null;
+    private PortletApplicationDefinitionImpl application = null;
     
     private Collection descriptions = null;
 
@@ -574,7 +574,7 @@ public class BasePortletEntry extends BasePortletInfoEntry
     /** 
      * @see org.apache.jetspeed.om.registry.PortletEntry#getApplication
      */
-    public BasePortletApplicationDefinition getApplication()
+    public PortletApplicationDefinitionImpl getApplication()
     {
         return this.application;
     }
@@ -582,7 +582,7 @@ public class BasePortletEntry extends BasePortletInfoEntry
     /** 
      * @see org.apache.jetspeed.om.registry.PortletEntry#setApplication
      */
-    public void setApplication(BasePortletApplicationDefinition application)
+    public void setApplication(PortletApplicationDefinitionImpl application)
     {
         this.application = application;
     }

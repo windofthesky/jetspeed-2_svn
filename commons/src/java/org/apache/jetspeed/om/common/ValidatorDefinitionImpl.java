@@ -51,34 +51,77 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.io.Serializable;
+
+import javax.portlet.PreferencesValidator;
+
+import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.pluto.om.common.ValidatorDefinition;
+
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * ValidatorDefinitionImpl
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public class ValidatorDefinitionImpl implements MutableValidatorDefinition,  Serializable
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+
+    private String className;
+    private PreferencesValidator pv;
+
+    /**
+     * @see org.apache.pluto.om.common.ValidatorDefinition#getClassName()
+     */
+    public String getClassName()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        return className;
     }
+
+    /**
+     * @see org.apache.pluto.om.common.ValidatorDefinition#getPreferencesValidator()
+     */
+    public PreferencesValidator getPreferencesValidator()
+    {
+        return pv;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.ValidatorDefinitionCtrl#setClassName(java.lang.String)
+     */
+    public void setClassName(String className)
+    {
+        this.className = className;
+
+    }
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj)
+    {
+        if (obj != null & obj instanceof ValidatorDefinition)
+        {
+            ValidatorDefinition vd = (ValidatorDefinition) obj;
+            return this.getClassName().equals(vd.getClassName());
+        }
+
+        return false;
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(25, 85);
+        hasher.append(className);
+        return hasher.toHashCode();
+    }
+
 }

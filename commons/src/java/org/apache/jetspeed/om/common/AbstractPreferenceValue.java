@@ -51,34 +51,100 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.om.common;
 
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.window.PortletWindowImpl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+
 
 /**
- * PortletWindowFactory
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * PreferenceValueObject
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PortletWindowFactory
+public abstract class AbstractPreferenceValue implements Serializable, PreferenceValue
 {
-    public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
+    private long preferenceId;
+    private long id;
+    private String value;
+
+    /**
+     * @return
+     */
+    public String getValue()
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        return value;
     }
+
+    /**
+     * @param string
+     */
+    public void setValue(String string)
+    {
+        value = string;
+    }
+
+    /**
+     * @return same as <code>getValue()</code>
+     */
+    public String toString()
+    {
+        return getValue();
+    }
+
+    protected final static ArrayList convertValueObjectsToStrings(Collection valueObjs)
+    {
+        ArrayList values = new ArrayList(valueObjs.size());
+        Iterator itr = valueObjs.iterator();
+        while (itr.hasNext())
+        {
+            values.add(itr.next().toString());
+        }
+
+        return values;
+    }
+
+    protected final static void convertStringsToValueObjects(Collection stringValues, List valueObjects, Class valueClass)
+    {
+        if (valueObjects == null)        
+        {
+            valueObjects = new ArrayList(stringValues.size());
+        }
+
+        Iterator itr = stringValues.iterator();
+        int count = 0;
+        try
+        {
+            while (itr.hasNext())
+            {
+                String strValue = (String) itr.next();
+                if (valueObjects.size() > count)
+                {
+                    AbstractPreferenceValue valueObj = (AbstractPreferenceValue) valueObjects.get(count);
+                    valueObj.setValue(strValue);
+                }
+                else
+                {
+
+                    AbstractPreferenceValue valueObj = (AbstractPreferenceValue) valueClass.newInstance();
+                    valueObj.setValue(strValue);
+                    valueObjects.add(valueObj);
+                }
+                count++;
+            }
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Unable to instantiate value class.", e);
+        }
+
+    }
+
 }
