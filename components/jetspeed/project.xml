@@ -43,6 +43,12 @@ limitations under the License.
       <id>portlet-api</id>
       <version>1.0</version>
     </dependency>
+
+    <dependency>
+      <id>commons-httpclient</id>
+      <version>2.0</version>
+    </dependency>
+	
     <dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
