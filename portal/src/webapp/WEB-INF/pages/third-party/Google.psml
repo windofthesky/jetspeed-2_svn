@@ -21,7 +21,7 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   
-   <title>Plumtree RSS Portlet</title>
+   <title>Google Portlets</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
      <fragment id="googlePortlet1" type="portlet" name="GooglePortlet::GooglePortlet">
       <property layout="TwoColumns" name="row" value="0" />

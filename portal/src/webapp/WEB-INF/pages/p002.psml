@@ -14,13 +14,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="p001">
+<page >
   <defaults
      skin="light-blue"
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
-  <title>Welcome to Jetspeed-2</title>
+  <title>My Second PSML page</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
   
 	  <fragment id="9" type="portlet" name="HW_App::CustomerList"/>

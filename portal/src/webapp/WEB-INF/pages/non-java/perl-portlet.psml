@@ -16,7 +16,7 @@ limitations under the License.
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
-  <title>PHP demo</title>
+  <title>PERL demo</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="perldemo-1" type="portlet" name="perl::perl-demo">
       <property layout="TwoColumns" name="row" value="0" />
