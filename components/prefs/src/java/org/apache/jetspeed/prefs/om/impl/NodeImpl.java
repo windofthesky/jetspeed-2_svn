@@ -58,8 +58,7 @@ public class NodeImpl implements Node
     {
         this.parentNodeId = parentNodeId;
         this.propertySetDefId = propertySetDefId;
-        this.nodeName =
-            ((nodeName != null) ? nodeName.toLowerCase() : nodeName);
+        this.nodeName = nodeName;
         this.nodeType = nodeType;
         this.fullPath = fullPath;
         this.creationDate = new Timestamp(System.currentTimeMillis());
@@ -244,6 +243,22 @@ public class NodeImpl implements Node
     public void setModifiedDate(Timestamp modifiedDate)
     {
         this.modifiedDate = modifiedDate;
+    }
+
+    /**
+     * <p>Convert <code>Node</code> to string.</p>
+     * @return The Node string value.
+     */
+    public String toString()
+    {
+        String toStringNode = "[[parentNodeId, " + this.parentNodeId + "], "
+            + "[propertySetDefId, " + this.propertySetDefId + "], "
+            + "[nodeName, " + this.nodeName + "], "
+            + "[nodeType, " + this.nodeType + "], "
+            + "[fullPath, " + this.fullPath + "], "
+            + "[creationDate, " + this.creationDate + "], "
+            + "[modifiedDate, " + this.modifiedDate + "]]";
+        return toStringNode;
     }
 
 }
