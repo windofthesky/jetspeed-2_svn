@@ -10,6 +10,9 @@
     <valveDescriptor>
       <className>org.apache.jetspeed.services.profiler.ProfilerValve</className>
     </valveDescriptor>
+     <valveDescriptor>
+      <className>org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl</className>
+    </valveDescriptor>
     <valveDescriptor>
       <className>org.apache.jetspeed.aggregator.AggregatorValve</className>
     </valveDescriptor>
