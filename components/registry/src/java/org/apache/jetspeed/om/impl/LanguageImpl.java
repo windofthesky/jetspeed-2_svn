@@ -93,6 +93,18 @@ public class LanguageImpl implements MutableLanguage, Serializable
         setKeywords(this.resourceBundle.getString("javax.portlet.keywords"));
     }
 
+    public LanguageImpl(
+            Locale locale,
+            ResourceBundle bundle)
+    {
+        this.resourceBundle =
+            new ResourceBundleImpl(
+                bundle,
+                new DefaultsResourceBundle("", "", ""));
+        this.locale = locale;
+        
+    }
+    
     /**
      * @see org.apache.pluto.om.common.Language#getLocale()
      */

@@ -133,6 +133,11 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
                     StringUtils.join(fallBack.getKeywords(), ","));
         }
 
+        if (fallBack == null)
+        {
+            fallBack = new LanguageImpl(locale, loadResourceBundle(locale));
+            innerCollection.add(fallBack);
+        }
         return fallBack;
     }
 
@@ -216,13 +221,16 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         ResourceBundle resourceBundle = null;
         try
         {
-            if (classLoader != null)
+            if (resources != null)
             {
-                resourceBundle=ResourceBundle.getBundle(resources, locale, classLoader);
-            }
-            else
-            {
-                resourceBundle=ResourceBundle.getBundle(resources, locale, Thread.currentThread().getContextClassLoader());
+                if (classLoader != null)
+                {
+                    resourceBundle=ResourceBundle.getBundle(resources, locale, classLoader);
+                }
+                else
+                {
+                    resourceBundle=ResourceBundle.getBundle(resources, locale, Thread.currentThread().getContextClassLoader());
+                }
             }
         }
         catch (MissingResourceException x)

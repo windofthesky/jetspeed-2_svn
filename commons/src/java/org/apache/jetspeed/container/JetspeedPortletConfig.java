@@ -65,6 +65,7 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     public ResourceBundle getResourceBundle(Locale locale)
     {
         LanguageSet languageSet = portletDefinition.getLanguageSet();
+        
         Language lang = languageSet.get(locale);
                                                                                 
         if (lang == null)
@@ -72,7 +73,7 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
             Locale defaultLocale = languageSet.getDefaultLocale();
             lang = languageSet.get(defaultLocale);
         }
-                                                                                
+        
         return lang.getResourceBundle();
     }
 
