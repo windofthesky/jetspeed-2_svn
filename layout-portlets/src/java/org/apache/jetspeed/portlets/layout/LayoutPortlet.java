@@ -22,17 +22,12 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.pluto.om.window.PortletWindow;
@@ -43,62 +38,56 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
-    
-    public void init(PortletConfig config) throws PortletException
+    public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
     }
 
-    public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    public void doHelp( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         response.setContentType("text/html");
-        JetspeedPowerTool jpt = new JetspeedPowerTool(request, response, getPortletConfig());
+        JetspeedPowerTool jpt = getJetspeedPowerTool(request);
+
         PortletPreferences prefs = request.getPreferences();
         String absHelpPage = "";
-        
-        request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY, getPage(request));
-        request.setAttribute("fragment", getFragment(request, false));
-        request.setAttribute("dispatcher", getDispatcher(request));
-        
+
+        // request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, getPage(request));
+        // request.setAttribute("fragment", getFragment(request, false));        
+
         if (prefs != null)
         {
-        
+
             try
             {
                 String helpPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
-        
-                // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
-                absHelpPage = jpt.getTemplate(helpPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+"-help.vm", 
-                                      JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+
+                // TODO: Need to retreive layout.properties instead of
+                // hard-coding ".vm"
+                absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help.vm",
+                        JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 log.debug("Path to help page for LayoutPortlet " + absHelpPage);
-                request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);                
+                request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);
             }
             catch (TemplateLocatorException e)
             {
                 throw new PortletException("Unable to locate view page " + absHelpPage, e);
-            }            
+            }
         }
         super.doView(request, response);
-        
-        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
-        request.removeAttribute("fragment");        
-        request.removeAttribute("layout");
-        request.removeAttribute("dispatcher");
-        
-        
+
+     //   request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE);
+     //   request.removeAttribute("fragment");
+     //   request.removeAttribute("layout");
+     //   request.removeAttribute("dispatcher");
     }
-    
-    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
+
+    public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         response.setContentType("text/html");
-
-        RequestContext context = Jetspeed.getCurrentRequestContext();
+        RequestContext context = getRequestContext(request);
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         boolean maximized = (window != null);
-        
-        request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY, getPage(request));
-        request.setAttribute("fragment", getFragment(request, maximized));
-        request.setAttribute("dispatcher", getDispatcher(request));
+
         if (maximized)
         {
             request.setAttribute("layout", getMaximizedLayout(request));
@@ -107,31 +96,33 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             request.setAttribute("layout", getFragment(request, false));
         }
-        // now invoke the JSP associated with this portlet
-        JetspeedPowerTool jpt = new JetspeedPowerTool(request, response, getPortletConfig());
+
         PortletPreferences prefs = request.getPreferences();
         if (prefs != null)
         {
             String absViewPage = null;
             try
             {
+                JetspeedPowerTool jpt = getJetspeedPowerTool(request);
                 if (maximized)
                 {
                     String viewPage = prefs.getValue(PARAM_MAX_PAGE, "maximized");
-                    
-                    // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
-                    absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", 
-                                                  JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();                    
+
+                    // TODO: Need to retreive layout.properties instead of
+                    // hard-coding ".vm"
+                    absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
+                            JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 }
                 else
                 {
                     String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
-                    
-                    // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
-                    absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", 
-                                                  JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+
+                    // TODO: Need to retreive layout.properties instead of
+                    // hard-coding ".vm"
+                    absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
+                            JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 }
-                log.debug("Path to view page for LayoutPortlet "+absViewPage);
+                log.debug("Path to view page for LayoutPortlet " + absViewPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
             }
             catch (TemplateLocatorException e)
@@ -142,57 +133,87 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 
         super.doView(request, response);
 
-        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
-        request.removeAttribute("fragment");        
+        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE);
+        request.removeAttribute("fragment");
         request.removeAttribute("layout");
         request.removeAttribute("dispatcher");
     }
 
-    protected Fragment getFragment(RenderRequest request, boolean maximized)
+    /**
+     * <p>
+     * initJetspeedPowerTool
+     * </p>
+     * 
+     * @param request
+     * @param response
+     * @return
+     * @throws PortletException
+     */
+    protected JetspeedPowerTool getJetspeedPowerTool( RenderRequest request ) throws PortletException
     {
-        // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        String attribute = (maximized) ? "org.apache.jetspeed.maximized.Fragment" : "org.apache.jetspeed.Fragment";
-        Fragment fragment = (Fragment) innerRequest.getAttribute(attribute);
+        JetspeedPowerTool tool = (JetspeedPowerTool) (RequestContext) request.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
+        RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
 
-        return fragment;
+        if (tool == null)
+        {
+
+            try
+            {
+                if (requestContext == null)
+                {
+                    throw new IllegalStateException(
+                            "LayoutPortlet unable to handle request because there is no RequestContext in "
+                                    + "the HttpServletRequest.");
+                }
+
+                tool = new JetspeedPowerTool(requestContext);
+                request.setAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE, tool);
+            }
+
+            catch (Exception e1)
+            {
+                throw new PortletException("Unable to init JetspeedPowerTool: " + e1.toString(), e1);
+            }
+        }
+        
+        return tool;
     }
 
-    protected Fragment getMaximizedLayout(RenderRequest request)
+    protected Fragment getFragment( RenderRequest request, boolean maximized )
     {
-        // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        String attribute = "org.apache.jetspeed.maximized.Layout" ;
-        Fragment fragment = (Fragment) innerRequest.getAttribute(attribute);
-        return fragment;        
-    }    
-    
-    protected Page getPage(RenderRequest request)
-    {
-        // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        Page page = (Page) innerRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
-
-        return page;
+        String attribute = (maximized)
+                ? PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE
+                : PortalReservedParameters.FRAGMENT_ATTRIBUTE;
+        return (Fragment) request.getAttribute(attribute);       
     }
 
-    protected ContentDispatcher getDispatcher(RenderRequest request)
+    protected Fragment getMaximizedLayout( RenderRequest request )
     {
-        // Very ugly and Pluto dependant but I don't see anything better right now
-        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
-        ContentDispatcher dispatcher = (ContentDispatcher) innerRequest.getAttribute("org.apache.jetspeed.ContentDispatcher");
-
-        return dispatcher;
+        return (Fragment) request.getAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
     }
-    
-    
+
+    protected RequestContext getRequestContext( RenderRequest request )
+    {
+        RequestContext requestContext = (RequestContext) request
+                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if (requestContext != null)
+        {
+            return requestContext;
+        }
+        else
+        {
+            throw new IllegalStateException(
+                    "getRequestContext() failed as it appears that now RenderRequest is available within the RenderRequest");
+        }
+    }
 
     /**
      * <p>
      * doEdit
      * </p>
-     *
-     * @see javax.portlet.GenericPortlet#doEdit(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
+     * 
+     * @see javax.portlet.GenericPortlet#doEdit(javax.portlet.RenderRequest,
+     *          javax.portlet.RenderResponse)
      * @param request
      * @param response
      * @throws PortletException

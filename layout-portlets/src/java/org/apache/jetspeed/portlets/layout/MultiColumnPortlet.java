@@ -68,12 +68,12 @@ public class MultiColumnPortlet extends LayoutPortlet
 
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
-        RequestContext context = Jetspeed.getCurrentRequestContext();
+        RequestContext context = getRequestContext(request);
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
 
         if (request.getParameter("moveBy") != null && request.getParameter("fragmentId") != null)
         {
-            Page page = getPage(request);
+            Page page = getRequestContext(request).getPage();
             Fragment f = getFragment(request, false);
             ArrayList tempFrags = new ArrayList(f.getFragments());
             doMoveFragment(page.getFragmentById(request.getParameter("fragmentId")), request.getParameter("moveBy"),
@@ -105,7 +105,7 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         // now invoke the JSP associated with this portlet
         super.doView(request, response);
-
+        
         request.removeAttribute("columns");
         request.removeAttribute("numberOfColumns");
     }
@@ -212,7 +212,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         {
             try
             {
-                pm.updatePage(getPage(request));
+                pm.updatePage(getRequestContext(request).getPage());
             }
             catch (Exception e)
             {
