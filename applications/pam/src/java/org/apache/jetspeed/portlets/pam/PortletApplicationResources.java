@@ -37,6 +37,7 @@ public final class PortletApplicationResources
     public final static String CPS_PAGE_MANAGER_COMPONENT = "cps:PageManager";
     public final static String CPS_ROLE_MANAGER_COMPONENT = "cps:RoleManager";
     public final static String CPS_GROUP_MANAGER_COMPONENT = "cps:GroupManager";
+    public final static String CPS_PROFILER_COMPONENT = "cps:Profiler";
     public final static String CURRENT_FOLDER = "current_folder";
     public final static String CURRENT_PAGE = "current_page";
     public final static String CURRENT_USER = "current_user";

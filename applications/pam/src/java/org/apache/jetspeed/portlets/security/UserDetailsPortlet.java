@@ -36,6 +36,7 @@ import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
@@ -55,6 +56,7 @@ public class UserDetailsPortlet extends ServletPortlet
     private final String VIEW_USER = "user"; 
     private final String VIEW_ROLES = "roles";
     private final String VIEW_GROUPS = "groups";
+    private final String VIEW_RULES = "rules";
     
     private final String USER_ACTION_PREFIX = "security_user.";
     private final String ACTION_UPDATE_ATTRIBUTE = "update_user_attribute";
@@ -64,6 +66,7 @@ public class UserDetailsPortlet extends ServletPortlet
     private final String ACTION_ADD_ROLE = "add_user_role";
     private final String ACTION_REMOVE_GROUP = "remove_user_group";
     private final String ACTION_ADD_GROUP = "add_user_group";
+    private final String ACTION_UPDATE_RULE = "update_user_rule";
     
     private final String TAB_ATTRIBUTES = "user_attributes";
     private final String TAB_ROLE = "user_role";
@@ -73,6 +76,7 @@ public class UserDetailsPortlet extends ServletPortlet
     private UserManager  userManager;
     private RoleManager  roleManager;
     private GroupManager groupManager;
+    private Profiler     profiler;
 
     private LinkedHashMap userTabMap = new LinkedHashMap();
     
@@ -94,6 +98,11 @@ public class UserDetailsPortlet extends ServletPortlet
         if (null == groupManager)
         {
             throw new PortletException("Failed to find the Group Manager on portlet initialization");
+        }
+        profiler = (Profiler)getPortletContext().getAttribute(PortletApplicationResources.CPS_PROFILER_COMPONENT);
+        if (null == profiler)
+        {
+            throw new PortletException("Failed to find the Profiler on portlet initialization");
         }
         
         TabBean tb1 = new TabBean(TAB_ATTRIBUTES);
@@ -145,7 +154,7 @@ public class UserDetailsPortlet extends ServletPortlet
             }
             else if (selectedTab.getId().equals(TAB_PROFILE))
             {
-                
+                request.setAttribute(VIEW_RULES, getProfilerRules());                  
             }
            
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
@@ -447,6 +456,11 @@ public class UserDetailsPortlet extends ServletPortlet
             System.err.println("user not found: " + userName + ", " + e);
         }    
         return user;
+    }
+    
+    private Collection getProfilerRules()
+    {
+        return profiler.getRules();
     }
     
 }
