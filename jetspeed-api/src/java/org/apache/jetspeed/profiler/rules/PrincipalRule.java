@@ -27,7 +27,7 @@ package org.apache.jetspeed.profiler.rules;
 public interface PrincipalRule
 {
     /**
-     * Gets the name of the principal in this principal/rule pair association.
+     * Gets the name of the principal in this principal/rule/locator pair association.
      * The principal name identifies the uniqueness of the relationship.
      * It is used for keyed lookups to find the rule associated with this principal. 
      *  
@@ -36,13 +36,33 @@ public interface PrincipalRule
     String getPrincipalName();
 
     /**
-     * Sets the name of the principal in this principal/rule pair association.
+     * Sets the name of the principal in this principal/rule/locator pair association.
      * The principal name identifies the uniqueness of the relationship.
      * It is used for keyed lookups to find the rule associated with this principal. 
      *  
      * @param name The name of the principal in this association.
      */        
     void setPrincipalName(String name);
+
+    /**
+     * Gets the name of the locator in this principal/rule/locator pair association.
+     * The principal + locator name identifies the uniqueness of the relationship.
+     * It is used for keyed lookups to find the rule associated with this principal  
+     * for a given locator 
+     *  
+     * @return The name of the locator in this association.
+     */    
+    String getLocatorName();
+
+    /**
+     * Sets the name of the locator in this principal/locator/rule pair association.
+     * The principal name + locator name identifies the uniqueness of the relationship.
+     * It is used for keyed lookups to find the rule associated with this principal
+     * for a given locator 
+     *  
+     * @param name The name of the locator in this association.
+     */        
+    void setLocatorName(String name);
     
         
     /**

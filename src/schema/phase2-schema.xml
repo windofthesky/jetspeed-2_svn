@@ -131,9 +131,10 @@ limitations under the License.
     
     <table name="PRINCIPAL_RULE_ASSOC">
         <column name="PRINCIPAL_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>
+        <column name="LOCATOR_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>
         <column name="RULE_ID" required="true" size="80" type="VARCHAR"/>
     </table>
-        
+        	    
     <table name="PROFILE_PAGE_ASSOC">
         <column name="LOCATOR_HASH" required="true" size="40" type="VARCHAR"/>
         <column name="PAGE_ID" required="true" size="80" type="VARCHAR"/>

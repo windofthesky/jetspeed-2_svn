@@ -40,8 +40,11 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
  */
 public interface ProfileLocator 
 {
+    public final static String PAGE_LOCATOR = "page";
+    public final static String DOCSET_LOCATOR = "docset";
+
     public final static String PATH_SEPARATOR = ":";
-        
+    
     /**
      * Initialize this page context.
      *

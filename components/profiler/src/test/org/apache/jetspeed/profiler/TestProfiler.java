@@ -117,7 +117,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
         assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
 
         // Test anonymous principal-rule
-        ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserPrincipalImpl("anon"));
+        ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserPrincipalImpl("anon"), ProfileLocator.PAGE_LOCATOR);
         assertNotNull("anonymous rule is null", anonRule);
         assertTrue("anonymous rule is j1", anonRule.getId().equals(DEFAULT_RULE));
         
@@ -255,7 +255,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
         params.put("page", "default-other");
         params.put("path", "/sports/football/nfl/chiefs");
         
-        ProfileLocator locator = profiler.getProfile(request);
+        ProfileLocator locator = profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR);
         assertNotNull("rule test on getProfile returned null", locator);
         String path = locator.getLocatorPath();
         System.out.println("locator = " + path);        
@@ -344,7 +344,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
         Map params = request.getParameterMap();
         // params.put("page", "default");
     
-        ProfileLocator locator = profiler.getProfile(request);
+        ProfileLocator locator = profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR);
         assertNotNull("rule test on getProfile returned null", locator);
         System.out.println("page = " + locator.getValue("page"));
     }

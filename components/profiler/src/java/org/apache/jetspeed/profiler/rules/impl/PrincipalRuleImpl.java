@@ -29,6 +29,7 @@ public class PrincipalRuleImpl implements PrincipalRule
     private String principalName;
     private String ruleId;
     private ProfilingRule profilingRule;
+    private String locatorName;
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.PrincipalRule#getPrincipalName()
@@ -64,4 +65,18 @@ public class PrincipalRuleImpl implements PrincipalRule
         this.ruleId = rule.getId();
     }
     
+    /**
+     * @return Returns the locatorName.
+     */
+    public String getLocatorName()
+    {
+        return locatorName;
+    }
+    /**
+     * @param locatorName The locatorName to set.
+     */
+    public void setLocatorName(String locatorName)
+    {
+        this.locatorName = locatorName;
+    }
 }

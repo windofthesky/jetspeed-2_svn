@@ -65,7 +65,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         {
             // perform profiling to get profiled page context using
             // the profiler and page manager
-            ProfileLocator locator = profiler.getProfile(request);
+            ProfileLocator locator = profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR);
             ProfiledPageContext profiledPageContext = pageManager.getProfiledPageContext(locator);
             if ((profiledPageContext == null) || (profiledPageContext.getPage() == null) || (profiledPageContext.getLocator() == null)) 
                 throw new NodeNotFoundException("Unable to profile request: " + request.getPath());

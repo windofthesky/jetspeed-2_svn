@@ -45,9 +45,10 @@ public interface Profiler
      *  Get the Profile object using the request parameters.
      *
      * @param context The request context
+     * @param locatorName The name of the profile locator to find i.e. "page", "docset", ...
      * @return a new Profile Locator object or null if failed to find a appropriate locator.
      */
-    ProfileLocator getProfile(RequestContext context) throws ProfilerException;
+    ProfileLocator getProfile(RequestContext context, String locatorName) throws ProfilerException;
 
     /**
      *  Get the Profile object using the request parameters and the rule.
@@ -80,18 +81,20 @@ public interface Profiler
      * For a given principal, lookup the associated profiling rule to that principal name.
      * 
      * @param principal Lookup the profiling rule based on this principal. 
+     * @param locatorName the unique name of a locator for this principal/rule/locator 
      * @return The rule found or null if not found
      */
-    ProfilingRule getRuleForPrincipal(Principal principal);
+    ProfilingRule getRuleForPrincipal(Principal principal, String locatorName);
 
     /**
      * For a given principal, associate a profiling rule to that principal name.
      * TODO: this API should be secured and require admin role
      * 
-     * @param principal Lookup the profiling rule based on this principal. 
+     * @param principal Lookup the profiling rule based on this principal.
+     * @param locatorName the unique name of a locator for this principal/rule/locator 
      * @param The rule used to find profiles for this user
      */
-    void setRuleForPrincipal(Principal principal, ProfilingRule rule);
+    void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName);
     
     /**
      * Lookup the portal's default profiling rule.

@@ -37,6 +37,7 @@ import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.security.GroupManager;
@@ -161,7 +162,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
             else if (selectedTab.getId().equals(TAB_PROFILE))
             {
                 Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);      
-                ProfilingRule rule = profiler.getRuleForPrincipal(userPrincipal);
+                // TODO: incorporate locator_name
+                ProfilingRule rule = profiler.getRuleForPrincipal(userPrincipal, ProfileLocator.PAGE_LOCATOR);
                 if (rule != null)
                 {
                     request.setAttribute(VIEW_SELECTED_RULE, rule.getId());
@@ -514,11 +516,16 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     {
                         if (rule == null)
                         {
-                            profiler.setRuleForPrincipal(userPrincipal, profiler.getDefaultRule());
+                            profiler.setRuleForPrincipal(userPrincipal, 
+                                                         profiler.getDefaultRule(),
+                                                         ProfileLocator.PAGE_LOCATOR);                                                         
                         }
                         else
                         {
-                            profiler.setRuleForPrincipal(userPrincipal, rule);
+                            // TODO: only support the page locator for now
+                            profiler.setRuleForPrincipal(userPrincipal,
+                                                         rule,
+                                                         ProfileLocator.PAGE_LOCATOR);
                         }
                     }
                 }

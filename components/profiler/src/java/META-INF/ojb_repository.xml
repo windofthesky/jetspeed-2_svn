@@ -147,6 +147,13 @@ limitations under the License.
      autoincrement="false"           
     />
     <field-descriptor
+     name="locatorName"
+     column="LOCATOR_NAME"
+     jdbc-type="VARCHAR"
+     primarykey="true"
+     autoincrement="false"           
+    />    
+    <field-descriptor
      name="ruleId"
      column="RULE_ID"
      jdbc-type="VARCHAR"

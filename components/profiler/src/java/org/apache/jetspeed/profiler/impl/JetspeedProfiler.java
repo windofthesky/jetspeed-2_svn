@@ -125,12 +125,8 @@ public class JetspeedProfiler implements Profiler
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getProfile(org.apache.jetspeed.request.RequestContext)
-     */
-    public ProfileLocator getProfile( RequestContext context ) throws ProfilerException
+    public ProfileLocator getProfile(RequestContext context, String locatorName) 
+    throws ProfilerException
     {
         // get the principal representing the currently logged on user
         Subject subject = context.getSubject();
@@ -151,7 +147,7 @@ public class JetspeedProfiler implements Profiler
         }
 
         // find a profiling rule for this principal
-        ProfilingRule rule = getRuleForPrincipal(principal);
+        ProfilingRule rule = getRuleForPrincipal(principal, locatorName);
         if (null == rule)
         {
             log.warn("Could not find profiling rule for principal: " + principal);
@@ -190,15 +186,10 @@ public class JetspeedProfiler implements Profiler
         return lookupProfilingRule(this.defaultRule);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getRuleForPrincipal(java.security.Principal)
-     */
-    public ProfilingRule getRuleForPrincipal( Principal principal )
+    public ProfilingRule getRuleForPrincipal(Principal principal, String locatorName)
     {
         // lookup the rule for the given principal in our user/rule table
-        PrincipalRule pr = lookupPrincipalRule(principal.getName());
+        PrincipalRule pr = lookupPrincipalRule(principal.getName(), locatorName);
 
         // if not found, fallback to the system wide rule
         if (pr == null)
@@ -211,19 +202,21 @@ public class JetspeedProfiler implements Profiler
     }
     
     
-    public void setRuleForPrincipal(Principal principal, ProfilingRule rule)
+    public void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName)
     {
         Transaction tx = persistentStore.getTransaction();
         tx.begin();
   
         Filter filter = persistentStore.newFilter();
         filter.addEqualTo("principalName", principal);
+        filter.addEqualTo("locatorName", locatorName);
         Object query = persistentStore.newQuery(principalRuleClass, filter);
         PrincipalRule pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
         if (pr == null)
         {
             pr = new PrincipalRuleImpl(); // TODO: factory
             pr.setPrincipalName(principal.getName());
+            pr.setLocatorName(locatorName);
             pr.setProfilingRule(rule);
         }
         try
@@ -249,15 +242,16 @@ public class JetspeedProfiler implements Profiler
      * @return The found PrincipalRule associated with the principal key or null
      *         if not found.
      */
-    private PrincipalRule lookupPrincipalRule( String principal )
+    private PrincipalRule lookupPrincipalRule(String principal, String locatorName)
     {
         PrincipalRule pr = (PrincipalRule) principalRules.get(principal);
         if (pr != null)
         {
             return pr;
         }
-        Filter filter = persistentStore.newFilter();
+        Filter filter = persistentStore.newFilter();        
         filter.addEqualTo("principalName", principal);
+        filter.addEqualTo("locatorName", locatorName);        
         Object query = persistentStore.newQuery(principalRuleClass, filter);
         pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
         principalRules.put(principal, pr);
