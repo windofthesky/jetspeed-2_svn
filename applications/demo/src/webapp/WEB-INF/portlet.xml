@@ -632,11 +632,11 @@ limitations under the License.
       </preference>                               
       <preference>                            
         <name>JdbcDriver</name>                    
-        <value>org.hsqldb.jdbcDriver</value>    
+        <value>com.mysql.jdbc.Driver</value>    
       </preference>                               
       <preference>                            
         <name>JdbcConnection</name>                    
-        <value>jdbc:hsqldb:hsql://127.0.0.1:9001</value>    
+        <value>jdbc:mysql://127.0.0.1/j2</value>    
       </preference>                               
       <preference>                            
         <name>JdbcUsername</name>                    
@@ -649,11 +649,7 @@ limitations under the License.
       <preference>                            
         <name>SSOSite</name>                    
         <value></value>    
-      </preference>                                   
-      <preference>                            
-        <name>SSOPrincipal</name>                    
-        <value></value>    
-      </preference>                                   
+      </preference>                                                                     
       <preference>                            
         <name>WindowSize</name>                    
         <value>10</value>    

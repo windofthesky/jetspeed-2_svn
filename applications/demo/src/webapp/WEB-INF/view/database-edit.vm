@@ -79,16 +79,22 @@
 <h4 class="portlet-section-header">$MESSAGES.getString('label.sso.settings')</h4>
 
 <table border="0" cellspacing="2" cellpadding="3">
+<tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.driver")</font></th>
+    <td>
+      <input type="input" name="SSOJdbcDriver" $!disableSSO  value="$!prefsMap.get('JdbcDriver')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
+  <tr>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.connection")</font></th>
+    <td>
+      <input type="input" name="SSOJdbcConnection" $!disableSSO value="$!prefsMap.get('JdbcConnection')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+    </td>
+  </tr>
   <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label">SSO Site</font></th>
     <td>
       <input type="input" name="SSOSite" $!disableSSO value="$!prefsMap.get('SSOSite')" size="60" maxlength="60" class="portlet-form-field-label"/> 
-    </td>
-  </tr>
-  <tr>
-    <th class="portlet-section-alternate"><font class="portlet-form-field-label">SSO Remote Principal</font></th>
-    <td>
-      <input type="input" name="SSOPrincipal" $!disableSSO value="$!prefsMap.get('SSOPrincipal')" size="60" maxlength="60" class="portlet-form-field-label"/> 
     </td>
   </tr>
   </tr>  

@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletConfig;
@@ -33,6 +34,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.portals.gems.util.StatusMessage;
 import org.apache.portals.messaging.PortletMessaging;
@@ -108,6 +110,12 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
     protected static final String SORT_COLUMN_NAME = "js_dbcolumn";
 
     protected List sqlParameters = new Vector();
+    
+    /*
+     * SSO link
+     */
+    protected PortletContext context;
+    protected SSOProvider sso;
 
     /**
      * Static initialization of the logger for this class
@@ -117,6 +125,13 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
+        
+        context = getPortletContext();
+        sso = (SSOProvider)context.getAttribute("cps:SSO");
+        if (null == sso)
+        {
+           throw new PortletException("Failed to find SSO Provider on portlet initialization");
+        }        
     }
 
     public void getRows(RenderRequest request, String sql, int windowSize)

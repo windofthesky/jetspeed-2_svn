@@ -16,6 +16,8 @@
 package org.apache.portals.gems.browser;
 
 import java.io.IOException;
+import java.security.AccessControlContext;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,9 +39,12 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.jetspeed.sso.SSOContext;
+import org.apache.jetspeed.sso.SSOException;
 import org.apache.portals.bridges.util.PreferencesHelper;
 import org.apache.portals.gems.util.StatusMessage;
 import org.apache.portals.messaging.PortletMessaging;
@@ -252,7 +257,31 @@ public class DatabaseBrowserPortlet
             }
             else if (dsType.equals("sso"))
             {
-                // TODO: write this
+                /*
+                 * For SSO the user has to define the JDBCdriver and JdbcConnection (URL)
+                 * but the credentials for the db come from the SSO storage
+                 */
+                BasicDataSource ds = new BasicDataSource();
+                ds.setDriverClassName(prefs.getValue("SSOJdbcDriver", ""));
+                ds.setUrl(prefs.getValue("SSOJdbcConnection", ""));  
+                String ssoURL = prefs.getValue("SSOSite", "");
+                
+                // SSO API lookup
+                SSOContext credentials = null;
+                try
+                {
+                    credentials = sso.getCredentials(getSubject(), ssoURL);
+                }
+                catch(SSOException ssoex)
+                {
+                    throw new Exception("SSO credential lookup failed. Error: " + ssoex.getMessage());
+                }
+                
+                String ssoUserName = credentials.getRemotePrincipalName();
+                String ssoPWD = credentials.getRemoteCredential();
+                ds.setUsername(ssoUserName);
+                ds.setPassword( ssoPWD );
+                con = ds.getConnection();
             }
             else
             {
@@ -333,4 +362,9 @@ public class DatabaseBrowserPortlet
         super.processAction(request, response);
     }
     
+    private Subject getSubject()
+    {
+        AccessControlContext context = AccessController.getContext();
+        return Subject.getSubject(context);         
+    }
 }
