@@ -63,8 +63,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -108,8 +106,19 @@ public class JARObjectHandlerImpl implements FSObjectHandler
     public void setFile(File file) throws IOException
     {        
         jar = file;
-		jarFile = new JarFile(jar);
+        
+        // On undeployment, the archive will not exist
+        if(jar.exists())
+        {
+			jarFile = new JarFile(jar);
+        }
+		
     }
+    
+	public File getFile()
+	{        
+		return jar;
+	}
 
     /**
      * @see org.apache.jetspeed.deployment.fs.FSObjectHandler#getAsStream()
@@ -136,9 +145,17 @@ public class JARObjectHandlerImpl implements FSObjectHandler
      */
     public void close() throws IOException
     {
+    	// prevent resource leaking
+    	if(jarFile != null)
+    	{
+			jarFile.close();
+    	}    	
+    	jar=null;
+    	jarFile=null;
         if(content != null)
         {
         	content.close();
+        	content = null;
         }
 
     }

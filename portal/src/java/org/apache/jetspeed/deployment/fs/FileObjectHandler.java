@@ -97,4 +97,12 @@ public class FileObjectHandler implements FSObjectHandler
         return null;
     }
 
+    /**
+     * @return
+     */
+    public File getFile()
+    {
+        return file;
+    }
+
 }

@@ -29,5 +29,7 @@ public interface FSObjectHandler extends DeploymentHandler
 	
 	void setFile(File file) throws IOException;
 	
+	File getFile();
+	
 
 }
