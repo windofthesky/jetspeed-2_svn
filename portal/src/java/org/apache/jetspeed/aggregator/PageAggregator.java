@@ -222,21 +222,20 @@ public class PageAggregator extends BaseCommonService implements Aggregator
 
             ContentDispatcher dispatcher = renderer.getDispatcher(context,(strategy==STRATEGY_PARALLEL));
 
-/*
+
             // Now synchronously trigger the rendering of the whole page
-            renderer.renderNow(page.getRootFragment(),context);
-*/
+//            renderer.renderNow(page.getRootFragment(),context);
 
             // DEBUG Testing: Use ContentDispatcher to display all children
             // of root fragment
 
             for(Iterator i = page.getRootFragment().getFragments().iterator(); i.hasNext();)
             {
-                Fragment f = (Fragment)i.next();
+                Fragment fragment = (Fragment)i.next();
 
-                if (!"hidden".equals(f.getState()))
+                if (!"hidden".equals(fragment.getState()))
                 {
-                    dispatcher.include(f,context.getRequest(),context.getResponse());
+                    dispatcher.include(fragment, context.getRequest(), context.getResponse());
                 }
             }
         }
@@ -244,6 +243,7 @@ public class PageAggregator extends BaseCommonService implements Aggregator
         {
             log.warn("Access denied RENDER page "+page);
         }
+        
     }
 
     public boolean checkAccess(RequestContext context, String acl, String action)

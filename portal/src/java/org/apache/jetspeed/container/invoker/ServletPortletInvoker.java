@@ -179,7 +179,6 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
 
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
-        System.out.println("%%% webapp invoker.pa = " + portletApplicationName);
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();

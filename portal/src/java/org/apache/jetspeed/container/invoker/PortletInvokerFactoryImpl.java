@@ -59,6 +59,7 @@ import javax.servlet.ServletConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -67,8 +68,29 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.invoker.PortletInvoker;
 
 /**
+ * <p>
  * Portlet Invoker Factory creates portlet invokers based on the servlet context.
- *
+ * This class is part of the contract between Pluto and the Jetspeed Portal as defined
+ * in the interfaces under <code>org.apache.pluto.factory</code>
+ * The Pluto container uses portlet invokers to abstract access to portlets.
+ * An invoker interfaces defines which actions are performed between the portal and container,
+ * namely action, render and optionally load. Portlet invoker factories are implemented by
+ * the portal implementation. The Pluto container uses pluggable portlet invoker factories
+ * in order to get portlet invokers, and then invoke methods on portlets (render, action, load). 
+ * </p>
+ * <p>
+ * The Portlet Invoker Factory is a Pluto factory. Pluto defines a basic lifecycle for Pluto
+ * factory services in the <code>org.apach.pluto.factory.Factory</code> interface with
+ * standard <code>init</code> and <code>destroy</code> methods.
+ * </p>
+ * <p>
+ * The Jetspeed portlet invoker factory supports two kinds of invokers: local and servlet.
+ * Local portlet invokers call portlets located in the same web applications.
+ * With local invokers, a simple java method invocation is called on the portlet.
+ * Servlet portlet invokers call portlets located in another web application.
+ * With servlet invokers, the servlet request dispatcher is used to call methods on the portlet. 
+ * </p>
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
@@ -77,38 +99,50 @@ public class PortletInvokerFactoryImpl
 {
     private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
 
-    public final static String INVOKER_SERVLET    = "factory.invoker.servlet";
-    public final static String INVOKER_LOCAL    = "factory.invoker.local";
 
+    /** The servlet configuration for the Jetspeed portal */
     private ServletConfig servletConfig;
-
+    
+    /** factory for creating servlet-based portlet invokers */           
+    private ServletPortletInvokerFactory servletInvokerFactory;
+    
+    /** factory for creating local portlet invokers */
+    private LocalPortletInvokerFactory localInvokerFactory;
+               
+    /* (non-Javadoc)
+     * @see org.apache.pluto.factory.Factory#init(javax.servlet.ServletConfig, java.util.Map)
+     */
     public void init(ServletConfig config, Map properties)
     throws Exception
     {
-        servletConfig = config;
+        servletConfig = config;        
+        PortalContext pc = Jetspeed.getContext();
+        servletInvokerFactory = new ServletPortletInvokerFactory(pc);
+        localInvokerFactory = new LocalPortletInvokerFactory(pc);                                
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.pluto.factory.Factory#destroy()
+     */
     public void destroy()
     throws Exception
     {
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.pluto.factory.PortletInvokerFactory#getPortletInvoker(org.apache.pluto.om.portlet.PortletDefinition)
+     */
     public PortletInvoker getPortletInvoker(PortletDefinition portletDefinition)
     {
-        PortalContext pc = Jetspeed.getContext();
         JetspeedPortletInvoker invoker = null;
 
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
         if (app.getApplicationType() == MutablePortletApplication.LOCAL)
         {
-            System.out.println("$$$$$$ LOCAL INVOKIN " + portletDefinition.getName());
-
-            // TODO: pooling
-
+            // create a local portlet invoker
             try
             {
-                String className = pc.getConfigurationProperty(INVOKER_LOCAL);
-                invoker = (JetspeedPortletInvoker)Class.forName(className).newInstance();
+                invoker = localInvokerFactory.getPortletInvoker();  
                 invoker.activate(portletDefinition, servletConfig);
                 return invoker;
             }
@@ -122,15 +156,11 @@ public class PortletInvokerFactoryImpl
             }
         }
 
-        // TODO: pooling
-        System.out.println("$$$$$$ EXTERNAL INVOKIN " + portletDefinition.getName());
-
+        // create a servlet-based portlet invoker
         try
         {
-            String className = pc.getConfigurationProperty(INVOKER_SERVLET);
-            //PortletInvoker invoker = new ServletPortletInvoker(portletDefinition, servletConfig);
-            invoker = (JetspeedPortletInvoker)Class.forName(className).newInstance();
-            invoker.activate(portletDefinition, servletConfig);
+            invoker = servletInvokerFactory.getPortletInvoker();
+            invoker.activate(portletDefinition, servletConfig);            
             return invoker;
         }
         catch (Throwable t)
@@ -141,5 +171,5 @@ public class PortletInvokerFactoryImpl
             return invoker;
         }
     }
-
+    
 }

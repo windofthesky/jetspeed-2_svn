@@ -110,8 +110,6 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
      */
     public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
-        System.out.println("%%% internal invoker.portletdef = " + portletDefinition);
-
         this.jetspeedConfig = servletConfig;
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
@@ -194,7 +192,6 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
 
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
-        System.out.println("%%% local invoker.pa = " + portletApplicationName);
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
