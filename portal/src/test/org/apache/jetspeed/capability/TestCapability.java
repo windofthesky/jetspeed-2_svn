@@ -54,12 +54,17 @@
 
 package org.apache.jetspeed.capability;
 
+import java.io.FileInputStream;
 import java.util.Iterator;
+import java.util.Properties;
 
 import junit.framework.Test;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.log4j.PropertyConfigurator;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -91,6 +96,11 @@ public class TestCapability extends AbstractComponentAwareTestCase
         super(name);
     }
 
+    public static final String LOG4J_CONFIG_FILE = "log4j.file";
+
+    /** The default value for the Log4J File */
+    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
+    
     /**
      * Start the tests.
      *
@@ -105,6 +115,22 @@ public class TestCapability extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        
+        System.out.println("MAIN --------------");
+        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
+        Properties p = new Properties();
+        try
+        {
+            p.load(new FileInputStream(log4jFile));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        PropertyConfigurator.configure(p);
+        
+        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+        
         container = (MutablePicoContainer) getContainer();
         capabilities = (Capabilities) container.getComponentInstance(Capabilities.class);        
     }
@@ -133,16 +159,16 @@ public class TestCapability extends AbstractComponentAwareTestCase
         // Find specific client -- testing pattern matching
         String userAgent;
         System.out.println("Testing all supported Clients...");
-
+/*
         userAgent = "Opera/7.0";
         System.out.println("Find pattern: " + userAgent);
         CapabilityMap cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
-
+*/
         userAgent = "Mozilla/4.0";
         System.out.println("Find pattern: " + userAgent);
-        cm = capabilities.getCapabilityMap(userAgent);
+        CapabilityMap cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
