@@ -120,8 +120,8 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         // assertEquals("org.apache.commons.vfs.provider.jar.JarFileSystem", testObj.getFileSystem().getClass().getName());
         FileObject webXml = testObj.resolveFile("WEB-INF/web.xml");
         assertNotNull(webXml);
-        assertNotNull(webXml.getContent().getInputStream());       
-        
+        assertNotNull(webXml.getContent().getInputStream());
+        fsManager.getFilesCache().close();        
     }
     
     public void testFileSystemManagerForJars() throws Exception
@@ -129,7 +129,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         File demoApp = new File(deploySrc, "portletstd.jar");
         FileObject testObj = fsManager.createFileSystem(fsManager.toFileObject(demoApp));
         assertEquals("org.apache.commons.vfs.provider.jar.JarFileSystem", testObj.getFileSystem().getClass().getName());
-        
+        fsManager.getFilesCache().close();
     }
 
     public void testDeploy() throws Exception
@@ -286,7 +286,9 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         fsManager.getFilesCache().clear(deploySrcObj.getFileSystem());
         deploySrcObj.copyFrom(copyFromObj, new AllFileSelector());
         copyFromObj.close();
-        deploySrcObj.close();
+        deploySrcObj.close();  
+        fsManager.getFilesCache().removeFile(deploySrcObj.getFileSystem(), deploySrcObj.getName());
+        fsManager.getFilesCache().removeFile(copyFromObj.getFileSystem(), copyFromObj.getName());
     }
 
     /**
@@ -321,7 +323,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         }
 
         DirectoryUtils.rmdir(new File("./target/deployment"));
-
+        fsManager.getFilesCache().close();
         super.tearDown();
 
     }

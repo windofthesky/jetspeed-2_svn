@@ -32,6 +32,7 @@ public class VFSDeploymentObject implements DeploymentObject
     protected String path;
     protected String name;
     protected FileObject fsStructure;
+    protected FileObject fsObject;
 
     /**
      * @throws IOException
@@ -51,7 +52,7 @@ public class VFSDeploymentObject implements DeploymentObject
         this.name = deployArtifact.getName();
         this.fsManager = fsManager;
         path = deployArtifact.getAbsolutePath();
-        FileObject fsObject = fsManager.toFileObject(deployArtifact);
+        fsObject = fsManager.toFileObject(deployArtifact);
         if(fsObject.getType().equals(FileType.FILE))
         {            
             try
@@ -110,6 +111,9 @@ public class VFSDeploymentObject implements DeploymentObject
     public void close() throws IOException
     {
         fsStructure.close();
+        fsObject.close();
+        fsManager.getFilesCache().removeFile(fsStructure.getFileSystem(), fsStructure.getName());
+        fsManager.getFilesCache().removeFile(fsObject.getFileSystem(), fsObject.getName());
     }
 
     /**
