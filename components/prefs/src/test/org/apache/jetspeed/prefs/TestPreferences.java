@@ -77,30 +77,6 @@ public class TestPreferences extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-        DatasourceComponent ds = (DatasourceComponent) container.getComponentInstance(DatasourceComponent.class);
-        PersistenceStoreContainer pContainer =
-            (PersistenceStoreContainer) container.getComponentInstanceOfType(PersistenceStoreContainer.class);
-        try
-        {
-            store = pContainer.getStoreForThread("jetspeed");
-        }
-        catch (Throwable e1)
-        {
-            e1.printStackTrace();
-            throw (Exception) e1;
-        }
-
-        JNDIComponent jndi = (JNDIComponent) container.getComponentInstance(JNDIComponent.class);
-        // Bind to JNDI.
-        try
-        {
-            jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
-        }
-        catch (NameAlreadyBoundException e)
-        {
-            // ignore
-        }
-
         //destroyRootNodes();
         //destroyPropertySetDefTestObject();
     }

@@ -79,28 +79,6 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-
-        try
-        {
-            DatasourceComponent ds = (DatasourceComponent) container.getComponentInstance(DatasourceComponent.class);
-            JNDIComponent jndi = (JNDIComponent) container.getComponentInstance(JNDIComponent.class);
-            jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
-        }
-        catch (NameAlreadyBoundException e)
-        {
-            // ignore
-        }
-        PersistenceStoreContainer pContainer =
-            (PersistenceStoreContainer) container.getComponentInstanceOfType(PersistenceStoreContainer.class);
-        try
-        {
-            store = pContainer.getStoreForThread("jetspeed");
-        }
-        catch (Throwable e1)
-        {
-            e1.printStackTrace();
-            throw (Exception) e1;
-        }
         try
         {
             destroyPropertySetDefTestObject(true);
