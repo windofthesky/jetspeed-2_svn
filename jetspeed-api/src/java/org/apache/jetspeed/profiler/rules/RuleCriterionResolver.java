@@ -65,6 +65,9 @@ public interface RuleCriterionResolver
     /** resolve the parameter via the request path, then value */        
     public static final String PATH = "path";
 
+    /** resolve the parameter via the request path, then value */        
+    public static final String PAGE = "page";
+    
     /** look in the request path first, then session */
     public static final String PATH_SESSION = "path.session";
     
@@ -83,6 +86,6 @@ public interface RuleCriterionResolver
      * 
      * @return The control class flag
      */    
-    boolean isControl();
+    boolean isControl(RuleCriterion criterion);
     
 }
