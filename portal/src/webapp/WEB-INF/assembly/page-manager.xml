@@ -35,6 +35,15 @@ limitations under the License.
   	   <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
+  <bean id="DocumentSetDocumentHandler"   	   
+  	   class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >  	   
+  	   <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+  	   <constructor-arg index="1"><value>.ds</value></constructor-arg>
+  	   <constructor-arg index="2" ><value>org.apache.jetspeed.om.folder.DocumentSet</value></constructor-arg>  	   
+  	   <constructor-arg index="3" ><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>
+  	   <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+  
   <bean id="FolderMetaDataDocumentHandler"   	   
   	   class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >  	   
   	   <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
@@ -53,6 +62,9 @@ limitations under the License.
   	   	  </entry>
   	   	  <entry key=".link">
   	   	  	<ref bean="LinkDocumentHandler" />
+  	   	  </entry>	
+  	   	  <entry key=".ds">
+  	   	  	<ref bean="DocumentSetDocumentHandler" />
   	   	  </entry>	
   	   	  <entry key="folder.metadata">
   	   	  	<ref bean="FolderMetaDataDocumentHandler" />
@@ -76,7 +88,8 @@ limitations under the License.
   	   <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
   	   <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
   	   <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>
-  	   <constructor-arg index="3"><value>true</value></constructor-arg>
+  	   <constructor-arg index="3"><value>100</value></constructor-arg>
+  	   <constructor-arg index="4"><value>true</value></constructor-arg>
   </bean>
 
 </beans>
