@@ -29,6 +29,7 @@ WHEREAS, the Board of Directors deems it to be in
   * Jeremy Ford
   * Santiago Gala
   * Stefan Hepper
+  * Davanum Srinivas
   * David Sean Taylor
   * Scott Weaver
   * Carsten Ziegeler
