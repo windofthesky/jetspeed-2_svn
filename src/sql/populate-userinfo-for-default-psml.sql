@@ -16,6 +16,9 @@ INSERT INTO SECURITY_PRINCIPAL VALUES(7,'org.apache.jetspeed.security.JetspeedRo
 INSERT INTO SECURITY_PRINCIPAL VALUES(8,'org.apache.jetspeed.security.JetspeedRolePrincipalImpl','/role/user','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_PRINCIPAL VALUES(9,'org.apache.jetspeed.security.JetspeedUserPrincipalImpl','/user/guest','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_PRINCIPAL VALUES(10,'org.apache.jetspeed.security.JetspeedRolePrincipalImpl','/role/guest','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
+INSERT INTO SECURITY_PRINCIPAL VALUES(11,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl','/group/accounting','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
+INSERT INTO SECURITY_PRINCIPAL VALUES(12,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl','/group/marketing','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
+INSERT INTO SECURITY_PRINCIPAL VALUES(13,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl','/group/engineering','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_CREDENTIAL VALUES(1,1,'admin',0,null,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_CREDENTIAL VALUES(2,2,'manager',0,null,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_CREDENTIAL VALUES(3,3,'user',0,null,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
