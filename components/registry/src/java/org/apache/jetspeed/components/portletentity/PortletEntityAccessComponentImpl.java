@@ -91,7 +91,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     // TODO: this should eventually use a system cach like JCS
     private HashMap entityCache = new HashMap();
 
-    private Class entityClass = null;
+    
 
     public PortletEntityAccessComponentImpl(PersistenceStoreContainer pContainer, String storeId)
     {
@@ -114,12 +114,18 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             prepareTransaction(store);
             
             Filter filter = store.newFilter();
-            filter.addEqualTo("oid", entityId);
-            Object q = store.newQuery(entityClass, filter);
+            filter.addEqualTo("oid", entityId.toString());
+            Object q = store.newQuery(PortletEntityImpl.class, filter);
             PortletEntity portletEntity = (PortletEntity) store.getObjectByQuery(q);
-
-            entityCache.put(entityId, portletEntity);
-            return wrapEntity((PortletEntityImpl) portletEntity);
+            if(portletEntity == null)
+            {
+                return null;
+            } 
+            else
+            {
+                entityCache.put(entityId, portletEntity);
+                return wrapEntity((PortletEntityImpl) portletEntity);
+            }
         }
     }
 
