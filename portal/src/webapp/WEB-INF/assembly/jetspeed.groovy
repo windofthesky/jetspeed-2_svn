@@ -82,7 +82,9 @@ container.registerComponentInstance("CastorXmlPageManager",
 // HSQL Server 
 //                
 
-container.registerComponentInstance(new HSQLServerComponent(9001, "sa","",applicationRoot+"WEB-INF/db/hsql/Registry",false, true))                     
+// container.registerComponentInstance(new HSQLServerComponent(9001, "sa","",applicationRoot+"WEB-INF/db/hsql/Registry",false, true))                     
+container.registerComponentInstance(new HSQLServerComponent(9001, "sa","", System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH),false, true))
+
 
 
 // This JNDI component helps us publish the datasource
