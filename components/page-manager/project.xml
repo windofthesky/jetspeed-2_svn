@@ -65,6 +65,14 @@ limitations under the License.
       <id>jetspeed2:jetspeed-security</id>
       <version>2.0-a1-dev</version>
     </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-locator</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-profiler</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
     <!-- Testing only -->
     <dependency>
       <id>jetspeed2:jetspeed-rdbms</id>

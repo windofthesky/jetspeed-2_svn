@@ -48,6 +48,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     private Map localizedTitles;
     private Node parent;
     private String path;
+    private String url;
     private boolean hidden=false;
 
     public AbstractNode()
@@ -214,14 +215,30 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * <p>
      * getUrl
      * </p>
-     * Same as invoking <code>Node.getPath()</code> 
+     * Same as invoking <code>Node.getPath()</code> unless url explicitly set.
      *
      * @see org.apache.jetspeed.page.document.Node#getUrl()
      * @return
      */
     public String getUrl()
     {
+        if (isUrlSet())
+            return url;
         return getPath();
+    }
+    /**
+     * @param url The url to set.
+     */
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+    /**
+     * @return Flag indicating whether url is set.
+     */
+    public boolean isUrlSet()
+    {
+        return (url != null);
     }
     /**
      * <p>

@@ -33,28 +33,8 @@ import org.apache.jetspeed.page.document.AbstractNode;
 public class LinkImpl extends AbstractNode implements Link 
 {
     
-    private String url;
-    
     private String target;
     
-    /**
-     * <p>
-     * getUrl
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.page.Document#getUrl()
-     * @return
-     */
-    public String getUrl()
-    {       
-        return url;
-    }
-    
-    public void setUrl(String url)
-    {
-        this.url = url;
-    }
-
     /**
      * <p>
      * getType
@@ -82,5 +62,13 @@ public class LinkImpl extends AbstractNode implements Link
     public void setTarget( String target )
     {
         this.target = target;
+    }
+
+    /**
+     * @return Flag indicating whether url is set.
+     */
+    public boolean isUrlSet()
+    {
+        return true;
     }
 }

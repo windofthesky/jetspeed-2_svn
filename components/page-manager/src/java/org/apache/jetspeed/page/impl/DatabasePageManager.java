@@ -32,7 +32,11 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
@@ -72,11 +76,49 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     * @see org.apache.jetspeed.services.page.PageManager#getProfiledPageContext(org.apache.jetspeed.profiler.ProfileLocator)
      */
-    public Page getPage( ProfileLocator locator ) throws PageNotFoundException
+    public ProfiledPageContext getProfiledPageContext( ProfileLocator locator ) throws PageNotFoundException, DocumentException, NodeException
     {
-        return getPage(locator.getValue("page"));
+        // profiling not implemented, return raw managed page context
+        Page page = getPage(locator.getValue("page"));
+        Folder folder = (Folder) page.getParent();
+        NodeSet siblingPages = folder.getPages();
+        Folder parentFolder = (Folder) folder.getParent();
+        NodeSet siblingFolders = folder.getFolders();
+        Folder rootFolder = folder;
+        while (rootFolder.getParent() != null)
+            rootFolder = (Folder) rootFolder.getParent();
+        NodeSet rootLinks = rootFolder.getLinks();
+
+        // construct, initialize, and return new ProfiledPageContext instance
+        ProfiledPageContext pageContext = locator.createProfiledPageContext();
+        if (pageContext != null)
+        {
+            pageContext.setPage(page);
+            pageContext.setFolder(folder);
+            pageContext.setSiblingPages(siblingPages);
+            pageContext.setParentFolder(parentFolder);
+            pageContext.setSiblingFolders(siblingFolders);
+            pageContext.setRootLinks(rootLinks);
+            return pageContext;
+        }
+        else
+            log.error("getProfiledPageContext(): Failed to create profiled page context.");
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.services.page.PageManager#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public Page getPage( ProfileLocator locator ) throws PageNotFoundException, DocumentException, NodeException
+    {
+        ProfiledPageContext pageContext = getProfiledPageContext(locator);
+        if (pageContext != null)
+            return pageContext.getPage();
+        return null;
     }
 
     /*

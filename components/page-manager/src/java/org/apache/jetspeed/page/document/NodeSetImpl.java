@@ -235,6 +235,19 @@ public class NodeSetImpl implements NodeSet
     /**
      * 
      * <p>
+     * getComparator
+     * </p>
+     * 
+     * @return comparator used to order nodes
+     */
+    public Comparator getComparator()
+    {
+        return comparator;
+    }
+
+    /**
+     * 
+     * <p>
      * matches
      * </p>
      *

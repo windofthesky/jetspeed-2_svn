@@ -189,12 +189,15 @@ public class PageImpl extends AbstractNode implements Page
      * <p>
      * getUrl
      * </p>
+     * Same as invoking <code>AbstractBaseElement.getId()</code> unless url explicitly set.
      *
      * @see org.apache.jetspeed.om.page.Document#getUrl()
      * @return
      */
     public String getUrl()
     {
+        if (isUrlSet())
+            return super.getUrl();
         return getId();
     }
 }

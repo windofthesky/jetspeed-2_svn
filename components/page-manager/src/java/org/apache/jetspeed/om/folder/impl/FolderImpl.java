@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -50,6 +51,7 @@ public class FolderImpl extends AbstractNode implements Folder
 {
     
     private static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
+    private static final String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
     private String defaultTheme;
     private NodeSet allNodes;
     private File directory;
@@ -102,11 +104,15 @@ public class FolderImpl extends AbstractNode implements Folder
         {
             try
             {
-                return ((Page) getPages().iterator().next()).getId();
+                Iterator pagesIter = getPages().iterator();
+                if (pagesIter.hasNext())
+                    return ((Page) pagesIter.next()).getId();
+                else
+                    return PAGE_NOT_FOUND_PAGE;
             }
             catch (NodeException e1)
             {
-                return "page_not_found.psml";
+                return PAGE_NOT_FOUND_PAGE;
             }
         }
 
