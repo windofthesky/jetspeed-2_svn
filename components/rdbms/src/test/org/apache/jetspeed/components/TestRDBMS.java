@@ -89,14 +89,6 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
     {
         super(name);
     }
-    public void testHSQL_1() throws Exception
-    {
-        Class.forName(jdbcDriver.class.getName());
-        Connection conn = DriverManager.getConnection("jdbc:hsqldb:hsql://127.0.0.1", "sa", "");
-        assertNotNull(conn);
-        assertFalse(conn.isClosed());
-        conn.close();
-    }
     public void testDBCP_1() throws Exception
     {
         assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));

@@ -58,6 +58,8 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.components.portletregsitry.RegistryException;
 import org.apache.jetspeed.container.JetspeedPortletContext;
@@ -420,6 +422,10 @@ public class FileSystemPAM implements Deployment
         {
 
             registry.registerPortletApplication(app);
+            log.info("Committing regsitry changes...");
+            PersistenceStoreContainer pContainer = (PersistenceStoreContainer)Jetspeed.getComponentManager().getComponent(PersistenceStoreContainer.class);
+            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+            store.getTransaction().commit();            
 
         }
         catch (Exception e)

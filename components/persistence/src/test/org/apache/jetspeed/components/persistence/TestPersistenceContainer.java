@@ -58,7 +58,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.components.hsql.HSQLServerComponent;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.defaults.DefaultPicoContainer;
 import org.picocontainer.defaults.ObjectReference;
@@ -582,12 +581,7 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
     {
         super.setUp();
         System.out.println("============== SET UP");
-        // Set up the db path
-        String scriptPath = System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH);
-        if (scriptPath == null)
-        {
-            System.setProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH, "../../portal/test/db/hsql/Registry");
-        }
+        
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Reader rdbmsScript = new InputStreamReader(cl
                 .getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
