@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition for PortletRegistry using Apache OJB.
+	-->
+<beans>
+  
+	<!-- Transaction manager for a single OJB PersistenceBroker (alternative to JTA) -->
+	<bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager"/>
+
+	<!-- Transaction manager that delegates to JTA (for a transactional JNDI DataSource) -->
+	<!--
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/>
+	-->
+
+
+	<!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
+
+	<!--
+		- A parent bean definition which is a base definition for transaction proxies.
+		- It is markes as abstract, since it is never supposed to be instantiated itself.
+		- We set shared transaction attributes here, following our naming patterns.
+		- The attributes can still be overridden in child bean definitions.
+		-->
+	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+			abstract="true">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!--
+	  - PortletRegsitry business object: OJB implementation, as an inner bean wrapped
+		- by an outer transactional proxy. The two bean definitions could have been separate,
+		- but this is cleaner as there is no need to ever access the unwrapped object.
+    -->
+    <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceStorePortletRegistry" init-method="init"/>
+		
+    
+	<bean id="portletRegistry" parent="baseTransactionProxy" >
+		<property name="target">
+			<ref bean="portletRegistryImpl"/>
+		</property>
+	</bean>
+
+
+</beans>
