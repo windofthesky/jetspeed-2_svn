@@ -20,7 +20,7 @@ import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentObject;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
@@ -49,6 +49,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private PortletApplicationManagement pam;
     private Map appNameToFile;
     protected PortletRegistryComponent registry;
+    private PortletFactory portletFactory;
 
 
     /**
@@ -60,10 +61,10 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      *             the <code>webAppDir</code> directory does not exist.
      */
     public DeployPortletAppEventListener( String webAppDir, PortletApplicationManagement pam,
-            PortletRegistryComponent registry  ) throws FileNotFoundException
+            PortletRegistryComponent registry, PortletFactory portletFactory  ) throws FileNotFoundException
     {
         File checkFile = new File(webAppDir);
-   
+        this.portletFactory = portletFactory;
 
         if (checkFile.exists())
         {
@@ -213,8 +214,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 // undeploy works correctly
                 appNameToFile.put(deploymentObj.getPath(), id);
                 if (isLocal)
-                {
-                    JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+                {                
+                    portletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                 }
                 return;
             }
@@ -228,7 +229,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 {
                     log.info(fileName + " will be registered as a local portlet applicaiton.");                    
                     pam.register(paWar);
-                    JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+                    portletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                 }
                 else
                 {
