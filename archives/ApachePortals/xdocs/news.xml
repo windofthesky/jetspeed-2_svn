@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<document>
+
+<properties>
+  <author email="taylor@apache.org">David Sean Taylor</author>
+  <title>News and Status</title>
+</properties>
+
+<body>
+
+<section name="News">
+
+<h4>25 March 2004 - Apache Portals Project Launched</h4>
+<p>
+The Apache Portals project is officially launched at the Apache Software Foundation
+</p>
+
+<hr noshade="" size="1"/>
+
+</section>
+
+<section name="Status">
+
+<p>
+<a href="status/2004-03.html">March 2004 Status</a>
+</p>
+
+<hr noshade="" size="1"/>
+
+</section>
+</body>
+
+</document>
+

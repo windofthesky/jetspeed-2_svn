@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<document>
+
+  <properties>
+    <author email="taylor@apache.org">David Sean Taylor</author>
+    <title>Getting Involved</title>
+  </properties>
+
+<body>
+
+<section name="Getting Started">
+<p>
+Apache Portals houses Portal-related sub-projects.
+See the links below for getting started with each project.
+</p>
+<subsection name="Jetspeed-1">
+<p>
+<a href='jetspeed-1/GETTING-STARTED.html'>Getting Started with Jetspeed-1</a>
+</p>
+</subsection>
+<subsection name="Jetspeed-2">
+<p>
+<a href='jetspeed-2/GETTING-STARTED.html'>Getting Started with Jetspeed-2</a>
+</p>
+</subsection>
+<subsection name="Pluto">
+<p>
+<a href='pluto/GETTING-STARTED.html'>Getting Started with Pluto</a>
+</p>
+</subsection>
+<subsection name="WSRP4J">
+<p>
+<a href='wsrp4j/GETTING-STARTED.html'>Getting Started with WSRP4J</a>
+</p>
+</subsection>
+
+</section>
+
+<section name="Getting Involved">
+<p>
+This section is under construction.
+</p>
+</section>
+</body>
+</document>

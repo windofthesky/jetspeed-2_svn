@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<document>
+
+  <properties>
+    <author email="taylor@apache.org">David Sean Taylor</author>
+    <title>Javadocs</title>
+  </properties>
+
+<body>
+
+<section name="Javadocs">
+<p>
+Apache Portals houses Portal-related sub-projects.
+See the links below to find Javdocs for each project.
+</p>
+<subsection name="Jetspeed-1">
+<p>
+<a href='jetspeed-1/javadocs/index.html'>Javadocs for Jetspeed-1</a>
+</p>
+</subsection>
+<subsection name="Jetspeed-2">
+<p>
+<a href='jetspeed-2/javadocs/index.html'>Javadocs for Jetspeed-2</a>
+</p>
+</subsection>
+<subsection name="Pluto">
+<p>
+<a href='pluto/javadocs/index.html'>Javadocs for Pluto</a>
+</p>
+</subsection>
+<subsection name="WSRP4J">
+<p>
+<a href='pluto/javadocs/index.html'>Javadocs for WSRP4J</a>
+</p>
+</subsection>
+
+</section>
+
+<section name="Getting Involved">
+<p>
+This section is under construction.
+</p>
+</section>
+</body>
+</document>
