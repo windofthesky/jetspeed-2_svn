@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
 
 /**
  * The Jetspeed Portlet Factory is a facade the process of creating portlets.
@@ -68,6 +69,7 @@ public abstract class JetspeedPortletFactory
             portlet = PortletCache.get(portletName);
             if (null != portlet)
             {
+               ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
                 return portlet;
             }
             
@@ -78,6 +80,7 @@ public abstract class JetspeedPortletFactory
                 throw new FileNotFoundException("Could not located portlet "+className+" in any classloader.");
             }
             
+            ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
             ServletContext servletContext = servletConfig.getServletContext();
             PortletContext portletContext = 
                         PortalAccessor.createPortletContext(servletContext, 
