@@ -251,6 +251,7 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <!--
     <dependency>
       <id>jetspeed-mockobjects</id>
       <groupId>jetspeed2</groupId>
@@ -259,6 +260,7 @@
         <war.bundle.jar>false</war.bundle.jar>
       </properties> 
     </dependency>      
+    -->
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
