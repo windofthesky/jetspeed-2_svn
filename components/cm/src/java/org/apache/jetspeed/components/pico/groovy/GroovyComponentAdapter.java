@@ -10,13 +10,13 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.syntax.SyntaxException;
 import org.picocontainer.Parameter;
 import org.picocontainer.PicoInitializationException;
 import org.picocontainer.PicoIntrospectionException;
@@ -24,7 +24,7 @@ import org.picocontainer.defaults.AbstractComponentAdapter;
 import org.picocontainer.defaults.UnsatisfiableDependenciesException;
 
 /**
- * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  *  
  */
 public class GroovyComponentAdapter extends AbstractComponentAdapter
@@ -35,12 +35,23 @@ public class GroovyComponentAdapter extends AbstractComponentAdapter
     private Script groovyScript;
     private boolean isSingleton;
     private Object instance;
+    private ClassLoader cl;
+    private Configuration config;
 
-    public GroovyComponentAdapter( Object componentKey, Class componentImplementation, Parameter[] parameters, boolean isSingleton )
+    public GroovyComponentAdapter( Object componentKey, Class componentImplementation, Parameter[] parameters, boolean isSingleton, ClassLoader cl, Configuration config )
     {
         super(componentKey, componentImplementation);
+        this.config = config;
         this.parameters = parameters;
         this.isSingleton = isSingleton;
+        if(cl != null)
+        {
+            this.cl = cl;
+        }
+        else
+        {
+            this.cl = getClass().getClassLoader();
+        }
     }
 
     /*
@@ -60,6 +71,7 @@ public class GroovyComponentAdapter extends AbstractComponentAdapter
      */
     public Object getComponentInstance() throws PicoInitializationException, PicoIntrospectionException
     {
+        
         try
         {
             if(isSingleton && instance != null)
@@ -74,17 +86,18 @@ public class GroovyComponentAdapter extends AbstractComponentAdapter
             binding.setVariable("componentImplementation", getComponentImplementation());
             binding.setVariable("parameters", parameters != null ? Arrays.asList(parameters) : Collections.EMPTY_LIST);            
             binding.setVariable("parameterReader", parameters != null ? new ParameterReader(parameters, getContainer()) : null);
-
-            String scriptPath = "/" + getComponentImplementation().getName().replace('.', '/') + GROOVY_EXTENSION;
-            InputStream scriptIs = getComponentImplementation().getResourceAsStream(scriptPath);
+            binding.setVariable("config", config != null ? config : new PropertiesConfiguration());
+            String scriptPath = getComponentImplementation().getName().replace('.', '/') + GROOVY_EXTENSION;
+            InputStream scriptIs = this.cl.getResourceAsStream(scriptPath);
 
             if (scriptIs == null)
             {
                 throw new PicoInitializationException("Couldn't load script at path " + scriptPath);
             }
 
-            GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
-
+            GroovyClassLoader loader = new GroovyClassLoader(this.cl);
+                        	
+            
             Class scriptClass = loader.parseClass(scriptIs);
             groovyScript = InvokerHelper.createScript(scriptClass, null);
 
@@ -97,15 +110,12 @@ public class GroovyComponentAdapter extends AbstractComponentAdapter
                 
             return instance;
             
-        }
-        catch (SyntaxException e)
+        }        
+        catch (Exception e)
         {
             throw new PicoInitializationException(e);
         }
-        catch (IOException e)
-        {
-            throw new PicoInitializationException(e);
-        }
+     
     }
 
 }
