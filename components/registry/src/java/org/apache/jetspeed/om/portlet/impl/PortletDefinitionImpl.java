@@ -29,6 +29,8 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
@@ -83,6 +85,15 @@ import org.odmg.DList;
 public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable, Support
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
+    
+    /**
+     * This is a static instance of the PortletREgistry that can be used by
+     * all instances of the PortletDefinitionImpl to support the 
+     * PortletDefintionCtrl.store() method.
+     * 
+     */
+    protected static PortletRegistry registry;
+    
     private long id;
     private String className;
     private String name;
@@ -710,8 +721,23 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void store() throws IOException
     {
-        throw new UnsupportedOperationException("PortletDefinitionImpl.store() is not supported."
-                + "Use the StoreablePortletDefinitionDelegate class to wrap the PortletDefinition to store");
+        if(registry != null)
+        {
+            try
+            {
+                registry.savePortletDefinition(this);
+            }
+            catch (RegistryException e)
+            {
+                IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
+                ioe.initCause(e);
+            }
+        }
+        else
+        {
+            throw new IllegalStateException("The portlet registry for PortletDefinitionImpl has not been set.  "+
+                                             "Please invoke PortletDefinitionImpl.setPortletRegistry before invoking the store() method.");
+        }
     }
 
     /**
@@ -873,6 +899,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         }
         langListWrapper.setClassLoader(getPortletClassLoader());        
         langListWrapper.postLoad(this.supportedLocales);
+    }
+    
+    public static void setPortletRegistry(PortletRegistry registry)
+    {
+        PortletDefinitionImpl.registry = registry;
     }
 
 }

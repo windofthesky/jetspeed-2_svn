@@ -31,7 +31,6 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -223,14 +222,9 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     public MutablePortletEntity newPortletEntityInstance( PortletDefinition portletDefinition )
     {
         PortletEntityImpl portletEntity = new PortletEntityImpl();
-        if (portletDefinition instanceof StoreablePortletDefinitionDelegate)
-        {
-            portletEntity.setPortletDefinition(((StoreablePortletDefinitionDelegate) portletDefinition).getPortlet());
-        }
-        else
-        {
-            portletEntity.setPortletDefinition(portletDefinition);
-        }
+
+        portletEntity.setPortletDefinition(portletDefinition);
+
         portletEntity.setStore(persistenceStore);
 
         return (PortletEntityImpl) portletEntity;
@@ -279,7 +273,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         }
         catch (LockFailedException e)
         {
-            log.error("Unable to remove entity from PersistenceStoreCache "+e.toString(), e);
+            log.error("Unable to remove entity from PersistenceStoreCache " + e.toString(), e);
         }
     }
 
