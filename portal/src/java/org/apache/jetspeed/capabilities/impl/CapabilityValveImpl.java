@@ -22,6 +22,7 @@ import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
+import org.apache.jetspeed.capabilities.UnableToBuildCapabilityMapException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -60,17 +61,16 @@ public class CapabilityValveImpl implements CapabilityValve
         String agent = request.getRequest().getHeader("User-Agent");
 
         // Get capability map
-        CapabilityMap cm = capabilities.getCapabilityMap(agent);
-
-        if (cm == null)
+        CapabilityMap cm;
+        try
         {
-            log.debug("Couldn't create capability map for agent: " + agent);
+            cm = capabilities.getCapabilityMap(agent);
         }
-        else
+        catch (UnableToBuildCapabilityMapException e)
         {
-            log.debug("Created Capability map for agent: " + agent);
+           throw new PipelineException("Falied to create capabilitied:  "+e.getMessage(), e);
         }
-
+        
         MediaType mediaType = cm.getPreferredMediaType();
         MimeType mimeType = cm.getPreferredType();
 
