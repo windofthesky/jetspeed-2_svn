@@ -401,7 +401,7 @@
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/xtest</unitTestSourceDirectory>
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
       <excludes>
         <exclude>org/apache/jetspeed/aggregator/TestAggregator.java</exclude>
