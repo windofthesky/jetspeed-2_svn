@@ -18,7 +18,7 @@ package org.apache.jetspeed.services.information;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.ResourceURLProvider;
 
@@ -38,12 +38,13 @@ public class ResourceURLProviderImpl implements ResourceURLProvider
     private PortletWindow portletWindow = null;
     private String stringUrl = "";
     private String base = "";
+    private RequestContext context;
 
-    public ResourceURLProviderImpl(DynamicInformationProviderImpl provider, PortletWindow portletWindow)
+    public ResourceURLProviderImpl(RequestContext context, PortletWindow portletWindow)
     {
         this.portletWindow = portletWindow;
-        // this.base = PortalEnvironment.getPortalEnvironment(provider.request).getRequestedPortalURL().getBaseURLexcludeContext();
-        this.base = Jetspeed.getCurrentRequestContext().getRequestedPortalURL().getBaseURL();
+        this.context = context;                
+        this.base = context.getNavigationalState().getBaseURL();
     }
 
     // ResourceURLProvider implementation.

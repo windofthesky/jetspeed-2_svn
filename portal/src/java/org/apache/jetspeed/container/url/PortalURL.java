@@ -4,8 +4,9 @@
  * 
  * @author
  */
-package org.apache.jetspeed.engine.core;
+package org.apache.jetspeed.container.url;
 
+import org.apache.jetspeed.container.url.impl.PortalControlParameter;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -65,7 +66,7 @@ public interface PortalURL
     //public abstract String getRequestParameterAsString(PortalControlParameter controlParam);
     //public abstract String toString();
     public abstract String toString(PortalControlParameter controlParam, Boolean p_secure);
-    public abstract void analyzeControlInformation(PortalControlParameter control);
+    // public abstract void analyzeControlInformation(PortalControlParameter control);
     // public abstract void setRenderParameter(PortletWindow portletWindow, String name, String[] values);
     // public abstract void clearRenderParameters(PortletWindow portletWindow);
     public abstract String getBaseURL();

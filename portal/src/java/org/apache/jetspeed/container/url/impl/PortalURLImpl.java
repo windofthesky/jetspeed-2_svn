@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.engine.core;
+package org.apache.jetspeed.container.url.impl;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +27,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.session.impl.*;
+import org.apache.jetspeed.container.url.*;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 
 /**
  * As part of its content, a portlet may need to create URLs that reference the portlet itself.
@@ -90,7 +93,10 @@ public class PortalURLImpl implements PortalURL
      */
     public PortalURLImpl(HttpServletRequest request)
     {
-        this(JetspeedRequestContext.getRequestContext(request));
+        // TODO: assemble this
+        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+        this.context = rcc.getRequestContext(request);
+        init(context);
     }
 
     /**

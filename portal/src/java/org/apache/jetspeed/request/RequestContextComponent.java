@@ -45,4 +45,13 @@ public interface RequestContextComponent
      */
     void release(RequestContext context);
     
+    /**
+     * The servlet request can always get you back to the Request Context if you need it
+     * This static accessor provides this capability
+     *
+     * @param request
+     * @return RequestContext
+     */
+    RequestContext getRequestContext(HttpServletRequest request);    
+    
 }

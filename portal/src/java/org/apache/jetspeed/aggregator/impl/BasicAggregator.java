@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -140,8 +140,8 @@ public class BasicAggregator implements Aggregator, Startable
             HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
 
-            PortalControlParameter control = new PortalControlParameter(request.getRequestedPortalURL());
-            WindowState windowState = control.getState(portletWindow);
+            NavigationalState state = request.getNavigationalState();            
+            WindowState windowState = state.getState(portletWindow);
 
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }

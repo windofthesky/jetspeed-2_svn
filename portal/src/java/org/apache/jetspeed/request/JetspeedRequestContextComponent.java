@@ -79,5 +79,17 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     public void release(RequestContext context) 
     {
     }
+
+    /**
+     * The servlet request can always get you back to the Request Context if you need it
+     * This static accessor provides this capability
+     *
+     * @param request
+     * @return RequestContext
+     */
+    public RequestContext getRequestContext(HttpServletRequest request)
+    {
+        return (RequestContext) request.getAttribute(JetspeedRequestContext.REQUEST_PORTALENV);
+    }
     
 }

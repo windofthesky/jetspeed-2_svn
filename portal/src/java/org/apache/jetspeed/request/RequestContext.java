@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.window.PortletWindow;
@@ -154,13 +153,6 @@ public interface RequestContext
      */
     public NavigationalState getNavigationalState();
     
-    /**
-     * Get the requested Portlet URL for this request
-     *
-     * @return PortletURL the requested Portlet URL
-     */
-    public PortalURL getRequestedPortalURL();
-
     /**
      * Get the target Action Window
      *

@@ -22,9 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletActionProvider;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 
 /**
  * Handle operations that the portlet may perform in an action method.
@@ -38,20 +39,23 @@ public class PortletActionProviderImpl implements PortletActionProvider
     HttpServletRequest request = null;
     ServletConfig config = null;
     private PortletWindow portletWindow;
-
+    private RequestContext context;
+    
     public PortletActionProviderImpl(HttpServletRequest request, ServletConfig config, PortletWindow portletWindow)
     {
         this.request = request;
         this.config = config;
         this.portletWindow = portletWindow;
+        // TODO: assemble this
+        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+        this.context = rcc.getRequestContext(request);       
     }
 
     /* (non-Javadoc)
      * @see org.apache.pluto.services.information.PortletActionProvider#changePortletMode(PortletWindow, PortletMode)
      */
     public void changePortletMode(PortletMode mode)
-    {
-        RequestContext context = JetspeedRequestContext.getRequestContext(request);
+    {        
         NavigationalState state = context.getNavigationalState();
         if (!(state.getMode(portletWindow).equals(mode)) && mode != null)
         {
@@ -64,7 +68,6 @@ public class PortletActionProviderImpl implements PortletActionProvider
      */
     public void changePortletWindowState(WindowState state)
     {
-        RequestContext context = JetspeedRequestContext.getRequestContext(request);
         NavigationalState navstate = context.getNavigationalState();
         if (!(navstate.getState(portletWindow).equals(state)) && state != null)
         {

@@ -31,8 +31,6 @@ import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
-import org.apache.jetspeed.engine.core.PortalURL;
-import org.apache.jetspeed.engine.core.PortalURLImpl;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.om.window.PortletWindow;
@@ -63,7 +61,6 @@ public class JetspeedRequestContext implements RequestContext
     private String mimeType;
     private String mediaType;
     private NavigationalState navstate;
-    private PortalURL requestedPortalURL;
     private PortletWindow actionWindow;
     private String encoding;
     
@@ -92,7 +89,6 @@ public class JetspeedRequestContext implements RequestContext
         {
             this.request.setAttribute(REQUEST_PORTALENV, this);
         }
-        requestedPortalURL = new PortalURLImpl(this);
         
         if (navcomponent != null)
         {
@@ -103,18 +99,6 @@ public class JetspeedRequestContext implements RequestContext
 
     private JetspeedRequestContext()
     {
-    }
-
-    /**
-     * The servlet request can always get you back to the Request Context if you need it
-     * This static accessor provides this capability
-     *
-     * @param request
-     * @return RequestContext
-     */
-    public static RequestContext getRequestContext(HttpServletRequest request)
-    {
-        return (RequestContext) request.getAttribute(REQUEST_PORTALENV);
     }
 
     public HttpServletRequest getRequest()
@@ -228,11 +212,6 @@ public class JetspeedRequestContext implements RequestContext
         return navstate;
     }
     
-    public PortalURL getRequestedPortalURL()
-    {
-        return requestedPortalURL;
-    }
-
     /**
      * Get the target Portlet Action Window
      *

@@ -32,11 +32,10 @@ import org.apache.pluto.services.information.ResourceURLProvider;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.NamespaceMapperAccess;
 import org.apache.pluto.services.information.PortletURLProvider;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
-import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
-import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.Jetspeed;
 
 /**
@@ -64,17 +63,17 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
     HttpServletRequest request = null;
     ServletConfig config = null;
 
-    PortalURL currentURL = null;
-    PortalControlParameter control = null;
-
+    RequestContext context;
+    
     public DynamicInformationProviderImpl(HttpServletRequest request,
                                           ServletConfig config)
     {
         this.request = request;
         this.config = config;
         
-        currentURL = JetspeedRequestContext.getRequestContext(request).getRequestedPortalURL();
-        control = new PortalControlParameter(currentURL);
+        // TODO: assemble this dependency when this provider is converted to a component
+        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+        this.context = rcc.getRequestContext(request);
     }
 
     public PortletURLProvider getPortletURLProvider(PortletWindow portletWindow)
@@ -85,13 +84,11 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
      public String getRequestContentType()
      {
-         RequestContext context = JetspeedRequestContext.getRequestContext(this.request);
          return context.getMimeType().toString();
      }
 
      public String getResponseContentType()
      {
-         RequestContext context = JetspeedRequestContext.getRequestContext(this.request);
          return context.getMimeType().toString();
      }
 
@@ -106,22 +103,26 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
      public PortletMode getPortletMode(PortletWindow portletWindow)
      {
-         return control.getMode(portletWindow);
+         NavigationalState navState = context.getNavigationalState();
+         return navState.getMode(portletWindow);
      }
 
      public PortletMode getPreviousPortletMode(PortletWindow portletWindow)
      {
-         return control.getPrevMode(portletWindow);
+         NavigationalState navState = context.getNavigationalState();         
+         return navState.getPreviousMode(portletWindow);
      }
 
      public WindowState getWindowState(PortletWindow portletWindow)
      {
-         return control.getState(portletWindow);
+         NavigationalState navState = context.getNavigationalState();         
+         return navState.getState(portletWindow);
      }
 
      public WindowState getPreviousWindowState(PortletWindow portletWindow)
      {
-         return control.getPrevState(portletWindow);
+         NavigationalState navState = context.getNavigationalState();         
+         return navState.getPreviousState(portletWindow);
      }
     public boolean isPortletModeAllowed(PortletMode mode)
     {
@@ -181,7 +182,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
     public String getBasePortalURL()
     {
-         return currentURL.getBaseURL();
+         return context.getNavigationalState().getBaseURL();
     }
 
     public Map getAllParameters(PortletWindow portletWindow)
@@ -202,12 +203,14 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
             }
         }
 
-        Iterator iterator = control.getRenderParamNames(portletWindow);
+        NavigationalState navState = context.getNavigationalState();
+        
+        Iterator iterator = navState.getRenderParamNames(portletWindow);
         while (iterator.hasNext())
         {
             String name = (String)iterator.next();
 
-            String[] values = control.getRenderParamValues(portletWindow, name);
+            String[] values = navState.getRenderParamValues(portletWindow, name);
 
             portletParameters.put(name, values );
 
@@ -245,7 +248,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
     public ResourceURLProvider getResourceURLProvider(PortletWindow window)
     {
         
-        return new ResourceURLProviderImpl(this, window);
+        return new ResourceURLProviderImpl(this.context, window);
     }
 
 }

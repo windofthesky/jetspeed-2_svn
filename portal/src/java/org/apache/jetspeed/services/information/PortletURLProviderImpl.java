@@ -21,9 +21,11 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.engine.core.PortalControlParameter;
-import org.apache.jetspeed.engine.core.PortalURL;
-import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.pluto.util.NamespaceMapperAccess;
@@ -46,14 +48,20 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private boolean clearParameters = false;
     private Map parameters = null;
 
-    private PortalURL portalUrl;
-    private PortalControlParameter controlURL;
+    private RequestContext context;
+    private NavigationalState nav;
+    
     public PortletURLProviderImpl(DynamicInformationProviderImpl provider, PortletWindow portletWindow)
     {
         this.provider = provider;
         this.portletWindow = portletWindow;
-        portalUrl = JetspeedRequestContext.getRequestContext(provider.request).getRequestedPortalURL();
-        controlURL = new PortalControlParameter(portalUrl);
+        
+        // TODO: assemble this with factory
+        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+        NavigationalStateComponent nsc = (NavigationalStateComponent)Jetspeed.getComponentManager().getComponent(NavigationalStateComponent.class);
+        
+        context = rcc.getRequestContext(provider.request);
+        nav = nsc.create(context);
     }
 
     public void setPortletMode(PortletMode mode)
@@ -77,10 +85,8 @@ public class PortletURLProviderImpl implements PortletURLProvider
     }
 
     public void clearParameters()
-    {
-
-        controlURL.clearRenderParameters(portletWindow);
-
+    {        
+        nav.clearRenderParameters(portletWindow);
     }
 
     public void setParameters(Map parameters)
@@ -90,15 +96,14 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public String toString()
     {
-
         if (mode != null)
         {
-            controlURL.setMode(portletWindow, mode);
+            nav.setMode(portletWindow, mode);
         }
 
         if (state != null)
         {
-            controlURL.setState(portletWindow, state);
+            nav.setState(portletWindow, state);
         }
 
         // STW: Spec reference PLT:12:2
@@ -111,7 +116,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
         if (action)
         {
-            controlURL.setAction(portletWindow);
+            nav.setAction(portletWindow);
         }
 
         if (parameters != null)
@@ -125,19 +130,18 @@ public class PortletURLProviderImpl implements PortletURLProvider
                 : (String[]) value;
                 if (action)
                 {
-                    controlURL.setRequestParam(
+                    nav.setRequestParam(
                         NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
                         values);
 
                 }
                 else
                 {
-                    controlURL.setRenderParam(portletWindow, name, values);
+                    nav.setRenderParam(portletWindow, name, values);
                 }
             }
         }
-
-        return portalUrl.toString(controlURL, new Boolean(secure));
+        return nav.toString(secure);
     }
 
 }

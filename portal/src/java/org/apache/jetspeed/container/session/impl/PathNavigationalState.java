@@ -15,14 +15,18 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.util.Iterator;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
-import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.container.url.impl.PortalControlParameter;
+import org.apache.jetspeed.container.url.impl.PortalURLImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
+
 
 /**
  * PathNavigationalStateContext is based on Pluto navigational state.
@@ -46,7 +50,7 @@ public class PathNavigationalState implements NavigationalState
     public void init(RequestContext context)
     {
         this.context = context;
-        this.url = context.getRequestedPortalURL();
+        this.url = new PortalURLImpl(context);
         this.pcp = new PortalControlParameter(url);        
     }
     
@@ -85,5 +89,53 @@ public class PathNavigationalState implements NavigationalState
         return PortalControlParameter.isControlParameter(token);
     }
     
+    public Iterator getRenderParamNames(PortletWindow window)
+    {
+        return pcp.getRenderParamNames(window);
+    }
     
+    public String[] getRenderParamValues(PortletWindow window, String paramName)
+    {
+        return pcp.getRenderParamValues(window, paramName);
+    }
+
+    public PortletWindow getPortletWindowOfAction()
+    {
+        return pcp.getPortletWindowOfAction();
+    }
+    
+    public void clearRenderParameters(PortletWindow portletWindow)
+    {
+        pcp.clearRenderParameters(portletWindow);
+    }
+    
+    public void setAction(PortletWindow window)
+    {
+        pcp.setAction(window);
+    }
+    
+    public void setRequestParam(String name, String[] values)
+    {
+        pcp.setRequestParam(name, values);
+    }
+    
+    public void setRenderParam(PortletWindow window, String name, String[] values)
+    {
+        pcp.setRenderParam(window, name, values);
+    }
+    
+    public String toString()
+    {
+        return toString(false);
+    }
+
+    public String toString(boolean secure)
+    {        
+        return url.toString(pcp, new Boolean(secure));
+    }
+    
+    public String getBaseURL()
+    {
+        return url.getBaseURL();
+    }
 }

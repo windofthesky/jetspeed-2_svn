@@ -15,13 +15,15 @@
  */
 package org.apache.jetspeed.container.session;
 
+import java.util.Iterator;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * NavigationalStateContext
+ * NavigationalState contains the state of the Portal URL and all navigational state context
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -40,5 +42,28 @@ public interface NavigationalState
     
     WindowState getPreviousState(PortletWindow window);
     
+    ///////////////////////////////////////////////
+    
     boolean isNavigationalParameter(String token);
+    
+    Iterator getRenderParamNames(PortletWindow window);
+    
+    String[] getRenderParamValues(PortletWindow window, String paramName);
+
+    PortletWindow getPortletWindowOfAction();
+    
+    void clearRenderParameters(PortletWindow portletWindow);
+    
+    void setAction(PortletWindow window);
+    
+    void setRequestParam(String name, String[] values);
+    
+    void setRenderParam(PortletWindow window, String name, String[] values);
+    
+    String toString();
+    
+    String toString(boolean secure);
+    
+    String getBaseURL();
+    
 }

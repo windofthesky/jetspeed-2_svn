@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.engine.core;
+package org.apache.jetspeed.container.url.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +25,10 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.session.impl.*;
+import org.apache.jetspeed.container.url.*;
+import org.apache.jetspeed.container.url.impl.*;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
 
@@ -208,7 +210,7 @@ public class PortalControlParameter
         return MODE + "_" + window.getId().toString();
     }
 
-    public PortletWindow getPortletWindowOfAction() throws JetspeedException
+    public PortletWindow getPortletWindowOfAction() 
     {
         Iterator iterator = getStateLessControlParameter().keySet().iterator();
         PortletWindow portletWindow = null;

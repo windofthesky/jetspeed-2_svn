@@ -202,7 +202,6 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 init(req, res);
             }
 
-            //RequestContext context = RequestContextFactory.getInstance(req, res, getServletConfig());
             RequestContextComponent contextComponent = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
             RequestContext context = contextComponent.create(req, res, getServletConfig());
             engine.service(context);

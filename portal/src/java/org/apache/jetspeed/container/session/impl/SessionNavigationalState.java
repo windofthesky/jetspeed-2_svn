@@ -15,12 +15,8 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * SessionNavigationalStateContext
@@ -29,6 +25,8 @@ import org.apache.pluto.om.window.PortletWindow;
  * @version $Id$
  */
 public class SessionNavigationalState
+        extends
+            PathNavigationalState // for now until we implement it
         implements
             NavigationalState 
 {
@@ -36,45 +34,9 @@ public class SessionNavigationalState
     
     public SessionNavigationalState(RequestContext context)
     {
-        init(context);        
+        super(context);
     }
     
-    public void init(RequestContext context)
-    {
-        this.context = context;
-    }
     
-    public WindowState getState(PortletWindow window) 
-    {
-        return null;
-    }
-    
-    public void setState(PortletWindow window, WindowState state) 
-    {
-    }
-    
-    public PortletMode getMode(PortletWindow window) 
-    {
-        return null;
-    }
-    
-    public void setMode(PortletWindow window, PortletMode mode) 
-    {
-    }
-    
-    public PortletMode getPreviousMode(PortletWindow window) 
-    {
-        return null;
-    }
-    
-    public WindowState getPreviousState(PortletWindow window) 
-    {
-        return null;
-    }
-    
-    public boolean isNavigationalParameter(String token)
-    {
-        return false;
-    }
     
 }

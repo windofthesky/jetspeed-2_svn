@@ -19,8 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
-import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -45,10 +44,10 @@ public class ContainerValve
     {
         try
         {  
-            PortalURL currentURL = request.getRequestedPortalURL();
             //PortletContainerServices.prepare();
-            PortalControlParameter control = new PortalControlParameter(currentURL);
-            PortletWindow actionWindow = control.getPortletWindowOfAction();
+            
+            NavigationalState nav = request.getNavigationalState();
+            PortletWindow actionWindow = nav.getPortletWindowOfAction();
             if (null == actionWindow)
             {
                 // set to null to denote that no action was requested
