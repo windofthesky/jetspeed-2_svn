@@ -31,7 +31,7 @@ public class DeploymentEventImpl implements DeploymentEvent
 	private String type;
 	private DeploymentHandler handler;
 	private String deploymentRoot;
-	private int status;
+	private int status=-1;
 	
 
     /**
