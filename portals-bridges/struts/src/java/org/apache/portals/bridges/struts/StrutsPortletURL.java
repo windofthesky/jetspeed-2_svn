@@ -55,7 +55,7 @@ public class StrutsPortletURL
             if (pageURL.startsWith(contextPath))
                 pageURL = pageURL.substring(contextPath.length());
         }
-        portletURL.setParameter(PAGE, pageURL);
+        portletURL.setParameter(PAGE, pageURL.replaceAll("&amp;","&"));
         if (actionURL)
         {
             String originURL = request.getParameter(PAGE);
