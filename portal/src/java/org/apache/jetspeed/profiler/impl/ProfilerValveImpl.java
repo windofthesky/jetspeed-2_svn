@@ -15,7 +15,12 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -27,39 +32,53 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * ProfilerValveImpl
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+    protected Log log = LogFactory.getLog(ProfilerValveImpl.class);
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext,
+     *      org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public void invoke(RequestContext request, ValveContext context)
-        throws PipelineException
+    public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
         try
         {
-            Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
-            
+            Profiler profiler = (Profiler) Jetspeed.getComponentManager().getComponent(Profiler.class);
+
             ProfileLocator locator = profiler.getProfile(request);
-            request.setProfileLocator(locator);                        
+            request.setProfileLocator(locator);
             request.setPage(profiler.getPage(locator));
-            
+            context.invokeNext(request);
+
         }
         catch (ProfilerException e)
         {
-            throw new PipelineException(e);
+            throw new PipelineException(e.toString(), e);
         }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
+        catch (PageNotFoundException e)
+        {
+            log.error(e.getMessage(), e);
+            try
+            {
+                request.getResponse().sendError(404, e.getMessage());
+            }
+            catch (IOException e1)
+            {
+                log.error("Failed to invoke HttpServletReponse.sendError: "+e1.getMessage(), e);
+            }
+        }       
     }
 
     public String toString()
     {
         return "ProfilerValve";
     }
-    
+
 }

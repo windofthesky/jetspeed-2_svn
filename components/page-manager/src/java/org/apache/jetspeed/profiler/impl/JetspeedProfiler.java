@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.desktop.Desktop;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
@@ -261,7 +262,7 @@ public class JetspeedProfiler implements Profiler
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
      */
-    public Page getPage(ProfileLocator locator)
+    public Page getPage(ProfileLocator locator) throws PageNotFoundException
     {
         // TODO: under construction, for now use the name
         

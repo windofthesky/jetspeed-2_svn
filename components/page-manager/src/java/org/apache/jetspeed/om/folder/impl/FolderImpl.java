@@ -22,6 +22,7 @@ import org.apache.jetspeed.om.folder.FolderSet;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSet;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.impl.PageSetImpl;
 
 /**
@@ -206,7 +207,7 @@ public class FolderImpl implements Folder
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getPages()
      */
-    public PageSet getPages()
+    public PageSet getPages() throws PageNotFoundException
     {
         if (pages == null)
         {
@@ -225,9 +226,14 @@ public class FolderImpl implements Folder
         return pages;
     }
     
-    public Page getPage(String name)
+    public Page getPage(String name) throws PageNotFoundException
     {
-        return pages.get(name);
+        Page page = pages.get(name);
+        if(page == null)
+        {
+            throw new PageNotFoundException("Jetspeed PSML page not found: "+name);
+        }
+        return page;
     }
 
     /*

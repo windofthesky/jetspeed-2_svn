@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.folder;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSet;
+import org.apache.jetspeed.page.PageNotFoundException;
 
 /**
  * Folder
@@ -54,12 +55,29 @@ public interface Folder extends SecuredResource, ChildNode
     
     void setFolders(FolderSet folders);
     
-    PageSet getPages();
+    /**
+     * 
+     * <p>
+     * getPages
+     * </p>
+     *
+     * @return PageSet of all the Pages referenced by this Folder.
+     * @throws PageNotFoundException if any of the Pages referenced by this Folder
+     * could not be found.
+     */
+    PageSet getPages() throws PageNotFoundException;
     
     void setPages(PageSet pages);
     
-    //GenericMetadata getMetadata();
-    //void setMetadata(GenericMetadata metadata);
-    
-    Page getPage(String name);
+  
+    /**
+     * 
+     * <p>
+     * getPage
+     * </p>
+     *
+     * @param name
+.     * @throws PageNotFoundException if the Page requested could not be found.
+     */
+    Page getPage(String name) throws PageNotFoundException;
 }

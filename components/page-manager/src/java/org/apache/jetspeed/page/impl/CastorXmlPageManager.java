@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
@@ -154,18 +155,35 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         pages.stopFileScanner();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+    /**
+     * 
+     * <p>
+     * getPage
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.PageManager#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     * @param locator
+     * @return
+     * @throws PageNotFoundException
      */
-    public Page getPage(ProfileLocator locator)
+    public Page getPage(ProfileLocator locator) throws PageNotFoundException
     {
         return getPage(locator.getValue("page"));
     }
     
     /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
+     * 
+     * <p>
+     * getPage
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
+     * @param id
+     * @return
+     * @throws PageNotFoundException
+     * @throws IllegalStateException if the page could be inserted into the FileCache.
      */
-    public Page getPage(String id)
+    public Page getPage(String id) throws PageNotFoundException
     {
         if (id == null)
         {
@@ -197,11 +215,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             
             if (!f.exists())
             {
-                return null;
+                throw new PageNotFoundException("Jetspeed PSML page not found: "+id);
             }
 
             FileReader reader = null;
-
+        
             try
             {
                 reader = new FileReader(f);
@@ -212,23 +230,19 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             }
             catch (IOException e)
             {
-                log.error("Could not load the file " + f.getAbsolutePath(), e);
-                page = null;
+                throw new PageNotFoundException("Could not load the file " + f.getAbsolutePath(), e);                
             }
             catch (MarshalException e)
             {
-                log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
-                page = null;
+                throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);               
             }
             catch (MappingException e)
             {
-                log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
-                page = null;
+                throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
             }
             catch (ValidationException e)
             {
-                log.error("Document " + f.getAbsolutePath() + " is not valid", e);
-                page = null;
+                throw new PageNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);                
             }
             finally
             {
@@ -239,6 +253,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
                 catch (IOException e)
                 {
                 }
+            }
+            
+            if(page == null)
+            {
+                throw new PageNotFoundException("Page not found: "+id);
             }
 
             synchronized (pages)
@@ -260,6 +279,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
                 catch (java.io.IOException e)
                 {
                     log.error("Error putting document: " + e);
+                    IllegalStateException ise = new IllegalStateException("Error storing Page in the FileCache: "+e.toString());
+                    ise.initCause(e);
                 }
             }
         }

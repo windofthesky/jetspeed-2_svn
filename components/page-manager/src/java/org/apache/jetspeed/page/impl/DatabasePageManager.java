@@ -28,6 +28,7 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.profiler.ProfileLocator;
@@ -75,7 +76,7 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
      */
-    public Page getPage(ProfileLocator locator)
+    public Page getPage(ProfileLocator locator) throws PageNotFoundException
     {
         return getPage(locator.getValue("page"));
     }    
@@ -83,7 +84,7 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
      */
-    public Page getPage(String id)
+    public Page getPage(String id) throws PageNotFoundException
     {
         if (pageCache.containsKey(id))
         {
@@ -96,6 +97,10 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
             Object q = persistenceStore.newQuery(pageClass, filter);
             persistenceStore.getTransaction().begin();
             Page page = (Page) persistenceStore.getObjectByQuery( q);
+            if(page == null)
+            {
+                throw new PageNotFoundException("Jetspeed PSML page not found: "+id);
+            }
 
             pageCache.put(id, page);
             return page;

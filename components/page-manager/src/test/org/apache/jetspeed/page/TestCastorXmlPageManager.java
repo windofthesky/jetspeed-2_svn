@@ -138,7 +138,7 @@ public class TestCastorXmlPageManager extends TestCase
         // TODO: Fix Property manipulation API, too clumsy right now
     }
 
-    public void testGetPage()
+    public void testGetPage() throws Exception
     {               
         Page testpage = pageManager.getPage("test001");
         assertNotNull(testpage);

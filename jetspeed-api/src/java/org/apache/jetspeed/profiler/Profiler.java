@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.apache.jetspeed.om.desktop.Desktop;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -69,10 +70,16 @@ public interface Profiler
     Desktop getDesktop(ProfileLocator locator);
     
     /**
+     * 
+     * <p>
+     * getPage
+     * </p>
+     *
      * @param locator
      * @return
+     * @throws PageNotFoundException
      */
-    Page getPage(ProfileLocator locator);
+    Page getPage(ProfileLocator locator) throws PageNotFoundException;
     
     /**
      * @param locator

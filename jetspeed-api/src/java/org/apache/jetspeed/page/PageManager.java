@@ -57,12 +57,18 @@ public interface PageManager
      */
     public Property newProperty();
 
-    /**
-     * Returns a PSML document for the given key
-     *
-     * @param locator The locator descriptor of the document to be retrieved.
-     */
-    public Page getPage(String id);
+   /**
+    * 
+    * <p>
+    * getPage
+    * </p>
+    *
+    * Returns a PSML document for the given key
+    *
+    * @param locator The locator descriptor of the document to be retrieved.
+    * @throws PageNotFoundException if the page cannot be found
+    */
+    public Page getPage(String id) throws PageNotFoundException;
     
     /**
      * 
@@ -77,11 +83,16 @@ public interface PageManager
     Folder getFolder(String folderPath);
 
     /**
-     * Returns a PSML document for the given locator
+     * 
+     * <p>
+     * getPage
+     * </p>
      *
-     * @param locator The locator descriptor of the document to be retrieved.
+     * @param locator
+     * @return
+     * @throws PageNotFoundException if the page cannot be found.
      */
-    public Page getPage(ProfileLocator locator);
+    public Page getPage(ProfileLocator locator) throws PageNotFoundException;
 
     /** Query for a collection of profiles given a profile locator criteria.
      *
