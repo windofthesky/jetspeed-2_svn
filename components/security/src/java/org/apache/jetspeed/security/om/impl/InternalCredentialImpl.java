@@ -18,7 +18,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.util.HashCodeBuilder;
 
 /**
  * <p>{@link InternalCredential} interface implementation.</p>
@@ -325,22 +324,6 @@ public class InternalCredentialImpl implements InternalCredential
         this.lastLogonDate = lastLogonDate;
     }
     
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode()
-    {
-        HashCodeBuilder hasher = new HashCodeBuilder(1, 3);
-        hasher.append(getPrincipalId());
-        hasher.append(getCreationDate().getTime());
-        if (getClassname() != null)
-        {
-            hasher.append(getClassname());
-        }
-        return hasher.toHashCode();
-    }
-    
-
     /**
      * <p>Compares this {@link InternalCredential} to the provided credential
      * and check if they are equal.</p>
