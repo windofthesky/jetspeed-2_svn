@@ -69,4 +69,31 @@ public interface PortletWindowAccessor
      * @return
      */
     PortletWindow createPortletWindow(String windowId);
+    
+    /**
+     * 
+     * <p>
+     * removeWindows
+     * </p>
+     * 
+     * Removes all <code>PortletWindow</code>s associated with this
+     * <code>PortletEntity</code>
+     *
+     * @param portletEntity
+     */
+    void removeWindows(PortletEntity portletEntity);
+    
+    /**
+     * 
+     * <p>
+     * removeWindow
+     * </p>
+     * 
+     * Removes a <code>PortletWindow</code> from the window cache.
+     *
+     * @param window
+     */
+    void removeWindow(PortletWindow window);
+    
+    
 }

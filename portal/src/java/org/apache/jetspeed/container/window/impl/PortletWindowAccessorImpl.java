@@ -18,6 +18,7 @@ package org.apache.jetspeed.container.window.impl;
 import groovy.swing.impl.Startable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -25,13 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
@@ -50,14 +48,12 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
    
     private Map windows = new HashMap();
     private PortletEntityAccessComponent entityAccessor;
-    private PortletRegistryComponent registry;
     
- 
-    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor,
-                                     PortletRegistryComponent registry)
+
+    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor )
     {
         this.entityAccessor = entityAccessor;
-        this.registry = registry;
+
     }
     
     public void start() 
@@ -151,11 +147,26 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
         PortletWindowList windowList = portletEntity.getPortletWindowList();
         ((PortletWindowListCtrl) windowList).add(portletWindow);
         
-        windows.put(fragment.getId(), portletWindow);
-        
+        windows.put(fragment.getId(), portletWindow);       
         
         
         return portletWindow;
+    }
+    
+    public void removeWindows(PortletEntity portletEntity)
+    {
+        Iterator entityWindows = portletEntity.getPortletWindowList().iterator();
+        while(entityWindows.hasNext())
+        {
+            Object obj = entityWindows.next();
+            PortletWindow window = (PortletWindow) obj;
+            removeWindow(window);
+        }
+    }
+    
+    public void removeWindow(PortletWindow window)
+    {
+        windows.remove(window.getId().toString());
     }
     
     private PortletWindow getWindowFromCache(Fragment fragment)
