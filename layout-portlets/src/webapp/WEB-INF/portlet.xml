@@ -90,6 +90,44 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="VelocityTwoColumnsSmallLeft">
+    <portlet-name>VelocityTwoColumnsSmallLeft</portlet-name>
+    <display-name>Two Columns with a small Left column for navigation controls using Velocity</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>columns</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>15%,85%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>TwoColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>VelocityTwoColumnsSmallLeft</title>
+      <short-title>TwoColumnsSmallLeft</short-title>
+    </portlet-info>
+</portlet>
+
+
 <portlet id="VelocityThreeColumns">
     <portlet-name>VelocityThreeColumns</portlet-name>
     <display-name>Three Columns Layout Using Velocity</display-name>
