@@ -126,55 +126,40 @@ public class PerlPortlet extends GenericPortlet {
     	   	
     	String query		= null;
     	String scriptName	= null;
+    	PerlParameters perlParam = null;
     	
     	/**
-    	 * The Perl parameters are either passed by a session attribute (invoked through an action) or as a query string (invoked from a href).
-    	 * The portlet checks first if a session attribute (SELECTED_VIEW) was defined and then checks for the query string
+    	 * The Perl parameters are either passed by a session attribute (invoked through an action) or as a query string (invoked from the cgi itself).
+    	 * The portlet checks first for the query (navigation inside the perl portlet) and then if a session attribute (SELECTED_VIEW) was defined.
     	 */
-    	PerlParameters perlParam = null;
-    	try
-		{
-    		perlParam = (PerlParameters)request.getPortletSession().getAttribute("SELECTED_VIEW", PortletSession.APPLICATION_SCOPE);
-		}
-    	catch (Exception e )
-		{
-    		perlParam = null;
-		}
     	
-    	if (perlParam != null)
+    	// Extract the Query string -- Request initiated from inside the CGI script. This allows navigation within the CGI
+    	String queryString = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getQueryString();
+    	
+    	if (queryString != null)
     	{
-    		query = perlParam.getQueryString();
-    		perlScript = perlParam.getPerlScript();
+    		query = queryString;
     		
+    		// Find the perl script -- last argument
+    		String url = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getRequestURI();
+    		perlScript = url.substring(url.lastIndexOf('/')+1);
     	}
     	else
     	{
-    		// Extract the Query string
-	    	String queryString = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getQueryString();
+    		try
+			{
+	    		perlParam = (PerlParameters)request.getPortletSession().getAttribute("SELECTED_VIEW", PortletSession.APPLICATION_SCOPE);
+			}
+	    	catch (Exception e )
+			{
+	    		perlParam = null;
+			}
 	    	
-	    	// Check if the call is to run the default script or for a different one (perl-script= defined) 
-	    	if (queryString == null || queryString.indexOf("perl-script=") == -1)
+	    	if (perlParam != null)
 	    	{
-	    		// Execute the perl script defined as the default
-	    		scriptName = perlScript;
-	    	}
-	    	else
-	    	{
-	    		// Check if the perl script to run is overwritten
-	    		scriptName = queryString.substring(queryString.indexOf("perl-script=")+12);
-	    		int del	= scriptName.indexOf('&');
-	    		if ( del != -1 )
-	    			scriptName = scriptName.substring(0, del);
-	    	}
-	    	
-	    	// Use the cached query string if the cgi is
-	    	if ( queryString == null )
-	    	{
-	    		query = "";
-	    	}
-	    	else
-	    	{
-	    		query = queryString;
+	    		query = perlParam.getQueryString();
+	    		perlScript = perlParam.getPerlScript();
+	    		
 	    	}
     	}
     	
@@ -232,8 +217,9 @@ public class PerlPortlet extends GenericPortlet {
 		{
 			writer.println("<P><B>IO Exception (" + e.getMessage() + ")</B></P>");
 		}
+			
+		String envQuery = "QUERY_STRING=" + query ;
 		
-		String envQuery = "QUERY_STRING=" + query;
 		String[] env = null;
 		env = new String[]{"REQUEST_METHOD=GET", envQuery};
 		
@@ -243,7 +229,8 @@ public class PerlPortlet extends GenericPortlet {
 			writer.println("<P>The portlet executes the perl script defined by the init-params. If you don't get an output make sure that the perl executable defined in the script is valid.");
 			writer.println("The executable is defined on the first line of your script.</P>Examples<ul><li><B>UNIX/Linux:</B>!/usr/bin/perl</li><li><B>Windows:</B>!c:\\bin\\perl\\perl.exe</li></ul>");
 			writer.println("<B><P>Perl Script:</B>" + rootContextPath + "<BR>");
-			writer.println("<B>Perl executable:</B>" + perlExecutable + "</P>");
+			writer.println("<B>Perl executable:</B>" + perlExecutable + "<BR>");
+			writer.println("<B>Query String:</B>" + query + "</P>");
 		}   	
     	
 		//Execute the perl script from the command line
