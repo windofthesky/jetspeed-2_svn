@@ -28,6 +28,7 @@ import junit.framework.Test;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.impl.PropertyException;
 
 import org.picocontainer.MutablePicoContainer;
@@ -72,6 +73,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
+        container.getComponentInstance(PreferencesProvider.class);
     }
 
     /**
@@ -91,7 +93,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPreferences.class);
-        suite.setScript("org/apache/jetspeed/containers/prefs.container.groovy");
+        suite.setScript("org/apache/jetspeed/containers/test.prefs.groovy");
         return suite;
     }
 
