@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
 
 
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer(parent)
 
 Long counterStart = 65536
 peidPrefix = "P-"
 peidSuffix = ""
 idgenerator = new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix)
-if(parent != null)
-{
-	parent.registerComponentInstance("IdGenerator", idgenerator)
-}
 
 container.registerComponentInstance("IdGenerator", idgenerator)
 

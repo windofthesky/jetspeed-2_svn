@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.jetspeed.locator.JetspeedTemplateLocator
 
 applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./");
 
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer(parent)
 
 roots = [ applicationRoot + "/WEB-INF/templates" ]
 container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots, applicationRoot))
