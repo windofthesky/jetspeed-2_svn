@@ -70,15 +70,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     protected final static String CONFIG_CACHE_SIZE = "cacheSize";
 
     // default configuration values
-  //  public final static String DEFAULT_ROOT = "/WEB-INF/pages";
-    public final static String DEFAULT_EXT = ".psml";
+
 
     // the root psml resource directory
     protected String root;
     // base store directory
     protected File rootDir = null;
     // file extension
-    protected String ext = DEFAULT_EXT;
+    protected String ext = PAGE_SUFFIX;
 
     /** The pages loaded by this manager */
     protected FileCache pages = null;
