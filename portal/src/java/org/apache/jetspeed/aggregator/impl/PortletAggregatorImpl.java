@@ -71,18 +71,10 @@ public class PortletAggregatorImpl implements PortletAggregator
             log.debug("No sepecific decorator portlet so using page default: "+decorator);
         }
         
-//        {
-//            log.debug("decorator=" + fragment.getDecorator());
-//	        addStyle(context, fragment.getDecorator(), "portlet");
-//        } 
-//        else 
-//        {
-//            log.debug("no decorator for portlet:" + fragment.getId());
-//        }
-        
+
         ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
         renderer.renderNow(fragment, context);
-        dispatcher.include(fragment);
+ //       dispatcher.include(fragment);
         context.getResponse().getWriter().write(fragment.getRenderedContent());
         
     }

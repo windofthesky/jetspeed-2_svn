@@ -18,6 +18,8 @@ package org.apache.jetspeed.om.page;
 
 import java.util.List;
 
+import org.apache.jetspeed.aggregator.PortletContent;
+
 /**
  * <p>A <code>Fragment</code> is the basic element handled by the aggregation
  * engine to compose the final portal page. It represents a reserved screen
@@ -227,11 +229,21 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
     /**
      * 
      * <p>
-     * setRenderedContent
+     * setPortletContent
      * </p>
-     * 
-     * @param content Raw, undecortated content of this fragment
+     *
+     * @param portletContent
      */
-    public void setRenderedContent(String content);    
+    public void setPortletContent(PortletContent portletContent);
+    
+    /**
+     * 
+     * <p>
+     * overrideRenderedContent
+     * </p>
+     *
+     * @param contnent
+     */
+    public void overrideRenderedContent(String contnent);
     
 }

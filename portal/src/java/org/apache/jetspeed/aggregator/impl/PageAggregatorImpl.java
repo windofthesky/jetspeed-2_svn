@@ -123,10 +123,6 @@ public class PageAggregatorImpl implements PageAggregator
                 contentPathes.add(path.replaceAll("\\{mediaType\\}", mediaType));
             }
 
-            //            contentPathes.add("portlet/"+mediaType+"/jetspeed");
-            //            contentPathes.add("portlet/" + mediaType);
-            //            contentPathes.add("generic/" + mediaType);
-            //            contentPathes.add("/" + mediaType);
         }
         else
         {
@@ -152,7 +148,7 @@ public class PageAggregatorImpl implements PageAggregator
             aggregateAndRender(root, context, page);
         }
         
-        dispatcher.include(root);
+        //dispatcher.include(root);
         context.getResponse().getWriter().write(root.getRenderedContent());
 
         if (null != window)
@@ -199,16 +195,14 @@ public class PageAggregatorImpl implements PageAggregator
             }
             try
             {
-                renderer.render(maxedFragment, context);
-                ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
-                dispatcher.sync(maxedFragment);
-                renderer.render(layoutFragment, context);              
-                dispatcher.sync(layoutFragment);
+                renderer.renderNow(maxedFragment, context);
+                renderer.renderNow(layoutFragment, context);              
+                
             }
             catch (Exception e)
             {
                 log.error(e.getMessage(), e);
-                maxedFragment.setRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
+                maxedFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
             }
 
 
@@ -259,20 +253,16 @@ public class PageAggregatorImpl implements PageAggregator
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
         }
         
-        try
-        {
-            renderer.render(f, context);
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(), e);
-            f.setRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
-        }
+       
+
         
         if (strategy == STRATEGY_SEQUENTIAL)
         {
-            ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
-            dispatcher.sync(f);
+            renderer.renderNow(f, context);
+        }
+        else
+        {
+            renderer.render(f, context);
         }
 
         if (f.getDecorator() != null && f.getType().equals(Fragment.PORTLET))

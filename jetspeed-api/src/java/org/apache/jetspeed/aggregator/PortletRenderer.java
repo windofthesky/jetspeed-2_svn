@@ -39,7 +39,7 @@ public interface PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow;
+    public void renderNow(Fragment fragment, RequestContext request) ;
 
     /**
         Render the specified Page fragment.
@@ -47,17 +47,15 @@ public interface PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow;
+    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) ;
 
     /** 
      * 
      * Render the specified Page fragment.
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
-     * @throws FailedToRenderFragmentException if the Fragment could not be rendered.
-     * @throws FailedToRetrievePortletWindow
      */
-    public void render(Fragment fragment, RequestContext request) throws  FailedToRenderFragmentException, FailedToRetrievePortletWindow;
+    public void render(Fragment fragment, RequestContext request);
 
     /**
      * Retrieve the ContentDispatcher for the specified request

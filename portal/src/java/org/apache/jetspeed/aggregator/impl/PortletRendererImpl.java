@@ -81,16 +81,17 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow( Fragment fragment, RequestContext requestContext ) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow
+    public void renderNow( Fragment fragment, RequestContext requestContext )
     {
 
         HttpServletRequest servletRequest = null;
         HttpServletResponse servletResponse = null;
         ContentDispatcher dispatcher = null;
-        PortletWindow portletWindow = getPortletWindow(fragment);
+        PortletWindow portletWindow = null;
         
         try
         {
+            portletWindow = getPortletWindow(fragment);
             PortletContainerServices.prepare("jetspeed");           
             ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
             dispatcher = getDispatcher(requestContext, true);
@@ -103,7 +104,7 @@ public class PortletRendererImpl implements PortletRenderer
         }
         catch (Exception e)
         {
-            fragment.setRenderedContent(e.toString());
+            fragment.overrideRenderedContent(e.toString());
             log.error(e.toString(), e);
         }
     }
@@ -115,17 +116,17 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws FailedToRenderFragmentException
      * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow( Fragment fragment, HttpServletRequest request, HttpServletResponse response )
-            throws FailedToRenderFragmentException, FailedToRetrievePortletWindow
+    public void renderNow( Fragment fragment, HttpServletRequest request, HttpServletResponse response )          
     {
 
         RequestContext requestContext = (RequestContext) request
                 .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         ContentDispatcher dispatcher = getDispatcher(requestContext, true);
-        PortletWindow portletWindow = getPortletWindow(fragment);
+        PortletWindow portletWindow = null;
         
         try
         {
+            portletWindow = getPortletWindow(fragment);
             PortletContainerServices.prepare("jetspeed");
             ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
             
@@ -137,7 +138,7 @@ public class PortletRendererImpl implements PortletRenderer
         }
         catch (Exception e)
         {
-            fragment.setRenderedContent(e.toString());
+            fragment.overrideRenderedContent(e.toString());
             log.error(e.toString(), e);
         }
     }
@@ -151,15 +152,13 @@ public class PortletRendererImpl implements PortletRenderer
      * @throws UnknownPortletDefinitionException
      * @throws FailedToRetrievePortletWindow
      */
-    public void render( Fragment fragment, RequestContext requestContext ) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow
+    public void render( Fragment fragment, RequestContext requestContext )
     {
 
         PortletContainerServices.prepare("jetspeed");
 
         PortletWindow portletWindow;
-
         
-
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
         ContentDispatcher dispatcher = getDispatcher(requestContext, true);
 
@@ -171,20 +170,19 @@ public class PortletRendererImpl implements PortletRenderer
             portletWindow = getPortletWindow(fragment);
             servletRequest = requestContext.getRequestForWindow(portletWindow);
             servletResponse = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
-            
+            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
+            monitor.process(rJob);            
         }
-        catch (FailedToRetrievePortletWindow e1)
+        catch (Exception e1)
         {
             servletRequest = requestContext.getRequest();
             servletResponse = dispatcherCtrl.getResponseForFragment(fragment, requestContext);
             log.error("render() failed: " + e1.toString(), e1);
-            fragment.setRenderedContent(e1.toString());            
+            fragment.overrideRenderedContent(e1.toString());            
+//            ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
+        //    ((ContentDispatcherImpl) dispatcherCtrl).notify(oid);
         }
-        finally
-        {
-            RenderingJob rJob = buildRenderingJob(fragment, servletRequest, servletResponse, requestContext);
-            monitor.process(rJob);
-        }
+
     }
 
     /**

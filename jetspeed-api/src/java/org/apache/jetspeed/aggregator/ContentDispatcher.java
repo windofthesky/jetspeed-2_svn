@@ -27,18 +27,14 @@ import org.apache.jetspeed.om.page.Fragment;
 public interface ContentDispatcher
 {
     /**
-     * Writes a portlets rendered content to the fragment.
-     * If the fragment rendered content is not yet available, the method will
-     * hold until it's completely rendered.
-     * @throws UnrenderedContentException
-     */
-    public void include(Fragment fragment) throws UnrenderedContentException;
-        
-    /**
-     * Sequentially wait on content generation for the given fragment.
      * 
+     * <p>
+     * getPortletContent
+     * </p>
+     *
      * @param fragment
+     * @return
      */
-    public void sync(Fragment fragment);
+    PortletContent getPortletContent(Fragment fragment);
     
 }

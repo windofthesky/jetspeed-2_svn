@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -34,7 +33,7 @@ public interface ContentDispatcherCtrl
     /** Notify ContentDispatcher that the content for the specified OID is
      * completely generated and is available for inclusion in other content
      */
-    public void notify(ObjectID oid);
+//    public void notify(ObjectID oid);
 
     /**
      * Return the HttpServletResponse to use for a given PortletWindow

@@ -100,10 +100,39 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
                 throw new FailedToRetrievePortletWindow(e.toString(), e);
             }
         }
+        else
+        {
+            validateWindow(fragment, portletWindow);
+        }
+        
         return portletWindow;
     }
     
-    public PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException
+    /**
+     * <p>
+     * validateWindow
+     * </p>
+     *
+     * @param fragment
+     * @param portletWindow
+     * @throws InconsistentWindowStateException
+     */
+    protected void validateWindow( Fragment fragment, PortletWindow portletWindow ) throws FailedToRetrievePortletWindow
+    {
+        // make sure the window has the most up-to-date portlet entity
+        PortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
+        if(portletEntity != null)
+        {
+            ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
+        }
+        else
+        {
+            removeWindow(portletWindow);  
+            throw new FailedToRetrievePortletWindow("No PortletEntity exists for for id "+fragment.getId()+" removing window from cache.");
+        }
+    }
+
+    public PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToRetrievePortletWindow, FailedToCreateWindowException
     {
         ArgUtil.assertNotNull(Fragment.class, fragment, this, "getPortletWindow(Fragment fragment, String principal)");
         ArgUtil.assertNotNull(String.class, principal, this, "getPortletWindow(Fragment fragment, String principal)");
@@ -112,6 +141,11 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         {
             return createPortletWindow(fragment, principal);
         }        
+        else
+        {
+            // make sure the window has the most up-to-date portlet entity
+            validateWindow(fragment, portletWindow);
+        }
         return portletWindow;
     }
 

@@ -16,8 +16,6 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
-import org.apache.jetspeed.aggregator.UnrenderedContentException;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
@@ -54,6 +52,8 @@ public class RenderingJob implements Runnable
     private PortletContainer container = null;
     private Fragment fragment = null;
     private RequestContext requestContext = null;
+
+    private PortletContent portletContent;
     
     public RenderingJob(PortletContainer container, ContentDispatcher dispatcher, Fragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
     {
@@ -76,17 +76,16 @@ public class RenderingJob implements Runnable
     {       
         try
         {
-            execute();
-            dispatcher.include(fragment);                   
-        }
-        catch (UnrenderedContentException e)
-        {
-            log.error("Failed to include fragment: "+e.toString(), e);
+            execute();                     
         }
         finally
         {
-            log.debug("Notifying dispatcher OID "+this.window.getId());
-            dispatcherCtrl.notify(this.window.getId());
+            
+            synchronized (portletContent)
+            {
+               log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
+               portletContent.notifyAll();
+            }
         }
     }
     
@@ -99,6 +98,7 @@ public class RenderingJob implements Runnable
      */
     protected void execute()
     {
+        portletContent = dispatcher.getPortletContent(fragment);
         try
         {
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);            
@@ -106,32 +106,21 @@ public class RenderingJob implements Runnable
             this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
             this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
-            container.renderPortlet(this.window, this.request, this.response);     
+            container.renderPortlet(this.window, this.request, this.response);               
+            this.response.flushBuffer();             
+            fragment.setPortletContent(portletContent);                        
         }
         catch (Throwable t)
         {
-            // this will happen is request is prematurely aborted
+            // this will happen is request is prematurely aborted            
             log.error("Error rendering portlet OID " + this.window.getId(), t);
-			try
-            {
-                t.printStackTrace(dispatcherCtrl.getResponseForWindow(this.window, this.requestContext).getWriter());
-            }
-            catch (IOException e)
-            {
-                // not important
-            }
+            fragment.overrideRenderedContent("Error rendering portlet fragment: "+fragment.getId());
         }
         finally
         {
-			try
-            {            	
-                this.response.flushBuffer();                       
-            }
-            catch (Exception e)
-            {
-                log.error("Error flushing response buffer: "+e.toString(), e);
-            }
+            portletContent.complete();
         }
+
     }
 
     /**
