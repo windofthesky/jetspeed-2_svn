@@ -192,9 +192,7 @@ public class PageAggregatorImpl implements PageAggregator, Startable
                                         + currentFragment.getId()
                                         + "]]");
                             }
-                            // TODO This is where we add User Info.
-                            RequestContext portletContext = context;
-                            renderer.render(currentFragment, portletContext);
+                            renderer.render(currentFragment, context);
                             if (strategy == STRATEGY_SEQUENTIAL)
                             {
                                 ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
