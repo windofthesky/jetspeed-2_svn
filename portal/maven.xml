@@ -19,15 +19,12 @@
                ignoreFailures="false"/>
  </preGoal>
  
- <!-- Always rbuild the DB befure we test -->
+ <!-- Always rbuild the DB befure we test 
  <preGoal name="test:test">
  	<attainGoal name="db.recreate" />
  </preGoal>
+-->
  
- <preGoal name="test:single">
- 	<attainGoal name="db.recreate" />
- </preGoal>
-
 <!--
   <goal name="jaxb:portlet"
         description="Generate java classes from protlet API schema">
@@ -218,56 +215,6 @@
         </java>
   </goal>
 
-  <!-- ================================================================ -->
-  <!-- EXECUTE a DB SCRIPT                                              -->
-  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-  <!-- ================================================================ -->
-  <goal name="db.execute">
-    <sql driver="${org.apache.jetspeed.database.driver}"
-         classpathref="maven.dependency.classpath"
-         url="${org.apache.jetspeed.database.url}"
-         userid="${org.apache.jetspeed.database.user}"
-         password="${org.apache.jetspeed.database.password}"
-         src="${database.arg.script}">
-    </sql>
-  </goal>
-
-  <!-- ================================================================ -->
-  <!-- EXECUTE CREATE DB SQL SCRIPTS                                    -->
-  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-  <!-- ================================================================ -->
-  <goal name="db.create">
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db-phase3-ojb.sql" />
-    <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db.sql" />
-    <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db-phase2.sql" />
-    <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-prefs-schema.sql" />
-    <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/populate-db-default.sql" />
-    <attainGoal name="db.execute" />
-  </goal>
-
-  <!-- ================================================================ -->
-  <!-- EXECUTE DROP DB SQL SCRIPTS                                      -->
-  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-  <!-- ================================================================ -->
-  <goal name="db.drop">
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/drop-db.sql" />
-    <attainGoal name="db.execute" />
-  </goal>
-
-  <!-- ================================================================ -->
-  <!-- EXECUTE RECREATE DB SQL SCRIPTS                                  -->
-  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
-  <!-- ================================================================ -->
-  <goal name="db.recreate">
-    <attainGoal name="db.drop" />
-    <attainGoal name="db.create" />
-  </goal>
-
- 
 
   <!-- ================================================================ -->
   <!-- Deploy to Catalina and Expand                                    -->

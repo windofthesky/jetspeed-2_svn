@@ -400,8 +400,6 @@
         <!-- Excluded due to persistence plugin issues -->
         <exclude>org/apache/jetspeed/security/Test*.java</exclude>
         <!-- End Excluded due to persistence plugin issues -->
- 
-        <exclude>org/apache/jetspeed/spi/services/prefs/TestUtils.java</exclude>
        </excludes>
       <includes>
         <include>**/Test*.java</include>
