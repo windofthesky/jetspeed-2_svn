@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.profiler.TestProfiler'/>        
+<property name='testcase' value='org.apache.jetspeed.services.page.TestPageXmlPersistence'/>        
  
 <!--
   <goal name="jaxb:portlet"

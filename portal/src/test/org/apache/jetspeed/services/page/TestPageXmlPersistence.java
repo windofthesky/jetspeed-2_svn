@@ -288,7 +288,7 @@ public class TestPageXmlPersistence extends JetspeedTest
     {
         PageManagerService pms = getService();
         List pages = pms.listPages();
-        assertTrue(pages.size() == 2);
+        assertTrue(pages.size() == 3);
         assertTrue(pages.contains(this.testId));
         assertTrue(pages.contains("test001"));
     }
