@@ -1089,7 +1089,7 @@ limitations under the License.
       
         <field-descriptor
          name="oid"
-         column="OID"
+         column="PEID"
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"

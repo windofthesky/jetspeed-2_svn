@@ -101,7 +101,7 @@ limitations under the License.
        Without the principal, the key represents the default preferences for the window
     -->
     <table name="PORTLET_ENTITY">
-        <column name="OID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PEID" primaryKey="true" required="true" type="INTEGER"/>
        <!-- <column name="PORTLET_DEFINITION_ID" required="true" type="INTEGER"/> -->
         <column name="ID" required="true" size="255" type="VARCHAR"/>
         <column name="APP_NAME" required="true" size="255" type="VARCHAR"/>
