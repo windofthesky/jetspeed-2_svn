@@ -2,48 +2,48 @@
       <id>picocontainer</id>
       <version>1.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>nanocontainer</id>
       <version>1.0-SNAPSHOT</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>nanocontainer:nanocontainer-proxytoys</id>
       <version>1.0-SNAPSHOT</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>proxytoys</id>
       <version>0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>  
      <dependency>
       <id>groovy</id>
      <version>1.0-rc1-snapshot</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>asm</id>
       <version>1.4.3</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>asm:asm-util</id>
       <version>1.4.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>

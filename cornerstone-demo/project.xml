@@ -31,7 +31,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>   
       <version>1.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency> 	
   	
@@ -39,7 +39,7 @@ limitations under the License.
       <id>commons-collections</id>
       <version>2.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -47,7 +47,7 @@ limitations under the License.
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
   	
@@ -56,7 +56,7 @@ limitations under the License.
       <id>commons-beanutils</id>
       <version>1.6.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -64,7 +64,7 @@ limitations under the License.
       <id>hsqldb</id>
       <version>1.7.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -72,7 +72,7 @@ limitations under the License.
       <id>junit</id>
       <version>3.8.1</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     
@@ -80,7 +80,7 @@ limitations under the License.
       <id>junit</id>
       <version>3.8.1</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     
@@ -88,7 +88,7 @@ limitations under the License.
       <id>log4j</id>
       <version>1.2.8</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -98,7 +98,7 @@ limitations under the License.
       
       <version>1.2.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -108,7 +108,7 @@ limitations under the License.
       
       <version>1.2.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -116,7 +116,7 @@ limitations under the License.
       <id>servletapi</id>
       <version>2.3</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties> 
     </dependency>
     

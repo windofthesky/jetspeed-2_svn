@@ -39,7 +39,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -47,7 +47,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
@@ -55,7 +55,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -63,7 +63,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -71,7 +71,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -79,7 +79,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -87,7 +87,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -95,7 +95,7 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -103,49 +103,49 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-id-generator</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
     <dependency>
       <id>jetspeed2:jetspeed-file-cache</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-api</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-locator</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-capability</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
     <dependency>
       <id>jetspeed2:jetspeed-page-manager</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     
@@ -154,7 +154,7 @@ limitations under the License.
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      
@@ -163,119 +163,119 @@ limitations under the License.
       <groupId>pluto</groupId>
       <version>1.0.1-SNAPSHOT</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
      </dependency>
      <dependency>
       <id>castor</id>
       <version>0.9.4.3</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-betwixt</id>
       <version>1.0-beta-1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-digester</id>
       <version>1.5</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-configuration</id>
       <version>1.0-dev</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-httpclient</id>
       <version>2.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-io</id>
       <version>0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>fulcrum</id>
       <version>3.0-b2-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>hsqldb</id>
       <version>1.7.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>ojb:db-ojb</id>
       <version>1.0.rc6-PATCHED</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>commons-pool</id>
       <version>1.2</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-dbcp</id>
       <version>1.2.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jdbc-se</id>
       <jar>jdbc-se2.0.jar</jar>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -283,21 +283,21 @@ limitations under the License.
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>junit</id>
       <version>3.8.1</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jta</id>
       <jar>jta1.0.1.jar</jar>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -305,14 +305,14 @@ limitations under the License.
       <id>log4j</id>
       <version>1.2.8</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>mysql</id>
       <jar>mysql-connector-java-2.0.14-bin.jar</jar>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -320,70 +320,70 @@ limitations under the License.
       <id>portlet-api</id>
       <version>1.0</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>servletapi</id>
       <version>2.3</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>tyrex</id>
       <version>1.0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>xalan</id>
       <version>2.4.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>xerces</id>
       <version>2.3.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
       <version>2.0.2</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>saxpath</id>
       <version>1.0-FCS</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
       <dependency>
       <id>jaxen</id>
       <version>1.0-FCS-full</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jdom</id>
       <version>b10</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>commons-modeler</id>
       <version>1.1M1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -391,7 +391,7 @@ limitations under the License.
       <groupId>mx4j</groupId>
       <version>1.1.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -399,7 +399,7 @@ limitations under the License.
       <groupId>mx4j</groupId>
       <version>1.1.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
@@ -407,35 +407,35 @@ limitations under the License.
       <id>regexp</id>
       <version>1.2</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jstl</id>
       <version>1.0.2</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>taglibs:standard</id>
       <version>1.0.2</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>taglibs:request</id>
       <version>1.0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>velocity</id>
       <version>1.4</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -443,14 +443,14 @@ limitations under the License.
       <version>1.1-beta1</version>
       <url>http://jakarta.apache.org/velocity</url>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>mockrunner</id>
       <version>0.2.7</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
   </dependencies>

@@ -145,7 +145,7 @@ limitations under the License.
       <id>hsqldb</id>
       <version>1.7.1</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>   	
     <dependency>
@@ -159,7 +159,7 @@ limitations under the License.
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -167,7 +167,7 @@ limitations under the License.
       <artifactId>mx4j-jmx</artifactId>
       <version>1.1.1</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
   </dependencies>

@@ -29,14 +29,14 @@ limitations under the License.
 			<groupId>jetspeed2</groupId>	 
 			<version>1.0</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency> 	
 		<dependency>
 			<id>log4j</id>
 			<version>1.2.8</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
 		<dependency>
@@ -44,7 +44,7 @@ limitations under the License.
 			<groupId>jmx</groupId>
 			<version>1.2.1</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
 		<dependency>
@@ -52,21 +52,21 @@ limitations under the License.
 			<groupId>jmx</groupId>
 			<version>1.2.1</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
 		<dependency>
 			<id>commons-collections</id>
 			<version>2.1</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
 		<dependency>
 			<id>commons-beanutils</id>
 			<version>1.6.1</version>
 			<properties>
-				<war.bundle.jar>true</war.bundle.jar>
+				<war.bundle>true</war.bundle>
 			</properties>
 		</dependency>
 	</dependencies>
