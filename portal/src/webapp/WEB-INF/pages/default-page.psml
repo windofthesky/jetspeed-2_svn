@@ -29,19 +29,19 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
-    <fragment id="dp-7" type="portlet" name="HW_App::PickANumberPortlet" >
+    <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>        
-    <fragment id="dp-16" type="portlet" name="HW_App::RoleSecurityTest">
+    <fragment id="dp-16" type="portlet" name="demo::RoleSecurityTest">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="dp-9" type="portlet" name="HW_App::IFramePortlet">
+    <fragment id="dp-9" type="portlet" name="demo::IFramePortlet">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>	
-    <fragment id="dp-17" type="portlet" name="HW_App::UserInfoTest">
+    <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    

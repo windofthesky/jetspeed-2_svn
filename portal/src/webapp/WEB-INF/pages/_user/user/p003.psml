@@ -23,11 +23,11 @@ limitations under the License.
   <title>[USER 003] PSML page</title>
   <fragment id="u3-xx2" type="layout" name="jetspeed::VelocityTwoColumns">
   
-	  <fragment id="u3-xx9" type="portlet" name="HW_App::CustomerList">
+	  <fragment id="u3-xx9" type="portlet" name="demo::CustomerList">
         <property layout="TwoColumns" name="row" value="0" />
         <property layout="TwoColumns" name="column" value="0" />
       </fragment>
-	  <fragment id="u3-xx6" type="portlet" name="HW_App::IFramePortlet">
+	  <fragment id="u3-xx6" type="portlet" name="demo::IFramePortlet">
         <property layout="TwoColumns" name="row" value="0" />
         <property layout="TwoColumns" name="column" value="1" />
       </fragment>

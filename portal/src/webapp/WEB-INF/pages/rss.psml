@@ -10,21 +10,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="css-demo">
+<page id="rss">
   <defaults
      skin="orange"
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
-  <title>CSS Demo</title>
-  <fragment id="css-2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="css-1" type="portlet" name="demo::CSSDemoPortlet" decorator="tigris">
+  <title>RSS Demo</title>
+  <fragment id="rss-1" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="rss-101" type="portlet" name="rss::RSS">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-  </fragment>
-  <metadata name="title" xml:lang="ja">
-        CSS デモ
-  </metadata>
-</page>
+    <fragment id="rss-102" type="portlet" name="rss::RomeRSS">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
 
+  </fragment>
+</page>

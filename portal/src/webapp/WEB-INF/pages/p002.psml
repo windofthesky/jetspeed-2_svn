@@ -23,7 +23,7 @@ limitations under the License.
   <title>My Second PSML page</title>
   <fragment id="xx2.0" type="layout" name="jetspeed::VelocityTwoColumns">
   
-	  <fragment id="xx2.1" type="portlet" name="HW_App::CustomerList"/>
+	  <fragment id="xx2.1" type="portlet" name="demo::CustomerList"/>
 
   </fragment>
   <metadata name="title" xml:lang="ja">
