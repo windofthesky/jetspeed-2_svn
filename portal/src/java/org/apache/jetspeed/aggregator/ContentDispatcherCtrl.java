@@ -53,26 +53,32 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * This service handles the generation of first step of agregation process
+ * <p>The ContentDispatcher control interface used for updating the content of
+ *    a ContentDispatcher</p>
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface Aggregator extends CommonService
+public interface ContentDispatcherCtrl
 {
-    public String SERVICE_NAME = "Aggregator";
+    /** Notify ContentDispatcher that the content for the specified OID is
+     * completely generated and is available for inclusion in other content
+     */
+    public void notify(ObjectID oid);
 
     /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
+     * Return the HttpServletResponse to use for a given PortletWindow
+     * in order to be able to capture parallel rendering portlets
      */
-    public void build(RequestContext context)
-        throws JetspeedException;
-
+    public HttpServletResponse getResponseForWindow(PortletWindow window, RequestContext request);
 }

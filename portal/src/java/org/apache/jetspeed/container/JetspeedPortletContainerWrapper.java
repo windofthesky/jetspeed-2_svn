@@ -77,7 +77,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
 {
     private boolean initialiized = false;
 
-    public void init(
+    public synchronized void init(
         String uniqueContainerId,
         ServletConfig servletConfig,
         PortletContainerEnvironment environment,
@@ -89,7 +89,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
         initialiized = true;
     }
 
-    public void shutdown() throws PortletContainerException
+    public synchronized void shutdown() throws PortletContainerException
     {
         //        PortletContainerFactory.
         //            getPortletContainerOriginal().
@@ -103,7 +103,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
     {
         PortletContainerFactory.getPortletContainerOriginal().renderPortlet(portletWindow, servletRequest, servletResponse);
         // TODO: figure out how to access pluto-services before container kicks in
-        //                              ServletObjectAccess.getServletRequest(servletRequest), 
+        //                              ServletObjectAccess.getServletRequest(servletRequest),
         //                              ServletObjectAccess.getServletResponse(servletResponse));
     }
 
@@ -127,11 +127,11 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
             ServletObjectAccess.getServletResponse(servletResponse, portletWindow));
     }
 
-    /** 
+    /**
      * <p>
      * isInitialized
      * </p>
-     * 
+     *
      * @see org.apache.pluto.PortletContainer#isInitialized()
      * @return
      */

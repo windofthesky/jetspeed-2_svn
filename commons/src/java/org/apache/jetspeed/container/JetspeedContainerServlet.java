@@ -117,11 +117,11 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     /**
      * Intialize Servlet.
      */
-    public final void init(ServletConfig config) throws ServletException
+    public synchronized final void init(ServletConfig config) throws ServletException
     {
         synchronized (this.getClass())
         {
-            log.info(INIT_START_MSG);
+            log.info(INIT_START_MSG+" "+config.getServletContext().getRealPath("/"));
             super.init(config);
 
             if (!firstInit)
@@ -141,22 +141,22 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                                     ServletHelper.findInitParameter(context, config,
                                                       JETSPEED_PROPERTIES_KEY,
                                                       JETSPEED_PROPERTIES_DEFAULT);
-                                
+
                                 String applicationRoot =
                                     ServletHelper.findInitParameter(context, config,
                                                   APPLICATION_ROOT_KEY,
                                                   APPLICATION_ROOT_DEFAULT);
                   */
                 webappRoot = config.getServletContext().getRealPath("/");
-                /*                
+                /*
                                 if (applicationRoot == null || applicationRoot.equals(WEB_CONTEXT))
                                 {
                                     applicationRoot = webappRoot;
                                 }
-                                    
-                                Configuration properties = (Configuration) 
+
+                                Configuration properties = (Configuration)
                                     new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
-                                
+
                                 properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
                                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
                   */
@@ -170,7 +170,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             }
 
             console.info(INIT_DONE_MSG);
-            log.info(INIT_DONE_MSG);
+            log.info(INIT_DONE_MSG+" "+config.getServletContext().getRealPath("/"));
         }
     }
 
@@ -180,7 +180,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
      *
      * @param data The first <code>GET</code> request.
      */
-    public final void init(HttpServletRequest request, HttpServletResponse response)
+    public synchronized final void init(HttpServletRequest request, HttpServletResponse response)
     {
         synchronized (JetspeedContainerServlet.class)
         {
@@ -230,7 +230,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 return;
             }
 
-            //res.getWriter().print("Rendering: Portlet Class = " + entity.getPortletClass() + "<BR/>");
+            log.debug("Rendering: Portlet Class = " + portletDefinition.getClassName());
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
@@ -244,13 +244,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 RenderRequest renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 RenderResponse renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
 
-                response.getWriter().print(PHONEY_PORTLET_WINDOW);
-                response.getWriter().print(portletDefinition.getName());
-                response.getWriter().print(PHONEY_PORTLET_WINDOW);
-
                 portlet.render(renderRequest, renderResponse);
-
-                response.getWriter().print(PHONEY_PORTLET_WINDOW);
             }
 
         }
@@ -289,6 +283,6 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         log.info("Done shutting down!");
     }
 
-  
+
 
 }

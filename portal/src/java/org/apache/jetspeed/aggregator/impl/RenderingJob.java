@@ -51,43 +51,109 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.entity;
 
-import org.apache.jetspeed.cps.CommonPortletServices;
+package org.apache.jetspeed.aggregator.impl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * <p>
- * PortletEntityAccess
- * </p>
+ * The RenderingJob is responsible for storing all necessary objets for
+ * asynchronous portlet rendering as well as implementing the rendering logic
+ * in its Runnable method.
  *
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
- *
  */
-public class PortletEntityAccess
+public class RenderingJob implements Runnable
 {
+    /** Commons logging */
+    protected final static Log log = LogFactory.getLog(RenderingJob.class);
 
-    public static PortletEntity getEntity(ObjectID oid)
+    /** WorkerMonitor used to flush the queue */
+    private PortletWindow window = null;
+    private HttpServletRequest request = null;
+    private HttpServletResponse response = null;
+    private ContentDispatcherCtrl dispatcher = null;
+    private PortletContainer container = null;
+
+    public void setWindow(PortletWindow window)
     {
-        return getService().getPortletEntity(oid);
+        this.window = window;
     }
 
-    public static PortletEntity getEntity(PortletDefinition def, String entityName)
+    public PortletWindow getWindow()
     {
-        return getService().getPortletEntity(def, entityName);
+        return this.window;
     }
 
-    public static void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException
+    public void setRequest(HttpServletRequest request)
     {
-        getService().storePortletEntity(portletEntity);
+        this.request = request;
     }
 
-    protected static PortletEntityService getService()
+    public HttpServletRequest getRequest()
     {
-        return (PortletEntityService) CommonPortletServices.getPortalService(PortletEntityService.SERVICE_NAME);
+        return this.request;
     }
 
+    public void setResponse(HttpServletResponse response)
+    {
+        this.response = response;
+    }
+
+    public HttpServletResponse getResponse()
+    {
+        return this.response;
+    }
+
+    public void setDispatcher(ContentDispatcherCtrl dispatcher)
+    {
+        this.dispatcher = dispatcher;
+    }
+
+    public ContentDispatcherCtrl getDispatcher()
+    {
+        return this.dispatcher;
+    }
+
+    public void setContainer(PortletContainer container)
+    {
+        this.container = container;
+    }
+
+    public PortletContainer getContainer()
+    {
+        return this.container;
+    }
+
+    /**
+     * Checks if queue is empty, if not try to empty it by calling
+     * the WorkerMonitor. When done, pause until next scheduled scan.
+     */
+    public void run()
+    {
+        try
+        {
+            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+            container.renderPortlet(this.window, this.request, this.response);
+            log.debug("Notifying dispatcher OID "+this.window.getId());
+            this.response.flushBuffer();
+            dispatcher.notify(this.window.getId());
+        }
+        catch (Throwable t)
+        {
+            // this will happen is request is prematurely aborted
+            log.error("Error rendering portlet OID " + this.window.getId());
+        }
+    }
 }

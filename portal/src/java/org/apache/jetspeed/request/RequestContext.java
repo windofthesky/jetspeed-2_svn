@@ -58,13 +58,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.om.profile.Profile;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.window.PortletWindow;
+
 /**
- * Portal Request Context is associated with each request 
+ * Portal Request Context is associated with each request
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
@@ -72,104 +75,132 @@ import org.apache.pluto.om.window.PortletWindow;
 public interface RequestContext
 {
     /**
-     * Gets the HTTP Servlet Request.  This is the Servlet 
+     * Gets the HTTP Servlet Request.  This is the Servlet
      * containers raw request object.  This request should
      * be wrapped using <code>getPortletRequestForWindow()</code> before
-     * being processed by the portlet container. 
-     * 
-     * @return HttpServletRequest 
+     * being processed by the portlet container.
+     *
+     * @return HttpServletRequest
      */
     public HttpServletRequest getRequest();
 
     /**
-     * Gets the HTTP Servlet Response.  This is the Servlet 
+     * Gets the HTTP Servlet Response.  This is the Servlet
      * containers raw response object.  This response should
      * be wrapped using <code>getPortletResponseForWindow()</code> before
-     * being processed by the portlet container. 
+     * being processed by the portlet container.
      * @return HttpServletResponse
      */
     public HttpServletResponse getResponse();
 
     /**
-     * Gets the HTTP Servlet Config 
-     * 
+     * Gets the HTTP Servlet Config
+     *
      * @return ServletConfig
      */
     public ServletConfig getConfig();
 
     /**
-     * Gets the Jetspeed Portal Context 
-     * 
+     * Gets the Jetspeed Portal Context
+     *
      * @return HttpServletRequest
      */
     public PortalContext getPortalContext();
 
     /**
-     * Gets the target page profile for this request 
-     * 
+     * Gets the target page profile for this request
+     *
      * @return Profile
      */
     public Profile getProfile();
 
     /**
-     * Sets the target page profile for this request 
-     * 
+     * Sets the target page profile for this request
+     *
      * @param profile The target profile
      */
     public void setProfile(Profile profile);
-    
-    /** 
+
+    /**
+     * Gets the target page for this request
+     *
+     * @return Page
+     */
+    public Page getPage();
+
+    /**
+     * Sets the target page  for this request
+     *
+     * @param page The target page
+     */
+    public void setPage(Page page);
+
+    /**
+     * Gets the content dispatcher for this request
+     *
+     * @return ContentDispatcher
+     */
+    public ContentDispatcher getContentDispatcher();
+
+    /**
+     * Sets the content dispatcher for this request
+     *
+     * @param dispatcher The ContentDispatcher to use for this request
+     */
+    public void setContentDispatcher(ContentDispatcher dispatcher);
+
+    /**
      * Set the capabilityMap. Used by the CapabilityValve
-     * 
-     * @param capabilityMap 
+     *
+     * @param capabilityMap
      */
     public void setCapabilityMap(CapabilityMap map);
-    
-    /** 
+
+    /**
      * Get the Capability Map
-     * 
+     *
      */
     public CapabilityMap getCapabilityMap();
 
-    /** 
+    /**
      * Set the Mimetype. Set by the CapabilityValve
-     * 
-     * @param mimeType 
+     *
+     * @param mimeType
      */
     public void setMimeType(String mimeType);
 
-    /** 
+    /**
      * Get the mimeType for the request
-     * 
+     *
      */
     public String getMimeType();
-        
-    /** 
+
+    /**
      * Set the mediaType. Set by the CapabilityValve
-     * 
-     * @param mediaType 
+     *
+     * @param mediaType
      */
     public void setMediaType(String mediaType);
-    
-    /** 
-     * get the Media Type 
-     * 
+
+    /**
+     * get the Media Type
+     *
      */
     public String getMediaType();
 
     /**
      * Get the requested Portlet URL for this request
-     * 
+     *
      * @return PortletURL the requested Portlet URL
-     */    
+     */
     public PortalURL getRequestedPortalURL();
 
     /**
-     * Change the Portlet URL to a new portal URL 
-     * 
+     * Change the Portlet URL to a new portal URL
+     *
      * @param url
      * @param control
-     */    
+     */
     public void changeRequestedPortalURL(PortalURL url, PortalControlParameter control);
 
     /**
@@ -178,38 +209,38 @@ public interface RequestContext
      * @return PortletWindow The target portlet action window
      */
     public PortletWindow getActionWindow();
-    
+
     /**
      * Sets the target Portlet Window
-     * 
+     *
      * @param window
      */
     public void setActionWindow(PortletWindow window);
-    
+
     /**
      * get the character encoding
-     * 
-     * 
+     *
+     *
      */
     public String getCharacterEncoding();
-    
+
     /**
      * set character encoding
-     * 
-     * @param enc 
+     *
+     * @param enc
      */
     public void setCharacterEncoding(String enc);
-    
+
     /**
-     * 
+     *
      * <p>
      * getRequestForWindow
      * </p>
-     * 
+     *
      * Takes a PortletWindow and generates a HttpServletRequest that
      * accurately represents that PortletWindow's request parameters
-     *  
-     * 
+     *
+     *
      * @param window PortetlWindow that we are build a request for
      * @return HttpServletRequest that wraps the existing servlet
      * container's request that can interpret encoded portlet information
@@ -217,17 +248,17 @@ public interface RequestContext
      *
      */
     HttpServletRequest getRequestForWindow(PortletWindow window);
-    
+
     /**
-     * 
+     *
      * <p>
      * getResponseForWindow
      * </p>
-     * 
+     *
      * Takes a PortletWindow and generates a HttpServletResponse that
      * accurately represents that PortletWindow's request parameters.
-     *  
-     * 
+     *
+     *
      * @param window PortetlWindow that we are build a response for
      * @return HttpServletRequest that wraps the existing servlet
      * container's request that can interpret encoded portlet information
@@ -236,5 +267,5 @@ public interface RequestContext
      *
      */
     HttpServletResponse getResponseForWindow(PortletWindow window);
-    
+
 }

@@ -58,7 +58,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.om.profile.Profile;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
@@ -72,8 +74,8 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * Jetspeed Request Context is associated with each portal request.
- * The request holds the contextual information shared amongst components 
- * in the portal, accessed through a common valve pipeline. 
+ * The request holds the contextual information shared amongst components
+ * in the portal, accessed through a common valve pipeline.
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
@@ -85,7 +87,9 @@ public class JetspeedRequestContext implements RequestContext
     private HttpServletResponse response;
     private ServletConfig config;
     private Profile profile;
+    private Page page;
     private PortletDefinition portletDefinition;
+    private ContentDispatcher dispatcher;
 
     private CapabilityMap capabilityMap;
     private String mimeType;
@@ -98,7 +102,7 @@ public class JetspeedRequestContext implements RequestContext
 
     /**
      * Create a new Request Context
-     * 
+     *
      * @param pc
      * @param request
      * @param response
@@ -125,8 +129,8 @@ public class JetspeedRequestContext implements RequestContext
 
     /**
      * The servlet request can always get you back to the Request Context if you need it
-     * This static accessor provides this capability 
-     * 
+     * This static accessor provides this capability
+     *
      * @param request
      * @return RequestContext
      */
@@ -165,6 +169,16 @@ public class JetspeedRequestContext implements RequestContext
         this.profile = profile;
     }
 
+    public Page getPage()
+    {
+        return this.page;
+    }
+
+    public void setPage(Page page)
+    {
+        this.page = page;
+    }
+
     public PortletDefinition getPortletDefinition()
     {
         return portletDefinition;
@@ -175,9 +189,19 @@ public class JetspeedRequestContext implements RequestContext
         this.portletDefinition = portletDefinition;
     }
 
+    public ContentDispatcher getContentDispatcher()
+    {
+        return dispatcher;
+    }
+
+    public void setContentDispatcher(ContentDispatcher dispatcher)
+    {
+        this.dispatcher = dispatcher;
+    }
+
     /** Set the capabilityMap. Used by the CapabilityValve
-       * 
-       * @param capabilityMap 
+       *
+       * @param capabilityMap
        */
     public void setCapabilityMap(CapabilityMap map)
     {
@@ -185,7 +209,7 @@ public class JetspeedRequestContext implements RequestContext
     }
 
     /** get the Capability Map
-     * 
+     *
      */
     public CapabilityMap getCapabilityMap()
     {
@@ -193,8 +217,8 @@ public class JetspeedRequestContext implements RequestContext
     }
 
     /** Set the Mimetype. Used by the CapabilityValve
-     * 
-     * @param mimeType 
+     *
+     * @param mimeType
      */
     public void setMimeType(String mimeType)
     {
@@ -202,7 +226,7 @@ public class JetspeedRequestContext implements RequestContext
     }
 
     /** get the mimeType for the request
-     * 
+     *
      */
     public String getMimeType()
     {
@@ -210,8 +234,8 @@ public class JetspeedRequestContext implements RequestContext
     }
 
     /** Set the mediaType. Used by the CapabilityValve
-     * 
-     * @param mediaType 
+     *
+     * @param mediaType
      */
     public void setMediaType(String mediaType)
     {
@@ -219,7 +243,7 @@ public class JetspeedRequestContext implements RequestContext
     }
 
     /** get the Media Type
-     * 
+     *
      */
     public String getMediaType()
     {
@@ -249,7 +273,7 @@ public class JetspeedRequestContext implements RequestContext
 
     /**
      * Sets the target Portlet Action Window
-     * 
+     *
      * @param window
      */
     public void setActionWindow(PortletWindow portletWindow)
@@ -259,8 +283,8 @@ public class JetspeedRequestContext implements RequestContext
 
     /**
      * get the character encoding
-     * 
-     * 
+     *
+     *
      */
     public String getCharacterEncoding()
     {
@@ -269,19 +293,19 @@ public class JetspeedRequestContext implements RequestContext
 
     /**
      * set character encoding
-     * 
-     * @param enc 
+     *
+     * @param enc
      */
     public void setCharacterEncoding(String enc)
     {
         this.encoding = enc;
     }
 
-    /** 
+    /**
      * <p>
      * getRequestForWindow
      * </p>
-     * 
+     *
      * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
      * @param window
      * @return
@@ -294,11 +318,11 @@ public class JetspeedRequestContext implements RequestContext
         return requestWrapper;
     }
 
-    /** 
+    /**
      * <p>
      * getResponseForWindow
      * </p>
-     * 
+     *
      * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
      * @param window
      * @return

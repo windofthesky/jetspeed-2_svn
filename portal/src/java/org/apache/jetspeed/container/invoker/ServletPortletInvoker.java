@@ -107,7 +107,7 @@ public class ServletPortletInvoker implements PortletInvoker
     }
 
     /**
-     * 
+     *
      * @param request
      * @param response
      * @throws PortletException
@@ -118,7 +118,7 @@ public class ServletPortletInvoker implements PortletInvoker
     }
 
     /**
-     * 
+     *
      */
     public void action(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
@@ -126,7 +126,7 @@ public class ServletPortletInvoker implements PortletInvoker
     }
 
     /**
-     * 
+     *
      */
     public void load(PortletRequest request, RenderResponse response) throws PortletException
     {
@@ -142,7 +142,7 @@ public class ServletPortletInvoker implements PortletInvoker
     }
 
     /**
-     * 
+     *
      * @param portletRequest
      * @param portletResponse
      * @param methodID
@@ -205,11 +205,11 @@ public class ServletPortletInvoker implements PortletInvoker
         }
         finally
         {
-            servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
+            //servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
         }
     }
 

@@ -78,7 +78,7 @@ import org.xml.sax.SAXException;
 /**
  * This class implements methods that are called during the deployment of the application.
  *
- * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a> 
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
   * @version $Id$
  */
 
@@ -88,10 +88,10 @@ public class DeployUtilities
     /**
      * Deploys archives from a war file to the WebApps directory
      * @param webAppsDir The application server directory
-     * @param warFile The war file to deploy 
+     * @param warFile The war file to deploy
      * @throws PortletApplicationException
      */
-    
+
     public void deployArchive(String webAppsDir, String warFile, String appName) throws PortletApplicationException
     {
         String warFileName = warFile;
@@ -107,13 +107,13 @@ public class DeployUtilities
         try
         {
             String destination = webAppsDir + appName;
-    
+
             JarFile jarFile = new JarFile(warFile);
             Enumeration files = jarFile.entries();
             while (files.hasMoreElements())
             {
                 JarEntry entry = (JarEntry)files.nextElement();
-    
+
                 File file = new File(destination, entry.getName());
                 File dirF = new File(file.getParent());
                 dirF.mkdirs();
@@ -133,26 +133,26 @@ public class DeployUtilities
                     }
                     fos.close();
                 }
-    
+
             }
-    
+
             System.out.println("Libraries and classes deployment finished!");
         }
         catch( Exception e )
         {
             e.printStackTrace();
-            PortletApplicationException pe = 
-                new PortletApplicationException("Exception while copying jar files to web apps directory '" + 
-                                                 webAppsDir +"'" + e.getMessage());            
+            PortletApplicationException pe =
+                new PortletApplicationException("Exception while copying jar files to web apps directory '" +
+                                                 webAppsDir +"'" + e.getMessage());
             throw pe;
         }
     }
 
     /**
      * getWebXMLPath()
-     * Creates the full path to the web.xml. 
+     * Creates the full path to the web.xml.
      * @param webAppsDir The application server directory
-     * @param warFile The war file to deploy 
+     * @param warFile The war file to deploy
      * @throws PortletApplicationException
      */
 
@@ -160,7 +160,7 @@ public class DeployUtilities
     {
         if (webAppsDir.length() == 0 || warFile.length() == 0 )
         {
-            PortletApplicationException pe = 
+            PortletApplicationException pe =
                 new PortletApplicationException("WebAppDir(" + webAppsDir + ") or WarFile ("+ warFile + ") not defined! ");
             throw pe;
         }
@@ -190,54 +190,54 @@ public class DeployUtilities
     private final static String CONFIG_JAX_FACTORY_DOM = "jax.factory.dom";
     private String jaxDomFactoryProp = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
     private static final String JAX_DOM_PARSER_PROPERTY = "javax.xml.parsers.DocumentBuilderFactory";
-    
+
     public void processWebXML(String webXml, String paName) throws PortletApplicationException
-    {     
+    {
         System.out.println("prepare web archive '"+webXml+"' ...");
 
         try
         {
             // Read the WEB.XML and add application specific nodes.
-            System.setProperty( JAX_DOM_PARSER_PROPERTY, jaxDomFactoryProp);            
+            System.setProperty( JAX_DOM_PARSER_PROPERTY, jaxDomFactoryProp);
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
-            
+
             DocumentBuilder db = dbf.newDocumentBuilder();
             if (db== null)
             {
               PortletApplicationException e = new PortletApplicationException( "Failed to create an XML DOM!");
               throw e;
             }
-           
+
             Document doc = db.parse(new File(webXml));
             if ( doc == null)
             {
-                PortletApplicationException e = 
-                    new PortletApplicationException( "Failed to load " + webXml + 
+                PortletApplicationException e =
+                    new PortletApplicationException( "Failed to load " + webXml +
                         "\nMake sure that the file exists in the war file and it's valid XML syntax.");
                 throw e;
-    
+
             }
-   
+
             // web.xml loadded -- check if all elements are in the document
             boolean bServletMappingExists  = false;
             boolean bWelcomeFileExists     = false;
             boolean bDocUpdated            = false;    // Only save DOM document when it was updated
-    
+
             NodeList nodes_i   = doc.getDocumentElement().getChildNodes();
 
             for (int i = 0; i < nodes_i.getLength(); i++)
             {
                 Node node_i = nodes_i.item(i);
-    
+
                 if (   node_i.getNodeType() == Node.ELEMENT_NODE
-                    && ((Element) node_i).getTagName().equals("servlet-mapping")) 
+                    && ((Element) node_i).getTagName().equals("servlet-mapping"))
                 {
                     bServletMappingExists = true;
-    
+
                     Element eServletMapping = (Element) node_i;
                     NodeList nodes_j = eServletMapping.getChildNodes();
-                    for (int j = 0; j < nodes_j.getLength(); j++) 
+                    for (int j = 0; j < nodes_j.getLength(); j++)
                     {
                         // TBD: Not yet clear what element we try to add. Use <servlet-name>
                         //      for testing.
@@ -264,12 +264,12 @@ public class DeployUtilities
                 else if (   node_i.getNodeType() == Node.ELEMENT_NODE
                          && ((Element) node_i).getTagName().equals("welcome-file-list"))
                 {
-                  bWelcomeFileExists = true;  
+                  bWelcomeFileExists = true;
                 }
             }
- 
+
             // Add the <welcome-file-list> node to the document
-    
+
             if ( bWelcomeFileExists == false)
             {
                 System.out.println("Adding <welcome-file-list> element to web.xml...");
@@ -279,16 +279,16 @@ public class DeployUtilities
                 Element eWelcomeFile = doc.createElement("welcome-file");
                 Text txt = doc.createTextNode("Index.jsp");
                 eWelcomeFile.appendChild(txt);
-    
+
                 // Create welcome-file-list node
                 Element eWelcomeList = doc.createElement("welcome-file-list");
-                
+
                 // Add welcome-file node to welcome-file-list node
                 eWelcomeList.appendChild(eWelcomeFile);
-    
+
                 // Add the welcome-file-list to the document
                 doc.getDocumentElement().appendChild(eWelcomeList);
-    
+
             }
 
             // Persit DOM Docuemnt to disk
@@ -302,7 +302,7 @@ public class DeployUtilities
                   ("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd");
 
                 FileWriter fw = new FileWriter(webXml);
-                
+
                 XMLSerializer serial = new XMLSerializer(fw, format);
 
                 serial.asDOMSerializer();
@@ -310,23 +310,23 @@ public class DeployUtilities
                 fw.close();
 
                 System.out.println("Updated " + webXml + " saved.....");
-                                                                                
+
             }
         }
         catch(SAXException se)
         {
-            PortletApplicationException e = 
+            PortletApplicationException e =
                 new PortletApplicationException("SAX Exception while ading elements to the web.xml file.\n" + se.getMessage());
             throw e;
         }
         catch(Exception ex)
         {
-            PortletApplicationException e = 
-                new PortletApplicationException("Unhandled exception while ading elements to the web.xml file.\n" 
+            PortletApplicationException e =
+                new PortletApplicationException("Unhandled exception while ading elements to the web.xml file.\n"
                             + ex.getMessage());
             throw e;
         }
-            
+
 
     }
 
@@ -341,16 +341,16 @@ public class DeployUtilities
         if (dir.isDirectory())
         {
             String[] children = dir.list();
-            for (int i=0; i<children.length; i++) 
+            for (int i=0; i<children.length; i++)
             {
                 boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) 
+                if (!success)
                 {
                     return false;
                 }
             }
         }
-        
+
         // The directory is now empty so delete it
         return dir.delete();
     }

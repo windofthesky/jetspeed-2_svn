@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app id="jetspeed" version="1.0">
+
+  <portlet id="OneColumn">
+    <portlet-name>OneColumn</portlet-name>
+    <display-name>OneColumn Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>1</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>100%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>OneColumn</title>
+      <short-title>OneColumn</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="TwoColumns">
+    <portlet-name>TwoColumns</portlet-name>
+    <display-name>Two Columns Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>50%,50%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>TwoColumns</title>
+      <short-title>TwoColumns</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="TwoColumnsLeft">
+    <portlet-name>TwoColumnsLeft</portlet-name>
+    <display-name>Two Columns (75%,25%) Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>75%,25%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>TwoColumnsLeft</title>
+      <short-title>TwoColumnsLeft</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="TwoColumnsRight">
+    <portlet-name>TwoColumnsRight</portlet-name>
+    <display-name>Two Columns (25%,75%) Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>25%,75%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>TwoColumnsRight</title>
+      <short-title>TwoColumnsRight</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="ThreeColumns">
+    <portlet-name>ThreeColumns</portlet-name>
+    <display-name>Three Columns (33%;34%,33%) Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>3</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>33%;34%,33%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>ThreeColumns</title>
+      <short-title>ThreeColumns</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="ThreeColumnsCentral">
+    <portlet-name>ThreeColumnsCentral</portlet-name>
+    <display-name>Three Columns (25%;50%,25%) Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>3</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>25%,50%,25%</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>ThreeColumnsCentral</title>
+      <short-title>ThreeColumnsCentral</short-title>
+    </portlet-info>
+  </portlet>
+
+</portlet-app>
+

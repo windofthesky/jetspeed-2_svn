@@ -71,7 +71,7 @@ import java.util.Map.Entry;
  * This is the interface that defines the Lifecycle-related methods to control
  * Portlet Applications.
  *
- * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a> 
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
   * @version $Id$
  */
 
@@ -80,19 +80,19 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     /**
      * Command line utility to deploy a portlet application to an application server.
      * The command line has the following options:
-     * 
+     *
      * PortletApplicationManager
      * -DWebappDir={Webapps directory of application server}
      * -DWarFileName={Name of the WAR file to deploy}
-     * -Daction={deploy|undeploy|start|stop|reload}
+     * -Daction={deploy|register|undeploy|unregister|start|stop|reload}
      * -DPortletAppName= Name of the Portlet application
      * -DApplicationServer={Catalina}
      *
-     *Notes: The deploy action requires the WarFileName. If no ApplicationServer 
+     *Notes: The deploy action requires the WarFileName. If no ApplicationServer
      *       is defined it requires in additionthe WebappDir.
      *       All other actions require the PortletAppName. If the ApplicationServer
      *       is not defined it will use catalina as default.
-                                
+
      */
 
     public static void main(String args[])
@@ -101,7 +101,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         Engine engine = null;
         int i = 0;
 
-        // Read the command line 
+        // Read the command line
         String strWebAppDir = "";
         String strAction = "";
         String strWarFileName = "";
@@ -164,7 +164,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
         }
 
-        // Portlet Application Name and action are required by all functions. 
+        // Portlet Application Name and action are required by all functions.
         // Make sure that the values were defined from the command line.
         if (strPortletAppName.length() == 0 || strAction.length() == 0)
         {
@@ -228,35 +228,49 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 }
             }
         }
-        else
-            if (strAction.compareToIgnoreCase("undeploy") == 0)
+        else if (strAction.compareToIgnoreCase("register") == 0)
+        {
+            // Requires WebAppDir
+            if (strWebAppDir.length() == 0)
             {
-                // Application server can be null -- using Catalina as default
-                undeploy(strWebAppDir, strPortletAppName, strAppServer);
+                System.out.println(
+                    "\nRegister action requires the definition of the Web application directory.");
+                return;
             }
-            else
-                if (strAction.compareToIgnoreCase("start") == 0)
-                {
-                    // Application server can be null -- using Catalina as default
-                    start(strAppServer, strPortletAppName);
-                }
-                else
-                    if (strAction.compareToIgnoreCase("stop") == 0)
-                    {
-                        // Application server can be null -- using Catalina as default
-                        stop(strAppServer, strPortletAppName);
-                    }
-                    else
-                        if (strAction.compareToIgnoreCase("reload") == 0)
-                        {
-                            // Application server can be null -- using Catalina as default
-                            reload(strAppServer, strPortletAppName);
-                        }
-                        else
-                        {
-                            System.out.println("\nAction: " + strAction + " not recognized by the PortletApplicationManager.");
-                            helpScreen();
-                        }
+
+            register(strWebAppDir, strWarFileName, strPortletAppName);
+        }
+        else if (strAction.compareToIgnoreCase("unregister") == 0)
+        {
+            // Application server can be null -- using Catalina as default
+            unregister(strWebAppDir, strPortletAppName, strAppServer);
+        }
+        else if (strAction.compareToIgnoreCase("undeploy") == 0)
+        {
+            // Application server can be null -- using Catalina as default
+            undeploy(strWebAppDir, strPortletAppName, strAppServer);
+        }
+        else if (strAction.compareToIgnoreCase("start") == 0)
+        {
+            // Application server can be null -- using Catalina as default
+            start(strAppServer, strPortletAppName);
+        }
+        else if (strAction.compareToIgnoreCase("stop") == 0)
+        {
+            // Application server can be null -- using Catalina as default
+            stop(strAppServer, strPortletAppName);
+        }
+        else if (strAction.compareToIgnoreCase("reload") == 0)
+        {
+            // Application server can be null -- using Catalina as default
+            reload(strAppServer, strPortletAppName);
+        }
+        else
+        {
+            System.out.println("\nAction: " + strAction + " not recognized by the PortletApplicationManager.");
+            helpScreen();
+        }
+
         try
         {
             if (engine != null)
@@ -294,8 +308,59 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     // Implementaion of the API's
 
     /**
+     * Registers the already deployed WAR into the Portal registry
+     *
+     * @param webAppsDir The webapps directory inside the Application Server
+     * @param warFile The warFile containing the Portlet Application
+     * @param paName The Portlet Application name
+     * @throws PortletApplicationException
+     */
+
+    public static void register(String webAppsDir, String warFile, String strPortletAppName)
+    {
+        // Invoke FileSystemPAM
+        FileSystemPAM fs = new FileSystemPAM();
+        try
+        {
+            System.out.println("Calling FileSystemPAM...");
+
+            fs.deploy(webAppsDir, warFile, strPortletAppName, 2);
+        }
+        catch (PortletApplicationException e)
+        {
+            //e.printStackTrace(System.out);
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Unregisterd a deployed portlet application
+     *
+     * @param paName The Portlet Application name
+     * @throws PortletApplicationException
+     */
+
+    public static void unregister(String strWebAppDir, String paName, String appServer)
+    {
+        if (strWebAppDir.length() != 0)
+        {
+            // FileSystem undeploy
+            FileSystemPAM dc = new FileSystemPAM();
+            try
+            {
+                dc.unregister(strWebAppDir, paName);
+            }
+            catch (PortletApplicationException e)
+            {
+                e.printStackTrace(System.out);
+            }
+        }
+
+    }
+
+    /**
      * Deploys the specified war file to the webapps dirctory specified.
-     * 
+     *
      * @param webAppsDir The webapps directory inside the Application Server
      * @param warFile The warFile containing the Portlet Application
      * @param paName The Portlet Application name
@@ -322,7 +387,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     /**
      * Deploys the specified war file to the webapps directory on the Application Server.
      * The appServer parameter specifies a specific Application Server.
-     * 
+     *
      * @param warFile The warFile containing the Portlet Application
      * @param appServer The Application Server name receiving the Portlet Application.
      * @param paName The Portlet Application name
@@ -353,8 +418,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
     /**
      * Prepares the specified war file for deployment.
-     * 
-     * @param paName The Portlet Application name 
+     *
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
 
@@ -399,8 +464,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
     /**
     * Starts the specified Portlet Application on the Application Server
-    * 
-    * @param paName The Portlet Application name 
+    *
+    * @param paName The Portlet Application name
     * @throws PortletApplicationException
     */
 
@@ -429,8 +494,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
     /**
      * Stops a portlet application from running on the Application Server
-     * 
-     * @param paName The Portlet Application name 
+     *
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
 
@@ -459,8 +524,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
     /**
      * Reloads a portlet application.
-     * 
-     * @param paName The Portlet Application name 
+     *
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
 

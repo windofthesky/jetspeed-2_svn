@@ -67,7 +67,7 @@ import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * This request wrappers the servlet request and is used 
+ * This request wrappers the servlet request and is used
  * within the container to communicate to the invoked servlet.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -88,7 +88,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
         this.portletWindow = window;
         // control = new PortalControlParameter(new PortalURLImpl(servletRequest));
-		control = new PortalControlParameter(Jetspeed.getCurrentRequestContext().getRequestedPortalURL());
+        control = new PortalControlParameter(Jetspeed.getCurrentRequestContext().getRequestedPortalURL());
 
     }
 
@@ -97,7 +97,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return (HttpServletRequest) super.getRequest();
     }
 
-    //	HttpServletRequestWrapper overlay
+    //  HttpServletRequestWrapper overlay
 
     public String getContentType()
     {
@@ -109,7 +109,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return contentType;
     }
 
-    //	ServletRequestWrapper overlay
+    //  ServletRequestWrapper overlay
 
     public String getParameter(String name)
     {
@@ -136,7 +136,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
             }
 
-            //get request params      
+            //get request params
             String pid = control.getPIDValue();
             String wid = portletWindow.getId().toString();
             if (pid.equals(wid))

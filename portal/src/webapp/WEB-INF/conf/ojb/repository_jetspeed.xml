@@ -1,28 +1,28 @@
 <!--
    - P O R T L E T    A P P L I C A T I O N
--->	
+-->
 
 <!--
   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl"
+      class="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl"
    >
-     <extent-class class-ref="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor" />  
+     <extent-class class-ref="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor" />
   </class-descriptor>
 -->
 
- 
+
   <class-descriptor
-   	  class="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
-   	  table="PORTLET_APPLICATION"
+      class="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
+      table="PORTLET_APPLICATION"
    >
-     
+
       <field-descriptor
          name="id"
          column="APPLICATION_ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
-         
+
       />
       <!--conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
       <field-descriptor
@@ -45,48 +45,48 @@
          name="description"
          column="DESCRIPTION"
          jdbc-type="VARCHAR"
-      /> 
-             
+      />
+
       <field-descriptor
          name="webApplicationId"
          column="WEB_APP_ID"
          jdbc-type="INTEGER"
 
-       
-      />
-     
-      <reference-descriptor 
-      	  name="webApplication" 
-      	  class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl" 
-      	  auto-delete="true"
 
-      	  >
+      />
+
+      <reference-descriptor
+          name="webApplication"
+          class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl"
+          auto-delete="true"
+
+          >
          <foreignkey field-ref="webApplicationId"/>
       </reference-descriptor>
-      
+
       <collection-descriptor
          name="portlets"
          auto-delete="true"
-    
+
          element-class-ref="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
          collection-class="org.apache.jetspeed.om.collection.ManageablePortletDefinitionListImpl"
       >
          <inverse-foreignkey field-ref="appId"/>
       </collection-descriptor>
-       
-   </class-descriptor>
-   
 
-   
+   </class-descriptor>
+
+
+
 <!--
- 	- W E B    A P P L I C A T I O N 
+  - W E B    A P P L I C A T I O N
 -->
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl"
-   	  table="WEB_APPLICATION"
+      class="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl"
+      table="WEB_APPLICATION"
    >
-   
+
       <field-descriptor
          name="id"
          column="ID"
@@ -95,8 +95,8 @@
          autoincrement="true"
 
       />
-     
- 
+
+
       <field-descriptor
          name="contextRoot"
          column="CONTEXT_ROOT"
@@ -107,7 +107,7 @@
          element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -117,13 +117,13 @@
           />
         </query-customizer>
       </collection-descriptor>
-      
+
       <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.DisplayNameImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -133,46 +133,46 @@
           />
         </query-customizer>
       </collection-descriptor>
-      
-     
+
+
    </class-descriptor>
 
 <!--
    -  P O R T L E T   D E F I N I T I O N
  -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
+      class="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" />         
-   
+      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" />
+
    </class-descriptor>
- 
- 
- 
+
+
+
    <class-descriptor
-   	  class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
-   	  table="PORTLET_DEFINITION"
+      class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
+      table="PORTLET_DEFINITION"
 
    >
-   
-   
+
+
       <field-descriptor
          name="id"
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
-       
+
       />
 
       <field-descriptor
          name="portletIdentifier"
          column="PORTLET_IDENTIFIER"
-         jdbc-type="VARCHAR"       
+         jdbc-type="VARCHAR"
       />
-      
-    
+
+
       <field-descriptor
          name="name"
          column="NAME"
@@ -183,34 +183,34 @@
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="appId"
          column="APPLICATION_ID"
          jdbc-type="INTEGER"
-         
+
       />
       <!-- conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
-      
+
        <field-descriptor
          name="expirationCache"
          column="EXPIRATION_CACHE"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="preferenceValidatorClassname"
          column="PREFERENCE_VALIDATOR"
          jdbc-type="VARCHAR"
       />
-      
-      
 
 
-      <reference-descriptor 
-      	name="app" 
-      	class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl" 
-   	 >       	        
+
+
+      <reference-descriptor
+        name="app"
+        class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
+     >
          <foreignkey field-ref="appId"/>
       </reference-descriptor>
 
@@ -224,23 +224,23 @@
          <inverse-foreignkey field-ref="portletId"/>
 
       </collection-descriptor>
-      
+
       <collection-descriptor
          name="contentTypes"
          element-class-ref="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
          collection-class="org.apache.jetspeed.om.collection.ManageableContentTypeSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="portletId"/>
       </collection-descriptor>
-      
 
-      	<collection-descriptor
+
+        <collection-descriptor
          name="parameterSet"
          element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePortletParameterSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
@@ -249,25 +249,25 @@
          element-class-ref="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"
-       >         
+       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
-      
+
        <collection-descriptor
          name="securityRoleRefSet"
          element-class-ref="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableSecurityRoleRefSetImpl"
          auto-delete="true"
-       >         
+       >
          <inverse-foreignkey field-ref="portletId"/>
       </collection-descriptor>
-      
+
      <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -277,13 +277,13 @@
           />
         </query-customizer>
       </collection-descriptor>
-      
+
       <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.DisplayNameImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -293,35 +293,35 @@
           />
         </query-customizer>
       </collection-descriptor>
-       
+
    </class-descriptor>
-   
 
 
-<!-- 
-   - L A N G U A G E 
+
+<!--
+   - L A N G U A G E
 -->
    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.LanguageImpl"
-   	  table="LANGUAGE"
+      class="org.apache.jetspeed.om.impl.LanguageImpl"
+      table="LANGUAGE"
    >
-   
+
       <field-descriptor
          name="id"
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
-      
+
       <field-descriptor
          name="portletId"
          column="PORTLET_ID"
          jdbc-type="INTEGER"
-          
+
       />
-      
-      
+
+
       <field-descriptor
          name="title"
          column="TITLE"
@@ -332,45 +332,45 @@
          column="SHORT_TITLE"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="keywords"
          column="KEYWORDS"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
       />
-      
+
       <field-descriptor
          name="locale"
          column="LOCALE_STRING"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />      
+      />
 
    </class-descriptor>
 
 <!--
-   - C O N T E N T    T Y P E 
+   - C O N T E N T    T Y P E
  -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
+      class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />              
+      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />
    </class-descriptor>
- 
- 
- 
+
+
+
    <class-descriptor
-   	  class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-   	  table="PORTLET_CONTENT_TYPE"
-   >   
+      class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
+      table="PORTLET_CONTENT_TYPE"
+   >
      <field-descriptor
          name="contentTypeId"
          column="CONTENT_TYPE_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
       <field-descriptor
          name="portletId"
@@ -388,9 +388,9 @@
          column="MODES"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.CSVtoPortletModeFieldConversion"
-      />  
+      />
    </class-descriptor>
-   
+
 
 
 <!--
@@ -398,72 +398,72 @@
  -->
  <!--
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.ParameterImpl"
-   	  table="PARAMETER"
+      class="org.apache.jetspeed.om.common.ParameterImpl"
+      table="PARAMETER"
    >
    <extent-class class-ref="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl" />
    <extent-class class-ref="org.apache.jetspeed.om.common.extended.ServletInitParameterImpl" />
-   
-    
+
+
 
    </class-descriptor>
    -->
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.ServletInitParameterImpl"
-   	  table="PARAMETER"
+      class="org.apache.jetspeed.om.impl.ServletInitParameterImpl"
+      table="PARAMETER"
    >
-   
+
    <field-descriptor
          name="parentId"
          column="PARENT_ID"
          jdbc-type="INTEGER"
 
       />
-      
+
         <field-descriptor
          name="parameterId"
          column="PARAMETER_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
-      
+
       <field-descriptor
          name="parentId"
          column="PARENT_ID"
          jdbc-type="INTEGER"
 
       />
-      
+
       <field-descriptor
          name="name"
          column="NAME"
          jdbc-type="VARCHAR"
       />
-   
+
       <field-descriptor
          name="value"
          column="VALUE"
-         jdbc-type="VARCHAR"         
-      />       
-         
+         jdbc-type="VARCHAR"
+      />
 
-   
+
+
    <field-descriptor
          name="ojbConcreteClass"
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
-      
-      
-      
-      
+
+
+
+
     </class-descriptor>
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
-   	  table="PARAMETER"
+      class="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
+      table="PARAMETER"
    >
       <field-descriptor
          name="parentId"
@@ -471,22 +471,22 @@
          jdbc-type="INTEGER"
 
       />
-      
+
         <field-descriptor
          name="parameterId"
          column="PARAMETER_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
-      
+
       <field-descriptor
          name="parentId"
          column="PARENT_ID"
          jdbc-type="INTEGER"
 
       />
-      
+
       <field-descriptor
          name="name"
          column="NAME"
@@ -496,22 +496,22 @@
       <field-descriptor
          name="value"
          column="VALUE"
-         jdbc-type="VARCHAR"         
-      />       
-         
-   
+         jdbc-type="VARCHAR"
+      />
+
+
    <field-descriptor
          name="ojbConcreteClass"
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
-      
+
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -520,21 +520,21 @@
             attribute-value="parameter"
           />
         </query-customizer>
-      </collection-descriptor>      
-   
+      </collection-descriptor>
+
     </class-descriptor>
 
 <!--
    - P R E F E R E N C E S
  -->
 
- 
+
     <!-- These preferences are the defaults for a PortletDefinition -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
-   	  table="PORTLET_PREFERENCE"
+      class="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
+      table="PORTLET_PREFERENCE"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
@@ -542,14 +542,14 @@
          primarykey="true"
          autoincrement="true"
 
-         
+
       />
       <field-descriptor
          name="ojbConcreteClass"
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
-            
+
       <field-descriptor
          name="parentId"
          column="PARENT_ID"
@@ -557,73 +557,7 @@
          access="anonymous"
 
       />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-       <field-descriptor
-         name="readOnly"
-         column="READ_ONLY"
-         jdbc-type="BIT"
-      />    
-      
-      <collection-descriptor
-         name="values"
-         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-         auto-delete="true"
-      >         
-         <inverse-foreignkey field-ref="preferenceId"/>
-        
-      </collection-descriptor>
-      
-      <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
-         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
-         auto-delete="true"
-      >         
-         <inverse-foreignkey field-ref="objectId"/>
-         <query-customizer
-             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
-        <attribute
-            attribute-name="type"
-            attribute-value="preference"
-          />
-        </query-customizer>
-      </collection-descriptor>  
-    </class-descriptor>
-   
-   <!-- These preference map directly to a Portlet Entity --> 
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
-   	  table="PORTLET_PREFERENCE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
-         
-      />
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-            
-      <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="INTEGER"
-         access="anonymous"
 
-      />
-      
       <field-descriptor
          name="name"
          column="NAME"
@@ -634,23 +568,23 @@
          name="readOnly"
          column="READ_ONLY"
          jdbc-type="BIT"
-      />    
-      
+      />
+
       <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="preferenceId"/>
-        
+
       </collection-descriptor>
-      
+
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -659,53 +593,119 @@
             attribute-value="preference"
           />
         </query-customizer>
-      </collection-descriptor>  
+      </collection-descriptor>
     </class-descriptor>
-    
- 
-        
+
+   <!-- These preference map directly to a Portlet Entity -->
    <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-   	  table="PREFERENCE_VALUE"
+      class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
+      table="PORTLET_PREFERENCE"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"  
-         access="anonymous"       
+         autoincrement="true"
+
       />
-      
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="parentId"
+         column="PARENT_ID"
+         jdbc-type="INTEGER"
+         access="anonymous"
+
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+       <field-descriptor
+         name="readOnly"
+         column="READ_ONLY"
+         jdbc-type="BIT"
+      />
+
+      <collection-descriptor
+         name="values"
+         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
+         auto-delete="true"
+      >
+         <inverse-foreignkey field-ref="preferenceId"/>
+
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
+         auto-delete="true"
+      >
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="preference"
+          />
+        </query-customizer>
+      </collection-descriptor>
+    </class-descriptor>
+
+
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
+      table="PREFERENCE_VALUE"
+   >
+
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
       <field-descriptor
          name="preferenceId"
          column="PREFERENCE_ID"
          jdbc-type="INTEGER"
-         access="anonymous"         
+         access="anonymous"
       />
-      
-    
-      
+
+
+
       <field-descriptor
          name="value"
          column="VALUE"
          jdbc-type="VARCHAR"
-      />  
-  
-    </class-descriptor>
-    
+      />
 
-    
-    
+    </class-descriptor>
+
+
+
+
 <!--
    - L O C A L I Z E D   D E S C R I P I T I O N
  -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.DescriptionImpl"
-   	  table="LOCALIZED_DESCRIPTION"
+      class="org.apache.jetspeed.om.impl.DescriptionImpl"
+      table="LOCALIZED_DESCRIPTION"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
@@ -713,275 +713,275 @@
          primarykey="true"
          autoincrement="true"
          access="anonymous"
-             
+
       />
-      
+
       <field-descriptor
          name="objectId"
          column="OBJECT_ID"
          jdbc-type="INTEGER"
          access="anonymous"
-  
+
           />
-        
-      
+
+
       <field-descriptor
          name="type"
          column="TYPE"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="description"
          column="DESCRIPTION"
          jdbc-type="VARCHAR"
-      />   
-      
+      />
+
       <field-descriptor
          name="locale"
          column="LOCALE_STRING"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
+      />
+
+
     </class-descriptor>
-    
+
   <!--
    - L O C A L I Z E D   D I S P L A Y   N A M E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.DisplayNameImpl"
-   	  table="LOCALIZED_DISPLAY_NAME"
+      class="org.apache.jetspeed.om.impl.DisplayNameImpl"
+      table="LOCALIZED_DISPLAY_NAME"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
-         access="anonymous"              
+         access="anonymous"
       />
-      
+
       <field-descriptor
          name="objectId"
          column="OBJECT_ID"
          jdbc-type="INTEGER"
-         access="anonymous"      
+         access="anonymous"
       />
-      
+
       <field-descriptor
          name="type"
          column="TYPE"
          jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="displayName"
          column="DISPLAY_NAME"
          jdbc-type="VARCHAR"
-      />   
-      
+      />
+
       <field-descriptor
          name="locale"
          column="LOCALE_STRING"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
-      />          
-      
-  
+      />
+
+
     </class-descriptor>
-    
-    
+
+
 <!--
    - C A P A B I L I T Y  M A P P I N G
--->	
+-->
 
 <!--
    - M E D I A T Y P E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.MediaTypeEntryImpl"
-   	  table="MEDIA_TYPE"
+      class="org.apache.jetspeed.om.registry.impl.MediaTypeEntryImpl"
+      table="MEDIA_TYPE"
    >
-      
+
         <field-descriptor
          name="MediatypeId"
          column="MEDIATYPE_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"            
+         autoincrement="true"
       />
-      
+
       <field-descriptor
          name="Name"
          column="NAME"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-           
+
       <field-descriptor
          name="CharacterSet"
          column="CHARACTER_SET"
          jdbc-type="VARCHAR"
-      />   
-      
+      />
+
       <field-descriptor
          name="Title"
          column="TITLE"
          jdbc-type="VARCHAR"
-      />  
-      
+      />
+
       <field-descriptor
          name="Description"
          column="DESCRIPTION"
          jdbc-type="VARCHAR"
-      /> 
-      
+      />
+
       <collection-descriptor
           name="Capabilities"
           element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
- 
+
           indirection-table="MEDIATYPE_TO_CAPABILITY"
        >
           <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
           <fk-pointing-to-element-class column="CAPABILITY_ID"/>
        </collection-descriptor>
-       
+
        <collection-descriptor
           name="Mimetypes"
           element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
- 
+
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
           <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
           <fk-pointing-to-element-class column="MIMETYPE_ID"/>
        </collection-descriptor>
-      
+
       </class-descriptor>
-             
+
   <!--
    - C L I E N T
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.ClientEntryImpl"
-   	  table="CLIENT"
+      class="org.apache.jetspeed.om.registry.impl.ClientEntryImpl"
+      table="CLIENT"
    >
         <field-descriptor
          name="ClientId"
          column="CLIENT_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
        />
-      
+
         <field-descriptor
          name="Name"
          column="NAME"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="Useragentpattern"
          column="USER_AGENT_PATTERN"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="Manufacturer"
          column="MANUFACTURER"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="Model"
          column="MODEL"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
       <field-descriptor
          name="Version"
          column="VERSION"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
       <collection-descriptor
           name="Capabilities"
           element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
- 
+
           indirection-table="MEDIATYPE_TO_CAPABILITY"
        >
           <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
           <fk-pointing-to-element-class column="CAPABILITY_ID"/>
        </collection-descriptor>
-       
+
        <collection-descriptor
           name="Mimetypes"
           element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
- 
+
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
           <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
           <fk-pointing-to-element-class column="MIMETYPE_ID"/>
        </collection-descriptor>
-      
+
     </class-descriptor>
 
 <!--
-   - M I M E T Y P E 
+   - M I M E T Y P E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
-   	  table="MIMETYPE"
+      class="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+      table="MIMETYPE"
    >
         <field-descriptor
          name="MimetypeId"
          column="MIMETYPE_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
-      
-      
+
+
       <field-descriptor
          name="name"
          column="NAME"
          jdbc-type="VARCHAR"
-      />  
+      />
     </class-descriptor>
-    
+
 <!--
    - C A P A B I L I T Y
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
-   	  table="CAPABILITY"
+      class="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+      table="CAPABILITY"
    >
         <field-descriptor
          name="CapabilityId"
          column="CAPABILITY_ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
       />
-      
+
        <field-descriptor
          name="Name"
          column="CAPABILITY"
-         jdbc-type="VARCHAR"     
+         jdbc-type="VARCHAR"
       />
-      
+
     </class-descriptor>
-    
-    
- <!-- 
+
+
+ <!--
    - P O R T L E T  E N T I T Y
  -->
      <class-descriptor
-   	  class="org.apache.jetspeed.om.entity.impl.PortletEntityImpl"
-   	  table="PORTLET_ENTITY"
+      class="org.apache.jetspeed.om.entity.impl.PortletEntityImpl"
+      table="PORTLET_ENTITY"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
@@ -989,9 +989,9 @@
          primarykey="true"
          autoincrement="true"
          access="anonymous"
-         
+
       />
-      
+
       <field-descriptor
          name="portletId"
          column="PORTLET_DEFINITION_ID"
@@ -999,41 +999,41 @@
          access="anonymous"
 
       />
-      
+
       <field-descriptor
          name="oid"
          column="GUID"
          jdbc-type="VARCHAR"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
       />
-      
-     <reference-descriptor 
-      	name="portletDefinition" 
-      	class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" 
-   	 >       	        
+
+     <reference-descriptor
+        name="portletDefinition"
+        class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
+     >
          <foreignkey field-ref="portletId"/>
       </reference-descriptor>
 
       <collection-descriptor
-         name="prefSet"
+         name="originalPreferences"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"
-       >         
+       >
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
-  
+
   </class-descriptor>
-  
-  <!-- 
+
+  <!--
    - S E C U R T I T Y   R O L E   R E F
  -->
      <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
-   	  table="SECURITY_ROLE_REFERENCE"
+      class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
+      table="SECURITY_ROLE_REFERENCE"
    >
-      
+
         <field-descriptor
          name="id"
          column="ID"
@@ -1041,9 +1041,9 @@
          primarykey="true"
          autoincrement="true"
          access="anonymous"
-         
+
       />
-      
+
       <field-descriptor
          name="portletId"
          column="PORTLET_DEFINITION_ID"
@@ -1051,25 +1051,25 @@
          access="anonymous"
 
       />
-      
+
       <field-descriptor
          name="name"
          column="ROLE_NAME"
-         jdbc-type="VARCHAR"         
-      />   
-      
+         jdbc-type="VARCHAR"
+      />
+
        <field-descriptor
          name="link"
          column="ROLE_LINK"
-         jdbc-type="VARCHAR"         
+         jdbc-type="VARCHAR"
       />
-      
+
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
-      >         
+      >
          <inverse-foreignkey field-ref="objectId"/>
          <query-customizer
              class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
@@ -1078,11 +1078,10 @@
             attribute-value="security role ref"
           />
         </query-customizer>
-      </collection-descriptor>     
+      </collection-descriptor>
 
-      
 
-  
+
+
   </class-descriptor>
-   
-  
+
