@@ -60,13 +60,10 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
      */
     public String rewriteUrl(String url, String tag, String attribute)
     {
-        /*
-         * TODO: no default. Use default Jetspeed JIRA to make sure that the
-         * method was called
-         */
-        String modifiedURL = "http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492";
-        //	Check if it's a relative or full URL
-        if (url.startsWith("/") || url.indexOf("http") == -1)
+         String modifiedURL = url;
+        
+        // Any relative URL needs to be converted to a full URL
+        if (url.startsWith("/") ) 
         {
             try
             {
@@ -74,39 +71,30 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter
                 {
                     URL full = new URL(new URL(this.getBaseUrl()), url);
                     modifiedURL = full.toString();
-                }
-                else
-                {
-                    modifiedURL = url; // leave as is
-                }
+  	            }
+	            else
+	            {
+	                modifiedURL = url; // leave as is
+	            }
             }
             catch (Exception e)
             {
                 modifiedURL = url;
             }
         }
-        else
+         
+        // Only add PortletActions to URL's which are anchors (tag=a) and HREF's (attribute= HREF) -- ignore all others links
+        if ( tag.compareToIgnoreCase("A") == 0 && attribute.compareToIgnoreCase("HREF") == 0)
         {
-            // Apply action URL's not to images
-            if (url.indexOf(".gif") == -1 && url.indexOf(".jpg") == -1)
-            {
+                // Regular URL just add a portlet action
                 if (this.actionURL != null)
                 {
                     // create Action URL
-                    actionURL.setParameter(ACTION_PARAMETER_URL, url);
-
+                    actionURL.setParameter(ACTION_PARAMETER_URL, modifiedURL);
                     modifiedURL = actionURL.toString();
                 }
-                else
-                {
-                    modifiedURL = url;
-                }
-            }
-            else
-            {
-                modifiedURL = url;
-            }
         }
+        
         return modifiedURL;
     }
 
