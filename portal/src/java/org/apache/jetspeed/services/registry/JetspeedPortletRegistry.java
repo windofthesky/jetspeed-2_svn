@@ -75,7 +75,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * <code>RegistryService</code></P>
  *
  * @see org.apache.jetspeed.services.registry.RegistryService
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
 public class JetspeedPortletRegistry

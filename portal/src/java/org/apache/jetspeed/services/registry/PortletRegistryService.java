@@ -74,7 +74,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * <P>This service is a facade for all registry related operations</P>
  *
  * @see org.apache.jetspeed.om.registry.Registry
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
 public interface PortletRegistryService extends Service
