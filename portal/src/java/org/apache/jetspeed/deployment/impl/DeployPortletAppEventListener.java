@@ -20,8 +20,8 @@ import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
-import org.apache.jetspeed.tools.pamanager.Deployment;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
+import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -41,11 +41,11 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
     protected static final Log log = LogFactory.getLog("deployment");
     private String webAppDir;
-    private Deployment pam;
+    private  PortletApplicationManagement pam;
     private Map appNameToFile;
 
 
-    public DeployPortletAppEventListener(String webAppDir, Deployment pam)
+    public DeployPortletAppEventListener(String webAppDir, PortletApplicationManagement pam)
     {
         this.webAppDir = webAppDir;
         this.pam = pam;
@@ -60,9 +60,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
         {
             try
-            {
-
+            {                
                 FSObjectHandler handler = (FSObjectHandler) event.getHandler();
+                boolean isLocal = handler.getFile().getName().startsWith("jetspeed-");
                 InputStream portletXmlStream = handler.getConfiguration("WEB-INF/portlet.xml");
                 if (portletXmlStream == null)
                 {
@@ -90,7 +90,16 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
                     log.info("Preparing to deploy portlet app \"" + id + "\"");
                
-                    pam.deploy(webAppDir, handler.getPath(), id);
+                    if(isLocal)
+                    {
+                         log.info(handler.getFile().getName()+" will be registered as a local portlet applicaiton.");
+                         pam.register(id, id, handler.getPath());
+                    }
+                    else
+                    {
+                         log.info("Deploying portlet applicaion WAR "+handler.getFile().getName());
+                         pam.deploy(webAppDir, handler.getPath(), id);
+                    }
                
 					
 					appNameToFile.put(handler.getFile().getName(), id);
@@ -112,6 +121,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             try
             {
                 FSObjectHandler handler = (FSObjectHandler) event.getHandler();
+                boolean isLocal = handler.getFile().getName().startsWith("jetspeed-");
                 File fileThatWasRemoved = handler.getFile();
                 String fileName = fileThatWasRemoved.getName();
                 paName = (String) appNameToFile.get(fileName);
@@ -130,8 +140,18 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     PortletCache.removeAll(pa);
                 }
                 
-                log.info("Preparing to undeploy portlet application \""+paName+"\"");
-                pam.undeploy(webAppDir, paName);
+                
+                if(isLocal)
+                {
+                    log.info("Preparing to unregister portlet application \""+paName+"\"");
+                    pam.unregister(paName, paName);                    
+                }
+                else
+                {
+                    log.info("Preparing to undeploy portlet application \""+paName+"\"");
+                    pam.undeploy(webAppDir, paName);
+                }
+                
                 log.info("Portlet application \""+paName+"\""+" was successfuly undeployed.");
             }
             catch (Exception e)

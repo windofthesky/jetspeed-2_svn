@@ -116,6 +116,10 @@ public class TestSimpleDeployment extends JetspeedTest
         assertTrue(decoratorVm.getCanonicalPath() + " was not created!", decoratorVm.exists());
 		PortletRegistryComponent portletRegistry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
         assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
+        assertTrue(TEST_PORTLET_APP_NAME+" directory was not created, app not deployed.", new File(webAppsDir+"/"+TEST_PORTLET_APP_NAME).exists());
+        assertNotNull("jetspeed was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier("jetspeed"));
+        assertFalse("local app, jetspeed, got deployed when it should have only been registered.", new File(webAppsDir+"/jetspeed").exists());
+        
 
     }
 
@@ -161,6 +165,7 @@ public class TestSimpleDeployment extends JetspeedTest
 		try
         {
             pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);
+            pam.unregister(webAppsDir, "jetspeed");
         }
         catch (PortletApplicationException e)
         {            
