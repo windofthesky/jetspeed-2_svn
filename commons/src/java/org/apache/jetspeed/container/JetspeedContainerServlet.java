@@ -216,8 +216,8 @@ public class JetspeedContainerServlet extends HttpServlet
             }
             
             PortletDefinition portletDefinition = JetspeedPortletFactoryProxy.getCurrentPortletDefinition();                        
-            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
             portletName = portletDefinition.getName();
+            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
@@ -236,7 +236,6 @@ public class JetspeedContainerServlet extends HttpServlet
 
             // if we get this far we are home free
             return;
-
         }
         catch (Throwable t)
         {
@@ -249,30 +248,41 @@ public class JetspeedContainerServlet extends HttpServlet
                 {
                     errorTemplate = "/WEB-INF/templates/generic/html/error.vm";
                 }
-                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);
-                request.setAttribute("e", t);
-                StringWriter stackTrace = new StringWriter();
-                t.printStackTrace(new PrintWriter(stackTrace));
-                request.setAttribute("stacktrace", stackTrace.toString());
-                dispatcher.include(request, response);
-
+                if (null != context.getResource(errorTemplate))
+                {
+                    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);                
+                    request.setAttribute("e", t);
+                    StringWriter stackTrace = new StringWriter();
+                    t.printStackTrace(new PrintWriter(stackTrace));
+                    request.setAttribute("stacktrace", stackTrace.toString());
+                    dispatcher.include(request, response);
+                }
+                else
+                {
+                    displayPortletNotAvailableMessage(t, response, portletName);
+                }
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
-                context.log(JCS + "Error rendering JetspeedContainerServlet error page: " + e.toString(), e);                
-                PrintWriter directError = new PrintWriter(response.getWriter());
-                directError.write("Error Rendering portlet: " + portletName + ": " + t.toString() + "\n\n");
-                t.printStackTrace(directError);
-                directError.close();
+                displayPortletNotAvailableMessage(t, response, portletName);                
             }
             finally
             {
                 t.printStackTrace();
             }
         }
-
     }
 
+    private void displayPortletNotAvailableMessage(Throwable t, HttpServletResponse response, String portletName)
+    throws IOException
+    {
+        getServletContext().log(JCS + "Error rendering JetspeedContainerServlet error page: " + t.toString(), t);                
+        PrintWriter directError = new PrintWriter(response.getWriter());
+        directError.write("Portlet is Not Available: " + portletName + "<br/>Reason: " + t.getMessage());
+        //t.printStackTrace(directError); 
+        directError.close();        
+    }
+    
     /**
      * In this application doGet and doPost are the same thing.
      *
