@@ -20,36 +20,18 @@ limitations under the License.
   <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
-  <id>portals-bridges-myfaces</id>
-  <name>Apache Portals My Faces Bridge</name>
+  <id>portals-bridges-velocity</id>
+  <name>Apache Portals Velocity Bridge</name>
   <currentVersion>0.1</currentVersion>
-  <package>org.apache.portals.bridges.myfaces</package>
+  <package>org.apache.portals.bridges.velocity</package>
   <description>
-    Apache Portals My Faces Bridge
+    Apache Portals Velocity Bridge
   </description>
-  <shortDescription>Apache Portals MyFaces Bridge</shortDescription>
+  <shortDescription>Apache Portals Velocity Bridge</shortDescription>
   <repository>
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/myfaces</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/myfaces/</url>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/velocity</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/velocity/</url>
   </repository>
-  <developers>
-    <developer>
-      <name>David Le Strat</name>
-      <id>dlestrat</id>
-      <email>dlestrat@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>David Sean Taylor</name>
-      <id>taylor</id>
-      <email>taylor@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
   <dependencies>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -66,31 +48,31 @@ limitations under the License.
       <artifactId>servletapi</artifactId>
       <version>2.3</version>
     </dependency>
+    <dependency>
+      <id>velocity</id>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <id>velocity-tools:velocity-tools-view</id>
+      <version>1.1-beta1</version>
+      <url>http://jakarta.apache.org/velocity</url>
+    </dependency>
 
     <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-jsf-api</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle>true</war.bundle>
+        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
     <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
+      <id>pluto</id>
+      <groupId>pluto</groupId>
+      <version>1.0.1-rc1</version>
       <properties>
-        <war.bundle>true</war.bundle>
+        <war.bundle>false</war.bundle>
       </properties>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces-components</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+     </dependency>
 
     <dependency>
       <groupId>portals-bridges</groupId>
