@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.page;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.ChildNode;
 
 /**
  * This interface represents a complete page document used by Jetspeed
@@ -23,7 +24,7 @@ import org.apache.jetspeed.om.common.GenericMetadata;
  *
  * @version $Id$
  */
-public interface Page extends BaseElement, java.io.Serializable, Cloneable
+public interface Page extends BaseElement, java.io.Serializable, Cloneable, ChildNode
 {
 	public GenericMetadata getMetadata();
 	

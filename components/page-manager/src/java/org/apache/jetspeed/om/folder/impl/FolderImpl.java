@@ -15,31 +15,83 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeSet;
+import java.io.File;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderSet;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSet;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.impl.PageSetImpl;
 
 /**
  * FolderImpl
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
  * @version $Id$
  */
-public class FolderImpl implements Folder {
-    
+public class FolderImpl implements Folder
+{
+
     private int id;
     private String name;
     private String defaultPage;
     private String defaultTheme;
-    private Collection folders=new HashSet();
-    private Collection pages=new TreeSet(new FolderComparator());
+    private FolderSet folders;
+    private PageSet pages;
+    private String acl;
+    private Folder parent;
+    private File directory;
+    private PageManager pageManager;
+
     //private GenericMetadata metadata;
 
-    /* (non-Javadoc)
+    public FolderImpl( File directory, String name, PageManager pageManager )
+    {
+
+        this.directory = directory;
+        this.name = name;
+        this.pageManager = pageManager;
+    }
+
+    /**
+     * @return Returns the directory.
+     */
+    public File getDirectory()
+    {
+        return directory;
+    }
+
+    /**
+     * @return Returns the parent.
+     */
+    public Folder getParent()
+    {
+        if(parent == null)
+        {
+            int lastSlash = name.lastIndexOf('/');
+            if(lastSlash != -1)
+            {
+                parent = pageManager.getFolder(name.substring(0, lastSlash));
+            }            
+        }
+        
+        return parent;
+    }
+
+    /**
+     * @param parent
+     *            The parent to set.
+     */
+    public void setParent( Folder parent )
+    {
+        this.parent = parent;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getName()
      */
     public String getName()
@@ -47,15 +99,36 @@ public class FolderImpl implements Folder {
         return name;
     }
 
-    /* (non-Javadoc)
+    /**
+     * @return Returns the acl.
+     */
+    public String getAcl()
+    {
+        return acl;
+    }
+
+    /**
+     * @param acl
+     *            The acl to set.
+     */
+    public void setAcl( String acl )
+    {
+        this.acl = acl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#setName(java.lang.String)
      */
-    public void setName(String name)
+    public void setName( String name )
     {
         this.name = name;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
      */
     public String getDefaultPage()
@@ -63,88 +136,108 @@ public class FolderImpl implements Folder {
         return defaultPage;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#setDefaultPage()
      */
-    public void setDefaultPage(String defaultPage)
+    public void setDefaultPage( String defaultPage )
     {
         this.defaultPage = defaultPage;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getDefaultTheme()
      */
-    public String getDefaultTheme() {
+    public String getDefaultTheme()
+    {
         return defaultTheme;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#setDefaultTheme()
      */
-    public void setDefaultTheme(String defaultTheme)
+    public void setDefaultTheme( String defaultTheme )
     {
         this.defaultTheme = defaultTheme;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getFolders()
      */
-    public Collection getFolders()
+    public FolderSet getFolders()
     {
+        if (folders == null)
+        {
+            folders = new FolderSetImpl(this);
+            File[] children = getDirectory().listFiles();
+            for (int i = 0; i < children.length; i++)
+            {
+                if (children[i].isDirectory())
+                {
+                    String folderName = name + "/" + children[i].getName();
+
+                    folders.add(pageManager.getFolder(folderName));
+                }
+            }
+        }
+
         return folders;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#setFolders(java.util.Collection)
      */
-    public void setFolders(Collection folders)
+    public void setFolders( FolderSet folders )
     {
-        this.folders = folders;        
+        this.folders = folders;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getPages()
      */
-    public Collection getPages()
+    public PageSet getPages()
     {
-        return pages;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.folder.Folder#setPages(java.util.Collection)
-     */
-    public void setPages(Collection pages)
-    {
-        this.pages = pages;
-    }
-    
-    class FolderComparator implements Comparator
-    {
-
-        /**
-         * <p>
-         * compare
-         * </p>
-         *
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         * @param o1
-         * @param o2
-         * @return
-         */
-        public int compare( Object o1, Object o2 )
+        if (pages == null)
         {
-            if(o1 != null || o2 != null)
+            pages = new PageSetImpl(this);
+            File[] children = getDirectory().listFiles();
+            for (int i = 0; i < children.length; i++)
             {
-                Folder f1 = (Folder) o1;
-                Folder f2 = (Folder) o2;
-                return f1.getName().compareTo(f2.getName());
-            }
-            else
-            {
-                return 1;
+                if (children[i].isFile())
+                {
+                    pages.add(pageManager.getPage(name + "/" + children[i].getName()));
+                }
+
             }
         }
-        
+
+        return pages;
+    }
+    
+    public Page getPage(String name)
+    {
+        return pages.get(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#setPages(java.util.Collection)
+     */
+    public void setPages( PageSet pages )
+    {
+        this.pages = pages;
     }
 
 }

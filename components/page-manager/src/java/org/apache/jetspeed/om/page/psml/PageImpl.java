@@ -16,14 +16,15 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Fragment;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Stack;
 import java.util.Iterator;
+import java.util.Stack;
+
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 
 /**
  * @version $Id$
@@ -33,12 +34,93 @@ public class PageImpl extends AbstractBaseElement implements Page
     private Defaults defaults = new Defaults();
 
     private Fragment root = null;
-    
+
     private Collection metadataFields = null;
+
+    private int hashCode;
+
+    private Folder parent;
 
     public PageImpl()
     {
         // empty constructor
+    }
+
+    /**
+     * <p>
+     * setId
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#setId(java.lang.String)
+     * @param id
+     */
+    public void setId( String id )
+    {
+        // Cheaper to generate the hash code now then every call to hashCode()
+        hashCode = (Page.class.getName()+":"+id).hashCode();
+        super.setId(id);
+    }
+    /**
+     * <p>
+     * getParent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.folder.ChildNode#getParent()
+     * @return
+     */
+    public Folder getParent()
+    {
+        return parent;
+    }
+
+    /**
+     * <p>
+     * setParent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.folder.ChildNode#setParent(org.apache.jetspeed.om.folder.Folder)
+     * @param parent
+     */
+    public void setParent( Folder parent )
+    {
+        this.parent = parent;
+    }
+
+    /**
+     * <p>
+     * equals
+     * </p>
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param obj
+     * @return
+     */
+    public boolean equals( Object obj )
+    {
+        if (obj instanceof Page)
+        {
+            Page page = (Page) obj;
+            return page != null && page.getId() != null && 
+                   this.getId() != null && this.getId().equals(page.getId());
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    /**
+     * <p>
+     * hashCode
+     * </p>
+     * 
+     * @see java.lang.Object#hashCode()
+     * @return
+     */
+    public int hashCode()
+    {       
+        return hashCode;
     }
 
     public String getDefaultSkin()
@@ -46,19 +128,19 @@ public class PageImpl extends AbstractBaseElement implements Page
         return this.defaults.getSkin();
     }
 
-    public void setDefaultSkin(String skinName)
+    public void setDefaultSkin( String skinName )
     {
         this.defaults.setSkin(skinName);
     }
 
-    public String getDefaultDecorator(String fragmentType)
+    public String getDefaultDecorator( String fragmentType )
     {
         return this.defaults.getDecorator(fragmentType);
     }
 
-    public void setDefaultDecorator(String decoratorName, String fragmentType)
+    public void setDefaultDecorator( String decoratorName, String fragmentType )
     {
-        this.defaults.setDecorator(decoratorName,fragmentType);
+        this.defaults.setDecorator(decoratorName, fragmentType);
     }
 
     public Fragment getRootFragment()
@@ -66,33 +148,33 @@ public class PageImpl extends AbstractBaseElement implements Page
         return this.root;
     }
 
-    public void setRootFragment(Fragment root)
+    public void setRootFragment( Fragment root )
     {
-        this.root=root;
+        this.root = root;
     }
 
-    public Fragment getFragmentById(String id)
+    public Fragment getFragmentById( String id )
     {
         Stack stack = new Stack();
-        if (getRootFragment()!=null)
+        if (getRootFragment() != null)
         {
             stack.push(getRootFragment());
         }
 
-        Fragment f = (Fragment)stack.pop();
+        Fragment f = (Fragment) stack.pop();
 
-        while ((f!=null)&&(!(f.getId().equals(id))))
+        while ((f != null) && (!(f.getId().equals(id))))
         {
             Iterator i = f.getFragments().iterator();
 
-            while(i.hasNext())
+            while (i.hasNext())
             {
                 stack.push(i.next());
             }
 
-            if (stack.size()>0)
+            if (stack.size() > 0)
             {
-                f = (Fragment)stack.pop();
+                f = (Fragment) stack.pop();
             }
             else
             {
@@ -108,13 +190,12 @@ public class PageImpl extends AbstractBaseElement implements Page
         return this.defaults;
     }
 
-    public void setDefaults(Defaults defaults)
+    public void setDefaults( Defaults defaults )
     {
         this.defaults = defaults;
     }
 
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
+    public Object clone() throws java.lang.CloneNotSupportedException
     {
         Object cloned = super.clone();
 
@@ -123,45 +204,51 @@ public class PageImpl extends AbstractBaseElement implements Page
         return cloned;
     }
 
-	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.om.page.Page#getMetadata()
-	 */
-	public GenericMetadata getMetadata()
-	{
-		if(metadataFields == null)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.page.Page#getMetadata()
+     */
+    public GenericMetadata getMetadata()
+    {
+        if (metadataFields == null)
         {
             metadataFields = new ArrayList();
         }
-		
-		GenericMetadata metadata = new PageMetadataImpl();
-	    metadata.setFields(metadataFields);
-	    return metadata;
-	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.om.page.Page#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
-	 */
-	public void setMetadata(GenericMetadata metadata)
-	{
+        GenericMetadata metadata = new PageMetadataImpl();
+        metadata.setFields(metadataFields);
+        return metadata;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.page.Page#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     */
+    public void setMetadata( GenericMetadata metadata )
+    {
         this.metadataFields = metadata.getFields();
-	}
+    }
 
-	/**
-	 * This should only be used during castor marshalling 
-	 * @see org.apache.jetspeed.om.page.Page#getMetadataFields()
-	 */
-	public Collection getMetadataFields()
-	{
-		return metadataFields;
-	}
+    /**
+     * This should only be used during castor marshalling
+     * 
+     * @see org.apache.jetspeed.om.page.Page#getMetadataFields()
+     */
+    public Collection getMetadataFields()
+    {
+        return metadataFields;
+    }
 
-	/**
-	 * This should only be used during castor unmarshalling 
-	 * @see org.apache.jetspeed.om.page.Page#setMetadataFields(java.util.Collection)
-	 */
-	public void setMetadataFields(Collection metadataFields)
-	{
-		this.metadataFields = metadataFields;
-	}
+    /**
+     * This should only be used during castor unmarshalling
+     * 
+     * @see org.apache.jetspeed.om.page.Page#setMetadataFields(java.util.Collection)
+     */
+    public void setMetadataFields( Collection metadataFields )
+    {
+        this.metadataFields = metadataFields;
+    }
 }
 

@@ -15,7 +15,9 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.util.Collection;
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSet;
 
 /**
  * Folder
@@ -24,7 +26,7 @@ import java.util.Collection;
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
  * @version $Id$
  */
-public interface Folder
+public interface Folder extends SecuredResource, ChildNode
 {
     /**
      * Gets the unique name of this desktop
@@ -48,14 +50,16 @@ public interface Folder
     
     void setDefaultTheme(String defaultTheme);
     
-    Collection getFolders();
+    FolderSet getFolders();
     
-    void setFolders(Collection folders);
+    void setFolders(FolderSet folders);
     
-    Collection getPages();
+    PageSet getPages();
     
-    void setPages(Collection pages);
+    void setPages(PageSet pages);
     
     //GenericMetadata getMetadata();
     //void setMetadata(GenericMetadata metadata);
+    
+    Page getPage(String name);
 }

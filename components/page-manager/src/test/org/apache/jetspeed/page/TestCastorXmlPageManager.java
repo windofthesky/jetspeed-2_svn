@@ -310,12 +310,23 @@ public class TestCastorXmlPageManager extends TestCase
         assertNotNull(folder1);
         assertEquals(2, folder1.getFolders().size());
         Iterator childItr = folder1.getFolders().iterator();
+        // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
         assertEquals("folder1/folder2",folder2.getName());        
         Folder folder3 = (Folder) childItr.next();
-        assertEquals("folder1/folder3",folder3.getName());  
+        assertEquals("folder1/folder3",folder3.getName());        
+        
         assertEquals(1, folder2.getPages().size());
-        assertEquals(2, folder3.getPages().size());        
+        assertEquals(2, folder3.getPages().size());       
+        
+        //Test FolderSet with both absolute and relative names
+        assertNotNull(folder1.getFolders().get("folder1/folder2"));
+        assertNotNull(folder1.getFolders().get("folder2"));
+        assertEquals(folder1.getFolders().get("folder1/folder2"), folder1.getFolders().get("folder2"));
+        
+        //Test PageSet with both absolute and relative names
+        assertNotNull(folder3.getPages().get("folder1/folder3/test001.psml"));
+        assertNotNull(folder3.getPages().get("test001.psml"));
         
     }
 }

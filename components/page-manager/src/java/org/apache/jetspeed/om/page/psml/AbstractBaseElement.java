@@ -16,12 +16,14 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.common.SecuredResource;
+
 
 /**
  *
  * @version $Id$
  */
-public abstract class AbstractBaseElement implements java.io.Serializable
+public abstract class AbstractBaseElement implements java.io.Serializable, SecuredResource
 {
 
     private String id = null;

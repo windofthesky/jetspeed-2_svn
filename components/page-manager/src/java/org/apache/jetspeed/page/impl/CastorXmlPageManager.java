@@ -185,7 +185,16 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
 
         if (page == null)
         {
-            File f = new File(this.rootDir, id + this.ext);
+            File f = null;
+            if(id.endsWith(this.ext))
+            {
+                f = new File(this.rootDir, id );
+            }
+            else
+            {
+                f = new File(this.rootDir, id + this.ext);
+            }
+            
             if (!f.exists())
             {
                 return null;
@@ -197,7 +206,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             {
                 reader = new FileReader(f);
                 Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-                page = (Page) unmarshaller.unmarshal(reader);
+                page = (Page) unmarshaller.unmarshal(reader);    
+                page.setId(id);
+                
             }
             catch (IOException e)
             {
@@ -236,6 +247,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
                 try
                 {
                     pages.put(id, page);
+                    int lastSlash = id.indexOf("/");
+                    if(lastSlash > -1)
+                    {
+                        page.setParent(getFolder(id.substring(0, lastSlash)));
+                    }
+                    else
+                    {
+                        page.setParent(getFolder("/"));
+                    }
                 }
                 catch (java.io.IOException e)
                 {
@@ -256,26 +276,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         }
         else
         {
-            Folder folder = new FolderImpl();
-            folder.setName(folderPath);            
-            File[] children = f.listFiles();
-            for(int i=0; i < children.length; i++)
-            {
-                if(children[i].isDirectory())
-                {
-                    folder.getFolders().add(getFolder(folderPath+"/"+children[i].getName()));
-                }
-                else
-                {
-                    folder.getPages().add(getPage(folderPath+"/"+children[i].getName()));
-                }                
-            }
-            
+            FolderImpl folder = new FolderImpl(f, folderPath, this);                   
             return folder;
         }
-        
     }
+    
 
+
+    
     /**
      * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
      */
