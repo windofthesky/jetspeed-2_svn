@@ -13,16 +13,16 @@ limitations under the License.
 <page id="pam">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>Portlet Application Manager</title>
   <fragment id="pam-2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="13" type="portlet" name="pam::PortletApplicationBrowser" decorator="minty-blue">
+    <fragment id="13" type="portlet" name="pam::PortletApplicationBrowser" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="14" type="portlet" name="pam::PortletApplicationDetail" decorator="minty-blue">
+    <fragment id="14" type="portlet" name="pam::PortletApplicationDetail" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

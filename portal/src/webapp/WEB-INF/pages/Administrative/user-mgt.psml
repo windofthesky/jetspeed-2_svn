@@ -13,8 +13,8 @@ limitations under the License.
 <page id="pam">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>User Management</title>
   <fragment id="um-2" type="layout" name="jetspeed::VelocityTwoColumns">

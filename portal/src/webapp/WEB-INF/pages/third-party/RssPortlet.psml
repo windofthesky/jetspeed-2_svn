@@ -17,8 +17,8 @@ limitations under the License.
 <page id="RssPortlet">
     <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   
    <title>Plumtree RSS Portlet</title>

@@ -17,8 +17,8 @@ limitations under the License.
 <page id="SunPortlets">
     <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   
    <title>Sun Portlets</title>

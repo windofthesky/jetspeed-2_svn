@@ -17,8 +17,8 @@ limitations under the License.
 <page id="JSFPortlets">
     <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   
    <title>JSF Guess Number Portlet</title>

@@ -17,8 +17,8 @@ limitations under the License.
 <page >
   <defaults
      skin="light-blue"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>[USER 003] PSML page</title>
   <fragment id="u3-xx2" type="layout" name="jetspeed::VelocityTwoColumns">

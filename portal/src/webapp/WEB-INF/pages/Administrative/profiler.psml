@@ -13,12 +13,12 @@ limitations under the License.
 <page id="site">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>Profiler Admin</title>
   <fragment id="pa-site" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="prof-1" type="portlet" name="pam::ProfilerAdmin" decorator="jetspeed">
+    <fragment id="prof-1" type="portlet" name="pam::ProfilerAdmin" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>

@@ -13,8 +13,8 @@ limitations under the License.
 <page id="perl">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>PERL demo</title>
   <fragment id="perl-2" type="layout" name="jetspeed::VelocityTwoColumns">

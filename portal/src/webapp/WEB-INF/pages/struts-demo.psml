@@ -13,8 +13,8 @@ limitations under the License.
 <page id="struts">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>Struts Portlet MailReader Demo</title>
   <fragment id="sd-1" type="layout" name="jetspeed::VelocityTwoColumns">

@@ -16,42 +16,36 @@ limitations under the License.
 <page>
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>Welcome to Jetspeed 2</title>
   <fragment id="dp-1" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
+    <fragment id="dp-3" type="portlet" name="localeselector::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="12" type="portlet" name="security::LoginPortlet">
+    <fragment id="dp-12" type="portlet" name="security::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
-    <fragment id="5" 
-     type="portlet" 
-     name="HW_App::PreferencePortlet"
-     decorator="metal">
+    <fragment id="dp-7" type="portlet" name="HW_App::PickANumberPortlet" >
       <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>
-    <fragment id="9" type="portlet" name="HW_App::CustomerList">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>
-    <fragment id="7" type="portlet" name="HW_App::PickANumberPortlet" decorator="minty-blue">
-      <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>        
-    <fragment id="16" type="portlet" name="HW_App::RoleSecurityTest">
-      <property layout="TwoColumns" name="row" value="2" />
+    <fragment id="dp-16" type="portlet" name="HW_App::RoleSecurityTest">
+      <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="17" type="portlet" name="HW_App::UserInfoTest">
-      <property layout="TwoColumns" name="row" value="3" />
+    <fragment id="dp-9" type="portlet" name="HW_App::IFramePortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>	
+    <fragment id="dp-17" type="portlet" name="HW_App::UserInfoTest">
+      <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    
+	
   </fragment>
   <metadata name="title" xml:lang="fr">
 		Ma Premiere Page de PSML

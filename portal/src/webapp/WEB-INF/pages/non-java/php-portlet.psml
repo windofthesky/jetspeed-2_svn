@@ -13,8 +13,8 @@ limitations under the License.
 <page id="php">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>PHP demo</title>
   <fragment id="php-2" type="layout" name="jetspeed::VelocityTwoColumns">

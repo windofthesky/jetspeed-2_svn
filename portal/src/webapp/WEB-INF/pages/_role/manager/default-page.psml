@@ -17,8 +17,8 @@ limitations under the License.
 <page >
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>Manager Role Page</title>
   <fragment id="mrp-xx1" type="layout" name="jetspeed::TwoColumns">

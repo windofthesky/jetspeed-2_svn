@@ -16,8 +16,8 @@ limitations under the License.
 <page id="testsuite_page">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
 
   <title>Test Suite Page</title>
