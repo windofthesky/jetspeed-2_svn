@@ -26,6 +26,6 @@ limitations under the License.
 <a href="/jetspeed/portal/struts-demo">Struts Portlet Demo</a>
 </p>
 <p>
-Portlet Mode is <%= renderRequest.getPortletMode().toString() %> <br/>
-Window State is <%= renderRequest.getWindowState().toString() %> <br/>
+Portlet Mode is <b><%= renderRequest.getPortletMode().toString() %></b> <br/>
+Window State is <b><%= renderRequest.getWindowState().toString() %></b> <br/>
 </p>

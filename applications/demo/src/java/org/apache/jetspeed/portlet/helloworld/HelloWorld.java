@@ -92,7 +92,7 @@ public class HelloWorld extends GenericPortlet
         // url.addParameter("test", "value");
         
         response.getWriter().println("<br/><b>Init Param 'Hello' = " + this.getInitParameter("hello") +  "</b>");
-        response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
+        // response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
         
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
         rd.include(request, response);        
