@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@page import="org.apache.jetspeed.login.LoginConstants"%>
+<%@page import="org.apache.jetspeed.request.RequestContext"%>
 <%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
 <%@taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c_rt"%>
 
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 
@@ -27,8 +29,8 @@ limitations under the License.
     <a href='<c:url value="/portal/Administrative/change-password.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
-    <c:set var="retryCountKey"><%=LoginConstants.RETRYCOUNT%></c:set>
-    <c:set var="retryCount" value="${sessionScope[retryCountKey]}"/>
+    <%-- backdoor access to the portal session to get the login error count --%>
+    <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
     <c:if test="${retryCount != null}">
       <br>
       <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
