@@ -1167,7 +1167,7 @@ public class JetspeedPowerTool implements ViewTool
         {
             title = Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
         }
-        if (title == null)
+        if (title == null && entity != null)
         {
             title = entity.getPortletDefinition().getName();
         }
