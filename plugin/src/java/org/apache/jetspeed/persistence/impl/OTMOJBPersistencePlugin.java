@@ -6,18 +6,20 @@
  */
 package org.apache.jetspeed.persistence.impl;
 
-import org.apache.fulcrum.InitializationException;
+import java.util.Collection;
 
+import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PBKey;
-import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.otm.OTMConnection;
-import org.apache.ojb.otm.core.Transaction;
-import org.apache.ojb.otm.core.TransactionException;
 import org.apache.ojb.otm.kit.SimpleKit;
+import org.apache.ojb.otm.lock.LockType;
 import org.apache.ojb.otm.lock.LockingException;
 import org.apache.ojb.otm.states.State;
 
@@ -61,9 +63,8 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
         }
         finally
         {
-        	close();
+            close();
         }
-      
 
     }
 
@@ -85,7 +86,7 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
                 "Unable to lock object " + obj.getClass().toString() + " to invalidate." + e.toString(),
                 e);
         }
-        return obj;		
+        return obj;
     }
 
     /**
@@ -93,14 +94,14 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
      */
     public void prepareForDelete(Object obj) throws TransactionStateException
     {
-		OTMConnection conn = getOTMConnection();
+        OTMConnection conn = getOTMConnection();
         if (!kit.getTransaction(conn).isInProgress())
         {
             throw new TransactionStateException("Transaction is not progress, cannot delete.");
         }
         try
         {
-			conn.deletePersistent(obj);
+            conn.deletePersistent(obj);
         }
         catch (LockingException e)
         {
@@ -140,19 +141,18 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
      */
     public void rollbackTransaction() throws TransactionStateException
     {
-       try
+        try
         {
-             if (!kit.getTransaction(getOTMConnection()).isInProgress())
-                {
-                    throw new TransactionStateException("Transaction is not progress, cannot rollback.");
-                }
-                kit.getTransaction(getOTMConnection()).rollback();
+            if (!kit.getTransaction(getOTMConnection()).isInProgress())
+            {
+                throw new TransactionStateException("Transaction is not progress, cannot rollback.");
+            }
+            kit.getTransaction(getOTMConnection()).rollback();
         }
-       finally
-       {
-       		close();
-       }
-     
+        finally
+        {
+            close();
+        }
 
     }
 
@@ -180,7 +180,7 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
             conn = kit.acquireConnection(pbKey);
             TLconn.set(conn);
         }
-        return conn;		
+        return conn;
     }
 
     /**
@@ -192,11 +192,11 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
 
         super.finalize();
     }
-	
-	/**
-	 * Makes sure the OTM Connection has been closed properly
-	 *
-	 */
+
+    /**
+     * Makes sure the OTM Connection has been closed properly
+     *
+     */
     protected void close()
     {
         OTMConnection conn = (OTMConnection) TLconn.get();
@@ -219,9 +219,58 @@ public class OTMOJBPersistencePlugin extends AbstractOJBPersistencePlugin implem
         }
         catch (LockingException e)
         {
-           throw new TransactionStateException("Unable to lock "+obj.getClass().getName());
+            throw new TransactionStateException("Unable to lock " + obj.getClass().getName());
         }
 
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#clearCache()
+     */
+    public void clearCache()
+    {
+
+        try
+        {
+            getOTMConnection().invalidateAll();
+        }
+        catch (LockingException e)
+        {
+            throw new IllegalStateException("Some objects were locked while trying to clear the cache: " + e.toString());
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#getCollectionByQuery(java.lang.Class, java.lang.Object)
+     */
+    public Collection getCollectionByQuery(Class clazz, Object query)
+    {
+        Query useQuery = null;
+        if (query instanceof Criteria)
+        {
+            useQuery = QueryFactory.newQuery(clazz, (Criteria) query);
+        }
+        else
+        {
+            useQuery = (Query) query;
+        }
+        return getOTMConnection().getCollectionByQuery(useQuery);
+    }
+
+    /**
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#getObjectByQuery(java.lang.Class, java.lang.Object)
+     */
+    public Object getObjectByQuery(Class clazz, Object query)
+    {
+        Collection c = getCollectionByQuery(clazz, query);
+        if (c.size() > 0)
+        {
+            return c.iterator().next();
+        }
+        else
+        {
+            return null;
+        }
     }
 
 }
