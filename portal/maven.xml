@@ -524,11 +524,9 @@ limitations under the License.
     <attainGoal name="ojb.set.production.database.platform"/>
   </preGoal>
 
-<!--
-  <preGoal name="war">
+  <preGoal name="war:install">
    <attainGoal name= "jar:install"/>
   </preGoal>
--->
 
   <preGoal name="war:webapp">
     <attainGoal name="ojb.set.production.database.platform"/>
