@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container;
+package org.apache.jetspeed.container.url;
 
 import javax.portlet.PortletURL;
 
@@ -61,7 +61,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.test.JetspeedTest;
 
 /**
- * TestMarshallRegistry
+ * TestPortletURL
  *
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
