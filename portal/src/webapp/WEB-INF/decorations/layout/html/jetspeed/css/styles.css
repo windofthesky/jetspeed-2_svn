@@ -21,7 +21,7 @@ limitations under the License.
 	otherwise it won't show !
 	**/
 	width:10px;
-	
+    
 	/** Always use relative path ! **/
 	background:  url(content/jetspeed/images/titleleft.gif);
 }
@@ -32,7 +32,7 @@ limitations under the License.
 	Specify the height of the image used
 	else it will use the text height	
 	**/
-	height:21px;
+	height:10px;	
 	color:#FFFFFF;
 	font-weight:bold;
 	background:  url(content/jetspeed/images/title.gif);

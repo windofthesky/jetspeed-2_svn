@@ -22,7 +22,6 @@ limitations under the License.
 
 #set($actions = $jetspeed.DecoratorActions)
 
-
 <!-- Begin portlet/html/jetspeed/decorator.vm  -->
 
 <div class="MintyBlue" >
@@ -36,19 +35,24 @@ limitations under the License.
     <td class="PTitleLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
 
     <td align="left" valign="middle" class="PTitle" >
-       ${myPE.portletDefinition.name}
+       ${myPE.portletDefinition.name} 
     </td>
     <td align="right" valign="middle" class="PTitle" >
+      <table border="0" cellpadding="0" cellspacing="0" >
+      <tr>       
       #foreach ($action in $actions)
+      <td align="right" valign="middle" class="PTitle" >
       <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      <td/>
       #end
+      </tr>  
+      </table>
     </td>
-    
     
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 
-### testing, this weill be removed  
+### testing, this will be removed  
   <tr>
     <td class="PContentLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
 
@@ -64,16 +68,16 @@ limitations under the License.
 ##
 ## Portlet Content
 ##
-#if (!$jetspeed.isHidden($myF))
+#if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <tr>
     <td  nowrap="nowrap"><div class="PContentLeft" >&nbsp;</div></td>
     
     <td class="PContent" >
        $jetspeed.include($myF)
     </td>   
-    
+
     <td align="right" valign="middle" class="PContent" />
-        
+    
     <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>
    
   </tr>
@@ -86,7 +90,7 @@ limitations under the License.
   <tr>
     <td class="PBottomLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
     <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-    <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>        
+    <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>    
     <td class="PBottomRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 </table>

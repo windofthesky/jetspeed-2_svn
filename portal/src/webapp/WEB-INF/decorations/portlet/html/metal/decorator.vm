@@ -38,9 +38,15 @@ limitations under the License.
        ${myPE.portletDefinition.name}
     </td>
     <td align="right" valign="middle" class="PTitle" >
+      <table border="0" cellpadding="0" cellspacing="0" >
+      <tr>       
       #foreach ($action in $actions)
+      <td align="right" valign="middle" class="PTitle" >
       <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      <td/>
       #end
+      </tr>  
+      </table>
     </td>
     
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
