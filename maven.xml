@@ -92,13 +92,20 @@ limitations under the License.
   <goal name="subClean"
         description="Clean all subprojects"
         >
+        
     <maven:reactor
-               basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml,layout-portlets/project.xml,maven-plugin/project.xml"
-               excludes="applications/project.xml,cornerstone-demo/project.xml"
-               goals="clean"
-               banner="Cleaning"
-               ignoreFailures="true"/>
+       basedir="${basedir}"
+       includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml"
+       excludes="applications/project.xml,cornerstone-demo/project.xml,taglibs/project.xml"
+       goals="clean"
+       banner="Cleaning"
+       ignoreFailures="true"/>
+    <maven:reactor
+       basedir="${basedir}"
+       includes="layout-portlets/project.xml,maven-plugin/project.xml,taglibs/project.xml"
+       goals="clean"
+       banner="Cleaning"
+       ignoreFailures="true"/>
   </goal>
 
   <goal name="allSite"
@@ -241,7 +248,13 @@ limitations under the License.
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
-       
+     <maven:reactor
+               basedir="${basedir}/taglibs"
+               includes="project.xml"
+               goals="allBuild"
+               banner="Build and Install the Portlet Taglibs"
+               postProcessing="false"
+               ignoreFailures="false"/>
 
      <!-- Build war files -->
      <maven:reactor
