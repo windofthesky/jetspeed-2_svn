@@ -55,6 +55,8 @@ package org.apache.jetspeed.demo.preferences;
 
 import java.io.IOException;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -93,6 +95,15 @@ public class PreferencePortlet extends GenericPortlet
     {
         System.out.println("Initializing Preference portlet example. ");
         super.init(config);
+    }
+
+    /**
+     * @see javax.portlet.Portlet#processAction(javax.portlet.ActionRequest, javax.portlet.ActionResponse)
+     */
+    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
+    {
+       request.setAttribute("invokeMessge", "I was invoked!!!");
+       System.out.println("I was invoked!!!");
     }
 
 }
