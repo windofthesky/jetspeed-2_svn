@@ -114,8 +114,8 @@ A minimal example tomcat-users.xml could look like:
 Make sure to use a more appropriate username and password. <br/>
 With the above example the required autodeployment properties should be set as:
   <pre>
-    org.apache.jetpseed.services.autodeployment.user=j2deployer
-    org.apache.jetpseed.services.autodeployment.password=j2deployer
+    org.apache.jetspeed.services.autodeployment.user=j2deployer
+    org.apache.jetspeed.services.autodeployment.password=j2deployer
   </pre>
 </p>
 </section>
