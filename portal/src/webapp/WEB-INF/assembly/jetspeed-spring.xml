@@ -44,6 +44,9 @@ limitations under the License.
   	   	  <entry key="PAM">
   	   	  	<ref bean="PAM" />
   	   	  </entry>		  
+  	   	  <entry key="UserManager">
+  	   	    <ref bean="org.apache.jetspeed.security.UserManager"/>
+  	   	  </entry>
   	   	</map>
   	   </constructor-arg>
   </bean>
