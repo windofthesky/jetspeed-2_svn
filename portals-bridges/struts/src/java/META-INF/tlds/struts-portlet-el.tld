@@ -498,6 +498,7 @@ limitations under the License.
 <name>actionURL</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
+</attribute>
 <attribute>
 <name>renderURL</name>
 <required>false</required>
@@ -507,7 +508,6 @@ limitations under the License.
 <name>resourceURL</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
-</attribute>
 </attribute>
 <attribute>
 <name>accesskey</name>
