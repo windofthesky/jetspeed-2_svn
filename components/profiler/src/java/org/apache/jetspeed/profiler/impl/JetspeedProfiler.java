@@ -328,7 +328,6 @@ public class JetspeedProfiler implements Profiler
      */
     public Collection getRules()
     {
-
         return persistentStore.getExtent(profilingRuleClass);
     }
 
@@ -377,15 +376,25 @@ public class JetspeedProfiler implements Profiler
         return names;
     }
     
+    public Collection getRulesForPrincipal(Principal principal)
+    {
+        Filter filter = persistentStore.newFilter();        
+        filter.addEqualTo("principalName", principal.getName());
+        Object query = persistentStore.newQuery(principalRuleClass, filter);
+        Collection result = persistentStore.getCollectionByQuery(query);
+        return result;
+    }
+    
+    
     public Map getProfileLocators(RequestContext context, Principal principal)
     throws ProfilerException
     {
         Map locators = new HashMap();
-        String locatorNames[] = getLocatorNamesForPrincipal(principal);
-        
-        for (int ix = 0; (ix < locatorNames.length); ix++)
+        Iterator it = getRulesForPrincipal(principal).iterator();
+        while (it.hasNext())
         {
-            locators.put(locatorNames[ix], getProfile(context, locatorNames[ix]));   
+            PrincipalRule pr = (PrincipalRule)it.next();
+            locators.put(pr.getLocatorName(), getProfile(context, pr.getLocatorName()));   
         }
         return locators;
     }
@@ -425,4 +434,36 @@ public class JetspeedProfiler implements Profiler
         
     }
     
+    public void storePrincipalRule(PrincipalRule rule)
+    throws ProfilerException
+    {
+        try
+        {
+            Transaction tx = persistentStore.getTransaction();
+            tx.begin();
+            persistentStore.makePersistent(rule);
+            persistentStore.lockForWrite(rule);
+            tx.commit();            
+        }
+        catch (Exception e)
+        {
+            throw new ProfilerException("failed to store: " + rule.getLocatorName(), e);
+        }        
+    }
+    
+    public void deletePrincipalRule(PrincipalRule rule)
+    throws ProfilerException
+    {
+        try
+        {
+            Transaction tx = persistentStore.getTransaction();
+            tx.begin();
+            persistentStore.deletePersistent(rule);
+            tx.commit();
+        }
+        catch (Exception e)
+        {
+            throw new ProfilerException("failed to delete: " + rule.getLocatorName(), e);
+        }        
+    }
 }
