@@ -10,7 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="chooser-users">
+<page id="chooser-users" hidden='true'>
   <defaults
      layout-decorator="simple"
      portlet-decorator="clear"
