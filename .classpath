@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
+	<classpathentry kind="src" path="taglibs/treecontrol/src/java"/>
 	<classpathentry kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry kind="src" path="components/page-manager/src/java"/>
@@ -78,11 +79,6 @@
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-vfs/jars/commons-vfs-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jmock/jars/jmock-1.0.1.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="components/capability/target/classes"/>
-	<classpathentry exported="true" kind="lib" path="components/page-manager/target/classes"/>
-	<classpathentry exported="true" kind="lib" path="components/registry/target/classes"/>
-	<classpathentry exported="true" kind="lib" path="components/security/target/classes"/>
-	<classpathentry exported="true" kind="lib" path="components/prefs/target/classes"/>
 	<classpathentry sourcepath="PICO_HOME/proxytoys/src/java" kind="var" path="MAVEN_REPO/nanocontainer/jars/nanocontainer-proxytoys-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/proxytoys/jars/proxytoys-0.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-util-1.4.1.jar"/>
