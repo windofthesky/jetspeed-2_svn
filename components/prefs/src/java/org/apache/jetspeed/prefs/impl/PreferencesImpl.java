@@ -502,7 +502,7 @@ public class PreferencesImpl extends AbstractPreferences
     public void removeNodeSpi() throws BackingStoreException
     {
         if (log.isDebugEnabled())
-            log.debug("Attempting to remove: " + this.absolutePath());
+            log.debug("Attempting to remove node: " + this.absolutePath());
         Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
         if (((Integer) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
