@@ -9,10 +9,12 @@ package org.apache.jetspeed.deployment.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.deployment.DeploymentEvent;
@@ -34,7 +36,7 @@ import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistryException;
 public class DeployDecoratorEventListener implements DeploymentEventListener
 {
     protected SimpleRegistry registry;
-    protected static final Log log = LogFactory.getLog(DeployDecoratorEventListener.class);
+    protected static final Log log = LogFactory.getLog("deployment");
 
     public DeployDecoratorEventListener(SimpleRegistry registry)
     {
@@ -50,40 +52,55 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
         // and all we need to do is register the folder name
         if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
         {
-			Configuration conf;
+			PropertiesConfiguration conf;
             try
             {
-                conf = event.getHandler().getConfiguration("decorator.properties");
+
+                InputStream configStream = event.getHandler().getConfiguration("decorator.properties");
+                if (configStream == null)
+                {
+                    return;
+                }
+                else
+                {
+                    conf = new PropertiesConfiguration();
+                    conf.load(configStream);                    
+                }
             }
             catch (IOException e1)
             {
                 // TODO Auto-generated catch block
-                throw new DeploymentException("Error readin configuration from jar: "+e1.toString(), e1);
+
+                throw new DeploymentException("Error reading configuration from jar: " + e1.toString(), e1);
             }
-            
+
             String id = conf.getString("id");
             if (id != null)
             {
-            	
+                log.info("Found decorator deployment archive " + id);
                 Entry entry = new Entry();
                 entry.setId(id);
                 if (!registry.isRegistered(entry))
                 {
+                    log.info("Deploying decorator " + id);
                     try
                     {
 
                         String mediaType = conf.getString("media.type", "html");
+                        log.info("Decorator " + id + " supports media type \"" + mediaType + "\"");
                         String deployPath = event.getDeploymentRoot() + File.separator + mediaType + File.separator + id;
+                        log.info("Deploying decorator " + id + " to " + deployPath);
                         JarInputStream jis = (JarInputStream) event.getHandler().getAsStream();
                         JarEntry jarEntry = jis.getNextJarEntry();
                         while (jarEntry != null)
                         {
                             String entryName = jarEntry.getName();
+                            log.info("Deploying " + entryName + " for decorator " + id);
                             File fullPath = new File(deployPath + File.separator + entryName);
                             if (!fullPath.exists())
                             {
-                            	// First create parnets
-                            	fullPath.getParentFile().mkdirs();
+                                // First create parnets
+                                fullPath.getParentFile().mkdirs();
                                 fullPath.createNewFile();
 
                             }
@@ -104,10 +121,11 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
                     }
                     catch (Exception e)
                     {
-                        
-                        e.printStackTrace();
+                        log.error("Error deploying decorator " + id + ": " + e.toString(), e);
+
                     }
                 }
+                log.info("Decorator " + id + " deployed and registered successfuly.");
 
             }
             else
