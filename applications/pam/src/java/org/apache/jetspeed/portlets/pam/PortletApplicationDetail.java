@@ -37,6 +37,7 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
@@ -51,10 +52,14 @@ public class PortletApplicationDetail extends ServletPortlet
     private static final String PORTLET_ACTION = "portlet_action";
     private final String VIEW_PA = "portletApplication"; 
     private final String VIEW_PD = "portletDefinition";
+    
+    private static final String PORTLET_APP_ACTION_PREFIX = "portlet_app.";
+    private static final String PORTLET_ACTION_PREFIX = "portlet.";
 
     private PortletContext context;
     private PortletRegistryComponent registry;
-    private HashMap tabMap = new HashMap();
+    private HashMap paTabMap = new HashMap();
+    private HashMap pdTabMap = new HashMap();
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -72,10 +77,26 @@ public class PortletApplicationDetail extends ServletPortlet
         TabBean tb3 = new TabBean("Portlets", "Portlets");
         TabBean tb4 = new TabBean("UserAttr", "User Attributes");
         
-        tabMap.put(tb1.getId(), tb1);
-        tabMap.put(tb2.getId(), tb2);
-        tabMap.put(tb3.getId(), tb3);
-        tabMap.put(tb4.getId(), tb4);
+        paTabMap.put(tb1.getId(), tb1);
+        paTabMap.put(tb2.getId(), tb2);
+        paTabMap.put(tb3.getId(), tb3);
+        paTabMap.put(tb4.getId(), tb4);
+        
+        TabBean tb_1 = new TabBean("Details", "Details");
+        TabBean tb_2 = new TabBean("Metadata", "Metadata");
+        TabBean tb_3 = new TabBean("Preferences", "Preferences");
+        TabBean tb_4 = new TabBean("Languages", "Languages/PortletInfo");
+        TabBean tb_5 = new TabBean("Parameters", "Initial Parameters");
+        TabBean tb_6 = new TabBean("Security", "Security");
+        TabBean tb_7 = new TabBean("ContentType", "ContentType/Supports");
+        
+        pdTabMap.put(tb_1.getId(), tb_1);
+        pdTabMap.put(tb_2.getId(), tb_2);
+        pdTabMap.put(tb_3.getId(), tb_3);
+        pdTabMap.put(tb_4.getId(), tb_4);
+        pdTabMap.put(tb_5.getId(), tb_5);
+        pdTabMap.put(tb_6.getId(), tb_6);
+        pdTabMap.put(tb_7.getId(), tb_7);
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -95,12 +116,26 @@ public class PortletApplicationDetail extends ServletPortlet
             
             request.setAttribute(VIEW_PD, pdef);
             
-            request.setAttribute("tabs", tabMap.values());
+            request.setAttribute("tabs", paTabMap.values());
+            request.setAttribute("portlet_tabs", pdTabMap.values());
             
             TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute("selected_tab");
-            if(selectedTab == null) {
-                selectedTab = (TabBean) tabMap.values().iterator().next();
+            if(selectedTab == null)
+            {
+                selectedTab = (TabBean) paTabMap.values().iterator().next();
             }
+            
+            //this supports tabs for portlets
+            if(selectedTab.getId().equals("Portlets"))
+            {
+                TabBean selectedPortletTab = (TabBean) request.getPortletSession().getAttribute("selected_portlet_tab");
+                if(selectedPortletTab == null)
+                {
+                    selectedPortletTab = (TabBean) pdTabMap.values().iterator().next();
+                }
+                request.setAttribute("selected_portlet_tab", selectedPortletTab);
+            }
+            
             request.setAttribute("selected_tab", selectedTab);
             
         }
@@ -117,8 +152,6 @@ public class PortletApplicationDetail extends ServletPortlet
         String selectedPortlet = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_PORTLET);
         if(selectedPortlet != null)
         {
-	        
-	        
 	        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
 	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef, PortletSession.APPLICATION_SCOPE);
         }
@@ -126,23 +159,65 @@ public class PortletApplicationDetail extends ServletPortlet
         String selectedTab = actionRequest.getParameter("selected_tab");
         if(selectedTab != null)
         {
-            TabBean tab = (TabBean) tabMap.get(selectedTab);
+            TabBean tab = (TabBean) paTabMap.get(selectedTab);
             actionRequest.getPortletSession().setAttribute("selected_tab", tab);
+        }
+        
+        String selectedPortletTab = actionRequest.getParameter("selected_portlet_tab");
+        if(selectedPortletTab != null)
+        {
+            TabBean tab = (TabBean) pdTabMap.get(selectedPortletTab);
+            actionRequest.getPortletSession().setAttribute("selected_portlet_tab", tab);
         }
         
         String action = actionRequest.getParameter(PORTLET_ACTION);
         if(action != null)
         {
-            if(action.endsWith("metadata"))
+            
+            if(isAppAction(action))
             {
-                processMetadataAction(actionRequest, actionResponse, pa, action);
+                action = getAction(PORTLET_APP_ACTION_PREFIX, action);
+                
+                if(action.endsWith("metadata"))
+                {
+                    processMetadataAction(actionRequest, actionResponse, pa.getMetadata(), action);
+                }
+                else if(action.endsWith("user_attribute"))
+                {
+                    processUserAttributeAction(actionRequest, actionResponse, pa, action);
+                }
             }
-            else if(action.endsWith("user_attribute"))
+            else if(isPortletAction(action))
             {
-                processUserAttributeAction(actionRequest, actionResponse, pa, action);
+                action = getAction(PORTLET_ACTION_PREFIX, action);
+                PortletDefinitionComposite pdef = (PortletDefinitionComposite) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+                
+                if(action.endsWith("metadata"))
+                {
+                    processMetadataAction(actionRequest, actionResponse, pdef.getMetadata(), action);
+                }
+                else if(action.endsWith("portlet"))
+                {
+                    processPortletAction(actionRequest, actionResponse, pa, pdef, action);
+                }
             }
         }
 	}
+    
+    private boolean isAppAction(String action)
+    {
+        return action.startsWith(PORTLET_APP_ACTION_PREFIX);
+    }
+    
+    private boolean isPortletAction(String action)
+    {
+        return action.startsWith(PORTLET_ACTION_PREFIX);
+    }
+    
+    private String getAction(String prefix, String action)
+    {
+        return action.substring(prefix.length());
+    }
     
     /**
      * @param actionRequest
@@ -225,11 +300,10 @@ public class PortletApplicationDetail extends ServletPortlet
      * @throws PortletException
      * @throws IOException
      */
-    private void processMetadataAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, String action) throws PortletException, IOException
+    private void processMetadataAction(ActionRequest actionRequest, ActionResponse actionResponse, GenericMetadata md, String action) throws PortletException, IOException
     {
         if(action.equals("edit_metadata"))
         {
-            GenericMetadata md = pa.getMetadata();
             Iterator fieldsIter = md.getFields().iterator();
             
             registry.getPersistenceStore().getTransaction().begin();
@@ -252,7 +326,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("remove_metadata"))
         {
-            GenericMetadata md = pa.getMetadata();
             Iterator fieldsIter = md.getFields().iterator();
             String[] ids = actionRequest.getParameterValues("metadata_id");
             
@@ -279,8 +352,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("add_metadata"))
         {
-            GenericMetadata md = pa.getMetadata();
-            
             PersistenceStore store = registry.getPersistenceStore();
             System.out.println("Transcation is open: " + store.getTransaction().isOpen());
             store.getTransaction().begin();
@@ -297,6 +368,22 @@ public class PortletApplicationDetail extends ServletPortlet
             md.addField(locale, name, value);
             
             store.getTransaction().commit();
+        }
+    }
+    
+    private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws PortletException, IOException
+    {
+        if(action.equals("edit_portlet"))
+        {
+
+        }
+        else if(action.equals("remove_portlet"))
+        {
+            //TODO should this be allowed??
+        }
+        else if(action.equals("add_portlet"))
+        {
+            //TODO should this be allowed??
         }
     }
 }
