@@ -26,6 +26,8 @@ import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -130,6 +132,13 @@ public class TestJetspeedPortletDescriptor
         
         assertEquals( ((JetspeedServiceReference)services[0]).getName(), "PortletRegistryComponent");
         assertEquals( ((JetspeedServiceReference)services[1]).getName(), "PortletEntityAccessComponent");
+    }
+    
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
+        PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
     }
 
 }
