@@ -50,6 +50,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor
@@ -361,6 +364,23 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
 
         SAXBuilder builder = new SAXBuilder(false);
 
+        // Use the local dtd instead of remote dtd. This
+        // allows to deploy the application offline
+        builder.setEntityResolver(new EntityResolver()
+        {
+            public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId)
+                throws SAXException, java.io.IOException
+            {
+
+                if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+                {
+                    return new InputSource(PortletApplicationWar.class.getResourceAsStream("web-app_2_3.dtd"));
+                }
+                else
+                    return null;
+            }
+        });
+
         FileReader srcReader = new FileReader("./test/testdata/deploy/webapp/WEB-INF/web.xml");
         FileReader targetReader = null;
         Document  doc = builder.build(srcReader);
@@ -380,7 +400,6 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
 
             targetReader = new FileReader("./target/webapp/WEB-INF/web.xml");
 
-            builder = new SAXBuilder(false);
             Document targetDoc = builder.build(targetReader);
             Element targetRoot = targetDoc.getRootElement();
 
