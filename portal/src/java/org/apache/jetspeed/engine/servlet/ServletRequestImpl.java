@@ -81,7 +81,7 @@ public class ServletRequestImpl
 
     public String getContentType()
     {
-        String contentType = InformationProviderAccess.getDynamicProvider(_getHttpServletRequest()).getRequestMimeType();
+        String contentType = InformationProviderAccess.getDynamicProvider(_getHttpServletRequest()).getResponseContentType();
         if (getCharacterEncoding()!=null)
         {
             contentType += ";" + getCharacterEncoding();

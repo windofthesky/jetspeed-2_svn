@@ -261,13 +261,13 @@ public class TestPortletDescriptor extends JetspeedTest
             if (pref.getName().equals("time-server"))
             {
                 assertTrue("Preference.Name invalid: " + pref.getName(), pref.getName().equals("time-server"));
-                assertTrue("Preference.Modifiable invalid: ", pref.isModifiable() == false);
+                assertTrue("Preference.Modifiable invalid: ", pref.isReadOnly() == false);
                 validatePreferences(pref, new String[] { "http://timeserver.myco.com" });
             }
             else
             {
                 assertTrue("Preference.Name invalid: " + pref.getName(), pref.getName().equals("port"));
-                assertTrue("Preference.Modifiable invalid: ", pref.isModifiable() == true);
+                assertTrue("Preference.Modifiable invalid: ", pref.isReadOnly() == true);
                 validatePreferences(pref, new String[] { "404" });
             }
             count++;
