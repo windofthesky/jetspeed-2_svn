@@ -62,7 +62,10 @@ public class DeploymentEventDispatcher
     		try
             {
                 listener.invoke(event);
-				event.setStatus(DeploymentEvent.STATUS_OKAY);
+                if(event.getStatus() < 0)
+                {
+                    event.setStatus(DeploymentEvent.STATUS_OKAY);
+                }
             }
             catch (DeploymentException e)
             {   
