@@ -20,10 +20,7 @@ Pluto Issues
 Misc
 ---------------------------------
 
-1. Old PortletContainer
+1. Old PortletContainer [DONE]
 - remove all code related-to the old container and old request/response impls and wrappers
-DROP:
-import org.apache.jetspeed.container.InternalRenderRequest;
-import org.apache.jetspeed.container.InternalRenderResponse;
 
 
