@@ -57,6 +57,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.portlet.PortletMode;
+
 import org.apache.jetspeed.om.common.portlet.ContentTypeSetComposite;
 import org.apache.pluto.om.portlet.ContentType;
 
@@ -78,6 +81,21 @@ public class ContentTypeSetImpl implements ContentTypeSetComposite, Serializable
         innerCollection = collection;
     }
 
+    public boolean supportsPortletMode(PortletMode mode)
+    {
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            ContentType p = (ContentType) itr.next();
+            if (p.supportsPortletMode(mode))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * @see org.apache.pluto.om.portlet.ContentTypeSet#get(java.lang.String)
      */
