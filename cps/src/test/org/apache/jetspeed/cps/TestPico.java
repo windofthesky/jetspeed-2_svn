@@ -64,11 +64,14 @@ import org.apache.jetspeed.cps.template.TemplateLocatorComponent;
 import org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.defaults.ConstantParameter;
 import org.picocontainer.defaults.DefaultPicoContainer;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.picocontainer.Parameter;
 
 /**
  * TestPico
@@ -115,10 +118,18 @@ public class TestPico extends TestCase
         Configuration configuration = getConfiguration();
         
         MutablePicoContainer pico = new DefaultPicoContainer();
-        // ConstructorComponentAdaptorFactory cca = new ConstructorComponentAdaptorFactory();
             
-        pico.registerComponentImplementation(TemplateLocatorComponent.class, TemplateLocatorComponentImpl.class);    
-        // pico.addParameterToComponent(TemplateLocatorComponent.class, Configuration.class, configuration);    
+        // pico.registerComponentImplementation(TemplateLocatorComponent.class, TemplateLocatorComponentImpl.class);
+            
+        Parameter [] parameters =  {new ConstantParameter(configuration)};
+                
+        System.out.println("parameters: " + parameters.length);
+        
+        pico.registerComponentImplementation(
+            TemplateLocatorComponent.class,
+            TemplateLocatorComponentImpl.class,
+            parameters);
+            
         pico.start();
         
         TemplateLocatorComponent locator1 = (TemplateLocatorComponent)pico.getComponentInstance(TemplateLocatorComponent.class);

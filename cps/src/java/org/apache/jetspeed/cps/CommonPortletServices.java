@@ -53,9 +53,12 @@
  */
 package org.apache.jetspeed.cps;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -230,5 +233,22 @@ public class CommonPortletServices extends BaseServiceBroker implements ServiceM
     public boolean isInitialized()
     {
         return initialized;
+    }
+    
+    /**
+     * Load all CPS component descriptors from the class path
+     * 
+     * @throws IOException
+     */
+    public static void loadServiceDescriptors()
+    throws IOException
+    {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader() ;    
+        Enumeration e = cl.getResources("META-INF/component.properties") ;
+        while(e.hasMoreElements()) 
+        {
+            URL url = (URL)e.nextElement();                    
+            System.out.println("url = " + url);
+        }        
     }
 }

@@ -61,8 +61,12 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.cps.CommonPortletServices;
 
 /**
  * TemplateLocatorComponentImpl
@@ -310,7 +314,7 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
         {
             try
             {                
-                // TODO: locatorClassName = getConfiguration().getString(TEMPLATE_LOCATOR_CLASS);
+                locatorClassName = getConfiguration().getString(TEMPLATE_LOCATOR_CLASS);
                 locatorClass = Class.forName(locatorClassName);
             }
             catch(Exception e)
@@ -331,20 +335,34 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
         }
         return locator;    
     }
-        
+
+/*        
     public TemplateLocatorComponentImpl()
     {  
         System.out.println("--- DEFAULT constructing template locator impl");      
     }
-
+*/
     public TemplateLocatorComponentImpl(Configuration configuration)
     {  
         System.out.println("--- CONFIGURATION constructing template locator impl");
-        this.configuration = configuration;      
+        this.configuration = configuration;
+/*        
+        try
+        {
+            init();
+            System.out.println("-- TLC implemented ok");
+        }
+        catch (Throwable t)
+        {      
+            t.printStackTrace();
+            log.error(t);
+        }
+*/        
     }
     
     
-    Configuration configuration = null;
+    private Configuration configuration = null;
+    private boolean isInit = false;
     
     public Configuration getConfiguration()
     {
@@ -353,10 +371,10 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
     
     /* (non-Javadoc)
      * @see org.apache.fulcrum.Service#init()
-     *
+     */
     public void init() throws CPSInitializationException
     {
-        if (isInitialized())
+        if (isInit)
         {
             return;
         }
@@ -396,9 +414,9 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
             }
         }
         
-        setInit(true);
+        isInit = true;
     }
-  */
+
   
     /* (non-Javadoc)
      * @see org.apache.jetspeed.cps.template.TemplateLocatorService#query(org.apache.jetspeed.cps.template.TemplateLocator)
