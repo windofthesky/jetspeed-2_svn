@@ -32,6 +32,7 @@ public class ScriptRuntimeData {
 	private String	queryString = "";
 	private String	displayMessage = "";
 	private String	sessionParameterName = "";
+	private String	applicationName = "";
 	
 	/**
 	 * addQueryString()
@@ -98,5 +99,17 @@ public class ScriptRuntimeData {
 	 */
 	public void setSessionParameterName(String sessionParameterName) {
 		this.sessionParameterName = sessionParameterName;
+	}
+	/**
+	 * @return Returns the applicationName.
+	 */
+	public String getApplicationName() {
+		return this.applicationName;
+	}
+	/**
+	 * @param applicationName The applicationName to set.
+	 */
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
 	}
 }
