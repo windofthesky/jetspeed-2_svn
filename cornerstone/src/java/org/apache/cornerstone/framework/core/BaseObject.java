@@ -19,6 +19,7 @@ package org.apache.cornerstone.framework.core;
 import java.util.*;
 import org.apache.cornerstone.framework.api.config.IConfigurable;
 import org.apache.cornerstone.framework.api.core.IObject;
+import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.OrderedProperties;
@@ -193,7 +194,8 @@ public abstract class BaseObject implements IObject, IConfigurable
         // does singleton already exist?
         if (isSingleton == Boolean.TRUE)
         {
-        	Object existingInstance = Cornerstone.getSingletonManager().getSingleton(getClass().getName());
+        	ISingletonManager singletonManager = (ISingletonManager) Cornerstone.getImplementation(ISingletonManager.class);
+        	Object existingInstance = singletonManager.getSingleton(getClass().getName());
             if (existingInstance != null)
                 throw new RuntimeException("singleton already exists; cannot create another instance");
         }

@@ -18,6 +18,7 @@ package org.apache.cornerstone.framework.service.controller;
 
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.service.IService;
+import org.apache.cornerstone.framework.api.service.IServiceManager;
 import org.apache.cornerstone.framework.api.service.ServiceException;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.init.Cornerstone;
@@ -66,7 +67,8 @@ public class SwitchServiceController extends BaseServiceController
             switchCase = SWITCH + Constant.DOT + CASE + Constant.DOT + switchConditionValue + Constant.DOT + Constant.PARENT_NAME;
         }
         String serviceName = getConfigProperty(switchCase);
-        IService service = Cornerstone.getServiceManager().createServiceByName(serviceName);
+        IServiceManager serviceManager = (IServiceManager) Cornerstone.getImplementation(IServiceManager.class);
+        IService service = serviceManager.createServiceByName(serviceName);
         if (service != null)
             return service.invoke(context);
         else

@@ -19,6 +19,8 @@ package org.apache.cornerstone.framework.persistence.connection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.api.persistence.connection.ConnectionException;
 import org.apache.cornerstone.framework.api.persistence.connection.IConnectionManager;
@@ -64,7 +66,8 @@ public class BaseConnectionManager extends BaseObject implements IConnectionMana
     {
     	try
 		{
-			IDataSource dataSource = (IDataSource) Cornerstone.getImplementationManager().createImplementation(IDataSource.class, dataSourceName);
+    		IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+			IDataSource dataSource = (IDataSource) implementationManager.createImplementation(IDataSource.class, dataSourceName);
             String driverClassName = dataSource.getDriverClassName();
             Class.forName(driverClassName);
             String url = dataSource.getConnectionUrl();

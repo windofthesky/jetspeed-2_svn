@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 import org.apache.cornerstone.framework.action.BaseAction;
 import org.apache.cornerstone.framework.api.action.ActionException;
 import org.apache.cornerstone.framework.api.action.IAction;
+import org.apache.cornerstone.framework.api.action.IActionManager;
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
 import org.apache.cornerstone.framework.bean.visitor.BeanJSConverter;
@@ -165,7 +166,8 @@ public abstract class BasePresentationAction extends BaseAction
         if (isExitNameAction(exitValue))
         {
             String actionName = exitValue.substring(ACTION_PREFIX.length());
-            IAction action = Cornerstone.getActionManager().createActionByName(actionName);
+            IActionManager actionManager = (IActionManager) Cornerstone.getImplementation(IActionManager.class);
+            IAction action = actionManager.createActionByName(actionName);
             _Logger.debug("chaining to action '" + actionName + "'");
             context.setValue(PREVIOUS_RESULT, result);
             return action.invoke(context);
@@ -246,7 +248,8 @@ public abstract class BasePresentationAction extends BaseAction
         {
             String authorizerName = getConfigProperty(CONFIG_AUTHORIZER_NAME);
             // create every time because actions are not reentrant 
-            IAction authorizer = Cornerstone.getActionManager().createActionByName(authorizerName);
+            IActionManager actionManager = (IActionManager) Cornerstone.getImplementation(IActionManager.class);
+            IAction authorizer = actionManager.createActionByName(authorizerName);
             return authorizer;
         }
         else

@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.factory.CreationException;
 import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistenceFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistentObjectFactory;
@@ -218,7 +219,8 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
             	throw new PersistenceException("config '" + CONFIG_ELEMENT_PARENT_NAME + "' missing");
             try
 			{
-				_elementFactory = (IPersistentObjectFactory) Cornerstone.getImplementationManager().createImplementation(
+            	IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+				_elementFactory = (IPersistentObjectFactory) implementationManager.createImplementation(
 					IFactory.class,
 					elementParentName
 				);
@@ -256,7 +258,8 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
                     throw new CreationException("expected format of '" + CONFIG_COLLECTION_PARENT_NAME + "' is <interfaceName>/<variantName>");
                 String interfaceName = configCollectionParentName.substring(0, slash);
                 String variantName = configCollectionParentName.substring(slash + 1);
-            	return Cornerstone.getImplementationManager().createImplementation(interfaceName, variantName);
+                IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+            	return implementationManager.createImplementation(interfaceName, variantName);
             }
 
             throw new CreationException(

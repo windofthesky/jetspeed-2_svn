@@ -22,19 +22,18 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.cornerstone.framework.action.BaseAction;
 import org.apache.cornerstone.framework.api.action.ActionException;
 import org.apache.cornerstone.framework.api.action.IAction;
 import org.apache.cornerstone.framework.api.action.IActionManager;
 import org.apache.cornerstone.framework.api.context.IContext;
+import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.core.ClassUtil;
 import org.apache.cornerstone.framework.init.Cornerstone;
@@ -75,7 +74,8 @@ public class ControllerServlet extends HttpServlet
         {
             throw new ServletException(CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
         }
-        _actionManager = (IActionManager) Cornerstone.getSingletonManager().getSingleton(actionManagerClassName);
+        ISingletonManager singletonManager = (ISingletonManager) Cornerstone.getImplementation(ISingletonManager.class);
+        _actionManager = (IActionManager) singletonManager.getSingleton(actionManagerClassName);
 
         // action session context
         _sessionContextClassName = _config.getProperty(CONFIG_SESSION_CONTEXT_INSTANCE_CLASS_NAME);

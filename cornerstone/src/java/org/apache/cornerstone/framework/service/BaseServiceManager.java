@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.api.registry.IRegistry;
 import org.apache.cornerstone.framework.api.service.IService;
@@ -71,7 +72,7 @@ public class BaseServiceManager extends BaseObject implements IServiceManager
 	public void init()
 	{
 		super.init();
-		_registry = Cornerstone.getRegistry();
+		_registry = (IRegistry) Cornerstone.getImplementation(IRegistry.class);
 		_serviceDomainName = getConfigProperty(CONFIG_SERVICE_REGISTRY_DOMAIN_NAME);
 		_serviceInterfaceName = getConfigProperty(CONFIG_SERVICE_REGISTRY_INTERFACE_NAME);
 		initServices();    
@@ -97,7 +98,8 @@ public class BaseServiceManager extends BaseObject implements IServiceManager
 
 		try
 		{
-			IService service = (IService) Cornerstone.getImplementationManager().createImplementation(IService.class, logicalName);
+			IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+			IService service = (IService) implementationManager.createImplementation(IService.class, logicalName);
             service.setName(logicalName);   // overwrite class name with logical name
     		return service;
 		}

@@ -27,6 +27,7 @@ import org.apache.cornerstone.framework.api.persistence.connection.ConnectionExc
 import org.apache.cornerstone.framework.api.persistence.connection.IConnectionManager;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistenceFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
+import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.factory.ioc.InversionOfControlFactory;
@@ -57,7 +58,8 @@ public abstract class BasePersistenceFactory extends InversionOfControlFactory i
 			Exception e = new PersistenceException("config property '" + CONFIG_CONNECTION_MANAGER_INSTANCE_CLASS_NAME + "' missing");
 			_Logger.error("", e);
 		}
-		_connectionManager = (IConnectionManager) Cornerstone.getSingletonManager().getSingleton(connectionManagerClassName);
+		ISingletonManager singletonManager = (ISingletonManager) Cornerstone.getImplementation(ISingletonManager.class);
+		_connectionManager = (IConnectionManager) singletonManager.getSingleton(connectionManagerClassName);
 
 		_dataSourceName = getConfigProperty(CONFIG_DATA_SOURCE_NAME);
 		if (_dataSourceName == null)

@@ -29,6 +29,7 @@ import java.util.Properties;
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.factory.CreationException;
 import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistentObjectFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
@@ -293,7 +294,8 @@ public class BasePersistentObjectFactory extends BasePersistenceFactory implemen
     {
         try
         {
-            IFactory factory = (IFactory) Cornerstone.getImplementationManager().createImplementation(IFactory.class, factoryParentName);
+        	IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+            IFactory factory = (IFactory) implementationManager.createImplementation(IFactory.class, factoryParentName);
             if (parameterProperties == null || parameterProperties.size() == 0)
             {    
                 return factory.createInstance();

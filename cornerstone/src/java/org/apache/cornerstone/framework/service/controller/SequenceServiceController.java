@@ -18,10 +18,10 @@ package org.apache.cornerstone.framework.service.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.service.IService;
 import org.apache.cornerstone.framework.api.service.IServiceDescriptor;
+import org.apache.cornerstone.framework.api.service.IServiceManager;
 import org.apache.cornerstone.framework.api.service.ServiceException;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.init.Cornerstone;
@@ -83,7 +83,8 @@ public class SequenceServiceController extends BaseServiceController
             {
                 String sequenceElemetnName = (String) serviceNameList.get(i);
                 String serviceLogicalName = getConfigProperty(CONFIG_SEQUENCE, sequenceElemetnName, Constant.PARENT_NAME);
-                _serviceList.add(Cornerstone.getServiceManager().createServiceByName(serviceLogicalName));
+                IServiceManager serviceManager = (IServiceManager) Cornerstone.getImplementation(IServiceManager.class);
+                _serviceList.add(serviceManager.createServiceByName(serviceLogicalName));
             }
         }
 
