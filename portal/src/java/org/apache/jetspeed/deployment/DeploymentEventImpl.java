@@ -53,9 +53,6 @@
  */
 package org.apache.jetspeed.deployment;
 
-import java.io.InputStream;
-
-import org.apache.commons.configuration.Configuration;
 
 /**
  * <p>
@@ -72,6 +69,7 @@ public class DeploymentEventImpl implements DeploymentEvent
 	private String type;
 	private DeploymentHandler handler;
 	private String deploymentRoot;
+	private int status;
 	
 
     /**
@@ -125,6 +123,22 @@ public class DeploymentEventImpl implements DeploymentEvent
     public DeploymentHandler getHandler()
     {        
         return handler;
+    }
+
+    /**
+     * @return
+     */
+    public int getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * @param i
+     */
+    public void setStatus(int i)
+    {
+        status = i;
     }
 
 }

@@ -77,6 +77,10 @@ public interface DeploymentEvent
     String EVENT_TYPE_REDEPLOY = "redeploy";
     /** Standard un-deployment event */
     String EVENT_TYPE_UNDEPLOY = "undeploy";
+    
+    int STATUS_OKAY = 0;
+	int STATUS_FAILED = 1;
+    
 	
 	/**
 	 * Returns the type of event this is.  You can use one of the three pre-defined types
@@ -100,5 +104,11 @@ public interface DeploymentEvent
 	 * @return InputStream containing the information to be deployed.
 	 */	
 	DeploymentHandler getHandler();
+	
+	int getStatus();
+	
+	void setStatus(int status);
+	
+	
 	
 }
