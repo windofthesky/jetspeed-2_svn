@@ -308,9 +308,9 @@ limitations under the License.
   	   <constructor-arg  ><ref bean="org.apache.jetspeed.aggregator.PortletRenderer" /></constructor-arg>
   </bean>
   
-  <!-- Application Server Manager 
+  <!-- Application Server Manager for Tomcat
   	   Provides hooks into the application server to help us deploy portlet applications
-  	   as web application into that server.
+  	   as web application into that server.  This manager is for Tomcat 4/5
   	-->
   <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" 
   	   class="org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager" 
@@ -321,11 +321,22 @@ limitations under the License.
   	   <constructor-arg index="2"><value>${autodeployment.user}</value></constructor-arg>
   	   <constructor-arg index="3"><value>${autodeployment.password}</value></constructor-arg>
   </bean>
+  <!--
+  	Application Server Manager for JBoss.
+  	To support deployment in JBoss, comment the Tomcat app server definition above
+  	and uncomment the JBoss app server manager below
+  -->
+  <!--
+  <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager"
+        class="org.apache.jetspeed.tools.pamanager.servletcontainer.JBossManager"
+       init-method="start" />
+  --> 
+  
   
   <!-- Portlet Application Manager 
   	   Deploys portlet application to both Jetspeed's portlet registry
   	   and to application server Jetspeed is using to process the web application
-  	   portion of the portlet application.
+  	   portion of the portlet application.  
   	-->
    <bean id="PAM" 
   	   class="org.apache.jetspeed.tools.pamanager.ApplicationServerPAM" 
@@ -338,6 +349,10 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
   	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  
   </bean>
+
+  
+  
+  
   
   <!-- Portlet Application deployment event listener -->
   <bean id="portletAppDeploymentListener" 
