@@ -15,29 +15,20 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
 import junit.framework.Test;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * TestPortletDescriptorSecurityRoles - test and validate security roles and
@@ -47,14 +38,8 @@ import org.picocontainer.MutablePicoContainer;
  * 
  * @version $Id$
  */
-public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTestCase
+public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCase
 {
-
-    private PortletRegistryComponent registry;
-
-    private MutablePicoContainer container;
-
-    private PersistenceStore store;
 
     /**
      * Defines the testcase name for JUnit.
@@ -78,39 +63,6 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
         TestRunner.main(new String[] { TestPortletDescriptorSecurityRoles.class.getName()});
     }
 
-    public static final String LOG4J_CONFIG_FILE = "log4j.file";
-
-    // TODO: make this relative, move it into script
-    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
-
-    protected void setUp() throws Exception
-    {
-        // super.setUp();
-
-        // TODO: this is REALLY strange. If I don't setup LOG4J here Digester
-        // crashes with a NPE
-        // if I setup Log4J in my super class, Digester crashes ... mysterious
-        // TODO: need a Logging Component
-
-        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
-        Properties p = new Properties();
-        try
-        {
-            p.load(new FileInputStream(log4jFile));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        PropertyConfigurator.configure(p);
-
-        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
-
-        container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-        store = registry.getPersistenceStore();
-    }
-
     /**
      * Creates the test suite.
      * 
@@ -119,11 +71,10 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletDescriptorSecurityRoles.class);
-        suite.setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPortletDescriptorSecurityRoles.class);
     }
-
+    
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");
@@ -170,22 +121,22 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
         // persist the app
         try
         {
-            store.getTransaction().begin();
-            registry.registerPortletApplication(app);
-            store.getTransaction().commit();
+            persistenceStore.getTransaction().begin();
+            portletRegistry.registerPortletApplication(app);
+            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {
             String msg =
                 "Unable to register portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
-            store.getTransaction().rollback();
+            persistenceStore.getTransaction().rollback();
             throw new Exception(msg, e);
         }
         // clear cache
-        store.invalidateAll();
+        persistenceStore.invalidateAll();
 
         // read back in
-        app = registry.getPortletApplication("unit-test");
+        app = portletRegistry.getPortletApplication("unit-test");
         validateFailed = true;
         try
         {
@@ -200,14 +151,14 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
         // remove the app
         try
         {
-            store.getTransaction().begin();
-            registry.removeApplication(app);
-            store.getTransaction().commit();
+            persistenceStore.getTransaction().begin();
+            portletRegistry.removeApplication(app);
+            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {
             String msg =
-                "Unable to remove portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
+                "Unable to remove portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
             throw new Exception(msg, e);
         }
 

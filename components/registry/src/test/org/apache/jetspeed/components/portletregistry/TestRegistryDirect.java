@@ -20,15 +20,12 @@ import java.util.Locale;
 import javax.portlet.PortletMode;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -36,13 +33,13 @@ import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * 
@@ -53,10 +50,9 @@ import org.picocontainer.MutablePicoContainer;
  * @version $Id$
  *  
  */
-public class TestRegistryDirect extends AbstractComponentAwareTestCase
+public class TestRegistryDirect extends PersistenceSupportedTestCase
 {
 
-    private MutablePicoContainer container;
     private static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
     private static final String PORTLET_0_NAME = "Portlet 0";
     private static final String PORTLET_1_CLASS = "com.portlet.MyClass";
@@ -71,10 +67,6 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
     private static PortletRegistryComponent registry;
     private static PersistenceStore store;
 
-    public void testContainer()
-    {
-        assertNotNull(container);
-    }
 
     /*
      * (non-Javadoc)
@@ -84,8 +76,8 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
+        
+        registry = new PortletRegistryComponentImpl(persistenceStore);
         store = registry.getPersistenceStore();
 
         testPasses++;
@@ -98,16 +90,13 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
      */
     protected void tearDown() throws Exception
     {
-
         super.tearDown();
     }
 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirect.class);
-        suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
-
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRegistryDirect.class);
     }
 
     /**
@@ -115,13 +104,13 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
      */
     public TestRegistryDirect(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     public void test001() throws Exception
     {
         // Create an Application and a Web app
-        assertNotNull(getContainer().getComponentInstanceOfType(PortletEntityAccessComponent.class));
+        
         store.getTransaction().begin();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");

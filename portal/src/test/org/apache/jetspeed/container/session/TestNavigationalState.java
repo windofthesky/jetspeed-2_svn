@@ -18,20 +18,17 @@ package org.apache.jetspeed.container.session;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextComponent;
-
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.pluto.om.window.PortletWindow;
-
 import org.picocontainer.MutablePicoContainer;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -46,14 +43,11 @@ import com.mockrunner.mock.web.MockServletConfig;
  * @version $Id$
  */
 
-public class TestNavigationalState extends AbstractComponentAwareTestCase 
+public class TestNavigationalState extends TestCase 
 {
     private MutablePicoContainer container;
     private NavigationalStateComponent navSession;
     private NavigationalStateComponent navPluto;    
-    private RequestContextComponent rcSession;
-    private RequestContextComponent rcPluto;
-    
     /**
      * Defines the testcase name for JUnit.
      *
@@ -77,52 +71,43 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        assertNotNull("container is null", container);
-        navSession = (NavigationalStateComponent) container.getComponentInstance(NavigationalStateComponent.class);
-        navPluto = (NavigationalStateComponent) container.getComponentInstance("PathNavs");        
         
-        rcSession = (RequestContextComponent) container.getComponentInstance(RequestContextComponent.class);
-        rcPluto = (RequestContextComponent) container.getComponentInstance("PlutoRC");        
-        
+     //   navSession = (NavigationalStateComponent) container.getComponentInstance(NavigationalStateComponent.class);
+       navSession = new JetspeedNavigationalStateComponent("org.apache.jetspeed.container.session.impl.SessionNavigationalState", 
+                                                                                                 "org.apache.jetspeed.container.url.impl.SessionPortalURL", 
+                                                                                                  "_,a,m,s,r,i,pm,ps,:");
+      //   navPluto = (NavigationalStateComponent) container.getComponentInstance("PathNavs");        
+       navPluto = new JetspeedNavigationalStateComponent("org.apache.jetspeed.container.session.impl.PathNavigationalState", 
+                                                                                           "org.apache.jetspeed.container.url.impl.PathPortalURL",
+                                                                                           "_,ac,md,st,rp,pid,pm,ps,:");
+                   
     }
 
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestNavigationalState.class);
-        suite.setScript("org/apache/jetspeed/containers/test-navstate-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestNavigationalState.class);
     }
 
     public void testAllComponents()
         throws Exception
     {        
         System.out.println("Starting Navs Mode and State test");
-        assertNotNull("nav state component is null", navPluto);
-        assertNotNull("pluto nav state component is null", navPluto);        
-        assertNotNull("request context component is null", rcSession);
-        assertNotNull("pathrequest context component is null", rcPluto);
-
+      
         // general navigational state test
-        navigationTest(navSession, rcSession);
-        navigationTest(navPluto, rcPluto);
+        navigationTest(navSession);
+        navigationTest(navPluto);
         
         // URL tests
-        String result = urlTest(navPluto, rcPluto);
+        String result = urlTest(navPluto);
         assertEquals("Session URL not equal", "http://www.sporteportal.com/jetspeed/portal/_st_33/minimized/_ac_33/AC/_rp_33_test/1_one/_md_33/edit", result);
-        result = urlTest(navSession, rcSession);
+        result = urlTest(navSession);
         assertEquals("Session URL not equal", "http://www.sporteportal.com/jetspeed/portal/_a_33/A/_s_33/minimized/_m_33/edit/_r_33_test/1_one", result);
         
         System.out.println("Ending Navs Mode and State test");
     }
 
-    private void navigationTest(NavigationalStateComponent component, RequestContextComponent rc)
+    private void navigationTest(NavigationalStateComponent component)
     throws Exception
     {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -131,10 +116,14 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         ServletConfig config = new MockServletConfig();
         request.setSession(session);
         request.setPathInfo("/stuff/");
-        RequestContext context = rc.create(
-                                           (HttpServletRequest)request, 
-                                            response, 
-                                            config);
+        
+
+//      RequestContext context = rc.create(
+//              (HttpServletRequest)request, 
+//              response, 
+//              config);
+      JetspeedRequestContext context = new JetspeedRequestContext(request, response, config, component, null );
+    PortalURL url = component.createURL(context);
                 
         PortletWindow window = new PortletWindowImpl("111");
         PortletWindow window2 = new PortletWindowImpl("222");
@@ -154,7 +143,7 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         assertTrue("window mode is not set", nav.getMode(window3).equals(PortletMode.VIEW));
         
     }
-    public String urlTest(NavigationalStateComponent component, RequestContextComponent rc)
+    public String urlTest(NavigationalStateComponent component)
     throws Exception
     {        
         String [] values = 
@@ -171,11 +160,11 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         request.setContextPath("/jetspeed");
         request.setServletPath("/portal");
         
-        RequestContext context = rc.create(
-                (HttpServletRequest)request, 
-                response, 
-                config);
-        PortalURL url = component.createURL(context);
+//        RequestContext context = rc.create(
+//                (HttpServletRequest)request, 
+//                response, 
+//                config);
+        PortalURL url = component.createURL(new JetspeedRequestContext(request, response, config, component, null ));
         assertNotNull("URL is null", url);
         
         PortletWindow window = new PortletWindowImpl("33");

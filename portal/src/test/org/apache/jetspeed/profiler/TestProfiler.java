@@ -19,13 +19,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.cache.file.FileCache;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.impl.CastorXmlPageManager;
+import org.apache.jetspeed.profiler.impl.JetspeedProfiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
@@ -41,11 +46,32 @@ import org.picocontainer.MutablePicoContainer;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestProfiler extends AbstractComponentAwareTestCase
+public class TestProfiler extends PersistenceSupportedTestCase
 {
-    private Profiler profiler = null;
+    private JetspeedProfiler profiler = null;
     private MutablePicoContainer container;
+    protected static final String ROOT = "./test";
+    protected static final String PAGE_ROOT = ROOT+"/testdata/pages";
+    protected static final Properties TEST_PROPS = new Properties();
     
+    static
+    {         
+        TEST_PROPS.put("defaultRule", "j1");
+        TEST_PROPS.put("anonymousUser", "anon");
+        TEST_PROPS.put("locator.impl", "org.apache.jetspeed.profiler.impl.JetspeedProfileLocator");
+        TEST_PROPS.put("principalRule.impl", "org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl");
+        TEST_PROPS.put("profilingRule.impl", "org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule");
+    }
+    
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception
+    {
+        profiler.stop();
+        pageManager.stop();
+        super.tearDown();
+    }
     /**
      * Defines the testcase name for JUnit.
      *
@@ -69,21 +95,17 @@ public class TestProfiler extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        profiler = (Profiler) container.getComponentInstance(Profiler.class);        
+        
+        pageManager = new CastorXmlPageManager(new JetspeedIdGenerator(), new FileCache(100, 120), PAGE_ROOT);
+        pageManager.start();
+        profiler = new JetspeedProfiler(persistenceStore, pageManager, TEST_PROPS);
+        profiler.start();
     }
 
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestProfiler.class);
-        suite.setScript("org/apache/jetspeed/profiler/containers/profiler-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestProfiler.class);
     }
 
     private static final String DEFAULT_RULE = "j1";
@@ -91,6 +113,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
     private static final int EXPECTED_STANDARD = 1;
     private static final int EXPECTED_FALLBACK = 1;
     private static final String DEFAULT_PAGE = "default-page";
+    protected CastorXmlPageManager pageManager;
     
         
     /**

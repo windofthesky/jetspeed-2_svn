@@ -16,12 +16,10 @@
 package org.apache.jetspeed.aggregator;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.container.TestPortletContainer;
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.AbstractPortalContainerTestCase;
+import org.apache.jetspeed.aggregator.impl.PortletRendererImpl;
 
 /**
  * TestPortletRenderer
@@ -29,10 +27,9 @@ import org.picocontainer.MutablePicoContainer;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestRenderer extends AbstractComponentAwareTestCase 
+public class TestRenderer extends AbstractPortalContainerTestCase
 {
-    private MutablePicoContainer container;
-    private PortletRenderer renderer;
+    protected PortletRenderer renderer;
     
     /**
      * Defines the testcase name for JUnit.
@@ -57,8 +54,8 @@ public class TestRenderer extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        renderer = (PortletRenderer) container.getComponentInstance(PortletRenderer.class);        
+        
+        renderer = new PortletRendererImpl(portletContainer, windowAccessor);       
     }
 
     /**
@@ -69,9 +66,8 @@ public class TestRenderer extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletContainer.class);
-        suite.setScript("org/apache/jetspeed/containers/test-renderer-container.groovy");
-        return suite;                                   
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRenderer.class);
     }
 
     public void testBasic() throws Exception

@@ -16,10 +16,10 @@
 package org.apache.jetspeed.aggregator;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl;
+import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl;
 
 /**
  * <P>Test the aggregation service</P>
@@ -28,9 +28,8 @@ import org.picocontainer.MutablePicoContainer;
  * @version $Id$
  * 
  */
-public class TestAggregator extends AbstractComponentAwareTestCase
+public class TestAggregator extends TestRenderer
 {
-    private MutablePicoContainer container;
     private PortletAggregator portletAggregator;
     private PageAggregator pageAggregator;
     
@@ -57,22 +56,16 @@ public class TestAggregator extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        pageAggregator = (PageAggregator) container.getComponentInstance(PageAggregator.class);
-        portletAggregator = (PortletAggregator) container.getComponentInstance(PortletAggregator.class);                
+
+        pageAggregator = new PageAggregatorImpl(renderer);
+        portletAggregator = new PortletAggregatorImpl(renderer);
+        
     }
 
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestAggregator.class);
-        suite.setScript("org/apache/jetspeed/containers/test-aggregator-container.groovy");
-        return suite;                                   
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestAggregator.class);
     }
 
     public void testBasic() throws Exception

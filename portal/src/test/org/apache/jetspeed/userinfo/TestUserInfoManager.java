@@ -21,37 +21,41 @@ import java.util.prefs.Preferences;
 import javax.portlet.PortletRequest;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyManager;
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
 import org.apache.jetspeed.prefs.impl.PropertyException;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.impl.GroupManagerImpl;
+import org.apache.jetspeed.security.impl.PermissionManagerImpl;
+import org.apache.jetspeed.security.impl.RdbmsPolicy;
+import org.apache.jetspeed.security.impl.RoleManagerImpl;
+import org.apache.jetspeed.security.impl.SecurityProviderImpl;
+import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.security.impl.UserManagerImpl;
 import org.apache.jetspeed.tools.pamanager.PortletDescriptorUtilities;
-
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
 
 /**
  * <p>Unit test for {@link UserInfoManager}</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestUserInfoManager extends AbstractComponentAwareTestCase
+public class TestUserInfoManager extends RegistrySupportedTestCase
 {
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
     /** The property manager. */
-    private static PropertyManager pms;
+    private static PropertyManager propertyManager;
 
     /** The user info manager. */
     private UserInfoManager uim;
@@ -59,11 +63,13 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
     /** The user manager. */
     private UserManager ums;
     
-    /** The portlet registry. */
-    private static PortletRegistryComponent registry;
-    
-    /** The persistence store. */
-    private PersistenceStore store;
+    private Object gms;
+
+    private Object rms;
+
+    private PermissionManagerImpl pms;
+
+    private PreferencesProvider provider;
 
     /**
      * <p>Defines the testcase name for JUnit.</p>
@@ -81,12 +87,15 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        uim = (UserInfoManager) container.getComponentInstance(UserInfoManager.class);
-        pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-        store = registry.getPersistenceStore();
+        
+        ums = new UserManagerImpl(persistenceStore);
+        gms = new GroupManagerImpl(persistenceStore);
+        rms =new RoleManagerImpl(persistenceStore);
+        pms = new PermissionManagerImpl(persistenceStore);
+        new SecurityProviderImpl("login.conf", new RdbmsPolicy(pms), ums);   
+        propertyManager = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        uim = new UserInfoManagerImpl(ums, portletRegistry);       
     }
 
     /**
@@ -97,25 +106,10 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         super.tearDown();
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     *
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestUserInfoManager.class);
-        suite.setScript("org/apache/jetspeed/containers/test-userinfo-container.groovy");
-        return suite;
-    }
-
-    /**
-     * <p>Test the container.</p>
-     */
-    public void testContainer()
-    {
-        assertNotNull(container);
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestUserInfoManager.class);
     }
 
     /** Test set user info map. */
@@ -128,15 +122,15 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         // persist the app
         try
         {
-            store.getTransaction().begin();
-            registry.registerPortletApplication(app);
-            store.getTransaction().commit();
+            persistenceStore.getTransaction().begin();
+            portletRegistry.registerPortletApplication(app);
+            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {
             String msg =
-                "Unable to register portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
-            store.getTransaction().rollback();
+                "Unable to register portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
+            persistenceStore.getTransaction().rollback();
             throw new Exception(msg, e);
         }
 
@@ -158,14 +152,14 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         // remove the app
         try
         {
-            store.getTransaction().begin();
-            registry.removeApplication(app);
-            store.getTransaction().commit();
+            persistenceStore.getTransaction().begin();
+            portletRegistry.removeApplication(app);
+            persistenceStore.getTransaction().commit();
         }
         catch (Exception e)
         {
             String msg =
-                "Unable to remove portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
+                "Unable to remove portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
             throw new Exception(msg, e);
         }
                 
@@ -204,7 +198,7 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         Map propertyKeys = initPropertyKeysMap();
         try
         {
-            pms.addPropertyKeys(userInfoPrefs, propertyKeys);
+            propertyManager.addPropertyKeys(userInfoPrefs, propertyKeys);
         }
         catch (PropertyException pex)
         {

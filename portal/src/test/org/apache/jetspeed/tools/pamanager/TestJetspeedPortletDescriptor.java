@@ -9,14 +9,12 @@ package org.apache.jetspeed.tools.pamanager;
 import java.util.Collection;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * @author jford
@@ -25,10 +23,7 @@ import org.picocontainer.MutablePicoContainer;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class TestJetspeedPortletDescriptor
-    extends AbstractComponentAwareTestCase {
-    
-    private PortletRegistryComponent registry;
-    private MutablePicoContainer container;
+    extends RegistrySupportedTestCase {
     
     private static final String PORTLET_01 = "HelloWorld Portlet";
     private static final String PORTLET_02 = "Display the Portlet Request Information";
@@ -50,7 +45,7 @@ public class TestJetspeedPortletDescriptor
      * @param log4jFile
      */
     public TestJetspeedPortletDescriptor(String arg0, String log4jFile) {
-        super(arg0, log4jFile);
+        super(arg0);
     }
     
     /**
@@ -63,18 +58,7 @@ public class TestJetspeedPortletDescriptor
         TestRunner.main(new String[] { TestPortletDescriptor.class.getName()});
     }
 
-    public static final String LOG4J_CONFIG_FILE = "log4j.file";
-    // TODO: make this relative, move it into script
-    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/test/Log4j.properties";
-    
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        
-        container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-    }
-    
+   
     /**
      * Creates the test suite.
      *
@@ -83,9 +67,8 @@ public class TestJetspeedPortletDescriptor
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestJetspeedPortletDescriptor.class);
-        suite.setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestJetspeedPortletDescriptor.class);
     }
     
     public void testLoadPortletApplicationTree() throws Exception

@@ -19,11 +19,12 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -32,7 +33,6 @@ import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * Test Portlet Entity Accessor
@@ -40,11 +40,11 @@ import org.picocontainer.MutablePicoContainer;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPortletEntityAccessComponent extends AbstractComponentAwareTestCase 
+public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCase 
 {
-    private static MutablePicoContainer container = null;
-    private static PortletEntityAccessComponent entityAccess = null;
-    private static PortletRegistryComponent registry = null;
+    
+    private  PortletEntityAccessComponent entityAccess = null;
+    private  PortletRegistryComponent registry = null;
     private static final String TEST_APP = "EntityTestApp";
     private static final String TEST_PORTLET = "EntityTestPortlet";
     private static final String TEST_ENTITY = "user5/entity-9";
@@ -57,12 +57,10 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
     protected void setUp() throws Exception
     {        
         super.setUp();
-        if (container == null)
-        {
-            container = (MutablePicoContainer) getContainer();
-            entityAccess = (PortletEntityAccessComponent) container.getComponentInstance(PortletEntityAccessComponent.class);
-            registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-        }
+    
+            entityAccess = new PortletEntityAccessComponentImpl(persistenceStore);
+            registry = new PortletRegistryComponentImpl(persistenceStore);
+        
         setupTestData();                   
     }
 
@@ -72,19 +70,16 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
      * @see junit.framework.TestCase#tearDown()
      */
     protected void tearDown() throws Exception
-    {        
+    {                
+        teardownTestData();
         super.tearDown();
-        teardownTestData();        
     }
 
-    public static Test suite()
+   public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletEntityAccessComponent.class);
-        suite.setScript("org/apache/jetspeed/containers/test-entity.groovy");
-        
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPortletEntityAccessComponent.class);
     }
-
     
 
     /**
@@ -92,13 +87,12 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
      */
     public TestPortletEntityAccessComponent(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
         
     public void testEntities() throws Exception
     {
-        assertNotNull(container);
-
+        
         PersistenceStore store = registry.getPersistenceStore();
         store.getTransaction().begin();
         

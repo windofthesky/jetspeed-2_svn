@@ -15,23 +15,18 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Properties;
 
 import javax.portlet.PortletMode;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4jFactory;
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -39,7 +34,6 @@ import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -48,7 +42,6 @@ import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor
@@ -58,11 +51,8 @@ import org.picocontainer.MutablePicoContainer;
  * 
  * @version $Id$
  */
-public class TestPortletDescriptor extends AbstractComponentAwareTestCase
+public class TestPortletDescriptor extends RegistrySupportedTestCase
 {
-    private PortletRegistryComponent registry;
-    private MutablePicoContainer container;
-
     /**
      * Defines the testcase name for JUnit.
      *
@@ -83,49 +73,12 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         TestRunner.main(new String[] { TestPortletDescriptor.class.getName()});
     }
 
-    public static final String LOG4J_CONFIG_FILE = "log4j.file";
-    // TODO: make this relative, move it into script
-    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
-
-    protected void setUp() throws Exception
-    {
-        // super.setUp();
-
-        // TODO: this is REALLY strange. If I don't setup LOG4J here Digester crashes with a NPE
-        // if I setup Log4J in my super class, Digester crashes ... mysterious
-        // TODO: need a Logging Component
-
-        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
-        Properties p = new Properties();
-        try
-        {
-            p.load(new FileInputStream(log4jFile));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        PropertyConfigurator.configure(p);
-
-        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
-
-        container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-    }
-
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletDescriptor.class);
-        suite.setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPortletDescriptor.class);
     }
-
+    
     /*
      * Overrides the database properties
      */
@@ -338,12 +291,12 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
 
     public void testWritingToDB() throws Exception
     {
-        PersistenceStore store = registry.getPersistenceStore();
+        PersistenceStore store = portletRegistry.getPersistenceStore();
         store.getTransaction().begin();
-        MutablePortletApplication app = registry.getPortletApplication("HW_App");
+        MutablePortletApplication app = portletRegistry.getPortletApplication("HW_App");
         if (app != null)
         {
-            registry.removeApplication(app);
+            portletRegistry.removeApplication(app);
             store.getTransaction().commit();
             store.getTransaction().begin();
         }
@@ -352,12 +305,12 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         app.setName("HW_App");
 
         store.getTransaction().begin();
-        registry.registerPortletApplication(app);
+        portletRegistry.registerPortletApplication(app);
         store.getTransaction().commit();
         // store.invalidateAll();
 
         store.getTransaction().begin();
-        PortletDefinition pd = registry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
+        PortletDefinition pd = portletRegistry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
         store.getTransaction().commit();
         assertNotNull(pd);
 
@@ -378,12 +331,12 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         assertTrue(count > 0);
 
         store.getTransaction().begin();
-        pd = registry.getPortletDefinitionByUniqueName("HW_App::PickANumberPortlet");
+        pd = portletRegistry.getPortletDefinitionByUniqueName("HW_App::PickANumberPortlet");
         store.getTransaction().commit();
         assertNotNull(pd);
 
         store.getTransaction().begin();
-        registry.removeApplication(app);
+        portletRegistry.removeApplication(app);
         store.getTransaction().commit();
 
     }

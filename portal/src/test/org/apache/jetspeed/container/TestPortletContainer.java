@@ -16,10 +16,11 @@
 package org.apache.jetspeed.container;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.pluto.PortletContainer;
+import org.apache.pluto.PortletContainerImpl;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -28,7 +29,7 @@ import org.picocontainer.MutablePicoContainer;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPortletContainer extends AbstractComponentAwareTestCase 
+public class TestPortletContainer extends TestCase 
 {
     private MutablePicoContainer container;
     private PortletContainer portletContainer;
@@ -56,26 +57,19 @@ public class TestPortletContainer extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        portletContainer = (PortletContainer) container.getComponentInstance(PortletContainer.class);        
+        
+        portletContainer = new JetspeedPortletContainerWrapper(new PortletContainerImpl());
     }
 
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
+   public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletContainer.class);
-        suite.setScript("org/apache/jetspeed/containers/portlet-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPortletContainer.class);
     }
 
     public void testBasic()
     {
-        assertNotNull("portlet container is null", portletContainer);
+        
         // not much more i can do without setting up a mock servlet or portlet framework
     }
 }

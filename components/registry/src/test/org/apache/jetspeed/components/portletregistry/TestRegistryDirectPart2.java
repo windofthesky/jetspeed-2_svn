@@ -18,23 +18,20 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-
 import org.apache.pluto.om.common.ObjectID;
-
-import org.picocontainer.MutablePicoContainer;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * 
@@ -45,10 +42,9 @@ import org.picocontainer.MutablePicoContainer;
  * @version $Id$
  *  
  */
-public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
+public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
 {
 
-    private MutablePicoContainer container;
     private static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
     private static final String PORTLET_0_NAME = "Portlet 0";
     private static final String PORTLET_1_CLASS = "com.portlet.MyClass";
@@ -63,10 +59,6 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
     private static PortletRegistryComponent registry;
     private static PersistenceStore store;
 
-    public void testContainer()
-    {
-        assertNotNull(container);
-    }
 
     /*
      * (non-Javadoc)
@@ -76,8 +68,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
+        registry = new PortletRegistryComponentImpl(persistenceStore);
         store = registry.getPersistenceStore();
 
         testPasses++;
@@ -90,15 +81,23 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
      */
     protected void tearDown() throws Exception
     {
-
+        PersistenceStore store = registry.getPersistenceStore();
+        store.getTransaction().begin();
+        
+        Iterator itr = registry.getPortletApplications().iterator();
+        while(itr.hasNext())
+        {        
+            registry.removeApplication((PortletApplicationDefinition)itr.next());
+        }
+        
+        store.getTransaction().commit(); 
         super.tearDown();
     }
 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirectPart2.class);
-        suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRegistryDirectPart2.class);
     }
 
     /**
@@ -106,7 +105,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
      */
     public TestRegistryDirectPart2(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     public void test001() throws Exception

@@ -19,10 +19,10 @@ package org.apache.jetspeed.capabilities;
 import java.util.Iterator;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.capabilities.impl.JetspeedCapabilities;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 
 /**
  * Test Capability Service
@@ -30,19 +30,10 @@ import org.picocontainer.MutablePicoContainer;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends AbstractComponentAwareTestCase
+public class TestCapability extends PersistenceSupportedTestCase
 {
     private Capabilities capabilities = null;
-    private MutablePicoContainer container;
-
-    /**
-     * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
-     */
-//    public void overrideProperties(Configuration properties)
-//    {
-//        super.overrideProperties(properties);
-//    }
-
+    
     /**
      * Defines the testcase name for JUnit.
      *
@@ -68,21 +59,14 @@ public class TestCapability extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();               
-        container = (MutablePicoContainer) getContainer();
-        capabilities = (Capabilities) container.getComponentInstance(Capabilities.class);        
+
+        capabilities = new JetspeedCapabilities(persistenceStore);        
     }
     
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCapability.class);
-        suite.setScript("org/apache/jetspeed/capabilities/containers/capability-container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestCapability.class);
     }
 
     /**
