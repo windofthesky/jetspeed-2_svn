@@ -48,7 +48,7 @@ public class HSQLServer
             System.out.println("Exiting HSQL");
             
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             
         }
