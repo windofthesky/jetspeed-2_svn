@@ -54,8 +54,8 @@ limitations under the License.
       #if ($velocityCount == 1)
         #set ($rowid = $entry)
       #end
-      <td class="$rowstyle" nowrap width="23">
-        <div align="center">$entry</div>
+      <td nowrap class="$rowstyle" width="23">
+        <div class="$rowstyle" align="center">$entry</div>
       </td>
     #end
     #if ($rowLinks)

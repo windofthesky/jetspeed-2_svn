@@ -302,12 +302,14 @@ body.layout-tigris
   background-color:#CCCCCC;
   FONT-SIZE:7pt;
   FONT-WEIGHT:normal;
+  color:black;  
 }
 .jetdbEven
 {
   background-color:#999999;
   FONT-SIZE:7pt;
   FONT-WEIGHT:normal;
+  color:white;  
 }
 
 .jetdbLight
