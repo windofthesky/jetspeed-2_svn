@@ -7,41 +7,41 @@
       <validator name="required"
                  classname="org.apache.portals.bridges.frameworks.spring.validation.ValidationSupport"
                  method="validateRequired"
-                 methodParams="java.lang.Object,org.apache.commons.validator.Field"
+                 methodParams="java.lang.Object,org.apache.commons.validator.ValidatorAction,org.apache.commons.validator.Field,java.util.Map,java.util.ResourceBundle"
                  msg="errors.required"/>
       <validator name="range"
                  classname="org.apache.portals.bridges.frameworks.spring.validation.ValidationSupport"
                  method="validateRange"
-                 methodParams="java.lang.Object,org.apache.commons.validator.Field"
+                 methodParams="java.lang.Object,org.apache.commons.validator.ValidatorAction,org.apache.commons.validator.Field,java.util.Map,java.util.ResourceBundle"
                  msg="errors.range"/>
       <validator name="doubleRange"
                  classname="org.apache.portals.bridges.frameworks.spring.validation.ValidationSupport"
                  method="validateDoubleRange"
-                 methodParams="java.lang.Object,org.apache.commons.validator.Field"
+                 methodParams="java.lang.Object,org.apache.commons.validator.ValidatorAction,org.apache.commons.validator.Field,java.util.Map,java.util.ResourceBundle"
                  msg="errors.range"/>
       <validator name="mask"
                  classname="org.apache.portals.bridges.frameworks.spring.validation.ValidationSupport"
                  method="validateMask"
-                 methodParams="java.lang.Object,org.apache.commons.validator.Field"
+                 methodParams="java.lang.Object,org.apache.commons.validator.ValidatorAction,org.apache.commons.validator.Field,java.util.Map,java.util.ResourceBundle"
                  msg="errors.mask"/>
                  
    </global>
    <formset>
       <form name="clientInfo">
          <field property="name"  depends="required">
-         	   <arg key="nameForm.firstname.displayname"/>
+         	   <arg key="Name"/>
          </field>    
          <field  property="phone" depends="required">
-         	     <arg key="nameForm.lastname.displayname"/>
+         	     <arg key="Phone"/>
          </field>
          <field  property="email" depends="required">
-         	     <arg key="nameForm.street1.displayname"/>
+         	     <arg key="Email"/>
          </field>
          <field  property="stocks" depends="required">
-         	     <arg key="nameForm.city.displayname"/>
+         	     <arg key="Stocks"/>
          </field>
          <field  property="income" depends="required">
-         	     <arg key="nameForm.state.displayname"/>
+         	     <arg key="Income"/>
          </field>
          <!--
          <field  property="postalCode" depends="required,mask">

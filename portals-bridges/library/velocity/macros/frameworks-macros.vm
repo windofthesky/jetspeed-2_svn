@@ -1,15 +1,63 @@
 #macro (headerCell $body)
-  <td>
+  <th class="portlet-section-header">
     <b>     
         $body
     </b>
-  </td>
+  </th>
 #end
 
 #macro (entryCell $body)
-  <td>    
+  <td class='portlet-section-body'>    
       $body &nbsp;    
   </td>
+#end
+
+#macro (entryCell2 $body $count)
+#if (($count % 2) == 0)
+  <td class='portlet-section-body'>    
+#else
+  <td class='portlet-section-alternate'>    
+#end
+      $body &nbsp;    
+  </td>
+#end
+
+
+#macro (formField $label $value $size $id $MESSAGES $ERRORS)
+#if ($ERRORS)
+#set ($eflag = "$!ERRORS.get($id)")
+#else
+#set ($eflag = "")
+#end
+  <tr colspan="4" align="right">
+    <td width="5%" class="portlet-msg-error" align="left">#if ($!eflag == "") #else x #end</td>
+    <td nowrap class="portlet-form-field-label" align="right">$!MESSAGES.getString($label):&nbsp;</td>
+    <td class="portlet-form-input-field" align="left">
+      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value">
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+  </tr>
+#end
+
+#macro (ErrorMessages $ERRORS)
+#if ($ERRORS)
+#if ($ERRORS.size() > 0)
+#foreach ($msg in $ERRORS)
+<div class="portlet-msg-error">
+$msg<br/>
+</div>
+#end
+<br/>
+#end
+#end
+#end
+
+#macro (Preference $prefs $name)
+#set ($pall = $prefs.get($name))
+#foreach ($x in $pall)
+#set ($extraction = $x)
+#end
+$extraction
 #end
 
 #macro (form4ColumnCell $label $value $size $id)
@@ -21,12 +69,4 @@
     </td>
     <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
   </tr>
-#end
-
-#macro (Preference $prefs $name)
-#set ($pall = $prefs.get($name))
-#foreach ($x in $pall)
-#set ($extraction = $x)
-#end
-$extraction
 #end
