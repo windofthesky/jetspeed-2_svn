@@ -186,14 +186,6 @@ limitations under the License.
         </unique>
     </table>
 
-    <!--
-       Create Web Application Table
-    -->
-    <table name="WEB_APPLICATION">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
-    </table>
-
     <!--                                                                   
        Security Role                                                        
     -->                                                                     
@@ -206,5 +198,13 @@ limitations under the License.
             <reference foreign="ID" local="WEB_APPLICATION_ID"/>            
         </foreign-key>                                                      
     </table>                                                                
+
+    <!--
+       Create Web Application Table
+    -->
+    <table name="WEB_APPLICATION">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
+    </table>
                          
 </database>
