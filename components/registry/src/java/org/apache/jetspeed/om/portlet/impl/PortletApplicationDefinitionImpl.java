@@ -25,7 +25,6 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
