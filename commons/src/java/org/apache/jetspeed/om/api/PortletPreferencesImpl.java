@@ -54,16 +54,19 @@
 package org.apache.jetspeed.om.api;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Set;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.UnmodifiableException;
 import javax.portlet.ValidatorException;
 
+import org.apache.jetspeed.om.common.PreferenceComposite;
 import org.apache.jetspeed.om.common.PreferenceSetImpl;
 import org.apache.jetspeed.om.common.PreferenceSetComposite;
 import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
 
 /**
  * PortletPreferencesImpl
@@ -82,7 +85,8 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
 {
     private static final String NULL_KEY_MSG = "The preference \"key\" argument cannot be null";
 
-    private PreferenceSet registryPreferences;
+    private PreferenceSetComposite defaultPreferences;
+    private PreferenceSetComposite originalPreferences;
 
     /**
      * Creates an instance of PortletPreferencesImpl using the
@@ -94,10 +98,24 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      * @param prefSet PreferenceSet from the registry that will be used as a
      * base for the PortletPreferenceImpl.
      */
-    public PortletPreferencesImpl(PreferenceSet prefSet)
+    public PortletPreferencesImpl(PreferenceSetComposite defaultPreferences)
+    {
+        this();
+        this.defaultPreferences = defaultPreferences;
+    }
+
+    public PortletPreferencesImpl()
     {
         super();
-        registryPreferences = prefSet;
+    }
+
+    /**
+     * 
+     * @param defaultPreferences
+     */
+    public void setDefaultPreferences(PreferenceSetComposite defaultPreferences)
+    {
+        this.defaultPreferences = defaultPreferences;
     }
 
     /**
@@ -129,7 +147,7 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
             throw new IllegalArgumentException(NULL_KEY_MSG);
         }
 
-        Preference pref = registryPreferences.get(key);
+        Preference pref = defaultPreferences.get(key);
         if (pref == null || pref.isModifiable())
         {
             return true;
@@ -168,16 +186,21 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
             throw new IllegalArgumentException(NULL_KEY_MSG);
         }
 
-        Preference pref = registryPreferences.get(key);
-        if (pref != null)
+        PreferenceComposite pref = (PreferenceComposite) get(key);
+
+        if ((pref == null || pref.getValueAt(0) == null)
+            && defaultPreferences.get(key) != null
+            && defaultPreferences.get(key).getValues() != null)
         {
-            return def;
-        }
-        else if (pref.getValues().hasNext())
-        {
+            pref = (PreferenceComposite) defaultPreferences.get(key);
         }
 
-        return null;
+        if (pref != null)
+        {
+            return pref.getValueAt(0);
+        }
+
+        return def;
     }
 
     /**
@@ -187,8 +210,24 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      */
     public String[] getValues(String key, String[] def)
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (key == null)
+        {
+            throw new IllegalArgumentException(NULL_KEY_MSG);
+        }
+
+        PreferenceComposite pref = (PreferenceComposite) get(key);
+
+        if (pref == null)
+        {
+            pref = (PreferenceComposite) defaultPreferences.get(key);
+        }
+
+        if (pref != null)
+        {
+            return pref.getValueArray();
+        }
+
+        return def;
     }
 
     /**
@@ -196,7 +235,24 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      */
     public void setValue(String key, String value) throws UnmodifiableException
     {
-        // TODO Auto-generated method stub
+        if (key == null)
+        {
+            throw new IllegalArgumentException(NULL_KEY_MSG);
+        }
+
+        if (!isModifiable(key))
+        {
+            throw new UnmodifiableException("Preference \"" + key + "\" is not a modifiable preference attribute.");
+        }
+
+        PreferenceComposite pref = (PreferenceComposite) get(key);
+
+        if (pref == null)
+        {
+            pref = new PortletPreference();
+        }
+
+        pref.setValueAt(0, value);
 
     }
 
@@ -205,7 +261,24 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      */
     public void setValues(String key, String[] values) throws UnmodifiableException
     {
-        // TODO Auto-generated method stub
+        if (key == null)
+        {
+            throw new IllegalArgumentException(NULL_KEY_MSG);
+        }
+
+        if (!isModifiable(key))
+        {
+            throw new UnmodifiableException("Preference \"" + key + "\" is not a modifiable preference attribute.");
+        }
+
+        PreferenceComposite pref = (PreferenceComposite) get(key);
+
+        if (pref == null)
+        {
+            pref = new PortletPreference();
+        }
+
+        pref.setValues(Arrays.asList(values));
 
     }
 
@@ -214,8 +287,11 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      */
     public Enumeration getNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        Set dftNames = defaultPreferences.getPreferenceNames();
+        Set prefNames = super.getPreferenceNames();
+        prefNames.addAll(dftNames);
+
+        return Collections.enumeration(prefNames);
     }
 
     /**
@@ -223,7 +299,18 @@ public class PortletPreferencesImpl extends PreferenceSetImpl implements Portlet
      */
     public void reset(String key) throws UnmodifiableException
     {
-        // TODO Auto-generated method stub
+        if (key == null)
+        {
+            throw new IllegalArgumentException(NULL_KEY_MSG);
+        }
+
+        if (!isModifiable(key))
+        {
+            throw new UnmodifiableException("Preference \"" + key + "\" is not a modifiable preference attribute.");
+        }
+
+        // This will automatically cause a fall back to stored defaults
+        remove(key);
 
     }
 
