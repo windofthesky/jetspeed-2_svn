@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documentSet>
+  <title>[USER] Top Pages</title>
+  <metadata name="title" xml:lang="fr">[USER] Page haut</metadata>
+  <name>top_pages</name>
+  <profileLocator>docset</profileLocator>
+  <documentPath regexp="true">/top-links/*.link</documentPath>
+</documentSet>

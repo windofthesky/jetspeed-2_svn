@@ -18,4 +18,8 @@
   <documentOrder>third-party</documentOrder>
   <documentOrder>non-java</documentOrder>
   <documentOrder>Administrative</documentOrder>
+
+  <documentOrder>top-pages.ds</documentOrder>
+  <documentOrder>pages.ds</documentOrder>
+  <documentOrder>non-java.ds</documentOrder>
 </folder>

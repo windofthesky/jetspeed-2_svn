@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder>
+  <documentOrder>apache_portals.link</documentOrder>
+  <documentOrder>apache_jakarta.link</documentOrder>
+  <documentOrder>apache_tomcat.link</documentOrder>
+  <documentOrder>apache_velocity.link</documentOrder>
+  <documentOrder>apache_commons.link</documentOrder>
+</folder>
