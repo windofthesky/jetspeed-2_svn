@@ -86,5 +86,15 @@ public interface PortalURL
     
     String toString(boolean secure);
     
+    boolean isStateFullParameter(String param);
+    
+    String getStateKey(PortletWindow window);    
+    String getModeKey(PortletWindow window);    
+    String getActionKey(PortletWindow window);    
+    String getPrevModeKey(PortletWindow window);
+    String getPrevStateKey(PortletWindow window);
+    String getRenderParamKey(PortletWindow window);
+    
+    
     
 }

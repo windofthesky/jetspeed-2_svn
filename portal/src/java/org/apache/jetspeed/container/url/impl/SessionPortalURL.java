@@ -35,7 +35,11 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SessionPortalURL extends AbstractPortalURL implements PortalURL 
+public class SessionPortalURL 
+    extends 
+        AbstractPortalURL 
+    implements 
+        PortalURL 
 {
     private String stateKey = null;
     private WindowState state = null;
@@ -45,128 +49,12 @@ public class SessionPortalURL extends AbstractPortalURL implements PortalURL
     public SessionPortalURL(RequestContext context, NavigationalStateComponent nsc)
     {
         super(context, nsc);        
-        // analyze();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#setState(org.apache.pluto.om.window.PortletWindow, javax.portlet.WindowState)
-     */
-    public void setState(PortletWindow window, WindowState state) 
-    {
-        stateKey = getStateKey(window);
-        this.state = state;
+        //analyze();
     }
         
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#setMode(org.apache.pluto.om.window.PortletWindow, javax.portlet.PortletMode)
-     */
-    public void setMode(PortletWindow window, PortletMode mode) 
+    public boolean isStateFullParameter(String param)
     {
-        modeKey = getModeKey(window);
-        this.mode = mode;
+        return false;
     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getState(org.apache.pluto.om.window.PortletWindow)
-     */
-    public WindowState getState(PortletWindow window) 
-    {
-        return this.state; 
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getMode(org.apache.pluto.om.window.PortletWindow)
-     */
-    public PortletMode getMode(PortletWindow window) 
-    {
-        return this.mode;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getPreviousMode(org.apache.pluto.om.window.PortletWindow)
-     */
-    public PortletMode getPreviousMode(PortletWindow window) 
-    {
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getPreviousState(org.apache.pluto.om.window.PortletWindow)
-     */
-    public WindowState getPreviousState(PortletWindow window) 
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getRenderParamNames(org.apache.pluto.om.window.PortletWindow)
-     */
-    public Iterator getRenderParamNames(PortletWindow window) 
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getRenderParamValues(org.apache.pluto.om.window.PortletWindow, java.lang.String)
-     */
-    public String[] getRenderParamValues(PortletWindow window, String paramName) 
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#getPortletWindowOfAction()
-     */
-    public PortletWindow getPortletWindowOfAction() 
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#clearRenderParameters(org.apache.pluto.om.window.PortletWindow)
-     */
-    public void clearRenderParameters(PortletWindow portletWindow) 
-    {
-        // TODO Auto-generated method stub
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#setAction(org.apache.pluto.om.window.PortletWindow)
-     */
-    public void setAction(PortletWindow window) 
-    {
-        // TODO Auto-generated method stub
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#setRequestParam(java.lang.String, java.lang.String[])
-     */
-    public void setRequestParam(String name, String[] values) 
-    {
-        // TODO Auto-generated method stub
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#setRenderParam(org.apache.pluto.om.window.PortletWindow, java.lang.String, java.lang.String[])
-     */
-    public void setRenderParam(PortletWindow window, String name,
-            String[] values) 
-    {
-        // TODO Auto-generated method stub
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.url.PortalURL#toString(boolean)
-     */
-    public String toString(boolean secure) 
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
     
 }

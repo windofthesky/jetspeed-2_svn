@@ -109,5 +109,5 @@ public class SessionNavigationalState
         }
         return state;        
     }
-            
+    
 }

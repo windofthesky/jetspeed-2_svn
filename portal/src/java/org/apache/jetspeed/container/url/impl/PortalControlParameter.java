@@ -16,7 +16,6 @@
 package org.apache.jetspeed.container.url.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
@@ -42,14 +42,12 @@ import org.apache.pluto.util.StringUtils;
  */
 public class PortalControlParameter
 {
-
-    private Map requestParameter = new HashMap();
     private Map stateFullControlParameter = null;
     private Map stateLessControlParameter = null;
     private NavigationalStateComponent nav;
-    private PathPortalURL url;
+    private PortalURL url;
 
-    public PortalControlParameter(PathPortalURL url, NavigationalStateComponent nav)
+    public PortalControlParameter(PortalURL url, NavigationalStateComponent nav)
     {
         this.nav = nav;
         this.url = url;
@@ -57,13 +55,13 @@ public class PortalControlParameter
 
     public void init()
     {
-        stateFullControlParameter = ((PathPortalURL)this.url).getClonedStateFullControlParameter();
-        stateLessControlParameter = ((PathPortalURL) this.url).getClonedStateLessControlParameter();        
+        stateFullControlParameter = ((AbstractPortalURL)this.url).getClonedStateFullControlParameter();
+        stateLessControlParameter = ((AbstractPortalURL) this.url).getClonedStateLessControlParameter();        
     }
     
     public void clearRenderParameters(PortletWindow portletWindow)
     {
-        String prefix = getRenderParamKey(portletWindow);
+        String prefix = url.getRenderParamKey(portletWindow);
         Iterator keyIterator = stateFullControlParameter.keySet().iterator();
 
         while (keyIterator.hasNext())
@@ -74,11 +72,6 @@ public class PortalControlParameter
                 keyIterator.remove();
             }
         }
-    }
-
-    private String getActionKey(PortletWindow window)
-    {        
-        return nav.getNavigationKey(NavigationalStateComponent.ACTION) + "_" + window.getId().toString();
     }
 
     public PortletMode getMode(PortletWindow window)
@@ -100,45 +93,10 @@ public class PortalControlParameter
             if (name.startsWith(nav.getNavigationKey(NavigationalStateComponent.ACTION)))
             {
                 String id = name.substring(nav.getNavigationKey(NavigationalStateComponent.ACTION).length() + 1);
-                /*
-                
-                TODO: BROKEN: need to go the profiler to get the profile, psml, and then window for an entity
-                this is normally done in the aggregator valve, need to sort out the sequence 
-                
-                Fragment fragment = org.apache.pluto.portalImpl.services.pageregistry.PageRegistry.getFragment(id);
-                if(fragment instanceof PortletFragment) {
-                    return ((PortletFragment)fragment).getPortletWindow();
-                }
-
-                StringTokenizer idTokenizer = new StringTokenizer(id, KEY_DELIMITER);
-                String portletName = idTokenizer.nextToken();
-                String sequence = idTokenizer.nextToken();
-                String entityName = idTokenizer.nextToken();
-                PortletRegistryComponent registry =
-                    (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-                PortletDefinition portletDefinition = registry.getPortletDefinitionByUniqueName(entityName + "::" + portletName);
-                
-                if (portletDefinition == null)
-                {
-                    throw new JetspeedException("Failed to load: " + portletName + " from registry");
-                }
-                    */
-
-                // TODO: deprecate this class and reimplment as a NavigationalState component
 
                 PortletWindowAccessor windowAccessor = 
                     (PortletWindowAccessor) Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
                 portletWindow = windowAccessor.getPortletWindow(id);
-                /*
-                PortletEntityAccessComponent entityAccess = 
-                    (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
-                ObjectID entityId = JetspeedObjectID.createFromString(id);
-                
-                PortletEntity entity = entityAccess.getPortletEntity(entityId);
-                portletWindow = entityAccess.getPortletWindow(entity);
-                
-                portletWindow = PortletWindowFactory.getWindow(portletDefinition, entityName);
-                    */
             }
         }
 
@@ -147,34 +105,26 @@ public class PortalControlParameter
 
     public PortletMode getPrevMode(PortletWindow window)
     {
-        String mode = (String) stateFullControlParameter.get(getPrevModeKey(window));
+        String mode = (String) stateFullControlParameter.get(url.getPrevModeKey(window));
         if (mode != null)
             return new PortletMode(mode);
         else
             return null;
     }
-    private String getPrevModeKey(PortletWindow window)
-    {
-        return nav.getNavigationKey(NavigationalStateComponent.PREV_MODE) + "_" + window.getId().toString();
-    }
 
     public WindowState getPrevState(PortletWindow window)
     {
-        String state = (String) stateFullControlParameter.get(getPrevStateKey(window));
+        String state = (String) stateFullControlParameter.get(url.getPrevStateKey(window));
         if (state != null)
             return new WindowState(state);
         else
             return null;
     }
-    private String getPrevStateKey(PortletWindow window)
-    {
-        return nav.getNavigationKey(NavigationalStateComponent.PREV_STATE) + "_" + window.getId().toString();
-    }
-
+    
     public Iterator getRenderParamNames(PortletWindow window)
     {
         List returnvalue = new ArrayList();
-        String prefix = getRenderParamKey(window);
+        String prefix = url.getRenderParamKey(window);
         Iterator keyIterator = stateFullControlParameter.keySet().iterator();
 
         while (keyIterator.hasNext())
@@ -194,11 +144,6 @@ public class PortalControlParameter
         String encodedValues = (String) stateFullControlParameter.get(encodeRenderParamName(window, paramName));
         String[] values = decodeRenderParamValues(encodedValues);
         return values;
-    }
-
-    public Map getRequestParameter()
-    {
-        return requestParameter;
     }
 
     public WindowState getState(PortletWindow window)
@@ -239,14 +184,14 @@ public class PortalControlParameter
 
     public void setAction(PortletWindow window)
     {
-        getStateFullControlParameter().put(getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
+        getStateFullControlParameter().put(url.getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
     }
 
     public void setMode(PortletWindow window, PortletMode mode)
     {
         Object prevMode = stateFullControlParameter.get(url.getModeKey(window));
         if (prevMode != null)
-            stateFullControlParameter.put(getPrevModeKey(window), prevMode);
+            stateFullControlParameter.put(url.getPrevModeKey(window), prevMode);
         // set current mode
         stateFullControlParameter.put(url.getModeKey(window), mode.toString());
     }
@@ -259,22 +204,11 @@ public class PortalControlParameter
         // setRequestParam(encodedKey, values);
     }
 
-    /*
-        public void setRequestParam(String name, String value)
-        {
-            requestParameter.put(name, value );
-        }
-    */
-    public void setRequestParam(String name, String[] values)
-    {
-        requestParameter.put(name, values);
-    }
-
     public void setState(PortletWindow window, WindowState state)
     {
         Object prevState = stateFullControlParameter.get(url.getStateKey(window));
         if (prevState != null)
-            stateFullControlParameter.put(getPrevStateKey(window), prevState);
+            stateFullControlParameter.put(url.getPrevStateKey(window), prevState);
         stateFullControlParameter.put(url.getStateKey(window), state.toString());
     }
 
@@ -309,11 +243,6 @@ public class PortalControlParameter
         returnvalue.append("_");
         returnvalue.append(paramName);
         return returnvalue.toString();
-    }
-
-    public String getRenderParamKey(PortletWindow window)
-    {
-        return nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM) + "_" + window.getId().toString();
     }
 
     public String encodeRenderParamValues(String[] paramValues)
@@ -378,27 +307,6 @@ public class PortalControlParameter
         value = StringUtils.replace(value, ".", "0x2");
         return value;
     }
-
-    public boolean isNavigationalParameter(String token)
-    {
-        return token.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
-    }
     
-    public boolean isStateFullParameter(String param)
-    {
-        if (isNavigationalParameter(param))
-        {
-            String prefix = nav.getNavigationKey(NavigationalStateComponent.PREFIX);            
-            if ((param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.MODE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_MODE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.STATE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_STATE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     
 }
