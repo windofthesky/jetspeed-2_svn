@@ -29,6 +29,9 @@ import org.apache.pluto.om.common.ObjectID;
  */
 public interface LocalizedField
 {
+    public String getName();
+    public void setName(String name);
+    
     public Locale getLocale();
     public void setLocale(Locale locale);
     

@@ -31,6 +31,7 @@ import org.apache.pluto.om.common.ObjectID;
 public class LocalizedFieldImpl implements LocalizedField
 {
     protected String value;
+    protected String name;
     protected Locale locale;
     
     protected long parentId;
@@ -94,5 +95,26 @@ public class LocalizedFieldImpl implements LocalizedField
     public void setId(String oid)
     {
         id = JetspeedObjectID.createFromString(oid).intValue();
+    }
+    
+    public void setLanguage(String lang)
+    {
+        this.locale = new Locale(lang);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.LocalizedField#getName()
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.LocalizedField#setName(java.lang.String)
+     */
+    public void setName(String name)
+    {
+        this.name = name;        
     }
 }
