@@ -56,10 +56,9 @@ package org.apache.jetspeed.container.url;
 import javax.portlet.PortletURL;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPortletURL
@@ -68,7 +67,7 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @version $Id$
  */
 
-public class TestPortletURL extends JetspeedTest
+public class TestPortletURL extends TestCase
 {
 
     /**
@@ -106,7 +105,7 @@ public class TestPortletURL extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestPortletURL.class);
+        return new TestSuite(TestPortletURL.class);
     }
 
 

@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.cache.file.TestFileCache'/>
+<property name='testcase' value='org.apache.jetspeed.container.url.TestPortletURL'/>
 
   <!-- ================================================================ -->
   <!-- Set System properties for junit                                  -->
