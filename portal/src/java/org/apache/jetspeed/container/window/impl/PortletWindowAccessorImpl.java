@@ -144,8 +144,6 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
             
         }
         ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
-        PortletWindowList windowList = portletEntity.getPortletWindowList();
-        ((PortletWindowListCtrl) windowList).add(portletWindow);
         
         windows.put(fragment.getId(), portletWindow);       
         
