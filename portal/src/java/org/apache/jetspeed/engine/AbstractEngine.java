@@ -59,6 +59,7 @@ import org.apache.pluto.services.information.InformationProviderService;
  * <p>
  *
  * </p>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
