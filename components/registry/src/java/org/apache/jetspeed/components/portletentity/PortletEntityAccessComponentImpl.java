@@ -386,6 +386,14 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             persistenceStore.getTransaction().rollback();
             throw ioe;
         }
-
     }
+
+    public MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id)
+    {
+        PortletEntityImpl portletEntity = new PortletEntityImpl();
+        portletEntity.setPortletDefinition(portletDefinition);
+        portletEntity.setId(id);
+        return (PortletEntityImpl) portletEntity;
+    }
+    
 }

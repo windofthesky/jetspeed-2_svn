@@ -220,12 +220,19 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     public MutablePortletEntity newPortletEntityInstance( PortletDefinition portletDefinition )
     {
         PortletEntityImpl portletEntity = new PortletEntityImpl();
-
         portletEntity.setPortletDefinition(portletDefinition);
-
         return (PortletEntityImpl) portletEntity;
     }
 
+    public MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id)
+    {
+        PortletEntityImpl portletEntity = new PortletEntityImpl();
+        portletEntity.setPortletDefinition(portletDefinition);
+        portletEntity.setId(id);
+        return (PortletEntityImpl) portletEntity;
+    }
+    
+    
     public void removeFromCache( PortletEntity entity )
     {
         // TODO Auto-generated method stub

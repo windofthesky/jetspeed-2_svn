@@ -96,6 +96,7 @@ public interface PortletEntityAccessComponent
 	 * @return
 	 */
 	MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
+    MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id);
 	
 	/**
 	 * 
