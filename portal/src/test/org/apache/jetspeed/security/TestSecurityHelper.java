@@ -51,29 +51,35 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.pipeline;
+package org.apache.jetspeed.security;
+
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.pipeline.valve.Valve;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.test.JetspeedTest;
 
 /**
- * TestPipeline
+ * TestSecurityHelper
  *
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPipeline extends JetspeedTest
+public class TestSecurityHelper extends JetspeedTest
 {
-
     /**
      * Defines the testcase name for JUnit.
      *
      * @param name the testcase's name.
      */
-    public TestPipeline(String name)
+    public TestSecurityHelper(String name)
     {
         super(name);
     }
@@ -85,12 +91,9 @@ public class TestPipeline extends JetspeedTest
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(new String[] { TestPipeline.class.getName()});
+        junit.awtui.TestRunner.main(new String[] { TestSecurityHelper.class.getName()});
     }
 
-    public void setup()
-    {
-    }
 
     /**
      * Creates the test suite.
@@ -101,28 +104,23 @@ public class TestPipeline extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPipeline.class);
+        return new TestSuite(TestSecurityHelper.class);
     }
-
-    /**
-     * Tests
-     *
-     * @throws Exception
-     */
-    public void testPipeline() throws Exception
+    
+    public void testHelpers() throws Exception
     {
-        assertNotNull(engine);
-        Pipeline pipeline = engine.getPipeline();
-        assertNotNull(pipeline);
-        Valve[] valves = pipeline.getValves();
-        assertTrue(valves[0].toString().equals("LocalizationValve"));
-        assertTrue(valves[1].toString().equals("CapabilityValveImpl"));        
-        assertTrue(valves[2].toString().equals("ContainerValve"));
-        assertTrue(valves[3].toString().equals("SecurityValve"));        
-        assertTrue(valves[4].toString().equals("ProfilerValve"));
-        assertTrue(valves[5].toString().equals("ActionValveImpl"));
-        assertTrue(valves[6].toString().equals("VerySimpleLayoutValveImpl"));
-        assertTrue(valves[7].toString().equals("AggregatorValve"));
-        assertTrue(valves[8].toString().equals("CleanupValveImpl"));
+        Principal principal = new UserPrincipalImpl("anon");
+        Set principals = new HashSet();
+        principals.add(principal);
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
+        System.out.println("subject = " + subject);
+        
+        Principal found = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
+        assertNotNull("found principal is null", found);
+        assertTrue("found principal should be anon", found.getName().equals("anon"));
+        System.out.println("found = " + found.getName());
+        String defaultAnon = Profiler.getAnonymousUser();
+        System.out.println("default anon = " + defaultAnon);
     }
+    
 }

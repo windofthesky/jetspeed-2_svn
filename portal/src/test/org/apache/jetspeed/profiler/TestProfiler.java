@@ -53,17 +53,30 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.security.Principal;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.test.JetspeedTest;
 
 /**
@@ -126,7 +139,10 @@ public class TestProfiler extends JetspeedTest
     private static final String FALLBACK_RULE = "role-fallback";
     private static final int EXPECTED_STANDARD = 1;
     private static final int EXPECTED_FALLBACK = 1;
+    private static final String DEFAULT_PAGE = "default-page";
+    private static final String DEFAULT_DESKTOP = "default-desktop";
     
+        
     /**
      * Tests
      *
@@ -139,11 +155,15 @@ public class TestProfiler extends JetspeedTest
         
         // Test Default Rule        
         ProfilingRule rule = service.getDefaultRule();
-        System.out.println("default rule = " + rule.getId());
         assertNotNull("Default profiling rule is null", rule);
         assertTrue("default rule unexpected, = " + rule.getId(), rule.getId().equals(DEFAULT_RULE));
         assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
 
+        // Test anonymous principal-rule
+        ProfilingRule anonRule = service.getRuleForPrincipal(new UserPrincipalImpl("anon"));
+        assertNotNull("anonymous rule is null", anonRule);
+        assertTrue("anonymous rule is j1", anonRule.getId().equals(DEFAULT_RULE));
+        
         // Test Retrieving All Rules
         int standardCount = 0;
         int fallbackCount = 0;        
@@ -154,33 +174,242 @@ public class TestProfiler extends JetspeedTest
             if (rule.getId().equals(DEFAULT_RULE))                                       
             {
                 assertTrue("standard rule class not mapped", rule instanceof StandardProfilingRule);
+                checkStandardCriteria(rule);
                 standardCount++;                                 
             }
             else if (rule.getId().equals(FALLBACK_RULE))                                       
             {
                 assertTrue("role fallback rule class not mapped", rule instanceof RoleFallbackProfilingRule);
+                checkFallbackCriteria(rule);                
                 fallbackCount++;             
             }
             else
             {
                 assertTrue("Unknown rule encountered: " + rule.getId(), false);            
             }
-            
-            // criteria
-            Collection criteriaCollection = rule.getRuleCriteria();
-            assertNotNull("Criteria is null", criteriaCollection);
-            Iterator criteria = criteriaCollection.iterator();
-            while (criteria.hasNext())
-            {
-                RuleCriterion criterion = (RuleCriterion)criteria.next();
-                System.out.println("criteria = " + 
-                                    criterion.getRuleId() + " - " + 
-                                    criterion.getName());                                                                    
-            }
-            
+                        
         }
         assertTrue("didnt find expected number of standard rules, expected = " + EXPECTED_STANDARD, standardCount == 1);
         assertTrue("didnt find expected number of fallback rules, expected = " + EXPECTED_FALLBACK, fallbackCount == 1);
         
     }    
+    
+    private void checkStandardCriteria(ProfilingRule rule)
+    {
+        Collection criteriaCollection = rule.getRuleCriteria();
+        assertNotNull("Criteria is null", criteriaCollection);
+        Iterator criteria = criteriaCollection.iterator();
+        int count = 0;
+        while (criteria.hasNext())
+        {
+            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            assertTrue("standard criteria type", criterion.getType().equals("standard"));
+            System.out.println("criteria name = " + criterion.getName());            
+            switch (count)
+            {
+                case 0:
+                    assertTrue("standard criteria name " + criterion.getName(), 
+                                criterion.getName().equals(ProfilingRule.STANDARD_DESKTOP));
+                    assertNotNull("standard criteria value", criterion.getValue());
+                    assertTrue("standard criteria value", criterion.getValue().equals(DEFAULT_DESKTOP));
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;                
+                case 1:
+                    assertTrue("standard criteria name " + criterion.getName(), 
+                                criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
+                    assertNotNull("standard criteria value", criterion.getValue());
+                    assertTrue("standard criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;
+                case 2:
+                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_GROUP_ROLE_USER));
+                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;
+                case 3:
+                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
+                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                    break;
+                case 4:
+                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
+                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                    break;
+                case 5:
+                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
+                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                    break;                                    
+            }   
+            count++;
+        }        
+    }
+    
+    private void checkFallbackCriteria(ProfilingRule rule)
+    {
+        Collection criteriaCollection = rule.getRuleCriteria();
+        assertNotNull("Criteria is null", criteriaCollection);
+        Iterator criteria = criteriaCollection.iterator();
+        int count = 0;
+        while (criteria.hasNext())
+        {
+            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            assertTrue("fallback criteria type", criterion.getType().equals("standard"));
+            
+            switch (count)
+            {
+                case 0:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_DESKTOP));
+                    assertNotNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback criteria value", criterion.getValue().equals(DEFAULT_DESKTOP));
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;
+                case 1:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
+                    assertNotNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
+                    break;                    
+                case 2:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_ROLE_FALLBACK));
+                    assertNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_LOOP);                    
+                    break;
+                case 3:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
+                    assertNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);                    
+                    break;
+                case 4:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
+                    assertNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                    break;
+                case 5:
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
+                    assertNull("fallback criteria value", criterion.getValue());
+                    assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
+                    break;                                    
+            }
+            count++;               
+        }        
+    }
+
+    public void testStandardRule()
+        throws Exception
+    {
+        service = getService();               
+        assertNotNull("profiler service is null", service);
+
+        PortalContext pc = Jetspeed.getContext();
+        RequestContext request = new MockRequestContext(pc);
+        
+        request.setSubject(createSubject("anon"));
+        request.setLocale(new Locale("en", "US"));        
+        request.setMediaType("HTML");
+        request.setMimeType("text/html");
+        Map params = request.getParameterMap();
+        params.put("page", "default-other");
+        
+        ProfileLocator locator = service.getProfile(request);
+        assertNotNull("standard rule test on getProfile returned null", locator);
+        String path = locator.getLocatorPath();
+        System.out.println("locator = " + path);        
+        assertTrue("locator key value unexpected: " + path, 
+                    path.equals(
+              "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en/country/US"));
+
+        // test fallback
+        Iterator fallback = locator.iterator();
+        int count = 0;
+        while (fallback.hasNext())
+        {
+            String locatorPath = (String)fallback.next();
+            switch (count)
+            {
+                case 0:
+                    assertTrue("locatorPath[0]: " + locatorPath, 
+                                locatorPath.equals(
+                        "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en/country/US"));
+                    break;
+                case 1:
+                    assertTrue("locatorPath[1]: " + locatorPath, 
+                                locatorPath.equals(
+                         "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en"));
+                    break;                
+                case 2:
+                    assertTrue("locatorPath[2]: " + locatorPath, 
+                                locatorPath.equals("desktop/default-desktop/page/default-other/user/anon/mediatype/HTML"));
+                    break;                
+                case 3:
+                    assertTrue("locatorPath[3]: " + locatorPath, 
+                                locatorPath.equals("desktop/default-desktop/page/default-other/user/anon"));
+                    break;                
+                
+            }
+            count++;
+            System.out.println("path = " + locatorPath);                             
+        }
+        assertTrue("fallback count = 4, " + count, count == 4);
+        
+        // create a simple locator
+        ProfileLocator locator2 = service.createLocator();
+        locator2.add("page", "test");
+        fallback = locator2.iterator();
+        count = 0;
+        while (fallback.hasNext())
+        {
+            String locatorPath = (String)fallback.next();
+            assertTrue("locatorPath: " + locatorPath, 
+                        locatorPath.equals("page/test"));
+            
+            System.out.println("Simple Test: path = " + locatorPath);
+            count++;            
+        }
+        assertTrue("fallback count = 1, " + count, count == 1);
+
+        // create an empty locator
+        ProfileLocator locator3 = service.createLocator();
+        fallback = locator3.iterator();
+        count = 0;
+        while (fallback.hasNext())
+        {
+            String locatorPath = (String)fallback.next();
+            count++;            
+        }
+        assertTrue("fallback count = 0, " + count, count == 0);
+                
+    }
+    
+    private Subject createSubject(String principalName)
+    {
+        Principal principal = new UserPrincipalImpl(principalName);
+        Set principals = new HashSet();
+        principals.add(principal);
+        return new Subject(true, principals, new HashSet(), new HashSet());        
+    }
+
+    public void testPage() throws Exception
+    {
+        service = getService();               
+        assertNotNull("profiler service is null", service);
+
+        PortalContext pc = Jetspeed.getContext();
+        RequestContext request = new MockRequestContext(pc);
+    
+        request.setSubject(createSubject("anon"));
+        request.setLocale(new Locale("en", "US"));        
+        request.setMediaType("HTML");
+        request.setMimeType("text/html");
+        Map params = request.getParameterMap();
+        // params.put("page", "default");
+    
+        ProfileLocator locator = service.getProfile(request);
+        assertNotNull("standard rule test on getProfile returned null", locator);
+        System.out.println("page = " + locator.getValue("page"));
+        
+        Page page = service.getPage(locator);
+        assertNotNull("page is null", page);                
+    }
 }

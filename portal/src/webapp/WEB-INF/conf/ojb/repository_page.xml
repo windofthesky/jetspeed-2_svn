@@ -98,7 +98,7 @@
      jdbc-type="VARCHAR"
     />    
     <field-descriptor
-     name="name"
+     name="resolverName"
      column="NAME"
      jdbc-type="VARCHAR"
     />    
@@ -107,6 +107,11 @@
      column="VALUE"
      jdbc-type="VARCHAR"
     />    
+    <field-descriptor 
+        name="fallbackType" 
+        jdbc-type="INTEGER"
+        column="FALLBACK_TYPE" 
+    />
 
 </class-descriptor>
 
@@ -122,6 +127,8 @@
      name="principalName"
      column="PRINCIPAL_NAME"
      jdbc-type="VARCHAR"
+     primarykey="true"
+     autoincrement="false"           
     />
     <field-descriptor
      name="ruleId"

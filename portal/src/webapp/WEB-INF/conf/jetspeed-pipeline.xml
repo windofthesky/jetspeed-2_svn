@@ -2,13 +2,19 @@
   <name>JetspeedPipeline</name>
   <valveDescriptors>
     <valveDescriptor>
+      <className>org.apache.jetspeed.localization.impl.LocalizationValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
       <className>org.apache.jetspeed.capability.CapabilityValveImpl</className>
     </valveDescriptor>
     <valveDescriptor>
       <className>org.apache.jetspeed.container.ContainerValve</className>
     </valveDescriptor>
     <valveDescriptor>
-      <className>org.apache.jetspeed.services.profiler.ProfilerValve</className>
+      <className>org.apache.jetspeed.security.impl.SecurityValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.profiler.impl.ProfilerValveImpl</className>
     </valveDescriptor>
      <valveDescriptor>
       <className>org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl</className>
