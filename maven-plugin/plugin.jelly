@@ -248,11 +248,13 @@ limitations under the License.
   	
 	<attainGoal name='jetspeed2:deploy.shared'/>  	
 	
-	<copy todir="${org.apache.jetspeed.deploy.war.dir}" failonerror="true" overwrite="true">
+	<j:if test="${org.apache.jetspeed.copy.war}">
+	 <copy todir="${org.apache.jetspeed.deploy.war.dir}" failonerror="true" overwrite="true">
          <fileset dir="${maven.war.build.dir}" >  
              <include name="${maven.war.final.name}" />
          </fileset>	             	       	       
-     </copy>	   
+     </copy>	
+    </j:if>   
 
 	<attainGoal name='jetspeed2:copy.context'/>
 	          
