@@ -15,10 +15,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <jboss-web>
+  <class-loading>
+    <loader-repository>
+      org.apache.jetspeed:loader=unique-archive-name
+    </loader-repository>
+  </class-loading>
   <resource-ref>
     <res-ref-name>jdbc/jetspeed</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
     <jndi-name>java:/JetspeedDS</jndi-name>
   </resource-ref>
 </jboss-web>
+
 
