@@ -420,7 +420,7 @@ limitations under the License.
 	<j:set var='nodots' value="${org.apache.jetspeed.database.default.name}" /> 	
     <j:choose>
       <j:when test="${nodots == 'mysql'}" >		
-          <j:set var="database.arg.script" value="./src/sql/mssql/drop.sql" />
+          <j:set var="database.arg.script" value="./src/sql/mysql/drop.sql" />
           <attainGoal name="db.execute" />		  
       </j:when>   	
      </j:choose>
