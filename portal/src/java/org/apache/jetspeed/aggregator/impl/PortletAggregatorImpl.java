@@ -61,17 +61,22 @@ public class PortletAggregatorImpl implements PortletAggregator
             entity = (String)context.getAttribute(PortalReservedParameters.PORTLET_ENTITY);          
         }
         fragment.setId(entity);  
-
-        
-        if(fragment.getDecorator() != null)
+         
+        String decorator = fragment.getDecorator();
+        if( decorator == null)
         {
-            log.debug("decorator=" + fragment.getDecorator());
-	        addStyle(context, fragment.getDecorator(), "portlet");
-        } 
-        else 
-        {
-            log.debug("no decorator for portlet:" + fragment.getId());
+            decorator = context.getPage().getDefaultDecorator(fragment.getType());
+            log.debug("No sepecific decorator portlet so using page default: "+decorator);
         }
+        
+//        {
+//            log.debug("decorator=" + fragment.getDecorator());
+//	        addStyle(context, fragment.getDecorator(), "portlet");
+//        } 
+//        else 
+//        {
+//            log.debug("no decorator for portlet:" + fragment.getId());
+//        }
 
         renderer.renderNow(fragment, context);
     }
@@ -87,6 +92,15 @@ public class PortletAggregatorImpl implements PortletAggregator
             context.setSessionAttribute("cssUrls", cssUrls);
         }
         
-        cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");        
+        //cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");
+        
+        if(decoratorType.equals(Fragment.LAYOUT))
+        {
+            cssUrls.add("content/css/styles.css");
+        }
+        else
+        {
+            cssUrls.add("content/"+decoratorName+"/css/styles.css");
+        }
     }
 }

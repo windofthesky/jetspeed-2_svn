@@ -99,6 +99,8 @@ public class PageAggregatorImpl implements PageAggregator
         {
             layoutDecorator = page.getDefaultDecorator(currentFragment.getType());
         }
+        
+        String defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //TODO: Remove hard coding of locations and use CM + TL
@@ -130,10 +132,10 @@ public class PageAggregatorImpl implements PageAggregator
         
         if(layoutDecorator != null)
         {
-            addStyle(context, layoutDecorator, "layout");
-	        addStyle(context, layoutDecorator, "portlet");
+            addStyle(context, layoutDecorator, Fragment.LAYOUT);	        
         }
-               
+        
+                      
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
         if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
@@ -203,11 +205,12 @@ public class PageAggregatorImpl implements PageAggregator
                             if(currentFragment.getDecorator() != null)
                             {
                                 log.debug("decorator=" + currentFragment.getDecorator());
-                    	        addStyle(context, currentFragment.getDecorator(), "portlet");
+                    	        addStyle(context, currentFragment.getDecorator(), Fragment.PORTLET);
                             } 
                             else 
                             {
-                                log.debug("no decorator for portlet:" + currentFragment.getId());
+                                log.debug("no decorator for defined for portlet fragement," + currentFragment.getId()+".  So using page default, "+defaultPortletDecorator);
+                                addStyle(context, defaultPortletDecorator, Fragment.PORTLET);
                             }
                             
                         }
@@ -267,6 +270,13 @@ public class PageAggregatorImpl implements PageAggregator
             context.setSessionAttribute("cssUrls", cssUrls);
         }
         
-        cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");        
+        if(decoratorType.equals(Fragment.LAYOUT))
+        {
+            cssUrls.add("content/css/styles.css");
+        }
+        else
+        {
+            cssUrls.add("content/"+decoratorName+"/css/styles.css");
+        }
     }
 }
