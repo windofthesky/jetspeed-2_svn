@@ -19,9 +19,8 @@ package org.apache.jetspeed.idgenerator;
 import java.util.HashMap;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.apache.jetspeed.components.ComponentAssemblyTestCase;
 
 /**
  * TestIdGenerator
@@ -29,26 +28,12 @@ import org.apache.jetspeed.components.ComponentAssemblyTestCase;
  * @author <a href="paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public class TestIdGenerator extends ComponentAssemblyTestCase
+public class TestIdGenerator extends TestCase
 {
     
     private static int ID_TEST_TRIES = 10000;
     
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestIdGenerator(String name) 
-    {
-        super( name );
-    }
-    
-    public String getBaseProject()
-    {
-        return "components/jetspeed";
-    }
-    
+   
     /**
      * Start the tests.
      *
@@ -82,9 +67,8 @@ public class TestIdGenerator extends ComponentAssemblyTestCase
      */
     public void testVerifyUniquePeid() throws Exception
     {
-        IdGenerator generator = (IdGenerator)componentManager.getComponent("IdGenerator");
-        assertNotNull("idgenerator is null", generator);            
- 
+        IdGenerator generator = new JetspeedIdGenerator(65536, "P-", "");
+        
         HashMap generatedIds = new HashMap( ID_TEST_TRIES + 1);
         String  newId;
         
@@ -107,7 +91,7 @@ public class TestIdGenerator extends ComponentAssemblyTestCase
      */
     public void testVerifyIncreasingPeid() throws Exception
     {
-        IdGenerator generator = (IdGenerator)componentManager.getComponent("IdGenerator");
+        IdGenerator generator = new JetspeedIdGenerator(65536, "P-", "");
         assertNotNull("idgenerator service is null", generator);            
         
         String  newId;
