@@ -173,7 +173,8 @@ public class JetspeedTestSuite extends TestSuite
      */
     public String getApplicationRoot()
     {
-        return "./src/webapp";
+        String applicationRoot = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, "./src/webapp");
+        return applicationRoot;
     }
 
     /**
@@ -182,7 +183,8 @@ public class JetspeedTestSuite extends TestSuite
      */
     public String getPropertiesFile()
     {
-        return "./src/webapp/WEB-INF/conf/jetspeed.properties";
+        String jetspeedProperties = System.getProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, "./src/webapp") + "/WEB-INF/conf/jetspeed.properties";        
+        return jetspeedProperties;
     }
 
     /*
