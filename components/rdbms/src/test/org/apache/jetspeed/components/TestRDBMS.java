@@ -16,12 +16,16 @@
 package org.apache.jetspeed.components;
 import java.sql.Connection;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import junit.framework.Test;
 
+import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
+import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.picocontainer.MutablePicoContainer;
 /**
  * <p>
@@ -57,6 +61,9 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
         MutablePicoContainer defaultContainer = getComponentManager().getRootContainer();
         DatasourceComponent dsc = (DatasourceComponent) defaultContainer
         .getComponentInstance(DatasourceComponent.class);
+        InitialContext context = new InitialContext();
+        //look up from jndi
+        assertNotNull(context.lookup("java:comp/env/jdbc/jetspeed"));
         assertNotNull(dsc);
         DataSource ds = dsc.getDatasource();
         assertNotNull(ds);
@@ -64,6 +71,23 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
         assertNotNull(conn);
         assertFalse(conn.isClosed());
         conn.close();
+        ((BoundDBCPDatasourceComponent)dsc).stop();
+        JNDIComponent jndi = (JNDIComponent)defaultContainer.getComponentInstance(JNDIComponent.class);
+        
+        try
+        {
+            context.lookup("java:comp/env/jdbc/jetspeed");
+            assertNotNull("java:comp/env/jdbc/jetspeed was not unbound", null);
+        }
+        catch (NamingException e)
+        {
+       
+        }
+        
+ 
+     
     }
+    
+   
 
 }
