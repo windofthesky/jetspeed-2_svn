@@ -17,12 +17,12 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>PHP demo</title>
-  <fragment id="22" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="34" type="portlet" name="perl::perl-demo">
+  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="perldemo-1" type="portlet" name="perl::perl-demo">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="35" type="portlet" name="perl::perl-demo2">
+    <fragment id="perldemo-2" type="portlet" name="perl::perl-demo2">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
