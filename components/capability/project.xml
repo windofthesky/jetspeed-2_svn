@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <pomVersion>3</pomVersion>
+  <id>jetspeed-capability</id>
+  <groupId>jetspeed2</groupId>
+  <name>Jetspeed-2 Capability Components</name>
+  <currentVersion>2.0-a1-dev</currentVersion>
+  <package>org.apache.jetspeed</package>
+  <description>
+	  Capability Components defines an api for "guessing" what client is accessing a
+	  web application by looking for clues in the request headers then return a list 
+	  of that client's capabilites i.e. HTML 4.0, WML, Javascript 1.2, etc.
+  </description>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/registry</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/registry/</url>
+  </repository>
+
+  <shortDescription>Capability Components</shortDescription>
+  <dependencies>  
+   	<dependency>
+      <id>jetspeed2:jetspeed-commons</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-persistence</id>
+      <version>2.0-a1-dev</version>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-registry</id>
+      <version>2.0-a1-dev</version>
+    </dependency>    
+    <!-- Testing only -->
+    <dependency>
+      <id>jetspeed2:jetspeed-rdbms</id>
+      <version>2.0-a1-dev</version>
+    </dependency>    	
+  	 <dependency>
+      <id>commons-lang</id>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <id>commons-logging</id>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <id>commons-beanutils</id>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
+      <id>junit</id>
+      <version>3.8.1</version>
+    </dependency>
+    <dependency>
+      <id>log4j</id>
+      <version>1.2.6</version>
+    </dependency>   
+    <dependency>
+      <id>commons-collections</id>
+      <version>3.0</version>
+    </dependency>
+    <dependency>
+      <id>commons-io</id>
+      <version>0.1</version>
+    </dependency>
+    <dependency>
+      <id>xerces</id>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <id>xml-apis</id>
+      <version>2.0.2</version>
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+    </dependency>
+    <dependency>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6</version>
+    </dependency>
+    <dependency>
+      <id>commons-pool</id>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <id>commons-dbcp</id>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <id>picocontainer</id>
+      <version>1.0-beta-5</version>
+    </dependency>      
+     
+    <!-- This is only a test dependency -->
+    <dependency>
+      <id>hsqldb</id>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
+      <id>pluto</id>
+      <groupId>pluto</groupId>
+      <version>1.0-SNAPSHOT</version>
+     </dependency>
+     <dependency>
+      <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
+      <id>portlet-api</id>
+      <version>1.0</version>
+    </dependency>
+     <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+ 
+    
+    <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+    <unitTest>
+      <resources>
+        <resource>
+          <directory>${basedir}/src/test</directory>
+          <excludes>
+           <exclude>**/*.java</exclude>
+          </excludes>
+        </resource>
+        <resource>
+        <directory>${basedir}/src/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+          <exclude>**/META-INF/**</exclude>
+        </excludes>
+      </resource>
+      </resources>
+    </unitTest>
+    
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    
+  </build>
+</project>
