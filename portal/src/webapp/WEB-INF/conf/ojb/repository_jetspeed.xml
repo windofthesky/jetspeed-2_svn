@@ -1023,7 +1023,7 @@
       </reference-descriptor>
 
       <collection-descriptor
-         name="prefSet"
+         name="originalPreferences"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"

@@ -126,9 +126,6 @@ CREATE ALIAS RAND FOR "java.lang.Math.random"
 CREATE ALIAS LENGTH FOR "org.hsqldb.Library.length"
 CREATE ALIAS ROUND FOR "org.hsqldb.Library.round"
 CREATE ALIAS REPLACE FOR "org.hsqldb.Library.replace"
-INSERT INTO PORTLET_APPLICATION VALUES(1,'jetspeed','jetspeed','1.0',0,NULL,1)
-INSERT INTO WEB_APPLICATION VALUES(1,'/jetspeed')
-INSERT INTO PORTLET_DEFINITION VALUES(1,'Layout','org.apache.jetspeed.portlets.layout.GenericLayoutPortlet',1,'Layout','-1',NULL)
 INSERT INTO MEDIA_TYPE VALUES(0,'html','UTF-8','HTML','Rich HTML for HTML 4.0 compliants browsers')
 INSERT INTO MEDIA_TYPE VALUES(1,'wml','UTF-8','WML','Format for mobile phones and PDAs compatible with WML 1.1')
 INSERT INTO MEDIA_TYPE VALUES(2,'vxml','UTF-8','VoiceXML','Format suitable for use with an audio VoiceXML server')

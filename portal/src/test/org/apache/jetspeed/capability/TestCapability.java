@@ -100,9 +100,10 @@ public class TestCapability extends JetspeedTest
             new String[] { TestCapability.class.getName()});
     }
 
-    public void setup()
+    public void setUp()
     {
         System.out.println("Setup: Testing Capability Service");
+        super.setUp();
     }
     /**
      * Creates the test suite.

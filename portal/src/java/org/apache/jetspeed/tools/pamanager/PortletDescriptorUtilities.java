@@ -135,7 +135,7 @@ public class PortletDescriptorUtilities
         }
         catch (Throwable t)
         {
-            String msg = "Could not unmarshal: " + pathPortletXML;
+            String msg = "Could not unmarshal: " + pathPortletXML + ", " + t.getLocalizedMessage();
             log.error(msg, t);
             throw new PortletApplicationException(msg, t);
         }

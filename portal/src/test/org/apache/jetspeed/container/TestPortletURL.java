@@ -91,7 +91,7 @@ public class TestPortletURL extends JetspeedTest
             new String[] { TestPortletURL.class.getName()});
     }
 
-    public void setup()
+    public void setUp()
     {
         System.out.println("Setup: Testing Portlet URL impl");
     }
