@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.aggregator.impl;
 
 import java.util.Iterator;
 
@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
