@@ -16,6 +16,7 @@
 package org.apache.jetspeed.request;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -57,10 +58,6 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class JetspeedRequestContext implements RequestContext
 {
-    public static final String PREFERED_LANGUAGE_SESSION_KEY = "org.apache.jetspeed.prefered.language";
-    public static final String PREFERED_LOCALE_SESSION_KEY = "org.apache.jetspeed.prefered.locale";
-    public static final String PREFERED_CHARACTERENCODING_KEY = "org.apache.jetspeed.prefered.characterencoding";
-
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
@@ -81,8 +78,8 @@ public class JetspeedRequestContext implements RequestContext
     private String requestPath = null;
     /** The user info manager. */
     private UserInfoManager userInfoMgr;
-
-    public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
+    private Map requestsForWindows;
+    private Map responsesForWindows;
 
     /**
      * Create a new Request Context
@@ -99,11 +96,13 @@ public class JetspeedRequestContext implements RequestContext
         this.response = response;
         this.config = config;
         this.userInfoMgr = userInfoMgr;
+        this.requestsForWindows = new HashMap();
+        this.responsesForWindows = new HashMap();
 
         // set context in Request for later use
         if (null != this.request)
         {
-            this.request.setAttribute(REQUEST_PORTALENV, this);
+            this.request.setAttribute(RequestContext.REQUEST_PORTALENV, this);
         }
 
         if (navcomponent != null)
@@ -111,7 +110,6 @@ public class JetspeedRequestContext implements RequestContext
             url = navcomponent.createURL(this);
             navstate = navcomponent.create(this);
         }
-
 
     }
 
@@ -273,13 +271,13 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setCharacterEncoding( String enc )
     {
-        String preferedEnc = (String) request.getSession().getAttribute(PREFERED_CHARACTERENCODING_KEY);
+        String preferedEnc = (String) request.getSession().getAttribute(RequestContext.PREFERED_CHARACTERENCODING_KEY);
 
         if (preferedEnc == null || !enc.equals(preferedEnc))
         {
-            request.setAttribute(PREFERED_CHARACTERENCODING_KEY, enc);
+            request.setAttribute(RequestContext.PREFERED_CHARACTERENCODING_KEY, enc);
         }
-        
+
         this.encoding = enc;
     }
 
@@ -294,11 +292,19 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletRequest getRequestForWindow( PortletWindow window )
     {
-        ServletRequestFactory reqFac = (ServletRequestFactory) Jetspeed.getEngine()
-                .getFactory(javax.servlet.http.HttpServletRequest.class);
-        HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
-        
-        return requestWrapper;
+        if (!requestsForWindows.containsKey(window.getId()))
+        {
+            ServletRequestFactory reqFac = (ServletRequestFactory) Jetspeed.getEngine().getFactory(
+                    javax.servlet.http.HttpServletRequest.class);
+            HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
+            requestsForWindows.put(window.getId(), requestWrapper);
+            return requestWrapper;
+        }
+        else
+        {
+            return (HttpServletRequest) requestsForWindows.get(window.getId());
+        }
+
     }
 
     /**
@@ -312,9 +318,18 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletResponse getResponseForWindow( PortletWindow window )
     {
-        ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(HttpServletResponse.class);
-        HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
-        return wrappedResponse;
+        if (!responsesForWindows.containsKey(window.getId()))
+        {
+            ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(
+                    HttpServletResponse.class);
+            HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
+            responsesForWindows.put(window.getId(), wrappedResponse);
+            return wrappedResponse;
+        }
+        else
+        {
+            return (HttpServletResponse) responsesForWindows.get(window.getId());
+        }
     }
 
     /**
@@ -346,14 +361,15 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setLocale( Locale locale )
     {
-        Locale preferedLocale = (Locale) request.getSession().getAttribute(PREFERED_LOCALE_SESSION_KEY);
-        
-        if(preferedLocale == null || !locale.equals(preferedLocale))
-        {    
-           request.getSession().setAttribute(PREFERED_LANGUAGE_SESSION_KEY, new WeakHashMap());
-           request.getSession().setAttribute(PREFERED_LOCALE_SESSION_KEY, locale);
+        Locale preferedLocale = (Locale) request.getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+
+        if (preferedLocale == null || !locale.equals(preferedLocale))
+        {
+            request.getSession().setAttribute(RequestContext.PREFERED_LANGUAGE_SESSION_KEY, new WeakHashMap());
+            request.getSession().setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
+            request.setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
         }
-        
+
         this.locale = locale;
     }
 
@@ -449,9 +465,9 @@ public class JetspeedRequestContext implements RequestContext
             path.append(token);
             count++;
         }
-        
+
         this.requestPath = "/" + path.toString();
-        
+
         return this.requestPath;
     }
 
@@ -467,22 +483,24 @@ public class JetspeedRequestContext implements RequestContext
     {
         return userInfoMgr.getUserInfoMap(oid, this);
     }
-    
+
     /**
      * 
      * <p>
      * getPreferedLanguage
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.om.portlet.PortletDefinition)
      * @param portlet
      * @return
      */
-    public Language getPreferedLanguage(PortletDefinition portlet)
+    public Language getPreferedLanguage( PortletDefinition portlet )
     {
-        // TODO cannot get a proper Language when changing a locale by Locale Selector
+        // TODO cannot get a proper Language when changing a locale by Locale
+        // Selector
         // HttpSession session = request.getSession();
-        // Map languageMap = (Map) session.getAttribute(PREFERED_LANGUAGE_SESSION_KEY);
+        // Map languageMap = (Map)
+        // session.getAttribute(PREFERED_LANGUAGE_SESSION_KEY);
         // Language language = (Language) languageMap.get(portlet);
         // if(language != null)
         // {
@@ -490,12 +508,12 @@ public class JetspeedRequestContext implements RequestContext
         // }
         LanguageSet languageSet = portlet.getLanguageSet();
         Language language = languageSet.get(locale);
-        
+
         Enumeration locales = request.getLocales();
         while (locales.hasMoreElements() && language == null)
         {
             Locale aLocale = (Locale) locales.nextElement();
-            language = languageSet.get(aLocale);            
+            language = languageSet.get(aLocale);
         }
 
         Iterator langItr = languageSet.iterator();
@@ -503,7 +521,7 @@ public class JetspeedRequestContext implements RequestContext
         {
             language = (Language) langItr.next();
         }
-        
+
         if (language == null)
         {
             MutableLanguage languageCtl = new LanguageImpl();
@@ -512,7 +530,7 @@ public class JetspeedRequestContext implements RequestContext
             languageCtl.setTitle(portlet.getName());
             language = languageCtl;
         }
-        
+
         // languageMap.put(portlet, language);
         return language;
     }
@@ -521,12 +539,12 @@ public class JetspeedRequestContext implements RequestContext
      * <p>
      * setPath
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setPath(java.lang.String)
      * @param path
      */
     public void setPath( String path )
     {
-       this.requestPath = path;
+        this.requestPath = path;
     }
 }
