@@ -17,7 +17,9 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.security.auth.Subject;
@@ -69,6 +71,8 @@ public class JetspeedProfiler implements Profiler, Startable
     private String anonymousUser = "anon";
 
     PersistenceStore persistentStore;
+
+    private Map  principalRules = new HashMap(); 
     
     public JetspeedProfiler(PersistenceStore persistentStore, PageManager pageManager)
 	{
@@ -215,12 +219,16 @@ public class JetspeedProfiler implements Profiler, Startable
      */
     private PrincipalRule lookupPrincipalRule(String principal)
     {
-        // TODO: implement caching      
-        
+        PrincipalRule pr = (PrincipalRule)principalRules.get(principal);      
+        if (pr != null)
+        {
+            return pr;
+        }
         Filter filter = persistentStore.newFilter();        
         filter.addEqualTo("principalName", principal);
         Object query = persistentStore.newQuery(principalRuleClass, filter);
-        PrincipalRule pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
+        pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
+        principalRules.put(principal, pr);
         return pr;            
     }
 
