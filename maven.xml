@@ -424,6 +424,12 @@ limitations under the License.
           <attainGoal name="db.execute" />		  
       </j:when>   	
      </j:choose>
+    <j:choose>
+      <j:when test="${nodots == 'hsql'}" >		
+          <j:set var="database.arg.script" value="./src/sql/hsql/drop.sql" />
+          <attainGoal name="db.execute" />		  
+      </j:when>   	
+     </j:choose>	 
   </goal>
 
   <goal name="db.drop.oracle">
