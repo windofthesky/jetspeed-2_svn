@@ -53,14 +53,7 @@ public class FolderImpl implements Folder
     {
 
         this.directory = directory;
-        if (!name.startsWith("/"))
-        {
-            this.name = "/" + name;
-        }
-        else
-        {
-            this.name = name;
-        }
+        this.name = name;
         this.pageManager = pageManager;
     }
 
