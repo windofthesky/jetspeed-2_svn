@@ -37,6 +37,10 @@ limitations under the License.
     <dc:type>Default Type</dc:type>
     <js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
     
+    <services>
+    	<service name='PortletRegistryComponent'/>
+    </services>
+    
     <portlet>
         <portlet-name>HelloWorld Portlet</portlet-name>
         <dc:title>HelloWorldTitle</dc:title>

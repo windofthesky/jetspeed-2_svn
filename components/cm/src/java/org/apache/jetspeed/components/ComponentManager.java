@@ -41,7 +41,6 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class ComponentManager extends NanoContainer implements ComponentManagement, ContainerManagement
 {
-    
     private MutablePicoContainer rootContainer;
 
     /**

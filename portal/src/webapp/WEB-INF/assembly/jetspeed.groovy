@@ -104,9 +104,11 @@ import org.apache.pluto.PortletContainerImpl
 import org.apache.jetspeed.container.PortletContainerWrapper
 import org.apache.jetspeed.container.JetspeedPortletContainerWrapper
 
+import org.apache.jetspeed.services.PortletServices
+import org.apache.jetspeed.services.JetspeedPortletServices
        
 /* **********************************************************
- *  U T I L L I T Y   C L O S U R E S                                                     *
+ *  U T I L L I T Y   C L O S U R E S                       *
  * ******************************************************** */
  
  // This creates a single component instance per thread
@@ -156,7 +158,13 @@ FSSystemResourceUtilImpl resourceUtil = new FSSystemResourceUtilImpl(application
 container = new DefaultPicoContainer()
 
 /* **********************************************************
- *  Template Locators                                                                      *
+ *  Portlet Services                                        *
+ * ******************************************************** */
+services = new JetspeedPortletServices()
+container.registerComponentInstance("PortalServices", services)
+
+/* **********************************************************
+ *  Template Locators                                       *
  * ******************************************************** */
 roots = [ applicationRoot + "WEB-INF/templates" ]
 container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots, applicationRoot))
@@ -165,7 +173,7 @@ decorationRoots = [ applicationRoot + "WEB-INF/decorations" ]
 container.registerComponentInstance("DecorationLocator", new JetspeedTemplateLocator(decorationRoots, applicationRoot))
 
 /* **********************************************************
- *  ID Generator                                                                               *
+ *  ID Generator                                            *
  * ******************************************************** */
 Long counterStart = 65536
 peidPrefix = "P-"
@@ -174,7 +182,7 @@ idgenerator = new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix)
 container.registerComponentInstance("IdGenerator", idgenerator)
 
 /* **********************************************************
- *  Page Manager                                                                             *
+ *  Page Manager                                            *
  * ******************************************************** */
 root = applicationRoot + "/WEB-INF/pages"
 Long scanRate = 120
@@ -184,7 +192,7 @@ pageManager = new CastorXmlPageManager(idgenerator, fileCache, root)
 container.registerComponentInstance(PageManager, pageManager)
 
 /* **********************************************************
- *  JNDI and Pooled Datasource                                                        *
+ *  JNDI and Pooled Datasource                              *
  * ******************************************************** */
  
 if(Boolean.getBoolean("portal.use.internal.jndi"))
@@ -213,14 +221,14 @@ if(Boolean.getBoolean("portal.use.internal.jndi"))
 
 
 /* **********************************************************
- * Persistence Store: as a thread safe per thread component           *
+ * Persistence Store: as a thread safe per thread component *
  * ******************************************************** */
 
 container.registerComponent(makeThreadLocalAdapter(PersistenceStore, PBStore,  new Parameter[]{new ConstantParameter("jetspeed")}))
 
 
 /* **********************************************************
- *  Porlet Registry                                                                            *
+ *  Porlet Registry                                         *
  * ******************************************************** */
  container.registerComponentImplementation(
                             PortletRegistryComponent, 
@@ -228,8 +236,10 @@ container.registerComponent(makeThreadLocalAdapter(PersistenceStore, PBStore,  n
                             doParams([cmpParam(PersistenceStore)])
 )
 
+services.addPortletService("PortletRegistryComponent", container.getComponentInstance(PortletRegistryComponent))
+
 /* **********************************************************
- *  Portlet Entity                                                                                *
+ *  Portlet Entity                                          *
  * ******************************************************** */
 container.registerComponentImplementation(
                            PortletEntityAccessComponent, 
@@ -238,7 +248,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Profiler                                                                                        *
+ *  Profiler                                                *
  * ******************************************************** */
 container.registerComponentImplementation(
                        Profiler, 
@@ -247,7 +257,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Capabilities                                                                                 *
+ *  Capabilities                                            *
  * ******************************************************** */
 container.registerComponentImplementation(
                       Capabilities, 
@@ -256,7 +266,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Preferences  & Properites (java.util.prefs implemnetation)           *
+ *  Preferences  & Properites (java.util.prefs implemnetation)           
  * ******************************************************** */
 container.registerComponentImplementation(
 	                      PropertyManager, 
@@ -274,7 +284,7 @@ container.registerComponentImplementation(
 
 
 /* **********************************************************
- *  Security                                                                                      *
+ *  Security                                                *
  * ******************************************************** */
 container.registerComponentImplementation(
                      UserManager, 
@@ -320,7 +330,7 @@ container.getComponentInstanceOfType(PreferencesProviderImpl)
 container.getComponentInstanceOfType(SecurityProviderImpl)
 
 /* **********************************************************
- *  User Info                                                                                     *
+ *  User Info                                               *
  * ******************************************************** */
 container.registerComponentImplementation(
                       UserInfoManager, 
@@ -329,7 +339,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *   Navigational State component                                                    *
+ *   Navigational State component                           *
  * ******************************************************** */
 // navigationKeys: prefix, action, mode, state, renderparam, pid, prev_mode, prev_state, key_delim
 // navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
@@ -354,7 +364,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Request Context component                                                        *
+ *  Request Context component                               *
  * ******************************************************** */
 requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
 container.registerComponentImplementation(
@@ -369,7 +379,7 @@ container.registerComponentImplementation(
 
 
 /* **********************************************************
- *  Portlet Window component                                                          *
+ *  Portlet Window component                                *
  * ******************************************************** */
 container.registerComponentImplementation(
                       PortletWindowAccessor, 
@@ -378,7 +388,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Portlet Container                                                                         *
+ *  Portlet Container                                       *
  * ******************************************************** */
 container.registerComponentInstance("Pluto", new PortletContainerImpl())
 
@@ -389,7 +399,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Portlet Container                                                                         *
+ *  Portlet Container                                       *
  * ******************************************************** */
 container.registerComponentImplementation(
                       PortletRenderer, 
@@ -398,7 +408,7 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
- *  Aggregation                                                                                *
+ *  Aggregation                                             *
  * ******************************************************** */
 container.registerComponentImplementation(
                       PageAggregator, 
