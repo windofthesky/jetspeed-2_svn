@@ -59,16 +59,20 @@ import org.apache.pluto.invoker.PortletInvoker;
 public class PortletInvokerFactoryImpl
     implements PortletInvokerFactory
 {
+    
+    public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
+    public final static String DEFAULT_MAPPING_NAME = "/container";
+    
     private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
 
     /** The servlet configuration for the Jetspeed portal */
     private ServletConfig servletConfig;
+
+    private Map props;
+
+    private PortalContext portalContext;
     
-    /** factory for creating servlet-based portlet invokers */           
-    private ServletPortletInvokerFactory servletInvokerFactory;
-    
-    /** factory for creating local portlet invokers */
-    private LocalPortletInvokerFactory localInvokerFactory;
+
                
     /* (non-Javadoc)
      * @see org.apache.pluto.factory.Factory#init(javax.servlet.ServletConfig, java.util.Map)
@@ -77,9 +81,8 @@ public class PortletInvokerFactoryImpl
     throws Exception
     {
         servletConfig = config;        
-        PortalContext pc = Jetspeed.getContext();
-        servletInvokerFactory = new ServletPortletInvokerFactory(pc);
-        localInvokerFactory = new LocalPortletInvokerFactory(pc);                                
+        portalContext = Jetspeed.getContext();
+        props = properties;                        
     }
 
     /* (non-Javadoc)
@@ -105,37 +108,18 @@ public class PortletInvokerFactoryImpl
         
         if (app.getApplicationType() == MutablePortletApplication.LOCAL)
         {
-            // create a local portlet invoker
-            try
-            {
-                invoker = localInvokerFactory.getPortletInvoker();  
+                invoker =  (JetspeedPortletInvoker) props.get("LocalPortletInvoker"); 
                 invoker.activate(portletDefinition, servletConfig);
-                return invoker;
-            }
-            catch (Throwable t)
-            {
-                log.error("failed to create LOCAL invoker, using default", t);
-                // try default
-                invoker = new LocalPortletInvoker();
-                invoker.activate(portletDefinition, servletConfig);
-                return invoker;
-            }
+                return invoker;           
+        }
+        else
+        {
+            invoker =  (JetspeedPortletInvoker) props.get("ServletPortletInvoker"); 
+            String servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
+            invoker.activate(portletDefinition, servletConfig, servletMappingName);            
+            return invoker;
         }
 
-        // create a servlet-based portlet invoker
-        try
-        {
-            invoker = servletInvokerFactory.getPortletInvoker();
-            invoker.activate(portletDefinition, servletConfig, servletInvokerFactory.getServletMappingName());            
-            return invoker;
-        }
-        catch (Throwable t)
-        {
-            log.error("failed to create SERVLET invoker, using default", t);
-            invoker = new ServletPortletInvoker();
-            invoker.activate(portletDefinition, servletConfig, servletInvokerFactory.getServletMappingName());
-            return invoker;
-        }
     }
     
     /* (non-Javadoc)
@@ -143,21 +127,22 @@ public class PortletInvokerFactoryImpl
      */
     public void releasePortletInvoker(PortletInvoker invoker)
     {
-        try
-        {
-            if (invoker instanceof ServletPortletInvoker)
-            {
-                servletInvokerFactory.releaseObject(invoker);                
-            }
-            else
-            {
-                localInvokerFactory.releaseObject(invoker);                            
-            }
-        }
-        catch (Exception e)
-        {
-            log.error(e);
-        }
+        // this is now taken care off by Spring's CommonsPoolingTargetSource
+//        try
+//        {
+//            if (invoker instanceof ServletPortletInvoker)
+//            {
+//                servletInvokerFactory.releaseObject(invoker);                
+//            }
+//            else
+//            {
+//                localInvokerFactory.releaseObject(invoker);                            
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            log.error(e);
+//        }
     }
     
 }

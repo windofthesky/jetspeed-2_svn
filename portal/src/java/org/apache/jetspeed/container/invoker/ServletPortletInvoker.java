@@ -73,6 +73,8 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected boolean activated = false;
     protected String servletMappingName;
 
+ 
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#passivate()
      */
@@ -109,9 +111,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         activate(portletDefinition, servletConfig);
     }
 
-    public ServletPortletInvoker()
-    {
-    }
+
 
     /**
      *
@@ -198,7 +198,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
         try
         {
-            PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
+            PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);            
             PortletConfig portletConfig = new PortletConfigImpl(this.jetspeedConfig, portletContext, portletDefinition);
             
             servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
