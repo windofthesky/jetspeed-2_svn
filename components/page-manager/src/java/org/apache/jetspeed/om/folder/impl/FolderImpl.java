@@ -258,7 +258,7 @@ public class FolderImpl implements Folder
 
                 public boolean accept( File dir, String name )
                 {                   
-                    return !name.endsWith(".metadata");
+                    return name.endsWith(".psml");
                 }});
             for (int i = 0; i < children.length; i++)
             {
