@@ -15,4 +15,4 @@ REM See the License for the specific language governing permissions and
 REM limitations under the License.
 
 REM ***
-@java -classpath "%CLASSPATH%;hsqldb.jar" org.hsqldb.util.DatabaseManager -url jdbc:hsqldb:Test
+@java -classpath "%HOME%/.maven/repository/hsqldb/jars/hsqldb-1.7.1.jar" org.hsqldb.util.DatabaseManager -url jdbc:hsqldb:Test

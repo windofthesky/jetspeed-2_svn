@@ -12,4 +12,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-java -classpath "%CLASSPATH%:hsqldb.jar" org.hsqldb.util.DatabaseManager -url jdbc:hsqldb:Production
+java -classpath "$HOME/.maven/repository/hsqldb/jars/hsqldb-1.7.1.jar" org.hsqldb.util.DatabaseManager -url jdbc:hsqldb:Production
