@@ -1,0 +1,89 @@
+#set($table = $jetspeed.columns)
+
+#set($myPage = $jetspeed.page)
+
+#set($myFragment = $jetspeed.currentFragment)
+
+#set($portletEntity = $jetspeed.currentPortletEntity)
+
+#set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
+
+  
+ #if($myFragment.getDecorator())
+        #set($decorator = $myFragment.getDecorator())
+  #end
+
+  #if ($decorator)
+        #set($decoTop = "${decorator}-top.vm")
+        #set($decoBottom = "${decorator}-bottom.vm")
+  #end
+
+<!-- Decorator  $decorator  ${decoTop}.vm-${decoBottom}.vm-->
+
+  #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))
+ 
+      ## $jetspeed.include($jetspeed.getTemplate($decoTop).appRelativePath)
+      #parse($jetspeed.getTemplate($decoTop).appRelativePath)
+
+  #end
+
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+
+     #foreach($entry in $table)
+    <td valign="top">
+       <table width="100%">
+       #foreach($f in $entry)
+
+           #set($fDeco = $myPage.getDefaultDecorator($f.type) )
+           
+           #if ($f.getDecorator())
+                #set($fDeco = $f.getDecorator())
+           #end
+           
+           #if ($fDeco)
+                #set($fDecoTop = "${fDeco}-top.vm" )
+                #set($fDecoBottom = "${fDeco}-bottom.vm" )
+           #end
+           
+           ## Set the JetspeedPowerTools current fragment
+           ## to this one prior to parse of window decorations
+           $jetspeed.setCurrentFragment($f)        
+           
+       	   <tr>
+       	   	<td width="100%">
+       	   	 ## Parse out the top half of the decorator
+
+             #if ($fDecoTop)                 
+               ## $jetspeed.include($jetspeed.getTemplate($fDecoTop).appRelativePath)
+               #parse($jetspeed.getTemplate($fDecoTop).appRelativePath)
+             #end
+
+           ##  out.flush(); do we need this in velocity???
+           $jetspeed.flush()
+           #if (!$jetspeed.isHidden($f))
+                ## get the actual Portlet content
+                $jetspeed.include($f)
+                
+           #end
+
+           ## parse out the bottom half of the decorator
+           #if ($fDecoBottom)
+             #parse($jetspeed.getTemplate($fDecoBottom).appRelativePath)
+          #end
+
+     </td></tr>
+      #end
+     </table></td>
+   #end
+  </tr>
+</table>
+
+## Reset the JetspeedPowerTool to the orignal, root fragment
+$jetspeed.setCurrentFragment($myFragment)
+
+
+#if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
+   ## $jetspeed.include($jetspeed.getTemplate($decoBottom).appRelativePath)
+   #parse($jetspeed.getTemplate($decoBottom).appRelativePath)
+#end
