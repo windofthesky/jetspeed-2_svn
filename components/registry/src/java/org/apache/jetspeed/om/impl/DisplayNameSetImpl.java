@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ import org.apache.pluto.om.common.DisplayName;
  * @version $Id$
  *
  */
-public class DisplayNameSetImpl  implements MutableDisplayNameSet
+public class DisplayNameSetImpl  implements MutableDisplayNameSet, Serializable
 {
 
     /** Specifies the type Description we are storing */

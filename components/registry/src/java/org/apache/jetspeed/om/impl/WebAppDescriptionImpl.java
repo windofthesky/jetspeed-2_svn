@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * WebAppDescriptionImpl
@@ -24,7 +26,7 @@ package org.apache.jetspeed.om.impl;
  * @version $Id$
  *
  */
-public class WebAppDescriptionImpl extends DescriptionImpl
+public class WebAppDescriptionImpl extends DescriptionImpl implements Serializable
 {
 	/**
 	* Tells OJB which class to use to materialize.  

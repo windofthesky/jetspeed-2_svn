@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ import org.apache.pluto.om.common.Description;
  * @version $Id$
  *
  */
-public class DescriptionSetImpl  implements MutableDescriptionSet
+public class DescriptionSetImpl  implements MutableDescriptionSet, Serializable
 {
     /** Specifies the type Description we are storing */
     protected String descriptionType;
