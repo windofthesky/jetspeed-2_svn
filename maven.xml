@@ -41,7 +41,7 @@ limitations under the License.
         >
     <maven:reactor
                basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml"
+               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml,layout-portlets/project.xml"
                excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
@@ -217,12 +217,21 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
 
+
      <maven:reactor
                basedir="${basedir}/applications/pam"
                includes="project.xml"
                excludes="applications/project.xml"
                goals="war:install"
                banner="Build and Install the PAM application WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>               
+                     
+     <maven:reactor
+               basedir="${basedir}/layout-portlets"
+               includes="project.xml"
+               goals="war"
+               banner="Building layout portlets WAR"
                postProcessing="false"
                ignoreFailures="false"/>
                
