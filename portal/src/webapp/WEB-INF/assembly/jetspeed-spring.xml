@@ -38,7 +38,7 @@ limitations under the License.
   	   <constructor-arg>
   	   	<map>
   	   	  <entry key="PortletRegistryComponent">
-  	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" />
+  	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
   	   	  </entry>
   	   	  <entry key="SearchComponent">
   	   	  	<ref bean="org.apache.jetspeed.search.SearchEngine"/>
@@ -138,19 +138,110 @@ limitations under the License.
   </bean>
   
   <!-- Portlet Registry DAO-->
-  <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" 
-  	   class="org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg> 	   
-  </bean>
+  <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">
+    	<constructor-arg>
+    		<value>META-INF/registry_repository.xml</value>
+    	</constructor-arg>
+    </bean>
+		
+    
+	<bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry"
+		  name="portletRegistry"
+		  parent="baseTransactionProxy" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
+		</property>
+
+		<property name="target"> 
+			<ref bean="portletRegistryImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="regsister*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+	</bean>
   
   <!-- Portlet Entity Access DAO-->
-  <bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" 
-  	   class="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent"/></constructor-arg> 	   
-  </bean>
+  <!--
+  <bean id="systemCache" class="org.apache.jetspeed.cache.general.SimpleHashMapCache" />
+     
+     <bean id="systemCachingInterceptor" class="org.apache.jetspeed.components.interceptors.CachingInterceptor" >
+    	<constructor-arg>
+    		<ref bean="systemCache"/>
+    	</constructor-arg>
+     </bean>
+    
+    <bean id="systemRemoveFromCacheInterceptor" class="org.apache.jetspeed.components.interceptors.RemoveFromCacheInterceptor" >
+    	<constructor-arg>
+    		<ref bean="systemCache"/>
+    	</constructor-arg>
+    </bean>   	
+    
+    <bean id="portletEntityCachingAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+             <ref bean="systemCachingInterceptor"/>
+        </property>
+        <property name="patterns">
+         <list>
+            <value>.*getPortletEntity.*</value>
+        </list>
+       </property>
+    </bean>
+    
+    <bean id="portletEntityRemoveFromCacheAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+             <ref bean="systemRemoveFromCacheInterceptor"/>
+        </property>
+        <property name="patterns">
+         <list>
+            <value>.*removePortletEntity.*</value>
+        </list>
+       </property>
+    </bean>
+    
+    -->
+    <!--
+	  - PortletEntity business object: OJB implementation, as an inner bean wrapped
+		- by an outer transactional proxy. The two bean definitions could have been separate,
+		- but this is cleaner as there is no need to ever access the unwrapped object.
+    -->
+
+    <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess" >
+    	<constructor-arg>
+    		<ref bean="portletRegistry"/>    		
+    	</constructor-arg>
+    </bean>
+    
+
+	<bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" parent="baseTransactionProxy" 
+		name="portletEntityAccess" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent</value>
+		</property>
+		<property name="target">
+			<ref bean="portletEntityAccessImpl"/>
+		</property>
+		<!--
+		<property name="preInterceptors">
+			<list>
+				<ref bean="portletEntityCachingAdvisor"/>
+				<ref bean="portletEntityRemoveFromCacheAdvisor"/>
+			</list>
+		</property>
+		-->
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>
+				<prop key="store*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+	</bean>
   
   <!-- Profiler -->
   <bean id="org.apache.jetspeed.profiler.Profiler" 
@@ -166,64 +257,155 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
   </bean>
   
-  <!-- Property Manager -->
-   <bean id="org.apache.jetspeed.prefs.PropertyManager" 
+   
+ <!-- Preferences Implementation -->
+   <bean id="PreferencesProviderImpl" 
+  	   class="org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider"
+  	   init-method="init"
+   >  	   
+  	   <constructor-arg index="0"><value>META-INF/prefs_repository.xml</value></constructor-arg>  	   
+  	   <constructor-arg type="boolean" index="1"><value>false</value></constructor-arg>  	     	   
+  </bean>
+  
+  
+  <bean id="org.apache.jetspeed.prefs.PreferencesProvider" parent="baseTransactionProxy" 
+  	name="prefsProvider"
+  	>
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.prefs.PreferencesProvider</value>
+		</property>
+
+		<property name="target"> 
+			<ref bean="PreferencesProviderImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="createNode*">PROPAGATION_REQUIRED</prop>
+				<prop key="storeNode*">PROPAGATION_REQUIRED</prop>
+				<prop key="removeNode*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+  </bean>
+  
+  <!-- PreferencesFaactory implementation -->
+  
+  <bean id="java.util.prefs.PreferencesFactory" 
+  	class="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"
+  	name="prefsFactory" init-method="init"
+  	>
+  		<property name="prefsProvider"> 
+			<ref bean="prefsProvider"/>
+		</property>	
+  </bean>
+  
+  
+   <!-- Property Manager -->
+   <bean id="PropertyManagerImpl" 
   	   class="org.apache.jetspeed.prefs.impl.PropertyManagerImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+      <!-- We don't use the Tx proxied prefs provider so that we can demarcate Txs
+      	   exclusively for the PropertyManager -->
+  	   <constructor-arg ><ref bean="PreferencesProviderImpl"/></constructor-arg>  	   
   </bean>
   
-  <!-- Preferences Implementation -->
-   <bean id="org.apache.jetspeed.prefs.PreferencesProvider" 
-  	   class="org.apache.jetspeed.prefs.impl.PreferencesProviderImpl"
-  	   init-method="start" destroy-method="stop"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
-  	   <constructor-arg ><value>org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl</value></constructor-arg>
-  	   <constructor-arg type="boolean"><value>false</value></constructor-arg>  	     	   
+  
+  <bean id="org.apache.jetspeed.prefs.PropertyManager" parent="baseTransactionProxy" 
+  	     name="propertyManager"
+  	     >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.prefs.PropertyManager</value>
+		</property>
+
+		<property name="target"> 
+			<ref bean="PropertyManagerImpl"/>
+		</property>		
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>		
   </bean>
   
-  <!-- ************** Security SPI Handlers ************** -->
+ <!-- ************** Security SPI Handlers ************** -->
   <!-- Security SPI: CommonQueries -->
-  <bean id="org.apache.jetspeed.security.spi.impl.CommonQueries" 
-  	   class="org.apache.jetspeed.security.spi.impl.CommonQueries"
+  <bean id="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl" 
+  	   class="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl"
+  	   init-method="init"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  	   <constructor-arg ><value>META-INF/security_repository.xml</value></constructor-arg>  	   
   </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.SecurityAccess" parent="baseTransactionProxy" 
+		name="SecurityCommonQueries" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.security.spi.SecurityAccess</value>
+		</property>
+		<property name="target">
+			<ref bean="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+   </bean>
   
   <!-- Security SPI: CredentialHandler -->
   <bean id="org.apache.jetspeed.security.spi.CredentialHandler" 
   	   class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/></constructor-arg>  	   
   </bean>
   
   <!-- Security SPI: UserSecurityHandler -->
-  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" 
+  <!-- The DefaultUSerSecurityHandler uses the raw SecurityAccessImpl so that it
+  	   may demarcate its own transactions -->
+  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl" 
   	   class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/></constructor-arg>  	   
   </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" parent="baseTransactionProxy" 
+		name="userSecurityHandler" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.security.spi.UserSecurityHandler</value>
+		</property>
+		<property name="target">
+			<ref bean="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+   </bean>
   
   <!-- Security SPI: RoleSecurityHandler -->
   <bean id="org.apache.jetspeed.security.spi.RoleSecurityHandler" 
   	   class="org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/></constructor-arg>
   </bean>
   
   <!-- Security SPI: GroupSecurityHandler -->
   <bean id="org.apache.jetspeed.security.spi.GroupSecurityHandler" 
   	   class="org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/></constructor-arg>
   </bean>
   
   <!-- Security SPI: SecurityMappingHandler -->
   <bean id="org.apache.jetspeed.security.spi.SecurityMappingHandler" 
   	   class="org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.impl.CommonQueries"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityAccess"/></constructor-arg>
   	   <!-- Default role hierarchy strategy is by generalization.  Add contructor-arg to change the strategy. -->
   	   <!-- Default group hierarchy strategy is by generalization.  Add contructor-arg to change the strategy. -->
   </bean>
@@ -294,11 +476,28 @@ limitations under the License.
   
   <!-- ************** Authorization ************** -->
   <!-- Security: Permission Manager -->
-  <bean id="org.apache.jetspeed.security.PermissionManager" 
-  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
-  </bean>
+  <bean id="org.apache.jetspeed.security.impl.PermissionManagerImpl" 
+  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"  />
+  
+  <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy" 
+		name="permissionManager" >
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.security.PermissionManager</value>
+		</property>
+		<property name="target">
+			<ref bean="org.apache.jetspeed.security.impl.PermissionManagerImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>
+				<prop key="grant*">PROPAGATION_REQUIRED</prop>
+				<prop key="revoke*">PROPAGATION_REQUIRED</prop>
+				<prop key="grant*">PROPAGATION_REQUIRED</prop>
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+   </bean>
   
   <!-- Security: RDBMS Policy implementation for JAAS -->
   <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" 
@@ -319,7 +518,7 @@ limitations under the License.
   	   class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl"
   >
      <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	     	   
-     <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent"/></constructor-arg>
+     <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
 
   </bean>
   
@@ -451,7 +650,7 @@ limitations under the License.
   	   init-method="start" destroy-method="stop"
   >  	   
   	   <constructor-arg ><value>${autodeployment.target.dir}</value></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
@@ -469,7 +668,7 @@ limitations under the License.
   > 	
        <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
   	   <constructor-arg ><ref bean="PAM" /></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
   	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
   </bean>
   
