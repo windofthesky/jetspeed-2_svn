@@ -33,9 +33,12 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.RenderKit;
 import javax.faces.render.RenderKitFactory;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
 
 import net.sourceforge.myfaces.util.NullIterator;
 
@@ -88,13 +91,17 @@ public class PortletFacesContextImpl extends FacesContext
     /** The render kit factory. */
     private RenderKitFactory renderKitFactory;
 
+    /** The JSF_VIEW_ID used to maintain the state of the view action. */
+    public static final String JSF_VIEW_ID = "jsf_viewid";
+    
     /**
      * @param portletContext The {@link PortletContext}.
      * @param portletRequest The {@link PortletRequest}.
      * @param portletResponse The {@link PortletResponse}.
      */
-    public PortletFacesContextImpl(PortletContext portletContext, PortletRequest portletRequest,
-            PortletResponse portletResponse)
+    public PortletFacesContextImpl(PortletContext portletContext,                                    
+                                   PortletRequest portletRequest,
+                                   PortletResponse portletResponse)
     {
         this.application = ((ApplicationFactory) FactoryFinder.getFactory(FactoryFinder.APPLICATION_FACTORY))
                 .getApplication();
@@ -102,6 +109,49 @@ public class PortletFacesContextImpl extends FacesContext
         this.externalContext = new PortletExternalContextImpl(portletContext, portletRequest, portletResponse);
         FacesContext.setCurrentInstance(this); //protected method, therefore
                                                // must be called from here
+    }
+    
+    public UIViewRoot resolveViewRoot(String defaultViewName, PortletRequest portletRequest)
+    {
+System.out.println("-----------------------------------------");        
+System.out.println("+++ Resolving view root: DEFAULT VID: " + defaultViewName);        
+        // shoot: can't get the entity id and be portable
+        PortletRequest request = (PortletRequest)externalContext.getRequest();
+        String viewId = request.getParameter(JSF_VIEW_ID);
+System.out.println("+++ Resolving: END VIEW ID: " + viewId);                
+        if (viewId == null)
+        {
+            viewId = defaultViewName;
+        }
+System.out.println("+++ Resolving: END VIEW ID: " + viewId);        
+        
+    if (portletRequest instanceof ActionRequest)
+    {
+        System.out.println("+++ Resolving: ACTION: " + viewId);
+        setViewRoot(viewRoot);        
+        portletRequest.setAttribute(FacesPortlet.REQUEST_SERVLET_PATH, viewId.replaceAll(".jsp", ".jsf"));        
+        return null;
+    }
+
+
+        UIViewRoot viewRoot = 
+            (UIViewRoot)request.getPortletSession().getAttribute(viewId, PortletSession.PORTLET_SCOPE);
+        if (null == viewRoot)
+        {
+System.out.println("+++ Resolving: CREATING NEW VIEW ROOT: " + viewId);                    
+            viewRoot = application.getViewHandler().createView(this, viewId);
+            //viewRoot = new UIViewRoot();
+            viewRoot.setViewId(viewId);
+            viewRoot.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+            request.getPortletSession().setAttribute(viewId, viewRoot, PortletSession.PORTLET_SCOPE);
+        }
+        else
+        {
+System.out.println("+++ Resolving: USING FROM SESSION VIEW ROOT: " + viewId);                                
+        }
+        setViewRoot(viewRoot);
+        portletRequest.setAttribute(FacesPortlet.REQUEST_SERVLET_PATH, viewId.replaceAll(".jsp", ".jsf"));
+        return viewRoot;
     }
 
     /**

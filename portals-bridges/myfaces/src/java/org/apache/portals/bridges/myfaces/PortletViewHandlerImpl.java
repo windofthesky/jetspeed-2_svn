@@ -82,7 +82,15 @@ public class PortletViewHandlerImpl extends ViewHandler
      */
     public UIViewRoot createView(FacesContext facesContext, String viewId)
     {
-        return handler.createView(facesContext, viewId);
+        System.out.println("Creating view: " + viewId);        
+        
+        UIViewRoot root = handler.createView(facesContext, viewId);
+        if (root != null)
+        {
+            facesContext.setViewRoot(root);
+        }
+        
+        return root;
     }
 
     /**
@@ -116,6 +124,7 @@ public class PortletViewHandlerImpl extends ViewHandler
      */
     public void renderView(FacesContext facesContext, UIViewRoot viewToRender) throws IOException, FacesException
     {
+        System.out.println("Rendering view: " + viewToRender);
         handler.renderView(facesContext, viewToRender);
     }
 
@@ -125,7 +134,14 @@ public class PortletViewHandlerImpl extends ViewHandler
      */
     public UIViewRoot restoreView(FacesContext facesContext, String viewId)
     {
-        return handler.restoreView(facesContext, viewId);
+        System.out.println("restoring view: " + viewId);        
+        UIViewRoot root = handler.restoreView(facesContext, viewId);
+        if (root != null)
+        {
+            facesContext.setViewRoot(root);
+        }
+        // System.out.println("Rendering view root: " + root);
+        return root;
     }
 
     /**

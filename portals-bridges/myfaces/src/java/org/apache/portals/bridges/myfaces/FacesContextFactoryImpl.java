@@ -20,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -37,17 +38,24 @@ public class FacesContextFactoryImpl extends FacesContextFactory
      * @see javax.faces.context.FacesContextFactory#getFacesContext(java.lang.Object,
      *      java.lang.Object, java.lang.Object, javax.faces.lifecycle.Lifecycle)
      */
-    public FacesContext getFacesContext(Object context, Object request, Object response, Lifecycle lifecycle)
+    public FacesContext getFacesContext(Object config, Object request, Object response, Lifecycle lifecycle) 
             throws FacesException
     {
-        if (context instanceof PortletContext)
+        if (config instanceof PortletConfig)
         {
-            return new PortletFacesContextImpl((PortletContext) context, (PortletRequest) request,
+            PortletConfig pc = (PortletConfig)config;
+            PortletContext context = pc.getPortletContext();
+            PortletFacesContextImpl facesContext = new PortletFacesContextImpl( 
+                    (PortletContext) context,  
+                    (PortletRequest) request,
                     (PortletResponse) response);
+            String defaultViewName = pc.getInitParameter(FacesPortlet.PARAM_VIEW_PAGE);            
+            // facesContext.resolveViewRoot(defaultViewName, (PortletRequest)request);
+            return facesContext;
         }
         else
         {
-            throw new FacesException("Unsupported context type " + context.getClass().getName());
+            throw new FacesException("Unsupported context type " + config.getClass().getName());
         }
     }
 }

@@ -35,6 +35,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -47,7 +48,8 @@ import org.apache.commons.logging.LogFactory;
  * portlet environment.
  * </p>
  * 
- * @author <a href="mailto:dlestrat@yahoo.com">David Le Strat </a>
+ * @author <a href="mailto:dlestrat@yahoo.com">David Le Strat</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
 public class FacesPortlet extends GenericPortlet
 {
@@ -384,9 +386,11 @@ public class FacesPortlet extends GenericPortlet
             log.trace("Begin FacesPortlet.processAction()");
         }
 
+        
         // Acquire the FacesContext instance for this request
-        FacesContext context = getFacesContextFactory().getFacesContext(portletConfig.getPortletContext(), request,
-                response, getLifecycle());
+        FacesContext context = getFacesContextFactory().getFacesContext(
+                portletConfig, 
+                request, response, getLifecycle());
 
         // Restore view if available.
         setDefaultView(context, defaultPage);
@@ -406,11 +410,20 @@ public class FacesPortlet extends GenericPortlet
                     log.trace("End Executing phases");
                 }
                 // The view should have been restore.
-                // Pass it to the render request.
-                request.getPortletSession().setAttribute(VIEW_ROOT, context.getViewRoot());
+                // Pass it to the render request. 
+                                
+                request.getPortletSession().setAttribute(createViewRootKey(context, defaultPage), context.getViewRoot());
+                ActionResponse actionResponse = (ActionResponse)response;
+                                
+                // actionResponse.setRenderParameter(JSF_VIEW_ID, context.getViewRoot().getViewId()); // get the navigation change
+                request.getPortletSession().setAttribute(JSF_VIEW_ID, context.getViewRoot().getViewId(), PortletSession.PORTLET_SCOPE);
             }
             else if (renderRequest)
-            { 
+            {
+                //    getLifecycle().execute(context);
+                String vi = context.getViewRoot().getViewId();
+                context.getApplication().getViewHandler().restoreView(context, vi);
+                
                 getLifecycle().render(context);
                 if (log.isTraceEnabled())
                 {
@@ -456,6 +469,30 @@ public class FacesPortlet extends GenericPortlet
         }
     }
 
+    private String createViewRootKey(FacesContext context, String defaultView)
+    {
+        PortletRequest portletRequest = (PortletRequest) context.getExternalContext().getRequest();
+        // String view = portletRequest.getParameter(JSF_VIEW_ID);
+        String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+        
+        if (view == null)
+        {
+            view = defaultView;
+        }
+        String key = VIEW_ROOT + ":" + getPortletName();
+        UIViewRoot root = context.getViewRoot();
+        if (root != null)
+        {
+           key = key + ":" + root.getViewId();
+        }
+        else
+        {
+            key = key + ":" + view;
+        }
+        System.out.println("KEY [" + key + "]");
+        return key;
+    }
+    
     /**
      * <p>
      * Set the view identifier to the view for the page to be rendered.
@@ -472,32 +509,59 @@ public class FacesPortlet extends GenericPortlet
         PortletRequest portletRequest = (PortletRequest) facesContext.getExternalContext().getRequest();
         if (portletRequest instanceof ActionRequest)
         {
+            String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+            
             if ((null != facesContext.getViewRoot()) && (null != facesContext.getViewRoot().getViewId()))
             {
                 defaultView = facesContext.getViewRoot().getViewId();
             }
-            else if (null != portletRequest.getParameter(JSF_VIEW_ID))
+            //else if (null != portletRequest.getParameter(JSF_VIEW_ID))
+            else if (null != view)
             {
-                defaultView = portletRequest.getParameter(JSF_VIEW_ID);
+                //defaultView = portletRequest.getParameter(JSF_VIEW_ID);
+                defaultView = view;
             }
+            
+            UIViewRoot viewRoot = (UIViewRoot)portletRequest.
+                                    getPortletSession().
+                                    getAttribute(createViewRootKey(facesContext, defaultView));
+            if (viewRoot != null)
+            {
+                facesContext.setViewRoot(viewRoot);
+                defaultView = facesContext.getViewRoot().getViewId();
+            }
+            
+            portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView.replaceAll(".jsp", ".jsf"));
         }
         else if (portletRequest instanceof RenderRequest)
         {
+            // String view = portletRequest.getParameter(JSF_VIEW_ID);
+            String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+            
             if (null == facesContext.getViewRoot())
-            {
-                if (null != portletRequest.getPortletSession().getAttribute(VIEW_ROOT))
+            {                
+                if (view == null)
                 {
-                    facesContext.setViewRoot((UIViewRoot) portletRequest.getPortletSession().getAttribute(VIEW_ROOT));
+                    view = defaultView;
+                }
+                UIViewRoot viewRoot = (UIViewRoot)portletRequest.
+                                        getPortletSession().
+                                        getAttribute(createViewRootKey(facesContext, view));
+                if (null != viewRoot)
+                {
+                    facesContext.setViewRoot(viewRoot);
                     defaultView = facesContext.getViewRoot().getViewId();
                 }
                 else
                 {
                     facesContext.setViewRoot(new UIViewRoot());
-                    facesContext.getViewRoot().setViewId(defaultView);
+                    facesContext.getViewRoot().setViewId(view);
                     facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+                    portletRequest.getPortletSession().setAttribute(createViewRootKey(facesContext, view), viewRoot);
                 }                	
             }
+            portletRequest.setAttribute(REQUEST_SERVLET_PATH, view.replaceAll(".jsp", ".jsf"));
         }
-        portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView.replaceAll(".jsp", ".jsf"));
+        
     }
 }
