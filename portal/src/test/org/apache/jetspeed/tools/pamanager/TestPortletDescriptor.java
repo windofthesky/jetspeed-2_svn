@@ -147,6 +147,8 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
             "PA Identifier invalid: " + app.getApplicationIdentifier(),
             app.getApplicationIdentifier().equals("TestRegistry"));
 
+        validateUserInfo(app);
+
         // portlets
         PortletDefinitionList portletsList = app.getPortletDefinitionList();
         Iterator it = portletsList.iterator();
@@ -164,6 +166,36 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         }
         assertTrue("Portlet Count != 4, = " + count, count == 4);
 
+    }
+
+    private void validateUserInfo(MutablePortletApplication app)
+    {
+        // Portlet User Attributes
+        Collection userAttributeSet = app.getUserAttributes();
+        Iterator it = userAttributeSet.iterator();
+        while (it.hasNext())
+        {
+            UserAttribute userAttribute = (UserAttribute) it.next();
+            assertNotNull("User attribute name is null, ", userAttribute.getName());
+            if (userAttribute.getName().equals("user.name.given"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User Given Name"));
+            }
+            if (userAttribute.getName().equals("user.name.family"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User Last Name"));
+            }
+            if (userAttribute.getName().equals("user.home-info.online.email"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User eMail"));
+            }
+        }
     }
 
     private void validateHelloPortlet(PortletDefinitionComposite portlet)
@@ -286,32 +318,6 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         }
         assertTrue("PortletPreference Count != 2, count = " + count, count == 2);
 
-        // Portlet User Attributes
-        Collection userAttributeSet = portlet.getUserAttributeSet();
-        it = userAttributeSet.iterator();
-        while (it.hasNext())
-        {
-            UserAttribute userAttribute = (UserAttribute) it.next();
-            assertNotNull("User attribute name is null, ", userAttribute.getName());
-            if (userAttribute.getName().equals("user.name.given"))
-            {
-                assertTrue(
-                    "User attribute description: " + userAttribute.getDescription(),
-                    userAttribute.getDescription().equals("User Given Name"));
-            }
-            if (userAttribute.getName().equals("user.name.family"))
-            {
-                assertTrue(
-                    "User attribute description: " + userAttribute.getDescription(),
-                    userAttribute.getDescription().equals("User Last Name"));
-            }
-            if (userAttribute.getName().equals("user.home-info.online.email"))
-            {
-                assertTrue(
-                    "User attribute description: " + userAttribute.getDescription(),
-                    userAttribute.getDescription().equals("User eMail"));
-            }
-        }
     }
 
     private void validatePreferences(PreferenceComposite pref, String[] expectedValues)

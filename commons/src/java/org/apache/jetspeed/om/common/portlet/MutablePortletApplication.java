@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -62,6 +63,31 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
     PortletDefinition getPortletDefinitionByName(String name);
 
     void setPortletDefinitionList(PortletDefinitionList portlets);
+
+    /**
+     * <p>Adds a user attribute to the user attribute set.</p>
+     * @param name The user attribute name.
+     * @param description The user attribute description.
+     */
+    void addUserAttribute(String name, String description);
+
+    /**
+     * <p>Adds a user attribute to the user attribute set.</p>
+     * @param userAttribute The user attribute.
+     */
+    void addUserAttribute(UserAttribute userAttribute);
+
+    /**
+     * <p>Sets a user-attribute to the collection of user attributes associated
+     * with this portlet application.</p>
+     */
+    void setUserAttributes(Collection userAttributes);
+    
+    /**
+     * <p>Gets the collection of user attributes associated
+     * with this portlet application.</p>
+     */
+    Collection getUserAttributes();
 
     void setApplicationIdentifier(String applicationIndentifier);
 

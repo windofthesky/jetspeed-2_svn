@@ -437,11 +437,6 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(DefaultPreferenceImpl.class, filter));
                 store.getTransaction().checkpoint();
-
-                filter = store.newFilter();
-                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(UserAttributeImpl.class, filter));
-                store.getTransaction().checkpoint();
                 
                 filter = store.newFilter();
                 filter.addEqualTo("portletId", new Long(curPortlet.getOID()));

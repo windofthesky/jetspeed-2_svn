@@ -38,7 +38,6 @@ import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -148,38 +147,6 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
     {
 		portlet.setContentTypeSet(contentTypes);
 
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addUserAttribute(java.lang.String, java.lang.String)
-     */
-    public void addUserAttribute(String name, String description)
-    {
-        portlet.addUserAttribute(name, description);
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
-     */
-    public void addUserAttribute(UserAttribute userAttribute)
-    {
-        portlet.addUserAttribute(userAttribute);
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setUserAttributeSet(java.util.Collection)
-     */
-    public void setUserAttributeSet(Collection userAttributeSet)
-    {
-        portlet.setUserAttributeSet(userAttributeSet);
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getUserAttributeSet()
-     */
-    public Collection getUserAttributeSet()
-    {
-        return portlet.getUserAttributeSet();
     }
 
     /** 

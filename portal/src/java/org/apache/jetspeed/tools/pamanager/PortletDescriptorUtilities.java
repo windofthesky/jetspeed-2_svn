@@ -204,10 +204,10 @@ public class PortletDescriptorUtilities
                 new Class[] { Boolean.class });
             digester.addSetNext("portlet-app/portlet/portlet-preferences/preference", "addPreference");
             
-            digester.addObjectCreate("portlet-app/portlet/user-attribute", UserAttributeImpl.class);
-            digester.addBeanPropertySetter("portlet-app/portlet/user-attribute/description", "description");
-            digester.addBeanPropertySetter("portlet-app/portlet/user-attribute/name", "name");
-            digester.addSetNext("portlet-app/portlet/user-attribute", "addUserAttribute");
+            digester.addObjectCreate("portlet-app/user-attribute", UserAttributeImpl.class);
+            digester.addBeanPropertySetter("portlet-app/user-attribute/description", "description");
+            digester.addBeanPropertySetter("portlet-app/user-attribute/name", "name");
+            digester.addSetNext("portlet-app/user-attribute", "addUserAttribute");
             
             digester.addObjectCreate("portlet-app/portlet/security-role-ref", SecurityRoleRefImpl.class);
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/role-name", "roleName");

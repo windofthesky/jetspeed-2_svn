@@ -134,6 +134,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
+        assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
         
@@ -146,7 +147,6 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
         assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
         assertNotNull("\"preference 1\" was not found.", portlet.getPreferenceSet().get("preference 1"));
-        assertTrue("\"user.name.family\" user attribute was not found.", portlet.getUserAttributeSet().size() == 1);
         assertNotNull("Language information not found for Portlet 1", portlet.getLanguageSet().get(Locale.getDefault()));
         assertNotNull("Content Type html not found.", portlet.getContentTypeSet().get("html/text"));
         assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));

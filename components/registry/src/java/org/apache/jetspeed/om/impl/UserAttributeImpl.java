@@ -24,6 +24,9 @@ import org.apache.jetspeed.om.common.UserAttribute;
 public class UserAttributeImpl implements UserAttribute
 {
 
+    /** The application id. */
+    protected long appId;
+    
     /**
      * <p>Default constructor.</p>
      */

@@ -197,6 +197,17 @@ limitations under the License.
       >
          <inverse-foreignkey field-ref="appId"/>
       </collection-descriptor>
+      
+	  <collection-descriptor
+         name="userAttributes"
+         element-class-ref="org.apache.jetspeed.om.impl.UserAttributeImpl"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
+       >         
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+
    </class-descriptor>
    
 
@@ -393,17 +404,6 @@ limitations under the License.
       	 auto-retrieve = "true"
 
        >         
-         <inverse-foreignkey field-ref="portletId"/>
-      </collection-descriptor>
-      
-      <collection-descriptor
-         name="userAttributeSet"
-         element-class-ref="org.apache.jetspeed.om.impl.UserAttributeImpl"
-         auto-delete="false"
-      	 auto-update = "true"
-      	 auto-retrieve = "true"
-       >         
-
          <inverse-foreignkey field-ref="portletId"/>
       </collection-descriptor>
       
@@ -1345,16 +1345,13 @@ limitations under the License.
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
-         access="anonymous"
-         
+         access="anonymous"        
       />
       
       <field-descriptor
-         name="portletId"
-         column="PORTLET_DEFINITION_ID"
+         name="appId"
+         column="APPLICATION_ID"
          jdbc-type="BIGINT"
-         access="anonymous"
-
       />
       
       <field-descriptor

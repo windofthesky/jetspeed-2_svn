@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -67,6 +69,9 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
 
     private Collection portlets;
     
+    /** User attributes collection. */
+    private Collection userAttributes;
+    
     private PortletDefinitionListImpl listWrapper = new PortletDefinitionListImpl();
 
     private int applicationType = MutablePortletApplication.WEBAPP;
@@ -75,6 +80,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public PortletApplicationDefinitionImpl()
     {
         portlets = new ArrayList();
+        userAttributes = new ArrayList();
     }
 
     /**
@@ -203,6 +209,38 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public void setPortletDefinitionList(PortletDefinitionList portlets)
     {
         this.portlets = ((PortletDefinitionListImpl) portlets).getInnerCollection();
+    }
+
+    /** 
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#addUserAttribute(java.lang.String, java.lang.String)
+     */
+    public void addUserAttribute(String name, String description)
+    {
+        userAttributes.add(new UserAttributeImpl(name, description));
+    }
+
+    /** 
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
+     */
+    public void addUserAttribute(UserAttribute userAttribute)
+    {
+        userAttributes.add(userAttribute);
+    }
+
+    /** 
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#setUserAttributes(java.util.Collection)
+     */
+    public void setUserAttributes(Collection userAttributes)
+    {
+        this.userAttributes = userAttributes;
+    }
+
+    /** 
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#getUserAttributes()
+     */
+    public Collection getUserAttributes()
+    {
+        return this.userAttributes;
     }
 
     /**
