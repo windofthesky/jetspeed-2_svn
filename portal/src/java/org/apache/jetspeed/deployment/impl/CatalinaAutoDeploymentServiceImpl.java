@@ -24,6 +24,8 @@ import org.apache.jetspeed.deployment.DeploymentEventDispatcher;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.tools.pamanager.CatalinaPAM;
+import org.apache.jetspeed.tools.pamanager.Deployment;
+import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 
 /**
  * <p>
@@ -117,16 +119,18 @@ public class CatalinaAutoDeploymentServiceImpl extends BaseCommonService impleme
 
         try
         {
-            CatalinaPAM catPAM = new CatalinaPAM();
+            String deployerClass = conf.getString("deployer", "org.apache.jetspeed.pamanager.CatalinaPAM");
+            PortletApplicationManagement pam = (PortletApplicationManagement)Class.forName(deployerClass).newInstance();
+
             Map map = new HashMap();
             map.put(CatalinaPAM.PAM_PROPERTY_SERVER, server);
             map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
             map.put(CatalinaPAM.PAM_PROPERTY_USER, userName);
             map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
             
-            catPAM.connect(map);
+            pam.connect(map);
             
-            DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(targetDirFile.getCanonicalPath(), catPAM);
+            DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(targetDirFile.getCanonicalPath(), pam);
             DeploymentEventDispatcher dispatcher = new DeploymentEventDispatcher(targetDirFile.getCanonicalPath());
             dispatcher.addDeploymentListener(dpal);
             HashMap handlers = new HashMap();
