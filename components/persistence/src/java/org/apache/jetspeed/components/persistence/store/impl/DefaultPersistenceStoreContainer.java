@@ -53,6 +53,8 @@ public class DefaultPersistenceStoreContainer
     private int storeTTL;
     
     private int checkInterval;
+    
+    private boolean started=false;
 
     private static final Log log = LogFactory.getLog(DefaultPersistenceStoreContainer.class);
 
@@ -394,19 +396,26 @@ public class DefaultPersistenceStoreContainer
      */
     public void start()
     {
-        super.start();
-        
-        storeLastUsed = new HashMap();
-        //		default to 15 seconds of inactivity, after which the broker is recalimed to the pool
-        
-        log.info("PersistenceStore Time To Live set to " + storeTTL);
-                log.info("PersistenceStore will be checked for inactivity every " + (checkInterval / 1000) + " seconds.");
+        if (!started)
+        {
+            super.start();
 
-        InactivityMonitor monitor = new InactivityMonitor(storeTTL, checkInterval);
-        monitor.setDaemon(true);
-        monitor.setPriority(Thread.MIN_PRIORITY);
-       // monitor.setContextClassLoader(Thread.currentThread().getContextClassLoader());
-        monitor.start();
+            storeLastUsed = new HashMap();
+            //		default to 15 seconds of inactivity, after which the broker is
+            // recalimed to the pool
+
+            log.info("PersistenceStore Time To Live set to " + storeTTL);
+            log.info("PersistenceStore will be checked for inactivity every "
+                    + (checkInterval / 1000) + " seconds.");
+
+            InactivityMonitor monitor = new InactivityMonitor(storeTTL,
+                    checkInterval);
+            monitor.setDaemon(true);
+            monitor.setPriority(Thread.MIN_PRIORITY);
+            // monitor.setContextClassLoader(Thread.currentThread().getContextClassLoader());
+            monitor.start();
+            started=true;
+        }
     }
 
 	/**
