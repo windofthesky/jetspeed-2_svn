@@ -15,22 +15,22 @@ See the links below for getting started with each project.
 </p>
 <subsection name="Jetspeed-1">
 <p>
-<a href='jetspeed-1/GETTING-STARTED.html'>Getting Started with Jetspeed-1</a>
+<a href='http://jakarta.apache.org/jetspeed/site/config_guide.html'>Getting Started with Jetspeed-1</a>
 </p>
 </subsection>
 <subsection name="Jetspeed-2">
 <p>
-<a href='jetspeed-2/GETTING-STARTED.html'>Getting Started with Jetspeed-2</a>
+<a href='http://cvs.apache.org/viewcvs.cgi/*checkout*/jakarta-jetspeed-2/GETTING-STARTED.html'>Getting Started with Jetspeed-2</a>
 </p>
 </subsection>
 <subsection name="Pluto">
 <p>
-<a href='pluto/GETTING-STARTED.html'>Getting Started with Pluto</a>
+<a href='http://jakarta.apache.org/pluto/install.html'>Getting Started with Pluto</a>
 </p>
 </subsection>
 <subsection name="WSRP4J">
 <p>
-<a href='wsrp4j/GETTING-STARTED.html'>Getting Started with WSRP4J</a>
+<a href='http://ws.apache.org/wsrp4j/installation.html'>Getting Started with WSRP4J</a>
 </p>
 </subsection>
 
