@@ -260,12 +260,19 @@ public class GenericServletPortlet extends GenericPortlet
     throws PortletException, IOException
     {
         String editPage = this.defaultEditPage;
+        
+        //  allow EditPage override by the request
+        String reqEditPage = (String) request.getAttribute(PARAM_EDIT_PAGE);
+        if(reqEditPage != null)
+        {
+            editPage = reqEditPage;
+        }
+        
         if (this.allowPreferences == true)
         {                       
             PortletPreferences prefs = request.getPreferences();
-            // Allow EditPage override by the request
-            editPage = request.getParameter(PARAM_EDIT_PAGE);
-            if (prefs != null && editPage == null)
+
+            if (prefs != null && reqEditPage == null)
             {
                 editPage = prefs.getValue(PARAM_EDIT_PAGE, this.defaultEditPage);
             }
@@ -291,13 +298,20 @@ public class GenericServletPortlet extends GenericPortlet
     throws PortletException, IOException
     {
         String helpPage = this.defaultHelpPage;
+        
+        //  allow HelpPage override by the request
+        String reqHelpPage = (String) request.getAttribute(PARAM_HELP_PAGE);
+        if(reqHelpPage != null)
+        {
+            helpPage = reqHelpPage;
+        }
+        
         if (this.allowPreferences == true)
         {
 
             PortletPreferences prefs = request.getPreferences();
-            // Allow HelpPage override by the request
-            helpPage = request.getParameter(PARAM_EDIT_PAGE);
-            if (prefs != null && helpPage == null)
+
+            if (prefs != null && reqHelpPage == null)
             {
                 helpPage = prefs.getValue(PARAM_HELP_PAGE, this.defaultHelpPage);
             }
