@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2000-2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,10 +70,24 @@ public class PerlPortlet extends GenericPortlet {
 	 * DemoMode on or off
 	 */
 	public static final String PARAM_DEMO_MODE	=	"DemoMode";
+	
+	/**
+	 * PARAM_APPLICATION
+	 * 
+     * ApplicationName identifies the caller so that the portlet only refreshes
+     * content that was supposed for the portlet.
+     * If the application name is undefined the portlet will process the request.
+     * If you have more than one perl-portlet for the same user/session all the portlets
+     * will be refreshed with the same content.
+	 */
+	public static final String PARAM_APPLICATION = "Application";
 
 //  Local variables
 	private String perlScript	=	"perl-demo.cgi";
     private String	scriptPath	=	"cgi-bin";
+    
+    
+    private String applicationName = null;
     
     // Switch that shows basic information about the perl script to run
     private boolean bDemoMode	=	false;
@@ -83,6 +97,9 @@ public class PerlPortlet extends GenericPortlet {
        
     // caching status -- cache the last query    
     private String lastQuery = null;
+    
+    // Cache the last generated page
+    String lastPage = null;
     
     
     public void init(PortletConfig config) throws PortletException
@@ -94,7 +111,8 @@ public class PerlPortlet extends GenericPortlet {
         // throw an exception
         scriptPath		=	config.getInitParameter(PARAM_SCRIPT_PATH);
         perlScript		=	config.getInitParameter(PARAM_PERL_SCRIPT);
-        String demoMode =	config.getInitParameter(PARAM_DEMO_MODE);
+        String demoMode =	config.getInitParameter(PARAM_DEMO_MODE); 
+        applicationName = config.getInitParameter(PARAM_APPLICATION);
         
         if (demoMode != null && demoMode.compareToIgnoreCase("on") == 0)
         	bDemoMode = true;
@@ -131,7 +149,8 @@ public class PerlPortlet extends GenericPortlet {
     	{
     		// Perl Parameter Object
     		PerlParameters cgi = new PerlParameters();
-    		
+    		cgi.setApplicationName(this.applicationName);
+       		
     		// Separate the values before and after the Query Mark ?
     		int ixQuery = perlParameter.indexOf('?');
     		if ( ixQuery != -1)
@@ -206,38 +225,44 @@ public class PerlPortlet extends GenericPortlet {
     	PerlParameters perlParam = null;
     	
     	/**
-    	 * The Perl parameters are either passed by a session attribute (invoked through an action) or as a query string (invoked from the cgi itself).
-    	 * The portlet checks first for the query (navigation inside the perl portlet) and then if a session attribute (SELECTED_VIEW) was defined.
+    	 * The Perl parameters are either passed by a session attribute (invoked from a different portlet) or as an action which is replaced
+    	 * with a session while processing actions..
     	 */
+    	    	
+		try
+		{
+    		perlParam = (PerlParameters)request.getPortletSession().getAttribute(PerlParameters.PERL_PARAMETER, PortletSession.APPLICATION_SCOPE);
+		}
+    	catch (Exception e )
+		{
+    		perlParam = null;
+		}
     	
-    	// Extract the Query string -- Request initiated from inside the CGI script. This allows navigation within the CGI
-    	String queryString = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getQueryString();
-    	
-    	if (queryString != null)
+    	if (perlParam != null)
     	{
-    		query = queryString;
-    		
-    		// Find the perl script -- last argument
-    		String url = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getRequestURI();
-    		perlScript = url.substring(url.lastIndexOf('/')+1);
-    	}
-    	else
-    	{
-    		try
-			{
-	    		perlParam = (PerlParameters)request.getPortletSession().getAttribute(PerlParameters.PERL_PARAMETER, PortletSession.APPLICATION_SCOPE);
-			}
-	    	catch (Exception e )
-			{
-	    		perlParam = null;
-			}
-	    	
-	    	if (perlParam != null)
-	    	{
+    	    // Only use the values if the call is designated to this script
+    	    if (perlParam.getApplicationName().compareToIgnoreCase(this.applicationName) == 0)
+    	    {
 	    		query = perlParam.getQueryString();
 	    		perlScript = perlParam.getScriptName();
-	    		
-	    	}
+    	    }
+    	    
+    		if (this.applicationName == null ) // not yet initialized
+    		{
+    			this.applicationName = perlParam.getApplicationName();
+    		}
+    		else
+    		{
+	    		// If the application name doesn't match just use the cached version and return
+	    		if (         lastPage != null 							// has run at least once
+	    				&& this.applicationName != null	// No filtering runs for any perl request
+	    				&& perlParam.getApplicationName().compareToIgnoreCase(this.applicationName) != 0)
+	    		{
+	    			// Use cache
+	    			writer.println(this.lastPage);
+	    			return;
+	    		}
+    		}
     	}
     	
     	// Open the perl script and extract the perl executable path. It's the same way as apache HTTP executes PERL
@@ -248,9 +273,10 @@ public class PerlPortlet extends GenericPortlet {
     	
     	contextPath = pathTranslated.substring(0, pathTranslated.indexOf("webapps") + 7) + contextPath + "/";
     	contextPath += scriptPath;
-    	
-    	contextPath += "/";
-    	String inputPath = contextPath;
+    
+    	// Build full path to scripts
+    	if (perlScript.startsWith("/") == false )
+    		contextPath += "/";
     	contextPath += perlScript;
     	
     	// command to execute
@@ -374,6 +400,9 @@ public class PerlPortlet extends GenericPortlet {
 				
 				// Write the page
 				writer.println(finalPage);
+				
+				// Cache page
+				lastPage = new String(finalPage);
 			}
 			catch(IOException ioe)
 			{
