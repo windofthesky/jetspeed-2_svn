@@ -485,13 +485,25 @@ public class JetspeedPowerTool implements ViewTool
         return getTemplate(path, templateType, templateLocator, templateLocatorDescriptor);
     }
     
-    public Configuration getTypeConfiguration(String type, String name) throws Exception
+    public Configuration getTypeConfiguration(String type, String name, String location) throws Exception
     {
         ArgUtil.assertNotNull(String.class, type, this, "getTypeConfiguration(String type, String name)");
         ArgUtil.assertNotNull(String.class, name, this, "getTypeConfiguration(String type, String name)");
         try
         {
-            TemplateDescriptor locator = getTemplate(name+"/"+type+".properties", type);
+            TemplateDescriptor locator = null;
+            if(location.equals("templates"))
+            {
+                locator = getTemplate(name+"/"+type+".properties", type);
+            }
+            else if(location.equals("decorations"))
+            {
+                locator = getDecoration(name+"/decorator.properties", type);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Location type "+location+" is not supported by getTypeConfiguration().");
+            }
             return new PropertiesConfiguration(locator.getAbsolutePath());
         }
         catch (TemplateLocatorException e)

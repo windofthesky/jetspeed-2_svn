@@ -16,19 +16,18 @@ limitations under the License.
 
 #* Add all template constants to the current context *#
 #defineConstants()
+#* Add the current layouts configuration values to the context *#
+#defineLayoutObjects()
+
+
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
-#set($preferedLocale = $JS2RequestContext.locale)
 <html>
 <head>
     <title>$jetspeed.page.getTitle($preferedLocale)</title>
-#set($cssUrls = $renderRequest.getAttribute("cssUrls"))
-#foreach($cssUrl in $cssUrls)
-    <link rel="stylesheet" type="text/css" media="all" href="$cssUrl" />
-#end
+    #includeStyleSheets()
 </head>
-<body class="layout-Jetspeed">
+<body class="${_layouyBaseCssClass}">
 
 #set($myF = $jetspeed.currentFragment)
 
