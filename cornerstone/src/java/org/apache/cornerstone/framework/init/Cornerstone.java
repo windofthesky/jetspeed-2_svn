@@ -1,15 +1,29 @@
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.cornerstone.framework.init;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
-import org.apache.cornerstone.framework.api.action.IActionManager;
-import org.apache.cornerstone.framework.api.factory.CreationException;
-import org.apache.cornerstone.framework.api.factory.IFactory;
-import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
-import org.apache.cornerstone.framework.api.registry.IRegistry;
-import org.apache.cornerstone.framework.api.service.IServiceManager;
-import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
@@ -21,12 +35,6 @@ public class Cornerstone
     public static final String CORNERSTONE_RUNTIME_HOME = "CORNERSTONE_RUNTIME_HOME";
     public static final String DEFAULT_CORNERSTONE_RUNTIME_HOME = "./";
     public static final String BOOTSTRAP_CONFIG_FILE_NAME = "bootstrap.properties";
-
-    public static final String CONFIG_SINGLETON_MANAGER_INSTANCE_CLASS_NAME = Constant.IMPLEMENTATION + Constant.SLASH + ISingletonManager.class.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
-    public static final String CONFIG_REGISTRY_FACTORY_CLASS_NAME = Constant.IMPLEMENTATION + Constant.SLASH + IRegistry.class.getName() + Constant.SLASH + Constant.FACTORY_CLASS_NAME;
-    public static final String CONFIG_IMPLEMENTATION_MANAGER_INSTANCE_CLASS_NAME = Constant.IMPLEMENTATION + Constant.SLASH + IImplementationManager.class.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
-    public static final String CONFIG_SERVICE_MANAGER_INSTANCE_CLASS_NAME = Constant.IMPLEMENTATION + Constant.SLASH + IServiceManager.class.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
-    public static final String CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME = Constant.IMPLEMENTATION + Constant.SLASH + IActionManager.class.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
 
     /**
      * Initializes the Cornerstone Framework.
@@ -56,11 +64,6 @@ public class Cornerstone
     		_Logger.info(CORNERSTONE_RUNTIME_HOME + "='" + _RuntimeHomeDir + "'");
 
         readBootStrapProperties();
-        initSingletonManager();
-        initRegistry();
-        initImplementationManager();
-        initServiceManager();
-        initActionManager();
     }
 
     public static String getRuntimeHome()
@@ -68,124 +71,114 @@ public class Cornerstone
         return _RuntimeHomeDir;
     }
 
-    public static ISingletonManager getSingletonManager()
-    {
-    	return _singletonManager;
-    }
-
-    public static IRegistry getRegistry()
-    {
-    	return _Registry;
-    }
-
-    public static IImplementationManager getImplementationManager()
-    {
-    	return _implementationManager;
-    }
-
-    public static IServiceManager getServiceManager()
-    {
-    	return _serviceManager;
-    }
-
-    public static IActionManager getActionManager()
-    {
-    	return _actionManager;
+    public static Object getManager(Class managerInterface)
+	{
+    	Object manager = _ManagerMap.get(managerInterface);
+    	if (manager == null)
+    	{
+    		Boolean managerLoaded = (Boolean) _ManagerLoadedMap.get(managerInterface);
+    		if (managerLoaded == null)
+    		{
+    			manager = loadManager(managerInterface);
+    		}
+    	}
+    	return manager;
     }
 
     protected static void readBootStrapProperties() throws InitException
     {
-        String bootStrapFilePath = _RuntimeHomeDir + File.separator + BOOTSTRAP_CONFIG_FILE_NAME;
-        FileInputStream fis;
-        try
-        {
-            fis = new FileInputStream(bootStrapFilePath);
-            _BootStrapProperties = new Properties();
-            _BootStrapProperties.load(fis);
-        }
-        catch (Exception e)
-        {
-            throw new InitException(e);
-        }
+    	try
+		{
+    		// this class' own properties provide the basic values
+    		Properties cornerstoneProperties = readResourceProperties(Cornerstone.class);
+
+    		// the bootstrap properties file (if any) provides overrides for the basic values
+    		String bootStrapFilePath = _RuntimeHomeDir + File.separator + BOOTSTRAP_CONFIG_FILE_NAME;
+    		Properties bootStrapProperties = readFileProperties(bootStrapFilePath);
+
+    		_BootStrapProperties = cornerstoneProperties;
+    		_BootStrapProperties.putAll(bootStrapProperties);
+    	}
+    	catch(IOException ioe)
+		{
+    		throw new InitException(ioe);
+    	}
     }
 
-    protected static void initSingletonManager() throws InitException
-    {
-        String singletonManagerClassName = _BootStrapProperties.getProperty(CONFIG_SINGLETON_MANAGER_INSTANCE_CLASS_NAME);
-        if (singletonManagerClassName == null)
-        {
-            String bootStrapFilePath = _RuntimeHomeDir + File.pathSeparator + BOOTSTRAP_CONFIG_FILE_NAME;
-            throw new InitException("'" + CONFIG_SINGLETON_MANAGER_INSTANCE_CLASS_NAME + "' undefined in '" + bootStrapFilePath + "'");
-        }
-        try
+    protected static Properties readFileProperties(String path) throws IOException
+	{
+    	Properties properties = new Properties();
+		try
 		{
-			_singletonManager = (ISingletonManager) Util.createInstance(singletonManagerClassName);
+			InputStream is = new FileInputStream(path);
+			properties.load(is);
+			return properties;
 		}
-		catch (Exception e)
+		catch (FileNotFoundException fnfe)
 		{
-            throw new InitException("failed to create singleton manager", e);
-		}
-    }
-
-    protected static void initRegistry() throws InitException
-    {
-    	String registryFactoryClassName = _BootStrapProperties.getProperty(CONFIG_REGISTRY_FACTORY_CLASS_NAME);
-        if (registryFactoryClassName == null)
-        {
-            String bootStrapFilePath = _RuntimeHomeDir + File.pathSeparator + BOOTSTRAP_CONFIG_FILE_NAME;
-            throw new InitException("'" + CONFIG_REGISTRY_FACTORY_CLASS_NAME + "' undefined in '" + bootStrapFilePath + "'");
-        }
-        IFactory registryFactory = (IFactory) getSingletonManager().getSingleton(registryFactoryClassName);
-        try
-		{
-			_Registry = (IRegistry) registryFactory.createInstance(_RuntimeHomeDir);
-		}
-		catch (CreationException ce)
-		{
-			throw new InitException("failed to create registry instance", ce.getCause());
+			return properties;
 		}
     }
 
-    protected static void initImplementationManager() throws InitException
-    {
-        String implementationManagerClassName = _BootStrapProperties.getProperty(CONFIG_IMPLEMENTATION_MANAGER_INSTANCE_CLASS_NAME);
-        if (implementationManagerClassName == null)
-        {
-            String bootStrapFilePath = _RuntimeHomeDir + File.pathSeparator + BOOTSTRAP_CONFIG_FILE_NAME;
-            throw new InitException("'" + CONFIG_IMPLEMENTATION_MANAGER_INSTANCE_CLASS_NAME + "' undefined in '" + bootStrapFilePath + "'");
-        }
-        _implementationManager = (IImplementationManager) getSingletonManager().getSingleton(implementationManagerClassName);
+    protected static Properties readResourceProperties(Class c) throws IOException
+	{
+    	String className = c.getName();
+    	String classNameTail = className.substring(className.lastIndexOf('.') + 1);
+    	String classPropertiesFileName = classNameTail + Constant.FILE_EXTENSION_PROPERTIES;
+    	Properties properties = new Properties();
+    	try
+		{
+    		InputStream is = c.getResourceAsStream(classPropertiesFileName);
+    		properties.load(is);
+    		return properties;
+    	}
+    	catch (FileNotFoundException fnfe)
+		{
+    		return properties;
+    	}
     }
 
-    protected static void initServiceManager() throws InitException
+    protected static Object loadManager(Class managerInterface)
     {
-        String serviceManagerClassName = _BootStrapProperties.getProperty(CONFIG_SERVICE_MANAGER_INSTANCE_CLASS_NAME);
-        if (serviceManagerClassName == null)
+    	String managerInstanceClassNameConfigName = Constant.IMPLEMENTATION + Constant.SLASH + managerInterface.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
+    	String managerClassName = _BootStrapProperties.getProperty(managerInstanceClassNameConfigName);
+    	_ManagerLoadedMap.put(managerInterface, Boolean.TRUE);
+    	if (managerClassName == null)
         {
-            String bootStrapFilePath = _RuntimeHomeDir + File.pathSeparator + BOOTSTRAP_CONFIG_FILE_NAME;
-            throw new InitException("'" + CONFIG_SERVICE_MANAGER_INSTANCE_CLASS_NAME + "' undefined in '" + bootStrapFilePath + "'");
+        	return null;
         }
-        _serviceManager = (IServiceManager) getSingletonManager().getSingleton(serviceManagerClassName);
-    }
-
-    protected static void initActionManager() throws InitException
-    {
-        String actionManagerClassName = _BootStrapProperties.getProperty(CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME);
-        if (actionManagerClassName == null)
-        {
-            String bootStrapFilePath = _RuntimeHomeDir + File.pathSeparator + BOOTSTRAP_CONFIG_FILE_NAME;
-            throw new InitException("'" + CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME + "' undefined in '" + bootStrapFilePath + "'");
+        else
+        {	
+	        try
+			{
+				Object manager = Util.createInstance(managerClassName);
+				_ManagerMap.put(managerInterface, manager);
+				return manager;
+			}
+			catch (Exception e)
+			{
+	            _Logger.error("failed to create manager of " + managerInterface.getName(), e);
+	            return null;
+			}
         }
-        _actionManager = (IActionManager) getSingletonManager().getSingleton(actionManagerClassName);
     }
 
     private static Logger _Logger = Logger.getLogger(Cornerstone.class);
     protected static String _RuntimeHomeDir = DEFAULT_CORNERSTONE_RUNTIME_HOME;
     protected static Properties _BootStrapProperties;
+    protected static Map _ManagerMap = new HashMap();
+    protected static Map _ManagerLoadedMap = new HashMap();
 
-    protected static ISingletonManager _singletonManager;
-    protected static IRegistry _Registry;
-    protected static IImplementationManager _implementationManager;
-    protected static IServiceManager _serviceManager;
-    protected static IActionManager _actionManager;
+    // auto initialize so that even if .init() is not called, Cornerstone functions in a default way
+    static
+	{
+    	try
+		{
+			Cornerstone.init();
+		}
+		catch (InitException ie)
+		{
+			_Logger.info("auto-init failed", ie);
+		}
+    }
 }
