@@ -293,5 +293,13 @@
     <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
   </goal>
+  
+  <!-- ================================================================ -->
+  <!-- Copy OJB mapping for registry into the portal directory-->
+  <!-- ================================================================ -->
+  <goal name="ojb.registry">
+    <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/>
+   </goal>
+  
 
 </project>
