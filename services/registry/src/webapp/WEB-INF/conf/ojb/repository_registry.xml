@@ -28,6 +28,114 @@
       >         
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
+      <collection-descriptor
+         name="creators"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="subjects"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="publishers"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="types"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="formats"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="identifiers"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="sources"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="languages"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="relations"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="coverages"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+      <collection-descriptor
+         name="rights"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
      
    </class-descriptor>
    
