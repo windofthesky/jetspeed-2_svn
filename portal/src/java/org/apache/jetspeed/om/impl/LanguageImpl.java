@@ -54,15 +54,16 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Language;
-
 
 /**
  * 
@@ -138,7 +139,13 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public Iterator getKeywords()
     {
-        return keywords.iterator();
+        if (keywords != null)
+        {
+            return keywords.iterator();
+        }
+
+        return null;
+
     }
 
     /**
@@ -205,6 +212,28 @@ public class LanguageImpl implements MutableLanguage, Serializable
         this.keywords = keywords;
     }
 
-
+    /**
+     * 
+     * <p>
+     * setKeywords
+     * </p>
+     * 
+     * A comma delimited list of keywords
+     * 
+     * @param keywords
+     *
+     */
+    public void setKeywords(String keywordStr)
+    {
+        if (keywords == null)
+        {
+            keywords = new ArrayList();
+        }
+        StringTokenizer tok = new StringTokenizer(keywordStr, ",");
+        while (tok.hasMoreTokens())
+        {
+            keywords.add(tok.nextToken());
+        }
+    }
 
 }
