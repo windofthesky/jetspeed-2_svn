@@ -75,6 +75,7 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.io.VelocityWriter;
 import org.apache.velocity.tools.view.context.ViewContext;
 import org.apache.velocity.tools.view.tools.ViewTool;
+import org.apache.portals.bridges.velocity.JetspeedVelocityViewServlet;
 
 /**
  * <p>
