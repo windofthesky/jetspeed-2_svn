@@ -166,16 +166,16 @@ public class GenericServletPortlet extends GenericPortlet
             this.allowPreferences = new Boolean(allowPreferencesString).booleanValue();
         }
 
-        if ((this.defaultActionPage == null) &&
-        (this.defaultCustomPage == null) &&
-        (this.defaultEditPage == null) &&
-        (this.defaultViewPage == null) &&
-        (this.defaultHelpPage == null) &&
-        (this.allowPreferences == false) )
-        {
-            // This portlet is configured to do nothing!
-            throw new PortletException("Portlet " + config.getPortletName() + " is incorrectly configured. No pages are defined.");
-        }
+//        if ((this.defaultActionPage == null) &&
+//        (this.defaultCustomPage == null) &&
+//        (this.defaultEditPage == null) &&
+//        (this.defaultViewPage == null) &&
+//        (this.defaultHelpPage == null) &&
+//        (this.allowPreferences == false) )
+//        {
+//            // This portlet is configured to do nothing!
+//            throw new PortletException("Portlet " + config.getPortletName() + " is incorrectly configured. No pages are defined.");
+//        }
     }
 
     /**
