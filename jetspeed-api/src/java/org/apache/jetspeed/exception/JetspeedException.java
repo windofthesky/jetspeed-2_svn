@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.exception;
 
-import org.apache.commons.lang.exception.NestableException;
 
 /**
  * Occurs when anything unexpected happens within Jetspeed.Any defined exceptions
@@ -25,7 +24,7 @@ import org.apache.commons.lang.exception.NestableException;
  * @version $Id$
  **/
 
-public class JetspeedException extends NestableException 
+public class JetspeedException extends Exception 
 {
 
     public JetspeedException() 

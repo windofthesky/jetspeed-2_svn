@@ -15,13 +15,12 @@
  */
 package org.apache.jetspeed.exception;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * Base exception for all RuntimeExceptions defined within Jetspeed.
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public class JetspeedRuntimeException extends NestableRuntimeException
+public class JetspeedRuntimeException extends RuntimeException
 {
 
     /**
