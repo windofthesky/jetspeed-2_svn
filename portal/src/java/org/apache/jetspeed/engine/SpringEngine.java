@@ -71,6 +71,7 @@ public class SpringEngine extends AbstractEngine
         }
         configs.add("file:///"+absApplicationRoot + configuration.getString("jetspeed.spring.xml", "/WEB-INF/assembly/jetspeed-spring.xml"));
         configs.add("file:///"+absApplicationRoot + configuration.getString("pluto-factories.xml", "/WEB-INF/assembly/pluto-factories.xml"));
+        configs.add("file:///"+absApplicationRoot + configuration.getString("pipelines.xml", "/WEB-INF/assembly/pipelines.xml"));
         
         ComponentManager cm = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
         

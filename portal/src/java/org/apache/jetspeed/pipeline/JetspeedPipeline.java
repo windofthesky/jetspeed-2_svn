@@ -15,12 +15,11 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
-import org.apache.jetspeed.pipeline.descriptor.ValveDescriptor;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -77,25 +76,11 @@ implements Pipeline, ValveContext
      * Constructor that provides the descriptor for building
      * the pipeline
      */
-    public JetspeedPipeline()
+    public JetspeedPipeline(String name, List valveList)
     throws Exception
     {
-    }
-    
-    /**
-     * <p>Set the descriptor used to create this pipeline.</p>
-     */
-    public void setDescriptor(PipelineDescriptor descriptor)
-    {
-        this.descriptor = descriptor;
-    }
-    
-    /**
-     * <p>Get the descriptor used to create this pipeline.</p>
-     */
-    public PipelineDescriptor getDescriptor()
-    {
-        return descriptor;
+        valves = (Valve[]) valveList.toArray(new Valve[valveList.size()]);
+        setName(name);
     }
     
     /**
@@ -104,39 +89,8 @@ implements Pipeline, ValveContext
     public void initialize()
     throws PipelineException
     {
-        setName(getDescriptor().getName());
-        ArrayList valveDescriptors = (ArrayList) getDescriptor().getValveDescriptors();
         
-        for (int i=0; i<valveDescriptors.size(); i++)
-        {
-            ValveDescriptor vDescriptor = (ValveDescriptor) valveDescriptors.get(i);
-            String className = vDescriptor.getClassName();
-            
-            log.info("Adding Valve: " + className);
-            
-            Valve valve;
-            
-            try
-            {
-                valve = (Valve) Class.forName(className).newInstance();
-            }
-            catch (Exception e)
-            {
-                throw new PipelineException("Failed to create valve: " + className);
-            }
-            
-            addValve(valve);
-        }
-        
-        // Valve implementations are added to this Pipeline using the
-        // Mapper.
-        
-        // Initialize the valves
-        for (int i = 0; i < valves.length; i++)
-        {
-            //valves[i].setApplicationView(getApplicationView());
-            valves[i].initialize();
-        }
+       
     }
     
     /**

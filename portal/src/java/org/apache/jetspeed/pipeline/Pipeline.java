@@ -15,9 +15,10 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
+import java.io.IOException;
+
 import org.apache.jetspeed.pipeline.valve.Valve;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  *
@@ -74,13 +75,4 @@ public interface Pipeline
      */
     void removeValve(Valve valve);
 
-    /**
-     * <p>Set the descriptor used to create this pipeline.</p>
-     */
-    void setDescriptor(PipelineDescriptor pipelineDescriptor);
-    
-    /**
-     * <p>Get the descriptor used to create this pipeline.</p>
-     */
-    PipelineDescriptor getDescriptor();
 }

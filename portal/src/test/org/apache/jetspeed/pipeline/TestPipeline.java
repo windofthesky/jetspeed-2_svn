@@ -85,5 +85,7 @@ public class TestPipeline extends JetspeedTest
         assertTrue(valves[5].toString().equals("ActionValveImpl"));     
         assertTrue(valves[6].toString().equals("AggregatorValve"));
         assertTrue(valves[7].toString().equals("CleanupValveImpl"));
+        assertNotNull(engine.getPipeline("action-pipeline"));
+        assertNotNull(engine.getPipeline("portlet-pipeline"));
     }
 }
