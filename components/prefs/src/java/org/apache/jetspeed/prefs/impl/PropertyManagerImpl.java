@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.prefs.PropertyManager;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
@@ -145,9 +144,12 @@ public class PropertyManagerImpl implements PropertyManager
                 nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 store.getTransaction().checkpoint();
             }
-            catch (LockFailedException lfe)
+            catch (Exception e)
             {
-                throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
+                String msg = "Unable to lock Node for update.";
+                log.error(msg, e);
+                store.getTransaction().rollback();
+                throw new PropertyException(msg, e);
             }
         }
         else
@@ -250,9 +252,12 @@ public class PropertyManagerImpl implements PropertyManager
                 nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 store.getTransaction().checkpoint();
             }
-            catch (LockFailedException lfe)
+            catch (Exception e)
             {
-                throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
+                String msg = "Unable to lock Node for update.";
+                log.error(msg, e);
+                store.getTransaction().rollback();
+                throw new PropertyException(msg, e);
             }
         }
         else
@@ -307,9 +312,12 @@ public class PropertyManagerImpl implements PropertyManager
                                 log.debug("Updated property key: " + curPropKey.toString());
                             store.getTransaction().checkpoint();
                         }
-                        catch (LockFailedException lfe)
+                        catch (Exception e)
                         {
-                            throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
+                            String msg = "Unable to lock Node for update.";
+                            log.error(msg, e);
+                            store.getTransaction().rollback();
+                            throw new PropertyException(msg, e);
                         }
                     }
                 }
