@@ -1,0 +1,36 @@
+<!--<!DOCTYPE plugins SYSTEM "plugins.dtd"> -->
+<plugins>	
+	<plugin name="essentialSecurityManager" default="true">
+		<classname>
+  	 	com.rippe.essential.commons.security.role.impl.SecurityManagementPlugin
+  	   </classname>
+  	   <persistencePlugin>
+  	   	essential
+  	   </persistencePlugin>  	   
+  	   <roleClassname>
+  	   	com.rippe.essential.commons.security.role.impl.RoleImpl
+  	   </roleClassname>
+	</plugin>
+	
+	<plugin name="essentialAuthenticator" default="true">
+		<classname>
+  	 	com.rippe.essential.commons.security.role.impl.AuthenticationPluginImpl
+  	   </classname>  	   
+  	   <persistencePlugin>
+  	   	essential
+  	   </persistencePlugin>  	   
+	</plugin>
+	
+	<plugin name="essentialAccessController" default="true">
+		<classname>
+  	 	com.rippe.essential.commons.security.role.impl.AccessControlImpl
+  	   </classname>
+  	   <securityManagementPlugin>
+  	   	essentialSecurityManager
+  	   </securityManagementPlugin>
+  	   <persistencePlugin>
+  	   	essential
+  	   </persistencePlugin>  	
+	</plugin>
+
+</plugins>

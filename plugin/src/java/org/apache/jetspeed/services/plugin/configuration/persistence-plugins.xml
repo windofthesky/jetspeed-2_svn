@@ -1,0 +1,10 @@
+<!--<!DOCTYPE plugins SYSTEM "plugins.dtd">-->
+<plugins>
+
+	<plugin name="essential" default="true">
+		<classname>
+  	 	org.apache.jetspeed.services.persistence.impl.OJBODMGPersistencePlugin
+  	   </classname>
+	</plugin>	
+
+</plugins>
