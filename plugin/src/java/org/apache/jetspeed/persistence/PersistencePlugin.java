@@ -88,27 +88,34 @@ public interface PersistencePlugin extends Plugin
     /** Constant that specifies a transaction lock level of read */
     int LOCK_LEVEL_READ = 1;
     
-	void beginTransaction() throws TransactionStateException;
+    void beginTransaction() throws TransactionStateException;
 	
-	void commitTransaction() throws TransactionStateException;
+    void commitTransaction() throws TransactionStateException;
 	
-	void prepareForDelete(Object obj) throws TransactionStateException;
+    void prepareForDelete(Object obj) throws TransactionStateException;
 	
-	void prepareForUpdate(Object obj) throws TransactionStateException;
+    void prepareForUpdate(Object obj) throws TransactionStateException;
 	
-	void rollbackTransaction() throws TransactionStateException;
+    void rollbackTransaction() throws TransactionStateException;
 	
-	/**
-	 * Takes an object that was modified outside of the current transaction
-	 * and makes it so that it appears to have been modified within the 
-	 * current transaction.
-	 * @param obj Object modified outside of a transaction
-	 * @return An object the same type, whose object graph match those
-	 * of the <code>obj</code> argument but is consistent within the
-	 * current transaction.
-	 * @throws TransactionStateException
-	 */
-	Object markDirty(Object obj) throws TransactionStateException;
+    /**
+     * Takes an object that was modified outside of the current transaction
+     * and makes it so that it appears to have been modified within the 
+     * current transaction.
+     * @param obj Object modified outside of a transaction
+     * @return An object the same type, whose object graph match those
+     * of the <code>obj</code> argument but is consistent within the
+     * current transaction.
+     * @throws TransactionStateException
+     */
+    Object markDirty(Object obj) throws TransactionStateException;
+    
+    /**
+     * Deletes all objects matching the query from the underlying persistence system.
+     * 
+     * @param query Query object used to identify the object to be removed from persistence.
+     */
+    void deleteByQuery(Object query);
 
     Collection getCollectionByQuery(Class clazz, Object query);
     

@@ -106,6 +106,30 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     private String overrideDefaultJcd;
 
     /**
+     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#deleteByQuery(java.lang.Object)
+     */
+    public void deleteByQuery(Object query)
+    {
+        PersistenceBroker pb = null;
+        try
+        {
+            Query useQuery = (Query) query;
+            pb = getBroker();
+            
+            pb.deleteByQuery(useQuery);
+        }
+        catch (Throwable e)
+        {
+            throw failure("Failed to delete by query.", e);
+        }
+        finally
+        {
+            // always release the broker
+            releaseBroker(pb);
+        }
+    }
+
+    /**
      * @return <code>true</code> if the <code>obj</code> is
      * of type AbstractOJBPersistencePlugin and the name defined
      * within the plugin configuration for <code>obj</code> is the

@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.persistence;
 
+import java.util.Collection;
+
 import org.apache.ojb.broker.query.Criteria;
 
 /**
@@ -82,6 +84,10 @@ public interface LookupCriteria
      * @see org.apache.ojb.broker.query.Criteria#addGreaterThan(java.lang.String, java.lang.Object)
      */
     public abstract void addGreaterThan(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addIn(java.lang.String, java.util.Collection)
+     */      
+    public abstract void addIn(String attribute, Collection values);
     /**
      * @see org.apache.ojb.broker.query.Criteria#addLessOrEqualThan(java.lang.String, java.lang.Object)
      */
@@ -118,4 +124,5 @@ public interface LookupCriteria
      * @see org.apache.ojb.broker.query.Criteria#addOrderByDescending(java.lang.String)
      */
     public abstract void addOrderByDescending(String arg0);
+
 }
