@@ -36,7 +36,7 @@ if(parent != null)
 	parent.registerComponentImplementation(GroupManager, GroupManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	parent.registerComponentImplementation(RoleManager, RoleManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 	parent.registerComponentImplementation(PermissionManager, PermissionManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-	parent.registerComponentImplementation(RdbmsPolicy, RdbmsPolicy)
+	parent.registerComponentImplementation(RdbmsPolicy, RdbmsPolicy, new Parameter[] {new ComponentParameter(PermissionManager)} )
 	parent.registerComponentImplementation(SecurityProvider, SecurityProviderImpl, new Parameter[] {new ConstantParameter("login.conf"), new ComponentParameter(RdbmsPolicy), new ComponentParameter(UserManager)})
 }
 else
