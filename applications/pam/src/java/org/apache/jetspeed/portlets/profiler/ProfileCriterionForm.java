@@ -63,7 +63,8 @@ public class ProfileCriterionForm implements Serializable
             new SelectItem("path"),
             new SelectItem("page"),
             new SelectItem("path.session"),
-            new SelectItem("user.attribute")
+            new SelectItem("user.attribute"),
+            new SelectItem("navigation")
     };
 
     private transient SelectItem[] fallbackTypes =
