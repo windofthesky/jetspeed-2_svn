@@ -26,7 +26,6 @@
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.6.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.3.jar"/>
-    <classpathentry exported="true" kind="var" path="MAVEN_REPO/xerces/jars/xerces-2.0.2.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-pool/jars/commons-pool-1.0.1.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.1-dev.20021231.055112.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-collections/jars/commons-collections-2.1.jar"/>
@@ -35,5 +34,7 @@
     <classpathentry kind="var" path="MAVEN_REPO/commons-modeler/jars/commons-modeler-1.1M1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/ojb/jars/ojb-1.0.rc3-PATCHED.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/pluto-container/jars/pluto-0.46.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xerces-2.3.0.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/xml-apis/jars/xml-apis-2.0.2.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
