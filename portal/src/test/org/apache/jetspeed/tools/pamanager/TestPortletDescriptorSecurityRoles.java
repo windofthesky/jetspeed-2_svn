@@ -26,6 +26,7 @@ import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
@@ -46,11 +47,15 @@ import org.picocontainer.MutablePicoContainer;
  * 
  * @version $Id$
  */
-public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTestCase {
+public class TestPortletDescriptorSecurityRoles extends
+        AbstractComponentAwareTestCase
+{
 
     private PortletRegistryComponent registry;
 
     private MutablePicoContainer container;
+
+    private PersistenceStore store;
 
     /**
      * Defines the testcase name for JUnit.
@@ -58,7 +63,8 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
      * @param name
      *            the testcase's name.
      */
-    public TestPortletDescriptorSecurityRoles(String name) {
+    public TestPortletDescriptorSecurityRoles(String name)
+    {
         super(name);
     }
 
@@ -68,8 +74,10 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
      * @param args
      *            the arguments. Not used
      */
-    public static void main(String args[]) {
-        TestRunner.main(new String[] { TestPortletDescriptorSecurityRoles.class.getName()});
+    public static void main(String args[])
+    {
+        TestRunner.main(new String[]
+        { TestPortletDescriptorSecurityRoles.class.getName()});
     }
 
     public static final String LOG4J_CONFIG_FILE = "log4j.file";
@@ -77,7 +85,8 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
     // TODO: make this relative, move it into script
     public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
 
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         // super.setUp();
 
         // TODO: this is REALLY strange. If I don't setup LOG4J here Digester
@@ -87,17 +96,22 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
 
         String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
         Properties p = new Properties();
-        try {
+        try
+        {
             p.load(new FileInputStream(log4jFile));
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
         PropertyConfigurator.configure(p);
 
-        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+        System.getProperties().setProperty(LogFactory.class.getName(),
+                Log4jFactory.class.getName());
 
         container = (MutablePicoContainer) getContainer();
-        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
+        registry = (PortletRegistryComponent) container
+                .getComponentInstance(PortletRegistryComponent.class);
+        store = registry.getPersistenceStore();
     }
 
     /**
@@ -106,59 +120,112 @@ public class TestPortletDescriptorSecurityRoles extends AbstractComponentAwareTe
      * @return a test suite (<code>TestSuite</code>) that includes all
      *         methods starting with "test"
      */
-    public static Test suite() {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletDescriptorSecurityRoles.class);
-        suite.setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
+    public static Test suite()
+    {
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(
+                TestPortletDescriptorSecurityRoles.class);
+        suite
+                .setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
         return suite;
     }
 
-    public void testSecurityRoles() throws Exception {
+    public void testSecurityRoles() throws Exception
+    {
         System.out.println("Testing securityRoles");
-        MutablePortletApplication app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/security-roles/portlet.xml", "unit-test");
+        MutablePortletApplication app = PortletDescriptorUtilities
+                .loadPortletDescriptor(
+                        "./test/testdata/deploy/security-roles/portlet.xml",
+                        "unit-test");
         assertNotNull("App is null", app);
-        MutableWebApplication webApp = (MutableWebApplication) WebDescriptorUtilities.loadDescriptor("./test/testdata/deploy/security-roles/web.xml", "/",
-                Jetspeed.getDefaultLocale(), "unit-test");
+        MutableWebApplication webApp = (MutableWebApplication) WebDescriptorUtilities
+                .loadDescriptor(
+                        "./test/testdata/deploy/security-roles/web.xml", "/",
+                        Jetspeed.getDefaultLocale(), "unit-test");
         assertNotNull("WebApp is null", webApp);
 
         app.setWebApplicationDefinition(webApp);
 
-        PortletDefinition portlet = app.getPortletDefinitionByName("TestPortlet");
+        PortletDefinition portlet = app
+                .getPortletDefinitionByName("TestPortlet");
         assertNotNull("TestPortlet is null", portlet);
         checkWebSecurityRoles(webApp);
         checkPortletSecurityRoleRefs(portlet);
         boolean validateFailed = false;
-        try {
+        try
+        {
             PortletDescriptorUtilities.validate(app);
-        } catch (PortletApplicationException e) {
+        } catch (PortletApplicationException e)
+        {
             validateFailed = true;
         }
-        assertEquals("Invalid PortletDescriptor validation result", true, validateFailed);
+        assertEquals("Invalid PortletDescriptor validation result", true,
+                validateFailed);
         SecurityRoleImpl role = new SecurityRoleImpl();
         role.setRoleName("users.manager");
         webApp.addSecurityRole(role);
-        try {
+        try
+        {
             PortletDescriptorUtilities.validate(app);
             validateFailed = false;
-        } catch (PortletApplicationException e) {
+        } catch (PortletApplicationException e)
+        {
         }
-        assertEquals("Invalid PortletDescriptor validation result", false, validateFailed);
+        assertEquals("Invalid PortletDescriptor validation result", false,
+                validateFailed);
+
+        // persist the app
+        try
+        {
+            store.getTransaction().begin();
+            registry.registerPortletApplication(app);
+            store.getTransaction().commit();
+        } catch (Exception e)
+        {
+            String msg = "Unable to register portlet application, "
+                    + app.getName() + ", through the portlet registry: "
+                    + e.toString();
+            store.getTransaction().rollback();
+            throw new Exception(msg, e);
+        }
+        // clear cache
+        store.invalidateAll();
+
+        // read back in
+        app = registry.getPortletApplication("unit-test");
+        validateFailed = true;
+        try
+        {
+            PortletDescriptorUtilities.validate(app);
+            validateFailed = false;
+        } catch (PortletApplicationException e)
+        {
+        }
+        assertEquals("Invalid loaded PortletDescriptor validation result",
+                false, validateFailed);
+
     }
 
-    private void checkWebSecurityRoles(MutableWebApplication webApp) {
+    private void checkWebSecurityRoles(MutableWebApplication webApp)
+    {
         SecurityRoleSet roles = webApp.getSecurityRoles();
-        assertEquals("Invalid number of security role definitions found", 1, roles.size());
+        assertEquals("Invalid number of security role definitions found", 1,
+                roles.size());
         SecurityRole role = roles.get("users.admin");
         assertNotNull("Role users.admin undefined", role);
     }
 
-    private void checkPortletSecurityRoleRefs(PortletDefinition portlet) {
+    private void checkPortletSecurityRoleRefs(PortletDefinition portlet)
+    {
         SecurityRoleRefSet roleRefs = portlet.getInitSecurityRoleRefSet();
-        assertEquals("Invalid number of security role references found", 2, roleRefs.size());
+        assertEquals("Invalid number of security role references found", 2,
+                roleRefs.size());
         SecurityRoleRef roleRef = roleRefs.get("admin");
         assertNotNull("Security Role Ref admin undefined", roleRef);
-        assertEquals("security Role link expected", "users.admin", roleRef.getRoleLink());
+        assertEquals("security Role link expected", "users.admin", roleRef
+                .getRoleLink());
         roleRef = roleRefs.get("users.manager");
         assertNotNull("Security Role Ref users.manager undefined", roleRef);
-        assertNull("Undefined security Role link for users.managers expected", roleRef.getRoleLink());
+        assertNull("Undefined security Role link for users.managers expected",
+                roleRef.getRoleLink());
     }
 }
