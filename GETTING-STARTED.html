@@ -186,13 +186,10 @@ code {font-size: 10pt;}
 <ol>
   <li>cd ${jetspeed-2-home}/portal</li>
   <li>maven pam.register </li>
-  <li>The console will stay open with [done] message, at this point you can ctrl-c 
-    to close the deployment tool.</li>
   <li>maven pam.deploy </li>
-  <li>The console will stay open with [done] message, at this point you can ctrl-c 
-    to close the deployment tool.</li>
 </ol>
-<p>&nbsp;</p>
+<p><strong>NOTE:</strong> Steps 5 and 6 have been combined into the ${jetspeed-2-home}/portal 
+  <code>&quot;<b>maven fullDeploy</b>&quot;</code> goal.</p>
 <h2>7. Start Tomcat</h2>
 <p>Run Tomcat, go to http://localhost:8080/jetspeed.</p>
 <h2>(Optional) How to undeploy the demo application</h2>

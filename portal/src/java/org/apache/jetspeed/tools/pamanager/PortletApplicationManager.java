@@ -293,7 +293,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             System.out.println("Failed shutting down the engine. Error: " + e1.getMessage());
         }
         System.out.println("Done");
-        return;
+       // return;
+      System.exit(0);
     }
 
     public static void helpScreen()

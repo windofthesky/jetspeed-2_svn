@@ -224,6 +224,15 @@
       </fileset>
     </copy>
   </goal>
+  
+    <!-- ================================================================ -->
+  <!-- Does all three deployment steps at once                                                                        -->
+  <!-- ================================================================ -->
+  <goal name="fullDeploy">
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+  	 <attainGoal name="pam.deploy" />
+  </goal>
 
   <preGoal name="hotdeploy">
    <attainGoal name= "java:compile"/>
