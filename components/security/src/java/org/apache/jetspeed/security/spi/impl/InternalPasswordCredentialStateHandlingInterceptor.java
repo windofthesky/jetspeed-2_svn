@@ -84,7 +84,9 @@ public class InternalPasswordCredentialStateHandlingInterceptor extends DefaultI
             credential.setExpirationDate(new Date(new java.util.Date().getTime()+maxLifeSpanInMillis));
             update = true;
         }
-        if ( !credential.isUpdateRequired() && credential.getLastAuthenticationDate() == null )
+        if ( !credential.isUpdateRequired() && 
+                credential.getLastAuthenticationDate() == null && 
+                credential.getPreviousAuthenticationDate() == null )
         {
             credential.setUpdateRequired(true);
             update = true;

@@ -257,7 +257,14 @@ public class DefaultCredentialHandler implements CredentialHandler
             if ( credential != null && !credential.isExpired() && credential.isUpdateRequired() != updateRequired )
             {
                 credential.setUpdateRequired(updateRequired);
-                internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
+                long time = new Date().getTime();
+                credential.setModifiedDate(new Timestamp(time));
+                // temporary hack for now to support setting passwordUpdateRequired = false
+                // for users never authenticated yet.
+                // The current InternalPasswordCredentialStateHandlingInterceptor.afterLoad()
+                // logic will only set it (back) to true if both prev and last auth. date is null
+                credential.setPreviousAuthenticationDate(new Timestamp(time));
+                internalUser.setModifiedDate(new Timestamp(time));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
         }
