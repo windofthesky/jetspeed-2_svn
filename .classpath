@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
+	<classpathentry kind="src" path="components/id-generator/src/java"/>
+	<classpathentry kind="src" path="components/id-generator/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="struts-portlet/demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="struts-portlet/framework/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="struts-portlet/spi/src/java"/>
