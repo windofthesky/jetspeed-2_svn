@@ -40,9 +40,12 @@ public class PortletRequestProcessor extends RequestProcessor
     public void process(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException
     {
-        if (!(response instanceof PortletServletResponseWrapper))
+        if (PortletServlet.isPortletRequest(request))
         {
-            response = new PortletServletResponseWrapper(request, response);
+            if (!(response instanceof PortletServletResponseWrapper))
+            {
+                response = new PortletServletResponseWrapper(request, response);
+            }
         }
         super.process(request, response);
     }
@@ -51,9 +54,9 @@ public class PortletRequestProcessor extends RequestProcessor
             throws IOException, ServletException
     {
         boolean proceed = super.processRoles(request, response, mapping);
-        if (proceed
-                && ((PortletServlet) super.servlet).performActionRenderRequest(
-                        request, response, mapping))
+        if (proceed &&
+                PortletServlet.isPortletRequest(request) &&
+                ((PortletServlet) super.servlet).performActionRenderRequest(request, response, mapping))
         {
             return false;
         } else

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.portals.bridges.struts.PortletServlet;
 
 /**
  * HttpRequestDispatcher
@@ -44,7 +45,7 @@ public class HttpRequestDispatcherImpl implements RequestDispatcher {
         this.dispatcher = dispatcher;
         this.path = path;
     }
-
+    
     protected void invoke(ServletRequest request, ServletResponse response, boolean include) throws ServletException, IOException {
         int startQueryString;
         if (path != null && // let dispatcher handle invalid null value
@@ -62,11 +63,25 @@ public class HttpRequestDispatcherImpl implements RequestDispatcher {
     }
 
     public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        invoke(request, response, false);
+        if ( PortletServlet.isPortletRequest(request) )
+        {
+            invoke(request, response, false);
+        }
+        else
+        {
+            dispatcher.forward(request,response);
+        }
     }
 
     public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        invoke(request, response, true);
+        if ( PortletServlet.isPortletRequest(request) )
+        {
+            invoke(request, response, true);
+        }
+        else
+        {
+            dispatcher.include(request,response);
+        }
     }
 
     public String toString() {

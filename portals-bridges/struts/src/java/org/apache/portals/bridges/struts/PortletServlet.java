@@ -21,6 +21,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -109,4 +110,9 @@ public class PortletServlet extends ActionServlet
         }
         return false;
     }
+    
+    public static boolean isPortletRequest(ServletRequest request)
+    {
+        return request.getAttribute("javax.portlet.request") != null;
+    }    
 }

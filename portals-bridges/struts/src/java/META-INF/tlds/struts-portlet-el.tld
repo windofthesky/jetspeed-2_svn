@@ -21,10 +21,10 @@ limitations under the License.
 <tlibversion>1.2</tlibversion>
 <jspversion>1.1</jspversion>
 <shortname>html</shortname>
-<uri>http://portals.apache.org/bridges/struts/tags-portlet</uri>
+<uri>http://portals.apache.org/bridges/struts/tags-portlet-el</uri>
 <tag>
 <name>form</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.FormTag</tagclass>
+<tagclass>org.apache.portals.bridges.struts.taglib.ELFormTag</tagclass>
 <bodycontent>JSP</bodycontent>
 <attribute>
 <name>action</name>
@@ -94,7 +94,7 @@ limitations under the License.
 </tag>
 <tag>
 <name>image</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.ImageTag</tagclass>
+<tagclass>org.apache.bridges.struts.taglib.ELImageTag</tagclass>
 <attribute>
 <name>accesskey</name>
 <required>false</required>
@@ -268,7 +268,7 @@ limitations under the License.
 </tag>
 <tag>
 <name>img</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.ImgTag</tagclass>
+<tagclass>org.apache.portals.bridges.struts.taglib.ELImgTag</tagclass>
 <bodycontent>empty</bodycontent>
 <attribute>
 <name>align</name>
@@ -493,16 +493,16 @@ limitations under the License.
 </tag>
 <tag>
 <name>link</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.LinkTag</tagclass>
+<tagclass>org.apache.portals.bridges.struts.taglib.ELLinkTag</tagclass>
 <attribute>
 <name>actionURL</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
-</attribute>
 <attribute>
 <name>renderURL</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
+</attribute>
 </attribute>
 <attribute>
 <name>accesskey</name>
@@ -697,7 +697,7 @@ limitations under the License.
 </tag>
 <tag>
 <name>rewrite</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.RewriteTag</tagclass>
+<tagclass>org.apache.portals.bridges.struts.taglib.ELRewriteTag</tagclass>
 <bodycontent>empty</bodycontent>
 <attribute>
 <name>actionURL</name>
@@ -787,7 +787,7 @@ limitations under the License.
 </tag>
 <tag>
 <name>script</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.ScriptTag</tagclass>
+<tagclass>org.apache.portals.bridges.struts.taglib.ELScriptTag</tagclass>
 <attribute>
 <name>language</name>
 <required>false</required>

@@ -18,16 +18,18 @@ package org.apache.portals.bridges.struts.taglib;
 import javax.servlet.ServletRequest; // javadoc
 import javax.servlet.jsp.JspException;
 
-import org.apache.portals.bridges.struts.PortletServlet; // javadoc
-import org.apache.portals.bridges.struts.config.PortletURLTypes;
+import org.apache.portals.bridges.struts.PortletServlet;
+import org.apache.portals.bridges.struts.config.PortletURLTypes; //javadoc
+import org.apache.strutsel.taglib.utils.EvalHelper;
+// javadoc
 
 /**
- * Supports the Struts html:link tag to be used within a Portlet context.
+ * Supports the Struts html-el:link tag to be used within a Portlet context.
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class LinkTag extends org.apache.struts.taglib.html.LinkTag 
+public class ELLinkTag extends org.apache.strutsel.taglib.html.ELLinkTag 
 {
     /**
      * Indicates if a RenderURL or ActionURL must be generated.
@@ -65,6 +67,36 @@ public class LinkTag extends org.apache.struts.taglib.html.LinkTag
     }
 
     /**
+     * struts-el support for {@link #setActionURL(String)}
+     */
+    protected String actionURLExpr = null;
+
+    public String getActionURLExpr()
+    {
+        return actionURLExpr;
+    }
+    
+    public void setActionURLExpr(String actionURLExpr)
+    {
+        this.actionURLExpr = actionURLExpr;
+    }
+    
+    /**
+     * struts-el support for {@link #setRenderURL(String)}
+     */
+    protected String renderURLExpr = null;
+
+    public String getRenderURLExpr()
+    {
+        return renderURLExpr;
+    }
+    
+    public void setRenderURLExpr(String renderURLExpr)
+    {
+        this.renderURLExpr = renderURLExpr;
+    }
+    
+    /**
      * Generates a PortletURL for the link when in the context of a
      * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
      * the default behaviour is maintained.
@@ -83,9 +115,33 @@ public class LinkTag extends org.apache.struts.taglib.html.LinkTag
         }
     }
     
-    public void release() {
+    public int doStartTag() throws JspException {
+        evaluateExpressions();
+        return(super.doStartTag());
+    }
+    
+    /**
+     * Resolve the {@link #actionURLExpr} and {@link #renderURLExpr} attributes using the JSTL expression
+     * evaluation engine ({@link EvalHelper}).
+     * @exception JspException if a JSP exception has occurred
+     */
+    private void evaluateExpressions() throws JspException {
+        String  string  = null;
 
+        if ((string = EvalHelper.evalString("actionURL", getActionURLExpr(),this, pageContext)) != null)
+        {
+            setActionURL(string);
+        }
+        if ((string = EvalHelper.evalString("renderURL", getRenderURLExpr(),this, pageContext)) != null)
+        {
+            setRenderURL(string);
+        }
+    }
+    
+    public void release() 
+    {
         super.release();
         actionURL = null;
+        actionURLExpr = null;
     }
 }

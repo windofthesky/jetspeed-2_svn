@@ -32,10 +32,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.portals.bridges.common.ServletContextProvider;
+import org.apache.portals.bridges.struts.config.StrutsPortletConfig;
 import org.apache.portals.bridges.struts.util.EmptyHttpServletResponseImpl;
 
 /**
@@ -50,6 +52,10 @@ public class StrutsPortlet extends GenericPortlet
      * Name of class implementing {@link ServletContextProvider}
      */
     public static final String PARAM_SERVLET_CONTEXT_PROVIDER = "ServletContextProvider";
+    /**
+     * Name of portlet preference for Struts Portlet Config Location
+     */
+    public static final String STRUTS_PORTLET_CONFIG_LOCATION = "StrutsPortletConfigLocation";
     /**
      * Name of portlet preference for Action page
      */
@@ -99,11 +105,16 @@ public class StrutsPortlet extends GenericPortlet
     public static final String RENDER_CONTEXT = "org.apache.portals.bridges.struts.render_context";
     public static final String ERROR_CONTEXT = "org.apache.portals.bridges.struts.error_context";
     public static final String PORTLET_NAME = "org.apache.portals.bridges.struts.portlet_name";
+    public static final String STRUTS_PORTLET_CONFIG = "org.apache.portals.bridges.struts.portlet_config";
+    public static final String DEFAULT_STRUTS_PORTLET_CONFIG_LOCATION = "WEB-INF/struts-portlet-config.xml";
     public static final String ACTION_REQUEST = "ACTION";
     public static final String VIEW_REQUEST = "VIEW";
     public static final String CUSTOM_REQUEST = "CUSTOM";
     public static final String EDIT_REQUEST = "EDIT";
     public static final String HELP_REQUEST = "HELP";
+    
+    private StrutsPortletConfig strutsPortletConfig;
+    
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
@@ -121,7 +132,9 @@ public class StrutsPortlet extends GenericPortlet
                 {
                     Object obj = clazz.newInstance();
                     if (ServletContextProvider.class.isInstance(obj))
+                    {
                         servletContextProvider = (ServletContextProvider) obj;
+                    }
                     else
                         throw new PortletException("class not found");
                 }
@@ -162,6 +175,15 @@ public class StrutsPortlet extends GenericPortlet
             defaultHelpPage = defaultViewPage;
         if (defaultEditPage == null)
             defaultEditPage = defaultViewPage;
+        
+        strutsPortletConfig = new StrutsPortletConfig();
+        String strutsPortletConfigLocation = getStrutsPortletConfigLocationParameter(config);
+        if ( strutsPortletConfigLocation == null )
+        {
+            strutsPortletConfigLocation = DEFAULT_STRUTS_PORTLET_CONFIG_LOCATION;
+        }
+        strutsPortletConfig.loadConfig(config.getPortletContext(),strutsPortletConfigLocation);
+        config.getPortletContext().setAttribute(STRUTS_PORTLET_CONFIG,strutsPortletConfig);
     }
     
     protected String getContextProviderClassNameParameter(PortletConfig config)
@@ -172,6 +194,21 @@ public class StrutsPortlet extends GenericPortlet
     protected ServletContextProvider getServletContextProvider()
     {
         return servletContextProvider;
+    }
+    
+    protected ServletContext getServletContext(GenericPortlet portlet, PortletRequest request, PortletResponse response)
+    {
+        return getServletContextProvider().getServletContext(portlet);
+    }
+    
+    protected HttpServletRequest getHttpServletRequest(GenericPortlet portlet, PortletRequest request, PortletResponse response)
+    {
+        return getServletContextProvider().getHttpServletRequest(portlet, request);
+    }
+    
+    protected HttpServletResponse getHttpServletResponse(GenericPortlet portlet, PortletRequest request, PortletResponse response)
+    {
+        return getServletContextProvider().getHttpServletResponse(portlet, response);
     }
     
     protected String getActionPageParameter(PortletConfig config)
@@ -197,6 +234,11 @@ public class StrutsPortlet extends GenericPortlet
     protected String getHelpPageParameter(PortletConfig config)
     {
         return config.getInitParameter(PARAM_HELP_PAGE);
+    }
+    
+    protected String getStrutsPortletConfigLocationParameter(PortletConfig config)
+    {
+        return config.getInitParameter(STRUTS_PORTLET_CONFIG_LOCATION);
     }
     
     public void doEdit(RenderRequest request, RenderResponse response)
@@ -230,31 +272,47 @@ public class StrutsPortlet extends GenericPortlet
             String defaultPage, String requestType) throws PortletException,
             IOException
     {
-        ServletContext servletContext = servletContextProvider
-                .getServletContext(this);
-        HttpServletRequest req = servletContextProvider.getHttpServletRequest(
-                this, request);
-        HttpServletResponse res = servletContextProvider
-                .getHttpServletResponse(this, response);
-        req.setAttribute(PORTLET_NAME, this.getPortletConfig().getPortletName());
+        ServletContext servletContext = getServletContext(this, request, response);
+        HttpServletRequest req = getHttpServletRequest(this, request, response);
+        HttpServletResponse res = getHttpServletResponse(this, request, response);
+        HttpSession session = req.getSession();
+        String portletName = this.getPortletConfig().getPortletName();
+        req.setAttribute(PORTLET_NAME, portletName);
         boolean actionRequest = (request instanceof ActionRequest);
+        
         try
         {
             StrutsPortletErrorContext errorContext = (StrutsPortletErrorContext) req
-                    .getSession().getAttribute(StrutsPortlet.ERROR_CONTEXT);
+                    .getSession().getAttribute(StrutsPortlet.ERROR_CONTEXT + "_" + portletName);
             if (errorContext != null)
             {
                 if (!actionRequest)
                 {
                     req.getSession().removeAttribute(
-                            StrutsPortlet.ERROR_CONTEXT);
+                            StrutsPortlet.ERROR_CONTEXT + "_" + portletName);
                     renderError(res, errorContext);
                 }
                 return;
             }
+
+            String keepRenderAttributes = null;
+            
+            if ( !actionRequest )
+            {
+                keepRenderAttributes = request.getParameter(StrutsPortletURL.KEEP_RENDER_ATTRIBUTES);
+            }
+            if ( keepRenderAttributes == null )
+            {
+                strutsPortletConfig.getRenderContextAttributes().clearAttributes(session);
+            }
+            else
+            {
+                strutsPortletConfig.getRenderContextAttributes().restoreAttributes(req);
+            }
+                                
             String path = null;
             String query_string = null;
-            String pageURL = StrutsPortletURL.getPageURL(req);
+            String pageURL = request.getParameter(StrutsPortletURL.PAGE);
             if (pageURL == null)
                 path = defaultPage;
             else
@@ -275,8 +333,8 @@ public class StrutsPortlet extends GenericPortlet
             {
                 if (actionRequest)
                     res = new EmptyHttpServletResponseImpl();
-                if (pageURL != null)
-                    req.setAttribute(StrutsPortlet.PAGE_URL, pageURL);
+                if (path != null)
+                    req.setAttribute(StrutsPortlet.PAGE_URL, path);
                 req.setAttribute(StrutsPortlet.REQUEST_TYPE, requestType);
                 try
                 {
@@ -288,46 +346,64 @@ public class StrutsPortlet extends GenericPortlet
                         log.error("Include exception", e);
                     errorContext = new StrutsPortletErrorContext();
                     errorContext.setError(e);
-                    req.setAttribute(StrutsPortlet.ERROR_CONTEXT, errorContext);
+                    req.setAttribute(StrutsPortlet.ERROR_CONTEXT + "_" + portletName, errorContext);
                     if (!actionRequest)
                         renderError(res, errorContext);
                 }
                 if (actionRequest)
                 {
                     String renderURL;
-                    if ((renderURL = (String) req
-                            .getAttribute(StrutsPortlet.REDIRECT_URL)) != null)
+                    if (req.getAttribute(StrutsPortlet.ERROR_CONTEXT) != null)
                     {
-                        if (log.isDebugEnabled())
-                            log.debug("action send redirect: " + renderURL);
-                        ((ActionResponse) response).sendRedirect(renderURL);
-                    } else if (req.getAttribute(StrutsPortlet.ERROR_CONTEXT) != null)
-                    {
-                        pageURL = StrutsPortletURL.getOriginURL(req);
+                        pageURL = request.getParameter(StrutsPortletURL.ORIGIN);
                         if (pageURL != null)
                             ((ActionResponse) response).setRenderParameter(
                                     StrutsPortletURL.PAGE, pageURL);
                         if (log.isDebugEnabled())
                             log.debug("action render error context");
-                        req.getSession().setAttribute(
-                                StrutsPortlet.ERROR_CONTEXT,
-                                req.getAttribute(StrutsPortlet.ERROR_CONTEXT));
-                    } else
+                        try
+                        {
+                            req.getSession(true).setAttribute(
+                                    StrutsPortlet.ERROR_CONTEXT + "_" + portletName,
+                                    req.getAttribute(StrutsPortlet.ERROR_CONTEXT));
+                        }
+                        catch (IllegalStateException ise)
+                        {
+                            // catch Session already invalidated exception
+                            // There isn't much we can do here other than
+                            // redirecting the user to the start page
+                        }
+                    }
+                    else
                     {
+                        strutsPortletConfig.getRenderContextAttributes().saveAttributes(req);
+                        ((ActionResponse) response).setRenderParameter(
+                                StrutsPortletURL.KEEP_RENDER_ATTRIBUTES, "1");
+
                         if ((renderURL = (String) req
-                                .getAttribute(StrutsPortlet.REDIRECT_PAGE_URL)) != null)
+                                .getAttribute(StrutsPortlet.REDIRECT_URL)) != null)
                         {
                             if (log.isDebugEnabled())
-                                log.debug("action render redirected page: "
-                                        + renderURL);
-                            pageURL = renderURL;
-                        }
-                        if (pageURL != null)
+                                log.debug("action send redirect: " + renderURL);
+                            ((ActionResponse) response).sendRedirect(renderURL);
+                        } 
+                        else
                         {
-                            if (renderURL == null && log.isDebugEnabled())
-                                log.debug("action render page: " + pageURL);
-                            ((ActionResponse) response).setRenderParameter(
-                                    StrutsPortletURL.PAGE, pageURL);
+                            if ((renderURL = (String) req
+                                    .getAttribute(StrutsPortlet.REDIRECT_PAGE_URL)) != null)
+                            {
+                                if (log.isDebugEnabled())
+                                    log.debug("action render redirected page: "
+                                            + renderURL);
+                                pageURL = renderURL;
+                            }
+                            if (pageURL != null)
+                            {
+                                if (renderURL == null && log.isWarnEnabled())
+                                    log.warn("Warning: Using the original action URL for render URL: " +pageURL+".\nA redirect should have been issued.");
+                                ((ActionResponse) response).setRenderParameter(
+                                        StrutsPortletURL.PAGE, pageURL);
+                            }
                         }
                     }
                 }

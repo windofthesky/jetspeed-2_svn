@@ -30,6 +30,8 @@ public class StrutsPortletURL
 {
     public static final String PAGE = "_spage";
     public static final String ORIGIN = "_sorig";
+    public static final String KEEP_RENDER_ATTRIBUTES = "_kra";
+    
     public static String getPageURL(ServletRequest request)
     {
         return request.getParameter(PAGE);

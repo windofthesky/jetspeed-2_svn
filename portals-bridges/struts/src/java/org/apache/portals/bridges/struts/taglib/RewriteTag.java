@@ -15,102 +15,84 @@
  */
 package org.apache.portals.bridges.struts.taglib;
 
+import javax.servlet.ServletRequest; // for javadoc
 import javax.servlet.jsp.JspException;
-import java.net.MalformedURLException;
-import java.util.Map;
+import javax.servlet.jsp.tagext.BodyContent;
+
+import org.apache.portals.bridges.struts.PortletServlet;
+import org.apache.portals.bridges.struts.config.PortletURLTypes; // javadoc
 import org.apache.struts.taglib.TagUtils;
 
-import org.apache.portals.bridges.struts.StrutsPortletURL;
-
 /**
- * RewriteTag
+ * Supports the Struts html:rewrite tag to be used within a Portlet context.
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
 public class RewriteTag extends org.apache.struts.taglib.html.RewriteTag 
 {
-    protected String renderURL = null;
+    /**
+     * Indicates if a RenderURL or ActionURL must be generated.
+     * <p>If not specified, the type will be determined by
+     * {@link PortletURLTypes#isActionURL(String)}</p>.
+     */
+    protected Boolean actionURL = null;
         
+    public String getActionURL()
+    {
+        return actionURL != null ? action.toString() : null;
+    }
+
+    /**
+     * Render an ActionURL when set to "true" otherwise render a RenderURL
+     * @param actionURL "true" renders an ActionURL otherwise a RenderURL
+     */
+    public void setActionURL(String actionURL)
+    {
+        this.actionURL = actionURL != null ? actionURL.equalsIgnoreCase("true") ? Boolean.TRUE : Boolean.FALSE : null; 
+    }
+    
     public String getRenderURL()
     {
-        return renderURL;
+        return actionURL != null ? actionURL.booleanValue() ? "false" : "true" : null;
     }
+        
+    /**
+     * Render a RenderURL when set to "true" otherwise render an ActionURL
+     * @param renderURL "true" renders a RenderURL otherwise an ActionURL
+     */
     public void setRenderURL(String renderURL)
     {
-        this.renderURL = renderURL;
+        this.actionURL = renderURL != null ? renderURL.equalsIgnoreCase("true") ? Boolean.FALSE : Boolean.TRUE : null; 
     }
-    
-    protected String calculateURL() throws JspException 
-    {
-        if ( renderURL == null || !renderURL.equalsIgnoreCase("true") )
-        {
-            return StrutsPortletURL.createActionURL(pageContext.getRequest(),super.calculateURL()).toString();
-        }
-        else
-        {
-            return StrutsPortletURL.createRenderURL(pageContext.getRequest(),super.calculateURL()).toString();
-        }
-    }
-    
+
     /**
-     * Overwrite of Struts RewriteTag.doStartTag()
-     *
+     * Generates a PortletURL for the link when in the context of a
+     * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
+     * the default behaviour is maintained.
+     * @return the link url
      * @exception JspException if a JSP exception has occurred
      */
-    public int doStartTag() throws JspException {
-
-        // Generate the hyperlink URL
-        Map params = TagUtils.getInstance().computeParameters
-            (pageContext, paramId, paramName, paramProperty, paramScope,
-             name, property, scope, transaction);
-             
-        String url = null;
-        try {
-            // Note that we're encoding the & character to &amp; in XHTML mode only, 
-            // otherwise the & is written as is to work in javascripts. 
-            url =
-                TagUtils.getInstance().computeURLWithCharEncoding(
-                    pageContext,
-                    forward,
-                    href,
-                    page,
-                    action,
-                    module,
-                    params,
-                    anchor,
-                    false,
-                    this.isXhtml(),
-                    useLocalEncoding);
-                    
-        } catch (MalformedURLException e) {
-            TagUtils.getInstance().saveException(pageContext, e);
-            throw new JspException
-                (messages.getMessage("rewrite.url", e.toString()));
-        }
-
-        // create StrutsPortletURL
-        if ( renderURL == null || !renderURL.equalsIgnoreCase("true") )
+    public int doStartTag() throws JspException
+    {
+        if ( PortletServlet.isPortletRequest(pageContext.getRequest()))
         {
-            url = StrutsPortletURL.createActionURL(pageContext.getRequest(),url).toString();
+            BodyContent bodyContent = pageContext.pushBody();
+            super.doStartTag();
+            String url = TagsSupport.getPortletURL(pageContext,super.calculateURL(),actionURL);
+            pageContext.popBody();
+            TagUtils.getInstance().write(pageContext, url);
+            return (SKIP_BODY);
         }
         else
         {
-            url = StrutsPortletURL.createRenderURL(pageContext.getRequest(),url).toString();
+            return super.doStartTag();
         }
-        
-        TagUtils.getInstance().write(pageContext, url);
-
-        return (SKIP_BODY);
-
     }
 
-    /**
-     * Release any acquired resources.
-     */
     public void release() {
 
         super.release();
-        renderURL = null;
+        actionURL = null;
     }
 }

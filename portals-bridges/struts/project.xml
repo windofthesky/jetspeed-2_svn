@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -22,7 +25,7 @@ limitations under the License.
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-struts</id>
   <name>Apache Portals Struts Framework Bridge</name>
-  <currentVersion>0.1</currentVersion>
+  <currentVersion>0.2</currentVersion>
   <package>org.apache.portals.bridges.struts</package>
   <description>
     Apache Portals Struts Framework Bridge
@@ -46,14 +49,23 @@ limitations under the License.
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4</version>
     </dependency>
-	  <dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.5</version>
+      <url>http://jakarta.apache.org/commons/digester.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
       <groupId>portlet-api</groupId>
       <artifactId>portlet-api</artifactId>
       <version>1.0</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>servletapi</groupId>
       <artifactId>servletapi</artifactId>
       <version>2.3</version>
@@ -61,7 +73,12 @@ limitations under the License.
     <dependency>
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts-el</artifactId>
+      <version>1.2.4</version>
     </dependency>
     <dependency>
       <groupId>portals-bridges</groupId>
@@ -77,24 +94,14 @@ limitations under the License.
         <includes>
           <include>META-INF/tlds/*</include>
         </includes>
+        <filtering>false</filtering>
       </resource>
     </resources>
   </build>
   <reports>
-    <report>maven-jdepend-plugin</report>
-<!--
-    <report>maven-checkstyle-plugin</report>
--->
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-jcoverage-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-tasklist-plugin</report>
+
+        &j2-reports;
+
   </reports>
 </project>
+

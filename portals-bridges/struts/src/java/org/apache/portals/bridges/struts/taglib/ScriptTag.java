@@ -23,15 +23,34 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * ScriptTag
+ * Generate a script tag for use within a Portlet environment.
+ * <p>
+ * The src attribute is resolved to a context relative path and may contain
+ * a relative path (prefixed with one or more ../ elements).
+ * </p>
+ * <p>
+ * Note: works equally well within a Portlet context as a Web application context.
+ * </p>
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
 public class ScriptTag extends TagSupport 
 {
+    /**
+     * The language attribute for the script tag.
+     * <p>
+     * Defaults to "Javascript1.1"
+     * </p>
+     */
     protected String language;
 
+    /**
+     * The script src path.
+     * <p>
+     * May contain a relative path (prefixed with one or more ../ elements).<br/>
+     * </p>
+     */
     protected String src;
 
     public String getLanguage()
@@ -60,15 +79,15 @@ public class ScriptTag extends TagSupport
             buffer.append("Javascript1.1");
         buffer.append("\" src=\"");
         if (src.startsWith("/"))
+        {
             buffer.append(((HttpServletRequest) pageContext.getRequest())
                     .getContextPath());
+        		buffer.append(src);
+        }
         else
         {
-            String requestURI = ((HttpServletRequest) pageContext.getRequest())
-                    .getRequestURI();
-            buffer.append(requestURI.substring(0, requestURI.lastIndexOf('/')));
+            buffer.append(TagsSupport.getContextRelativeURL(pageContext,src,true));
         }
-        buffer.append(src);
         buffer.append("\"/></script>");
         JspWriter writer = pageContext.getOut();
         try
@@ -84,5 +103,12 @@ public class ScriptTag extends TagSupport
     public int doEndTag()
     {
         return EVAL_PAGE;
+    }
+
+    public void release() 
+    {
+        super.release();
+        language = null;
+        src = null;
     }
 }

@@ -90,7 +90,7 @@ public class PortletServletResponseWrapper extends HttpServletResponseWrapper
         {
             return;
         }
-        if (path.startsWith("http://"))
+        if (path.startsWith("http://") || path.startsWith("https://"))
         {
             request.setAttribute(StrutsPortlet.REDIRECT_URL, path);
         }

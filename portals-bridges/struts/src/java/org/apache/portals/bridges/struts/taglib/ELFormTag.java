@@ -15,17 +15,17 @@
  */
 package org.apache.portals.bridges.struts.taglib;
 
-import javax.servlet.ServletRequest; // javadoc
+import javax.servlet.ServletRequest;
 
 import org.apache.portals.bridges.struts.PortletServlet;
 
 /**
- * Supports the Struts html:form tag to be used within a Portlet context.
+ * Supports the Struts html-el:form tag to be used within a Portlet context.
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class FormTag extends org.apache.struts.taglib.html.FormTag
+public class ELFormTag extends org.apache.strutsel.taglib.html.ELFormTag
 {
     /**
      * Modifies the default generated form action url to be a valid Portlet ActionURL
