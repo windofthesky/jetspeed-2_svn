@@ -25,15 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * SSODemoServlet - looks for username, password in the URL for single
- * signon to this servlet from a SSO portlet.
- * Username request parameter: ssouser
- * Password request parameter: ssopw
+ * SSOBasicDemoServlet - this will only run in Tomcat 4 and 5
+ * where there is a tomcat user name tomcat with the password tomcat
+ * and with a role named tomcat.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SSODemoServlet extends HttpServlet
+public class SSOBasicDemoServlet extends HttpServlet
 {
     public final static String DEMO_SSO_PRINCIPAL_PARAM = "sso-principal";
     public final static String DEMO_SSO_CREDENTIAL_PARAM = "sso-credential";
@@ -42,8 +41,6 @@ public class SSODemoServlet extends HttpServlet
     public final void doGet(HttpServletRequest request, HttpServletResponse response) 
         throws IOException, ServletException
     {
-        String principal = request.getParameter(DEMO_SSO_PRINCIPAL_PARAM);
-        String credential = request.getParameter(DEMO_SSO_CREDENTIAL_PARAM);
         String authenticatedPrincipal = "";
         
         Principal userPrincipal = request.getUserPrincipal();
@@ -55,46 +52,20 @@ public class SSODemoServlet extends HttpServlet
         {
             authenticatedPrincipal = userPrincipal.toString();
         }
-        if (principal == null)
-        {
-            error403(request, response, "SSO Principal is not valid. Please provide a valid SSO principal.");
-            return;
-        }
-        if (credential == null)
-        {
-            error403(request, response, "SSO Credential is not valid. Please provide a valid SSO credential.");
-            return;
-        }
-        if (!principal.equals(authenticatedPrincipal))
-        {
-            error403(request, response, "SSO Principal not found on SSO Server. Please provide a valid SSO principal.");
-            return;
-        }
-        if (!credential.equals(DEMO_SSO_CREDENTIAL))
-        {
-            error403(request, response, "SSO Credential does not match. Please provide a valid SSO credential.");
-            return;
-        }
-
+        
+        // create the session
+        request.getSession(true);
+        
         // authenticated
-        response.getWriter().println("<b>Welcome to the SSO Gateway!</b><br/>");
+        response.getWriter().println("<b>Welcome to the Basic Authentication SSO Gateway!</b><br/>");
         response.getWriter().println("Remote Principal has been authenticated.<br/>");
         response.getWriter().println("Remote User  = " + authenticatedPrincipal + "<br/>");
     }
 
-    private void error403(HttpServletRequest request, HttpServletResponse response, String message)
-    throws IOException, ServletException
-    {
-        response.getWriter().println("<b>HTTP Status 403: Access to SSO Demo Site not permitted.<br/>");            
-        response.getWriter().println(message + "<br/>");
-        response.getWriter().println("To configure the SSO Principal, switch to Edit Mode.<br/>");
-        return;
-        
-    }
     
     public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
     {
         doGet(req, res);
     }
-    
+
 }

@@ -49,9 +49,21 @@ limitations under the License.
     <servlet-class>org.apache.jetspeed.demo.servlet.SSODemoServlet</servlet-class>
   </servlet>       
 
+  <servlet>
+    <servlet-name>SSOBasicDemo</servlet-name>
+    <display-name>SSOBasicDemo Servlet</display-name>
+    <description>Servlet for Testing HTTP Basic Authentication SSO</description>
+    <servlet-class>org.apache.jetspeed.demo.servlet.SSOBasicDemoServlet</servlet-class>
+  </servlet>       
+
 	<servlet-mapping>
 		<servlet-name>SSODemo</servlet-name>
 		<url-pattern>/sso-demo</url-pattern>
+	</servlet-mapping>	
+
+	<servlet-mapping>
+		<servlet-name>SSOBasicDemo</servlet-name>
+		<url-pattern>/sso-basic</url-pattern>
 	</servlet-mapping>	
 	
     <!-- Map *.vm files to Velocity  -->
@@ -85,6 +97,26 @@ limitations under the License.
     <taglib-location>/WEB-INF/c.tld</taglib-location>
   </taglib>
   
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>HTTPBasicDemo</web-resource-name>
+      <url-pattern>/sso-basic/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+       <role-name>tomcat</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Jetspeed</realm-name>
+  </login-config>
+
+  <security-role>
+    <description>The role that is required to log in to the Agent</description>    
+    <role-name>agent</role-name>
+  </security-role>
+
 
   <security-role>
     <description>The admin role</description>
