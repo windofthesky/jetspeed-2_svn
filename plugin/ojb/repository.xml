@@ -6,10 +6,7 @@
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
-<!ENTITY commons SYSTEM "com/rippe/essential/commons/om/repository_common.xml">
-<!ENTITY contact SYSTEM "com/rippe/essential/commons/contact/om/repository_contact.xml">
-<!ENTITY audit_fields SYSTEM "com/rippe/essential/commons/om/audit_fields.xml">
-<!ENTITY security SYSTEM "com/rippe/essential/commons/security/role/repository_security.xml">
+<!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
 
 ]>
 
@@ -22,11 +19,8 @@
     <!-- include ojb internal mappings here -->
     &internal;
 
-    <!-- include essential commons defined mappings here -->
-    &commons; 
-    
-    &contact; 
+    <!-- include jetspeed defined mappings here -->
+    &jetspeed;
 
-   &security;
 
 </descriptor-repository>
