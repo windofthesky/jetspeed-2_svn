@@ -185,7 +185,7 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     
     void addDescription(Locale locale, String description);
     
-	void addDisplayName(Locale locale, String displayName);
+    void addDisplayName(Locale locale, String displayName);
     
     
 
