@@ -21,12 +21,12 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>Manager Role Page</title>
-  <fragment id="u1-xx1" type="layout" name="jetspeed::TwoColumns">
-    <fragment id="u1-xx3" type="portlet" name="HW_App::HelloPortlet">
+  <fragment id="mrp-xx1" type="layout" name="jetspeed::TwoColumns">
+    <fragment id="mrp-xx3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="u1-xx5" type="portlet" name="HW_App::PreferencePortlet">
+    <fragment id="mrp-xx5" type="portlet" name="HW_App::PreferencePortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
