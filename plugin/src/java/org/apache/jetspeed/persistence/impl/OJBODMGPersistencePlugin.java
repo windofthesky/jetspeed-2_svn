@@ -53,7 +53,6 @@
  */
 package org.apache.jetspeed.persistence.impl;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
@@ -210,7 +209,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             // 1. Start the transaction
             TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
             tx.begin();
-            
+
             //  2. remove object from the OJB cache
             PersistenceBroker pb = tx.getBroker();
             //pb.removeFromCache(object);
@@ -227,7 +226,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
             //BeanUtils.copyProperties(object, object);
 
             // 5. Commit the transaction
-            tx.commit();            
+            tx.commit();
 
         }
         catch (Throwable e)
@@ -242,31 +241,40 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
      */
     public void delete(Object object)
     {
-        //  PersistenceBroker pb1 = getBroker();
+        //        //  PersistenceBroker pb1 = getBroker();
+        //        try
+        //        {
+        //            // 1. Start the transaction
+        //            TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
+        //
+        //            // 2. remove object from the OJB cache
+        //
+        //            tx.begin();
+        //            PersistenceBroker pb = tx.getBroker();
+        //            pb.removeFromCache(object);
+        //            Identity id = new Identity(object, pb);
+        //            // 3. retreive a "stale" version of this object from the db
+        //
+        //            Object staleObject = pb.getObjectByIdentity(id);
+        //            tx.lock(staleObject, Transaction.WRITE);
+        //            db.deletePersistent(staleObject);
+        //            pb.removeFromCache(staleObject);
+        //
+        //            // 5. Commit the transaction
+        //            tx.commit();
+        //        }
+        //        finally
+        //        {
+        //            // releaseBroker(pb1);
+        //        }
+        PersistenceBroker pb = getBroker();
         try
         {
-            // 1. Start the transaction
-            TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
-
-            // 2. remove object from the OJB cache
-
-            tx.begin();
-            PersistenceBroker pb = tx.getBroker();
-            pb.removeFromCache(object);
-            Identity id = new Identity(object, pb);
-            // 3. retreive a "stale" version of this object from the db
-
-            Object staleObject = pb.getObjectByIdentity(id);
-            tx.lock(staleObject, Transaction.WRITE);
-            db.deletePersistent(staleObject);
-            pb.removeFromCache(staleObject);
-
-            // 5. Commit the transaction
-            tx.commit();
+            pb.delete(object);
         }
         finally
         {
-            // releaseBroker(pb1);
+            releaseBroker(pb);
         }
 
     }
@@ -275,7 +283,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
      * @see org.apache.jetspeed.services.persistence.ODMGPersistencePlugin#newODMGTransaction()
      */
     public Transaction newODMGTransaction()
-    {        
+    {
         return odmg.newTransaction();
     }
 
@@ -283,7 +291,7 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
      * @see org.apache.jetspeed.services.persistence.ODMGPersistencePlugin#newOQLQuery()
      */
     public OQLQuery newOQLQuery()
-    {        
+    {
         return odmg.newOQLQuery();
     }
 
@@ -294,10 +302,9 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
     {
         Transaction tx = odmg.newTransaction();
         tx.begin();
-        tx.lock(object, Transaction.WRITE);        
+        tx.lock(object, Transaction.WRITE);
         tx.commit();
-        
-        
+
     }
 
 }
