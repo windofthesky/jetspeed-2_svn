@@ -1,17 +1,69 @@
 --------------------------  
  Jetspeed 2.0-M1 Release
+   December 5, 2004
 --------------------------
 
-Tested App Servers:
 
+-----------
+ Features
+-----------
+* JSR 168 Support
+* Component Architecture (Spring)
+* J2EE Security, Portal Security Policy
+* Page and Portal Security Constraints (Bronco)
+* PSML/Folder CMS Navigations, Menus, Links
+* Jetspeed SSO
+* Multithreaded Aggregation Engine
+* Full Localization Support
+* Pipeline Request Processor
+* Rules-based Profiler
+* Basic Page Customization
+* Auto Deployment of Portlet Applications
+* Auto Deployment of Layouts and Decorators
+* Advanced Password Features
+* Navigational State Component
+* Integration with Pluto Portlet Container
+* Tigris CSS 
+* Client Indepedent Capability Engine (HTML, XHTML, WML, VML....)
+* Portals Bridges 
+    - Struts
+    - MyFaces
+    - Velocity
+    - Perl
+    - PHP
+    - Bridges Framework
+* Admin Portlets 
+    - Portlet Application Managerr
+    - Profiler Admin
+    - Role Manager
+    - Portal Site Manager
+    - User Manager
+* Sample Portlets 
+    - XSLT RSS
+    - Rome RSS 
+    - WebContent
+    - IFrame
+    - Calendar
+    - Bookmark
+    - Tree Navigator
+    - Guess Games
+
+
+---------------------
+ Tested App Servers:
+---------------------
  * Tomcat 4.1.30
  * Tomcat 5.0.30
 
  (Tomcat 5.5 requires a different jetspeed.xml found in the source tree under src/resources/jetspeed-tomcat-5.5.xml)
 
+ Jetspeed 2 has been independently tested and run on JBoss, Weblogic, and Websphere application servers
+ Check out our wiki page for details: http://wiki.apache.org/portals/Jetspeed2
 
-Installation Instructions
---------------------------
+
+---------------------------
+ Installation Instructions
+---------------------------
 
 1. Download jetspeed-2.0-M1.tar.gz 
    Download jetspeed-2.0-M1.zip (windows)
@@ -33,8 +85,9 @@ Installation Instructions
 6. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
 
 
-Configuring another database
------------------------------
+------------------------------
+ Configuring Another Database
+------------------------------
 
 1. cd $TOMCAT_HOME/jetspeed-database/scripts
 2. edit the build.properties, set the properties for your database connection, save.
@@ -50,6 +103,10 @@ Configuring another database
 
 7. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
 
+ Sample accounts to login as:
+    
+ admin/admin
+
 **    NOTE: if you are installing into a Tomcat instance which had Jetspeed installed previously, remember to delete these files :
         $TOMCAT_HOME/shared/lib/jetspeed*.jar
         $TOMCAT_HOME/shared/lib/pluto*.jar
@@ -58,8 +115,10 @@ Configuring another database
         $TOMCAT_HOME/webapps/jetspeed
 
 
-Deployment Optimization
 -----------------------------
+   Deployment Optimization
+-----------------------------
+
 There are some known issues with deployment and race conditions with the default jetspeed configuration.
 To optimize deployment, add these properties to your $HOME/build.properties:
 
