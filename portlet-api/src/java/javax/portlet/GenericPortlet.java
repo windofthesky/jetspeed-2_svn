@@ -1,18 +1,98 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 
 /**
  * The <CODE>GenericPortlet</CODE> class provides a default implementation
- * for the <CODE>Portlet</CODE> interface. 
+ * for the <CODE>Portlet</CODE> interface.
  * <p>
- * It is recommended not to extend the Portlet interface directly. 
- * Rather, a portlet should derive
- * from this or any other derived class and use the provided helper
- * methods for the different modes.
+ * It provides an abstract class to be subclassed to create portlets. A 
+ * subclass of <CODE>GenericPortlet</CODE> should override at least
+ * one method, usually one of the following:
+ * <ul>
+ * <li>processAction, to handle action requests</li>
+ * <li>doView, to handle render requests when in VIEW mode</li>
+ * <li>doEdit, to handle render requests when in EDIT mode</li>
+ * <li>doHelp, to handle render request when in HELP mode</li>
+ * <li>init and destroy, to manage resources that are held for the life of 
+ * the servlet</li>
+ * </ul>
+ * <p>
+ * Normally there is no need to override the render or the doDispatch 
+ * methods. Render handles render requests setting the title of the 
+ * portlet in the response and invoking doDispatch. doDispatch dispatches 
+ * the request to one of the doView, doEdit or doHelp method depending on 
+ * the portlet mode indicated in the request.
+ * <p>
+ * Portlets typically run on multithreaded servers, so please note that a 
+ * portlet must handle concurrent requests and be careful to synchronize 
+ * access to shared resources.  Shared resources include in-memory data 
+ * such as  instance or class variables and external objects  such as 
+ * files, database connections, and network  connections.
  */
 public abstract class GenericPortlet implements Portlet, PortletConfig
 {
+
 
   private transient PortletConfig config;
 
@@ -51,13 +131,12 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException 	if an exception has occurred that
    *					interferes with the portlet normal
    *					operation.
-   * @exception UnavailableException 	if the portlet is unavailable to perform init
+   * @exception UnavailableException 	if the portlet cannot perform the initialization at this time.
    */
 
   public void init (PortletConfig config) throws PortletException
   {
     this.config = config;
-    config.getPortletContext().log("init");
     this.init();
   }
 
@@ -85,8 +164,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
 
 
   /**
-   * Notifies the portlet which is called by the portlet container
-   * that an action request has been performed.
+   * Called by the portlet container to allow the portlet to process
+   * an action request. This method is called if the client request was
+   * originated by a URL created (by the portlet) with the 
+   * <code>RenderResponse.createActionURL()</code> method.
    * <p>
    * The default implementation throws an exception.
    *
@@ -97,10 +178,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform processAction
+   *                   if the portlet is unavailable to process the action at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception  IOException
+   * @exception  java.io.IOException
    *                   if the streaming causes an I/O problem
    */
   public void processAction (ActionRequest request, ActionResponse response) 
@@ -111,8 +192,8 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
 
   /**
    * The default implementation of this method sets the title 
-   * using the <code>getTitle</code> method and performs
-   * the rendering using the <code>doDispatch</code> method.
+   * using the <code>getTitle</code> method and invokes the
+   * <code>doDispatch</code> method.
    * 
    * @param request
    *                 the render request
@@ -122,10 +203,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform render
+   *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception IOException
+   * @exception java.io.IOException
    *                   if the streaming causes an I/O problem
    *
    */
@@ -142,12 +223,12 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
   /**
    * Used by the render method to get the title.
    * <p>
-   * The default implementation gets the title
-   * defined in the deployment descriptor.
+   * The default implementation gets the title from the ResourceBundle
+   * of the PortletConfig of the portlet. The title is retrieved
+   * using the 'javax.portlet.title' resource name.
    * <p>
    * Portlets can overwrite this method to provide dynamic
-   * titles (e.g. based on locale, client,
-   * and session information).
+   * titles (e.g. based on locale, client, and session information).
    * Examples are:
    * <UL>
    * <LI>language-dependant titles for multi-lingual portals
@@ -165,12 +246,13 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
 
   /**
    * The default implementation of this method routes the render request
-   * to a set of helper methods based on the portlet mode. 
+   * to a set of helper methods depending on the current portlet mode the
+   * portlet is currently in.
    * These methods are:
    * <ul>
-   * <il><code>doView</code> for handling <code>view</code> requests
-   * <il><code>doEdit</code> for handling <code>edit</code> requests
-   * <il><code>doHelp</code> for handling <code>help</code> requests
+   * <li><code>doView</code> for handling <code>view</code> requests
+   * <li><code>doEdit</code> for handling <code>edit</code> requests
+   * <li><code>doHelp</code> for handling <code>help</code> requests
    * </ul>
    * <P>
    * If the window state of this portlet is <code>minimized</code>, this
@@ -187,10 +269,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform render
+   *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception IOException
+   * @exception java.io.IOException
    *                   if the streaming causes an I/O problem
    *
    * @see #doView(RenderRequest, RenderResponse)
@@ -234,10 +316,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform render
+   *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception IOException
+   * @exception java.io.IOException
    *                   if the streaming causes an I/O problem
    *
    */
@@ -263,10 +345,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform render
+   *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception IOException
+   * @exception java.io.IOException
    *                   if the streaming causes an I/O problem
    *
    */
@@ -291,10 +373,10 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * @exception PortletException
    *                   if the portlet cannot fulfilling the request
    * @exception  UnavailableException 	
-   *                   if the portlet is unavailable to perform render
+   *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
-   * @exception IOException
+   * @exception java.io.IOException
    *                   if the streaming causes an I/O problem
    */
 
@@ -330,7 +412,6 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
   
   public void destroy ()
   {
-    getPortletContext().log("destroy");
     // do nothing
   }
 
@@ -340,10 +421,11 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
 
 
   /**
-   * Returns the name of the portlet. The portlet container needs the
-   * portlet name for administration purposes.
-   *
-   * @return   the portlet name
+   * Returns the name of this portlet.
+   * 
+   * @return the portlet name
+   * 
+   * @see PortletConfig#getPortletName()
    */
 
   public String getPortletName ()
@@ -353,7 +435,8 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
 
 
   /**
-   * Returns the portlet application context.
+   * Returns the <code>PortletContext</code> of the portlet application 
+   * the portlet is in.
    *
    * @return   the portlet application context
    */
@@ -370,10 +453,6 @@ public abstract class GenericPortlet implements Portlet, PortletConfig
    * resource bundle defined in the deployment descriptor
    * with <code>resource-bundle</code> tag or the inlined resources
    * defined in the deployment descriptor.
-   * <p>
-   * If the resources are included inline the deployment descriptor, 
-   * no localization support is provided by the portlet container. 
-   * The defined values will be used for all Locales.
    * 
    * @return   the resource bundle for the given locale
    */

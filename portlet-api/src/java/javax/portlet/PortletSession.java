@@ -1,36 +1,97 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 
 /**
- * The <CODE>PortletSession</CODE> interface provides a way to identify a user 
+ * The <CODE>PortletSession</CODE> interface provides a way to identify a user
  * across more than one request and to store transient information about that user.
  * <p>
- * A <code>PortletSession</code> is created per user client per portlet application. 
+ * A <code>PortletSession</code> is created per user client per portlet application.
  * <p>
- * A portlet can bind an object attribute into a <code>PortletSession</code> by name. 
+ * A portlet can bind an object attribute into a <code>PortletSession</code> by name.
  * The <code>PortletSession</code> interface defines two scopes for storing objects:
  * <ul>
- * <li><code>APPLICATION_SCOPE</code> 
+ * <li><code>APPLICATION_SCOPE</code>
  * <li><code>PORTLET_SCOPE</code>
  * </ul>
- * Any object stored in the session using the <code>APPLICATION_SCOPE</code> is 
- * available to any other portlet that belongs to the same portlet application 
- * and that handles a request identified as being a part of the same session.
- * Objects stored in the session using the <code>PORTLET_SCOPE</code> must be 
- * available to the portlet during requests for the same portlet window 
- * that the objects where stored from. Attributes stored in the 
+ * All objects stored in the session using the <code>APPLICATION_SCOPE</code> 
+ * must be available to all the portlets, servlets and 
+ * JSPs that belongs to the same portlet application and that handles a 
+ * request identified as being a part of the same session.
+ * Objects stored in the session using the <code>PORTLET_SCOPE</code> must be
+ * available to the portlet during requests for the same portlet window
+ * that the objects where stored from. Attributes stored in the
  * <code>PORTLET_SCOPE</code> are not protected from other web components
  * of the portlet application. They are just conveniently namespaced.
  * <P>
  * The portlet session is based on the <code>HttpSession</code>. Therefore all
  * <code>HttpSession</code> listeners do apply to the portlet session and
- * attributes set in the portlet session are visible in the <code>HttpSession</code> 
+ * attributes set in the portlet session are visible in the <code>HttpSession</code>
  * and vice versa.
- *  
  */
 public interface PortletSession
 {
+
 
   /**
    * This constant defines an application wide scope for the session attribute.

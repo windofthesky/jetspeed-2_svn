@@ -13,7 +13,7 @@
   <dependencies>
 	 <dependency>
       <id>portlet-api</id>
-      <version>0.1-dev-unreleased</version>
+      <version>1.0</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
       </properties>

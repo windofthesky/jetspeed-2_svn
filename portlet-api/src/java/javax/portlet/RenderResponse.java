@@ -1,20 +1,80 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 /**
- * The <CODE>RenderResponse</CODE> defines an object to assist a portlet in 
- * sending a response to the portal. The portlet container creates a RenderResponse 
- * object and passes it as an argument to the render method of the portlet.
- * 
- * <p>See the Internet RFCs such as 
- * <a href="http://info.internet.isi.edu/in-notes/rfc/files/rfc2045.txt">
- * RFC 2045</a> for more information on MIME. 
+ * The <CODE>RenderResponse</CODE> defines an object to assist a portlet in
+ * sending a response to the portal.
+ * It extends the <CODE>PortletResponse</CODE> interface to provide specific 
+ * render response functionality to portlets.<br>
+ * The portlet container creates a <CODE>RenderResponse</CODE> object and 
+ * passes it as argument to the portlet's <CODE>render</CODE> method.
  * 
  * @see RenderRequest
  * @see PortletResponse
  */
 public interface RenderResponse extends PortletResponse
 {
+
 
   /**
    * Property to set the expiration time in seconds for this
@@ -45,8 +105,11 @@ public interface RenderResponse extends PortletResponse
 
 
   /**
-   * Creates a portlet URL pointing to the current portlet mode and
-   * current window state, triggering a render call.
+   * Creates a portlet URL targeting the portlet. If no portlet mode, 
+   * window state or security modifier is set in the PortletURL the
+   * current values are preserved. If a request is triggered by the
+   * PortletURL, it results in a render request.
+   * <p>
    * The returned URL can be further extended by adding
    * portlet-specific parameters and portlet modes and window states. 
    * <p>
@@ -59,8 +122,11 @@ public interface RenderResponse extends PortletResponse
 
 
   /**
-   * Creates a portlet URL pointing to the current portlet mode and
-   * current window state, triggering an action request and a render request.
+   * Creates a portlet URL targeting the portlet. If no portlet mode, 
+   * window state or security modifier is set in the PortletURL the
+   * current values are preserved. If a request is triggered by the
+   * PortletURL, it results in an action request.
+   * <p>
    * The returned URL can be further extended by adding
    * portlet-specific parameters and portlet modes and window states. 
    * <p>
@@ -74,34 +140,21 @@ public interface RenderResponse extends PortletResponse
 
 
   /**
-   * Maps the given string value into this portlet namespace and therefore
-   * ensures the uniqueness of the string value in the whole portal page.
-   * This method should be applied to every variable or name used in the
-   * output stream. For example a function name in javascript.
-   * <p>
-   * If the string passed to the <code>encodeNamespace</code> method 
-   * must be a valid identifier as defined in the 3.8 Identifier Section 
-   * of the Java Language Specification Second Edition, the returned
-   * string is also a valid identifier.
-   * <P>
-   * If <code>null</code> is passed as value this method
-   * returns the portlet namespace.
+   * The value returned by this method should be prefixed or appended to 
+   * elements, such as JavaScript variables or function names, to ensure 
+   * they are unique in the context of the portal page.
    *
-   * @param   aValue
-   *          the name to be mapped
-   *
-   * @return   the mapped name
+   * @return   the namespace
    */
   
-  public String encodeNamespace (String aValue);
+  public String getNamespace ();
 
 
 
   /**
-   * This method can be called to set the title of a portlet.
+   * This method sets the title of the portlet.
    * <p>
-   * The value can be either a text String or a resource
-   * URI.
+   * The value can be a text String
    *
    * @param  title    portlet title as text String or resource URI
    */
@@ -136,7 +189,7 @@ public interface RenderResponse extends PortletResponse
    * Returns the name of the charset used for
    * the MIME body sent in this response.
    *
-   * <p>See RFC 2047 (http://ds.internic.net/rfc/rfc2045.txt)
+   * <p>See <a href="http://ds.internic.net/rfc/rfc2045.txt">RFC 2047</a>
    * for more information about character encoding and MIME.
    *
    * @return		a <code>String</code> specifying the
@@ -186,7 +239,6 @@ public interface RenderResponse extends PortletResponse
   public java.util.Locale getLocale();
     
 
-
   /**
    * Sets the preferred buffer size for the body of the response.  
    * The portlet container will use a buffer at least as large as 
@@ -194,7 +246,7 @@ public interface RenderResponse extends PortletResponse
    * <p>
    * This method must be called before any response body content is
    * written; if content has been written, or the portlet container
-   * does not support buffering, this method throws an 
+   * does not support buffering, this method may throw an 
    * <code>IllegalStateException</code>.
    *
    * @param size 	the preferred buffer size
@@ -216,9 +268,6 @@ public interface RenderResponse extends PortletResponse
   /**
    * Returns the actual buffer size used for the response.  If no buffering
    * is used, this method returns 0.
-   * <p>
-   * Depending on the portlet container implementation the buffer may
-   * be shared by serveral portlets.
    *
    * @return	 	the actual buffer size used
    *

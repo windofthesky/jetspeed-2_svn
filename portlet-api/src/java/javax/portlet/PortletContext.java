@@ -1,3 +1,63 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
@@ -6,30 +66,31 @@ package javax.portlet;
 /**
  * The <CODE>PortletContext</CODE> interface defines a portlet view
  * of the portlet container.
- * The <CODE>PortletContext</CODE> also makes resources available 
+ * The <CODE>PortletContext</CODE> also makes resources available
  * to the portlet. Using the context, a portlet can access
  * the portlet log, and obtain URL references to resources.
  * 
- * <p>There is one context per "portlet web application" per Java Virtual Machine.  (A
- * "portlet web application" is a collection of portlets, servlets, and content installed
+ * <p>There is one context per "portlet application" per Java Virtual Machine.  (A
+ * "portlet application" is a collection of portlets, servlets, and content installed
  * under a specific subset of the server URL namespace, such as <code>/catalog</code>.
  * They are possibly installed via a <code>.war</code> file.)
- * As a web application, a portlet application also has a servlet context. 
- * The portlet context leverages most of its functionality from the 
+ * As a web application, a portlet application also has a servlet context.
+ * The portlet context leverages most of its functionality from the
  * servlet context of the portlet application.
  * <p>
  * Attibutes stored in the context are global for <I>all</I> users and <I>all</I>
- * components in the portlet web application.
+ * components in the portlet application.
  * <p>
  * In the case of a web
  * application marked "distributed" in its deployment descriptor, there will
  * be one context instance for each virtual machine.  In this situation, the
  * context cannot be used as a location to share global information (because
- * the information is not truly global).  Use an external resource, such as
+ * the information is not truly global). Use an external resource, such as
  * a database to achieve sharing on a global scope.
  */
 public interface PortletContext
 {
+
 
   /**
    * Returns the name and version of the portlet container in which the
@@ -47,18 +108,20 @@ public interface PortletContext
   /**
    * Returns a {@link PortletRequestDispatcher} object that acts
    * as a wrapper for the resource located at the given path.
-   * A <code>RequestDispatcher</code> object can be used include the
+   * A <code>PortletRequestDispatcher</code> object can be used include the
    * resource in a response. The resource can be dynamic or static.
    * 
    * <p>The pathname must begin with a slash (<code> / </code>) and is interpreted as relative
-   * to the current context root. 
-   * This method returns <code>null</code> if the <code>PortletContext</code>
-   * cannot return a <code>PortletRequestDispatcher</code>.
+   * to the current context root.
+   * 
+   * <p>This method returns <code>null</code> if the <code>PortletContext</code>
+   * cannot return a <code>PortletRequestDispatcher</code>
+   * for any reason.
    * 
    *
    * @param path   a <code>String</code> specifying the pathname
    *               to the resource
-   * @return a <code>RequestDispatcher</code> object
+   * @return a <code>PortletRequestDispatcher</code> object
    *         that acts as a wrapper for the resource
    *         at the specified path.
    * @see PortletRequestDispatcher
@@ -76,14 +139,14 @@ public interface PortletContext
    * administration or via a web application deployment descriptor.
    *
    * <p>This method returns <code>null</code> if the 
-   * <code>PortletContext</code>
-   * cannot return a <code>RequestDispatcher</code> for any reason.
+   * <code>PortletContext</code> cannot return a 
+   * <code>PortletRequestDispatcher</code> for any reason.
    *
    *
    * @param name 	a <code>String</code> specifying the name
    *			of a servlet to be wrapped
    *
-   * @return 		a <code>RequestDispatcher</code> object
+   * @return 		a <code>PortletRequestDispatcher</code> object
    *			that acts as a wrapper for the named servlet
    *
    * @see 		PortletRequestDispatcher
@@ -308,7 +371,7 @@ public interface PortletContext
    * Returns a String containing the value of the named context-wide 
    * initialization parameter, or <code>null</code> if the parameter does not exist.
    * This method provides configuration information which may be useful for 
-   * an entire "portlet web application".
+   * an entire "portlet application".
    *
    * @param	name	a <code>String</code> containing the name of the
    *                    requested parameter 
@@ -417,7 +480,7 @@ public interface PortletContext
 
 
   /**
-   * Returns the name of this portlet web application correponding to this PortletContext as specified 
+   * Returns the name of this portlet application correponding to this PortletContext as specified 
    * in the <code>web.xml</code> deployment descriptor for this web application by the 
    * <code>display-name</code> element.
    *

@@ -1,14 +1,80 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 /**
- * The <CODE>PortletRequest</CODE> is the basic interface extended by all portlet requests.
+ * The <CODE>PortletRequest</CODE> defines the base interface to provide client
+ * request information to a portlet. The portlet container uses two specialized
+ * versions of this interface when invoking a portlet, <CODE>ActionRequest</CODE>
+ * and <CODE>RenderRequest</CODE>. The portlet container creates these objects and 
+ * passes them as  arguments to the portlet's <CODE>processAction</CODE> and
+ * <CODE>render</CODE> methods.
  * 
  * @see ActionRequest
  * @see RenderRequest
  */
 public interface PortletRequest
 {
+
 
   /** Used to retrieve user information attributes with the 
    * <code>getAttribute</code> call. The user information is returned 
@@ -228,8 +294,8 @@ public interface PortletRequest
   /**
    * Returns the name of the authentication scheme used for the 
    * connection between client and portal,
-   * for example, <code>BASIC_AUTH</code> or <code>CLIENT_CERT_AUTH</code>, or 
-   * <code>null</code> if there was no authentication.
+   * for example, <code>BASIC_AUTH</code>, <code>CLIENT_CERT_AUTH</code>, 
+   * a custom one or <code>null</code> if there was no authentication.
    *
    * @return		one of the static members <code>BASIC_AUTH</code>, 
    *			<code>FORM_AUTH</code>, <code>CLIENT_CERT_AUTH</code>, 
@@ -244,12 +310,12 @@ public interface PortletRequest
   
 
    /**
-    *
-    * Returns the portion of the request URL that indicates the context
-    * of the request.  The context path always comes first in a request
-    * URL.  The path starts with a slash ( / ) character but does not end 
-    * with a slash character.  For portlets in the default (root) context, this method
-    * returns an empty string ( "" ). The container does not decode this string.
+    * Returns the context path which is the path prefix associated with the deployed 
+    * portlet application. If the portlet application is rooted at the
+    * base of the web server URL namespace (also known as "default" context), 
+    * this path must be an empty string. Otherwise, it must be the path the
+    * portlet application is rooted to, the path must start with a '/' and 
+    * it must not end with a '/' character.
     * <p>
     * To encode a URL the {@link PortletResponse#encodeURL} method must be used.
     *
@@ -440,10 +506,10 @@ public interface PortletRequest
    * The values in the returned <code>Map</code> are from type
    * String array (<code>String[]</code>).
    * <p>
-   * If no parameters exist this method returns <code>null</code>.
+   * If no parameters exist this method returns an empty <code>Map</code>.
    *
    * @return     an immutable <code>Map</code> containing parameter names as 
-   *             keys and parameter values as map values, or <code>null</code>
+   *             keys and parameter values as map values, or an empty <code>Map</code>
    *             if no parameters exist. The keys in the parameter
    *             map are of type String. The values in the parameter map are of type
    *             String array (<code>String[]</code>).

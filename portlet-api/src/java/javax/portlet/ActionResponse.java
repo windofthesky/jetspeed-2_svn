@@ -1,15 +1,80 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 /**
  * The <CODE>ActionResponse</CODE> interface represents the portlet
- * response to an action request, the invocation of the processAction method.
- *
- * @see  ActionRequest
- * @see  PortletResponse
+ * response to an action request.
+ * It extends the <CODE>PortletResponse</CODE> interface to provide specific 
+ * action response functionality to portlets.<br>
+ * The portlet container creates an <CODE>ActionResponse</CODE> object and 
+ * passes it as argument to the portlet's <CODE>processAction</CODE> method.
+ * 
+ * @see ActionRequest
+ * @see PortletResponse
  */
 public interface ActionResponse extends PortletResponse
 {
+
 
   /**
    * Sets the window state of a portlet to the given window state.
@@ -31,7 +96,7 @@ public interface ActionResponse extends PortletResponse
    *                   To avoid this exception the portlet can check the allowed
    *                   window states with <code>Request.isWindowStateAllowed()</code>.
    * @exception java.lang.IllegalStateException
-   *                    if the method is invoked after <code>sendRedirect</code>chas been called.
+   *                    if the method is invoked after <code>sendRedirect</code> has been called.
    *
    * @see WindowState
    */
@@ -67,7 +132,7 @@ public interface ActionResponse extends PortletResponse
    *                   To avoid this exception the portlet can check the allowed
    *                   portlet modes with <code>Request.isPortletModeAllowed()</code>.
    * @exception java.lang.IllegalStateException
-   *                    if the method is invoked after <code>sendRedirect</code>chas been called.
+   *                    if the method is invoked after <code>sendRedirect</code> has been called.
    */
 
   public void setPortletMode (PortletMode portletMode)
@@ -78,7 +143,10 @@ public interface ActionResponse extends PortletResponse
    * Instructs the portlet container to send a redirect response 
    * to the client using the specified redirect location URL.  
    * <p>
-   * This method only accepts full or full path URLs. If required, 
+   * This method only accepts an absolute URL (e.g. 
+   * <code>http://my.co/myportal/mywebap/myfolder/myresource.gif</code>)
+   * or a full path URI (e.g. <code>/myportal/mywebap/myfolder/myresource.gif</code>).
+   * If required, 
    * the portlet container may encode the given URL before the 
    * redirection is issued to the client.
    * <p>
@@ -127,8 +195,13 @@ public interface ActionResponse extends PortletResponse
    *                      in the parameter map must be of type
    *                      String array (<code>String[]</code>).
    *
-   * @exception	java.lang.IllegalArgumentException	
-   *                      if parameters is <code>null</code>.
+   * @exception	java.lang.IllegalArgumentException 
+   *                      if parameters is <code>null</code>, if
+   *                      any of the key/values in the Map are <code>null</code>, 
+   *                      if any of the keys is not a String, or if any of 
+   *                      the values is not a String array.
+   * @exception java.lang.IllegalStateException
+   *                    if the method is invoked after <code>sendRedirect</code> has been called.
    */
 
   public void setRenderParameters(java.util.Map parameters);
@@ -142,7 +215,7 @@ public interface ActionResponse extends PortletResponse
    * <code>PortletRequest.getParameter</code> call until
    * a request is targeted to the portlet.
    * <p>
-   * This method resets all parameters with the same key.
+   * This method replaces all parameters with the given key.
    * <p>
    * The given parameter do not need to be encoded
    * prior to calling this method.
@@ -151,7 +224,9 @@ public interface ActionResponse extends PortletResponse
    * @param  value  value of the render parameter
    *
    * @exception	java.lang.IllegalArgumentException	
-   *                      if key or value is <code>null</code>.
+   *                      if key or value are <code>null</code>.
+   * @exception java.lang.IllegalStateException
+   *                    if the method is invoked after <code>sendRedirect</code> has been called.
    */
 
   public void setRenderParameter(String key, String value);
@@ -165,7 +240,7 @@ public interface ActionResponse extends PortletResponse
    * <code>PortletRequest.getParameter</code> call until
    * a request is targeted to the portlet.
    * <p>
-   * This method resets all parameters with the same key.
+   * This method replaces all parameters with the given key.
    * <p>
    * The given parameter do not need to be encoded
    * prior to calling this method.
@@ -174,7 +249,9 @@ public interface ActionResponse extends PortletResponse
    * @param  values  values of the render parameter
    *
    * @exception	java.lang.IllegalArgumentException	
-   *                      if key or value is <code>null</code>.
+   *                      if key or value are <code>null</code>.
+   * @exception java.lang.IllegalStateException
+   *                    if the method is invoked after <code>sendRedirect</code> has been called.
    */
 
   public void setRenderParameter(String key, String[] values);

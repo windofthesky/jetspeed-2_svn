@@ -8,7 +8,7 @@
   <dependencies>
 	 <dependency>
       <id>portlet-api</id>
-      <version>0.6.6</version>
+      <version>1.0</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>

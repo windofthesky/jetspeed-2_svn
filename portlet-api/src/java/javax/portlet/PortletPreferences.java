@@ -1,25 +1,87 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2003 The Apache Software Foundation.  All rights 
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:  
+ *       "This product includes software developed by the 
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "The Jakarta Project", "Pluto", and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written 
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ *
+ * ====================================================================
+ *
+ * This source code implements specifications defined by the Java
+ * Community Process. In order to remain compliant with the specification
+ * DO NOT add / change / or delete method signatures!
+ */
+
 package javax.portlet;
 
 
 
 /**
- * The <CODE>PortletPreferences</CODE> interface allows the portlet to store 
+ * The <CODE>PortletPreferences</CODE> interface allows the portlet to store
  * configuration data. It is not the
  * purpose of this interface to replace general purpose databases.
  * <p>
  * There are two different types of preferences:
  * <ul>
  * <li>modifiable preferences - these preferences can be changed by the
- *     portlet in any standard portlet mode (<code>EDIT, HELP, VIEW</code>). 
+ *     portlet in any standard portlet mode (<code>EDIT, HELP, VIEW</code>).
  *     Per default every preference is modifiable.
- * <li>non-modifiable preferences - these preferences cannot be changed by the
+ * <li>read-only preferences - these preferences cannot be changed by the
  *     portlet in any standard portlet mode, but may be changed by administrative modes.
- *     Preferences are non-modifiable, if the are defined in the 
- *     deployment descriptor with <code>modifiable</code> set to zero.
+ *     Preferences are read-only, if the are defined in the
+ *     deployment descriptor with <code>read-only</code> set to <code>true</code>,
+ *     or if the portlet container restricts write access.
  * </ul>
  * <p>
- * Changes are persisted when the <code>store</code> method is called. 
- * Changes that are not persisted are discarded when the 
+ * Changes are persisted when the <code>store</code> method is called. The <code>store</code> method 
+ * can only be invoked within the scope of a <code>processAction</code> call.
+ * Changes that are not persisted are discarded when the
  * <code>processAction</code> or <code>render</code> method ends.
  */
 public interface PortletPreferences
@@ -27,37 +89,38 @@ public interface PortletPreferences
 
 
 
+
   /**
-   * Returns true, if the value of this key can be modified by the user.
+   * Returns true, if the value of this key cannot be modified by the user.
    * <p>
    * Modifiable preferences can be changed by the
    * portlet in any standard portlet mode (<code>EDIT, HELP, VIEW</code>). 
    * Per default every preference is modifiable.
    * <p>
-   * Non-modifiable preferences cannot be changed by the
-   * portlet in any standard portlet mode, but may be changed by administrative modes.
-   * Preferences are non-modifiable, if they are defined in the 
-   * deployment descriptor with <code>modifiable</code> set to zero.
+   * Read-only preferences cannot be changed by the
+   * portlet in any standard portlet mode, but inside of custom modes
+   * it may be allowed changing them.
+   * Preferences are read-only, if they are defined in the 
+   * deployment descriptor with <code>read-only</code> set to <code>true</code>,
+   * or if the portlet container restricts write access.
    *
-   * @return  true, if the value of this key can be changed, or
+   * @return  false, if the value of this key can be changed, or
    *          if the key is not known
    *
    * @exception java.lang.IllegalArgumentException 
    *         if <code>key</code> is <code>null</code>.
    */
-  public boolean isModifiable(String key);
+  public boolean isReadOnly(String key);
 
 
 
   /**
-   * Returns the first String value associated with the specified key in this preference.
-   * Returns the specified default if there is no value associated
-   * with the key, or if the backing store is inaccessible.
-   *
-   * <p>Some implementations may store default values in their backing
-   * stores.  If there is no value associated with the specified key
-   * but there is such a <i>stored default</i>, it is returned in
-   * preference to the specified default.
+   * Returns the first String value associated with the specified key of this preference.
+   * If there is one or more preference values associated with the given key 
+   * it returns the first associated value.
+   * If there are no preference values associated with the given key, or the 
+   * backing preference database is unavailable, it returns the given 
+   * default value.
    *
    * @param key key for which the associated value is to be returned
    * @param def the value to be returned in the event that there is no 
@@ -68,7 +131,7 @@ public interface PortletPreferences
    *         store is inaccessible.
    *
    * @exception java.lang.IllegalArgumentException 
-   *         if <code>key</code> is <code>null</code>.  (A 
+   *         if <code>key</code> is <code>null</code>. (A 
    *         <code>null</code> value for <code>def</code> <i>is</i> permitted.)
    * 
    * @see #getValues(String, String[])
@@ -110,11 +173,14 @@ public interface PortletPreferences
   /**
    * Associates the specified String value with the specified key in this
    * preference.
+   * <p>
+   * The key cannot be <code>null</code>, but <code>null</code> values
+   * for the value parameter are allowed.
    *
    * @param key key with which the specified value is to be associated.
    * @param value value to be associated with the specified key.
    *
-   * @exception  UnmodifiableException
+   * @exception  ReadOnlyException
    *                 if this preference cannot be modified for this request
    * @exception java.lang.IllegalArgumentException if key is <code>null</code>,
    *                 or <code>key.length()</code> 
@@ -123,7 +189,7 @@ public interface PortletPreferences
    *
    * @see #setValues(String, String[])
    */
-  public void setValue(String key, String value)  throws UnmodifiableException;
+  public void setValue(String key, String value)  throws ReadOnlyException;
 
 
 
@@ -131,6 +197,9 @@ public interface PortletPreferences
   /**
    * Associates the specified String array value with the specified key in this
    * preference.
+   * <p>
+   * The key cannot be <code>null</code>, but <code>null</code> values
+   * in the values parameter are allowed.
    *
    * @param key key with which the  value is to be associated
    * @param values values to be associated with key
@@ -139,13 +208,13 @@ public interface PortletPreferences
    *                 <code>key.length()</code> 
    *                 is to long or <code>value.size</code> is to large.  The maximum 
    *                 length for key and maximum size for value are implementation specific.
-   * @exception  UnmodifiableException
+   * @exception  ReadOnlyException
    *                 if this preference cannot be modified for this request
    *
    * @see #setValue(String,String)
    */
 
-  public void setValues(String key, String[] values) throws UnmodifiableException;
+  public void setValues(String key, String[] values) throws ReadOnlyException;
 
 
   /**
@@ -158,6 +227,23 @@ public interface PortletPreferences
    *         available.
    */
   public java.util.Enumeration getNames();
+
+  /** 
+   * Returns a <code>Map</code> of the preferences.
+   * <p>
+   * The values in the returned <code>Map</code> are from type
+   * String array (<code>String[]</code>).
+   * <p>
+   * If no preferences exist this method returns an empty <code>Map</code>.
+   *
+   * @return     an immutable <code>Map</code> containing preference names as 
+   *             keys and preference values as map values, or an empty <code>Map</code>
+   *             if no preference exist. The keys in the preference
+   *             map are of type String. The values in the preference map are of type
+   *             String array (<code>String[]</code>).
+   */
+
+  public java.util.Map getMap();
 
 
   /**
@@ -172,11 +258,11 @@ public interface PortletPreferences
    * @param  key to reset
    *
    * @exception  java.lang.IllegalArgumentException if key is <code>null</code>.
-   * @exception  UnmodifiableException
+   * @exception  ReadOnlyException
    *                 if this preference cannot be modified for this request
    */
 
-  public void reset(String key) throws UnmodifiableException;
+  public void reset(String key) throws ReadOnlyException;
 
 
   /**
@@ -190,8 +276,7 @@ public interface PortletPreferences
    * <P>
    * All changes made to preferences not followed by a call 
    * to the <code>store</code> method are discarded when the 
-   * portlet finishes the <code>processAction</code> or 
-   * <code>render</code> methods.
+   * portlet finishes the <code>processAction</code> method.
    * <P>
    * If a validator is defined for this preferences in the
    * deployment descriptor, this validator is called before
@@ -205,7 +290,7 @@ public interface PortletPreferences
    * @exception  ValidatorException
    *                 if the validation performed by the
    *                 associated validator fails
-   * @exception  java.lang.UnsupportedOperationException
+   * @exception  java.lang.IllegalStateException
    *                 if this method is called inside a render call
    *
    * @see  PreferencesValidator

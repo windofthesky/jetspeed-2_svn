@@ -100,7 +100,7 @@
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
     <copy file="commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="portlet-api/target/portlet-api-0.1-dev-unreleased.jar" todir="${catalina.shared.lib}"/>
+    <copy file="portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
   </goal>
 
   <goal name="catalina:base-shared"
