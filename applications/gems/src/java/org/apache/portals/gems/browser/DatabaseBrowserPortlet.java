@@ -270,6 +270,9 @@ public class DatabaseBrowserPortlet
                 SSOContext credentials = null;
                 try
                 {
+                    if (sso == null)
+                        throw new SSOException("SSO Not supported.");
+                    
                     credentials = sso.getCredentials(getSubject(), ssoURL);
                 }
                 catch(SSOException ssoex)

@@ -130,7 +130,8 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         sso = (SSOProvider)context.getAttribute("cps:SSO");
         if (null == sso)
         {
-           throw new PortletException("Failed to find SSO Provider on portlet initialization");
+            log.info("Warning: SSO provider not found.");
+           //throw new PortletException("Failed to find SSO Provider on portlet initialization");
         }        
     }
 
