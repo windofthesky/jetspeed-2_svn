@@ -19,7 +19,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -54,7 +54,7 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
     {
         PortletRegistryComponent regsitry =
             (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-        return regsitry.getPortletDefinitionByIndetifier(uniqueId);
+        return regsitry.getPortletDefinitionByIdentifier(uniqueId);
     }
 
     /** 

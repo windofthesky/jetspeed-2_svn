@@ -27,7 +27,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;

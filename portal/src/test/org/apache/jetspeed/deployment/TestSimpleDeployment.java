@@ -13,7 +13,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
@@ -115,7 +115,7 @@ public class TestSimpleDeployment extends JetspeedTest
 
         assertTrue(decoratorVm.getCanonicalPath() + " was not created!", decoratorVm.exists());
 		PortletRegistryComponent portletRegistry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-        assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIndetifier(TEST_PORTLET_APP_NAME));
+        assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
 
     }
 

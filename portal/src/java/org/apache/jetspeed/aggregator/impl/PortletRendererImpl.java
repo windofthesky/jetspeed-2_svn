@@ -28,7 +28,7 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;

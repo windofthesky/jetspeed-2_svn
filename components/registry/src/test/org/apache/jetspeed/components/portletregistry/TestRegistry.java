@@ -29,7 +29,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
@@ -233,7 +233,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             // registry.clearCache();
 
             PortletDefinitionComposite pdc0 = 
-            (PortletDefinitionComposite) registry.getPortletDefinitionByIndetifier(PORTLET_0_UID);
+            (PortletDefinitionComposite) registry.getPortletDefinitionByIdentifier(PORTLET_0_UID);
             PortletDefinitionComposite pdc2 = 
             (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName(
             APP_1_NAME + "::" + PORTLET_0_NAME);
@@ -354,7 +354,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             assertEquals(2, count);
             PortletDefinitionComposite portlet1 = (PortletDefinitionComposite) app
             .getPortletDefinitionByName(PORTLET_1_NAME);
-            PortletDefinitionComposite portlet1_2 = registry.getPortletDefinitionByIndetifier(PORTLET_1_UID);
+            PortletDefinitionComposite portlet1_2 = registry.getPortletDefinitionByIdentifier(PORTLET_1_UID);
             assertNotNull(portlet1);
             Description desc = portlet1.getDescription(JetspeedLocale.getDefaultLocale());
             assertNotNull("Description for portlet definition was null.", desc);
@@ -491,7 +491,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         {
             PortletDefinitionComposite pdc = null;
             PortletDefinitionComposite pdc1 = 
-            (PortletDefinitionComposite) registry.getPortletDefinitionByIndetifier(PORTLET_0_UID);
+            (PortletDefinitionComposite) registry.getPortletDefinitionByIdentifier(PORTLET_0_UID);
 
             // registry.clearCache();
 
@@ -507,7 +507,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
             pdc.addPreference(pc);
             store.getTransaction().commit();
-            pdc = (PortletDefinitionComposite) registry.getPortletDefinitionByIndetifier(PORTLET_0_UID);
+            pdc = (PortletDefinitionComposite) registry.getPortletDefinitionByIdentifier(PORTLET_0_UID);
             assertNotNull("Portlet definition \"com.portlet.MyClass0.Portlet 0\" does not exist.", pdc);
             assertNotNull("PreferenceSet for \"com.portlet.MyClass0.Portlet 0\" should not be null", pdc
             .getPreferenceSet());

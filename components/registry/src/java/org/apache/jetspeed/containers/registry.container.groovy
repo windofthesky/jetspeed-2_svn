@@ -7,8 +7,8 @@ import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceS
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
 
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
 

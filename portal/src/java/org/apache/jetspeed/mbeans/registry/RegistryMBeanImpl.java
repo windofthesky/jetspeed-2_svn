@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 /**
