@@ -3,5 +3,6 @@
 	       xmlns:js="http://portals.apache.org/jetspeed" 
 >
   <dc:title >Non-Java Portlets</dc:title>
-  <dc:title xml:lang="fr">Portlets de contributeurs externes</dc:title>  
+  <dc:title xml:lang="fr">Portlet non-Java</dc:title>  
+  
 </js:folder>
