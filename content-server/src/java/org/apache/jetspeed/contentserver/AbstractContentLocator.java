@@ -185,8 +185,10 @@ public abstract class AbstractContentLocator implements ContentLocator
         if (basePath == null)
         {
             String absPath = getRealPath();
+
             if (absPath != null)
             {
+                absPath = absPath.replace('\\','/');
                 int startOffset = absPath.indexOf(contextRoot) + contextRoot.length();
                 basePath = absPath.substring(startOffset, absPath.length());
             }
