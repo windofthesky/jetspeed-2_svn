@@ -460,4 +460,33 @@ limitations under the License.
             <arg value="${dropstable}" />
         </java>
     </goal>
+   
+   <!-- this will be inherited into all sub-projects to assists in
+   	    setting jdbc test connecitons--> 
+   <preGoal name="test:test">
+   	<j:set var="maven.junit.sysproperties" value="${maven.junit.sysproperties} org.apache.jetspeed.database.url org.apache.jetspeed.database.driver org.apache.jetspeed.database.user org.apache.jetspeed.database.password p6.home" />
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+    
+    <j:if test="${!pom.id.equals('jetspeed2:jetspeed')}">
+    <copy file="src/test/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
+     <filterset begintoken="@" endtoken="@">
+       <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
+     </filterset>    
+    </copy>
+    </j:if>
+    
+    <j:if test="${pom.id.equals('jetspeed2:jetspeed')}">
+      <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true" failonerror="false">
+       <filterset begintoken="@" endtoken="@">
+        <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
+       </filterset>    
+      </copy>
+    </j:if>
+
+    <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+    <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
+  </preGoal>
 </project>

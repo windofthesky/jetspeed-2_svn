@@ -543,26 +543,7 @@ limitations under the License.
     <attainGoal name="ojb.set.production.database.platform"/>
   </preGoal>
 
-  <preGoal name="test:test">
-    <attainGoal name="dbsetup"/>
-  </preGoal>
-
-  <preGoal name="test:single">
-    <attainGoal name="dbsetup"/>
-  </preGoal>
-
-  <goal name="dbsetup">
-    <attainGoal name="db.test.properties"/>
-    <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true">
-    <filterset begintoken="@" endtoken="@">
-        <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
-    </filterset>
-    </copy>
-
-    <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
-    <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
-  </goal>
-
+  
   <goal name='remove.wars'>
     <delete dir="${deploy.war.dir}/${webapp.name}"/>
     <delete file="${deploy.war.dir}/${webapp.name}.war"/>

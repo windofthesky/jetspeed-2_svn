@@ -37,19 +37,4 @@ limitations under the License.
   </goal>
 
 
-  <preGoal name="test:test">
-    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
-    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
-    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
-    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
-    <copy file="src/test/repository_database.xml" todir="${maven.test.dest}" overwrite="true">
-    <filterset begintoken="@" endtoken="@">
-        <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
-    </filterset>
-    </copy>
-
-    <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
-    <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
-  </preGoal>
-
 </project>
