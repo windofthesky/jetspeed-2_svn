@@ -51,6 +51,11 @@ public class PortletRule extends Rule
             {    
                 digester.push(def.getMetadata());
             }
+            else
+            {
+                //push a null object onto the stack to prevent fields being placed onto another metadata object
+                digester.push(null);
+            }
         }
     }
 }
