@@ -114,9 +114,18 @@ import org.apache.jetspeed.services.JetspeedPortletServices
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite
 
+//Commons VFS
+import org.apache.commons.vfs.impl.StandardFileSystemManager
+import org.apache.commons.vfs.FileSystemManager
+import org.apache.commons.vfs.VFS
+
 // Autodeploy
-import org.apache.jetspeed.deployment.impl.CatalinaAutoDeploymentServiceImpl
-import org.apache.jetspeed.tools.pamanager.CatalinaPAM
+import org.apache.jetspeed.deployment.impl.AutoDeploymentManager
+import org.apache.jetspeed.tools.pamanager.ApplicationServerPAM
+import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener
+
+import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager
+import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager
        
 /* **********************************************************
  *  U T I L L I T Y   C L O S U R E S                       *
@@ -173,20 +182,20 @@ def singletonAdapter(key, clazz, parameters)
 }
                    
  
- /* ******************************************************* */
-
-ClassLoader cl = Thread.currentThread().getContextClassLoader()
-
-
-applicationRoot = Jetspeed.getRealPath("/")
-
-//
-// Resource Location Utility
-//
-FSSystemResourceUtilImpl resourceUtil = new FSSystemResourceUtilImpl(applicationRoot)
+/* ******************************************************* */
 
 // create the root container
 container = new DefaultPicoContainer(parent)
+
+
+
+// Make the "portal_config" configuration available
+portalConfig = container.getComponentInstance("portal_configuration")
+
+
+applicationRoot = portalConfig.getString("applicationRoot", "./")+"/"
+
+
 
 /* **********************************************************
  *  Portlet Services                                        *
@@ -422,7 +431,7 @@ container.registerComponentImplementation(
 container.registerComponentImplementation(
                       PortletWindowAccessor, 
                       PortletWindowAccessorImpl, 
-                      doParams([cmpParam(PortletEntityAccessComponent), cmpParam(PortletRegistryComponent)])
+                      doParams([cmpParam(PortletEntityAccessComponent)])
 )
 
 /* **********************************************************
@@ -461,26 +470,71 @@ container.registerComponentImplementation(
 )
 
 /* **********************************************************
+ *  Commons VFS                                             *
+ * ******************************************************** */
+vfsConfigUri = portalConfig.getString("vfs.configuration.uri", "${applicationRoot}/WEB-INF/conf/vfs-providers.xml")             
+                            
+                            
+standardManager = new StandardFileSystemManager()
+standardManager.setConfiguration(vfsConfigUri)
+standardManager.init()
+container.registerComponentInstance(FileSystemManager, standardManager);
+
+
+/* **********************************************************
  *  Autodeployment                                          *
  * ******************************************************** */
+ 
+webAppDeployDirectory = portalConfig.getString("autodeployment.target.dir", "${applicationRoot}/../")
+deployHost = portalConfig.getString("autodeployment.server", "localhost")
+deployPort = portalConfig.getInt("autodeployment.port", 8080)
+deployUser = portalConfig.getString("autodeployment.user", "manager")
+deployPassword = portalConfig.getString("autodeployment.password", "manager")    
+deployScanningDelay = portalConfig.getLong("autodeployment.delay", 10000)
+deployStagingDir = portalConfig.getString("autodeployment.staging.dir", "${applicationRoot}/WEB-INF/deploy")               
+
+
+container.registerComponent(singletonAdapter( 
+                                  ApplicationServerManager,
+                                  TomcatManager,
+                                   doParams([
+                                       cstParam(deployHost), cstParam(deployPort),
+                                       cstParam(deployUser), cstParam(deployPassword)                                
+                                       ]
+                                    )
+                             )
+)
+                                  
+                                                           
 
 container.registerComponent(singletonAdapter(
                              "PAM", 
-                             CatalinaPAM,
-                             doParams([cmpParam(PortletRegistryComponent),
-                                       cstParam(Locale.getDefault())                                       
+                             ApplicationServerPAM,
+                             doParams([
+                                       cstParam(webAppDeployDirectory),
+                                       cmpParam(PortletRegistryComponent),
+                                       cmpParam(FileSystemManager),
+                                       cmpParam(PortletEntityAccessComponent), 
+                                       cmpParam(PortletWindowAccessor),
+                                       cmpParam(ApplicationServerManager) 
                                        ]
                              )
                           )
 )
 
+portletApplicationListener = new DeployPortletAppEventListener(webAppDeployDirectory, 
+                                   container.getComponentInstance("PAM"), 
+                                   container.getComponentInstance(PortletRegistryComponent), 
+                                   container.getComponentInstance(FileSystemManager));  
+
 container.registerComponent(singletonAdapter(
                              "autodeployment", 
-                             CatalinaAutoDeploymentServiceImpl,
-                             doParams([cmpParam("portal_configuration"), 
-                                       cstParam(Locale.getDefault()),                                        
-                                       cmpParam(PortletRegistryComponent),
-                                       cmpParam("PAM")]
+                             AutoDeploymentManager,
+                             doParams([cstParam(deployStagingDir), 
+                                       cstParam(deployScanningDelay),
+                                       cstParam([portletApplicationListener]),
+                                       cmpParam(FileSystemManager)
+                                       ]
                              )
                           )
 )
