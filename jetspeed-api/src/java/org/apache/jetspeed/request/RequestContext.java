@@ -327,10 +327,17 @@ public interface RequestContext
     void setAttribute(String key, Object value);
 
     /**
+     * <p>
      * Returns any extra path information associated with the URL the
      * client sent when it made this request. The extra path information
      * follows the servlet path but precedes the query string.
      * This method returns null if there was no extra path information.
+     * </p>
+     * <p>
+     * This method should function identically to <code>HttpServletRequest.getPathInfo()</code>
+     * except for that it removes ALL portal/portlet navigational state information from the
+     * path info string.
+     * </p>
      *
      * @return the path
      */
