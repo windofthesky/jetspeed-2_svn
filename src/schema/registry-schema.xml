@@ -5,9 +5,20 @@
 
     
     <!--
-       Create Metadata Fields Table
+       Create Portlet Application Metadata Fields Table
     -->    
-    <table name="METADATA_FIELDS">
+    <table name="PA_METADATA_FIELDS">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OBJECT_ID" required="true" type="INTEGER"/>
+        <column name="VALUE" required="true" type="LONGVARCHAR"/>
+        <column name="NAME" required="true" size="100" type="VARCHAR"/>
+        <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
+    </table>
+    
+    <!--
+       Create Portlet Definition Metadata Fields Table
+    -->    
+    <table name="PD_METADATA_FIELDS">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="OBJECT_ID" required="true" type="INTEGER"/>
         <column name="VALUE" required="true" type="LONGVARCHAR"/>
