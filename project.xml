@@ -85,10 +85,19 @@
       </roles>
     </developer>
 
-   <developer>
+    <developer>
       <name>Roger Ruttimann</name>
       <id>roger</id>
       <email>roger.ruttimann@earthlink.net</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+
+    <developer>
+      <name>David Le Strat</name>
+      <id>dls</id>
+      <email>dlestrat@apache.org</email>
       <roles>
         <role>Java Developer</role>
       </roles>
