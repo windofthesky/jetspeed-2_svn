@@ -27,6 +27,9 @@ import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent
 
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
+
 
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
@@ -93,9 +96,9 @@ container.registerComponentInstance(dsClass, new DBCPDatasourceComponent("sa",""
 
 PersistenceContainer pContainer = new DefaultPersistenceStoreContainer(15000, 10000)
 
-OJBTypeIntializer ojbBootstrap = new OJBTypeIntializer(resourceUtil, "WEB-INF/conf/ojb", "OJB.properties", null)
+// OJBTypeIntializer ojbBootstrap = new OJBTypeIntializer(resourceUtil, "WEB-INF/conf/ojb", "OJB.properties", null)
 
-pContainer.registerComponentInstance(ojbBootstrap)
+// pContainer.registerComponentInstance(ojbBootstrap)
 
 Class OTMStoreClass = Class.forName("org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl")
 ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", OTMStoreClass, new Parameter[] {new ConstantParameter("jetspeed")})
@@ -112,7 +115,13 @@ container.registerComponentInstance(pContainerClass, pContainer);
 
 Class registryClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent")
 Class registryImplClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl")
+
+
 // Parameter[] regParams = new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")}
 container.registerComponentImplementation(registryClass, registryImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
+
+Class eaClass = Class.forName("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent")
+Class eaImplClass = Class.forName("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl")
+container.registerComponentImplementation(eaClass, eaImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
 
 return container
