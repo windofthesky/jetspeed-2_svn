@@ -662,10 +662,10 @@ public class PersistenceBrokerSSOProvider extends
 	    return null;
 	}
     
-    public SSOSite getSite(String siteName)
+    public SSOSite getSite(String siteUrl)
     {
         Criteria filter = new Criteria();
-        filter.addEqualTo("name", siteName);
+        filter.addEqualTo("url", siteUrl);
         Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
         SSOSite site = (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return site;       

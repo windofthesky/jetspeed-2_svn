@@ -63,7 +63,7 @@ public interface SSOProvider
     
     Iterator getSites(String filter);
     
-    SSOSite getSite(String siteName);
+    SSOSite getSite(String siteUrl);
     
     void updateSite(SSOSite site) throws SSOException;
     
