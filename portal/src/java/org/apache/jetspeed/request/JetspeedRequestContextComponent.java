@@ -67,9 +67,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         }
         catch(Exception e)
         {
-            e.printStackTrace();
-            
-            String msg = "RequestContextFactory: Failed to create a Class object for RequestContext: " + e.toString();
+            String msg = "JetspeedRequestContextComponent: Failed to create a Class object for RequestContext: " + e.toString();
             log.error(msg);
         }
 

@@ -279,6 +279,7 @@ public class JetspeedEngine implements Engine
         }
         return base.concat(path);
     }
+    
     private void initComponents(Configuration configuration) throws IOException, ClassNotFoundException, NamingException
     {
         String applicationRoot = getRealPath("/");

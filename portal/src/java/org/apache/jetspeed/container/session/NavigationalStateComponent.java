@@ -55,11 +55,17 @@ public interface NavigationalStateComponent
      * Keys for URL encoding
      * @return
      */
-    String getActionKey();
-    String getRenderParamKey();    
-    String getModeKey();    
-    String getPreviousModeKey();        
-    String getStateKey();    
-    String getPreviousStateKey();
+    static public final int PREFIX = 0;    
+    static public final int ACTION = 1;
+    static public final int MODE = 2;
+    static public final int STATE = 3;
+    static public final int RENDER_PARAM = 4;
+    static public final int ID = 5;
+    static public final int PREV_MODE = 6;
+    static public final int PREV_STATE = 7;
+    static public final int KEY_DELIM = 8;
+    static public final int NAV_MAX = 9;        
+    
+    String getNavigationKey(int key);
     
 }

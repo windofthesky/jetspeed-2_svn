@@ -32,11 +32,11 @@ strategy = 1
 if(parent != null)
 {
     container = new DefaultPicoContainer(parent)
-	parent.registerComponentImplementation(PageAggregator, 
+    parent.registerComponentImplementation(PageAggregator, 
                                            PageAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer), 
                                                new ConstantParameter(strategy)} )                           	    
-	parent.registerComponentImplementation(PortletAggregator, 
+    parent.registerComponentImplementation(PortletAggregator, 
                                            PortletAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer)})
                                           
@@ -44,11 +44,11 @@ if(parent != null)
 else
 {
     container = new DefaultPicoContainer()                           	    
-	container.registerComponentImplementation(PageAggregator, 
+    container.registerComponentImplementation(PageAggregator, 
                                            PageAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer), 
                                                new ConstantParameter(strategy)} )                           	    
-	container.registerComponentImplementation(PortletAggregator, 
+    container.registerComponentImplementation(PortletAggregator, 
                                            PortletAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer)})
                             

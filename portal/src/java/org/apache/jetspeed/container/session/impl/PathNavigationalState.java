@@ -21,6 +21,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.url.impl.PortalControlParameter;
 import org.apache.jetspeed.container.url.impl.PortalURLImpl;
@@ -38,20 +39,22 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public class PathNavigationalState implements NavigationalState 
 {
-    RequestContext context;
-    PortalURL url;
-    PortalControlParameter pcp;
+    private RequestContext context;
+    private PortalURL url;
+    private PortalControlParameter pcp;
+    private NavigationalStateComponent nav;
     
-    public PathNavigationalState(RequestContext context)
+    public PathNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
+        this.nav = nav;        
         init(context);
     }
     
     public void init(RequestContext context)
     {
         this.context = context;
-        this.url = new PortalURLImpl(context);
-        this.pcp = new PortalControlParameter(url);        
+        this.url = new PortalURLImpl(context);               
+        this.pcp = new PortalControlParameter(url, nav);        
     }
     
     public WindowState getState(PortletWindow window) 
@@ -86,7 +89,7 @@ public class PathNavigationalState implements NavigationalState
     
     public boolean isNavigationalParameter(String token)
     {
-        return PortalControlParameter.isControlParameter(token);
+        return pcp.isControlParameter(token);
     }
     
     public Iterator getRenderParamNames(PortletWindow window)

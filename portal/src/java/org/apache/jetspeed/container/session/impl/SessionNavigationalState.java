@@ -15,28 +15,196 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import javax.servlet.http.HttpSession;
+
 import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * SessionNavigationalStateContext
+ * SessionNavigationalState, stores nav state in the session, not on URL
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public class SessionNavigationalState
-        extends
-            PathNavigationalState // for now until we implement it
         implements
             NavigationalState 
-{
-    RequestContext context;
+{    
+    private static final String STATES_KEY = "org.apache.jetspeed.container.session.impl.states";
+    private static final String MODES_KEY = "org.apache.jetspeed.container.session.impl.modes";
+    private static final String PSTATES_KEY = "org.apache.jetspeed.container.session.impl.pstates";
+    private static final String PMODES_KEY = "org.apache.jetspeed.container.session.impl.pmodes";
     
-    public SessionNavigationalState(RequestContext context)
+    private static Object lock = new Object();
+    
+    private HttpSession session;
+    private RequestContext context;
+    private Map states;
+    private Map modes;
+    private Map pstates;
+    private Map pmodes;
+    private NavigationalStateComponent nav;
+    
+    public SessionNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
-        super(context);
+        this.context = context;
+        this.nav = nav;
+        session = context.getRequest().getSession();
+        states = (Map)session.getAttribute(STATES_KEY);
+        if (null == states)
+        {
+            synchronized (lock)
+            {
+                states = new HashMap();
+                session.setAttribute(STATES_KEY, states);
+            }
+        }
+        
+        modes = (Map)session.getAttribute(MODES_KEY);
+        if (null == modes)
+        {
+            synchronized (lock)
+            {            
+                modes = new HashMap();
+                session.setAttribute(MODES_KEY, modes);
+            }
+        }
+        
+        pstates = (Map)session.getAttribute(PSTATES_KEY);
+        if (null == pstates)
+        {
+            synchronized (lock)
+            {
+                pstates = new HashMap();
+                session.setAttribute(PSTATES_KEY, pstates);
+            }
+        }
+        
+        pmodes = (Map)session.getAttribute(PMODES_KEY);
+        if (null == pmodes)
+        {
+            synchronized (lock)
+            {            
+                pmodes = new HashMap();
+                session.setAttribute(PMODES_KEY, pmodes);
+            }
+        }               
+    }
+        
+    public WindowState getState(PortletWindow window) 
+    {
+        WindowState state = (WindowState)states.get(window.getId().toString());
+        if (state == null)
+        {
+            // optimize, no need to add it if its default            
+            return WindowState.NORMAL;
+        }
+        return state;
+    }
+
+    public void setState(PortletWindow window, WindowState state) 
+    {
+        states.put(window.getId().toString(), state);
     }
     
+    public PortletMode getMode(PortletWindow window) 
+    {
+        PortletMode mode = (PortletMode)modes.get(window.getId().toString());
+        if (mode == null)
+        {
+            // optimize, no need to add it if its default
+            return PortletMode.VIEW;
+        }
+        return mode;
+    }
+
+    public void setMode(PortletWindow window, PortletMode mode) 
+    {
+        modes.put(window.getId().toString(), mode);        
+    }
+    
+    public PortletMode getPreviousMode(PortletWindow window)
+    {
+        PortletMode mode = (PortletMode)pmodes.get(window.getId().toString());
+        if (mode == null)
+        {
+            // optimize, no need to add it if its default
+            return PortletMode.VIEW;
+        }
+        return mode;        
+    }
+    
+    public WindowState getPreviousState(PortletWindow window)
+    {
+        WindowState state = (WindowState)pstates.get(window.getId().toString());
+        if (state == null)
+        {
+            // optimize, no need to add it if its default            
+            return WindowState.NORMAL;
+        }
+        return state;        
+    }
+    
+    ///////////////////////////////////////////////////////////
+    
+    public boolean isNavigationalParameter(String token)
+    {
+        return token.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
+    }
+
+    public Iterator getRenderParamNames(PortletWindow window)
+    {
+        return null;
+    }
+    
+    public String[] getRenderParamValues(PortletWindow window, String paramName)
+    {
+        return null;
+    }
+
+    public PortletWindow getPortletWindowOfAction()
+    {
+        return null;
+    }
+    
+    public void clearRenderParameters(PortletWindow portletWindow)
+    {
+    }
+    
+    public void setAction(PortletWindow window)
+    {        
+    }
+    
+    public void setRequestParam(String name, String[] values)
+    {
+    }
+    
+    public void setRenderParam(PortletWindow window, String name, String[] values)
+    {
+    }
+    
+    public String toString()
+    {
+        return toString(false);
+    }
+
+    public String toString(boolean secure)
+    {        
+        return "";
+    }
+    
+    public String getBaseURL()
+    {
+        return "";
+    }
     
     
 }

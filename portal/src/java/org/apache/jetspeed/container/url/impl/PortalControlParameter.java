@@ -25,9 +25,8 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.session.impl.*;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.*;
-import org.apache.jetspeed.container.url.impl.*;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
@@ -43,135 +42,18 @@ import org.apache.pluto.util.StringUtils;
  */
 public class PortalControlParameter
 {
-    static public final String ACTION = "ac";
 
-    static public final String MODE = "md";
-    static public final String PREFIX = "_";
-    static public final String PREV_MODE = "pm";
-    static public final String PREV_STATE = "ps";
-    static public final String RENDER_PARAM = "rp";
-    static public final String STATE = "st";
-    static public final String KEY_DELIMITER = ":";
-    static public final String PORTLET_ID = "pid";
-
-    public static String decodeParameterName(String paramName)
-    {
-        return paramName.substring(PREFIX.length());
-    }
-
-    public static String decodeParameterValue(String paramName, String paramValue)
-    {
-        return paramValue;
-    }
-
-    private static String decodeRenderParamName(String encodedParamName)
-    {
-        StringTokenizer tokenizer = new StringTokenizer(encodedParamName, "_");
-        if (!tokenizer.hasMoreTokens())
-            return null;
-        String constant = tokenizer.nextToken();
-        if (!tokenizer.hasMoreTokens())
-            return null;
-        String objectId = tokenizer.nextToken();
-        if (!tokenizer.hasMoreTokens())
-            return null;
-        String name = tokenizer.nextToken();
-        return name;
-    }
-
-    private static String[] decodeRenderParamValues(String encodedParamValues)
-    {
-        StringTokenizer tokenizer = new StringTokenizer(encodedParamValues, "_");
-        if (!tokenizer.hasMoreTokens())
-            return null;
-        String _count = tokenizer.nextToken();
-        int count = Integer.valueOf(_count).intValue();
-        String[] values = new String[count];
-        for (int i = 0; i < count; i++)
-        {
-            if (!tokenizer.hasMoreTokens())
-                return null;
-            values[i] = decodeValue(tokenizer.nextToken());
-        }
-        return values;
-    }
-
-    private static String decodeValue(String value)
-    {
-        value = StringUtils.replace(value, "0x1", "_");
-        value = StringUtils.replace(value, "0x2", ".");
-        return value;
-    }
-
-    public static String encodeParameter(String param)
-    {
-        return PREFIX + param;
-    }
-
-    public static String encodeRenderParamName(PortletWindow window, String paramName)
-    {
-        StringBuffer returnvalue = new StringBuffer(50);
-        returnvalue.append(RENDER_PARAM);
-        returnvalue.append("_");
-        returnvalue.append(window.getId().toString());
-        returnvalue.append("_");
-        returnvalue.append(paramName);
-        return returnvalue.toString();
-    }
-
-    public static String encodeRenderParamValues(String[] paramValues)
-    {
-        StringBuffer returnvalue = new StringBuffer(100);
-        returnvalue.append(paramValues.length);
-        for (int i = 0; i < paramValues.length; i++)
-        {
-            returnvalue.append("_");
-            returnvalue.append(encodeValue(paramValues[i]));
-        }
-        return returnvalue.toString();
-    }
-
-    private static String encodeValue(String value)
-    {
-        value = StringUtils.replace(value, "_", "0x1");
-        value = StringUtils.replace(value, ".", "0x2");
-        return value;
-    }
-
-    public static String getRenderParamKey(PortletWindow window)
-    {
-        return RENDER_PARAM + "_" + window.getId().toString();
-    }
-
-    public static boolean isControlParameter(String param)
-    {
-        return param.startsWith(PREFIX);
-    }
-
-    public static boolean isStateFullParameter(String param)
-    {
-        if (isControlParameter(param))
-        {
-            if ((param.startsWith(PREFIX + MODE))
-                || (param.startsWith(PREFIX + PREV_MODE))
-                || (param.startsWith(PREFIX + STATE))
-                || (param.startsWith(PREFIX + PREV_STATE))
-                || (param.startsWith(PREFIX + RENDER_PARAM)))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     private Map requestParameter = new HashMap();
     private Map stateFullControlParameter = null;
     private Map stateLessControlParameter = null;
-
+    private NavigationalStateComponent nav;
     private PortalURL url;
 
-    public PortalControlParameter(PortalURL url)
+    public PortalControlParameter(PortalURL url, NavigationalStateComponent nav)
     {
+        this.nav = nav;
         this.url = url;
+        url.setControlParameter(this);        
         stateFullControlParameter = ((PortalURLImpl)this.url).getClonedStateFullControlParameter();
         stateLessControlParameter = ((PortalURLImpl) this.url).getClonedStateLessControlParameter();
     }
@@ -192,8 +74,8 @@ public class PortalControlParameter
     }
 
     private String getActionKey(PortletWindow window)
-    {
-        return ACTION + "_" + window.getId().toString();
+    {        
+        return nav.getNavigationKey(NavigationalStateComponent.ACTION) + "_" + window.getId().toString();
     }
 
     public PortletMode getMode(PortletWindow window)
@@ -207,7 +89,7 @@ public class PortalControlParameter
 
     private String getModeKey(PortletWindow window)
     {
-        return MODE + "_" + window.getId().toString();
+        return nav.getNavigationKey(NavigationalStateComponent.MODE) + "_" + window.getId().toString();
     }
 
     public PortletWindow getPortletWindowOfAction() 
@@ -217,9 +99,9 @@ public class PortalControlParameter
         while (iterator.hasNext())
         {
             String name = (String) iterator.next();
-            if (name.startsWith(ACTION))
+            if (name.startsWith(nav.getNavigationKey(NavigationalStateComponent.ACTION)))
             {
-                String id = name.substring(ACTION.length() + 1);
+                String id = name.substring(nav.getNavigationKey(NavigationalStateComponent.ACTION).length() + 1);
                 /*
                 
                 TODO: BROKEN: need to go the profiler to get the profile, psml, and then window for an entity
@@ -275,7 +157,7 @@ public class PortalControlParameter
     }
     private String getPrevModeKey(PortletWindow window)
     {
-        return PREV_MODE + "_" + window.getId().toString();
+        return nav.getNavigationKey(NavigationalStateComponent.PREV_MODE) + "_" + window.getId().toString();
     }
 
     public WindowState getPrevState(PortletWindow window)
@@ -288,7 +170,7 @@ public class PortalControlParameter
     }
     private String getPrevStateKey(PortletWindow window)
     {
-        return PREV_STATE + "_" + window.getId().toString();
+        return nav.getNavigationKey(NavigationalStateComponent.PREV_STATE) + "_" + window.getId().toString();
     }
 
     public Iterator getRenderParamNames(PortletWindow window)
@@ -337,7 +219,7 @@ public class PortalControlParameter
 
     private String getStateKey(PortletWindow window)
     {
-        return STATE + "_" + window.getId().toString();
+        return nav.getNavigationKey(NavigationalStateComponent.STATE) + "_" + window.getId().toString();
     }
 
     public Map getStateLessControlParameter()
@@ -351,7 +233,7 @@ public class PortalControlParameter
         while (iterator.hasNext())
         {
             String name = (String) iterator.next();
-            if (name.startsWith(STATE))
+            if (name.startsWith(nav.getNavigationKey(NavigationalStateComponent.STATE)))
             {
                 if (stateFullControlParameter.get(name).equals(WindowState.MAXIMIZED.toString()))
                 {
@@ -364,7 +246,7 @@ public class PortalControlParameter
 
     public void setAction(PortletWindow window)
     {
-        getStateFullControlParameter().put(getActionKey(window), ACTION.toUpperCase());
+        getStateFullControlParameter().put(getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
     }
 
     public void setMode(PortletWindow window, PortletMode mode)
@@ -411,7 +293,119 @@ public class PortalControlParameter
 
     private String getPortletIdKey()
     {
-        return PORTLET_ID;
+        return nav.getNavigationKey(NavigationalStateComponent.ID);
     }
 
+    public boolean isControlParameter(String param)
+    {
+        return param.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
+    }
+
+    public boolean isStateFullParameter(String param)
+    {
+        if (isControlParameter(param))
+        {
+            String prefix = nav.getNavigationKey(NavigationalStateComponent.PREFIX);            
+            if ((param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.MODE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_MODE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.STATE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_STATE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String decodeParameterName(String paramName)
+    {
+        int length = nav.getNavigationKey(NavigationalStateComponent.PREFIX).length();
+        return paramName.substring(length);
+    }
+    
+    public String encodeParameter(String param)
+    {
+        return nav.getNavigationKey(NavigationalStateComponent.PREFIX) + param;
+    }
+
+    public String encodeRenderParamName(PortletWindow window, String paramName)
+    {
+        StringBuffer returnvalue = new StringBuffer(50);
+        returnvalue.append(nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM));
+        returnvalue.append("_");
+        returnvalue.append(window.getId().toString());
+        returnvalue.append("_");
+        returnvalue.append(paramName);
+        return returnvalue.toString();
+    }
+
+    public String getRenderParamKey(PortletWindow window)
+    {
+        return nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM) + "_" + window.getId().toString();
+    }
+
+    public String encodeRenderParamValues(String[] paramValues)
+    {
+        StringBuffer returnvalue = new StringBuffer(100);
+        returnvalue.append(paramValues.length);
+        for (int i = 0; i < paramValues.length; i++)
+        {
+            returnvalue.append("_");
+            returnvalue.append(encodeValue(paramValues[i]));
+        }
+        return returnvalue.toString();
+    }
+
+    public String decodeParameterValue(String paramName, String paramValue)
+    {
+        return paramValue;
+    }
+
+    private String decodeRenderParamName(String encodedParamName)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(encodedParamName, "_");
+        if (!tokenizer.hasMoreTokens())
+            return null;
+        String constant = tokenizer.nextToken();
+        if (!tokenizer.hasMoreTokens())
+            return null;
+        String objectId = tokenizer.nextToken();
+        if (!tokenizer.hasMoreTokens())
+            return null;
+        String name = tokenizer.nextToken();
+        return name;
+    }
+
+    private String[] decodeRenderParamValues(String encodedParamValues)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(encodedParamValues, "_");
+        if (!tokenizer.hasMoreTokens())
+            return null;
+        String _count = tokenizer.nextToken();
+        int count = Integer.valueOf(_count).intValue();
+        String[] values = new String[count];
+        for (int i = 0; i < count; i++)
+        {
+            if (!tokenizer.hasMoreTokens())
+                return null;
+            values[i] = decodeValue(tokenizer.nextToken());
+        }
+        return values;
+    }
+
+    private String decodeValue(String value)
+    {
+        value = StringUtils.replace(value, "0x1", "_");
+        value = StringUtils.replace(value, "0x2", ".");
+        return value;
+    }
+
+    private String encodeValue(String value)
+    {
+        value = StringUtils.replace(value, "_", "0x1");
+        value = StringUtils.replace(value, ".", "0x2");
+        return value;
+    }
+    
 }

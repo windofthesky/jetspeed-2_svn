@@ -16,12 +16,14 @@
 package org.apache.jetspeed.container.session.impl;
 
 import java.lang.reflect.Constructor;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.request.RequestContext;
+import org.picocontainer.Startable;
 
 /**
  * JetspeedNavigationalStateComponent
@@ -29,29 +31,48 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedNavigationalStateComponent implements NavigationalStateComponent 
+public class JetspeedNavigationalStateComponent implements NavigationalStateComponent, Startable 
 {
+    static private final String PREFIX = "_";    
     static private final String ACTION = "ac";
     static private final String MODE = "md";
-    static private final String PREFIX = "_";
+    static private final String STATE = "st";
+    static private final String RENDER_PARAM = "rp";
+    static private final String PORTLET_ID = "pid";    
     static private final String PREV_MODE = "pm";
     static private final String PREV_STATE = "ps";
-    static private final String RENDER_PARAM = "rp";
-    static private final String STATE = "st";
     static private final String KEY_DELIMITER = ":";
-    static private final String PORTLET_ID = "pid";
     
     private String contextClassName = null;
     private Class contextClass = null;
-    private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
+    private String navigationKeys;
+    private String navigationKeyNames[] = new String[]
+    {
+            PREFIX, ACTION, MODE, STATE, RENDER_PARAM, PORTLET_ID, PREV_MODE, PREV_STATE, KEY_DELIMITER
+    };
     
-    public JetspeedNavigationalStateComponent(String contextClassName)
+    private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
+
+    
+    
+    /**
+     * @param contextClassName  name of the class implementing Navigational State instances
+     * @param navigationsKeys comma-separated list of navigation keys
+     */
+    public JetspeedNavigationalStateComponent(String contextClassName, String navigationKeys)
     {
         this.contextClassName = contextClassName;
+        this.navigationKeys = navigationKeys;
     }
             
     public void start()
-    {
+    {        
+        StringTokenizer tokenizer = new StringTokenizer(navigationKeys, ", ");
+        for (int ix = 0; tokenizer.hasMoreTokens() && ix < NavigationalStateComponent.NAV_MAX; ix++)
+        {
+            String token = tokenizer.nextToken();
+            navigationKeyNames[ix] = token;
+        }
     }
     
     public void stop()
@@ -69,14 +90,14 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             }
 
             // TODO: we could use a pooled object implementation here
-            Constructor constructor = contextClass.getConstructor(new Class[] {RequestContext.class});
+            Constructor constructor = contextClass.getConstructor(new Class[] {RequestContext.class, NavigationalStateComponent.class});
             
-            state = (NavigationalState) constructor.newInstance(new Object[] {context});
+            state = (NavigationalState) constructor.newInstance(new Object[] {context, this});
             
         }
         catch(Exception e)
         {
-            String msg = "RequestContextFactory: Failed to create a Class object for RequestContext: " + e.toString();
+            String msg = "JetspeedNavigationalStateComponent: Failed to create a Class object for: " + e.toString();            
             log.error(msg);
         }
         return state;
@@ -91,35 +112,14 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     {
         
     }
+    
+    public String getNavigationKey(int key)
+    {
+        if (key < NavigationalStateComponent.NAV_MAX && key >= 0)
+        {
+            return navigationKeyNames[key];
+        }
+        return "";        
+    }
 
-    public String getActionKey()
-    {
-        return ACTION;
-    }
-
-    public String getRenderParamKey()
-    {
-        return RENDER_PARAM;
-    }
-    
-    public String getModeKey()
-    {
-        return MODE;
-    }
-    
-    public String getPreviousModeKey()
-    {
-        return PREV_MODE;
-    }
-    
-    
-    public String getStateKey()
-    {
-        return STATE;
-    }
-    
-    public String getPreviousStateKey()
-    {
-        return PREV_STATE;
-    }
 }

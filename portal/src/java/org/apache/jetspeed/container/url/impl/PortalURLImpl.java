@@ -28,7 +28,6 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.session.impl.*;
 import org.apache.jetspeed.container.url.*;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -56,6 +55,7 @@ public class PortalURLImpl implements PortalURL
     private HashMap startStateLessControlParameter = new HashMap();
     private boolean analyzed = false;
     private boolean secure;
+    private PortalControlParameter pcp;
 
     private String serverName;
     private String serverScheme;
@@ -74,6 +74,17 @@ public class PortalURLImpl implements PortalURL
         init(context);
     }
 
+    public void setControlParameter(PortalControlParameter pcp)
+    {
+        this.pcp = pcp;
+    }
+    
+    public PortalControlParameter getControlParameter()
+    {
+        return this.pcp;
+    }
+    
+    
     public void init(RequestContext context)
     {
         if (null != context.getRequest())
@@ -201,7 +212,7 @@ public class PortalURLImpl implements PortalURL
             if (iterator.hasNext())
                 result.append("/");
             String name = (String) iterator.next();
-            result.append(PortalControlParameter.encodeParameter(name));
+            result.append(pcp.encodeParameter(name));
             result.append("/");
             result.append((String) stateFullParams.get(name));
         }
@@ -337,7 +348,8 @@ public class PortalURLImpl implements PortalURL
             while (tokenizer.hasMoreTokens())
             {
                 String token = tokenizer.nextToken();
-                if (PortalControlParameter.isControlParameter(token))
+                
+                if (pcp.isControlParameter(token))
                 {
                     mode = 1;
                     name = token;
@@ -348,17 +360,17 @@ public class PortalURLImpl implements PortalURL
                 }
                 else if (mode == 1)
                 {
-                    if ((PortalControlParameter.isStateFullParameter(name)))
+                    if ((pcp.isStateFullParameter(name)))
                     {
                         startControlParameter.put(
-                            PortalControlParameter.decodeParameterName(name),
-                            PortalControlParameter.decodeParameterValue(name, token));
+                            pcp.decodeParameterName(name),
+                            pcp.decodeParameterValue(name, token));
                     }
                     else
                     {
                         startStateLessControlParameter.put(
-                            PortalControlParameter.decodeParameterName(name),
-                            PortalControlParameter.decodeParameterValue(name, token));
+                            pcp.decodeParameterName(name),
+                            pcp.decodeParameterValue(name, token));
                     }
                     mode = 0;
                 }
@@ -371,14 +383,14 @@ public class PortalURLImpl implements PortalURL
     public void setRenderParameter(PortletWindow portletWindow, String name, String[] values)
     {
         startControlParameter.put(
-            PortalControlParameter.encodeRenderParamName(portletWindow, name),
-            PortalControlParameter.encodeRenderParamValues(values));
+            pcp.encodeRenderParamName(portletWindow, name),
+            pcp.encodeRenderParamValues(values));
 
     }
 
     public void clearRenderParameters(PortletWindow portletWindow)
     {
-        String prefix = PortalControlParameter.getRenderParamKey(portletWindow);
+        String prefix = pcp.getRenderParamKey(portletWindow);
         Iterator keyIterator = startControlParameter.keySet().iterator();
 
         while (keyIterator.hasNext())

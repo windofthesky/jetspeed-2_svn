@@ -26,6 +26,10 @@ public interface PortalURL
     /** HTTPS protocol. */
     public static final String HTTPS = "https";
 
+    void setControlParameter(PortalControlParameter pcp);
+    
+    PortalControlParameter getControlParameter();
+    
     public abstract void init(RequestContext context);
     /**
      * Adds a navigational information pointing to a portal part, e.g. PageGroups

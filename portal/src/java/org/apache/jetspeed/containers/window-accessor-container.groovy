@@ -28,20 +28,20 @@ import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl
 if(parent != null)
 {
     container = new DefaultPicoContainer(parent)
-	parent.registerComponentImplementation(PortletWindowAccessor, 
-	                                       PortletWindowAccessorImpl, 
-          	    new Parameter[] {new ComponentParameter(PortletEntityAccessComponent), 
-          	                     new ComponentParameter(PortletRegistryComponent)} )
+    parent.registerComponentImplementation(PortletWindowAccessor, 
+                                           PortletWindowAccessorImpl, 
+                  new Parameter[] {new ComponentParameter(PortletEntityAccessComponent), 
+                                   new ComponentParameter(PortletRegistryComponent)} )
                                           
 
 }
 else
 {
     container = new DefaultPicoContainer()
-	container.registerComponentImplementation(PortletWindowAccessor, 
-	                                       PortletWindowAccessorImpl, 
-          	    new Parameter[] {new ComponentParameter(PortletEntityAccessComponent), 
-                           	    new ComponentParameter(PortletRegistryComponent)} )
+    container.registerComponentImplementation(PortletWindowAccessor, 
+                                           PortletWindowAccessorImpl, 
+                  new Parameter[] {new ComponentParameter(PortletEntityAccessComponent), 
+                                   new ComponentParameter(PortletRegistryComponent)} )
 
 }
 
