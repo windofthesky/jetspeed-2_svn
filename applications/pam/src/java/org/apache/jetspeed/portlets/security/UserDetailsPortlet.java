@@ -39,6 +39,8 @@ import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.ProfilerException;
+import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.RoleManager;
@@ -62,6 +64,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String VIEW_ROLES = "roles";
     private final String VIEW_GROUPS = "groups";
     private final String VIEW_RULES = "rules";
+    private final String VIEW_ALL_RULES = "prules";
     private final String VIEW_SELECTED_RULE = "selectedRule";
     
     private final String USER_ACTION_PREFIX = "security_user.";
@@ -72,7 +75,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String ACTION_ADD_ROLE = "add_user_role";
     private final String ACTION_REMOVE_GROUP = "remove_user_group";
     private final String ACTION_ADD_GROUP = "add_user_group";
-    private final String ACTION_UPDATE_RULE = "update_user_rule";
+    private final String ACTION_REMOVE_RULE = "remove_user_rule";
+    private final String ACTION_ADD_RULE = "add_rule";
     
     private final String TAB_ATTRIBUTES = "user_attributes";
     private final String TAB_ROLE = "user_role";
@@ -161,14 +165,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             else if (selectedTab.getId().equals(TAB_PROFILE))
             {
-                Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);      
-                // TODO: incorporate locator_name
-                ProfilingRule rule = profiler.getRuleForPrincipal(userPrincipal, ProfileLocator.PAGE_LOCATOR);
-                if (rule != null)
-                {
-                    request.setAttribute(VIEW_SELECTED_RULE, rule.getId());
-                }
-                request.setAttribute(VIEW_RULES, getProfilerRules());                  
+                request.setAttribute(VIEW_RULES, getRules(user));
+                request.setAttribute(VIEW_ALL_RULES, getProfilerRules());
             }
            
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
@@ -222,9 +220,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 addUserGroup(actionRequest, actionResponse);
             }
-            else if (action.endsWith(this.ACTION_UPDATE_RULE))
+            else if (action.endsWith(this.ACTION_ADD_RULE))
             {
-                updateUserProfile(actionRequest, actionResponse);
+                addUserProfile(actionRequest, actionResponse);
+            }
+            else if (action.endsWith(this.ACTION_REMOVE_RULE))
+            {
+                removeUserProfile(actionRequest, actionResponse);
             }
         }
     }    
@@ -496,7 +498,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
         return profiler.getRules();
     }
     
-    private void updateUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
+    private Collection getRules(User user)
+    {
+        Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);
+        return profiler.getRulesForPrincipal(userPrincipal);
+    }
+
+    private void addUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)
             actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
@@ -504,37 +512,62 @@ public class UserDetailsPortlet extends GenericServletPortlet
         User user = lookupUser(userName);
         if (user != null)
         {
-            String profileId = actionRequest.getParameter("user_profile_id");
-
-            if(profileId != null)
+            String locatorName = actionRequest.getParameter("locator_name");
+            if (locatorName != null && locatorName.trim().length() > 0)
             {
                 try
                 {
-                    Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);      
-                    ProfilingRule rule = profiler.getRule(profileId);
-                    if (userPrincipal != null)
-                    {
-                        if (rule == null)
-                        {
-                            profiler.setRuleForPrincipal(userPrincipal, 
-                                                         profiler.getDefaultRule(),
-                                                         ProfileLocator.PAGE_LOCATOR);                                                         
-                        }
-                        else
-                        {
-                            // TODO: only support the page locator for now
-                            profiler.setRuleForPrincipal(userPrincipal,
-                                                         rule,
-                                                         ProfileLocator.PAGE_LOCATOR);
-                        }
-                    }
+                    Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);                          
+                    String ruleName = actionRequest.getParameter("select_rule");
+                    profiler.setRuleForPrincipal(userPrincipal, 
+                            profiler.getRule(ruleName),
+                            locatorName);                                                         
                 }
                 catch (Exception e)
                 {
                     // TODO: logging
-                    System.err.println("failed to update user + profile: " + userName + ", "  + profileId + e);                       
-                }                
-            }            
+                    System.err.println("failed to set rule for principal: " + userName + ", "  + locatorName + e);                       
+                }
+            }
+            
+        }
+    }
+    
+    private void removeUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String[] locatorNames = actionRequest.getParameterValues("user_profile_id");
+
+            if(locatorNames != null)
+            {
+                Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);                                              
+                Collection rules = profiler.getRulesForPrincipal(userPrincipal);
+                for (int ix = 0; ix < locatorNames.length; ix++)
+                {
+                    try
+                    {
+                        Iterator it = rules.iterator();
+                        while (it.hasNext())
+                        {
+                            PrincipalRule rule = (PrincipalRule)it.next();
+                            if (rule.getLocatorName().equals(locatorNames[ix]))
+                            {
+                                profiler.deletePrincipalRule(rule);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // TODO: logging
+                        System.err.println("failed to remove rule for principal: " + userName + ", "  + locatorNames[ix] + e);                       
+                    }                
+                }
+            }                                    
         }
     }        
 }

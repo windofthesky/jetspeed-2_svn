@@ -209,34 +209,64 @@ limitations under the License.
 <%--Beginning Profile tab data--%>
 <%--TODO:  switch to c:choose --%>
 <c:if test="${selectedTab.id == 'user_profile'}">
-  <div id="Profile">
-  <portlet:actionURL var="edit_role_link" />
+  <div id="Profile">	
+  <portlet:actionURL var="edit_profile_link" />
   
-	<form name="Edit_Group_Form" action="<c:out value="${edit_role_link}"/>" method="post">
-		<input type="hidden" name="portlet_action" value="security_user.update_user_rule"/>		
+	<form name="Edit_Profile_Form" action="<c:out value="${edit_profile_link}"/>" method="post">
+		<input type="hidden" name="portlet_action" value="security_user.remove_user_rule"/>		
 		<table>
 			<tr>
 				<th>&nbsp;</th>
-				<th><fmt:message key="security.profile.rules"/></th>
-				<th>&nbsp;</th>
+				<th><fmt:message key="security.name"/></th>
+				<th><fmt:message key="security.rule"/></th>
 			</tr>
 		<c:forEach var="rule" items="${rules}">
 			<tr>			
 				<td>
-					<input type="radio" name="user_profile_id"  <c:if test="${rule.id == selectedRule}">checked</c:if>  value="<c:out value="${rule.id}"/>"/>
+					<input type="checkbox" name="user_profile_id" value="<c:out value="${rule.locatorName}"/>"/>
 				</td>
 				<td>
-					<c:out value="${rule.id}"/>
+					<c:out value="${rule.locatorName}"/>
 				</td>
 				<td>
-					<c:out value="${rule.title}"/>
-				</td>				
+					<c:out value="${rule.profilingRule}"/>
+				</td>
 			</tr>
 		</c:forEach>
 		</table>
-	<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_rule'"/>
-    </form>
-  </div>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_rule'"/>
+	</form>
+	<form name="Add_Profile_Form" action="<c:out value="${edit_profile_link}"/>" method="post">
+		<input type="hidden" name="portlet_action" value="security_user.add_rule"/>
+		
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="security.name"/>
+				</td>
+				<td>
+					<input type="text" name="locator_name" value=""/>
+					Common Locator Names: [page,docset]
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="security.rule"/>
+				</td>
+				<td>
+					<select name="select_rule">								
+						<c:forEach var="prule" items="${prules}">						    						    
+						    <option value="<c:out value="${prule.id}"/>">
+							  <c:out value="${prule.id}"/>
+						    </option>
+						</c:forEach>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="security.add"/>"/>
+	</form>
+  </div>	
 </c:if>
 <%--End of Profile tab data--%>
 
