@@ -1,4 +1,0 @@
-2004-02-09 01:16:50,958 INFO  com.werken.werkz.jelly.PostGoalTag - Running post goal: clean:clean
-2004-02-09 01:16:50,968 INFO  org.apache.maven.cli.App - Total time: 4 seconds
-2004-02-09 01:16:50,968 INFO  org.apache.maven.cli.App - Finished at: Mon Feb 09 01:16:50 PST 2004
-2004-02-09 01:16:50,968 INFO  org.apache.maven.cli.App - 

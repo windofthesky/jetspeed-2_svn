@@ -1,2 +1,0 @@
-The apps directory holds Portlet Applications stored locally inside Jetspeed.
-This is an alternative to storing Portlet Applications in another web application, which requires a cross-context servlet invoker (as of Servlet spec 2.3). Some application servers do not support cross-context Servlet invokers, such as Weblogic 8.1 and prior versions. If your application server doesn't support cross-context, recommend deploying your portlet applications here. See the Portlet Application Manager documentation for details on how to deploy portlet applications internally.

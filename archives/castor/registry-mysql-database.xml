@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database name="registry" engine="mysql">
-  <driver url="jdbc:mysql://localhost/js2"
-          class-name="com.mysql.jdbc.Driver"/>
-  <mapping href="registry-mapping.xml"/>
-</database>        

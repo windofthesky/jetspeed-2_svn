@@ -1,1 +1,0 @@
-This is were you things to be deployed to Jetspeed (not implemented yet)

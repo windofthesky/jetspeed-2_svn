@@ -1,1 +1,0 @@
-This is were the deployment tests will deploy test portlet apps.
