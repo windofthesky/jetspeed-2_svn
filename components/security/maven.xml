@@ -19,7 +19,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.security.TestLoginModule'/>
+  <property name='testcase' value='org.apache.jetspeed.security.TestUserManager'/>
 
  
   <goal name="deployJar">
