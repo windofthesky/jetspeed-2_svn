@@ -15,20 +15,18 @@
 package org.apache.jetspeed.security.impl;
 
 import java.lang.reflect.Constructor;
-import java.sql.Timestamp;
 import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
@@ -55,23 +53,19 @@ public class PermissionManagerImpl implements PermissionManager
 {
     private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
 
-    /** The persistence store container. */
-    PersistenceStoreContainer storeContainer;
-
-    /** The store name. */
-    String jetspeedStoreName;
+    PersistenceStore persistenceStore;
 
     /**
      * <p>Constructor providing access to the persistence component.</p>
      */
-    public PermissionManagerImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public PermissionManagerImpl(PersistenceStore persistenceStore)
     {
-        if (storeContainer == null)
+        if (persistenceStore == null)
         {
-            throw new IllegalArgumentException("storeContainer cannot be null for BaseSecurityImpl");
+            throw new IllegalArgumentException("persistenceStore cannot be null for BaseSecurityImpl");
         }
-        this.storeContainer = storeContainer;
-        this.jetspeedStoreName = keyStoreName;
+        
+        this.persistenceStore = persistenceStore;
     }
 
     /**
@@ -399,12 +393,8 @@ public class PermissionManagerImpl implements PermissionManager
      */
     PersistenceStore getPersistenceStore()
     {
-        PersistenceStore store = storeContainer.getStoreForThread(jetspeedStoreName);
-        if (!store.getTransaction().isOpen())
-        {
-            store.getTransaction().begin();
-        }
-        return store;
+    
+        return persistenceStore;
     }
 
 }

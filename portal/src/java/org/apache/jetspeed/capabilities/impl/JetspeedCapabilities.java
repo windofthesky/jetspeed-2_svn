@@ -16,27 +16,22 @@
 package org.apache.jetspeed.capabilities.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
 import org.apache.jetspeed.capabilities.MediaType;
-import org.picocontainer.Startable;
-
-
-import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.picocontainer.Startable;
 
 /**
  * Jetspeed Capabilities
@@ -47,9 +42,6 @@ import org.apache.jetspeed.components.persistence.store.Transaction;
  */
 public class JetspeedCapabilities implements Capabilities, Startable 
 {
-    private PersistenceStoreContainer pContainer;
-    private String storeName = "jetspeed";
-
     private String originalAlias;
 
     private static final Log log =
@@ -68,10 +60,11 @@ public class JetspeedCapabilities implements Capabilities, Startable
     private Class capabilityClass = CapabilityImpl.class;
     private Class mimeTypeClass = MimeTypeImpl.class;
     private Class mediaTypeClass = MediaTypeImpl.class;
+    private PersistenceStore persistenceStore;
 
-    public JetspeedCapabilities(PersistenceStoreContainer pContainer)
+    public JetspeedCapabilities(PersistenceStore persistenceStore)
     {
-        this.pContainer = pContainer;        
+         this.persistenceStore = persistenceStore;
     }
     
     /**
@@ -79,17 +72,17 @@ public class JetspeedCapabilities implements Capabilities, Startable
      * 
      * 	   defaultRule   = the default profiling rule
      *     anonymousUser = the name of the anonymous user
-     *     storeName = The name of the persistence store component to connect to  
+     *     persistenceStoreName = The name of the persistence persistenceStore component to connect to  
      *     services.profiler.locator.impl = the pluggable Profile Locator impl
      *     services.profiler.principalRule.impl = the pluggable Principal Rule impl
      *     services.profiler.profilingRule.impl = the pluggable Profiling Rule impl
      *      
-     * @param pContainer  The persistence store container
+     * @param persistenceStore  The persistence persistenceStore 
      * @param properties  Properties for this component described above
      */
-    public JetspeedCapabilities(PersistenceStoreContainer pContainer, Properties properties)
+    public JetspeedCapabilities(PersistenceStore persistenceStore, Properties properties)
 	{
-        this.pContainer = pContainer;
+        this(persistenceStore);
         initModelClasses(properties);
     }
     
@@ -309,8 +302,8 @@ public class JetspeedCapabilities implements Capabilities, Startable
     {
         if (null == clients)
         {
-            PersistenceStore store = getPersistenceStore();            
-            this.clients = store.getExtent(ClientImpl.class);
+                
+            this.clients = persistenceStore.getExtent(ClientImpl.class);
         }
 
         return this.clients.iterator();
@@ -322,8 +315,8 @@ public class JetspeedCapabilities implements Capabilities, Startable
     public Collection getMediaTypesForMimeTypes(Iterator mimetypes)
     {
         //Find the MediaType by matching the Mimetype
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();        
+        
+        Filter filter = persistenceStore.newFilter();        
 
         Vector temp = new Vector();
         // Add Mimetypes to map and create query
@@ -340,9 +333,9 @@ public class JetspeedCapabilities implements Capabilities, Startable
         filter.addIn("mimetypes.name", temp);
 
         
-        Object query = store.newQuery(mediaTypeClass, filter);
+        Object query = persistenceStore.newQuery(mediaTypeClass, filter);
         
-        Collection co = store.getCollectionByQuery(query);
+        Collection co = persistenceStore.getCollectionByQuery(query);
 
         if (co.isEmpty())
         {
@@ -368,11 +361,11 @@ public class JetspeedCapabilities implements Capabilities, Startable
      */
     public MediaType getMediaType(String mediaType)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();        
+        
+        Filter filter = persistenceStore.newFilter();        
         filter.addEqualTo("name", mediaType);
-        Object query = store.newQuery(mediaTypeClass, filter);
-        return (MediaType) store.getObjectByQuery(query);
+        Object query = persistenceStore.newQuery(mediaTypeClass, filter);
+        return (MediaType) persistenceStore.getObjectByQuery(query);
     }
 
     /**
@@ -383,12 +376,12 @@ public class JetspeedCapabilities implements Capabilities, Startable
     public MediaType getMediaTypeForMimeType(String mimeTypeName)
     {               
         //Find the MediaType by matching the Mimetype
-        PersistenceStore store = getPersistenceStore();
         
-        Filter filter = store.newFilter();        
+        
+        Filter filter = persistenceStore.newFilter();        
         filter.addEqualTo("mimetypes.name", mimeTypeName);
-        Object query = store.newQuery(mediaTypeClass, filter);        
-        Collection mediaTypeCollection = store.getCollectionByQuery(query);                
+        Object query = persistenceStore.newQuery(mediaTypeClass, filter);        
+        Collection mediaTypeCollection = persistenceStore.getCollectionByQuery(query);                
         Iterator mtIterator = mediaTypeCollection.iterator();
         if (mtIterator.hasNext())
         {
@@ -397,17 +390,6 @@ public class JetspeedCapabilities implements Capabilities, Startable
         {
             return null;
         }
-    }
-    
-    protected PersistenceStore getPersistenceStore()
-    {
-        PersistenceStore store = pContainer.getStoreForThread(storeName);
-        Transaction tx = store.getTransaction();
-        if (!tx.isOpen())
-        {
-            tx.begin();
-        }
-        return store;
     }
     
 }

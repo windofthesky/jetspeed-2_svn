@@ -15,9 +15,6 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
-import org.apache.jetspeed.profiler.Profiler;
-import org.picocontainer.Startable;
-
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,14 +26,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.Transaction;
-
 import org.apache.jetspeed.om.desktop.Desktop;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
@@ -45,7 +40,7 @@ import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.page.PageManager;
+import org.picocontainer.Startable;
 
 
 /**
@@ -58,9 +53,6 @@ public class JetspeedProfiler implements Profiler, Startable
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(JetspeedProfiler.class);
-
-    private PersistenceStoreContainer pContainer;
-    private String storeName = "jetspeed";
     
     PageManager pageManager; 
         
@@ -75,12 +67,13 @@ public class JetspeedProfiler implements Profiler, Startable
     private String defaultRule = "j1";
 
     private String anonymousUser = "anon";
+
+    PersistenceStore persistentStore;
     
-    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, String storeName)
+    public JetspeedProfiler(PersistenceStore persistentStore, PageManager pageManager)
 	{
-        this.pContainer = pContainer;
-        this.pageManager = pageManager;
-        this.storeName = storeName;
+        this.persistentStore = persistentStore;
+        this.pageManager = pageManager;        
     }
     
     /**
@@ -96,22 +89,15 @@ public class JetspeedProfiler implements Profiler, Startable
      * @param pContainer  The persistence store container
      * @param properties  Properties for this component described above
      */
-    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, Properties properties)
-	{
-        this.pContainer = pContainer;
-        this.pageManager = pageManager;        
-        this.storeName = properties.getProperty("storeName", "jetspeed");        
+    public JetspeedProfiler(PersistenceStore persistentStore, PageManager pageManager, Properties properties)
+	{       
+        this(persistentStore, pageManager);
         this.defaultRule = properties.getProperty("defaultRule", "j1");
         this.anonymousUser = properties.getProperty("anonymousUser", "anon");
         initModelClasses(properties); // TODO: move this to start()
     }
 
-    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager)
-	{
-        this.pageManager = pageManager;        
-        this.pContainer = pContainer;
-	}
-    
+   
     private void initModelClasses(Properties properties)
 	{
         String modelName = "";
@@ -230,11 +216,11 @@ public class JetspeedProfiler implements Profiler, Startable
     private PrincipalRule lookupPrincipalRule(String principal)
     {
         // TODO: implement caching      
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();        
+        
+        Filter filter = persistentStore.newFilter();        
         filter.addEqualTo("principalName", principal);
-        Object query = store.newQuery(principalRuleClass, filter);
-        PrincipalRule pr = (PrincipalRule) store.getObjectByQuery(query);
+        Object query = persistentStore.newQuery(principalRuleClass, filter);
+        PrincipalRule pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
         return pr;            
     }
 
@@ -247,10 +233,9 @@ public class JetspeedProfiler implements Profiler, Startable
     private ProfilingRule lookupProfilingRule(String ruleid)
     {
         // TODO: implement caching
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();        
-        Object query = store.newQuery(profilingRuleClass, filter);
-        ProfilingRule rule = (ProfilingRule) store.getObjectByQuery(query);
+        Filter filter = persistentStore.newFilter();        
+        Object query = persistentStore.newQuery(profilingRuleClass, filter);
+        ProfilingRule rule = (ProfilingRule) persistentStore.getObjectByQuery(query);
         return rule;            
     }
     
@@ -335,20 +320,19 @@ public class JetspeedProfiler implements Profiler, Startable
      */
     public Collection getRules()
     {
-        PersistenceStore store = getPersistenceStore();        
-        return store.getExtent(profilingRuleClass);
+        
+        return persistentStore.getExtent(profilingRuleClass);
     }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getRule(java.lang.String)
      */
     public ProfilingRule getRule(String id)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();        
+    {        
+        Filter filter = persistentStore.newFilter();        
         filter.addEqualTo("id", id);
-        Object query = store.newQuery(profilingRuleClass, filter);
-        return (ProfilingRule) store.getObjectByQuery(query);        
+        Object query = persistentStore.newQuery(profilingRuleClass, filter);
+        return (ProfilingRule) persistentStore.getObjectByQuery(query);        
     }
 
     /* (non-Javadoc)
@@ -358,16 +342,6 @@ public class JetspeedProfiler implements Profiler, Startable
     {
          return this.anonymousUser;
     }
-    
-    protected PersistenceStore getPersistenceStore()
-    {
-        PersistenceStore store = pContainer.getStoreForThread(storeName);
-        Transaction tx = store.getTransaction();
-        if (!tx.isOpen())
-        {
-            tx.begin();
-        }
-        return store;
-    }
+
 	
 }

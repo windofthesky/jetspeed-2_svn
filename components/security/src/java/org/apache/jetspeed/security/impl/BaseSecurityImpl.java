@@ -23,20 +23,19 @@ import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.GroupPrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
+import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
+import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 
 /**
@@ -46,23 +45,19 @@ import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 public class BaseSecurityImpl
 {
 
-    /** The persistence store container. */
-    PersistenceStoreContainer storeContainer;
-
-    /** The store name. */
-    String jetspeedStoreName;
+    PersistenceStore persistenceStore;
 
     /**
      * <p>Constructor providing access to the persistence component.</p>
      */
-    public BaseSecurityImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public BaseSecurityImpl(PersistenceStore persistenceStore)
     {
-        if (storeContainer == null)
+        if (persistenceStore == null)
         {
-            throw new IllegalArgumentException("storeContainer cannot be null for BaseSecurityImpl");
+            throw new IllegalArgumentException("persistenceStore cannot be null for BaseSecurityImpl");
         }
-        this.storeContainer = storeContainer;
-        this.jetspeedStoreName = keyStoreName;
+        
+       this.persistenceStore = persistenceStore;
     }
 
     /**
@@ -334,11 +329,7 @@ public class BaseSecurityImpl
      */
     PersistenceStore getPersistenceStore()
     {
-        PersistenceStore store = storeContainer.getStoreForThread(jetspeedStoreName);
-        if (!store.getTransaction().isOpen())
-        {
-            store.getTransaction().begin();
-        }
-        return store;
+     
+        return persistenceStore;
     }
 }

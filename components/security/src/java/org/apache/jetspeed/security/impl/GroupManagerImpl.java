@@ -23,17 +23,15 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
+import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -50,14 +48,14 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
 {
     private static final Log log = LogFactory.getLog(GroupManagerImpl.class);
 
+    
     /**
-     * <p>Constructor providing access to the persistence component.</p>
+     * @param persistenceStore
      */
-    public GroupManagerImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public GroupManagerImpl( PersistenceStore persistenceStore )
     {
-        super(storeContainer, keyStoreName);
-    }
-
+        super(persistenceStore);
+   }
     /**
      * @see org.apache.jetspeed.security.GroupManager#addGroup(java.lang.String)
      */

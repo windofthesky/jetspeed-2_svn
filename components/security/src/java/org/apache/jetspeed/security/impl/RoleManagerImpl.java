@@ -23,18 +23,16 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
 import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
+import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -51,14 +49,16 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
 {
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
 
-    /**
-     * <p>Constructor providing access to the persistence component.</p>
-     */
-    public RoleManagerImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
-    {
-        super(storeContainer, keyStoreName);
-    }
+  
 
+    /**
+     * @param persistenceStore
+     */
+    public RoleManagerImpl( PersistenceStore persistenceStore )
+    {
+        super(persistenceStore);
+    }
+    
     /**
      * @see org.apache.jetspeed.security.RoleManager#addRole(java.lang.String)
      */

@@ -23,26 +23,23 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
+import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
+import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
+import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
+import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
-import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
-import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
+import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
-import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
-import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
-
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -87,22 +84,22 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
     static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
 
     protected static final String KEY_STORE_NAME = "persistence.store.name";
-    private PersistenceStoreContainer storeContainer;
-    private String jetspeedStoreName;
+    
     private Class portletDefClass;
     private Class portletAppClass;
+    
+    private PersistenceStore persistenceStore;
 
     /**
      *  
      */
-    public PortletRegistryComponentImpl(PersistenceStoreContainer storeContainer, String keyStoreName) throws RegistryException
+    public PortletRegistryComponentImpl(PersistenceStore persistenceStore) throws RegistryException
     {
-        if (storeContainer == null)
+        if (persistenceStore == null)
         {
-            throw new IllegalArgumentException("storeContainer cannot be null for PortletRegistryComponentImpl");
+            throw new IllegalArgumentException("persistenceStore cannot be null for PortletRegistryComponentImpl");
         }
-        this.storeContainer = storeContainer;
-        jetspeedStoreName = keyStoreName;
+        this.persistenceStore = persistenceStore;
         portletDefClass = PortletDefinitionImpl.class;
         portletAppClass = PortletApplicationDefinitionImpl.class;
     }
@@ -157,7 +154,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
 
     public PersistenceStore getPersistenceStore()
     {
-        return storeContainer.getStoreForThread(jetspeedStoreName);
+        return persistenceStore;
     }
 
     /**

@@ -21,20 +21,17 @@ import java.util.Iterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.JetspeedCredential;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.JetspeedCredentialImpl;
+import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -46,14 +43,15 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
 {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
+  
     /**
-     * <p>Constructor providing access to the persistence component.</p>
+     * @param persistenceStore
      */
-    public UserManagerImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public UserManagerImpl( PersistenceStore persistenceStore )
     {
-        super(storeContainer, keyStoreName);
-    }
+        super(persistenceStore);
 
+    }
     /**
      * @see org.apache.jetspeed.security.UserManager#authenticate(java.lang.String, java.lang.String)
      */

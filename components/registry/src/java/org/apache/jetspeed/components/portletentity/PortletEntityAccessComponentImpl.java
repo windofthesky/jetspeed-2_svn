@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
@@ -42,10 +41,6 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class PortletEntityAccessComponentImpl implements PortletEntityAccessComponent
 {
-    private PersistenceStoreContainer pContainer;
-
-    private String storeName;
-
     protected final static Log log = LogFactory.getLog(PortletEntityAccessComponentImpl.class);
 
     private boolean autoCreateNewEntities;
@@ -53,12 +48,13 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     // TODO: this should eventually use a system cach like JCS
     private HashMap entityCache = new HashMap();
 
+    private PersistenceStore persistenceStore;
+
     
 
-    public PortletEntityAccessComponentImpl(PersistenceStoreContainer pContainer, String storeId)
+    public PortletEntityAccessComponentImpl(PersistenceStore persistenceStore)
     {
-        this.pContainer = pContainer;
-        this.storeName = storeId;
+        this.persistenceStore = persistenceStore;
     }
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.common.ObjectID)
@@ -230,7 +226,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
     protected PersistenceStore getPersistenceStore()
     {
-        return pContainer.getStoreForThread(storeName);
+        return persistenceStore;
     }
     
     protected StoreablePortletEntityDelegate wrapEntity(PortletEntityImpl entity)
