@@ -44,7 +44,9 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
             
             ProfileLocator locator = profiler.getProfile(request);
-            request.setProfileLocator(locator);
+            request.setProfileLocator(locator);                        
+            request.setPage(profiler.getPage(locator));
+            
         }
         catch (ProfilerException e)
         {

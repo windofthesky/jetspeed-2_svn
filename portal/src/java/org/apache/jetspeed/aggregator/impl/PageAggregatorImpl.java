@@ -22,80 +22,54 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.contentserver.ContentFilter;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.picocontainer.Startable;
 
 /**
- * Single-step multi-thread aggregation valve. Not very efficient because, hidden
- * portlets may be sent to rendering but useful for testing
+ * PageAggregator builds the content required to render a page of portlets.
  *
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PageAggregator extends BaseCommonService implements Aggregator
+public class PageAggregatorImpl implements PageAggregator, Startable
 {
-    private final static Log log = LogFactory.getLog(PageAggregator.class);
-    private final static String DEFAULT_STRATEGY = "strategy.default";
+    private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
 
     public final static int STRATEGY_SEQUENTIAL = 0;
     public final static int STRATEGY_PARALLEL = 1;
-    private final static String CONFIG_STRATEGY_SEQUENTIAL = "sequential";
-    private final static String CONFIG_STRATEGY_PARALLEL = "parallel";
+
     private int strategy = STRATEGY_SEQUENTIAL;
+    private PortletRenderer renderer;
 
-    /**
-     */
-    public void init() throws CPSInitializationException
+    public PageAggregatorImpl( PortletRenderer renderer, 
+                           int strategy)
     {
-        if (isInitialized())
-        {
-            return;
-        }
-
-        try
-        {
-            initConfiguration();
-        }
-        catch (Exception e)
-        {
-            log.error("Aggregator: Failed to load Service: " + e);
-            e.printStackTrace();
-        }
-
-        setInit(true);
+        this.renderer = renderer;
+        this.strategy = strategy;        
     }
-
-    /**
-     */
-    public void shutdown()
+    
+    public PageAggregatorImpl(PortletRenderer renderer) 
+    {
+        this(renderer, STRATEGY_SEQUENTIAL);
+    }
+    
+    public void start()
     {
     }
-
-    private void initConfiguration() throws CPSInitializationException
+    
+    public void stop()
     {
-        String defaultStrategy = getConfiguration().getString(DEFAULT_STRATEGY, CONFIG_STRATEGY_SEQUENTIAL);
-        if (defaultStrategy.equals(CONFIG_STRATEGY_SEQUENTIAL))
-        {
-            strategy = STRATEGY_SEQUENTIAL;
-        }
-        else if (defaultStrategy.equals(CONFIG_STRATEGY_PARALLEL))
-        {
-            strategy = STRATEGY_PARALLEL;
-        }
+        
     }
-
+    
     /**
      * Builds the portlet set defined in the context into a portlet tree.
      *
@@ -104,22 +78,12 @@ public class PageAggregator extends BaseCommonService implements Aggregator
     public void build(RequestContext context)
         throws JetspeedException
     {
-
-        PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
-        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
-        
-        ProfileLocator locator = context.getProfileLocator();
-        if (null == locator)
-        {
-            throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
-        }
-        Page page = profiler.getPage(locator);
+        Page page = context.getPage();
         if (null == page)
         {
-            throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");
+            throw new JetspeedException("Failed to find PSML Pin PageAggregator.build");
         }
-        context.setPage(page);
-
+        
         //Set default acl
         String acl = page.getAcl();
         if (acl == null)

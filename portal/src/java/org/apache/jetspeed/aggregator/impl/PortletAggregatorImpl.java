@@ -17,47 +17,47 @@ package org.apache.jetspeed.aggregator.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.Aggregator;
+import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.request.RequestContext;
+import org.picocontainer.Startable;
 
 /**
- * PortletAggregator is used to produce the content of a single portlet.
+ * PortletAggregator builds the content required to render a single portlet.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletAggregator extends BaseCommonService implements Aggregator
+public class PortletAggregatorImpl implements PortletAggregator, Startable
 {
-    private final static Log log = LogFactory.getLog(PortletAggregator.class);
+    private final static Log log = LogFactory.getLog(PortletAggregatorImpl.class);    
     
-    /* (non-Javadoc)
-     * @see org.apache.fulcrum.Service#init()
-     */
-    public void init() throws InitializationException
+    private PortletRenderer renderer;
+
+    public PortletAggregatorImpl(PortletRenderer renderer) 
     {
-        if (isInitialized())
-        {
-            return;
-        }
-
-        setInit(true);
+        this.renderer = renderer;
     }
-
+    
+    public void start()
+    {
+    }
+    
+    public void stop()
+    {
+        
+    }
+    
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.aggregator.Aggregator#build(org.apache.jetspeed.request.RequestContext)
      */
     public void build(RequestContext context) throws JetspeedException
     {
-        PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
         Fragment fragment = new FragmentImpl(); // TODO: fragment factory
         fragment.setType(Fragment.PORTLET);
         fragment.setName(context.getRequestParameter(PortalReservedParameters.PORTLET));

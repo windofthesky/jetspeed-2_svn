@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,12 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.request.RequestContext;
-
 /**
- * Basic aggregation interface
+ * Page aggregation handles pipeline requests for pages of portlets.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface Aggregator 
+public interface PageAggregator extends Aggregator 
 {
-    /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
-     */
-    public void build(RequestContext context)
-        throws JetspeedException;
-
 }

@@ -30,8 +30,6 @@ import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -47,38 +45,31 @@ import org.picocontainer.Startable;
 public class BasicAggregator implements Aggregator, Startable
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
-    private final static String DEFAULT_STRATEGY = "strategy.default";
 
     public final static int STRATEGY_SEQUENTIAL = 0;
     public final static int STRATEGY_PARALLEL = 1;
-    private final static String CONFIG_STRATEGY_SEQUENTIAL = "sequential";
-    private final static String CONFIG_STRATEGY_PARALLEL = "parallel";
     private int strategy = STRATEGY_SEQUENTIAL;
     
-    private Profiler profiler;
     private PortletRegistryComponent registry;
     private PortletWindowAccessor windowAccessor;
     private PortletContainer portletContainer;
 
-    public BasicAggregator(Profiler profiler, 
-                           PortletRegistryComponent registry, 
+    public BasicAggregator(PortletRegistryComponent registry, 
                            PortletWindowAccessor windowAccessor,
                            PortletContainer portletContainer,
                            int strategy)
     {
-        this.profiler = profiler;
         this.registry = registry;
         this.windowAccessor = windowAccessor;
         this.strategy = strategy;
         this.portletContainer = portletContainer;
     }
     
-    public BasicAggregator(Profiler profiler, 
-            PortletRegistryComponent registry, 
-            PortletWindowAccessor windowAccessor,
-            PortletContainer portletContainer)            
+    public BasicAggregator(PortletRegistryComponent registry, 
+                           PortletWindowAccessor windowAccessor,
+                           PortletContainer portletContainer)            
     {
-        this(profiler, registry, windowAccessor, portletContainer, STRATEGY_SEQUENTIAL);
+        this(registry, windowAccessor, portletContainer, STRATEGY_SEQUENTIAL);
     }
     
     public void start()
@@ -97,13 +88,7 @@ public class BasicAggregator implements Aggregator, Startable
      */
     public void build(RequestContext request) throws JetspeedException
     {
-        ProfileLocator locator = request.getProfileLocator();
-        if (null == locator)
-        {
-            throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
-        }
-
-        Page page = profiler.getPage(locator);
+        Page page = request.getPage();
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");

@@ -17,7 +17,7 @@ package org.apache.jetspeed.aggregator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -38,7 +38,8 @@ public class PortletValve extends AbstractValve
     {
         try
         {
-            Aggregator aggregator = (Aggregator)CommonPortletServices.getPortalService(Aggregator.PORTLET_SERVICE_NAME);
+            // TODO: move valves to component, or make component a valve..., deprecate CM
+            PortletAggregator aggregator = (PortletAggregator)Jetspeed.getComponentManager().getComponent(PortletAggregator.class);
   
             aggregator.build(request);
         }

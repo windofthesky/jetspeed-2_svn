@@ -20,14 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -35,6 +32,7 @@ import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
+import org.picocontainer.Startable;
 
 /**
  * <h4>PortletRendererService<br />
@@ -45,33 +43,33 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class PortletRendererImpl extends BaseCommonService implements PortletRenderer
+public class PortletRendererImpl implements PortletRenderer, Startable
 {
-    /** Commons logging */
     protected final static Log log = LogFactory.getLog(PortletRendererImpl.class);
 
     private WorkerMonitor monitor;
 
-    private PortletContainer container = null;
+    private PortletContainer container;
+    private PortletWindowAccessor windowAccessor;
 
-    /**
-     */
-    public void init() throws InitializationException
+    public PortletRendererImpl(PortletContainer container, 
+                               PortletWindowAccessor windowAccessor)
+    {
+        this.container = container;
+        this.windowAccessor = windowAccessor;
+    }
+        
+    public void start()
     {
         this.monitor = new WorkerMonitor();
         this.monitor.init();
-
-        // TODO: deprecate this when converted to component
-        this.container = (PortletContainer)Jetspeed.getComponentManager().getComponent(PortletContainer.class);
-        setInit(true);
     }
-
-    /**
-     */
-    public void shutdown()
+    
+    public void stop()
     {
+        // this.monitor.shutdown ?
     }
-
+          
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
@@ -167,9 +165,9 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
      */
     protected ContentDispatcherCtrl getDispatcherCtrl(RequestContext request, boolean isParallel)
     {
-        if (request.getContentDispatcher()==null)
+        if (request.getContentDispatcher() == null)
         {
-            request.setContentDispatcher(new ContentDispatcherImpl(isParallel));
+            request.setContentDispatcher(new ContentDispatcherImpl(isParallel, this));
         }
 
         return (ContentDispatcherCtrl)request.getContentDispatcher();
@@ -178,11 +176,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
     protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-                
-        // TODO: make renderer a component, assemble window accessor in constructor
-        PortletWindowAccessor windowAccess = (PortletWindowAccessor)Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
-        
-        PortletWindow portletWindow = windowAccess.getPortletWindow(fragment);
+                        
+        PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
         if (portletWindow == null)
         {
             throw new UnknownPortletDefinitionException("Portlet Window creation failed for fragment: " + fragment.getId() + ", " + fragment.getName());

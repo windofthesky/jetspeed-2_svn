@@ -17,7 +17,6 @@ package org.apache.jetspeed.aggregator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -30,11 +29,8 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface PortletRenderer extends CommonService
+public interface PortletRenderer 
 {
-    /** The name of this service */
-    public String SERVICE_NAME = "PortletRenderer";
-
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.

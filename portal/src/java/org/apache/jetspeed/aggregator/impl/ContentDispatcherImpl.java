@@ -20,7 +20,6 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Hashtable;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -31,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -56,12 +54,11 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
 
     private static int debugLevel = 1;
 
-    public ContentDispatcherImpl()
+    private PortletRenderer renderer;
+    
+    public ContentDispatcherImpl(boolean isParallel, PortletRenderer renderer)
     {
-    }
-
-    public ContentDispatcherImpl(boolean isParallel)
-    {
+        this.renderer = renderer;
         this.isParallel = isParallel;
     }
 
@@ -87,7 +84,6 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
             {
                 log.debug("Synchronous rendering for OID "+ oid);
             }
-            PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
             renderer.renderNow(fragment,req,rsp);
             return;
         }
@@ -162,7 +158,6 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
                 log.debug("Content is null for OID "+oid);
             }
 
-            PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
             renderer.renderNow(fragment,req,rsp);
             return;
         }
@@ -253,8 +248,6 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
                 log.debug("Content is null for OID "+oid);
             }
 
-            PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
-
             //unwrap the RenderRequest and RenderResponse to avoid having to cascade several
             // portlet requests/responses
             HttpServletRequest request = (HttpServletRequest)((HttpServletRequestWrapper)req).getRequest();
@@ -288,7 +281,7 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
 
         synchronized (contents)
         {
-            contents.put(window.getId(),myContent);
+            contents.put(window.getId(), myContent);
         }
 
         return new HttpBufferedResponse(request.getResponse(),myContent.getWriter());
