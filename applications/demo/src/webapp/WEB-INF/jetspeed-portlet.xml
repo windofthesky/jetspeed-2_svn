@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app id="HW_App" version="1.0" 
+	xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
+	xmlns:js="http://portals.apache.org/jetspeed" 
+	xmlns:dc="http://www.purl.org/dc">
+	
+	<dc:title>Title 1</dc:title>
+	<dc:title xml:lang="en">Eng Title</dc:title>
+	<dc:title xml:lang="fr">Fr Title</dc:title>
+	<dc:subject xml:lang="sp">Spanish Subject</dc:subject>
+	<dc:creator>Default Jeremy Ford</dc:creator>
+	<dc:coverage>Default Coverage</dc:coverage>
+	<dc:contributor>Default Contributor</dc:contributor>
+	<dc:description>Default Description</dc:description>
+	<dc:format>Default Format</dc:format>
+	<dc:identifer>Default Identifier</dc:identifer>
+	<dc:language>Default Language</dc:language>
+	<dc:publisher>Default Publisher</dc:publisher>
+	<dc:relation>Default Relation</dc:relation>
+	<dc:right>Default Right</dc:right>
+	<dc:source>Default Source</dc:source>
+	<dc:type>Default Type</dc:type>
+	<js:metadata name="my_metadata" xml:lang="en">English My_Metadata</metadata>
+	
+	<!--
+	<portlet id="HelloPortlet">
+		<dc:title>Title 1</dc:title>
+		<dc:title xml:lang="en">Eng Title</dc:title>
+		<dc:title xml:lang="fr">Fr Title</dc:title>
+		<dc:subject xml:lang="sp">Spanish Subject</dc:subject>
+		<dc:creator>Default Jeremy Ford</dc:creator>
+		<dc:coverage>Default Coverage</dc:coverage>
+		<dc:contributor>Default Contributor</dc:contributor>
+		<dc:description>Default Description</dc:description>
+		<dc:format>Default Format</dc:format>
+		<dc:identifer>Default Identifier</dc:identifer>
+		<dc:language>Default Language</dc:language>
+		<dc:publisher>Default Publisher</dc:publisher>
+		<dc:relation>Default Relation</dc:relation>
+		<dc:right>Default Right</dc:right>
+		<dc:source>Default Source</dc:source>
+		<dc:type>Default Type</dc:type>
+		<js:metadata name="my_metadata" xml:lang="en">English My_Metadata</metadata>
+	</portlet>
+	-->
+</portlet-app>
