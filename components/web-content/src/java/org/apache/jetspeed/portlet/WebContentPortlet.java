@@ -294,8 +294,9 @@ public class WebContentPortlet extends GenericVelocityPortlet
             String baseurl = baseURL.getProtocol() + "://" + baseURL.getHost();
 
             rewriter.setBaseUrl(baseurl);
-
-            rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getRemoteReader(sourceAttr), htmlWriter);
+            String source = getURLSource(sourceAttr, request, response);
+            System.out.println("Rewriting SOURCE: " + source);
+            rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getRemoteReader(source), htmlWriter);
             htmlWriter.flush();
             
         }
@@ -317,6 +318,11 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return byteOutputStream.toByteArray();
     }
 
+    public String getURLSource(String source, RenderRequest request, RenderResponse response)
+    {
+        return source;    
+    }
+    
     /*
      * Get WebContent source preference value
      */
