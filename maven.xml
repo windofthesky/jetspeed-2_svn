@@ -408,4 +408,34 @@ limitations under the License.
                ignoreFailures="false"/>
     </goal>
 
+   <goal name="dropdrops">
+    <attainGoal name="db.test.properties"/>
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/cornerstonedemo-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
+    <attainGoal name="run.dropdrops" />
+   </goal>
+
+    <goal name="run.dropdrops">
+         <java classname="org.apache.jetspeed.dbutil.ScriptUtil" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-drops" />
+            <arg value="${dropstable}" />
+        </java>
+    </goal>
 </project>
