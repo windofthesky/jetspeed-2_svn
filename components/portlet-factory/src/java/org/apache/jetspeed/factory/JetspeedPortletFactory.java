@@ -103,6 +103,10 @@ public class JetspeedPortletFactory implements PortletFactory
         {
             portlet = (Portlet)Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
         }
+        catch (ClassCastException cce)
+        {
+            cce.printStackTrace();
+        }
         catch (ClassNotFoundException e)
         {
             synchronized(classLoaders)
