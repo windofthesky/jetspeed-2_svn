@@ -165,7 +165,6 @@ public class PortletApplicationDetail extends ServletPortlet
     
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
     {
-        //System.out.println("PorletApplicationDetail: processAction()");
         String paName = (String)
         actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
                                              PortletSession.APPLICATION_SCOPE);
