@@ -1,0 +1,22 @@
+<h2>An Error occured rendering portlets</h2>
+
+<table border="2" cellpsacing="0" cellpadding="3">
+ <tr>
+   <th style="background-color:#DCDCDC; align:left">
+      Exception: $e.class <br />
+      Details:$e <br />
+      Message:$!e.messge <br />      
+   </th>
+ </tr>
+ <tr>
+  <td>
+    <h4>Stacktrace</h4>
+    <pre>
+      <code>
+        $stacktrace
+      </code>
+    </pre>
+  </td>
+ </tr>
+
+</table>

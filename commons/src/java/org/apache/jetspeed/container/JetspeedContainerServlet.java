@@ -54,6 +54,8 @@
 package org.apache.jetspeed.container;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -62,6 +64,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -120,7 +123,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     {
         synchronized (this.getClass())
         {
-            log.info(INIT_START_MSG+" "+config.getServletContext().getRealPath("/"));
+            log.info(INIT_START_MSG + " " + config.getServletContext().getRealPath("/"));
             super.init(config);
 
             if (!firstInit)
@@ -140,7 +143,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                                     ServletHelper.findInitParameter(context, config,
                                                       JETSPEED_PROPERTIES_KEY,
                                                       JETSPEED_PROPERTIES_DEFAULT);
-
+                
                                 String applicationRoot =
                                     ServletHelper.findInitParameter(context, config,
                                                   APPLICATION_ROOT_KEY,
@@ -152,10 +155,10 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                                 {
                                     applicationRoot = webappRoot;
                                 }
-
+                
                                 Configuration properties = (Configuration)
                                     new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
-
+                
                                 properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
                                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
                   */
@@ -169,7 +172,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             }
 
             console.info(INIT_DONE_MSG);
-            log.info(INIT_DONE_MSG+" "+config.getServletContext().getRealPath("/"));
+            log.info(INIT_DONE_MSG + " " + config.getServletContext().getRealPath("/"));
         }
     }
 
@@ -221,7 +224,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             }
 
             // infuseClasspath();
-            
+
             PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
             Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
 
@@ -248,11 +251,39 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 portlet.render(renderRequest, renderResponse);
             }
 
+            // if we get this far we are home free
+            return;
+
         }
         catch (Throwable t)
         {
-            t.printStackTrace();
+
+            log.error("Error rendering portlet: " + t.toString(), t);
+            try
+            {
+                String errorTemplate = getInitParameter("portal.error.page");
+                if (errorTemplate == null)
+                {
+                    errorTemplate = "/WEB-INF/templates/generic/html/error.vm";
+                }
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);
+                request.setAttribute("e", t);
+                StringWriter stackTrace = new StringWriter();
+                t.printStackTrace(new PrintWriter(stackTrace));
+                request.setAttribute("stacktrace", stackTrace.toString());
+                dispatcher.include(request, response);
+
+            }
+            catch (Exception e)
+            {
+                PrintWriter directError = new PrintWriter(response.getWriter());
+                directError.write("Error occured process includeTemplate(): " + t.toString() + "\n\n");
+                t.printStackTrace(directError);
+                directError.close();
+                log.error("Error rendering JetspeedContainerServlet error page: " + e.toString(), e);
+            }
         }
+
     }
 
     /**
@@ -284,36 +315,35 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         log.info("Done shutting down!");
     }
 
-    public static final String LOCAL_CLASSES = "/WEB-INF/classes/";    
-    public static final String LOCAL_JARS = "/WEB-INF/lib/";    
+    public static final String LOCAL_CLASSES = "/WEB-INF/classes/";
+    public static final String LOCAL_JARS = "/WEB-INF/lib/";
 
     private void infuseClasspath()
     {
         try
         {
-            ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
-            
+            ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+
             ClassLoader loader; // = (ClassLoader)classLoaders.get(portletApplicationName);            
-//            if (null == loader)
+            //            if (null == loader)
             {
                 StringBuffer localPath = new StringBuffer("file:");
                 // localPath.append(jetspeedContext.getRealPath(JetspeedPortletContext.LOCAL_PA_ROOT));
                 // localPath.append(portletApplicationName);
-                String localAppPath = "file://c:/bluesunrise/apache/catalina/webapps/jetspeed"; 
+                String localAppPath = "file://c:/bluesunrise/apache/catalina/webapps/jetspeed";
                 //localPath.toString(); 
-                URL[] urls = {new URL(localAppPath + LOCAL_CLASSES),
-                              new URL(localAppPath + LOCAL_JARS)};
+                URL[] urls = { new URL(localAppPath + LOCAL_CLASSES), new URL(localAppPath + LOCAL_JARS)};
                 loader = new URLClassLoader(urls, oldLoader);
                 // classLoaders.put(portletApplicationName, loader);
             }
-            Thread.currentThread().setContextClassLoader(loader);                 
+            Thread.currentThread().setContextClassLoader(loader);
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return;
         }
-          
+
     }
 
 }
