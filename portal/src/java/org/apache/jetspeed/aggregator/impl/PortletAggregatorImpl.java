@@ -15,6 +15,9 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -57,7 +60,33 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             entity = (String)context.getAttribute(PortalReservedParameters.PORTLET_ENTITY);          
         }
-        fragment.setId(entity);            
+        fragment.setId(entity);  
+
+        
+        if(fragment.getDecorator() != null)
+        {
+            log.debug("decorator=" + fragment.getDecorator());
+	        addStyle(context, fragment.getDecorator(), "portlet");
+        } 
+        else 
+        {
+            log.debug("no decorator for portlet:" + fragment.getId());
+        }
+
         renderer.renderNow(fragment, context);
+    }
+    
+    private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
+    {
+        log.debug("addStyle: decoratorName=" + decoratorName + ", decoratorType=" + decoratorType );
+        Set cssUrls = (Set) context.getSessionAttribute("cssUrls");
+
+        if (cssUrls == null)
+        {
+            cssUrls = new HashSet();
+            context.setSessionAttribute("cssUrls", cssUrls);
+        }
+        
+        cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");        
     }
 }

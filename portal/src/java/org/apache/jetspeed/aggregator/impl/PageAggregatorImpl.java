@@ -16,8 +16,10 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
@@ -124,6 +126,14 @@ public class PageAggregatorImpl implements PageAggregator
         {
             contentPathes.set(0, currentFragment.getType() + "/html/" + layoutDecorator);
         }
+        
+        
+        if(layoutDecorator != null)
+        {
+            addStyle(context, layoutDecorator, "layout");
+	        addStyle(context, layoutDecorator, "portlet");
+        }
+               
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
         if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
@@ -189,6 +199,17 @@ public class PageAggregatorImpl implements PageAggregator
                                 ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
                                 dispatcher.sync(currentFragment);
                             }
+                            
+                            if(currentFragment.getDecorator() != null)
+                            {
+                                log.debug("decorator=" + currentFragment.getDecorator());
+                    	        addStyle(context, currentFragment.getDecorator(), "portlet");
+                            } 
+                            else 
+                            {
+                                log.debug("no decorator for portlet:" + currentFragment.getId());
+                            }
+                            
                         }
                         catch (Exception e)
                         {
@@ -233,5 +254,19 @@ public class PageAggregatorImpl implements PageAggregator
         // This methid needs to be moved a secuity module.
         // Does nothing right now
         return true;
+    }
+    
+    
+    private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
+    {
+        Set cssUrls = (Set) context.getSessionAttribute("cssUrls");
+
+        if (cssUrls == null)
+        {
+            cssUrls = new HashSet();
+            context.setSessionAttribute("cssUrls", cssUrls);
+        }
+        
+        cssUrls.add("/WEB-INF/decorations/" + decoratorType + "/html/" + decoratorName + "/css/styles.css");        
     }
 }
