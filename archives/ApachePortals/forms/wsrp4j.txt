@@ -62,7 +62,34 @@ or
 
 [3] Initial Committer list 
 
-... 
+aaron
+acoliver
+behl
+blautenb
+coar
+cziegeler
+dims
+fielding
+fitz
+geirm
+gstein
+hammant
+jacob
+jim
+jmacna
+jstrachan
+leosimons
+morgand
+nicolaken
+noel
+pfisher
+rubys
+sgala
+stefano
+stevenn
+striker
+taylor
+twl
 
 [4] Issue Tracker
  (i) Bugzilla URL: http://nagoya.apache.org/bugzilla/buglist.cgi?product=wsrp4j 

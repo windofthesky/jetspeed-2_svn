@@ -62,7 +62,31 @@ or
 
 [3] Initial Committer list 
 
-... 
+akempf
+aurelien
+blumm
+brekke
+cziegeler
+ddewolf
+ggolden
+ingo
+jford
+jon
+jvanzyl
+jyang
+kimptoc
+morciuch
+nacho
+nlothian
+paulsp
+prickett
+raphael
+rubys
+sgala
+shesmer
+sthepper
+taylor
+weaver
 
 [4] Issue Tracker
  (i) Bugzilla URL: http://nagoya.apache.org/bugzilla/buglist.cgi?product=pluto 
