@@ -24,7 +24,7 @@ limitations under the License.
   <fragment id="xx2.0" type="layout" name="jetspeed::VelocityTwoColumns">
   
 	  <fragment id="xx2.1" type="portlet" name="demo::SSOIFramePortlet"/>
-	   <fragment id="wcp2.0" type="portlet" name="demo::WebContentPortlet"/>
+	   <fragment id="wcp2.0" type="portlet" name="demo::SSOWebContentPortlet"/>
 
   </fragment>
    
