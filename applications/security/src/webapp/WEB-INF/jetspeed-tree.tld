@@ -24,7 +24,7 @@ limitations under the License.
 
   <tlib-version>1.0</tlib-version>
   <jsp-version>1.2</jsp-version>
-  <short-name>Tags for PAM</short-name>
+  <short-name>Tags for Security</short-name>
   
   <!-- ========== Tree Control Tag ======================================== -->
 
