@@ -16,7 +16,6 @@ package org.apache.jetspeed.prefs.impl;
 
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
-import org.apache.jetspeed.prefs.om.impl.PropertySetDefImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -46,53 +45,6 @@ public class CommonQueries
     }
 
     /**
-     * <p>Utility method to create a new <code>PropertySetDef</code>
-     * by propertySetDefId query.</p>
-     * @param propertySetDefIdObject The propertySetDefId object.
-     * @return The new query.
-     */
-   /* Object newPropertySetDefQueryById(Object propertySetDefIdObject)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("propertySetDefId", propertySetDefIdObject);
-        Object query = store.newQuery(PropertySetDefImpl.class, filter);
-        return query;
-    }*/
-
-    /**
-     * <p>Utility method to create a new <code>PropertySetDef</code>
-     * by propertySetType query.
-     * @param propertySetTypeObject The propertySetType object.
-     * @return The new query.
-     */
-    Object newPropertySetDefQueryByType(Object propertySetTypeObject)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("propertySetType", propertySetTypeObject);
-        Object query = store.newQuery(PropertySetDefImpl.class, filter);
-        return query;
-    }
-
-    /**
-     * <p>Utility method to create a new <code>PropertySetDef</code>
-     * by propertySetName and propertySetType query.</p>
-     * @param propertySetName The propertySetName.
-     * @param propertySetTypeObject The propertySetType object.
-     * @return The new query.
-     */
-    Object newPropertySetDefQueryByNameAndType(Object propertySetName, Object propertySetTypeObject)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("propertySetName", propertySetName);
-        filter.addEqualTo("propertySetType", propertySetTypeObject);
-        Object query = store.newQuery(PropertySetDefImpl.class, filter);
-        return query;
-    }
-
-    /**
      * <p>Utility method to create a new <code>PropertyKey</code>
      * by propertyKeyId query.</p>
      * @param propertyKeyIdObject The propertyKeyId object.
@@ -106,21 +58,6 @@ public class CommonQueries
         Object query = store.newQuery(PropertyKeyImpl.class, filter);
         return query;
     }
-
-    /**
-     * <p>Utility method to create a new <code>PropertyKey</code>
-     * by propertySetDefId query.</p>
-     * @param propertySetDefIdObject The propertySetDefId object.
-     * @return The new query.
-     */
-    /*Object newPropertyKeyQueryByPropertySetDefId(Object propertySetDefIdObject)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("propertySetDefId", propertySetDefIdObject);
-        Object query = store.newQuery(PropertyKeyImpl.class, filter);
-        return query;
-    }*/
 
     /**
      * <p>Utility method to create a new <code>PropertyKey</code>
@@ -186,6 +123,25 @@ public class CommonQueries
 
     /**
      * <p>Utility method to create a new <code>Node</code>
+     * by parentNodeId, name and type query.</p>
+     * @param parentNodeIdObject The parentNodeId object.
+     * @param nodeName The node name.
+     * @param nodeType The node type.
+     * @return The new query.
+     */
+    Object newNodeQueryByParentIdNameAndType(Object parentNodeIdObject, Object nodeName, Object nodeType)
+    {
+        PersistenceStore store = getPersistenceStore();
+        Filter filter = store.newFilter();
+        filter.addEqualTo("parentNodeId", parentNodeIdObject);
+        filter.addEqualTo("nodeName", nodeName);
+        filter.addEqualTo("nodeType", nodeType);
+        Object query = store.newQuery(NodeImpl.class, filter);
+        return query;
+    }
+
+    /**
+     * <p>Utility method to create a new <code>Node</code>
      * by parentNodeId query.</p>
      * @param parentNodeIdObject The parentNodeId object.
      * @return The new query.
@@ -195,21 +151,6 @@ public class CommonQueries
         PersistenceStore store = getPersistenceStore();
         Filter filter = store.newFilter();
         filter.addEqualTo("parentNodeId", parentNodeIdObject);
-        Object query = store.newQuery(NodeImpl.class, filter);
-        return query;
-    }
-
-    /**
-     * <p>Utility method to create a new <code>Node</code>
-     * by propertySetDefId query.</p>
-     * @param propertySetDefIdObject The propertySetDefId object.
-     * @return The new query.
-     */
-    Object newNodeQueryByPropertySetDefId(Object propertySetDefIdObject)
-    {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("propertySetDefId", propertySetDefIdObject);
         Object query = store.newQuery(NodeImpl.class, filter);
         return query;
     }

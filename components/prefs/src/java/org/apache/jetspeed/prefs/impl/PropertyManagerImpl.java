@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Collection;
+import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,11 +29,10 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.prefs.PropertyManager;
-import org.apache.jetspeed.prefs.om.PropertySetDef;
+import org.apache.jetspeed.prefs.om.Node;
+import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
-import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
-import org.apache.jetspeed.prefs.om.impl.PropertySetDefImpl;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.util.ArgUtil;
 
@@ -45,6 +45,12 @@ import org.apache.jetspeed.util.ArgUtil;
 public class PropertyManagerImpl implements PropertyManager
 {
     private static final Log log = LogFactory.getLog(PropertyManagerImpl.class);
+
+    /** User <tt>Preferences<tt> node type. */
+    private static final short USER_NODE_TYPE = 0;
+
+    /** System <tt>Preferences</tt> node type. */
+    private static final short SYSTEM_NODE_TYPE = 1;
 
     /** The persistence store container. */
     private PersistenceStoreContainer storeContainer;
@@ -71,353 +77,247 @@ public class PropertyManagerImpl implements PropertyManager
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#addPropertySetDef(java.lang.String, short)
+     * @see org.apache.jetspeed.prefs.PropertyManager#addPropertyKeys(java.util.prefs.Preferences, java.util.Map)
      */
-    public void addPropertySetDef(String propertySetName, short propertySetType) throws PropertyException
+    public void addPropertyKeys(Preferences prefNode, Map propertyKeysMap) throws PropertyException
     {
-        Short propertySetTypeObject = new Short(propertySetType);
         ArgUtil.notNull(
-            new Object[] { propertySetName, propertySetTypeObject },
-            new String[] { "propertySetName", "propertySetType" },
-            "addPropertySetDef(java.lang.String, java.lang.String)");
+            new Object[] { prefNode, propertyKeysMap },
+            new String[] { "prefNode", "propertyKeysMap", },
+            "addPropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-        // We should not have duplicated property set definition for a
-        // specific type.
         PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-        if (null == ppsd)
+        Node nodeObj;
+        if (prefNode.isUserNode())
         {
-            ppsd = new PropertySetDefImpl(propertySetName, propertySetType);
-            try
-            {
-                store.lockForWrite(ppsd);
-                store.getTransaction().checkpoint();
-            }
-            catch (LockFailedException lfe)
-            {
-                throw new PropertyException("Unable to lock PropertySetDef for update: " + lfe.toString(), lfe);
-            }
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
         }
         else
         {
-            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_ALREADY_EXISTS);
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
         }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#getPropertySetDefIdByType(java.lang.String, short)
-     */
-    //    public int getPropertySetDefIdByType(String propertySetName, short propertySetType) throws PropertyException
-    //    {
-    //        Short propertySetTypeObject = new Short(propertySetType);
-    //        ArgUtil.notNull(
-    //            new Object[] { propertySetName, propertySetTypeObject },
-    //            new String[] { "propertySetName", "propertySetType" },
-    //            "getPropertySetDefIdByType(java.lang.String, java.lang.String)");
-    //
-    //        PersistenceStore store = getPersistenceStore();
-    //        PropertySetDef ppsd =
-    //            (PropertySetDef) store.getObjectByQuery(
-    //                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-    //        if (null != ppsd)
-    //        {
-    //            return ppsd.getPropertySetDefId();
-    //        }
-    //        else
-    //        {
-    //            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_NOT_FOUND);
-    //        }
-    //    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertySetDef(java.lang.String, short)
-     */
-    public void removePropertySetDef(String propertySetName, short propertySetType) throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-        ArgUtil.notNull(
-            new Object[] { propertySetName, propertySetTypeObject },
-            new String[] { "propertySetName", "propertySetType" },
-            "removePropertySetDef(java.lang.String, short)");
-
-        // We need to remove all property set, property values and
-        // keys associated to that set definition.
-        PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-        if (null == ppsd)
+        if (null != nodeObj)
         {
-            if (log.isDebugEnabled())
-                log.debug("Property set definition is null. Nothing to remove.");
-            return;
-        }
-        try
-        {
-            store.deletePersistent(ppsd);
-            store.getTransaction().checkpoint();
-        }
-        catch (LockFailedException lfe)
-        {
-            throw new PropertyException("Unable to remove property set definition: " + lfe.toString(), lfe);
-
-        }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertySetDef(java.lang.String, java.lang.String, short)
-     */
-    public void updatePropertySetDef(String newPropertySetName, String oldPropertySetName, short propertySetType)
-        throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-
-        ArgUtil.notNull(
-            new Object[] { newPropertySetName, oldPropertySetName, propertySetTypeObject },
-            new String[] { "newPropertySetName", "oldPropertySetName", "propertySetType" },
-            "updatePropertySetDef(java.lang.String, java.lang.String, short)");
-
-        PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(oldPropertySetName, propertySetTypeObject));
-        try
-        {
-            store.lockForWrite(ppsd);
-            ppsd.setPropertySetName(newPropertySetName);
-            ppsd.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            store.getTransaction().checkpoint();
-        }
-        catch (LockFailedException lfe)
-        {
-            throw new PropertyException("Unable to lock PropertySetDef for update: " + lfe.toString(), lfe);
-        }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#getAllPropertySetsByType(short)
-     */
-    public Collection getAllPropertySetsByType(short propertySetType) throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-        ArgUtil.notNull(
-            new Object[] { propertySetTypeObject },
-            new String[] { "propertySetType" },
-            "getAllPropertySetsByType(short)");
-
-        PersistenceStore store = getPersistenceStore();
-        Collection propertySetDefs = store.getCollectionByQuery(commonQueries.newPropertySetDefQueryByType(propertySetTypeObject));
-        if (null != propertySetDefs)
-        {
-            ArrayList propertySetsByType = new ArrayList(propertySetDefs.size());
-            for (Iterator i = propertySetDefs.iterator(); i.hasNext();)
+            // Get the existing property keys.
+            Collection propertyKeys = nodeObj.getNodeKeys();
+            ArrayList newPropertyKeys = new ArrayList(propertyKeysMap.size());
+            for (Iterator i = propertyKeysMap.keySet().iterator(); i.hasNext();)
             {
-                PropertySetDef curppsd = (PropertySetDef) i.next();
-                propertySetsByType.add(curppsd.getPropertySetName());
-            }
-            return propertySetsByType;
-        }
-        else
-        {
-            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_NOT_FOUND);
-        }
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#addPropertyKeys(java.lang.String, short, java.util.Collection)
-     */
-    public void addPropertyKeys(String propertySetName, short propertySetType, Collection propertyKeys) throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-        ArgUtil.notNull(
-            new Object[] { propertySetName, propertySetTypeObject, propertyKeys },
-            new String[] { "propertySetName", "propertySetType", "propertyKeys" },
-            "addPropertyKeys(java.lang.String, short, java.util.Collection)");
-
-        PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-        if (null != ppsd)
-        {
-            // Create a set of property keys to add to the property set definition.
-            Collection propertyKeysObj = new ArrayList(propertyKeys.size());
-            for (Iterator i = propertyKeys.iterator(); i.hasNext();)
-            {
-                Map currentPropertyKey = (Map) i.next();
-                PropertyKey ppk =
-                    new PropertyKeyImpl(
-                        ppsd.getPropertySetDefId(),
-                        (String) currentPropertyKey.get(PROPERTYKEY_NAME),
-                        ((Short) currentPropertyKey.get(PROPERTYKEY_TYPE)).shortValue());
-                propertyKeysObj.add(ppk);
-            }
-
-            // Add the properties to the set.
-            try
-            {
-                store.lockForWrite(ppsd);
-                ppsd.setPropertyKeys(propertyKeysObj);
-                ppsd.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                store.getTransaction().checkpoint();
-            }
-            catch (LockFailedException lfe)
-            {
-                throw new PropertyException("Unable to lock PropertySetDef for update: " + lfe.toString(), lfe);
-            }
-        }
-        else
-        {
-            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_NOT_FOUND);
-        }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKeysBySet(int)
-     */
-    /*public void removePropertyKeysBySetDef(int propertySetDefId) throws PropertyException
-    {
-        Integer propertySetDefIdObject = new Integer(propertySetDefId);
-    
-        ArgUtil.notNull(
-            new Object[] { propertySetDefIdObject },
-            new String[] { "propertySetDefId" },
-            "removePropertyKeysBySet(int)");
-    
-        Map propertyKeys = getPropertyKeysBySetDef(propertySetDefId);
-    
-        PersistenceStore store = getPersistenceStore();
-        log.info("\n\n_______________ HERE0_____________\n\n");
-        try
-        {
-            // Remove properties.
-            if ((null != propertyKeys) && (propertyKeys.size() > 0))
-            {
-                log.info("\n\n_______________ HERE1_____________\n\n");
-    
-                Filter filter = store.newFilter();
-                filter.addIn("propertyKeyId", propertyKeys.keySet());
-                Object query = store.newQuery(PropertyImpl.class, filter);
-                store.deleteAll(query);
-            }
-            // Remove property keys.
-            store.deleteAll(commonQueries.newPropertyKeyQueryByPropertySetDefId(propertySetDefIdObject));
-        }
-        catch (LockFailedException lfe)
-        {
-            throw new PropertyException("Unable to remove property keys: " + lfe.toString(), lfe);
-        }
-    }
-    */
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#getPropertyKeysBySetDef(java.lang.String, short)
-     */
-    public Collection getPropertyKeysBySetDef(String propertySetName, short propertySetType) throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-        ArgUtil.notNull(
-            new Object[] { propertySetName, propertySetTypeObject },
-            new String[] { "propertySetName", "propertySetType" },
-            "getPropertyKeysBySetDef(java.lang.String, java.lang.String)");
-
-        PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-        if (null != ppsd)
-        {
-            Collection propertyKeys = ppsd.getPropertyKeys();
-            ArrayList propertyKeyNames = new ArrayList(propertyKeys.size());
-            for (Iterator i = propertyKeys.iterator(); i.hasNext();)
-            {
-                PropertyKey curppk = (PropertyKey) i.next();
-                propertyKeyNames.add(curppk.getPropertyKeyName());
-            }
-            return propertyKeyNames;
-        }
-        else
-        {
-            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_NOT_FOUND);
-        }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKey(int)
-     */
-    public void removePropertyKey(int propertyKeyId) throws PropertyException
-    {
-        Integer propertyKeyIdObject = new Integer(propertyKeyId);
-
-        ArgUtil.notNull(new Object[] { propertyKeyIdObject }, new String[] { "propertyKeyId" }, "removePropertyKey(int)");
-
-        PersistenceStore store = getPersistenceStore();
-        try
-        {
-            // First we remove all property values associated with this key.
-            store.deleteAll(commonQueries.newPropertyQueryById(propertyKeyIdObject));
-            // Second we delete the property key.
-            store.deleteAll(commonQueries.newPropertyKeyQueryById(propertyKeyIdObject));
-        }
-        catch (LockFailedException lfe)
-        {
-            throw new PropertyException("Unable to remove property key: " + lfe.toString(), lfe);
-        }
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertyKey(java.lang.String, java.lang.String, java.lang.String, short)
-     */
-    public void updatePropertyKey(
-        String newPropertyKeyName,
-        String oldPropertyKeyName,
-        String propertySetName,
-        short propertySetType)
-        throws PropertyException
-    {
-        Short propertySetTypeObject = new Short(propertySetType);
-        ArgUtil.notNull(
-            new Object[] { newPropertyKeyName, oldPropertyKeyName, propertySetName, propertySetTypeObject },
-            new String[] { "newPropertyKeyName", "oldPropertyKeyName", "propertySetName", "propertySetType" },
-            "updatePropertyKey(java.lang.String, java.lang.String, java.lang.String, short)");
-
-        PersistenceStore store = getPersistenceStore();
-        PropertySetDef ppsd =
-            (PropertySetDef) store.getObjectByQuery(
-                commonQueries.newPropertySetDefQueryByNameAndType(propertySetName, propertySetTypeObject));
-        if (null != ppsd)
-        {
-            Collection propertyKeys = ppsd.getPropertyKeys();
-            ArrayList newPropertyKeys = new ArrayList(propertyKeys.size());
-            for (Iterator i = propertyKeys.iterator(); i.hasNext();)
-            {
-                PropertyKey curPropertyKey = (PropertyKey) i.next();
-                if (curPropertyKey.getPropertyKeyName().equals(oldPropertyKeyName))
+                boolean foundKey = false;
+                String currentPropertyKeyName = (String) i.next();
+                for (Iterator j = propertyKeys.iterator(); j.hasNext();)
                 {
-                    curPropertyKey.setPropertyKeyName(newPropertyKeyName);
-                    curPropertyKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                    PropertyKey existingPpk = (PropertyKey) j.next();
+                    if (existingPpk.getPropertyKeyName().equals((String) propertyKeysMap.get(currentPropertyKeyName)))
+                    {
+                        if (log.isDebugEnabled())
+                            log.debug("Existing Property: " + (String) propertyKeysMap.get(currentPropertyKeyName));
+                        foundKey = true;
+                        newPropertyKeys.add(existingPpk);
+                        break;
+                    }
                 }
-                newPropertyKeys.add(curPropertyKey);
+                if (!foundKey)
+                {
+                    if (log.isDebugEnabled())
+                        log.debug("New Property: " + currentPropertyKeyName);
+                    PropertyKey ppk =
+                        new PropertyKeyImpl(
+                            currentPropertyKeyName,
+                            ((Short) propertyKeysMap.get(currentPropertyKeyName)).shortValue());
+                    newPropertyKeys.add(ppk);
+                }
             }
 
+            // Add the properties keys.
             try
             {
-                store.lockForWrite(ppsd);
-                ppsd.setPropertyKeys(newPropertyKeys);
-                ppsd.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                if (log.isDebugEnabled())
+                    log.debug("Node: " + nodeObj.toString());
+                if (log.isDebugEnabled())
+                    log.debug("Node property keys: " + newPropertyKeys.toString());
+                store.lockForWrite(nodeObj);
+                nodeObj.setNodeKeys(newPropertyKeys);
+                nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 store.getTransaction().checkpoint();
             }
             catch (LockFailedException lfe)
             {
-                throw new PropertyException("Unable to lock PropertyKey for update: " + lfe.toString(), lfe);
+                throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
             }
         }
         else
         {
-            throw new PropertyException(PropertyException.PROPERTYSET_DEFINITION_NOT_FOUND);
+            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.prefs.PropertyManager#getPropertyKeys(java.util.prefs.Preferences)
+     */
+    public Map getPropertyKeys(Preferences prefNode)
+    {
+        ArgUtil.notNull(new Object[] { prefNode }, new String[] { "prefNode" }, "getPropertyKeys(java.util.prefs.Preferences)");
+
+        PersistenceStore store = getPersistenceStore();
+        Node nodeObj;
+        if (prefNode.isUserNode())
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+        }
+        else
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+        }
+        if (null != nodeObj)
+        {
+            Collection keys = nodeObj.getNodeKeys();
+            HashMap propertyKeysMap = new HashMap(keys.size());
+            for (Iterator i = keys.iterator(); i.hasNext();)
+            {
+                PropertyKey curpk = (PropertyKey) i.next();
+                propertyKeysMap.put(curpk.getPropertyKeyName(), new Short(curpk.getPropertyKeyType()));
+            }
+            return propertyKeysMap;
+        }
+        else
+        {
+            return new HashMap(0);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)
+     */
+    public void removePropertyKeys(Preferences prefNode, Collection propertyKeys) throws PropertyException
+    {
+        ArgUtil.notNull(
+            new Object[] { prefNode, propertyKeys },
+            new String[] { "prefNode", "propertyKeys" },
+            "removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
+
+        PersistenceStore store = getPersistenceStore();
+        Node nodeObj;
+        if (prefNode.isUserNode())
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+        }
+        else
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+        }
+        if (null != nodeObj)
+        {
+            Collection properties = nodeObj.getNodeProperties();
+            ArrayList newProperties = new ArrayList(properties.size());
+            Collection keys = nodeObj.getNodeKeys();
+            ArrayList newKeys = new ArrayList(keys.size());
+            for (Iterator i = properties.iterator(); i.hasNext();)
+            {
+                Property curProp = (Property) i.next();
+                PropertyKey curPropKey = (PropertyKey) curProp.getPropertyKey();
+                if ((null != curPropKey) && (!propertyKeys.contains(curProp.getPropertyKey().getPropertyKeyName())))
+                {
+                    newProperties.add(curProp);
+                }
+            }
+            for (Iterator j = newKeys.iterator(); j.hasNext();)
+            {
+                PropertyKey curPropKey = (PropertyKey) j.next();
+                if (!propertyKeys.contains(curPropKey.getPropertyKeyName()))
+                {
+                    newKeys.add(curPropKey);
+                }
+            }
+            // Remove the properties keys.
+            try
+            {
+                store.lockForWrite(nodeObj);
+                nodeObj.setNodeKeys(newKeys);
+                nodeObj.setNodeProperties(newProperties);
+                nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                store.getTransaction().checkpoint();
+            }
+            catch (LockFailedException lfe)
+            {
+                throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
+            }
+        }
+        else
+        {
+            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)
+     */
+    public void updatePropertyKey(String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey) throws PropertyException
+    {
+        ArgUtil.notNull(
+            new Object[] { oldPropertyKeyName, prefNode, newPropertyKey },
+            new String[] { "oldPropertyKeyName", "prefNode", "newPropertyKey" },
+            "updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)");
+
+        PersistenceStore store = getPersistenceStore();
+        Node nodeObj;
+        if (prefNode.isUserNode())
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+        }
+        else
+        {
+            nodeObj =
+                (Node) store.getObjectByQuery(
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+        }
+        if (null != nodeObj)
+        {
+            Collection keys = nodeObj.getNodeKeys();
+            for (Iterator i = keys.iterator(); i.hasNext();)
+            {
+                PropertyKey curPropKey = (PropertyKey) i.next();
+                if (curPropKey.getPropertyKeyName().equals(oldPropertyKeyName))
+                {
+                    for (Iterator j = newPropertyKey.keySet().iterator(); j.hasNext();)
+                    {
+                        String newKey = (String) j.next();
+                        // Update the property key.
+                        try
+                        {
+                            store.lockForWrite(curPropKey);
+                            curPropKey.setPropertyKeyName(newKey);
+                            curPropKey.setPropertyKeyType(((Short) newPropertyKey.get(newKey)).shortValue());
+                            curPropKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                            if (log.isDebugEnabled())
+                                log.debug("Updated property key: " + curPropKey.toString());
+                            store.getTransaction().checkpoint();
+                        }
+                        catch (LockFailedException lfe)
+                        {
+                            throw new PropertyException("Unable to lock Node for update: " + lfe.toString(), lfe);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
         }
     }
 

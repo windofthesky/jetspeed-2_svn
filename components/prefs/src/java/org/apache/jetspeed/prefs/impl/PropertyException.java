@@ -25,12 +25,12 @@ import org.apache.jetspeed.exception.JetspeedException;
 public class PropertyException extends JetspeedException
 {
 
-    /** Property set definition not found exception message. */
-    public static final String PROPERTYSET_DEFINITION_NOT_FOUND
-                        = "The specified property set definition does not exist.";
-    /** Property set definition already exists exception message. */
-    public static final String  PROPERTYSET_DEFINITION_ALREADY_EXISTS
-                        = "The specified property set definition already exists.";
+    /** Preferences node not found exception message. */
+    public static final String NODE_NOT_FOUND
+                        = "The specified preferences node does not exist.";
+    /** Preferences node already exists exception message. */
+    public static final String  NODE_ALREADY_EXISTS
+                        = "The specified preferences node already exists.";
     /** Property key not found exception message. */
     public static final String PROPERTYKEY_NOT_FOUND
                         = "The specified property key does not exist.";
