@@ -17,19 +17,19 @@ package org.apache.jetspeed.util.descriptor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,9 +37,8 @@ import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.impl.VFSClassLoader;
-import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
@@ -58,10 +57,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * This class facilitates opertions a portlet applications WAR file or WAR file-like
- * structure.
- *
+ * <p>
+ * This class facilitates operations a portlet applications WAR file or WAR
+ * file-like structure.
+ * </p>
+ * <p>
+ * This class is utility class used mainly implementors of
+ * {@link org.apache.jetspeed.pamanager.Deployment}and
+ * {@link org.apache.jetspeed.pamanager.Registration}to assist in deployment
+ * and undeployment of portlet applications.
+ * 
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
+ * @author <a href="mailto:mavery@einnovation.com">Matt Avery </a>
  * @version $Id$
  */
 public class PortletApplicationWar
@@ -77,39 +84,88 @@ public class PortletApplicationWar
 
     protected String paName;
     protected String webAppContextRoot;
-    protected Locale locale;
-    protected String webAppDisplayName;
     protected FileObject warStruct;
     protected FileSystemManager fsManager;
     private MutableWebApplication webApp;
     private MutablePortletApplication portletApp;
 
-
-
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
     protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
-            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet", "servlet-mapping"};
+            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
+            "servlet-mapping"};
 
     /**
-     * @param warPath
-     *                  Path to a war file or war file structure
-     * @param paName
-     *                  name of the portlet application the <code>warPath</code>
-     *                  contains
+     * @param warFile
+     *            <code>org.apache.commons.vfs.FileObject</code> representing
+     *            the WAR file we are working with. This <code>FileObject</code>
+     *            can be an actual WAR file or a directory structure layed out
+     *            in a WAR-like fashion. name of the portlet application the
+     *            <code>warPath</code> contains
      * @param webAppContextRoot
-     *                  context root relative to the servlet container of this app
-     * @param locale
-     *                  locale to deploy to
-     * @param webAppDisplayName
-     * @param vfsConfigUri
-     *                  Optional URI to a Commons VFS configuration file, since
-     *                  this class uses it to manipulate the WAR file. Can be
-     *                  null if we want Common VFS to use default behavior.
+     *            context root relative to the servlet container of this app
+     * @param fsManager
+     *            org.apache.commons.vfs.FileSystemManager that will be used to
+     *            operate on the WAR file.
      * @throws IOException
      */
-    public PortletApplicationWar( String warPath, String paName, String webAppContextRoot, Locale locale,
-            String webAppDisplayName, String vfsConfigUri ) throws IOException
+    public PortletApplicationWar( FileObject warStruct, String paName, String webAppContextRoot,
+            FileSystemManager fsManager ) throws IOException
+    {
+        validatePortletApplicationName(paName);
+
+        if (fsManager != null)
+        {
+            this.fsManager = fsManager;
+        }
+        else
+        {
+            throw new IllegalArgumentException("PortletApplicationWar requires a non-null FileSystemManager instance.");
+        }
+        
+        if(warStruct.getType().equals(FileType.FOLDER))
+        {
+            this.warStruct = warStruct;
+        }
+        else
+        {
+            throw new IllegalArgumentException(warStruct.getURL()+" must be of type FileType.FOLDER, not "+warStruct.getType());
+        }
+        
+
+        this.paName = paName;
+        this.webAppContextRoot = webAppContextRoot;
+    }
+
+    /**
+     * 
+     * @param warPath
+     *            A path on the file system that points to a WAR file we are
+     *            working with. The <code>warPath</code> can be an actual WAR
+     *            file or a directory structure layed out in a WAR-like fashion.
+     *            name of the portlet application the <code>warPath</code>
+     *            contains
+     * @param webAppContextRoot
+     *            context root relative to the servlet container of this app
+     * @param fsManager
+     *            org.apache.commons.vfs.FileSystemManager that will be used to
+     *            operate on the WAR file.
+     * @throws IOException
+     */
+    public PortletApplicationWar( String warPath, String paName, String webAppContextRoot, FileSystemManager fsManager )
+            throws IOException
+    {
+        this(fsManager.toFileObject(new File(warPath)), paName, webAppContextRoot, fsManager);
+    }
+
+    /**
+     * <p>
+     * validatePortletApplicationName
+     * </p>
+     * 
+     * @param paName
+     */
+    private void validatePortletApplicationName( String paName )
     {
         if (paName == null || paName.startsWith("/") || paName.startsWith("\\") || paName.endsWith("/")
                 || paName.endsWith("\\"))
@@ -117,51 +173,20 @@ public class PortletApplicationWar
             throw new IllegalStateException("Invalid paName \"" + paName
                     + "\".  paName cannot be null nor can it begin nor end with any slashes.");
         }
-
-        if (vfsConfigUri != null)
-        {
-            StandardFileSystemManager standardManager = new StandardFileSystemManager();
-            standardManager.setConfiguration(vfsConfigUri);
-            standardManager.init();
-            fsManager = standardManager;
-        }
-        else
-        {
-            fsManager = VFS.getManager();
-        }
-        File warPathFile = new File(warPath).getAbsoluteFile();
-
-        if (!warPathFile.exists())
-        {
-            throw new FileNotFoundException(warPathFile.getPath() + " does not exist.");
-        }
-
-        if (warPathFile.isDirectory())
-        {
-            warStruct = fsManager.resolveFile(warPathFile.toURL().toExternalForm());
-        }
-        else if (warPathFile.isFile())
-        {
-            warStruct = fsManager.resolveFile("jar:" + warPathFile.getAbsolutePath());
-        }
-
-        this.paName = paName;
-        this.webAppContextRoot = webAppContextRoot;
-        this.locale = locale;
-        this.webAppDisplayName = webAppDisplayName;
     }
 
     /**
-     *
+     * 
      * <p>
      * createWebApp
      * </p>
      * Creates a web applicaiton object based on the values in this WAR's
      * WEB-INF/web.xml
-     *
+     * 
      * @return @throws
-     *              PortletApplicationException
+     *         PortletApplicationException
      * @throws IOException
+     * @see org.apache.jetspeed.util.descriptor.WebApplicationDescriptor
      */
     public MutableWebApplication createWebApp() throws PortletApplicationException, IOException
     {
@@ -169,8 +194,7 @@ public class PortletApplicationWar
 
         try
         {
-            WebApplicationDescriptor webAppDescriptor = new WebApplicationDescriptor(webXmlReader, webAppContextRoot,
-                    locale, webAppDisplayName);
+            WebApplicationDescriptor webAppDescriptor = new WebApplicationDescriptor(webXmlReader, webAppContextRoot);
             webApp = webAppDescriptor.createWebApplication();
             return webApp;
         }
@@ -193,16 +217,17 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * createPortletApp
      * </p>
      * Creates a portlet application object based of the WAR file's
      * WEB-INF/portlet.xml
-     *
+     * 
      * @return @throws
-     *              PortletApplicationException
+     *         PortletApplicationException
      * @throws IOException
+     * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
     public MutablePortletApplication createPortletApp() throws PortletApplicationException, IOException
     {
@@ -243,14 +268,20 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * getReader
      * </p>
-     *
+     * Returns a <code>java.io.Reader</code> to a resource within this WAR's
+     * structure.
+     * 
      * @param path
-     * @return @throws
-     *              IOException
+     *            realtive to an object within this WAR's file structure
+     * @return java.io.Reader to the file within the WAR
+     * @throws IOException
+     *             if the path does not exist or there was a problem reading the
+     *             WAR.
+     *  
      */
     protected Reader getReader( String path ) throws IOException
     {
@@ -258,48 +289,89 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * getInputStream
      * </p>
-     *
+     * 
+     * Returns a <code>java.io.InputStream</code> to a resource within this
+     * WAR's structure.
+     * 
      * @param path
-     * @return @throws
-     *              IOException
+     *            realtive to an object within this WAR's file structure
+     * @return java.io.InputStream to the file within the WAR
+     * @throws IOException
+     *             if the path does not exist or there was a problem reading the
+     *             WAR.
      */
     protected InputStream getInputStream( String path ) throws IOException
     {
         FileObject child = warStruct.resolveFile(path);
         if (child == null)
         {
-            throw new IOException("Unable to locate file or path " + child);
+            throw new FileNotFoundException("Unable to locate file or path " + child);
         }
 
         return child.getContent().getInputStream();
     }
 
     /**
-     *
+     * 
+     * <p>
+     * getOutputStream
+     * </p>
+     * 
+     * Returns a <code>java.io.OutputStream</code> to a resource within this
+     * WAR's structure.
+     * 
+     * @param path
+     *            realtive to an object within this WAR's file structure
+     * @return java.io.Reader to the file within the WAR
+     * @throws IOException
+     *             if the path does not exist or there was a problem reading the
+     *             WAR.
+     */
+    protected OutputStream getOutputStream( String path ) throws IOException
+    {
+        FileObject child = warStruct.resolveFile(path);
+        if (child == null)
+        {
+            throw new FileNotFoundException("Unable to locate file or path " + child);
+        }
+
+        return child.getContent().getOutputStream();
+    }
+
+    protected Writer getWriter( String path ) throws IOException
+    {
+        return new OutputStreamWriter(getOutputStream(path));
+    }
+
+    /**
+     * 
      * <p>
      * copyWar
      * </p>
      * Copies the entire WAR structure to the path defined in
      * <code>targetAppRoot</code>
-     *
+     * 
      * @param targetAppRoot
+     *            target to copy this WAR's content to. If the path ends in
+     *            <code>.war</code> or <code>.jar</code>. The war will be
+     *            copied into that file in jar format.
+     * @return PortletApplicationWar representing the newly created WAR.
      * @throws IOException
      */
-    public void copyWar( String targetAppRoot ) throws IOException
+    public PortletApplicationWar copyWar( String targetAppRoot ) throws IOException
     {
         FileObject target = fsManager.resolveFile(new File(targetAppRoot).getAbsolutePath());
-        
+
         try
-        {
-            // fsManager.getFilesCache().clear(target.getFileSystem());
-           
-            target.createFolder();            
+        {           
             target.copyFrom(warStruct, new AllFileSelector());
-            
+
+            return new PortletApplicationWar(target, paName, webAppContextRoot, fsManager);
+
         }
         catch (FileSystemException e)
         {
@@ -308,80 +380,37 @@ public class PortletApplicationWar
         finally
         {
             target.close();
-            
-        }
-       
-        
 
-    }
-
-    public void copyWarAndProcessWebXml( String targetAppRoot ) throws IOException, MetaDataException
-    {
-        copyWar(targetAppRoot);
-        InputStream webXmlIn = null;
-        OutputStream webXmlOut = null;
-        try
-        {
-            webXmlIn = getInputStream(WEB_XML_PATH);
-            processWebXML(webXmlIn, targetAppRoot + WEB_XML_PATH);
-        }
-        finally
-        {
-            if (webXmlIn != null)
-            {
-                webXmlIn.close();
-            }
-
-            if (webXmlOut != null)
-            {
-                webXmlOut.close();
-            }
         }
 
     }
 
     /**
-     * @param targetWebXml
-     *                  web.xml to "infuse" with J2 specific information
-     * @throws IOException
-     *                   when there is a problem reading or writing web.xml
-     *                   information
-     * @throws PortletApplicationException
-     */
-    public void processWebXML( String targetWebXml ) throws MetaDataException, IOException
-    {
-        InputStream webXmlIn = null;
-
-        try
-        {
-            webXmlIn = getInputStream(WEB_XML_PATH);
-            processWebXML(webXmlIn, targetWebXml);
-        }
-        finally
-        {
-            if (webXmlIn != null)
-            {
-                webXmlIn.close();
-            }
-        }
-
-    }
-
-    /**
-     *
+     * 
      * <p>
      * removeWar
      * </p>
      * Deletes this WAR. If the WAR is a file structure and not an actual WAR
      * file, all children are delted first, then the directory is removed.
-     *
+     * 
      * @throws IOException
-     *                   if there is an error removing the WAR from the file system.
+     *             if there is an error removing the WAR from the file system.
      */
     public void removeWar() throws IOException
     {
-        warStruct.delete(new AllFileSelector());
-        warStruct.delete();
+        File checkFile = new File(warStruct.getURL().getFile());
+        if(checkFile.exists())
+        {
+          warStruct.delete(new AllFileSelector());
+          warStruct.delete();
+          checkFile.delete();
+          fsManager.getFilesCache().clear(warStruct.getFileSystem());
+        }
+        else
+        {
+            fsManager.getFilesCache().clear(warStruct.getFileSystem());
+            throw new FileNotFoundException("PortletApplicationWar ,"+warStruct.getURL().getFile()+", does not exist.");
+        }
     }
 
     /**
@@ -395,9 +424,7 @@ public class PortletApplicationWar
      * web application. An error message is logged and a
      * PortletApplicationException is thrown if not.
      * </ul>
-     *
-     * @param app
-     *                  The PortletApplicationDefinition to validate
+     * 
      * @throws PortletApplicationException
      */
     public void validate() throws PortletApplicationException
@@ -435,24 +462,24 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * processWebXML
      * </p>
-     *
-     * Infuses this the <code>webXmlIn</code>, which is expected to be the contents of a web.xml web
-     * application descriptor, with <code>servlet</code> and a <code>servlet-mapping</code> element
-     * for the JetspeedContainer servlet.  This is only done if the descriptor does not already contain these
-     * items.
-     *
-     * @param webXmlIn web.xml content that is not yet infused
-     * @param webXmlOut target for infused web.xml content
-     * @throws MetaDataException if there is a problem infusing
+     * 
+     * Infuses this PortletApplicationWar's web.xml file with
+     * <code>servlet</code> and a <code>servlet-mapping</code> element for
+     * the JetspeedContainer servlet. This is only done if the descriptor does
+     * not already contain these items.
+     * 
+     * @throws MetaDataException
+     *             if there is a problem infusing
      */
-    protected void processWebXML( InputStream webXmlIn, String targetWebXml ) throws MetaDataException
+    public void processWebXML() throws MetaDataException
     {
         SAXBuilder builder = new SAXBuilder();
-        FileWriter webXmlWriter = null;
+        Writer webXmlWriter = null;
+        InputStream webXmlIn = null;
 
         try
         {
@@ -460,20 +487,19 @@ public class PortletApplicationWar
             // allows to deploy the application offline
             builder.setEntityResolver(new EntityResolver()
             {
-                public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId)
-                    throws SAXException, java.io.IOException
+                public InputSource resolveEntity( java.lang.String publicId, java.lang.String systemId )
+                        throws SAXException, java.io.IOException
                 {
 
                     if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
                     {
                         return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
                     }
-                    else
-                        return null;
+                    else return null;
                 }
             });
 
-
+            webXmlIn = getInputStream(WEB_XML_PATH);
             Document doc = builder.build(webXmlIn);
 
             Element root = doc.getRootElement();
@@ -483,11 +509,10 @@ public class PortletApplicationWar
 
             Object jetspeedServlet = XPath.selectSingleNode(doc, JETSPEED_SERVLET_XPATH);
             Object jetspeedServletMapping = XPath.selectSingleNode(doc, JETSPEED_SERVLET_MAPPING_XPATH);
-            if(doc.getRootElement().getChildren().size() ==0)
+            if (doc.getRootElement().getChildren().size() == 0)
             {
                 throw new MetaDataException("Source web.xml has no content!!!");
             }
-
 
             log.debug("web.xml already contains servlet for the JetspeedContainer servlet.");
             log.debug("web.xml already contains servlet-mapping for the JetspeedContainer servlet.");
@@ -496,16 +521,17 @@ public class PortletApplicationWar
             {
                 Element jetspeedServletElement = new Element("servlet");
                 Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
-                Element servletDspName =(Element)  new Element("display-name").addContent("Jetspeed Container");
-                Element servletDesc =(Element)  new Element("description").addContent("MVC Servlet for Jetspeed Portlet Applications");
-                Element servletClass = (Element)  new Element("servlet-class")
+                Element servletDspName = (Element) new Element("display-name").addContent("Jetspeed Container");
+                Element servletDesc = (Element) new Element("description")
+                        .addContent("MVC Servlet for Jetspeed Portlet Applications");
+                Element servletClass = (Element) new Element("servlet-class")
                         .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
                 jetspeedServletElement.addContent(servletName);
                 jetspeedServletElement.addContent(servletDspName);
                 jetspeedServletElement.addContent(servletDesc);
                 jetspeedServletElement.addContent(servletClass);
 
-               insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
+                insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
                 changed = true;
             }
 
@@ -514,7 +540,7 @@ public class PortletApplicationWar
 
                 Element jetspeedServletMappingElement = new Element("servlet-mapping");
 
-                Element servletMapName = (Element)  new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletMapName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
                 Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
 
                 jetspeedServletMappingElement.addContent(servletMapName);
@@ -526,12 +552,9 @@ public class PortletApplicationWar
 
             if (changed)
             {
-                System.out.println("Writing out infused web.xml for "+paName);
+                System.out.println("Writing out infused web.xml for " + paName);
                 XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-//                output.setIndent("  ");
-//                output.setNewlines(true);
-//                output.setTrimAllWhite(true);
-                webXmlWriter = new FileWriter(targetWebXml);
+                webXmlWriter = getWriter(WEB_XML_PATH);
                 output.output(doc, webXmlWriter);
                 webXmlWriter.flush();
 
@@ -544,11 +567,23 @@ public class PortletApplicationWar
         }
         finally
         {
-            if(webXmlWriter != null)
+            if (webXmlWriter != null)
             {
                 try
                 {
                     webXmlWriter.close();
+                }
+                catch (IOException e1)
+                {
+
+                }
+            }
+
+            if (webXmlIn != null)
+            {
+                try
+                {
+                    webXmlIn.close();
                 }
                 catch (IOException e1)
                 {
@@ -560,23 +595,26 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * insertElementCorrectly
      * </p>
-     *
-     * @param root JDom element representing the &lt; web-app &gt;
-     * @param toInsert JDom element to insert into the web.xml hierarchy.
-     * @param elementsBefore an array of web.xml elements that should be defined
-     * before the element we want to insert.  This order should be the order defined by the
-     * web.xml's DTD type definition.
+     * 
+     * @param root
+     *            JDom element representing the &lt; web-app &gt;
+     * @param toInsert
+     *            JDom element to insert into the web.xml hierarchy.
+     * @param elementsBefore
+     *            an array of web.xml elements that should be defined before the
+     *            element we want to insert. This order should be the order
+     *            defined by the web.xml's DTD type definition.
      */
     protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
     {
         List allChildren = root.getChildren();
         List elementsBeforeList = Arrays.asList(elementsBefore);
         toInsert.detach();
-        int insertAfter = 0;  
+        int insertAfter = 0;
         for (int i = 0; i < allChildren.size(); i++)
         {
             Element element = (Element) allChildren.get(i);
@@ -586,10 +624,10 @@ public class PortletApplicationWar
                 insertAfter = root.indexOf(element);
             }
         }
-       
+
         try
         {
-            root.addContent((insertAfter+1), toInsert);
+            root.addContent((insertAfter + 1), toInsert);
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
@@ -598,42 +636,46 @@ public class PortletApplicationWar
     }
 
     /**
-     *
+     * 
      * <p>
      * close
      * </p>
      * Closes any resource this PortletApplicationWar may have opened.
-     *
+     * 
      * @throws IOException
      */
     public void close() throws IOException
     {
         warStruct.close();
+        fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
+        //fsManager.getFilesCache().clear(warStruct.getFileSystem());
     }
 
     /**
-     *
+     * 
      * <p>
      * createClassloader
      * </p>
-     *
-     * Use this method to create a classloader based on this wars structure. I.e.
-     * it will create a ClassLoader containing the contents of WEB-INF/classes and
-     * WEB-INF/lib and the ClassLoader will be searched in that order.
-     *
-     *
-     * @param parent Parent ClassLoader
-     * @return
-     * @throws IOException
+     * 
+     * Use this method to create a classloader based on this wars structure.
+     * I.e. it will create a ClassLoader containing the contents of
+     * WEB-INF/classes and WEB-INF/lib and the ClassLoader will be searched in
+     * that order.
+     * 
+     * 
+     * @param parent
+     *            Parent ClassLoader. Can be <code>null</code>
+     * @return @throws
+     *         IOException
      */
-    public ClassLoader createClassloader(ClassLoader parent) throws IOException
+    public ClassLoader createClassloader( ClassLoader parent ) throws IOException
     {
         ArrayList fileObjects = new ArrayList();
         FileObject webInfClasses = null;
         try
         {
             webInfClasses = warStruct.resolveFile("WEB-INF/classes/");
-            log.info("Adding "+webInfClasses.getURL()+" to class path.");
+            log.info("Adding " + webInfClasses.getURL() + " to class path.");
             fileObjects.add(webInfClasses);
         }
         catch (FileSystemException e)
@@ -641,19 +683,17 @@ public class PortletApplicationWar
             log.info("No class dependencies found");
         }
 
-
-         try
+        try
         {
             FileObject webInfLib = warStruct.resolveFile("WEB-INF/lib");
             FileObject[] jars = webInfLib.getChildren();
             URL[] jarUrls = new URL[jars.length];
-            for(int i=0; i<jars.length; i++)
+            for (int i = 0; i < jars.length; i++)
             {
                 FileObject jar = jars[i];
-                log.info("Adding "+jar.getURL()+" to class path.");
-                fileObjects.add( jar);
+                log.info("Adding " + jar.getURL() + " to class path.");
+                fileObjects.add(jar);
             }
-
 
         }
         catch (FileSystemException e)
@@ -661,9 +701,37 @@ public class PortletApplicationWar
             log.info("No jar dependencies found");
         }
 
-
-        return new VFSClassLoader((FileObject[])fileObjects.toArray(new FileObject[fileObjects.size()]), fsManager, parent);
+        return new VFSClassLoader((FileObject[]) fileObjects.toArray(new FileObject[fileObjects.size()]), fsManager,
+                parent);
 
     }
 
+    /**
+     * @return Returns the paName.
+     */
+    public String getPortletApplicationName()
+    {
+        return paName;
+    }
+
+    /**
+     * 
+     * <p>
+     * getDeployedPath
+     * </p>
+     * 
+     * @return A string representing the path to this WAR in the form of a URL
+     *         or <code>null</code> is the URL could not be created.
+     */
+    public String getDeployedPath()
+    {
+        try
+        {
+            return warStruct.getURL().toExternalForm();
+        }
+        catch (FileSystemException e)
+        {
+            return null;
+        }
+    }
 }
