@@ -47,7 +47,7 @@ XML,RSS or SMTP can be integrated with Jetspeed. The actual presentation of the 
 handled via ates XSL and delivered to the user for example via the combination of Java Server Pages (JSPs) 
 and HTML. Jetspeed provides support for templating and content publication frameworks such as 
 <a href="http://xml.apache.org/cocoon/">Cocoon</a>, <a href="http://www.webmacro.org/">WebMacro</a> and 
-<a href="http://jakarta.apache.org/velocity/">Velocity</a>. Note that outside of regualar browser Jetspeed also supports WAP devices.
+<a href="http://jakarta.apache.org/velocity/">Velocity</a>. Note that outside of regular browser Jetspeed also supports WAP devices.
 </p>
       <p>
 Jetspeed helps you build portal applications quickly. The goal is to make Jetspeed a tool for both portal developers as well 
