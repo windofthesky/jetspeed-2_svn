@@ -81,6 +81,8 @@ limitations under the License.
 	    <collection-descriptor
 	        name="credentials"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
+          proxy="true"
+          refresh="true"          
 	        auto-retrieve="true"
 	        auto-update="object"
 	        auto-delete="object"

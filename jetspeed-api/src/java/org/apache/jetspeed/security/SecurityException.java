@@ -60,6 +60,9 @@ public class SecurityException extends JetspeedException
     /** <p>Invalid authentication provider exception message.</p> */
     public static final String INVALID_AUTHENTICATION_PROVIDER = "Invalid authentication provider.";    
 
+    /** <p>Password already used exception message.</p> */
+    public static final String PASSWORD_ALREADY_USED = "Password already used.";
+
     /**
      * <p>Default Constructor.</p>
      */

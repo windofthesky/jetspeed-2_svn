@@ -14,7 +14,6 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,22 +21,23 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
 * <p>
- * TestInternalPasswordCredentialStateHandlingInterceptor
+ * TestInternalPasswordCredentialHistoryHandlingInterceptor
  * </p>
  * 
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public class TestInternalPasswordCredentialStateHandlingInterceptor extends AbstractSecurityTestcase
+public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends AbstractSecurityTestcase
 {
     private InternalUserPrincipal internalUser;
-    private InternalCredential credential;
+    private InternalCredentialImpl credential;
     
     protected void setUp() throws Exception
     {
@@ -55,44 +55,35 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
 
     public static Test suite()
     {
-        return new TestSuite(TestInternalPasswordCredentialStateHandlingInterceptor.class);
+        return new TestSuite(TestInternalPasswordCredentialHistoryHandlingInterceptor.class);
     }
 
-    public void testExpired() throws Exception
+    public void testPasswordHistory() throws Exception
     {
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
-        credential.setExpirationDate(new Date(System.currentTimeMillis()));
-        updateCredential();
-        assertFalse("should be expired",ums.authenticate("testcred","password"));
-        ums.setPassword("testcred","password","password2");
+        ums.setPassword("testcred","password","password1");
+        ums.setPassword("testcred","password1","password2");
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password2"));
-        assertFalse("should not be allowed to authenticate (wrong password1)",ums.authenticate("testcred","password"));
-        assertFalse("should not be allowed to authenticate (wrong password2)",ums.authenticate("testcred","password"));
-        assertFalse("should not be allowed to authenticate (wrong password3)",ums.authenticate("testcred","password"));
-        assertFalse("should not be allowed to authenticate (disabled)",ums.authenticate("testcred","password2"));
-        ums.setPassword("testcred",null,"password3");
-        assertFalse("should still not be allowed to authenticate (disabled)",ums.authenticate("testcred","password3"));
-        ums.setPasswordEnabled("testcred", true);
-        assertTrue("should be allowed to authenticate again",ums.authenticate("testcred","password3"));
+        try
+        {
+            ums.setPassword("testcred","password2","password");
+            fail("Should not be allowed to reuse a password from password history");
+        }
+        catch (SecurityException sex)
+        {
+            assertEquals(SecurityException.PASSWORD_ALREADY_USED, sex.getMessage());
+        }
+        ums.setPassword("testcred","password2","password3");
+        ums.setPassword("testcred","password3","password4");
+        ums.setPassword("testcred","password4","password");
+        assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
     }
 
     protected void initUser() throws Exception
     {
         ums.addUser("testcred", "password");
-        loadUser();
     }
     
-    protected void loadUser() throws Exception
-    {
-        internalUser = securityAccess.getInternalUserPrincipal("testcred");
-        credential = (InternalCredential)internalUser.getCredentials().iterator().next();
-    }
-    
-    protected void updateCredential() throws Exception
-    {
-        securityAccess.setInternalUserPrincipal(internalUser,false);
-    }
-
     protected void destroyUser() throws Exception
     {
         ums.removeUser("testcred");
@@ -102,7 +93,7 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("META-INF/sipcshi.xml");
+        confList.add("META-INF/sipchhi.xml");
         return (String[])confList.toArray(new String[1]);
     }    
 }

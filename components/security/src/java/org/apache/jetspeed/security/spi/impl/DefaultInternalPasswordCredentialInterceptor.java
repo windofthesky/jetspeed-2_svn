@@ -74,10 +74,10 @@ public class DefaultInternalPasswordCredentialInterceptor implements InternalPas
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#beforeSetPassword(org.apache.jetspeed.security.om.InternalUserPrincipal, java.util.Collection, java.lang.String, org.apache.jetspeed.security.om.InternalCredential, java.lang.String)
+     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#beforeSetPassword(org.apache.jetspeed.security.om.InternalUserPrincipal, java.util.Collection, java.lang.String, org.apache.jetspeed.security.om.InternalCredential, java.lang.String, boolean)
      */
     public void beforeSetPassword(InternalUserPrincipal internalUser, Collection credentials, String userName,
-            InternalCredential credential, String password) throws SecurityException
+            InternalCredential credential, String password, boolean authenticated) throws SecurityException
     {
     }
 }

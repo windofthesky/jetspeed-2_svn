@@ -385,11 +385,13 @@ limitations under the License.
   </bean>       
 
   <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor" 
-       class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialStateHandlingInterceptor">
+       class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialHistoryHandlingInterceptor">
        <!-- maxNumberOfAuthenticationFailures -->
        <constructor-arg index="0"><value>3</value></constructor-arg>  
        <!-- maxLifeSpanInDays -->     
        <constructor-arg index="1"><value>60</value></constructor-arg>       
+       <!-- historySize -->     
+       <constructor-arg index="2"><value>3</value></constructor-arg>       
   </bean>
 
   <!-- Security SPI: CredentialHandler -->

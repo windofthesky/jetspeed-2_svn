@@ -40,12 +40,6 @@ public class DefaultCredentialHandler implements CredentialHandler
 {
     private static final Log log = LogFactory.getLog(DefaultCredentialHandler.class);
 
-    /** Private credentials type. */
-    private static final int PRIVATE = 0;
-
-    /** Public credentials type. */
-    private static final int PUBLIC = 1;
-
     private SecurityAccess securityAccess;
 
     private PasswordCredentialProvider pcProvider;
@@ -106,7 +100,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             while (iter.hasNext())
             {
                 credential = (InternalCredential) iter.next();
-                if (credential.getType() == PRIVATE )
+                if (credential.getType() == InternalCredential.PRIVATE )
                 {
                     if ((null != credential.getClassname())
                             && (credential.getClassname().equals(pcProvider.getPasswordCredentialClass().getName())))
@@ -184,9 +178,9 @@ public class DefaultCredentialHandler implements CredentialHandler
 
         boolean create = credential == null;
 
-        if ( credential == null )
+        if ( create )
         {
-            credential = new InternalCredentialImpl(internalUser.getPrincipalId(), newPassword, PRIVATE,
+            credential = new InternalCredentialImpl(internalUser.getPrincipalId(), newPassword, InternalCredential.PRIVATE,
                             pcProvider.getPasswordCredentialClass().getName());
             credential.setEncoded(encoded);
             credentials.add(credential);
@@ -212,7 +206,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             }
             else
             {
-                ipcInterceptor.beforeSetPassword(internalUser, credentials, userName, credential, newPassword );
+                ipcInterceptor.beforeSetPassword(internalUser, credentials, userName, credential, newPassword, oldPassword != null );
             }
         }
         if (!create)

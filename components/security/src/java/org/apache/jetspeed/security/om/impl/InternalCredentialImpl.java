@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.util.HashCodeBuilder;
 
 /**
  * <p>{@link InternalCredential} interface implementation.</p>
@@ -34,7 +35,7 @@ public class InternalCredentialImpl implements InternalCredential
     }
 
     /**
-     * <p>InternalPrincipal constructor given a value, type and classname.</p>
+     * <p>InternalCredentialImpl constructor given a value, type and classname.</p>
      * @param principalId The principal id.
      * @param value The value.
      * @param type The type.
@@ -48,6 +49,28 @@ public class InternalCredentialImpl implements InternalCredential
         this.classname = classname;
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
+    }
+    
+    /**
+     * <p>InternalCredentialImpl copy constructor given another InternalCredential and overriding classname</p>
+     * @param credential The credential to copy from
+     * @param classname The classname for the new credential
+     */
+    public InternalCredentialImpl(InternalCredential credential, String classname)
+    {
+        this.authenticationFailures = credential.getAuthenticationFailures();
+        this.classname = classname;
+        this.creationDate = credential.getCreationDate();
+        this.enabled = credential.isEnabled();
+        this.encoded = credential.isEncoded();
+        this.expirationDate = credential.getExpirationDate();
+        this.expired = credential.isExpired();
+        this.lastLogonDate = credential.getLastLogonDate();
+        this.modifiedDate = credential.getModifiedDate();
+        this.principalId = credential.getPrincipalId();
+        this.type = credential.getType();
+        this.updateRequired = credential.isUpdateRequired();
+        this.value = credential.getValue();
     }
 
     private long credentialId;
@@ -301,6 +324,22 @@ public class InternalCredentialImpl implements InternalCredential
     {
         this.lastLogonDate = lastLogonDate;
     }
+    
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(1, 3);
+        hasher.append(getPrincipalId());
+        hasher.append(getCreationDate().getTime());
+        if (getClassname() != null)
+        {
+            hasher.append(getClassname());
+        }
+        return hasher.toHashCode();
+    }
+    
 
     /**
      * <p>Compares this {@link InternalCredential} to the provided credential

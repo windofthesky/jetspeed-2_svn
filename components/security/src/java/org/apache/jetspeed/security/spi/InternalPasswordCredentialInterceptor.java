@@ -33,5 +33,5 @@ public interface InternalPasswordCredentialInterceptor
     boolean afterLoad(PasswordCredentialProvider pcProvider, String userName, InternalCredential credential) throws SecurityException;
     boolean afterAuthenticated(InternalUserPrincipal internalUser, String userName, InternalCredential credential, boolean authenticated) throws SecurityException;
     void beforeCreate(InternalUserPrincipal internalUser, Collection credentials, String userName, InternalCredential credential, String password) throws SecurityException;
-    void beforeSetPassword(InternalUserPrincipal internalUser, Collection credentials, String userName, InternalCredential credential, String password) throws SecurityException;
+    void beforeSetPassword(InternalUserPrincipal internalUser, Collection credentials, String userName, InternalCredential credential, String password, boolean authenticated) throws SecurityException;
 }

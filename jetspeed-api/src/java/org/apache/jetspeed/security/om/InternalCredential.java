@@ -37,6 +37,11 @@ import java.sql.Timestamp;
  */
 public interface InternalCredential extends Serializable, Cloneable
 {
+    /** Private credentials type. */
+    public static final int PRIVATE = 0;
+    /** Public credentials type. */
+    public static final int PUBLIC = 1;
+
     /**
      * <p>Getter for the credential id.</p>
      * @return The credential id.
