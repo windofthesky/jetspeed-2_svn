@@ -423,7 +423,7 @@ public class PersistenceBrokerSSOProvider extends
 		String name = remotePrincipal.getFullPath();
 		int ix = name.lastIndexOf('/');
 		if ( ix != -1)
-			name = name.substring(ix);
+			name = name.substring(ix + 1);
 		
 		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, credential.getValue());
 		
