@@ -49,6 +49,8 @@ import org.apache.jetspeed.request.RequestContextComponent
 import org.apache.jetspeed.request.JetspeedRequestContextComponent
 import org.apache.jetspeed.container.session.NavigationalStateComponent
 import org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
+import org.apache.jetspeed.security.impl.SecurityProviderImpl
 
 import org.apache.jetspeed.components.util.NanoQuickAssembler
        
@@ -173,6 +175,27 @@ container.registerComponentImplementation(PageAggregator,
 container.registerComponentImplementation(PortletAggregator, 
                                            PortletAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer)})
+
+//
+// Prefs
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/prefs/containers/prefs.container.groovy", container)
+
+//
+// Security
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/security/containers/security.container.groovy", container)
+
+// Instantiate the Preferences provider.
+container.getComponentInstanceOfType(PreferencesProviderImpl)
+
+// Instantiate the Security provider.
+container.getComponentInstanceOfType(SecurityProviderImpl)
+
+//
+// User Info.
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/userinfo/containers/userinfo.container.groovy", container)
 
 
 return container
