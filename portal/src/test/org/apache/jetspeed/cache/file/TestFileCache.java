@@ -77,6 +77,15 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
         cache = (FileCache) container.getComponentInstance(FileCache.class);
     }    
     
+    /**
+     * @see junit.framework.TestCase#tearDown()
+     */
+    public void tearDown() throws Exception
+    {
+        super.tearDown();
+        removeTestFiles();
+    }
+
     public void testComponent()
     throws Exception
     {
@@ -129,6 +138,22 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
 
             dumpCache(cache.getIterator());
 
+            // Reload files array to get the files back in the correct order
+            // because the cache CAN have reordered them while evicting.
+            // This can happen if test files where left over from a previous 
+            // test which then will have an older timestamp.
+            // In that case it is NOT garanteed that files[18] below will still
+            // be in the cache!
+            // Note: this is only an issue for the test itself and not for the
+            // cache as such. 
+
+            Iterator it = cache.getIterator();
+            for ( int ix = 0; it.hasNext(); ix++ )
+            {
+                FileCacheEntry entry = (FileCacheEntry) it.next();
+                files[ix] = entry.getFile();
+            }
+
             String stuff = (String) cache.getDocument(files[18].getCanonicalPath());
             assertNotNull(stuff);
 
@@ -169,7 +194,8 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
         {
             String testFile = "./test/testdata/psml/user/cachetest/testFile-" + ix + ".psml";
             File file = new File(testFile);
-            file.delete();
+            if ( file.exists() )
+                file.delete();
         }
     }
 
