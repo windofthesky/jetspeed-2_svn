@@ -1441,9 +1441,19 @@ public class CastorPsmlManagerService extends BaseCommonService
     {
         System.out.println("entry is refreshing: " + entry.getFile().getName());
         Profile profile = (Profile) entry.getDocument();
+        
+        String path = null;
         if (profile != null)
         {
-            profile.setDocument(loadDocument(entry.getFile().getName()));
+            try
+            {
+                path = entry.getFile().getCanonicalPath();
+                profile.setDocument(loadDocument(path));
+            }
+            catch (IOException e)
+            {
+                log.error("CastorPsmlManager: Failed to refresh document "+path);
+            }
         }
     }
 
