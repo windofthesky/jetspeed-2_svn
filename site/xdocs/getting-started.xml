@@ -51,7 +51,7 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
     <th>what is it?</th>
   </tr>
   <tr> 
-    <td>jetspeed2.home</td>
+    <td>org.apache.jetspeed.project.home</td>
     <td>${JETSPEED2_HOME}/</td>
     <td>The root of your jetspeed2 installation.</td>
   </tr>

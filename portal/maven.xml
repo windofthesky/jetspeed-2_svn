@@ -639,7 +639,7 @@ copying over the files, so I need this 'manual' copy in order to deploy
 
   <postGoal name="java:compile">  	
     <copy todir="target/classes">
-        <fileset dir="${jetspeed2.home}/etc/db-ojb">
+        <fileset dir="${org.apache.jetspeed.project.home}/etc/db-ojb">
         </fileset>
     </copy>
   </postGoal>

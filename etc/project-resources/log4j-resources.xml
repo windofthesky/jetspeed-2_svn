@@ -1,5 +1,5 @@
 <resource>
-	<directory>${jetspeed2.home}/etc/log4j</directory>
+	<directory>${org.apache.jetspeed.project.home}/etc/log4j</directory>
     <includes>
     	<include>*.properties</include>
     </includes>
