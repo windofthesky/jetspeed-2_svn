@@ -20,7 +20,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
+<property name='testcase' value='org.apache.jetspeed.engine.TestEngine'/>
 
 <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
@@ -257,6 +257,12 @@ limitations under the License.
  	<attainGoal name="pam.template.deploy"/>
   </goal>
 
+  <goal name="pam.pamdeploy">
+ 	<j:set var="pam.app.name" value="pam"/>
+ 	<j:set var="pam.app.war" value="../applications/pam/target/pam.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+  </goal>
+
   <goal name="pam.tsdeploy">
  	<j:set var="pam.app.name" value="testsuite"/>
  	<j:set var="pam.app.war" value="../../jakarta-pluto/testsuite/target/testsuite.war"/>
@@ -277,6 +283,12 @@ limitations under the License.
 
   <goal name="pam.undeploy">
  	<j:set var="pam.app.name" value="HW_App"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.pamundeploy">
+ 	<j:set var="pam.app.name" value="pam"/>
  	<j:set var="pam.app.type" value="webapp"/>
  	<attainGoal name="pam.template.undeploy"/>
   </goal>
@@ -352,6 +364,7 @@ limitations under the License.
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
+  	 <attainGoal name="pam.pamdeploy" />  	 
      <attainGoal name="pam.strutsdeploy" />
      <attainGoal name="pam.securitydeploy" />
      <attainGoal name="db.entities" />
@@ -526,6 +539,7 @@ limitations under the License.
     <delete dir="${deploy.war.dir}/${webapp.name}"/>
     <delete file="${deploy.war.dir}/${webapp.name}.war"/>
     <delete dir="${deploy.war.dir}/HW_App"/>
+    <delete dir="${deploy.war.dir}/pam"/>    
     <delete dir="${deploy.war.dir}/security"/>
     <delete dir="${deploy.war.dir}/struts-demo"/>
   </goal>

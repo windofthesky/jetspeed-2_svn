@@ -224,6 +224,15 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
 
+     <maven:reactor
+               basedir="${basedir}/applications/pam"
+               includes="project.xml"
+               excludes="applications/project.xml"
+               goals="war:install"
+               banner="Build and Install the PAM application WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>
+
           <attainGoal name="copy.shared.deps" />
           <attainGoal name="check.patch.tomcat5.jaas.realm"/>
   </goal>
