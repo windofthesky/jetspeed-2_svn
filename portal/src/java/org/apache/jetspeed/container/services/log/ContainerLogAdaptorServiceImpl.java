@@ -59,6 +59,7 @@ import org.apache.commons.logging.LogConfigurationException;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.pluto.services.log.LogService;
+import org.apache.pluto.services.log.Logger;
 
 
 /**
@@ -75,7 +76,7 @@ import org.apache.pluto.services.log.LogService;
  */
 public class ContainerLogAdaptorServiceImpl
     extends BaseCommonService
-    implements ContainerLogAdaptorService, LogService 
+    implements ContainerLogAdaptorService, LogService
 {
     private final static Log defaultLog = LogFactory.getLog(ContainerLogAdaptorServiceImpl.class);
     
@@ -115,66 +116,22 @@ public class ContainerLogAdaptorServiceImpl
     }
     
     
-    public boolean isDebugEnabled(String aComponent)
+
+    /* (non-Javadoc)
+     * @see org.apache.pluto.services.log.LogService#getLogger(java.lang.String)
+     */
+    public Logger getLogger(String component)
     {
-        Log log = getLogger(aComponent);
-        return log.isDebugEnabled();
-    }
-    
-    public boolean isInfoEnabled(String aComponent)
-    {
-        Log log = getLogger(aComponent);
-        return log.isInfoEnabled();
+        return new ContainerLoggerAdaptor(getConfiguredLogger(component));
     }
 
-    public boolean isWarnEnabled(String aComponent)
+    /* (non-Javadoc)
+     * @see org.apache.pluto.services.log.LogService#getLogger(java.lang.Class)
+     */
+    public Logger getLogger(Class klass)
     {
-        Log log = getLogger(aComponent);
-        return log.isWarnEnabled();
-    }
-
-    public boolean isErrorEnabled(String aComponent)
-    {
-        Log log = getLogger(aComponent);
-        return log.isErrorEnabled();        
-    }
-
-    public void debug (String aComponent, String aMessage)
-    {
-        if (isDebugEnabled(aComponent))
-        {
-            System.out.println ("DEBUG  " + aComponent + "   " + aMessage);
-        }
-    }
-
-    public void debug (String aComponent, String aMessage, Throwable aThrowable)
-    {
-        Log log = getLogger(aComponent);
-        log.debug(aMessage);
-    }
-
-    public void info (String aComponent, String aMessage)
-    {
-        Log log = getLogger(aComponent);
-        log.info(aMessage);        
-    }
-
-    public void warn (String aComponent, String aMessage)
-    {
-        Log log = getLogger(aComponent);
-        log.warn(aMessage);
-    }
-
-    public void error (String aComponent, String aMessage, Throwable aThrowable)
-    {
-        Log log = getLogger(aComponent);
-        log.error(aMessage, aThrowable);
-    }
-
-    public void error (String aComponent, Throwable aThrowable)
-    {
-        Log log = getLogger(aComponent);
-        log.error("An exception has been thrown:", aThrowable);
+        
+        return new ContainerLoggerAdaptor(getConfiguredLogger(klass));
     }
 
     /**
@@ -184,7 +141,7 @@ public class ContainerLogAdaptorServiceImpl
      * @param className
      * @return Log The logger configured for the given class name or the default logger if failed to load class
      */
-    private Log getLogger(String className)
+    private Log getConfiguredLogger(String className)
     {
         Class classe = null;
         Log log = defaultLog;
@@ -197,6 +154,28 @@ public class ContainerLogAdaptorServiceImpl
         catch (ClassNotFoundException e)
         {
             // use the default logger
+        }
+        catch (LogConfigurationException e)
+        {
+            // use the default logger            
+        }
+        return log;        
+    }
+
+    /**
+     * Given a string class name returns a logger for that class, or if we can't find a logger for the class
+     * the it returns the default logger for this class
+     * 
+     * @param classe the class to get a logger for
+     * @return Log The logger configured for the given class name or the default logger if failed to load class
+     */
+    private Log getConfiguredLogger(Class classe)
+    {
+        Log log = defaultLog;
+        
+        try
+        {        
+            log = LogFactory.getLog(classe);
         }
         catch (LogConfigurationException e)
         {

@@ -32,7 +32,6 @@
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.6.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.3.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-pool/jars/commons-pool-1.0.1.jar"/>
-    <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.1-dev.20021231.055112.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-collections/jars/commons-collections-2.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/mx4j/jars/mx4j-jmx-1.1.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/mx4j/jars/mx4j-tools-1.1.1.jar"/>
@@ -46,5 +45,7 @@
     <classpathentry kind="var" path="MAVEN_REPO/ojb/jars/db-ojb-1.0.rc5.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/commons-httpclient/jars/commons-httpclient-2.0-rc3.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/velocity-tools/jars/velocity-tools-view-1.1-beta1.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/picocontainer/jars/picocontainer-1.0-beta-5-SNAPSHOT.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.1.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
