@@ -9,6 +9,7 @@
 <!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
 <!ENTITY page SYSTEM "repository_page.xml">
 <!ENTITY registry SYSTEM "repository_registry.xml">
+<!ENTITY security SYSTEM "repository_security.xml">
 <!ENTITY preferences SYSTEM "repository_prefs.xml">
 
 ]>
@@ -27,11 +28,14 @@
 
     <!-- include jetspeed page and profiler mappings here -->
     &page;
+    
+    <!-- include jetspeed registry mapping here -->
+    &registry;
+
+    <!-- include jetspeed defined mappings here -->
+    &security;
 
     <!-- include jetspeed defined mappings here -->
     &preferences;
-
-    <!-- include jetspeed registry mapping here -->
-    &registry;
 
 </descriptor-repository>
