@@ -78,6 +78,10 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
     </dependency>
@@ -118,6 +122,41 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-pool</id>
+      <version>1.1</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-dbcp</id>
+      <version>1.1</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
+    </dependency>  
      
     <!-- This is only a test dependency -->
     <dependency>
@@ -172,6 +211,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>**/META-INF/**</exclude>
         </excludes>
       </resource>
       </resources>

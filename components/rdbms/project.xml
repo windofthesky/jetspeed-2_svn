@@ -50,6 +50,14 @@ limitations under the License.
       <version>SNAPSHOT</version>
     </dependency>
     <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
+      <id>classworlds</id>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>  
+    <dependency>
       <id>nanocontainer:nanocontainer-deployer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
     </dependency> 
@@ -74,16 +82,10 @@ limitations under the License.
     <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>    
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>jta</id>
@@ -95,9 +97,6 @@ limitations under the License.
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>junit</id>

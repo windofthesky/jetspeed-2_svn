@@ -60,53 +60,32 @@ limitations under the License.
   	<dependency>
       <id>jetspeed2:jetspeed-cm</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>  
     <dependency>
       <id>jetspeed2:jetspeed-persistence</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>true</component.only>
-      </properties>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-prefs</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>true</component.only>
-      </properties>
     </dependency>
 
     <!-- Testing only -->
     <dependency>
       <id>jetspeed2:jetspeed-rdbms</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>false</component.only>
-      </properties>
     </dependency>    	
   	 <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>junit</id>
@@ -119,16 +98,14 @@ limitations under the License.
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-io</id>
       <version>0.1</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
+    </dependency>
+    <dependency>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6</version>
     </dependency>
    <!--
     <dependency>
@@ -149,16 +126,10 @@ limitations under the License.
     <dependency>
       <id>xerces</id>
       <version>2.3.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
       <version>2.0.2</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <!-- This is only a test dependency -->
     <dependency>
@@ -192,7 +163,27 @@ limitations under the License.
     <dependency>
       <id>nanocontainer:nanocontainer-deployer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-    </dependency>     
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+    </dependency>        
+    <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>   
+    <dependency>
+      <id>commons-pool</id>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <id>commons-dbcp</id>
+      <version>1.1</version>
+    </dependency>  
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
@@ -215,6 +206,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>**/component.pkg</exclude>
         </excludes>
       </resource>
       </resources>

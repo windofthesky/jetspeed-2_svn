@@ -33,13 +33,6 @@ limitations under the License.
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
   
-   <!-- ================================================================ -->
-  <!-- Merge OJB desriptor with Jetspeed main OJB descriptor                                              -->
-  <!-- ================================================================ -->
-  <goal name="ojb.registry">
-    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/java/repository_registry.xml" overwrite="true"/>
-<!--    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/test/repository_registry.xml"/> -->
-   </goal>
 
     
   <goal name="deployJar">
@@ -49,16 +42,8 @@ limitations under the License.
   </goal>
   
   <goal name="build.registry">  	
-  	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
  </goal> 
  
-  <preGoal name="test:test">
-  	 <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-rdbms-2.0-a1-dev.jar" overwrite="true"/>
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-persistence-2.0-a1-dev.jar" overwrite="true"/>
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-page-manager-2.0-a1-dev.jar" overwrite="true" />
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-id-generator-2.0-a1-dev.jar" overwrite="true" />
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-file-cache-2.0-a1-dev.jar" overwrite="true" />
-  </preGoal>
 
 </project>

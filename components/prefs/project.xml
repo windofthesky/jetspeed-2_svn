@@ -36,105 +36,61 @@ limitations under the License.
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>  
+=    </dependency>  
     <dependency>
       <id>jetspeed-persistence</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <!-- Testing only -->
     <dependency>
       <id>jetspeed-rdbms</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>    	
   	 <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>nanocontainer:nanocontainer-deployer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>junit</id>
       <version>3.8.1</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
-
       <id>log4j</id>
       <version>1.2.6</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>   
-    
+    </dependency>       
     <dependency>
       <id>commons-configuration</id>
       <version>1.0-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-io</id>
       <version>0.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
-    <dependency>
+     <dependency>
       <id>ojb:db-ojb</id>
-      <version>1.0.rc5-PATCHED</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
+      <version>1.0.rc6</version>
     </dependency>
     <!--
     <dependency>
@@ -148,30 +104,18 @@ limitations under the License.
      <dependency>
       <id>commons-pool</id>
       <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>commons-dbcp</id>
       <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>    
     <dependency>    	
       <id>jdbc-se</id>
       <jar>jdbc-se2.0.jar</jar>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
         <dependency>
       <id>xerces</id>
       <version>2.3.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
@@ -183,18 +127,12 @@ limitations under the License.
      <dependency>
       <id>jdom</id>
       <version>b8</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <!-- This is only a test dependency -->
     <dependency>
       <id>jetspeed-commons</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>hsqldb</id>
@@ -213,9 +151,6 @@ limitations under the License.
     <dependency>
       <id>nanocontainer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>    
      <dependency>
       <id>groovy</id>
@@ -227,28 +162,19 @@ limitations under the License.
      <dependency>
       <id>asm</id>
       <version>1.4.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>    
     <dependency>
       <id>jta</id>
       <jar>jta1.0.1.jar</jar>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>tyrex</id>
       <version>1.0.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <!--
+
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     
     <unitTest>
@@ -267,11 +193,12 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>**/component.pkg</exclude>
         </excludes>
       </resource>
       </resources>
     </unitTest>
-    -->
+   
     
     <resources>
       <resource>

@@ -44,9 +44,6 @@ limitations under the License.
     <dependency>
       <id>jetspeed2:jetspeed-persistence</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>true</component.only>
-      </properties>  
     </dependency>
     <!-- Testing only -->
     <dependency>
@@ -63,9 +60,6 @@ limitations under the License.
     <dependency>
       <id>jetspeed2:jetspeed-id-generator</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>true</component.only>
-      </properties> 
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-file-cache</id>
@@ -77,9 +71,6 @@ limitations under the License.
     <dependency>
       <id>jetspeed2:jetspeed-page-manager</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <component.only>true</component.only>
-      </properties> 
     </dependency> 		
   	 <dependency>
       <id>commons-lang</id>
@@ -130,11 +121,9 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>ojb:db-ojb</id>
-      <version>1.0.rc5-PATCHED</version>
-      <properties>
-        <jar.bundle>true</jar.bundle>
-      </properties>
-    </dependency>
+      <version>1.0.rc6</version>
+    </dependency>  
+
     <!--
     <dependency>
       <id>ojb</id>
@@ -150,6 +139,32 @@ limitations under the License.
     <dependency>
       <id>commons-dbcp</id>
       <version>1.1</version>
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>   
+    </dependency> 
+    <dependency>    	
+      <id>jdbc-se</id>
+      <jar>jdbc-se2.0.jar</jar>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
+      <id>castor</id>
+      <version>0.9.4.3</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
     </dependency>
     <!--
     <dependency>    	
@@ -233,7 +248,7 @@ limitations under the License.
         <resource>
         <directory>${basedir}/src/java</directory>
         <excludes>
-          <exclude>**/*.java</exclude>
+          <exclude>**/component.pkg</exclude>
         </excludes>
       </resource>
       </resources>
@@ -244,6 +259,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+
         </excludes>
       </resource>
     </resources>

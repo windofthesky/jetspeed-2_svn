@@ -164,6 +164,14 @@ limitations under the License.
       <version>1.7.1</version>
     </dependency>
     <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
+      <id>classworlds</id>
+      <version>1.1-SNAPSHOT</version>
+    </dependency> 
+    <dependency>
       <id>picocontainer</id>
       <version>1.0-RC-1-SNAPSHOT</version>
     </dependency>
@@ -191,9 +199,12 @@ limitations under the License.
       <version>1.0</version>
     </dependency>
     <!-- Testing only -->
-    <dependency>
+   	<dependency>
       <id>tyrex</id>
       <version>1.0.1</version>
+      <properties>
+        <jar.bundle>true</jar.bundle>
+      </properties>
     </dependency>
   </dependencies>
   <build>

@@ -77,6 +77,14 @@ limitations under the License.
       </properties>
     </dependency> 
     <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
+    <dependency>
+      <id>classworlds</id>
+      <version>1.1-SNAPSHOT</version>
+    </dependency> 
+    <dependency>
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
       <properties>

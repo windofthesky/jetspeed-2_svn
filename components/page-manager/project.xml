@@ -54,7 +54,10 @@ limitations under the License.
         <component.only>true</component.only>
       </properties>      
     </dependency>
-
+    <dependency>
+      <id>commons-configuration</id>
+      <version>1.0-dev</version>
+    </dependency>
     <dependency>
       <id>jetspeed-components</id>
       <groupId>jetspeed2</groupId>
@@ -118,8 +121,11 @@ limitations under the License.
     <dependency>
       <id>log4j</id>
       <version>1.2.6</version>
-   </dependency>      
-
+   </dependency>   
+   	<dependency>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6</version>
+    </dependency>  
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
@@ -155,7 +161,15 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>   
+    </dependency> 
     <dependency>    	
       <id>jdbc-se</id>
       <jar>jdbc-se2.0.jar</jar>
@@ -269,6 +283,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>**/component.pkg</exclude>
         </excludes>
       </resource>
       </resources>
@@ -279,6 +294,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          
         </excludes>
       </resource>
     </resources>
