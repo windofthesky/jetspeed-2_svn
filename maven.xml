@@ -402,6 +402,13 @@ limitations under the License.
         <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
+               goals="remove.wars"
+               banner="Remove war files, make sure to shutdown server first"
+               postProcessing="false"
+               ignoreFailures="false"/>        
+        <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml"
                goals="fullDeploy"
                banner="Deploying basic Jetspeed portal suite"
                postProcessing="false"
