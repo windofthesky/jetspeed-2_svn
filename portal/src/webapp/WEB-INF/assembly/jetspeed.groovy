@@ -33,8 +33,9 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler
-
-
+import org.apache.jetspeed.capability.Capabilities
+import org.apache.jetspeed.capability.impl.JetspeedCapabilities
+       
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
 // You end getting a Class instance of the type java.lang.Class
@@ -136,5 +137,9 @@ container.registerComponentImplementation(eaClass, eaImplClass, new Parameter[] 
 //
 container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer))
 
+//
+// Capabilities
+//
+container.registerComponentInstance(Capabilities, new JetspeedCapabilities(pContainer))
 
 return container

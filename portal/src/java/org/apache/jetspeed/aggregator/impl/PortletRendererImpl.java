@@ -230,7 +230,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
         PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
-        PortletEntity portletEntity = entityAccess.getPortletEntity(oid);
+        // DST: PortletEntity portletEntity = entityAccess.getPortletEntity(oid);
+        PortletEntity portletEntity = null;
         PortletWindow portletWindow = null;
 
         if (portletEntity==null)

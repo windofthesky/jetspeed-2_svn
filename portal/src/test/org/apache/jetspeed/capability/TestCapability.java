@@ -57,11 +57,10 @@ package org.apache.jetspeed.capability;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.picocontainer.MutablePicoContainer;
 
 /**
  * Test Capability Service
@@ -69,8 +68,10 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends JetspeedTest
+public class TestCapability extends AbstractComponentAwareTestCase
 {
+    private Capabilities capabilities = null;
+    private MutablePicoContainer container;
 
     /**
      * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
@@ -101,11 +102,13 @@ public class TestCapability extends JetspeedTest
             new String[] { TestCapability.class.getName()});
     }
 
-    public void setUp() throws Exception
+    protected void setUp() throws Exception
     {
-        System.out.println("Setup: Testing Capability Service");
         super.setUp();
+        container = (MutablePicoContainer) getContainer();
+        capabilities = (Capabilities) container.getComponentInstance(Capabilities.class);        
     }
+    
     /**
      * Creates the test suite.
      *
@@ -114,14 +117,9 @@ public class TestCapability extends JetspeedTest
      */
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestCapability.class);
-    }
-
-    protected CapabilityService getService()
-    {
-        return (CapabilityService) CommonPortletServices.getPortalService(
-            CapabilityService.SERVICE_NAME);
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCapability.class);
+        suite.setScript("org/apache/jetspeed/capability/containers/capability-container.groovy");
+        return suite;
     }
 
     /**
@@ -130,8 +128,7 @@ public class TestCapability extends JetspeedTest
      */
     public void testCapability() throws Exception
     {
-        CapabilityService service = getService();
-        assertNotNull("capability service is null", service);
+        assertNotNull("capabilities component is null", capabilities);
 
         // Find specific client -- testing pattern matching
         String userAgent;
@@ -139,37 +136,37 @@ public class TestCapability extends JetspeedTest
 
         userAgent = "Opera/7.0";
         System.out.println("Find pattern: " + userAgent);
-        CapabilityMap cm = service.getCapabilityMap(userAgent);
+        CapabilityMap cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/4.0";
         System.out.println("Find pattern: " + userAgent);
-        cm = service.getCapabilityMap(userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
         userAgent = "MSIE 5.0";
         System.out.println("Find pattern: " + userAgent);
-        cm = service.getCapabilityMap(userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
         userAgent = "Mozilla/5.0";
         System.out.println("Find pattern: " + userAgent);
-        cm = service.getCapabilityMap(userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
         userAgent = "Lynx";
         System.out.println("Find pattern: " + userAgent);
-        cm = service.getCapabilityMap(userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 
         userAgent = "Nokia";
         System.out.println("Find pattern: " + userAgent);
-        cm = service.getCapabilityMap(userAgent);
+        cm = capabilities.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
         capabilityMapReport(cm);
 

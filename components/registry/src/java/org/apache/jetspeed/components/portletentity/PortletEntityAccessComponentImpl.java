@@ -111,10 +111,11 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         else
         {
             PersistenceStore store = getPersistenceStore();
+            prepareTransaction(store);
+            
             Filter filter = store.newFilter();
             filter.addEqualTo("oid", entityId);
             Object q = store.newQuery(entityClass, filter);
-            prepareTransaction(store);
             PortletEntity portletEntity = (PortletEntity) store.getObjectByQuery(q);
 
             entityCache.put(entityId, portletEntity);
