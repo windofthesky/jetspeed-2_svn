@@ -233,8 +233,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 page = (Page) setProfiledNodePathAndUrl((AbstractNode) profiledPage[0]);
             }
 
-            // profile page context
-            if (page != null)
+            // profile page context if page and folder found
+            if ((page != null) && (folder != null))
             {
                 // profile general document/folder order
                 List documentOrder = null;
@@ -265,7 +265,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregatePagesIter = aggregatePages.iterator();
                     while (aggregatePagesIter.hasNext())
                     {
-                        siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingPages, setProfiledNodePathAndUrl((AbstractNode) aggregatePagesIter.next()));
+                        AbstractNode siblingPageNode = (AbstractNode)aggregatePagesIter.next();
+                        if (!siblingPageNode.isHidden())
+                        {
+                            siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl)siblingPages, setProfiledNodePathAndUrl(siblingPageNode));
+                        }
                     }
                 }
 
@@ -273,7 +277,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 if ((((AbstractNode)folder).getParent(false) != null) &&
                     !((AbstractNode)folder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
                 {
-                    parentFolder = (Folder)setProfiledNodePathAndUrl((AbstractNode)((AbstractNode)folder).getParent(false));
+                    AbstractNode parentFolderNode = (AbstractNode)((AbstractNode)folder).getParent(false);
+                    if (!parentFolderNode.isHidden())
+                    {
+                        parentFolder = (Folder)setProfiledNodePathAndUrl(parentFolderNode);
+                    }
                 }
 
                 // profile sibling folders by aggregating all siblings in profiled folders
@@ -287,7 +295,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregateFoldersIter = aggregateFolders.iterator();
                     while (aggregateFoldersIter.hasNext())
                     {
-                        siblingFolders = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingFolders, setProfiledNodePathAndUrl((AbstractNode) aggregateFoldersIter.next()));
+                        AbstractNode siblingFolderNode = (AbstractNode)aggregateFoldersIter.next();
+                        if (!siblingFolderNode.isHidden())
+                        {
+                            siblingFolders = addUniqueOrDescribedUrlNode((NodeSetImpl)siblingFolders, setProfiledNodePathAndUrl(siblingFolderNode));
+                        }
                     }
                 }
 
@@ -302,11 +314,14 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     Iterator aggregateFolderDocumentSetsIter = aggregateFolderDocumentSets.iterator();
                     while (aggregateFolderDocumentSetsIter.hasNext())
                     {
-                        DocumentSet documentSet = (DocumentSet) setProfiledNodePathAndUrl((AbstractNode) aggregateFolderDocumentSetsIter.next());
-                        String documentSetProfiledPath = ((AbstractNode) documentSet).getProfiledPath();
-                        if (! aggregateDocumentSets.containsKey(documentSetProfiledPath))
+                        AbstractNode documentSetNode = (AbstractNode)setProfiledNodePathAndUrl((AbstractNode)aggregateFolderDocumentSetsIter.next());
+                        if (!documentSetNode.isHidden())
                         {
-                            aggregateDocumentSets.put(documentSetProfiledPath, documentSet);
+                            String documentSetProfiledPath = documentSetNode.getProfiledPath();
+                            if (!aggregateDocumentSets.containsKey(documentSetProfiledPath))
+                            {
+                                aggregateDocumentSets.put(documentSetProfiledPath, documentSetNode);
+                            }
                         }
                     }
                 }
@@ -369,7 +384,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             Iterator aggregateLinksIter = aggregateLinks.iterator();
                             while (aggregateLinksIter.hasNext())
                             {
-                                rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl) rootLinks, setProfiledNodePathAndUrl((AbstractNode) aggregateLinksIter.next()));
+                                AbstractNode rootLinkNode = (AbstractNode)aggregateLinksIter.next();
+                                if (!rootLinkNode.isHidden())
+                                {
+                                    rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl)rootLinks, setProfiledNodePathAndUrl(rootLinkNode));
+                                }
                             }
                         }
                     }
@@ -382,7 +401,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
             else
             {
-                log.error("computeProfiledPageContext(): Failed to find profiled page for " + requestPath + " at " + locator);
+                log.error("computeProfiledPageContext(): Failed to find profiled page and/or folder for " + requestPath + " at " + locator);
                 throw new PageNotFoundException(requestPath + " at " + locator);
             }
         }
@@ -666,18 +685,21 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     while (pathNodesIter.hasNext())
                     {
                         AbstractNode pathNode = setProfiledNodePathAndUrl((AbstractNode) pathNodesIter.next());
-                        if (!(pathNode instanceof DocumentSet))
+                        if (!pathNode.isHidden())
                         {
-                            // add expanded document
-                            expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, pathNode);
-                        }
-                        else if (!documentSetNames.containsKey(pathNode))
-                        {
-                            // expand unique nested document set
-                            if (expandAndProfileDocumentSet(profileLocators, (DocumentSet)pathNode, null, name, documentSetNames, documentSetNodeSets) != null)
+                            if (!(pathNode instanceof DocumentSet))
                             {
-                                // add expanded document set
+                                // add expanded document
                                 expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, pathNode);
+                            }
+                            else if (!documentSetNames.containsKey(pathNode))
+                            {
+                                // expand unique nested document set
+                                if (expandAndProfileDocumentSet(profileLocators, (DocumentSet)pathNode, null, name, documentSetNames, documentSetNodeSets) != null)
+                                {
+                                    // add expanded document set
+                                    expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, pathNode);
+                                }
                             }
                         }
                     }
