@@ -24,14 +24,10 @@ import javax.portlet.PortletRequest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
+import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyException;
-import org.apache.jetspeed.prefs.PropertyManager;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
@@ -53,10 +49,8 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestUserInfoManager extends RegistrySupportedTestCase
+public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
 {
-    /** The property manager. */
-    private static PropertyManager propertyManager;
 
     /** The user info manager. */
     private UserInfoManager uim;
@@ -70,7 +64,7 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
 
     private PermissionManagerImpl pms;
 
-    private PreferencesProvider provider;
+
 
     /**
      * <p>Defines the testcase name for JUnit.</p>
@@ -94,9 +88,8 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
         rms =new RoleManagerImpl(persistenceStore);
         pms = new PermissionManagerImpl(persistenceStore);
         new SecurityProviderImpl("login.conf", new RdbmsPolicy(pms), ums);   
-        propertyManager = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
-        uim = new UserInfoManagerImpl(ums, portletRegistry);       
+        uim = new UserInfoManagerImpl(ums, portletRegistry); 
+    
     }
 
     /**
