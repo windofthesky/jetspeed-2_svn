@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -174,6 +175,10 @@ public class FileCache implements java.util.Comparator
     public void put(File file, Object document)
         throws java.io.IOException
     {
+        if(!file.exists())
+        {
+            throw new FileNotFoundException("File to cache: "+file.getAbsolutePath()+" does not exist.");
+        }
         FileCacheEntry entry = new FileCacheEntryImpl(file, document);
         cache.put(file.getCanonicalPath(), entry);
     }
@@ -184,12 +189,16 @@ public class FileCache implements java.util.Comparator
      * @param path the full path name of the file
      * @param document the cached document
      */
-    public void put(String key, Object document)
+    public void put(String key, Object document, File rootFile)
         throws java.io.IOException
     {
-        File file = new File(key);
+        File file = new File(rootFile, key);
+        if(!file.exists())
+        {
+            throw new FileNotFoundException("File to cache: "+file.getAbsolutePath()+" does not exist.");
+        }
         FileCacheEntry entry = new FileCacheEntryImpl(file, document);
-        cache.put(file.getCanonicalPath(), entry);
+        cache.put(key, entry);
     }
 
     /**
@@ -281,7 +290,14 @@ public class FileCache implements java.util.Comparator
                 {
                     FileCacheEventListener listener = 
                         (FileCacheEventListener) lit.next();
-                    listener.evict(entry);                                    
+                    try
+                    {
+                        listener.evict(entry);
+                    }
+                    catch (Exception e1)
+                    {
+                        log.warn("Unable to evict cache entry.  "+e1.toString(), e1);
+                    }                                    
                 }
                 cache.remove(key);
     
@@ -348,7 +364,14 @@ public class FileCache implements java.util.Comparator
                                 {
                                     FileCacheEventListener listener = 
                                         (FileCacheEventListener) lit.next();
-                                    listener.refresh(entry);                                    
+                                    try
+                                    {
+                                        listener.refresh(entry);
+                                    }
+                                    catch (Exception e1)
+                                    {
+                                        log.warn("Unable to refresh cached document:  "+e1.toString(), e1);
+                                    }                                    
                                     entry.setLastModified(modified);
                                 }
                             }
