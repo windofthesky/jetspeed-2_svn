@@ -166,6 +166,13 @@ limitations under the License.
                banner="Build and Install the Capability Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}/components/page-manager"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Page Manager Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
     
     <maven:reactor
                basedir="${basedir}/cps"
