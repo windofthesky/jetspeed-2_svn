@@ -93,7 +93,7 @@ public interface NavigationalState
      * @throws java.lang.IllegalArgumentException if the <code>context</code>
      * id <code>null</code>.
      */
-    void init(RequestContext context);
+    void init(RequestContext context, NavigationalStateComponent nav);
     
     
     /**
@@ -106,5 +106,7 @@ public interface NavigationalState
      * <code>null</code>.
      */
     PortletWindow getMaximizedWindow(Page page);
+    
+    
     
 }

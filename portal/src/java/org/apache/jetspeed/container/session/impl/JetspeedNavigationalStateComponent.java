@@ -138,7 +138,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             }
             else
             {
-                state.init(context);
+                state.init(context, this);
             }
 
             if (sessionBased && session != null)

@@ -43,10 +43,12 @@ public abstract class AbstractNavigationalState
         this.nav = nav;        
     }
         
-    public void init(RequestContext context)
+    public void init(RequestContext context, NavigationalStateComponent nav)
     {
         ArgUtil.assertNotNull(RequestContext.class, context, this, "init()");
+        ArgUtil.assertNotNull(NavigationalStateComponent.class, nav, this, "init()");
         this.context = context;
+        this.nav = nav;
     }
     
     public boolean isNavigationalParameter(String token)
