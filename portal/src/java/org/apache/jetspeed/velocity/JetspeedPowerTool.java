@@ -42,6 +42,8 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
@@ -52,7 +54,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.information.PortletURLProviderImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.velocity.context.Context;
@@ -92,6 +93,18 @@ import org.apache.velocity.tools.view.tools.ViewTool;
  */
 public class JetspeedPowerTool implements ViewTool
 {
+
+    private static final int ACTION_MINIMIZE = 0;    
+    private static final int ACTION_MAXIMIZE = 1;
+    private static final int ACTION_NORMAL = 2;
+    private static final int ACTION_VIEW = 3;
+    private static final int ACTION_EDIT = 4;
+    private static final int ACTION_HELP = 5;
+    private static final String ACTION_STRINGS[] =
+    {
+            "minimize", "maximize", "restore", "view", "edit", "help"
+    };
+    
     protected static final String PORTLET_CONFIG_ATTR = "portletConfig";
     protected static final String RENDER_RESPONSE_ATTR = "renderResponse";
     protected static final String RENDER_REQUEST_ATTR = "renderRequest";
@@ -315,7 +328,15 @@ public class JetspeedPowerTool implements ViewTool
      */
     public PortletEntity getCurrentPortletEntity()
     {
-        return windowAccess.getPortletWindow(getCurrentFragment()).getPortletEntity();        
+        try
+        {
+            return windowAccess.getPortletWindow(getCurrentFragment()).getPortletEntity();
+        }
+        catch (Exception e)
+        {            
+            handleError(e, "JetspeedPowerTool failed to retreive the current PortletEntity.  "+e.toString() );
+            return null;
+        }        
     }
 
     /**
@@ -323,11 +344,31 @@ public class JetspeedPowerTool implements ViewTool
      * @param f Fragment whose <code>PortletEntity</code> we want to retreive.
      * @return The PortletEntity represented by the current fragment.
      */
-    public PortletEntity getPortletEntity(Fragment f)
+    public PortletEntity getPortletEntity(Fragment f) 
     {
-        PortletEntity portletEntity = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(f.getId()));
+        PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
+        if(portletEntity == null)
+        {
+            try
+            {
+                portletEntity = entityAccess.generateEntityFromFragment(f);
+                entityAccess.storePortletEntity(portletEntity);
+            }
+            catch (PortletEntityNotGeneratedException e)
+            {
+                String msg = "JetspeedPowerTool failed to retreive a PortletEntity for Fragment "+f.getId()+".  "+e.toString();
+                handleError(e, msg);               
+            }
+            catch (PortletEntityNotStoredException e)
+            {
+                String msg = "JetspeedPowerTool failed to store a PortletEntity for Fragment "+f.getId()+".  "+e.toString();
+                handleError(e, msg);  
+            }
+        }
         return portletEntity;
     }
+
+
 
     /**
      * This method is synonymous with the following code:
@@ -605,18 +646,30 @@ public class JetspeedPowerTool implements ViewTool
             throw e;
         }
     }
-
-    private static final int ACTION_MINIMIZE = 0;    
-    private static final int ACTION_MAXIMIZE = 1;
-    private static final int ACTION_NORMAL = 2;
-    private static final int ACTION_VIEW = 3;
-    private static final int ACTION_EDIT = 4;
-    private static final int ACTION_HELP = 5;
-        
-    private static final String ACTION_STRINGS[] =
+    
+    /**
+     * <p>
+     * handleError
+     * </p>
+     *
+     * @param e
+     * @param msg
+     */
+    protected void handleError( Exception e, String msg )
     {
-            "minimize", "maximize", "restore", "view", "edit", "help"
-    };
+        log.error(msg, e);
+        try
+        {
+            renderResponse.getWriter().write(e.toString());
+        }
+        catch (IOException e1)
+        {
+            log.error("Failed writing to RenderResponse.  "+e1.toString());
+        }
+    }
+
+        
+
     
     public List getDecoratorActions()
     {
