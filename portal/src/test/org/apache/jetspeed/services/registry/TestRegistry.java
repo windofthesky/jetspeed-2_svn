@@ -116,42 +116,44 @@ public class TestRegistry extends JetspeedTest
     {
         // All methods starting with "test" will be executed in the test suite.
         JetspeedTestSuite testSuite = new JetspeedTestSuite(TestRegistry.class);
-        List allPortletDefinitions = JetspeedPortletRegistry.getAllPortletDefinitions();
-        List allPortletApps = JetspeedPortletRegistry.getPortletApplications();
-        removeCollection(allPortletApps);
-        removeCollection(allPortletDefinitions);
+        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
+        PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
+        try
+        {
+            plugin.beginTransaction();
+            List allPortletDefinitions = JetspeedPortletRegistry.getAllPortletDefinitions();
+            List allPortletApps = JetspeedPortletRegistry.getPortletApplications();
+            removeCollection(allPortletApps, plugin);
+            removeCollection(allPortletDefinitions, plugin);
+            plugin.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+            }
+
+            throw new RuntimeException("Test suite failed: " + e.toString());
+        }
         return testSuite;
 
     }
 
-    protected static void removeCollection(Collection col)
+    protected static void removeCollection(Collection col, PersistencePlugin plugin) throws TransactionStateException
     {
-        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-        PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
+
         Iterator itr = col.iterator();
 
         while (itr.hasNext())
         {
 
-            try
-            {
-                plugin.beginTransaction();
-                plugin.prepareForDelete(itr.next());
-                plugin.commitTransaction();
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    plugin.rollbackTransaction();
-                }
-                catch (TransactionStateException e1)
-                {
-                    e1.printStackTrace();
-                }
-                System.out.println("Suite initialization failed");
-                e.printStackTrace();
-            }
+            plugin.prepareForDelete(itr.next());
+
         }
     }
 
@@ -224,14 +226,14 @@ public class TestRegistry extends JetspeedTest
         }
     }
 
-    public void testAddApplication() throws Throwable 
+    public void testAddApplication() throws Throwable
     {
         // JetspeedPortletRegistry.clearCache();
         // test that portlet application exists
         // plugin.clearCache();
         try
         {
-            JetspeedPortletRegistry.beginTransaction();			
+            JetspeedPortletRegistry.beginTransaction();
             MutablePortletApplication appExists = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
             assertNotNull(appExists);
 
@@ -278,17 +280,17 @@ public class TestRegistry extends JetspeedTest
 
     }
 
-    public void testAddingPortlet() throws Throwable 
+    public void testAddingPortlet() throws Throwable
     {
         try
         {
             // JetspeedPortletRegistry.clearCache();
-
+            JetspeedPortletRegistry.beginTransaction();
             MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
 
             assertNotNull(app);
-            JetspeedPortletRegistry.beginTransaction();
-           JetspeedPortletRegistry.writeLock(app);
+
+            JetspeedPortletRegistry.writeLock(app);
 
             //add a portlet
             PortletDefinitionComposite portlet1 =
@@ -310,40 +312,52 @@ public class TestRegistry extends JetspeedTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();            
-           JetspeedPortletRegistry.rollbackTransaction(); 
+            e.printStackTrace();
+            JetspeedPortletRegistry.rollbackTransaction();
             throw e;
         }
 
-        //		test that portlet application exists
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
-        assertNotNull(app);
-        int count = 0;
-        Iterator countItr = app.getPortletDefinitionList().iterator();
-        while (countItr.hasNext())
+        try
         {
-            countItr.next();
-            count++;
+            JetspeedPortletRegistry.beginTransaction();
+            //		test that portlet application exists
+            MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
+            assertNotNull(app);
+            int count = 0;
+            Iterator countItr = app.getPortletDefinitionList().iterator();
+            while (countItr.hasNext())
+            {
+                countItr.next();
+                count++;
+            }
+            assertEquals(2, count);
+
+            PortletDefinitionComposite portlet1 = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_1_NAME);
+
+            PortletDefinitionComposite portlet1_2 = JetspeedPortletRegistry.getPortletDefinitionByIndetifier(PORTLET_1_UID);
+
+            assertNotNull(portlet1);
+
+            DisplayName displayName = portlet1.getDisplayName(Jetspeed.getDefaultLocale());
+
+            assertNotNull("DisplayName for portlet definition was null.", displayName);
+
+            System.out.println("Default local displayName  for Portlet 1 is " + displayName.getDisplayName());
+
+            Description desc = portlet1.getDescription(Jetspeed.getDefaultLocale());
+
+            assertNotNull("Description for portlet definition was null.", desc);
+
+            System.out.println("Default local description for Portlet 1 is " + desc.getDescription());
+
+            JetspeedPortletRegistry.commitTransaction();
         }
-        assertEquals(2, count);
-
-        PortletDefinitionComposite portlet1 = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_1_NAME);
-
-        PortletDefinitionComposite portlet1_2 = JetspeedPortletRegistry.getPortletDefinitionByIndetifier(PORTLET_1_UID);
-
-        assertNotNull(portlet1);
-
-        DisplayName displayName = portlet1.getDisplayName(Jetspeed.getDefaultLocale());
-
-        assertNotNull("DisplayName for portlet definition was null.", displayName);
-
-        System.out.println("Default local displayName  for Portlet 1 is " + displayName.getDisplayName());
-
-        Description desc = portlet1.getDescription(Jetspeed.getDefaultLocale());
-
-        assertNotNull("Description for portlet definition was null.", desc);
-
-        System.out.println("Default local description for Portlet 1 is " + desc.getDescription());
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            JetspeedPortletRegistry.rollbackTransaction();
+            throw e;
+        }
 
     }
 
@@ -400,7 +414,7 @@ public class TestRegistry extends JetspeedTest
 
         }
         catch (Throwable e)
-        {            
+        {
             try
             {
                 JetspeedPortletRegistry.rollbackTransaction();
@@ -412,76 +426,112 @@ public class TestRegistry extends JetspeedTest
             throw e;
         }
 
-        // JetspeedPortletRegistry.clearCache();
-        doTestContentType();
-        doTestParameters();
+      
+            doTestContentType();
+            doTestParameters();
+        
         // doTestPreferences();
     }
 
-    protected void doTestContentType()
+    protected void doTestContentType() throws Throwable
     {
-        // JetspeedPortletRegistry.clearCache();
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
-        assertNotNull(app);
-        PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_0_NAME);
-        assertNotNull(pdc);
-
-        ContentType html = pdc.getContentTypeSet().get("html/text");
-        assertNotNull(html);
-        if (html == null)
-            return;
-        System.out.println("Content Type : " + html.getContentType());
-        Iterator modes = html.getPortletModes();
-
-        boolean modeView = false;
-        boolean modeHelp = false;
-        boolean modeEdit = false;
-
-        while (modes.hasNext())
+        try
         {
-            PortletMode mode = (PortletMode) modes.next();
-            if (!modeView)
+            JetspeedPortletRegistry.beginTransaction();
+            // JetspeedPortletRegistry.clearCache();
+            MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
+            assertNotNull(app);
+            PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_0_NAME);
+            assertNotNull(pdc);
+
+            ContentType html = pdc.getContentTypeSet().get("html/text");
+            assertNotNull(html);
+            if (html == null)
+                return;
+            System.out.println("Content Type : " + html.getContentType());
+            Iterator modes = html.getPortletModes();
+
+            boolean modeView = false;
+            boolean modeHelp = false;
+            boolean modeEdit = false;
+
+            while (modes.hasNext())
             {
-                modeView = mode.toString().equals(PortletMode.VIEW.toString());
+                PortletMode mode = (PortletMode) modes.next();
+                if (!modeView)
+                {
+                    modeView = mode.toString().equals(PortletMode.VIEW.toString());
+                }
+
+                if (!modeHelp)
+                {
+                    modeHelp = mode.toString().equals(PortletMode.HELP.toString());
+                }
+
+                if (!modeEdit)
+                {
+                    modeEdit = mode.toString().equals(PortletMode.EDIT.toString());
+                }
+                System.out.println("   - Available Mode: " + mode);
             }
 
-            if (!modeHelp)
-            {
-                modeHelp = mode.toString().equals(PortletMode.HELP.toString());
-            }
-
-            if (!modeEdit)
-            {
-                modeEdit = mode.toString().equals(PortletMode.EDIT.toString());
-            }
-            System.out.println("   - Available Mode: " + mode);
+            assertTrue("All 3 portlet modes for \"html/text\" were not found.", (modeEdit && modeView & modeHelp));
+            JetspeedPortletRegistry.commitTransaction();
         }
-
-        assertTrue("All 3 portlet modes for \"html/text\" were not found.", (modeEdit && modeView & modeHelp));
+        catch (Throwable e)
+        {
+            try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+            }
+            throw e;
+        }
     }
 
-    protected void doTestParameters() throws Exception
+    protected void doTestParameters() throws Throwable
     {
-        // JetspeedPortletRegistry.clearCache();
-        System.out.println("Number of parameters in the DB " + JetspeedPortletRegistry.getPortletInitParameters(null).size());
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
-        assertNotNull(app);
-        PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_0_NAME);
-        assertNotNull(pdc);
+        try
+        {
+            // JetspeedPortletRegistry.clearCache();
+            JetspeedPortletRegistry.beginTransaction();
+            System.out.println("Number of parameters in the DB " + JetspeedPortletRegistry.getPortletInitParameters(null).size());
+            MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
+            assertNotNull(app);
+            PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName(PORTLET_0_NAME);
+            assertNotNull(pdc);
 
-        Iterator itr = pdc.getInitParameterSet().iterator();
-        int count = 0;
-        for (; itr.hasNext(); count++)
-            itr.next();
+            Iterator itr = pdc.getInitParameterSet().iterator();
+            int count = 0;
+            for (; itr.hasNext(); count++)
+                itr.next();
 
-        assertTrue(count == 2);
-        System.out.println("Testing cascading delete of parameters.  Removing Portlet Application now...");
-        JetspeedPortletRegistry.beginTransaction();
-        JetspeedPortletRegistry.removeApplication(app);
-        JetspeedPortletRegistry.commitTransaction();
+            assertTrue(count == 2);
+            System.out.println("Testing cascading delete of parameters.  Removing Portlet Application now...");
 
-        int paramSize = JetspeedPortletRegistry.getPortletInitParameters(null).size();
-        assertEquals("Not all parameters were deleted.  " + paramSize + " left remain.", 0, paramSize);
+            JetspeedPortletRegistry.removeApplication(app);
+            JetspeedPortletRegistry.commitTransaction();
+
+            JetspeedPortletRegistry.beginTransaction();
+            int paramSize = JetspeedPortletRegistry.getPortletInitParameters(null).size();
+            assertEquals("Not all parameters were deleted.  " + paramSize + " left remain.", 0, paramSize);
+            JetspeedPortletRegistry.commitTransaction();
+        }
+        catch (Throwable e)
+        {
+            try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+            }
+            throw e;
+        }
 
     }
 
@@ -489,7 +539,7 @@ public class TestRegistry extends JetspeedTest
     {
         try
         {
-
+			JetspeedPortletRegistry.beginTransaction();
             PortletDefinitionComposite pdc = null;
             PortletDefinitionComposite pdc1 =
                 (PortletDefinitionComposite) JetspeedPortletRegistry.getPortletDefinitionByIndetifier(PORTLET_0_UID);
@@ -502,7 +552,7 @@ public class TestRegistry extends JetspeedTest
 
             assertNotNull("Could not locate PortletDefinition with unique name \"" + APP_1_NAME + "::" + PORTLET_0_UID + "\"", pdc);
 
-            JetspeedPortletRegistry.beginTransaction();
+            
 
             JetspeedPortletRegistry.writeLock(pdc);
 
@@ -517,7 +567,8 @@ public class TestRegistry extends JetspeedTest
             pdc.addPreference(pc);
 
             JetspeedPortletRegistry.commitTransaction();
-
+			
+			JetspeedPortletRegistry.beginTransaction();
             // plugin.invalidateObject(pdc);
             // plugin.invalidateObject(pc);
             pdc = (PortletDefinitionComposite) JetspeedPortletRegistry.getPortletDefinitionByIndetifier(PORTLET_0_UID);
@@ -557,6 +608,7 @@ public class TestRegistry extends JetspeedTest
             assertTrue("\"preference 1\" should have 2 values not " + valueCount, valueCount == 2);
 
             assertTrue(count == 1);
+			JetspeedPortletRegistry.commitTransaction();
         }
         catch (Exception e)
         {
@@ -591,10 +643,11 @@ public class TestRegistry extends JetspeedTest
     {
         // // JetspeedPortletRegistry.clearCache();
 
-        Iterator itr = JetspeedPortletRegistry.getPortletApplications().iterator();
         try
         {
             JetspeedPortletRegistry.beginTransaction();
+            Iterator itr = JetspeedPortletRegistry.getPortletApplications().iterator();
+
             while (itr.hasNext())
             {
                 MutablePortletApplication pac = (MutablePortletApplication) itr.next();
@@ -602,7 +655,7 @@ public class TestRegistry extends JetspeedTest
                 JetspeedPortletRegistry.removeApplication(pac);
 
             }
-			JetspeedPortletRegistry.commitTransaction();
+            JetspeedPortletRegistry.commitTransaction();
 
         }
         catch (Exception e)
