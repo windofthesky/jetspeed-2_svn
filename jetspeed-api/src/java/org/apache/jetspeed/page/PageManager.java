@@ -19,6 +19,7 @@ package org.apache.jetspeed.page;
 import java.util.List;
 
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
@@ -62,6 +63,18 @@ public interface PageManager
      * @param locator The locator descriptor of the document to be retrieved.
      */
     public Page getPage(String id);
+    
+    /**
+     * 
+     * <p>
+     * getFolder
+     * </p>
+     * Locates a folder for the given path.
+     * @param folderPath
+     * @return <code>Folder</code> object represented by the <code>folderPath</code> or
+     * <code>null</code> if no such folder exists.
+     */
+    Folder getFolder(String folderPath);
 
     /**
      * Returns a PSML document for the given locator

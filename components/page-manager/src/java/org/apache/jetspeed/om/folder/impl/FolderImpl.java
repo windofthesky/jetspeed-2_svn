@@ -16,6 +16,9 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.apache.jetspeed.om.folder.Folder;
 
@@ -32,8 +35,8 @@ public class FolderImpl implements Folder {
     private String name;
     private String defaultPage;
     private String defaultTheme;
-    private Collection folders;
-    private Collection pages;
+    private Collection folders=new HashSet();
+    private Collection pages=new TreeSet(new FolderComparator());
     //private GenericMetadata metadata;
 
     /* (non-Javadoc)
@@ -113,6 +116,35 @@ public class FolderImpl implements Folder {
     public void setPages(Collection pages)
     {
         this.pages = pages;
+    }
+    
+    class FolderComparator implements Comparator
+    {
+
+        /**
+         * <p>
+         * compare
+         * </p>
+         *
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         * @param o1
+         * @param o2
+         * @return
+         */
+        public int compare( Object o1, Object o2 )
+        {
+            if(o1 != null || o2 != null)
+            {
+                Folder f1 = (Folder) o1;
+                Folder f2 = (Folder) o2;
+                return f1.getName().compareTo(f2.getName());
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        
     }
 
 }

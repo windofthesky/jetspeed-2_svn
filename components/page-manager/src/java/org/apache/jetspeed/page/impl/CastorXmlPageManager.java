@@ -34,6 +34,8 @@ import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.ProfileLocator;
@@ -243,6 +245,35 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         }
 
         return page;
+    }
+    
+    public Folder getFolder(String folderPath)
+    {
+        File f = new File(this.rootDir, folderPath);
+        if (!f.exists())
+        {
+            return null;
+        }
+        else
+        {
+            Folder folder = new FolderImpl();
+            folder.setName(folderPath);            
+            File[] children = f.listFiles();
+            for(int i=0; i < children.length; i++)
+            {
+                if(children[i].isDirectory())
+                {
+                    folder.getFolders().add(getFolder(folderPath+"/"+children[i].getName()));
+                }
+                else
+                {
+                    folder.getPages().add(getPage(folderPath+"/"+children[i].getName()));
+                }                
+            }
+            
+            return folder;
+        }
+        
     }
 
     /**

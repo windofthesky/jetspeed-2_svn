@@ -16,7 +16,9 @@
 package org.apache.jetspeed.page;
 
 // Java imports
+import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
@@ -27,10 +29,12 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.impl.CastorXmlPageManager;
+import org.apache.jetspeed.util.DirectoryHelper;
 
 /**
  * TestPageXmlPersistence
@@ -42,6 +46,7 @@ public class TestCastorXmlPageManager extends TestCase
 {
     private String testId = "test002";
     protected CastorXmlPageManager pageManager;
+    protected DirectoryHelper dirHelper;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -49,12 +54,27 @@ public class TestCastorXmlPageManager extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
+        dirHelper.copyFrom(new File("testdata/pages"));
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
         pageManager = new CastorXmlPageManager(idGen, cache, "target/testdata/pages");
+        
         pageManager.start();
     }
     
+    /**
+     * <p>
+     * tearDown
+     * </p>
+     *
+     * @see junit.framework.TestCase#tearDown()
+     * @throws java.lang.Exception
+     */
+    protected void tearDown() throws Exception
+    {        
+        super.tearDown();
+    }
     /**
      * Defines the testcase name for JUnit.
      *
@@ -272,5 +292,21 @@ public class TestCastorXmlPageManager extends TestCase
 
         page = pageManager.getPage(this.testId);
         assertNull(page);
+    }
+    
+    public void testFolders() throws Exception
+    {
+        
+        Folder folder1 = pageManager.getFolder("folder1");
+        assertNotNull(folder1);
+        assertEquals(2, folder1.getFolders().size());
+        Iterator childItr = folder1.getFolders().iterator();
+        Folder folder2 = (Folder) childItr.next();
+        assertEquals("folder1/folder2",folder2.getName());        
+        Folder folder3 = (Folder) childItr.next();
+        assertEquals("folder1/folder3",folder3.getName());  
+        assertEquals(1, folder2.getPages().size());
+        assertEquals(2, folder3.getPages().size());        
+        
     }
 }

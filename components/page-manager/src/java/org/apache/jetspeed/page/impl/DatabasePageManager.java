@@ -25,6 +25,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotRemovedException;
@@ -175,4 +176,18 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
     }
 
+    /**
+     * <p>
+     * getFolder
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.PageManager#getFolder(java.lang.String)
+     * @param folderPath
+     * @return
+     */
+    public Folder getFolder( String folderPath )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
