@@ -13,39 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.components.adapters;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public interface MockComponent
+public class ThreadLocalDelegationStrategy extends AbstractDelegationStrategy
 {
-    /**
-     * @return Returns the value1.
-     */
-    int getValue1();
 
-    /**
-     * @param value1 The value1 to set.
-     */
-    void setValue1( int value1 );
-
-    /**
-     * @return Returns the value2.
-     */
-    String getValue2();
-
-    /**
-     * @param value2 The value2 to set.
-     */
-    void setValue2( String value2 );
+    private ThreadLocal localInstance=new ThreadLocal();
     
-    /**
-     * 
-     * @return number of components of this type that have been instantiated.
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.AbstractDelegationStrategy#getDelegatedInstance()
      */
-    int componentId();
-    
-    String getThreadName();
+    protected Object getDelegatedInstance()
+    {        
+        return localInstance.get();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.AbstractDelegationStrategy#setDelegatedInstance(java.lang.Object)
+     */
+    protected void setDelegatedInstance( Object instance )
+    {
+        localInstance.set(instance);
+    }
+
 }

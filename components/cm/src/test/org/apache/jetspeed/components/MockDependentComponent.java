@@ -19,33 +19,21 @@ package org.apache.jetspeed.components;
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public interface MockComponent
-{
-    /**
-     * @return Returns the value1.
-     */
-    int getValue1();
-
-    /**
-     * @param value1 The value1 to set.
-     */
-    void setValue1( int value1 );
-
-    /**
-     * @return Returns the value2.
-     */
-    String getValue2();
-
-    /**
-     * @param value2 The value2 to set.
-     */
-    void setValue2( String value2 );
+public class MockDependentComponent
+{   
     
-    /**
-     * 
-     * @return number of components of this type that have been instantiated.
-     */
-    int componentId();
+    private MockComponent dependency;
+
+    public MockDependentComponent(MockComponent dependency)
+    {
+        this.dependency = dependency;  
+    }
     
-    String getThreadName();
+    public MockComponent getMockComponent()
+    {
+        return dependency;
+    }
+    
+    
+
 }
