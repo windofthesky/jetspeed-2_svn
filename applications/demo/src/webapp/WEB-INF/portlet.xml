@@ -39,6 +39,28 @@
       <keywords>JMX</keywords>
     </portlet-info>
   </portlet>
+  
+  <portlet id="PreferencePortlet">      
+    <portlet-name>PreferencePortlet</portlet-name>
+    <display-name>PreferencePortlet</display-name>
+    <portlet-class>org.apache.jetspeed.demo.preferences.PreferencePortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Preference Test</title>
+      <short-title>Preference Test</short-title>
+      <keywords>Preferences</keywords>
+    </portlet-info>
+    <portlet-preferences>
+    	 <preference>
+    	 	 <name>pref1</name>
+    	 	 <value>Hello</value>
+    	  </preference>
+    </portlet-preferences>
+  </portlet>
  
   <portlet id="DisplayRequestPortlet">
     <init-param> 
