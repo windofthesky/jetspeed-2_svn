@@ -20,6 +20,7 @@ import java.util.Arrays;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
@@ -132,9 +133,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
     {
         super.init(config);
 
-        defaultViewSource = config.getInitParameter(VIEW_SOURCE_PARAM);
-        if (defaultViewSource == null) defaultViewSource = "http://www.apache.org";
-
         defaultEditSource = config.getInitParameter(EDIT_SOURCE_PARAM);
     }
 
@@ -214,7 +212,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         if (sourceURL == null)
         {
             // Use the URL defined in the preferences
-            sourceURL = defaultViewSource;
+            sourceURL =  request.getPreferences().getValue("SRC", "");
         }
 
         if (lastURL != null && sourceURL.equals(lastURL))
@@ -230,14 +228,9 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // Initialize the controller if it's not already done
         if (rewriteController == null)
         {
-            // Extract context path
-            String pathTranslated = ((HttpServletRequest) ((HttpServletRequestWrapper) request).getRequest())
-                    .getPathTranslated();
-            String contextPath = request.getContextPath();
-
-            contextPath = pathTranslated.substring(0, pathTranslated.indexOf("webapps") + 7) + contextPath
-                    + "/WEB-INF/";
-
+            PortletContext portletApplication = getPortletContext(); 
+            String path = portletApplication.getRealPath("/WEB-INF");
+            String contextPath = path + "/";
             try
             {
                 // Create rewriter adaptor
