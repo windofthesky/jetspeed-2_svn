@@ -15,13 +15,17 @@
  */
 package org.apache.jetspeed.components.persistence.store.ojb.pb;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
@@ -33,6 +37,9 @@ import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PBKey;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.metadata.DescriptorRepository;
+import org.apache.ojb.broker.metadata.MetadataManager;
+import org.apache.ojb.broker.metadata.RepositoryPersistor;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -55,6 +62,7 @@ public class PBStore implements PersistenceStore
     private PersistenceBroker pb;
    
     protected Set toBeStored;
+    protected static final Log log = LogFactory.getLog(PBStore.class);
     
     
     public PBStore(String jcd)
@@ -75,6 +83,16 @@ public class PBStore implements PersistenceStore
             invoker = new StoreEventInvoker(listeners, this);
             pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);        
             toBeStored = new HashSet();
+            MetadataManager metaManager = MetadataManager.getInstance();
+            RepositoryPersistor persistor = new RepositoryPersistor();
+            Enumeration descriptors = getClass().getClassLoader().getResources("META-INF/ojb_repository.xml");
+            while(descriptors.hasMoreElements())
+            {
+                URL descriptorUrl = (URL) descriptors.nextElement();
+                log.info("Merging OJB respository: "+descriptorUrl);
+                DescriptorRepository repo = persistor.readDescriptorRepository(descriptorUrl.openStream());
+                metaManager.mergeDescriptorRepository(repo);                
+            }
         }
         catch (Throwable e)
         {

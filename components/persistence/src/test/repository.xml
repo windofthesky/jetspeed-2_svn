@@ -6,8 +6,6 @@
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
-<!ENTITY test SYSTEM "repository_test.xml">
-
 
 ]>
 
@@ -19,9 +17,5 @@
 
     <!-- include ojb internal mappings here -->
     &internal;
-    
-    <!-- include test registry mapping here -->
-    &test;
-
 
 </descriptor-repository>

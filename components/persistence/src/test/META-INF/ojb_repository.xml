@@ -1,4 +1,4 @@
-
+<descriptor-repository version="1.0" >
 
    <class-descriptor
    	  class="org.apache.jetspeed.components.persistence.A"
@@ -77,4 +77,4 @@
      
    </class-descriptor>
    
-  
+  </descriptor-repository>

@@ -579,12 +579,15 @@
 	user is responsible to fill the reference attribute.
 
 	The auto-update attribute specifies whether OJB automatically stores
-	this reference attribute on storing the persistent object.
-	This attribute must be set to false if using the OTM, ODMG or JDO layer.
+	this reference attribute on storing the persistent object or not or only
+    link the reference.
+	This attribute must be set to 'false' if using the OTM, ODMG or JDO layer.
+    More info see OJB documentation.
 
 	The auto-delete attribute specifies whether OJB automatically deletes
-	this reference attribute on deleting the persistent object.
-	This attribute must be set to false if using the OTM, ODMG or JDO layer.
+	this reference attribute on deleting the persistent object or not.
+	This attribute must be set to 'false' if using the OTM, ODMG or JDO layer.
+    More info see OJB documentation.
 
 	The otm-dependent attribute specifies whether the OTM layer automatically
     creates the referred object or deletes it if the reference field is set to null.
@@ -602,8 +605,8 @@
 	refresh (true | false) "false"
 
 	auto-retrieve (true | false) "true"
-	auto-update (true | false) "false"
-	auto-delete (true | false) "false"
+	auto-update (none | link | object | true | false) "false"
+	auto-delete (none | link | object | true | false) "false"
 	otm-dependent (true | false) "false"
 >
 
@@ -657,7 +660,9 @@
 	The collection-class may hold a fully qualified class name.
 	This class must be the Java type of the Collection attribute.
 	This attribute must only specified if the attribute type is not
-	a java.util.Collection (or subclass) or Array type.
+	a java.util.Collection (or subclass) or Array type. The declared
+    (none java.util.Collection or non Array) class must implement
+    ManageableCollection to let OJB handle this type of collection.
 
 	The element-class-ref attribute contains a fully qualified class name.
 	This class is the Object type of the elements of persistent collection
@@ -691,12 +696,14 @@
 	user is responsible to fill the persistent attribute.
 
 	The auto-update attribute specifies whether OJB automatically stores
-	this reference attribute on storing the persistent object.
-	This attribute must be set to false if using the OTM, ODMG or JDO layer.
+	the referenced objects on storing the persistent object or not or only link.
+	This attribute must be set to 'false' if using the OTM, ODMG or JDO layer.
+    More info see OJB documentation.
 
 	The auto-delete attribute specifies whether OJB automatically deletes
-	this reference attribute on deleting the persistent object.
+	the referenced objects on deleting the persistent object or not.
 	This attribute must be set to false if using the OTM, ODMG or JDO layer.
+    More info see OJB documentation.
 
 	The otm-dependent attribute specifies whether the OTM layer automatically
     creates collection elements that were included into the collectionelements
@@ -721,8 +728,8 @@
 	refresh (true | false) "false"
 
 	auto-retrieve (true | false) "true"
-	auto-update (true | false) "false"
-	auto-delete (true | false) "false"
+	auto-update (none | link | object | true | false) "false"
+	auto-delete (none | link | object | true | false) "false"
 	otm-dependent (true | false) "false"
 >
 
