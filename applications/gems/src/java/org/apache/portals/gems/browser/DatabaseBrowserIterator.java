@@ -238,8 +238,19 @@ public class DatabaseBrowserIterator implements BrowserIterator
 
         if (idx != -1)
         {
-            Object col1 = ((List) obj1).get(idx);
-            Object col2 = ((List) obj2).get(idx);
+            Object col1 = null;
+            Object col2 = null;
+            
+            if (obj1 instanceof String)
+            {
+                col1 = (String)obj1;
+                col2 = (String)obj2;                
+            }
+            else if (obj1 instanceof List)
+            {
+                col1 = ((List) obj1).get(idx);
+                col2 = ((List) obj2).get(idx);
+            }
 
             if ((col1).equals(VELOCITY_NULL_ENTRY))
             {
