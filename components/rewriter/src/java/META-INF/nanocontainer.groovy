@@ -14,7 +14,7 @@
  * limitations under the License.
  * ========================================================================
  */
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.jetspeed.rewriter.JetspeedRewriterController
 import org.apache.jetspeed.rewriter.BasicRewriter
 import org.apache.jetspeed.rewriter.RulesetRewriterImpl
@@ -26,7 +26,7 @@ applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./
 rulesFile = System.getProperty("org.apache.jetspeed.rewriter_rules", "/WEB-INF/conf/rewriter-rules-mapping.xml")
 
 
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer()
 
 
 mapping = applicationRoot + rulesFile

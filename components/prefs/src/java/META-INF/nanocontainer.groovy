@@ -14,7 +14,7 @@
  * limitations under the License.
  * ========================================================================
  */
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
@@ -29,26 +29,12 @@ import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
 
 import java.io.File
 
-/**
- * This is the standard assembly for a Preferences
- * component.  We want the Preferences component to be exposed
- * at as high the container hierarchy as possibly so, if a
- * parent container is provided, we will regsiter to the parent
- * and use it as the container for the Preferences.
- */
 
-if(parent != null)
-{
-	container = new DefaultPicoContainer(parent)
-	parent.registerComponentImplementation(PropertyManager, PropertyManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-	parent.registerComponentImplementation(PreferencesProvider, PreferencesProviderImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed"), new ConstantParameter("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl")} )
-}
-else
-{
-	container = new DefaultPicoContainer()
-	container.registerComponentImplementation(PropertyManager, PropertyManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
-	container.registerComponentImplementation(PreferencesProvider, PreferencesProviderImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed"), new ConstantParameter("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl")} )	
-}	
+
+container = new ChildAwareContainer(parent)
+container.registerComponentImplementation(PropertyManager, PropertyManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
+container.registerComponentImplementation(PreferencesProvider, PreferencesProviderImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed"), new ConstantParameter("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl")} )	
 	
-// This will be an empty container if "parent" was not null
+	
+
 return container

@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.picocontainer.ComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.page.PageManager
-import org.apache.jetspeed.page.impl.CastorXmlPageManager
-import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler
-import org.apache.jetspeed.components.ComponentAssemblyTestCase
+
 
 import java.io.File
 import java.util.Properties
 
 applicationRoot = System.getProperty("org.apache.jetspeed.application_root", "./")
 
-// create the root container
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer(parent)
 
-//
-// Profiler
-//
+
 props = new Properties()
 props.put("persistenceStore", "jetspeed")
 props.put("defaultRule", "j1")
@@ -46,7 +41,6 @@ props.put("locator.impl", "org.apache.jetspeed.profiler.impl.JetspeedProfileLoca
 props.put("principalRule.impl", "org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl")
 props.put("profilingRule.impl", "org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule")
 
-// container.registerComponentInstance(Profiler, new JetspeedProfiler(container.get, pageManager, props))
-container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter(pageManager), new ConstantParameter(props)} )
+container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ComponentParameter(PageManager), new ConstantParameter(props)} )
 
 return container

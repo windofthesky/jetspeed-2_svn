@@ -1,4 +1,4 @@
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
@@ -11,9 +11,9 @@ import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.ComponentAdapter
 import org.picocontainer.defaults.ConstructorInjectionComponentAdapter
 import java.io.File
-import org.apache.jetspeed.components.MultiStartPicoContainerWrapper
 
-container = new DefaultPicoContainer(parent)
+
+container = new ChildAwareContainer(parent)
 
 // This JNDI component helps us publish the datasource
 Class jndiClass = JNDIComponent
@@ -33,4 +33,4 @@ if(url != null)
 
 
 
-return new MultiStartPicoContainerWrapper(container)
+return container
