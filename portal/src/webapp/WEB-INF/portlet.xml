@@ -33,7 +33,7 @@
     <display-name>Two Columns Layout Using Velocity</display-name>
     <init-param>
       <name>ViewPage</name>
-      <value>/columns.vm</value>
+      <value>columns</value>
     </init-param>
     <init-param>
       <name>columns</name>
