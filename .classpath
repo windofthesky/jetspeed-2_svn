@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
+	<classpathentry kind="src" path="components/deploy-tool/src/java"/>
 	<classpathentry kind="src" path="taglibs/treecontrol/src/java"/>
 	<classpathentry kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>

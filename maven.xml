@@ -185,6 +185,13 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/components/deploy-tool"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Jetspeed Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>			   
+    <maven:reactor
                basedir="${basedir}/content-server"
                includes="project.xml"
                goals="jar:install"
