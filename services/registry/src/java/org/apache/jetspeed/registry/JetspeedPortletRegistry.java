@@ -162,7 +162,7 @@ public class JetspeedPortletRegistry
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#updatePortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public static void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException
+    public static void updatePortletApplication(PortletApplicationDefinition app) throws RegistryException
     {
         getService().updatePortletApplication(app);
     }

@@ -198,22 +198,36 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#updatePortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException
+    public void updatePortletApplication(PortletApplicationDefinition app) throws RegistryException
     {
-        plugin.prepareForUpdate(app);
+        try
+        {
+            plugin.prepareForUpdate(app);
+        }
+        catch (TransactionStateException e)
+        {
+            throw new RegistryException(e.toString(), e);
+        }
 
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#removeApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public void removeApplication(PortletApplicationDefinition app) throws TransactionStateException
+    public void removeApplication(PortletApplicationDefinition app) throws RegistryException
     {
         ArgUtil.notNull(new Object[] { app }, new String[] { "app" }, "removeApplication(PortletApplicationDefinition)");
 
-        log.info("Removing portlet application " + ((MutablePortletApplication) app).getName());
-        plugin.prepareForDelete(app);
-        plugin.invalidateObject(app);
+        try
+        {
+            log.info("Removing portlet application " + ((MutablePortletApplication) app).getName());
+            plugin.prepareForDelete(app);
+            plugin.invalidateObject(app);
+        }
+        catch (TransactionStateException e)
+        {
+			throw new RegistryException(e.toString(), e);
+        }
     }
 
     /**

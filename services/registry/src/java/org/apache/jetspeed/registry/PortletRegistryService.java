@@ -75,7 +75,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public interface PortletRegistryService extends CommonService
+public interface PortletRegistryService extends CommonService, PortletRegistryComponent
 {
 
     /** The name of this service */
@@ -171,21 +171,7 @@ public interface PortletRegistryService extends CommonService
         */
     void registerPortletApplication(PortletApplicationDefinition newApp) throws RegistryException;
 
-    /**
-        * Makes any changes to the <code>PortletApplicationDefinition</code>
-        * persistent.
-        * @param app
-        */
-    void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException;
-
-    void removeApplication(PortletApplicationDefinition app) throws TransactionStateException;
-
-    Language createLanguage(
-        Locale locale,
-        String title,
-        String shortTitle,
-        String description,
-        Collection keywords)  throws RegistryException;
+  
         
     /**
      * Lists  portlet init parameters within the system
