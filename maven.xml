@@ -159,6 +159,13 @@ limitations under the License.
                banner="Build and Install the Security Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
+      <maven:reactor
+               basedir="${basedir}/components/capability"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Capability Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
     
     <maven:reactor
                basedir="${basedir}/cps"
