@@ -1,17 +1,17 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.jetspeed.om.page;
 
@@ -21,37 +21,41 @@ import java.util.Iterator;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 
 /**
  * TestMarshalPsml
- *
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * 
+ * @author <a href="taylor@apache.org">David Sean Taylor </a>
+ * @version $Id: TestPageObjectModel.java,v 1.1.2.3 2004/04/20 22:37:45 weaver
+ *          Exp $
  */
 public class TestPageObjectModel extends AbstractComponentAwareTestCase
 {
 
     /**
      * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
+     * 
+     * @param name
+     *            the testcase's name.
      */
     public TestPageObjectModel( String name )
     {
-        super( name );
+        super(name);
     }
 
     /**
      * Start the tests.
-     *
-     * @param args the arguments. Not used
+     * 
+     * @param args
+     *            the arguments. Not used
      */
-    public static void main(String args[])
+    public static void main( String args[] )
     {
-        junit.awtui.TestRunner.main( new String[] { TestPageObjectModel.class.getName() } );
+        junit.awtui.TestRunner.main(new String[]{TestPageObjectModel.class
+                .getName()});
     }
 
     public void setup()
@@ -61,14 +65,15 @@ public class TestPageObjectModel extends AbstractComponentAwareTestCase
 
     /**
      * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
+     * 
+     * @return a test suite (<code>TestSuite</code>) that includes all
+     *         methods starting with "test"
      */
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new NanoDeployerBasedTestSuite( TestPageObjectModel.class );
+        //return new NanoDeployerBasedTestSuite( TestPageObjectModel.class );
+        return new ContainerDeployerTestSuite(TestPageObjectModel.class);
     }
 
     private Page buildBasePage()
@@ -130,9 +135,9 @@ public class TestPageObjectModel extends AbstractComponentAwareTestCase
         root.getFragments().add(frag2);
 
         //Check the construct
-        assertTrue(root.getFragments().size()==2);
+        assertTrue(root.getFragments().size() == 2);
         Iterator i = root.getFragments().iterator();
-        Fragment f = (Fragment)i.next();
+        Fragment f = (Fragment) i.next();
         assertNotNull(f);
         assertTrue(f.getName().equals("Portlet1"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
@@ -141,17 +146,17 @@ public class TestPageObjectModel extends AbstractComponentAwareTestCase
         assertNull(f.getAcl());
         assertNull(f.getDecorator());
         assertNull(f.getState());
-        assertTrue(f.getFragments().size()==0);
-        f = (Fragment)i.next();
+        assertTrue(f.getFragments().size() == 0);
+        f = (Fragment) i.next();
         assertNotNull(f);
         assertTrue(f.getName().equals("TwoColumns"));
         assertTrue(f.getType().equals(Fragment.LAYOUT));
-        assertTrue(f.getFragments().size()==1);
+        assertTrue(f.getFragments().size() == 1);
         assertTrue(f.getDecorator().equals("test"));
         assertTrue(f.getAcl().equals("private"));
-        assertTrue(f.getFragments().size()==1);
+        assertTrue(f.getFragments().size() == 1);
         i = f.getFragments().iterator();
-        frag1 = (Fragment)i.next();
+        frag1 = (Fragment) i.next();
         assertNotNull(frag1);
         assertTrue(frag1.getName().equals("Portlet3"));
         assertTrue(frag1.getType().equals(Fragment.PORTLET));
@@ -168,8 +173,8 @@ public class TestPageObjectModel extends AbstractComponentAwareTestCase
         frag3 = page.getFragmentById("F3");
         assertNull(frag3);
         f.getFragments().add(frag2);
-        assertTrue(f.getFragments().size()==1);
-        f = (Fragment)f.getFragments().get(0);
+        assertTrue(f.getFragments().size() == 1);
+        f = (Fragment) f.getFragments().get(0);
         assertNotNull(f);
         assertTrue(f.getName().equals("P4"));
     }

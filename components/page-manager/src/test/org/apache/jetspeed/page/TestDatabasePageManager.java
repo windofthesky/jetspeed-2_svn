@@ -18,7 +18,7 @@ package org.apache.jetspeed.page;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 
@@ -67,8 +67,7 @@ public class TestDatabasePageManager extends AbstractComponentAwareTestCase
     {
         // All methods starting with "test" will be executed in the test suite.
        // return new TestSuite(TestDatabasePageManager.class);
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestDatabasePageManager.class);
-    	return suite;
+        return new ContainerDeployerTestSuite(TestDatabasePageManager.class);
     }
     
     

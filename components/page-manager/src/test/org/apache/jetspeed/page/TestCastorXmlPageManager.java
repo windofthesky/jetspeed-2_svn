@@ -22,7 +22,7 @@ import java.util.List;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -71,8 +71,7 @@ public class TestCastorXmlPageManager extends AbstractComponentAwareTestCase
         //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCastorXmlPageManager.class);
         // suite.setScript("org/apache/jetspeed/page/impl/registry.container.groovy");
         // return suite ;
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestCastorXmlPageManager.class);
-    	return suite;
+        return new ContainerDeployerTestSuite(TestCastorXmlPageManager.class);
     }
 
     public void testNewPage()
