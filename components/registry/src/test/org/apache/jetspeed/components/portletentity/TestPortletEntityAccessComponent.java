@@ -241,9 +241,6 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         entityAccess.removePortletEntity(entity6);
         
         store.getTransaction().commit();              
-        
-        // TODO: test preferences
-        System.out.println("PortletEntity Test completed.");
     }
         
     private void setupTestData()
