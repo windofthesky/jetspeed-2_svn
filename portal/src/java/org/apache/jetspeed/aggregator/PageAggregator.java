@@ -137,20 +137,18 @@ public class PageAggregator extends BaseCommonService implements Aggregator
     {
 
         PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
-/*
+        ProfilerService profiler = (ProfilerService)CommonPortletServices.getPortalService(ProfilerService.SERVICE_NAME);
+        
         ProfileLocator locator = context.getProfileLocator();
         if (null == locator)
         {
             throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
         }
-        Page page = Profiler.getPage(locator);
+        Page page = profiler.getPage(locator);
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");
         }
-*/
-        //DEBUG CODE: use this to test a specific page
-        Page page = org.apache.jetspeed.services.page.PageManager.getPage("p001");
         context.setPage(page);
 
         //Set default acl

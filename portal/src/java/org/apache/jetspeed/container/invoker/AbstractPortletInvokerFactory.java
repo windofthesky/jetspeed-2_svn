@@ -103,7 +103,6 @@ public abstract class AbstractPortletInvokerFactory
     public void passivateObject(Object object) throws Exception 
     {
         JetspeedPortletInvoker invoker = (JetspeedPortletInvoker)object;
-        invoker.passivate();        
         pool.returnObject(invoker);
     }
 
@@ -111,7 +110,7 @@ public abstract class AbstractPortletInvokerFactory
      * @see org.apache.commons.pool.PoolableObjectFactory#makeObject()
      */
     public Object makeObject() throws Exception
-    {
+    {        
         return Class.forName(invokerClass).newInstance();
     }
     
