@@ -33,19 +33,28 @@ limitations under the License.
 
  
   <goal name="deploy-plugin">
+  	<attainGoal name="undeploy-plugin" />
+  	
   	<!-- install will do the uninstall if needed for us -->
-    <attainGoal name="plugin:install"/>
+    <attainGoal name="plugin:install"/> 
     <!-- get the plugin available now (like with plugin:install-now, but which doesn't install).
          Bug: If a new version of the plugin is deployed while an older version is available
               maven gets very confused... Haven't found a workaround for that.
     -->
-    <maven:uninstallPlugin artifactId="${pom.artifactId}" />
-    <maven:installPlugin file="${maven.build.dir}/${maven.final.name}.jar" cache="true" />
+    
     <!-- deploy the plugin to the local repository directly: 
          using the plugin:repository-install goal would lead to another build of the jar as all plugin goals do that as 
          prereq
     -->    
+    <maven:installPlugin file="${maven.build.dir}/${maven.final.name}.jar" cache="true" />
     <artifact:install artifact="${maven.build.dir}/${maven.final.name}.jar" type="plugin" project="${pom}"/>
+    <unjar src="${maven.build.dir}/${maven.final.name}.jar" dest="${maven.home.local}/plugins/${maven.final.name}" overwrite="true" />
+
+  </goal>
+  
+  <goal name="undeploy-plugin">
+  	<attainGoal name="plugin:uninstall-now" />
+  	<delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="true" />  
   </goal>
 
    <goal name="copyDb">
