@@ -42,6 +42,7 @@ import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
  * This request wrappers the servlet request and is used within the container to
@@ -207,7 +208,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Object getAttribute(String name)
     {
-        Object value = super.getAttribute(name);
+        Object value = super.getAttribute(name);        
         if (name.equals(PortletRequest.USER_INFO))
         {
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
@@ -233,6 +234,20 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                     log.error("Entity is null:" + entityID);
                 }
 
+            }
+        }
+        else
+        {
+            if (null == value)
+            {
+                PortletRequest pr = (PortletRequest)super.getAttribute("javax.portlet.request");
+                if (pr != null)
+                {
+                    value = super.getAttribute(
+                                NamespaceMapperAccess
+                                    .getNamespaceMapper()
+                                    .encode(portletWindow.getId(), name));
+                }
             }
         }
         return value;
