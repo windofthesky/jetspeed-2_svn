@@ -1,22 +1,31 @@
-----------------------------------------------------------------
+-------------------------------------------------------------------------
   T O D O   L i s t
-----------------------------------------------------------------
+-------------------------------------------------------------------------
 
------------------------------------------------------------------------------------------------------------
-2003-05-22
+Here is a list of stuff that you can work on if you find it interesting
 
-Think we need to be able to get the portlets out of the registry.
-Still have some problems there with the deploy.
+-------------------------------------------------------------------------
+* PAM *
+-------------------------------------------------------------------------
+- refactor PAM maven tasks to simply copy WAR to a deploy directory
+- Move PAM into portal runtime. A directory watcher will pick up new deployments
+  and kickoff the PAM to actually do the deployment.
+  This implies that the portal server must be running to pick up a deployment
+- remove funky code to look in the $HOME directory for the database path (yech)
 
+ASSIGNED:
 
------------------------------------------------------------------------------------------------------------
-2003-05-23
+-------------------------------------------------------------------------
+* Pooling *
+-------------------------------------------------------------------------
+- All Pluto factory objects such as request, response, dispatchers, invokers, contexts need to be pooled
 
-- Separate Test registry data from Deployed registry data
-- Separate Test PSML from Deployed PSML data
-- Change Application to have APP_ID
-- Deploy tool needs to write Application to Registry
-- PortletConfig to pass to portlet.init().
-    
+ASSIGNED: DST
 
-
+-------------------------------------------------------------------------
+* Database *
+-------------------------------------------------------------------------
+- Consider using PA-NAME + PORTLET-NAME as a unique key to find portlets
+  Currently it is, which can't make queries like SELECT NAME FROM PORTLET_DEFINITION run too fast.
+    UNIQUE(APPLICATION_ID, NAME)
+- Rework the way we find the database. Having a property in the $HOME directory isn't going to cut it

@@ -11,16 +11,5 @@ Pluto Issues
     so Im not sure how Pluto accesses factories before the container is called per thread.
     But it seems to work in Pluto. Cant figure this one out yet    
 
-3. org.apache.jetspeed.aggregator.BasicAggregator
-    - cleanup, combine with PSML
-    - remove simplistic PortletEntity creation
-    - find a way to cache PSML and PortletEntity objects in session
-
----------------------------------
-Misc
----------------------------------
-
-1. Old PortletContainer [DONE]
-- remove all code related-to the old container and old request/response impls and wrappers
 
 
