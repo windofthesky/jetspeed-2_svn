@@ -15,88 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
+  <extend>${basedir}/../project.xml</extend>
   <id>jetspeed2-design-docs</id>
   <name>Jetspeed 2 Enterprise Portal Design Documentation</name>
-  <currentVersion>2.0-a1-dev</currentVersion>
-  <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://jakarta.apache.org/</url>
-    <logo>/images/jakarta-logo.gif</logo>
-  </organization>
-  <inceptionYear>1999</inceptionYear>
-  <package>org.apache.jetspeed</package>
-  <logo>/images/blue-logo.gif</logo>
 
-  <!-- Gump integration -->
-  <gumpRepositoryId></gumpRepositoryId>
-
-  <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
+  <description>
+    Jetspeed is an Open Source implementation of an Enterprise Information 
+    Portal, using Java and XML.
+  </description>
   <shortDescription>Enterprise Information Portal</shortDescription>
 
-  <mailingLists>
-    <mailingList>
-      <name>Jetspeed 2 Developer List</name>
-      <subscribe>jetspeed-2-dev-subscribe@bluesunrise.com</subscribe>
-      <unsubscribe>jetspeed=2-dev-unsubscribe@bluesunrise.com</unsubscribe>
-    </mailingList>
-  </mailingLists>
-
-  <developers>
-    <developer>
-      <name>David Sean Taylor</name>
-      <id>taylor</id>
-      <email>taylor@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Raphael Luta</name>
-      <id>raphael</id>
-      <email>raphael@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Mark Orciuch</name>
-      <id>mark</id>
-      <email>mark_oriuch@nqsltd.com</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Paul Spencer</name>
-      <id>paul</id>
-      <email>paulsp@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Ruchi Gatha</name>
-      <id>ruchi</id>
-      <email>ruchi@bluesunrise.com</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-   <developer>
-      <name>Roger Ruttimann</name>
-      <id>roger</id>
-      <email>roger.ruttimann@earthlink.net</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-  </developers>
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/design-docs</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/design-docs/</url>
+  </repository>
 
   <dependencies>
     <dependency> <!-- Required by FOP v0.20.3 -->
@@ -130,4 +62,12 @@ limitations under the License.
    </dependencies>
 
   <build/>
+  <reports>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
 </project>
