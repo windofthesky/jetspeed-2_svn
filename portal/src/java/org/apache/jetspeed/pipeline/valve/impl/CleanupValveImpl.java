@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -50,6 +49,13 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
     public static final String RENDER_STACK_ATTR = "org.apache.jetspeed.renderStack";
 
     private static final Log log = LogFactory.getLog(CleanupValveImpl.class);
+
+    private PersistenceStore persistenceStore;
+    
+    public CleanupValveImpl(PersistenceStore persistenceStore)
+    {
+        this.persistenceStore = persistenceStore;
+    }
 
     /**
      * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
@@ -81,9 +87,8 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
         {
             log.error("CleanupValveImpl: failed while trying to render fragment " + fragment);
             log.error("CleanupValveImpl: Unable to complete all renderings", e);
-        }
+        }        
         
-        PersistenceStore persistenceStore = (PersistenceStore) Jetspeed.getComponentManager().getComponent(PersistenceStore.class);
         try
         {
             if(persistenceStore != null)

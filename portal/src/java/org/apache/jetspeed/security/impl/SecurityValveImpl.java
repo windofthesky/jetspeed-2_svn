@@ -23,8 +23,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -43,6 +41,14 @@ import org.apache.jetspeed.security.UserPrincipal;
 public class SecurityValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.SecurityValve
 {
     private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
+    private Profiler profiler;
+    private UserManager userMgr;
+    
+    public SecurityValveImpl(Profiler profiler, UserManager userMgr)
+    {
+        this.profiler = profiler;
+        this.userMgr = userMgr;
+    }
 
     /**
      * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
@@ -50,10 +56,7 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
         try
-        {
-            Profiler profiler = (Profiler) Jetspeed.getComponentManager().getComponent(Profiler.class);
-            UserManager userMgr = (UserManager) Jetspeed.getComponentManager().getComponent(UserManager.class);
-
+        {            
             Principal principal = request.getRequest().getUserPrincipal();
             Subject subject = (Subject) request.getRequest().getSession().getAttribute(this.getClass().toString() + ".subject");
             if (null == principal)

@@ -24,17 +24,32 @@ limitations under the License.
   <bean id="capabilityValve"
         class="org.apache.jetspeed.capabilities.impl.CapabilityValveImpl"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.capabilities.Capabilities" />
+   </constructor-arg>
+  </bean> 
   
   <bean id="securityValve"
         class="org.apache.jetspeed.security.impl.SecurityValveImpl"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.profiler.Profiler" />
+   </constructor-arg>
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.security.UserManager" />
+   </constructor-arg>
+  </bean> 
   
   <bean id="profilerValve"
         class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.profiler.Profiler" />
+   </constructor-arg>
+  </bean> 
   
   <bean id="containerValve"
         class="org.apache.jetspeed.container.ContainerValve"
@@ -44,22 +59,38 @@ limitations under the License.
   <bean id="actionValve"
         class="org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.pluto.PortletContainer" />
+   </constructor-arg>
+  </bean> 
   
   <bean id="portletValve"
         class="org.apache.jetspeed.aggregator.PortletValve"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.aggregator.PortletAggregator"/>
+   </constructor-arg>
+  </bean> 
   
   <bean id="aggregatorValve"
         class="org.apache.jetspeed.aggregator.AggregatorValve"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.aggregator.PageAggregator"/>
+   </constructor-arg>
+  </bean> 
   
   <bean id="cleanUpValve"
         class="org.apache.jetspeed.pipeline.valve.impl.CleanupValveImpl"
         init-method="initialize"
-  /> 
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore" />  	
+   </constructor-arg>
+  </bean> 
   
   <bean id="jetspeed-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"

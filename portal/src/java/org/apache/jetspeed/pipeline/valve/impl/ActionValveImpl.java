@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -51,18 +50,21 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
 {
 
     private static final Log log = LogFactory.getLog(ActionValveImpl.class);
+    private PortletContainer container;
+    
+    public ActionValveImpl(PortletContainer container)
+    {
+        this.container = container;
+    }
 
     /**
      * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
      */
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
-    {
-        PortletContainer container;
+    {     
         boolean responseCommitted = false;
         try
-        {
-            // TODO: deprecate this when valves are components
-            container = (PortletContainer)Jetspeed.getComponentManager().getComponent(PortletContainer.class);
+        {            
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {

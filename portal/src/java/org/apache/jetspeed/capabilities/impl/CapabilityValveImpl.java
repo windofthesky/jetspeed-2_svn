@@ -18,16 +18,15 @@ package org.apache.jetspeed.capabilities.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.capabilities.MediaType;
+import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.capabilities.Capabilities;
-import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.capabilities.MediaType;
-import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Invokes the capability mapper in the request pipeline
@@ -39,6 +38,12 @@ public class CapabilityValveImpl implements CapabilityValve
 {
     private static final Log log = LogFactory.getLog(CapabilityValveImpl.class);
     String resourceDefault;        // the default name for a resource
+    private Capabilities capabilities;
+    
+    public CapabilityValveImpl(Capabilities capabilities)
+    {
+        this.capabilities = capabilities;
+    }
     
     /**
       * Initialize the valve before using in a pipeline.
@@ -48,11 +53,7 @@ public class CapabilityValveImpl implements CapabilityValve
 
     }
     
-    protected Capabilities getComponent()
-    {
-        return (Capabilities)Jetspeed.getComponentManager().getComponent(Capabilities.class);        
-    }
-
+   
     public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
     {
@@ -61,11 +62,9 @@ public class CapabilityValveImpl implements CapabilityValve
             String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);
             String agent = request.getRequest().getHeader("User-Agent"); 
             
-            // Connect to CapabilityService
-            Capabilities component = getComponent();  
-            
+                        
             // Get capability map
-            CapabilityMap cm = component.getCapabilityMap(agent);
+            CapabilityMap cm = capabilities.getCapabilityMap(agent);
             
             if ( cm == null)
             {
