@@ -22,9 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.om.Property;
 
 /**
@@ -32,7 +30,7 @@ import org.apache.jetspeed.prefs.om.Property;
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestPropertyManager extends PersistenceSupportedTestCase
+public class TestPropertyManager extends DatasourceEnabledSpringTestCase
 {
 
     /** The property manager. */
@@ -44,28 +42,8 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     private final static int USER_PROPERTY_SET_TYPE = 0;
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
-    private PreferencesProviderImpl provider;
+    private PreferencesProvider provider;
 
-    /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
-     */
-    public TestPropertyManager(String testName)
-    {
-        super(testName);
-    }
-
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        pms =new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
-        // Class.forName("org.apache.jetspeed.prefs.impl.PreferencesImpl");
-        provider.start();
-    }
 
     /**
      * @see junit.framework.TestCase#tearDown()
@@ -86,7 +64,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     /**
      * <p>Test add property keys to a {@link Preferences} node.</p>
      */
-    public void testAddPropertyKeys() throws PropertyException
+    public void testAddPropertyKeys() throws Exception
     {
         Map propertyKeys = initPropertyKeysMap();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1"); 
@@ -102,8 +80,9 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
 
     /**
      * <p>Test get property key.</p>
+     * @throws Exception
      */
-    public void testGetPropertyKeys()
+    public void testGetPropertyKeys() throws Exception
     {
         initPropertyKeys();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
@@ -114,7 +93,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     /**
      * <p>Test update property key.</p>
      */
-    public void testUpdatePropertyKey() throws PropertyException
+    public void testUpdatePropertyKey() throws Exception
     {
         initPropertyKeys();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
@@ -139,7 +118,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     /**
      * <p>Test remove property keys.</p>
      */
-    public void testRemovePropertyKeys() throws PropertyException
+    public void testRemovePropertyKeys() throws Exception
     {
         initPropertyKeys();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
@@ -174,7 +153,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     /**
      * <p>Init property property keys.</p>
      */
-    protected void initPropertyKeys()
+    protected void initPropertyKeys() throws Exception
     {
         Map propertyKeys = initPropertyKeysMap();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
@@ -191,7 +170,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     /**
      * <p>Clean properties.</p>
      */
-    protected void clean()
+    protected void clean() throws Exception
     {
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
         try
@@ -207,6 +186,22 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
         {
             System.out.println("BackingStoreException" + bse);
         }
+    }
+
+    protected String[] getConfigurations()
+    {
+        return new String[]{"META-INF/prefs-dao.xml", "META-INF/transaction.xml"};
+    }
+
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
+        
+        pms = (PropertyManager) ctx.getBean("propertyManager");        
     }
 
 }

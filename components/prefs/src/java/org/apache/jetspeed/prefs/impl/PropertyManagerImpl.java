@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.prefs.NodeDoesNotExistException;
+import org.apache.jetspeed.prefs.PreferencesException;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.PropertyManager;
 import org.apache.jetspeed.prefs.om.Node;
@@ -32,6 +32,7 @@ import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 import org.apache.jetspeed.util.ArgUtil;
+import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
  * <p>
@@ -41,277 +42,205 @@ import org.apache.jetspeed.util.ArgUtil;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
-public class PropertyManagerImpl implements PropertyManager
+public class PropertyManagerImpl extends PersistenceBrokerDaoSupport implements PropertyManager
 {
-    private static final Log log = LogFactory.getLog(PropertyManagerImpl.class);
-
     /** User <tt>Preferences<tt> node type. */
     private static final int USER_NODE_TYPE = 0;
 
     /** System <tt>Preferences</tt> node type. */
     private static final int SYSTEM_NODE_TYPE = 1;
 
-    /** Common queries. * */
-    private CommonQueries commonQueries;
-
-    private PersistenceStore persistenceStore;
-    
-
+    protected PreferencesProvider prefsProvider;
 
     /**
      * <p>
-     * Constructor providing access to the persistence component.
+     * Constructor providing access to the PreferencesProvider component.
      * </p>
      */
-    public PropertyManagerImpl(PersistenceStore persistenceStore)
+    public PropertyManagerImpl( PreferencesProvider prefsProvider )
     {
-        if (persistenceStore == null)
-        {
-            throw new IllegalArgumentException("persistenceStore cannot be null for PropertyManagerImpl");
-        }
-        
-        
-
-        this.persistenceStore = persistenceStore;
-        this.commonQueries = new CommonQueries(persistenceStore);
+        super();
+        this.prefsProvider = prefsProvider;
     }
 
     /**
      * @see org.apache.jetspeed.prefs.PropertyManager#addPropertyKeys(java.util.prefs.Preferences,
      *      java.util.Map)
      */
-    public void addPropertyKeys(Preferences prefNode, Map propertyKeysMap) throws PropertyException
+    public void addPropertyKeys( Preferences prefNode, Map propertyKeysMap ) throws PropertyException,
+            PreferencesException
     {
         ArgUtil.notNull(new Object[]{prefNode, propertyKeysMap}, new String[]{"prefNode", "propertyKeysMap",},
                 "addPropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-        Node nodeObj;
-        if (prefNode.isUserNode())
-        {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(USER_NODE_TYPE)));
-        }
-        else
-        {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
-        }
-        if (null != nodeObj)
-        {
-            // Get the existing property keys.
-            Collection propertyKeys = nodeObj.getNodeKeys();
-            ArrayList newPropertyKeys = new ArrayList(propertyKeysMap.size());
-            for (Iterator i = propertyKeysMap.keySet().iterator(); i.hasNext();)
-            {
-                boolean foundKey = false;
-                String currentPropertyKeyName = (String) i.next();
-                for (Iterator j = propertyKeys.iterator(); j.hasNext();)
-                {
-                    PropertyKey existingPpk = (PropertyKey) j.next();
-                    if (propertyKeysMap.containsKey(existingPpk.getPropertyKeyName()))
-                    {
-                        if (log.isDebugEnabled())
-                            log.debug("Existing Property: " + (String) propertyKeysMap.get(currentPropertyKeyName));
-                        foundKey = true;
-                        newPropertyKeys.add(existingPpk);
-                        break;
-                    }
-                }
-                if (!foundKey)
-                {
-                    if (log.isDebugEnabled())
-                        log.debug("New Property: " + currentPropertyKeyName);
-                    PropertyKey ppk = new PropertyKeyImpl(currentPropertyKeyName, ((Integer) propertyKeysMap
-                            .get(currentPropertyKeyName)).intValue());
-                    newPropertyKeys.add(ppk);
-                }
-            }
+        Node nodeObj = getNode(prefNode);
 
-            // Add the properties keys.
-            try
-            {
-                if (log.isDebugEnabled())
-                    log.debug("Node: " + nodeObj.toString());
-                if (log.isDebugEnabled())
-                    log.debug("Node property keys: " + newPropertyKeys.toString());
-                persistenceStore.lockForWrite(nodeObj);
-                nodeObj.setNodeKeys(newPropertyKeys);
-                nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                persistenceStore.getTransaction().checkpoint();
-            }
-            catch (Exception e)
-            {
-                String msg = "Unable to lock Node for update.";
-                log.error(msg, e);
-                persistenceStore.getTransaction().rollback();
-                throw new PropertyException(msg, e);
-            }
-        }
-        else
+        // Get the existing property keys.
+        Collection propertyKeys = nodeObj.getNodeKeys();
+        ArrayList newPropertyKeys = new ArrayList(propertyKeysMap.size());
+        for (Iterator i = propertyKeysMap.keySet().iterator(); i.hasNext();)
         {
-            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
+            boolean foundKey = false;
+            String currentPropertyKeyName = (String) i.next();
+            for (Iterator j = propertyKeys.iterator(); j.hasNext();)
+            {
+                PropertyKey existingPpk = (PropertyKey) j.next();
+                if (propertyKeysMap.containsKey(existingPpk.getPropertyKeyName()))
+                {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Existing Property: " + (String) propertyKeysMap.get(currentPropertyKeyName));
+                    foundKey = true;
+                    newPropertyKeys.add(existingPpk);
+                    break;
+                }
+            }
+            if (!foundKey)
+            {
+                if (logger.isDebugEnabled())
+                    logger.debug("New Property: " + currentPropertyKeyName);
+                PropertyKey ppk = new PropertyKeyImpl(currentPropertyKeyName, ((Integer) propertyKeysMap
+                        .get(currentPropertyKeyName)).intValue());
+                newPropertyKeys.add(ppk);
+            }
         }
+
+        // Add the properties keys.
+
+        if (logger.isDebugEnabled())
+            logger.debug("Node: " + nodeObj.toString());
+        if (logger.isDebugEnabled())
+            logger.debug("Node property keys: " + newPropertyKeys.toString());
+
+        nodeObj.setNodeKeys(newPropertyKeys);
+        nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+        prefsProvider.storeNode(nodeObj);
+
     }
+
     /**
+     * @throws PreferencesException
      * @see org.apache.jetspeed.prefs.PropertyManager#getPropertyKeys(java.util.prefs.Preferences)
      */
-    public Map getPropertyKeys(Preferences prefNode)
+    public Map getPropertyKeys( Preferences prefNode ) throws PreferencesException
     {
         ArgUtil.notNull(new Object[]{prefNode}, new String[]{"prefNode"},
                 "getPropertyKeys(java.util.prefs.Preferences)");
 
-        Node nodeObj;
-        if (prefNode.isUserNode())
+        Node nodeObj = getNode(prefNode);
+
+        Collection keys = nodeObj.getNodeKeys();
+        HashMap propertyKeysMap = new HashMap(keys.size());
+        for (Iterator i = keys.iterator(); i.hasNext();)
         {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(USER_NODE_TYPE)));
+            PropertyKey curpk = (PropertyKey) i.next();
+            propertyKeysMap.put(curpk.getPropertyKeyName(), new Integer(curpk.getPropertyKeyType()));
         }
-        else
-        {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
-        }
-        if (null != nodeObj)
-        {
-            Collection keys = nodeObj.getNodeKeys();
-            HashMap propertyKeysMap = new HashMap(keys.size());
-            for (Iterator i = keys.iterator(); i.hasNext();)
-            {
-                PropertyKey curpk = (PropertyKey) i.next();
-                propertyKeysMap.put(curpk.getPropertyKeyName(), new Integer(curpk.getPropertyKeyType()));
-            }
-            return propertyKeysMap;
-        }
-        else
-        {
-            return new HashMap(0);
-        }
+        return propertyKeysMap;
+
     }
 
     /**
+     * @throws PreferencesException
      * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKeys(java.util.prefs.Preferences,
      *      java.util.Collection)
      */
-    public void removePropertyKeys(Preferences prefNode, Collection propertyKeys) throws PropertyException
+    public void removePropertyKeys( Preferences prefNode, Collection propertyKeys ) throws PropertyException,
+            PreferencesException
     {
         ArgUtil.notNull(new Object[]{prefNode, propertyKeys}, new String[]{"prefNode", "propertyKeys"},
                 "removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-        Node nodeObj;
-        if (prefNode.isUserNode())
+        Node nodeObj = getNode(prefNode);
+
+        Collection properties = nodeObj.getNodeProperties();
+        ArrayList newProperties = new ArrayList(properties.size());
+        Collection keys = nodeObj.getNodeKeys();
+        ArrayList newKeys = new ArrayList(keys.size());
+        for (Iterator i = properties.iterator(); i.hasNext();)
         {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(USER_NODE_TYPE)));
-        }
-        else
-        {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
-        }
-        if (null != nodeObj)
-        {
-            Collection properties = nodeObj.getNodeProperties();
-            ArrayList newProperties = new ArrayList(properties.size());
-            Collection keys = nodeObj.getNodeKeys();
-            ArrayList newKeys = new ArrayList(keys.size());
-            for (Iterator i = properties.iterator(); i.hasNext();)
+            Property curProp = (Property) i.next();
+            PropertyKey curPropKey = (PropertyKey) curProp.getPropertyKey();
+            if ((null != curPropKey) && (!propertyKeys.contains(curProp.getPropertyKey().getPropertyKeyName())))
             {
-                Property curProp = (Property) i.next();
-                PropertyKey curPropKey = (PropertyKey) curProp.getPropertyKey();
-                if ((null != curPropKey) && (!propertyKeys.contains(curProp.getPropertyKey().getPropertyKeyName())))
-                {
-                    newProperties.add(curProp);
-                }
-            }
-            for (Iterator j = newKeys.iterator(); j.hasNext();)
-            {
-                PropertyKey curPropKey = (PropertyKey) j.next();
-                if (!propertyKeys.contains(curPropKey.getPropertyKeyName()))
-                {
-                    newKeys.add(curPropKey);
-                }
-            }
-            // Remove the properties keys.
-            try
-            {
-                persistenceStore.lockForWrite(nodeObj);
-                nodeObj.setNodeKeys(newKeys);
-                nodeObj.setNodeProperties(newProperties);
-                nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                persistenceStore.getTransaction().checkpoint();
-            }
-            catch (Exception e)
-            {
-                String msg = "Unable to lock Node for update.";
-                log.error(msg, e);
-                persistenceStore.getTransaction().rollback();
-                throw new PropertyException(msg, e);
+                newProperties.add(curProp);
             }
         }
-        else
+        for (Iterator j = newKeys.iterator(); j.hasNext();)
         {
-            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
+            PropertyKey curPropKey = (PropertyKey) j.next();
+            if (!propertyKeys.contains(curPropKey.getPropertyKeyName()))
+            {
+                newKeys.add(curPropKey);
+            }
         }
+        // Remove the properties keys.
+
+        nodeObj.setNodeKeys(newKeys);
+        nodeObj.setNodeProperties(newProperties);
+        nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+        prefsProvider.storeNode(nodeObj);
+
     }
 
     /**
+     * @throws PreferencesException
      * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertyKey(java.lang.String,
      *      java.util.prefs.Preferences, java.util.Map)
      */
-    public void updatePropertyKey(String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey)
-            throws PropertyException
+    public void updatePropertyKey( String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey )
+            throws PropertyException, PreferencesException
     {
         ArgUtil.notNull(new Object[]{oldPropertyKeyName, prefNode, newPropertyKey}, new String[]{"oldPropertyKeyName",
                 "prefNode", "newPropertyKey"},
                 "updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)");
 
-        Node nodeObj;
-        if (prefNode.isUserNode())
+        Node nodeObj = getNode(prefNode);
+
+        Collection keys = nodeObj.getNodeKeys();
+        for (Iterator i = keys.iterator(); i.hasNext();)
         {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(USER_NODE_TYPE)));
-        }
-        else
-        {
-            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
-                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
-        }
-        if (null != nodeObj)
-        {
-            Collection keys = nodeObj.getNodeKeys();
-            for (Iterator i = keys.iterator(); i.hasNext();)
+            PropertyKey curPropKey = (PropertyKey) i.next();
+            if (curPropKey.getPropertyKeyName().equals(oldPropertyKeyName))
             {
-                PropertyKey curPropKey = (PropertyKey) i.next();
-                if (curPropKey.getPropertyKeyName().equals(oldPropertyKeyName))
+                for (Iterator j = newPropertyKey.keySet().iterator(); j.hasNext();)
                 {
-                    for (Iterator j = newPropertyKey.keySet().iterator(); j.hasNext();)
-                    {
-                        String newKey = (String) j.next();
-                        // Update the property key.
-                        try
-                        {
-                            persistenceStore.lockForWrite(curPropKey);
-                            curPropKey.setPropertyKeyName(newKey);
-                            curPropKey.setPropertyKeyType(((Integer) newPropertyKey.get(newKey)).intValue());
-                            curPropKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                            if (log.isDebugEnabled())
-                                log.debug("Updated property key: " + curPropKey.toString());
-                            persistenceStore.getTransaction().checkpoint();
-                        }
-                        catch (Exception e)
-                        {
-                            String msg = "Unable to lock Node for update.";
-                            log.error(msg, e);
-                            persistenceStore.getTransaction().rollback();
-                            throw new PropertyException(msg, e);
-                        }
-                    }
+                    String newKey = (String) j.next();
+                    // Update the property key.
+
+                    curPropKey.setPropertyKeyName(newKey);
+                    curPropKey.setPropertyKeyType(((Integer) newPropertyKey.get(newKey)).intValue());
+                    curPropKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                    if (logger.isDebugEnabled())
+                        logger.debug("Updated property key: " + curPropKey.toString());
+
+                    getPersistenceBrokerTemplate().store(curPropKey);
+
                 }
             }
         }
+
+    }
+
+    /**
+     * <p>
+     * getNode
+     * </p>
+     * 
+     * @param prefNode
+     * @return @throws
+     *         NodeDoesNotExistException
+     */
+    protected Node getNode( Preferences prefNode ) throws NodeDoesNotExistException
+    {
+        Node nodeObj;
+        if (prefNode.isUserNode())
+        {
+            nodeObj = prefsProvider.getNode(prefNode.absolutePath(), USER_NODE_TYPE);
+        }
         else
         {
-            throw new PropertyException(PropertyException.NODE_NOT_FOUND);
+            nodeObj = prefsProvider.getNode(prefNode.absolutePath(), SYSTEM_NODE_TYPE);
         }
+        return nodeObj;
     }
 }

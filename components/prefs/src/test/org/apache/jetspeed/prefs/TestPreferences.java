@@ -22,9 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 /**
  * <p>
@@ -33,7 +31,7 @@ import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
  * 
  * @author <a href="dlestrat@yahoo.com">David Le Strat </a>
  */
-public class TestPreferences extends PersistenceSupportedTestCase
+public class TestPreferences extends DatasourceEnabledSpringTestCase
 {
 
     /** The property manager. */
@@ -47,20 +45,9 @@ public class TestPreferences extends PersistenceSupportedTestCase
     private final static int USER_PROPERTY_SET_TYPE = 0;
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
-    private PreferencesProviderImpl provider;
+    private PreferencesProvider provider;
 
-    /**
-     * <p>
-     * Defines the test case name for junit.
-     * </p>
-     * 
-     * @param testName
-     *            The test case name.
-     */
-    public TestPreferences( String testName )
-    {
-        super(testName);
-    }
+    private PreferencesProvider providerNoProp;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -68,10 +55,10 @@ public class TestPreferences extends PersistenceSupportedTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
-        provider.start();
+        provider = (PreferencesProvider) ctx.getBean("prefsProvider");   
+        
+        pms = (PropertyManager) ctx.getBean("propertyManager");
+        
         // Make sure we are starting with a clean slate
         clearChildren(Preferences.userRoot());
         clearChildren(Preferences.systemRoot());
@@ -100,9 +87,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testUserRoot()
     {
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        
         Preferences prefs = Preferences.userRoot();
         if (null != prefs)
         {
@@ -114,20 +99,6 @@ public class TestPreferences extends PersistenceSupportedTestCase
         }
     }
 
-    public void testSansPropertyManager()
-    {
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
-        Preferences pref0 = Preferences.userRoot();
-        // Test that the property manager is off
-        Preferences pref1 = pref0.node("testOpenNode");
-        pref1.put("0", "I am 0 key");
-
-        assertNotNull(pref1.get("0", null));
-
-    }
-
     /**
      * <p>
      * Test system root.
@@ -135,9 +106,6 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testSystemRoot()
     {
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.systemRoot();
         if (null != prefs)
         {
@@ -156,9 +124,6 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testNodeAndChildrenNames()
     {
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.userRoot();
         // Test without children.
         try
@@ -220,12 +185,10 @@ public class TestPreferences extends PersistenceSupportedTestCase
      * Test adding properties to a property set node and get property keys for a
      * given node.
      * </p>
+     * @throws Exception
      */
-    public void testPropertyAndPropertyKeys()
+    public void testPropertyAndPropertyKeys() throws Exception
     {
-        pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
 
         // 1. Current node does not have any property associated to it.
         // No property has been defined nor added to the node. There should be
@@ -339,7 +302,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
      * Init property property keys.
      * </p>
      */
-    protected void initPropertyKeys()
+    protected void initPropertyKeys() throws Exception
     {
         Map propertyKeys = initPropertyKeysMap();
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
@@ -358,7 +321,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
      * Clean properties.
      * </p>
      */
-    protected void clean()
+    protected void clean() throws Exception
     {
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
         try
@@ -390,4 +353,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
         }
     }
 
+    protected String[] getConfigurations()
+    {
+        return new String[]{"META-INF/prefs-dao.xml", "META-INF/transaction.xml"};
+    }
 }

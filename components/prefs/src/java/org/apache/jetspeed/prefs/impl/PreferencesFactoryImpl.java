@@ -17,6 +17,9 @@ package org.apache.jetspeed.prefs.impl;
 import java.util.prefs.Preferences;
 import java.util.prefs.PreferencesFactory;
 
+import org.apache.jetspeed.prefs.PreferencesException;
+import org.apache.jetspeed.prefs.PreferencesProvider;
+
 /**
  * <p>{@link java.util.prefs.PreferencesFactory} implementation to
  * return {@link PreferencesImpl}.</p>
@@ -25,9 +28,17 @@ import java.util.prefs.PreferencesFactory;
  */
 public class PreferencesFactoryImpl implements PreferencesFactory
 {
-  
+    
+    
+    protected static PreferencesProvider prefsProvider;
+
+    public PreferencesFactoryImpl()
+    {
+        super();        
+        System.setProperty("java.util.prefs.PreferencesFactory", getClass().getName());
+    }
+    
      
-   
 
     /**
      * @see java.util.prefs.PreferencesFactory#systemRoot()
@@ -44,5 +55,30 @@ public class PreferencesFactoryImpl implements PreferencesFactory
     {
         return  PreferencesImpl.userRoot;
     }
+    
+    public void init() throws Exception
+    {        
+        try
+        {           
+              PreferencesImpl.setPreferencesProvider(prefsProvider);
+              PreferencesImpl.systemRoot = new PreferencesImpl(null, "", PreferencesImpl.SYSTEM_NODE_TYPE);
+              PreferencesImpl.userRoot =  new PreferencesImpl(null, "", PreferencesImpl.USER_NODE_TYPE);            
+        }
+        catch(Throwable e)
+        {
+            throw new PreferencesException("Failed to initialize prefs api.  "+e.toString());
+        }
+    }
+    
+    
 
+    public PreferencesProvider getPrefsProvider()
+    {
+        return prefsProvider;
+    }
+    
+    public void setPrefsProvider( PreferencesProvider prefsProvider )
+    {
+        this.prefsProvider = prefsProvider;
+    }
 }

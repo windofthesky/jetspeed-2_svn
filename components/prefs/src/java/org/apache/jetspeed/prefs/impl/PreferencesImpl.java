@@ -24,21 +24,24 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.prefs.FailedToCreateNodeException;
+import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
+import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
-import org.apache.jetspeed.prefs.om.impl.NodeImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 
 /**
- * <p>{@link Preferences} implementation relying on Jetspeed
- * OJB based persistence plugin.</p>
- *
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>S
+ * {@link Preferences}implementation relying on Jetspeed OJB based persistence
+ * plugin.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class PreferencesImpl extends AbstractPreferences
 {
@@ -49,234 +52,76 @@ public class PreferencesImpl extends AbstractPreferences
     /** System <tt>Preferences</tt> node type. */
     public static final int SYSTEM_NODE_TYPE = 1;
 
-
-
-    /** Common queries. **/
-    private CommonQueries commonQueries;
-
-    /** BackingStore availability flag. */
-    private boolean isBackingStoreAvailable = true;
-
-    /** The current node id. */
-    private long nodeId = -1;
-
     /** The current <code>Node</code> object. */
     private Node node = null;
-
-    /** The current node type. */
-    private int nodeType = -1;
 
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
 
-    // Constants used to interpret returns of functions.
-    private static final int ARRAY_SIZE = 4;
-    private static final int NODE_ID = 0;
-    private static final int NODE = 1;
-    private static final int ERROR_CODE = 2;
-    private static final int DISPOSITION = 3;
-    private static final int DISPOSITION_NEW_NODE = 0;
-    private static final int DISPOSITION_EXISTING_NODE = 1;
-    private static final int ERROR_SUCCESS = 0;
-    private static final int ERROR_NODE_NOT_FOUND = 1;
-    private static final int ERROR_NODE_ALREADY_EXISTS = 2;
-    private static final int ERROR_NODE_CREATION_FAILED = 3;
-    private static final int ERROR_PARENT_NOT_FOUND = 4;
 
-  
-    protected PersistenceStore persistenceStore;
+    protected static PreferencesProvider prefsProvider;
 
-    protected PreferencesProvider prefProvider;
-    
-    static PreferencesImpl systemRoot;    
-    static PreferencesImpl userRoot;   
+    static PreferencesImpl systemRoot;
+    static PreferencesImpl userRoot;
+   
 
     /**
-     * <p>Constructs a root node in the underlying
-     * datastore if they have not yet been created.</p>
-     * <p>Logs a warning if the underlying datastore is
-     * unavailable.</p>
-     * @param parent The parent object.
-     * @param nodeName The node name.
-     * @param nodeType The node type.
+     * <p>
+     * Constructs a root node in the underlying datastore if they have not yet
+     * been created.
+     * </p>
+     * <p>
+     * Logs a warning if the underlying datastore is unavailable.
+     * </p>
+     * 
+     * @param parent
+     *            The parent object.
+     * @param nodeName
+     *            The node name.
+     * @param nodeType
+     *            The node type.
      */
-    public PreferencesImpl(PreferencesImpl parent, String nodeName, int nodeType)
+    public PreferencesImpl( PreferencesImpl parent, String nodeName, int nodeType ) throws IllegalStateException
     {
         super(parent, nodeName);
-
-        if (log.isDebugEnabled())
-            log.debug("Constructing node: " + nodeName);
-        prefProvider = PreferencesProviderImpl.prefProvider;
-        persistenceStore = prefProvider.getPersistenceStore();
-        this.commonQueries = new CommonQueries(persistenceStore);
-
-        this.nodeType = nodeType;
-        long[] result = createPrefNode(parent, nodeName, nodeType, this.absolutePath());
-        if (result[ERROR_CODE] != ERROR_SUCCESS)
+        
+        try
         {
-            String warning =
-                "Could not create node " + nodeName + " of type " + nodeType + ". Returned error code " + result[ERROR_CODE];
-            if (log.isWarnEnabled())
+            if (parent != null)
             {
-                log.warn(warning);
-            }
-            // Backing store is not available.
-            isBackingStoreAvailable = false;
-            return;
-        }
-        // Check if a new node.
-        newNode = (result[DISPOSITION] == DISPOSITION_NEW_NODE);
-
-    }
-
-    /**
-     * <p>Create a new preference node in the backing store.</p>
-     * @param parent The parent node.
-     * @param nodeName The node name.
-     * @param nodeType The node type.
-     * @param fullPath The node full path.
-     * @return The operation status code.
-     */
-    private long[] createPrefNode(PreferencesImpl parent, String nodeName, int nodeType, String fullPath)
-    {
-        long[] result = new long[ARRAY_SIZE];
-        Long parentNodeId = null;
-
-        if (null != parent)
-        {
-            if (log.isDebugEnabled())
-                log.debug("Current node parent: " + parent.nodeId);
-            // Get child node
-            Object[] nodeFromParentRetrievalResult = getChildNode(new Long(parent.nodeId), nodeName, new Integer(nodeType));
-            if (((Long) nodeFromParentRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
-            {
-                result[NODE_ID] = ((Long) nodeFromParentRetrievalResult[NODE_ID]).intValue();
-                result[ERROR_CODE] = ERROR_SUCCESS;
-                result[DISPOSITION] = DISPOSITION_EXISTING_NODE;
-                return result;
+                this.node = prefsProvider.createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
             }
             else
             {
-                parentNodeId = new Long(parent.nodeId);
+                this.node = prefsProvider.createNode(null, nodeName, nodeType, this.absolutePath());
             }
 
+            newNode = true;
         }
-        // Check if node exists.
-        Object[] nodeRetrievalResult = getNode(fullPath, nodeType);
-        if (((Long) nodeRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
+        catch (FailedToCreateNodeException e)
         {
-            result[NODE_ID] = ((Long) nodeRetrievalResult[NODE_ID]).intValue();
-            result[ERROR_CODE] = ERROR_SUCCESS;
-            result[DISPOSITION] = DISPOSITION_EXISTING_NODE;
-            return result;
+            IllegalStateException ise = new IllegalStateException("Failed to create new Preferences of type "
+                    + nodeType + " for path " + this.absolutePath());
+            ise.initCause(e);
+            throw ise;
         }
-
-        // If does not exist, create.
-        Node nodeObj = new NodeImpl(parentNodeId, nodeName, nodeType, fullPath);
-        if (log.isDebugEnabled())
-            log.debug("New node: " + nodeObj.toString());
-        PersistenceStore store = getPersistenceStore();
-        try
+        catch (NodeAlreadyExistsException e)
         {
-            store.lockForWrite(nodeObj);
-            store.getTransaction().checkpoint();
-
-            result[NODE_ID] = nodeObj.getNodeId();
-            result[ERROR_CODE] = ERROR_SUCCESS;
-            result[DISPOSITION] = DISPOSITION_NEW_NODE;
-
-            this.nodeId = nodeObj.getNodeId();
-            this.node = nodeObj;
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to store Node.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-
-            result[ERROR_CODE] = ERROR_NODE_CREATION_FAILED;
+            try
+            {
+                node = prefsProvider.getNode(this.absolutePath(), nodeType);
+                newNode = false;
+            }
+            catch (NodeDoesNotExistException e1)
+            {
+                // If we get this at this point something is very wrong
+                IllegalStateException ise = new IllegalStateException("Unable to create node for Preferences of type "+nodeType+" for path "+this.absolutePath() +
+                               ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
+                ise.initCause(e1);
+                throw ise;
+            }            
         }
 
-        return result;
-    }
-
-    /**
-     * <p>Get the node id from the full path.</p>
-     * @param fullPath The full path.
-     * @param nodeType The node type.
-     * @return An array of value returned including:
-     *         <ul>
-     *          <li>At index NODE_ID: The node id.</li>
-     *          <li>At index NODE: The node object.</li>
-     *          <li>At index ERROR_CODE: The error code.</li>
-     *         </ul>
-     */
-    private Object[] getNode(String fullPath, int nodeType)
-    {
-        Object[] result = new Object[ARRAY_SIZE];
-        if (log.isDebugEnabled())
-            log.debug("Getting node: [[nodeId, " + this.nodeId + "], [fullPath, " + fullPath + "], [nodeType, " + nodeType + "]]");
-
-        if (this.nodeId != -1 && (null != this.node))
-        {
-            result[NODE_ID] = new Long(this.nodeId);
-            result[NODE] = this.node;
-            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
-            return result;
-        }
-
-        PersistenceStore store = getPersistenceStore();
-        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(fullPath, new Integer(nodeType)));
-        if (null != nodeObj)
-        {
-            result[NODE_ID] = new Long(nodeObj.getNodeId());
-            result[NODE] = nodeObj;
-            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
-            if (log.isDebugEnabled())
-                log.debug("Found node: " + nodeObj.getFullPath());
-            this.node = nodeObj;
-            this.nodeId = nodeObj.getNodeId();
-            return result;
-        }
-        else
-        {
-            result[ERROR_CODE] = new Long(ERROR_NODE_NOT_FOUND);
-            return result;
-        }
-    }
-
-    /**
-     * <p>Get the child node from the parent node.</p>
-     * @param parentIdObject The parent node id.
-     * @return An array of value returned including:
-     *         <ul>
-     *          <li>At index NODE_ID: The node id.</li>
-     *          <li>At index NODE: The node object.</li>
-     *          <li>At index ERROR_CODE: The error code.</li>
-     *         </ul>
-     */
-    private Object[] getChildNode(Long parentIdObject, String nodeName, Integer nodeType)
-    {
-        Object[] result = new Object[ARRAY_SIZE];
-        PersistenceStore store = getPersistenceStore();
-        Node nodeObj =
-            (Node) store.getObjectByQuery(commonQueries.newNodeQueryByParentIdNameAndType(parentIdObject, nodeName, nodeType));
-        if (null != nodeObj)
-        {
-            result[NODE_ID] = new Long(nodeObj.getNodeId());
-            result[NODE] = nodeObj;
-            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
-            if (log.isDebugEnabled())
-                log.debug("Found child node: " + nodeObj.getFullPath());
-            this.nodeId = nodeObj.getNodeId();
-            this.node = nodeObj;
-            return result;
-        }
-        else
-        {
-            result[ERROR_CODE] = new Long(ERROR_NODE_NOT_FOUND);
-            return result;
-        }
     }
 
     /**
@@ -284,20 +129,8 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public String[] childrenNamesSpi() throws BackingStoreException
     {
-        Object[] parentResult = getNode(this.absolutePath(), this.nodeType);
+        Collection nodes = prefsProvider.getChildren(getNode());
 
-        if (((Long) parentResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
-        {
-            String warning = "Could not get node id. Returned error code " + parentResult[ERROR_CODE];
-            if (log.isWarnEnabled())
-            {
-                log.warn(warning);
-            }
-            throw new BackingStoreException(warning);
-        }
-
-        PersistenceStore store = getPersistenceStore();
-        Collection nodes = store.getCollectionByQuery(commonQueries.newNodeQueryByParentId(parentResult[NODE_ID]));
         if (null != nodes)
         {
             ArrayList childrenNames = new ArrayList(nodes.size());
@@ -310,7 +143,8 @@ public class PreferencesImpl extends AbstractPreferences
         }
         else
         {
-            // The returned array is of size zero if this node has no preferences.
+            // The returned array is of size zero if this node has no
+            // preferences.
             return new String[0];
         }
     }
@@ -318,9 +152,9 @@ public class PreferencesImpl extends AbstractPreferences
     /**
      * @see java.util.prefs.Preferences#childSpi(java.lang.String)
      */
-    public AbstractPreferences childSpi(String name)
+    public AbstractPreferences childSpi( String name )
     {
-        return new PreferencesImpl(this, name, this.nodeType);
+        return new PreferencesImpl(this, name, node.getNodeType());
     }
 
     /**
@@ -328,40 +162,28 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void flushSpi() throws BackingStoreException
     {
-        if(persistenceStore.getTransaction().isOpen())
-        {
-            persistenceStore.getTransaction().commit();
-        }
+        prefsProvider.storeNode(this.node);
     }
 
     /**
      * @see java.util.prefs.Preferences#getSpi(java.lang.String)
      */
-    public String getSpi(String key)
+    public String getSpi( String key )
     {
-        String value = null;
-        Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
-        {
-            log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
-            return value;
-        }
+        Collection properties = node.getNodeProperties();
 
-        // Get the property set def.
-        Node nodeObj = (Node) nodeResult[NODE];
-        Collection properties = nodeObj.getNodeProperties();
-        if (log.isDebugEnabled())
-            log.debug("Node properties: " + properties.size());
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
             if (curProp.getPropertyKey().getPropertyKeyName().equals(key))
             {
-                value = curProp.getPropertyValue(curProp.getPropertyKey().getPropertyKeyType());
+                return curProp.getPropertyValue(curProp.getPropertyKey().getPropertyKeyType());
             }
         }
-        return value;
+
+        //prop not found
+        return null;
     }
 
     /**
@@ -371,51 +193,34 @@ public class PreferencesImpl extends AbstractPreferences
     {
         ArrayList propertyNames = new ArrayList();
 
-        PersistenceStore store = getPersistenceStore();
-        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryById(new Long(this.nodeId)));
-        if (null != nodeObj)
+        Collection propCol = node.getNodeProperties();
+        if ((null != propCol) && propCol.size() > 0)
         {
-            if (log.isDebugEnabled())
-                log.debug("Fetching keys for node: " + nodeObj.toString());
+            for (Iterator j = propCol.iterator(); j.hasNext();)
+            {
+                Property curprop = (Property) j.next();
+                propertyNames.add(curprop.getPropertyKey().getPropertyKeyName());
+            }
+        }    
 
-            Collection propCol = nodeObj.getNodeProperties();
-            if ((null != propCol) && propCol.size() > 0)
-            {
-                for (Iterator j = propCol.iterator(); j.hasNext();)
-                {
-                    Property curprop = (Property) j.next();
-                    propertyNames.add(curprop.getPropertyKey().getPropertyKeyName());
-                }
-            }
-            else
-            {
-                log.error("Could not retrieve property keys for node " + nodeObj.getFullPath());
-            }
-        }
-        return (String[]) propertyNames.toArray(new String[0]);
+        return (String[]) propertyNames.toArray(new String[propertyNames.size()]);
     }
 
     /**
-     * @see java.util.prefs.Preferences#putSpi(java.lang.String, java.lang.String)
-     * <p>In addition to java.util.prefs.Preferences, this implementation
-     * is enforcing that node used as property sets have been defined
-     * as such and that only the keys defined associated to the property
-     * set can be added as properties of the current node.</p> 
+     * @see java.util.prefs.Preferences#putSpi(java.lang.String,
+     *      java.lang.String)
+     *      <p>
+     *      In addition to java.util.prefs.Preferences, this implementation is
+     *      enforcing that node used as property sets have been defined as such
+     *      and that only the keys defined associated to the property set can be
+     *      added as properties of the current node.
+     *      </p>
      */
-    public void putSpi(String key, String value)
+    public void putSpi( String key, String value )
     {
-        Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
-
-        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
-        {
-            log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
-            return;
-        }
-
-        // Get the property set def.
-        Node nodeObj = (Node) nodeResult[NODE];
-        Collection nodeKeys = nodeObj.getNodeKeys();
-        Collection properties = nodeObj.getNodeProperties();
+      
+        Collection nodeKeys = node.getNodeKeys();
+        Collection properties = node.getNodeProperties();
         if (null == properties)
         {
             log.error("Could not retrieve node property: [key: " + key + ", value:" + value + "]");
@@ -438,11 +243,11 @@ public class PreferencesImpl extends AbstractPreferences
                 curProp.setPropertyValue(curProp.getPropertyKey().getPropertyKeyType(), value);
                 curProp.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             }
-           
+
         }
-        // The property does not already exist.  Create a new property, if
+        // The property does not already exist. Create a new property, if
         // the property key exits and is associated to this node.
-        if (prefProvider.isPropertyManagerEnabled() && !foundProp)
+        if (prefsProvider.isPropertyManagerEnabled() && !foundProp)
         {
             for (Iterator i = nodeKeys.iterator(); i.hasNext();)
             {
@@ -453,46 +258,28 @@ public class PreferencesImpl extends AbstractPreferences
                     if (log.isDebugEnabled())
                         log.debug("New property value: [" + key + ", " + value + "]");
 
-                    properties.add(
-                        new PropertyImpl(nodeObj.getNodeId(), curpk.getPropertyKeyId(), curpk, curpk.getPropertyKeyType(), value));
+                    properties.add(new PropertyImpl(node.getNodeId(), curpk.getPropertyKeyId(), curpk, curpk
+                            .getPropertyKeyType(), value));
                 }
             }
         }
-        else if (!prefProvider.isPropertyManagerEnabled() && !foundProp)
+        else if (!prefsProvider.isPropertyManagerEnabled() && !foundProp)
         {
             foundKey = true;
             PropertyKey pKey = new PropertyKeyImpl(key, Property.STRING_TYPE);
-            properties.add(
-                    new PropertyImpl(nodeObj.getNodeId(), pKey.getPropertyKeyId(), pKey, pKey.getPropertyKeyType(), value));
-            
+            properties.add(new PropertyImpl(node.getNodeId(), pKey.getPropertyKeyId(), pKey, pKey
+                    .getPropertyKeyType(), value));
+
         }
-        
+
         if (!foundKey)
         {
             if (log.isWarnEnabled())
                 log.warn(PropertyException.PROPERTYKEY_NOT_FOUND);
             return;
         }
-        // Update node.
-        PersistenceStore store = getPersistenceStore();
-        if (log.isDebugEnabled())
-            log.debug("Updated properties: " + properties.size());
-   
-        try
-        {
-            store.lockForWrite(nodeObj);
-
-            nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            if (log.isDebugEnabled())
-                log.debug("Node for update: " + nodeObj.toString());
-            store.getTransaction().checkpoint();
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to update Node.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-        }
+       
+        prefsProvider.storeNode(node);
 
     }
 
@@ -500,53 +287,16 @@ public class PreferencesImpl extends AbstractPreferences
      * @see java.util.prefs.Preferences#removeNodeSpi()
      */
     public void removeNodeSpi() throws BackingStoreException
-    {
-        if (log.isDebugEnabled())
-            log.debug("Attempting to remove node: " + this.absolutePath());
-        Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
-
-        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
-        {
-            String warning = "Could not get node id. Returned error code " + nodeResult[ERROR_CODE];
-            if (log.isWarnEnabled())
-            {
-                log.warn(warning);
-            }
-            throw new BackingStoreException(warning);
-        }
-        PersistenceStore store = getPersistenceStore();
-        try
-        {
-            Node nodeObj = (Node) nodeResult[NODE];
-            if (log.isDebugEnabled())
-                log.debug("Remove node: " + nodeObj.getNodeName());
-            store.deletePersistent(nodeObj);
-            store.getTransaction().checkpoint();
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to remove Node.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-        }
+    {        
+       prefsProvider.removeNode(node);
     }
 
     /**
      * @see java.util.prefs.Preferences#removeSpi(java.lang.String)
      */
-    public void removeSpi(String key)
+    public void removeSpi( String key )
     {
-        Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
-
-        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
-        {
-            log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
-            return;
-        }
-
-        // Get the property set def.
-        Node nodeObj = (Node) nodeResult[NODE];
-        Collection properties = nodeObj.getNodeProperties();
+        Collection properties = node.getNodeProperties();
 
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
@@ -557,20 +307,9 @@ public class PreferencesImpl extends AbstractPreferences
                 i.remove();
             }
         }
+        
         // Update node.
-        PersistenceStore store = getPersistenceStore();
-        try
-        {
-            store.lockForWrite(nodeObj);
-            nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            store.getTransaction().checkpoint();
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to update Node.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-        }
+        prefsProvider.storeNode(node);
     }
 
     /**
@@ -582,14 +321,29 @@ public class PreferencesImpl extends AbstractPreferences
     }
 
     /**
-     * <p>Utility method to get the persistence store and initiate
-     * the transaction if not open.</p>
-     * @return The persistence store.
+     * 
+     * <p>
+     * getNode
+     * </p>
+     * 
+     * @return
      */
-    protected PersistenceStore getPersistenceStore()
+    public Node getNode()
     {
-        
-        return persistenceStore;
+        return node;
     }
-
+    
+    /**
+     * 
+     * <p>
+     * setPreferencesProvider
+     * </p>
+     * Sets the <code>org.apache.jetspeed.prefs.PreferencesProvider</code> that
+     * will support backing store operations for all <code>PreferencesImpls</code>
+     * @param prefsProvider
+     */
+    public static void setPreferencesProvider(PreferencesProvider prefsProvider)
+    {
+        PreferencesImpl.prefsProvider = prefsProvider;
+    }
 }
