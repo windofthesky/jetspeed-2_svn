@@ -16,6 +16,7 @@ package org.apache.jetspeed.userinfo;
 
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ import javax.portlet.PortletRequest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
@@ -35,32 +36,10 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.impl.AuthenticationProviderImpl;
-import org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl;
-import org.apache.jetspeed.security.impl.GroupManagerImpl;
-import org.apache.jetspeed.security.impl.PermissionManagerImpl;
-import org.apache.jetspeed.security.impl.RoleManagerImpl;
-import org.apache.jetspeed.security.impl.SecurityProviderImpl;
-import org.apache.jetspeed.security.impl.UserManagerImpl;
-import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.GroupSecurityHandler;
-import org.apache.jetspeed.security.spi.RoleSecurityHandler;
-import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.CommonQueries;
-import org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler;
-import org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler;
-import org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler;
-import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
+import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -69,33 +48,15 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
+public class TestUserInfoManager extends AbstractSecurityTestcase
 {
 
     /** The user info manager. */
     private UserInfoManager uim;
-
-    /** The user manager. */
-    private UserManager ums;
     
-    private Object gms;
+    private PortletRegistry portletRegistry;
 
-    private Object rms;
-
-    private PermissionManagerImpl pms;
-
-
-
-    /**
-     * <p>Defines the testcase name for JUnit.</p>
-     *
-     * @param name the testcase's name.
-     */
-    public TestUserInfoManager(String name)
-    {
-        super(name);
-    }
-
+  
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -104,30 +65,10 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         super.setUp();
         
         PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));        
         
-        // SPI Security handlers.
-        CommonQueries cq = new CommonQueries(persistenceStore);
-        CredentialHandler ch = new DefaultCredentialHandler(cq);
-        UserSecurityHandler ush = new DefaultUserSecurityHandler(cq);
-        RoleSecurityHandler rsh = new DefaultRoleSecurityHandler(cq);
-        GroupSecurityHandler gsh = new DefaultGroupSecurityHandler(cq);
-        SecurityMappingHandler smh = new DefaultSecurityMappingHandler(cq);
-        
-        // Security Providers.
-        AuthenticationProvider atnProvider = new AuthenticationProviderImpl("DefaultAuthenticator", "The default authenticator", "login.conf", ch, ush);
-        List atnProviders = new ArrayList();
-        atnProviders.add(atnProvider);
-        AuthenticationProviderProxy atnProviderProxy = new AuthenticationProviderProxyImpl(atnProviders, "DefaultAuthenticator");
-        SecurityProvider securityProvider = new SecurityProviderImpl(atnProviderProxy, rsh, gsh, smh);
-        
-        ums = new UserManagerImpl(securityProvider);
-        gms = new GroupManagerImpl(securityProvider);
-        rms = new RoleManagerImpl(securityProvider);
-        
-        ums = new UserManagerImpl(securityProvider);
-        uim = new UserInfoManagerImpl(ums, portletRegistry); 
-    
+        uim = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager"); 
+        portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
     }
 
     /**
@@ -153,16 +94,14 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
 
         // persist the app
         try
-        {
-            persistenceStore.getTransaction().begin();
-            portletRegistry.registerPortletApplication(app);
-            persistenceStore.getTransaction().commit();
+        {            
+            portletRegistry.registerPortletApplication(app);            
         }
         catch (Exception e)
         {
             String msg =
                 "Unable to register portlet application, " + app.getName() + ", through the portlet portletRegistry: " + e.toString();
-            persistenceStore.getTransaction().rollback();
+            
             throw new Exception(msg, e);
         }
 
@@ -193,10 +132,8 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
          
         // remove the app
         try
-        {
-            persistenceStore.getTransaction().begin();
-            portletRegistry.removeApplication(app);
-            persistenceStore.getTransaction().commit();
+        {            
+            portletRegistry.removeApplication(app);            
         }
         catch (Exception e)
         {
@@ -224,7 +161,7 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
     /**
      * <p>Init test user.</p>
      */
-    private void initUser()
+    private void initUser() throws Exception
     {
         User user = null;
         try
@@ -281,4 +218,13 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         }
     }
 
+    protected String[] getConfigurations()
+    {
+        
+        String[] confs = super.getConfigurations();
+        List confList = new ArrayList(Arrays.asList(confs));
+        confList.add("META-INF/registry-dao.xml");
+        confList.add("org/apache/jetspeed/userinfo/user-info.xml");
+        return (String[]) confList.toArray(new String[1]);
+    }
 }
