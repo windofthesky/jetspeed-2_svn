@@ -231,8 +231,8 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
      */
     public Iterator getUsers(String filter)
     {
-        // TODO Not Implemented
-        return null;
+        throw new UnsupportedOperationException("getUsers no implemented yet.");
+       // return null;
     }
 
     /**
