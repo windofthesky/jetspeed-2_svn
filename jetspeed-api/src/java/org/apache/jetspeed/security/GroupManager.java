@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p>
@@ -156,4 +157,12 @@ public interface GroupManager
      */
     boolean isUserInGroup(String username, String groupFullPathName) throws SecurityException;
 
+    /**
+     * Get all groups available from all group handlers
+     * 
+     * @param filter The filter used to retrieve matching groups.
+     * @return all groups available as {@link Principal} 
+     */
+   Iterator getGroups(String filter) throws SecurityException;
+    
 }

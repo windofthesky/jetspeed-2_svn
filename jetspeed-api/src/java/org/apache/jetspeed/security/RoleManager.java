@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.Iterator;
 import java.util.Collection;
 
 /**
@@ -150,4 +151,11 @@ public interface RoleManager
      */
     boolean isGroupInRole(String groupFullPathName, String roleFullPathName) throws SecurityException;
 
+    /**
+     * Get all roles available from all role handlers
+     * 
+     * @param filter The filter used to retrieve matching roles.
+     * @return all roles available as {@link Principal} 
+     */
+    Iterator getRoles(String filter) throws SecurityException;
 }
