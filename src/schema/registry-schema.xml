@@ -193,5 +193,18 @@ limitations under the License.
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
     </table>
-    
+
+    <!--                                                                   
+       Security Role                                                        
+    -->                                                                     
+    <table name="SECURITY_ROLE">                                            
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="WEB_APPLICATION_ID" required="true" type="INTEGER"/>  
+        <column name="ROLE_NAME" required="true" size="150" type="VARCHAR"/>
+        <column name="DESCRIPTION" size="150" type="VARCHAR"/>              
+        <foreign-key foreignTable="WEB_APPLICATION">                        
+            <reference foreign="ID" local="WEB_APPLICATION_ID"/>            
+        </foreign-key>                                                      
+    </table>                                                                
+                         
 </database>

@@ -382,6 +382,9 @@ public class FileSystemPAM implements Deployment
                 .getDefaultLocale(), paName);
 
         app.setWebApplicationDefinition(webapp);
+
+        // validate the application definition
+        PortletDescriptorUtilities.validate(app);
         
         try
         {

@@ -17,6 +17,7 @@ package org.apache.jetspeed.tools.pamanager;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.digester.Digester;
@@ -38,6 +39,10 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor;
+import org.apache.pluto.om.common.SecurityRoleRef;
+import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
@@ -235,4 +240,48 @@ public class PortletDescriptorUtilities
         }
     }
 
+    /**
+     * Validate a PortletApplicationDefinition tree AFTER its
+     * WebApplicationDefinition has been loaded. Currently, only the security role
+     * references of the portlet definitions are validated:
+     * <ul>
+     * <li>A security role reference should reference a security role through a
+     * roleLink. A warning message is logged if a direct reference is used.
+     * <li>For a security role reference a security role must be defined in the
+     * web application. An error message is logged and a
+     * PortletApplicationException is thrown if not.
+     * </ul>
+     * 
+     * @param app
+     *            The PortletApplicationDefinition to validate
+     * @throws PortletApplicationException
+     */
+     public static void validate(MutablePortletApplication app) throws PortletApplicationException 
+     {
+         SecurityRoleSet roles = app.getWebApplicationDefinition().getSecurityRoles();
+         Collection portlets = app.getPortletDefinitions();
+         Iterator portletIterator = portlets.iterator();
+         while ( portletIterator.hasNext() ) 
+         {
+             PortletDefinition portlet = (PortletDefinition)portletIterator.next();
+             SecurityRoleRefSet securityRoleRefs = portlet.getInitSecurityRoleRefSet();
+             Iterator roleRefsIterator = securityRoleRefs.iterator();
+             while ( roleRefsIterator.hasNext() ) 
+             {
+                 SecurityRoleRef roleRef = (SecurityRoleRef)roleRefsIterator.next();
+                 String roleName = roleRef.getRoleLink();
+                 if ( roleName == null ) 
+                 {
+                     log.warn("No role link specified for portlet " +portlet.getName()+" security role reference "+ roleRef.getRoleName());
+                     roleName = roleRef.getRoleName();
+                 }
+                 if ( roles.get(roleName) == null ) 
+                 {
+                     String errorMsg = "Undefined security role " +roleName+ " referenced from portlet " + portlet.getName();                    
+                     log.error(errorMsg);
+                     throw new PortletApplicationException(errorMsg);
+                 }
+             }
+         }           
+     }    
 }

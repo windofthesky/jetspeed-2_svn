@@ -61,6 +61,9 @@ public class SecurityRoleSetImpl implements SecurityRoleSet, MutableSecurityRole
      * @see org.apache.jetspeed.om.common.servlet.MutableSecurityRoleSet#add(org.apache.pluto.om.common.SecurityRole)
      */
     public SecurityRole add(SecurityRole securityRole) {
+        if ( innerCollection.contains(securityRole)) {
+            throw new IllegalArgumentException("SecurityRole "+securityRole.getRoleName()+" already defined.");
+        }
         innerCollection.add(securityRole);
         return securityRole;
     }
@@ -70,10 +73,8 @@ public class SecurityRoleSetImpl implements SecurityRoleSet, MutableSecurityRole
      */
     public boolean add(Object o) {
         SecurityRole role = (SecurityRole) o;
-        if (innerCollection.contains(o)) {
-            remove(o);
-        }
-        return innerCollection.add(o);
+        add(role);
+        return true;
     }
 
     /**
@@ -89,7 +90,12 @@ public class SecurityRoleSetImpl implements SecurityRoleSet, MutableSecurityRole
      * @see java.util.Collection#addAll(java.util.Collection)
      */
     public boolean addAll(Collection c) {
-        return innerCollection.addAll(c);
+        // enforce unique role names in collection by adding them individually
+        Iterator itr = c.iterator();
+        while ( itr.hasNext() ) {
+            add(itr.next());
+        }
+        return true;
     }
 
     /**

@@ -28,6 +28,8 @@ import org.apache.pluto.om.common.SecurityRole;
  */
 public class SecurityRoleImpl implements SecurityRole, MutableSecurityRole, Serializable {
 
+    protected long webAppId;
+
     private String description;
 
     private String roleName;
@@ -62,8 +64,8 @@ public class SecurityRoleImpl implements SecurityRole, MutableSecurityRole, Seri
     /**
      * @see org.apache.jetspeed.om.common.servlet.MutableSecurityRole#setRoleName(java.lang.String)
      */
-    public void setRoleName(String name) {
-        this.roleName = name;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     /**
@@ -75,5 +77,21 @@ public class SecurityRoleImpl implements SecurityRole, MutableSecurityRole, Seri
         String securityRole = "[[roleName, " + this.roleName + "], [description, " + this.description + "]]";
         return securityRole;
     }
+    
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj) {
+        if ( obj != null && obj instanceof SecurityRoleImpl ) {
+            return getRoleName().equals(((SecurityRoleImpl)obj).getRoleName());
+        }
+        return false;
+    }
 
+    /** 
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return getRoleName().hashCode();
+    }
 }

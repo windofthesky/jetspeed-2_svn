@@ -260,6 +260,16 @@ limitations under the License.
           <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
      
+     <collection-descriptor                                                    
+       name="securityRoles"                                                    
+       element-class-ref="org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl"
+       auto-delete="false"                                                     
+         auto-update = "true"                                                  
+         auto-retrieve = "true"                                                                                                                               
+     >                                                                         
+       <inverse-foreignkey field-ref="webAppId"/>                              
+    </collection-descriptor>                                                   
+                      
    </class-descriptor>
 
 <!--
@@ -1367,5 +1377,43 @@ limitations under the License.
       />
         
    </class-descriptor>
+   
+   <!--                                                              
+   - S E C U R I T Y  R O L E                                        
+   -->                                                               
+     <class-descriptor                                               
+         class="org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl"
+         proxy="dynamic"                                             
+         table="SECURITY_ROLE"                                       
+   >                                                                 
+        <field-descriptor                                            
+         name="id"                                                   
+         column="ID"                                                 
+         jdbc-type="BIGINT"                                          
+         primarykey="true"                                           
+         autoincrement="true"                                        
+         access="anonymous"                                          
+      />                                                             
+                                                                     
+      <field-descriptor                                              
+         name="webAppId"                                             
+         column="WEB_APPLICATION_ID"                                 
+         jdbc-type="BIGINT"                                          
+         access="anonymous"                                          
+      />                                                             
+                                                                     
+      <field-descriptor                                              
+         name="roleName"                                             
+         column="ROLE_NAME"                                          
+         jdbc-type="VARCHAR"                                         
+      />                                                             
+                                                                     
+       <field-descriptor                                             
+         name="description"                                          
+         column="DESCRIPTION"                                        
+         jdbc-type="VARCHAR"                                         
+      />                                                             
+                                                                     
+   </class-descriptor>                                               
    
   
