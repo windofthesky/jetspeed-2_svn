@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -408,17 +409,65 @@ public class PortletApplicationDetail extends ServletPortlet
             String name = actionRequest.getParameter("name");
             String value = actionRequest.getParameter("value");
             
-            Preference pref = portlet.getPreferenceSet().get(name);
-            //if(pref == null)
+            PreferenceComposite pref = (PreferenceComposite) portlet.getPreferenceSet().get(name);
+            if(pref == null)
             {
                 portlet.addPreference(name, new String[] { value });
             }
-            //else
+            else
             {
-                //pref.
+                pref.addValue(value);
             }
             
             registry.getPersistenceStore().getTransaction().commit();
-        }        
+        }
+        else if(action.equals("edit_preference"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String[] prefNames = actionRequest.getParameterValues("pref_edit_id");
+            for (int i = 0; i < prefNames.length; i++)
+            {
+                String prefName = prefNames[i];
+                PreferenceComposite prefComp = (PreferenceComposite) portlet.getPreferenceSet().get(prefName);
+                String[] values = prefComp.getValueArray();
+                for (int j = 0; j < values.length; j++)
+                {
+                    String value = values[j];
+                    String newValue = actionRequest.getParameter(prefName + ":" + j);
+                    if(!value.equals(newValue))
+                    {
+                        prefComp.setValueAt(j, newValue);
+                    }
+                }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("remove_preference"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String[] prefNames = actionRequest.getParameterValues("pref_remove_id");
+            
+            Iterator prefIter = portlet.getPreferenceSet().iterator();
+            while (prefIter.hasNext())
+            {
+                PreferenceComposite pref = (PreferenceComposite) prefIter.next();
+                String name = pref.getName();
+                
+                for(int i=0; i<prefNames.length; i++)
+                {
+                    String prefName = prefNames[i];
+                    if(name.equals(prefName))
+                    {
+                        prefIter.remove();
+                        break;
+                    }
+                }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
     }
 }

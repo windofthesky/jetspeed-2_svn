@@ -90,36 +90,49 @@ limitations under the License.
 		Iterator prefIter = comp.iterator();
 		pageContext.setAttribute("prefIter", prefIter);
 	%>
-	<table border="1">
-		<tr>
-			<th><fmt:message key="pam.details.name"/></th>
-			<th><fmt:message key="pam.details.value"/></th>
-		</tr>
-	<c:forEach var="pref" items="${prefIter}">
-		<tr>
-			<td>
-				<c:out value="${pref.name}"/>
-			</td>
-			<td>
-				<table>
-				<c:forEach var="value" items="${pref.values}">
-					<tr>
-						<td>
-							<c:out value="${value}"/>
-						</td>
-					</tr>
-				</c:forEach>
-				</table>
+	
+	<portlet:actionURL var="edit_preferenece_link" >
+    </portlet:actionURL>
+	
+	<form action="<c:out value="${edit_preferenece_link}"/>">
+		<input type="hidden" name="portlet_action" value=""/>
+		<table border="1">
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="pam.details.name"/></th>
+				<th><fmt:message key="pam.details.value"/></th>
 			</tr>
-		</tr>
-	</c:forEach>
-	</table>
+		<c:forEach var="pref" items="${prefIter}">
+			<tr>
+				<td>
+					<input type="checkbox" name="pref_remove_id" value="<c:out value="${pref.name}"/>"/>
+				</td>
+				<td>
+					<c:out value="${pref.name}"/>
+					<input type="hidden" name="pref_edit_id" value="<c:out value="${pref.name}"/>"/>
+				</td>
+				<td>
+					<table>
+					<c:forEach var="value" items="${pref.values}" varStatus="status">
+						<tr>
+							<td>
+								<input type="text" name="<c:out value="${pref.name}"/>:<c:out value="${status.index}"/>" value="<c:out value="${value}"/>"/>
+							</td>
+						</tr>
+					</c:forEach>
+					</table>
+				</tr>
+			</tr>
+		</c:forEach>
+		</table>
+		
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet.edit_preference'"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_preference'"/>
+	</form>
 	
 	<hr />
 	
-	<portlet:actionURL var="edit_preferenece_link" >
-        <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
-    </portlet:actionURL>
+	
 	<form action="<c:out value="${edit_preferenece_link}"/>">
 		<input type="hidden" name="portlet_action" value="portlet.add_preference"/>
 		<table>
