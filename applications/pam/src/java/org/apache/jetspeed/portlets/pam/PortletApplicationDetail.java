@@ -19,6 +19,7 @@ package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -29,6 +30,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -48,6 +50,7 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.portals.bridges.common.GenericServletPortlet;
@@ -1065,6 +1068,214 @@ public class PortletApplicationDetail extends GenericServletPortlet
                 registry.getPersistenceStore().getTransaction().commit();
             }
         }
+    }
+    
+    private String createXml(MutablePortletApplication pa)
+    {
+        StringBuffer buffer = new StringBuffer();
+        
+        buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        
+        //TODO:  add namespace
+        buffer.append("<portlet-app id=\"");
+        buffer.append(pa.getApplicationIdentifier());
+        buffer.append("\" version=\"");
+        buffer.append(pa.getVersion());
+        buffer.append("\">\n");
+        
+        Iterator portletDefsIter = pa.getPortletDefinitions().iterator();
+        while (portletDefsIter.hasNext())
+        {
+            PortletDefinitionComposite pDef = (PortletDefinitionComposite) portletDefsIter.next();
+            buffer.append(createPortletDefinitionXml(pDef));
+        }
+        
+        buffer.append("</portlet-app>\n");
+        
+        return buffer.toString();
+    }
+    
+    private String createPortletDefinitionXml(PortletDefinitionComposite pDef)
+    {
+        StringBuffer buffer = new StringBuffer();
+        
+        buffer.append("<portlet id=\"");
+        buffer.append(pDef.getPortletIdentifier());
+        buffer.append("\">\n");
+        
+        Iterator paramIter = pDef.getInitParameterSet().iterator();
+        while (paramIter.hasNext())
+        {
+            ParameterComposite param = (ParameterComposite) paramIter.next();
+            buffer.append("<init-param>\n");
+            
+            addDescriptions(buffer, param.getDescriptionSet());
+            
+            buffer.append("\t<name>");
+            buffer.append(param.getName());
+            buffer.append("</name>\n");
+            buffer.append("\t<value>");
+            buffer.append(param.getValue());
+            buffer.append("</value>\n");
+            buffer.append("</init-param>\n");
+        }
+        
+        buffer.append("\t<portlet-name>");
+        buffer.append(pDef.getName());
+        buffer.append("</portlet-name>\n");
+        
+        Iterator displayNameIter = pDef.getDisplayNameSet().iterator();
+        while (displayNameIter.hasNext())
+        {
+            MutableDisplayName displayName = (MutableDisplayName) displayNameIter.next();
+            buffer.append("\t<display-name");
+            if(displayName.getLocale() != null)
+            {
+                buffer.append(" xml:lang=\"");
+                buffer.append(displayName.getLocale().getCountry());
+                buffer.append("\"");
+            }
+            buffer.append(">");
+            buffer.append(displayName.getDisplayName());
+            buffer.append("</display-name>\n");
+        }
+        
+        addDescriptions(buffer, pDef.getDescriptionSet());
+        
+        buffer.append("\t<portlet-class>");
+        buffer.append(pDef.getClassName());
+        buffer.append("</portlet-class>\n");
+        
+        buffer.append("\t<expiration-cache>");
+        buffer.append(pDef.getExpirationCache());
+        buffer.append("</expiration-cache>\n");
+        
+        
+        Iterator contentTypeIter = pDef.getContentTypeSet().iterator();
+        while (contentTypeIter.hasNext())
+        {
+            buffer.append("\t<supports>\n");
+            ContentType contentType = (ContentType) contentTypeIter.next();
+            buffer.append("\t\t<mime-type>\n");
+            buffer.append(contentType.getContentType());
+            buffer.append("</mime-type>\n");
+            
+            Iterator modeIter = contentType.getPortletModes();
+            while (modeIter.hasNext())
+            {
+                PortletMode mode = (PortletMode) modeIter.next();
+                buffer.append("\t\t<portlet-mode>");
+                buffer.append(mode.toString());
+                buffer.append("</portlet-mode>\n");
+            }
+            
+            buffer.append("</supports>");
+        }
+        
+        
+        
+        String resourceBundle = pDef.getResourceBundle();
+        if(resourceBundle == null)
+        {
+	        //<portlet-info>
+	        //StringBuffer supportedLocaleBuffer = new StringBuffer();
+	        StringBuffer portletInfoBuffer = new StringBuffer();
+	        
+	        Iterator langIter = pDef.getLanguageSet().iterator();
+	        while (langIter.hasNext())
+	        {
+	            MutableLanguage lang = (MutableLanguage) langIter.next();
+	            /*
+	            supportedLocaleBuffer.append("\t<supported-locale>");
+	            supportedLocaleBuffer.append(lang.getLocale().getCountry());
+	            supportedLocaleBuffer.append("</supported-locale>\n");
+	            */
+	            
+	            //lang.
+	            portletInfoBuffer.append("\t<portlet-info>\n");
+	            portletInfoBuffer.append("\t\t<title>");
+	            portletInfoBuffer.append(lang.getTitle());
+	            portletInfoBuffer.append("</title>\n");
+	            if(lang.getShortTitle() != null)
+	            {
+	                portletInfoBuffer.append("\t\t<short-title>");
+	                portletInfoBuffer.append(lang.getShortTitle());
+	                portletInfoBuffer.append("</short-title>\n");
+	            }
+	            Iterator keywordIter = lang.getKeywords();
+	            if(keywordIter.hasNext())
+	            {
+	                portletInfoBuffer.append("\t\t<keywords>");
+		            while (keywordIter.hasNext())
+		            {
+		                String keyword = (String) keywordIter.next();
+		                portletInfoBuffer.append(keyword);
+		                if(keywordIter.hasNext())
+		                {
+		                    portletInfoBuffer.append(",");
+		                }
+		            }
+		            portletInfoBuffer.append("</keywords>\n");
+	            }
+	            portletInfoBuffer.append("\t</portlet-info>\n");
+	        }
+	        
+//	        buffer.append(supportedLocaleBuffer);
+	        buffer.append(portletInfoBuffer);
+        }
+        else
+        {
+            Iterator supportIter = pDef.getSupportedLocales().iterator();
+            while (supportIter.hasNext())
+            {
+                Locale locale = (Locale) supportIter.next();
+                buffer.append("\t<supported-locale>");
+                buffer.append(locale.getCountry());
+                buffer.append("<supported-locale>\n");
+            }
+        }
+        
+        buffer.append("\t<portlet-preferences>\n");
+        Iterator prefIter = pDef.getPreferenceSet().iterator();
+        while (prefIter.hasNext())
+        {
+            PreferenceComposite pref = (PreferenceComposite) prefIter.next();
+            buffer.append("\t\t<preference>\n");
+            buffer.append("\t\t\t<name>);");
+            buffer.append(pref.getName());
+            buffer.append("</name>\n");
+            String[] values = pref.getValueArray();
+            for (int i = 0; i < values.length; i++)
+            {
+                String value = values[i];
+                buffer.append("\t\t\t<value>");
+                buffer.append(value);
+                buffer.append("</value>\n");
+            }
+            
+            buffer.append("\t\t</preference>\n");
+        }
+        buffer.append("</portlet-preferences>");
+        
+        buffer.append("</portlet>\n");
+        
+        return buffer.toString();
+    }
+    
+    private void addDescriptions(StringBuffer buffer, DescriptionSet descriptions)
+    {
+        Iterator descIter = descriptions.iterator();
+        MutableDescription desc = (MutableDescription) descIter.next();
+        buffer.append("\t<description");
+        if(desc.getLocale() != null)
+        {
+            buffer.append(" xml:lang=\"");
+            buffer.append(desc.getLocale().getCountry());
+            buffer.append("\"");
+        }
+        buffer.append(">");
+        buffer.append(desc.getDescription());
+        buffer.append("</description>\n");
     }
 
 }
