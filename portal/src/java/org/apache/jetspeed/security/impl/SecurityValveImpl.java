@@ -68,8 +68,9 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
      * not match
      * @param request
      * @return 
+     * @throws Exception
      */
-    protected final Subject getSubject(RequestContext request)
+    protected final Subject getSubject(RequestContext request) throws Exception
     {
         HttpSession session = request.getRequest().getSession();
         Principal userPrincipal = getUserPrincipal(request);

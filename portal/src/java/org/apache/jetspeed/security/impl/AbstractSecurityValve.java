@@ -40,7 +40,7 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      * @param request
      * @return Subject
      */
-    protected abstract Subject getSubject(RequestContext request);
+    protected abstract Subject getSubject(RequestContext request) throws Exception;
     
     /**
      * 
@@ -51,8 +51,9 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      * the Subject returned from <code>getSubject()</code> 
      * @param request
      * @return Principal
+     * @throws Exception
      */
-    protected abstract Principal getUserPrincipal(RequestContext request);
+    protected abstract Principal getUserPrincipal(RequestContext request) throws Exception;
     
     /**
      * 
@@ -64,7 +65,7 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      * @return javax.security.Subject or <code>null</code> if there is no servlet session attribute defined
      * for the key <code>org.apache.jetspeed.PortalReservedParameters.SESSION_KEY_SUBJECT</code>.
      */
-    protected final Subject getSubjectFromSession(RequestContext request)
+    protected final Subject getSubjectFromSession(RequestContext request) throws Exception
     {
         return (Subject) request.getRequest().getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
     }
@@ -89,8 +90,15 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
             // initialize/validate security subject
-            Subject subject = getSubject(request);
-    
+            Subject subject;
+            try
+            {
+                subject = getSubject(request);
+            }
+            catch (Exception e1)
+            {
+               throw new PipelineException(e1.getMessage(), e1);
+            }
             request.getRequest().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
             // set request context subject
             request.setSubject(subject);
