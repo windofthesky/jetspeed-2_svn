@@ -152,6 +152,30 @@ public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
      * @return an immutable List of Property objects
      */
     public List getProperties(String layoutName);
+    
+    /**
+     * 
+     * <p>
+     * getPropertyValue
+     * </p>
+     *
+     * @param layout
+     * @param propName
+     * @return
+     */
+    public String getPropertyValue(String layout, String propName);
+    
+    /**
+     * 
+     * <p>
+     * setPropertyValue
+     * </p>
+     *
+     * @param layout
+     * @param propName
+     * @param value
+     */
+    public void setPropertyValue(String layout, String propName, String value);
 
     /**
      * Adds a new property to this fragment

@@ -114,4 +114,16 @@ public class PropertyImpl implements Property, java.io.Serializable
     {
         return super.clone();
     }
+    /**
+     * <p>
+     * getIntValue
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Property#getIntValue()
+     * @return
+     */
+    public int getIntValue()
+    {        
+        return Integer.parseInt(value);
+    }
 }

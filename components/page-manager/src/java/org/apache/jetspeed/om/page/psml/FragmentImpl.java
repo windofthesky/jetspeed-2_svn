@@ -133,6 +133,41 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
         return props;
     }
+    
+    public String getPropertyValue(String layout, String propName)
+    {
+        Iterator itr = getProperties(layout).iterator();
+        while(itr.hasNext())
+        {
+            Property aProp = (Property) itr.next();
+            if(aProp.getName().equals(propName))
+            {
+                return aProp.getValue();
+            }
+        }
+        
+        return null;
+    }
+    
+    public void setPropertyValue(String layout, String propName, String value)
+    {
+        Iterator itr = getProperties(layout).iterator();
+        while(itr.hasNext())
+        {
+            Property aProp = (Property) itr.next();
+            if(aProp.getName().equals(propName))
+            {
+                aProp.setValue(value);
+                return;
+            }
+        }
+        
+        PropertyImpl newProp = new PropertyImpl();
+        newProp.setLayout(layout);
+        newProp.setName(propName);
+        newProp.setValue(value);
+        addProperty(newProp);
+    }
 
     public void addProperty(Property p)
     {
@@ -201,4 +236,44 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     }   // clone
 
+    /**
+     * <p>
+     * equals
+     * </p>
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param obj
+     * @return
+     */
+    public boolean equals( Object obj )
+    {
+        if(obj != null && obj instanceof Fragment)
+        {
+            Fragment aFragment = (Fragment) obj;
+            return getId().equals(aFragment.getId());
+        }
+        else
+        {
+            return false;
+        }
+    }
+    /**
+     * <p>
+     * hashCode
+     * </p>
+     *
+     * @see java.lang.Object#hashCode()
+     * @return
+     */
+    public int hashCode()
+    {    
+        if(getId() != null)
+        {
+            return (Fragment.class.getName()+":"+getId()).hashCode();
+        }
+        else
+        {
+            return super.hashCode();
+        }
+    }
 }

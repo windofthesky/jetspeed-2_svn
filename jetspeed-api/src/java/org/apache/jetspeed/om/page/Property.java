@@ -60,6 +60,16 @@ public interface Property extends Cloneable
      * @return the string value of the property
      */
     public String getValue();
+    
+    /**
+     * 
+     * <p>
+     * getIntValue
+     * </p>
+     *
+     * @return the string value of the property as an <code>int</code>
+     */
+    public int getIntValue();
 
     /**
      * Sets the value of the property
