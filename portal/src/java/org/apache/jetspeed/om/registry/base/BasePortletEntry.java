@@ -61,7 +61,7 @@ import java.util.Map;
 import java.util.Vector;
 
 
-import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.registry.CachedParameter;
 import org.apache.jetspeed.om.registry.Category;
 import org.apache.jetspeed.om.registry.ContentURL;

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Jetspeed-2</name>
+	<name>jetspeed-2</name>
 	<comment></comment>
 	<projects>
+<<<<<<< .project
+=======
 		<project>jakarta-pluto</project>
+>>>>>>> 1.4
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -64,8 +64,8 @@ import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
-import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 
 /**
  * This is the catalina specific implemenation for deplyment of Portlet Applications.

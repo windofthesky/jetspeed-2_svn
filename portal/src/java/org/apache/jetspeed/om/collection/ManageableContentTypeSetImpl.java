@@ -56,8 +56,8 @@ package org.apache.jetspeed.om.collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.portlet.ContentTypeSetImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeSetComposite;
+import org.apache.jetspeed.om.portlet.impl.ContentTypeSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;

@@ -56,7 +56,7 @@ package org.apache.jetspeed.om.collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionListImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionListImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;

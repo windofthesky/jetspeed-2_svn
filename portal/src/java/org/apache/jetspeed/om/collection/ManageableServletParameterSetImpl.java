@@ -55,8 +55,8 @@ package org.apache.jetspeed.om.collection;
 
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.ParameterSetImpl;
-import org.apache.jetspeed.om.common.extended.ServletParameterSetImpl;
+import org.apache.jetspeed.om.impl.ParameterSetImpl;
+import org.apache.jetspeed.om.impl.ServletParameterSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;

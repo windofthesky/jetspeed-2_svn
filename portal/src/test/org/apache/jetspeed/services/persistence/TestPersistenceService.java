@@ -61,14 +61,14 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.om.common.LanguageImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
@@ -230,7 +230,7 @@ public class TestPersistenceService extends JetspeedTest
         app2.setName("This is app 2 of 2");
         app2.setVersion("1.0");
         app2.setDescription("This is app 2 of 2");
-		app1.setApplicationIdentifier("app2of2");
+        app1.setApplicationIdentifier("app2of2");
 
         plugin.add(app2);
 
@@ -248,7 +248,6 @@ public class TestPersistenceService extends JetspeedTest
 
         assertNotNull("Could not retrieve test app 1 from the db", app1);
         plugin.delete(app1);
-        
 
         LookupCriteria lc2 = plugin.newLookupCriteria();
         lc2.addEqualTo("name", "This is app 2 of 2");

@@ -56,7 +56,7 @@ package org.apache.jetspeed.om.registry;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
 /**
  * This entry describes all the properties that should be present in

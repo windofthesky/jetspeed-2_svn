@@ -58,8 +58,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.ParameterSetImpl;
-import org.apache.jetspeed.om.common.extended.PortletParameterSetImpl;
+import org.apache.jetspeed.om.impl.ParameterSetImpl;
+import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;

@@ -12,7 +12,7 @@
 
  
   <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl"
+   	  class="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
    	  table="PORTLET_APPLICATION"
    >
      
@@ -57,7 +57,7 @@
      
       <reference-descriptor 
       	  name="webApplication" 
-      	  class-ref="org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl" 
+      	  class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl" 
       	  auto-delete="true"
 
       	  >
@@ -83,7 +83,7 @@
 -->
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl"
+   	  class="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl"
    	  table="WEB_APPLICATION"
    >
    
@@ -104,7 +104,7 @@
       />
       <collection-descriptor
          name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
       >         
@@ -120,7 +120,7 @@
       
       <collection-descriptor
          name="displayNames"
-         element-class-ref="org.apache.jetspeed.om.common.DisplayNameImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DisplayNameImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
          auto-delete="true"
       >         
@@ -144,14 +144,14 @@
    	  class="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl" />         
+      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" />         
    
    </class-descriptor>
  
  
  
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl"
+   	  class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
    	  table="PORTLET_DEFINITION"
 
    >
@@ -209,7 +209,7 @@
 
       <reference-descriptor 
       	name="app" 
-      	class-ref="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl" 
+      	class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl" 
    	 >       	        
          <foreignkey field-ref="appId"/>
       </reference-descriptor>
@@ -217,7 +217,7 @@
 
       <collection-descriptor
          name="languageSet"
-         element-class-ref="org.apache.jetspeed.om.common.LanguageImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.LanguageImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableLanguageSetImpl"
          auto-delete="true"
       >
@@ -237,7 +237,7 @@
 
       	<collection-descriptor
          name="parameterSet"
-         element-class-ref="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePortletParameterSetImpl"
          auto-delete="true"
       >         
@@ -246,7 +246,7 @@
 
       <collection-descriptor
          name="prefSet"
-         element-class-ref="org.apache.jetspeed.om.common.preference.PreferenceImpl"
+         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"
       >         
@@ -262,7 +262,7 @@
       
      <collection-descriptor
          name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
       >         
@@ -278,7 +278,7 @@
       
       <collection-descriptor
          name="displayNames"
-         element-class-ref="org.apache.jetspeed.om.common.DisplayNameImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DisplayNameImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
          auto-delete="true"
       >         
@@ -300,7 +300,7 @@
    - L A N G U A G E 
 -->
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.LanguageImpl"
+   	  class="org.apache.jetspeed.om.impl.LanguageImpl"
    	  table="LANGUAGE"
    >
    
@@ -354,13 +354,13 @@
    	  class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.common.portlet.ContentTypeImpl" />              
+      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />              
    </class-descriptor>
  
  
  
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.ContentTypeImpl"
+   	  class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
    	  table="PORTLET_CONTENT_TYPE"
    >   
      <field-descriptor
@@ -408,7 +408,7 @@
    -->
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.extended.ServletInitParameterImpl"
+   	  class="org.apache.jetspeed.om.impl.ServletInitParameterImpl"
    	  table="PARAMETER"
    >
    
@@ -460,7 +460,7 @@
     </class-descriptor>
 
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.extended.PortletInitParameterImpl"
+   	  class="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
    	  table="PARAMETER"
    >
       <field-descriptor
@@ -506,7 +506,7 @@
       
       <collection-descriptor
          name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
       >         
@@ -530,13 +530,13 @@
    	  class="org.apache.jetspeed.om.common.preference.PreferenceComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.common.preference.PreferenceImpl" />
+      <extent-class class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl" />
       
    </class-descriptor>
  
 
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.preference.PreferenceImpl"
+   	  class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
    	  table="PORTLET_PREFERENCE"
    >
       
@@ -575,7 +575,7 @@
       
       <collection-descriptor
          name="valueObjects"
-         element-class-ref="org.apache.jetspeed.om.common.preference.PreferenceValueImpl"
+         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
          auto-delete="true"
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
@@ -584,7 +584,7 @@
       
       <collection-descriptor
          name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         element-class-ref="org.apache.jetspeed.om.impl.DescriptionImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
          auto-delete="true"
       >         
@@ -603,7 +603,7 @@
  
         
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.preference.PreferenceValueImpl"
+   	  class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
    	  table="PREFERENCE_VALUE"
    >
       
@@ -638,7 +638,7 @@
    - L O C A L I Z E D   D E S C R I P I T I O N
  -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.DescriptionImpl"
+   	  class="org.apache.jetspeed.om.impl.DescriptionImpl"
    	  table="LOCALIZED_DESCRITPION"
    >
       
@@ -687,7 +687,7 @@
    - L O C A L I Z E D   D I S P L A Y   N A M E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.DisplayNameImpl"
+   	  class="org.apache.jetspeed.om.impl.DisplayNameImpl"
    	  table="LOCALIZED_DISPLAY_NAME"
    >
       
