@@ -35,6 +35,7 @@ public interface PageManager
 {
     /** The name of the service */
     public String SERVICE_NAME = "PageManager";
+    static final String PAGE_SUFFIX = ".psml";
 
     /**
      * Creates a new empty Page instance
