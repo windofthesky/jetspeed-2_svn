@@ -22,7 +22,7 @@ import javax.portlet.PortletURL;
  * @author <a href="mailto:rogerrutr@apache.org">Roger Ruttimann</a>
  * @version $Id$
  */
-public class WebContentRewriter extends AbstractRewriter implements Rewriter {
+public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter {
 
     /** WebContentURL */
     public static final String ACTION_PARAMETER_URL = "WCURL";
@@ -70,9 +70,11 @@ public class WebContentRewriter extends AbstractRewriter implements Rewriter {
 		return modifiedURL;
 	}
 
+    
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.rewriter.Rewriter#shouldRemoveTag(java.lang.String)
 	 */
+    /*
 	public boolean shouldRemoveTag(String tag) {
 		 if (tag.equalsIgnoreCase("html"))
 		{
@@ -80,10 +82,12 @@ public class WebContentRewriter extends AbstractRewriter implements Rewriter {
 		}
 		return false;	
 	}
+    */
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.rewriter.Rewriter#shouldStripTag(java.lang.String)
 	 */
+    /*
 	public boolean shouldStripTag(String tag) {
 		if (tag.equalsIgnoreCase("head"))
 		{
@@ -91,12 +95,15 @@ public class WebContentRewriter extends AbstractRewriter implements Rewriter {
 		}
 		return false;
 	}
+    */
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.rewriter.Rewriter#shouldRemoveComments()
 	 */
+    /*
 	public boolean shouldRemoveComments() {
 		return true;
 	}
+    */
 
 }

@@ -139,7 +139,7 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
                     continue;
                 }                                        
                 
-                String rewritten = this.rewriteUrl(value, tag.getId(), name);
+                String rewritten = rewriteUrl(value, tag.getId(), name);
                 if (null != rewritten) // return null indicates "don't rewrite" 
                 {
                     if (rule.getSuffix() != null)
