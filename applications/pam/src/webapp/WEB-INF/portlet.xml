@@ -65,5 +65,77 @@ limitations under the License.
     </portlet-info>
   </portlet>
 
+<portlet id="PortalSiteBrowser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/site-browser.jsp</value>
+     </init-param>   
+    <portlet-name>PortalSiteBrowser</portlet-name>
+    <display-name>Portal Site Browser</display-name>
+    <description>The Portal Site Browser displays a hierarchical view of the portal site. From here you can add, edit, and delete folders and pages.</description>
+    <portlet-class>org.apache.portals.bridges.myfaces.FacesPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portal Site Browser</title>
+      <short-title>Site</short-title>
+      <keywords>admin,site</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="ProfilerAdmin">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/profiler-admin.jsp</value>
+     </init-param>   
+    <portlet-name>ProfilerAdmin</portlet-name>
+    <display-name>Profiler Admin</display-name>
+    <description>The Profiler Admin is used to adminstrate profiling rules.</description>
+    <portlet-class>org.apache.portals.bridges.myfaces.FacesPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Profiler Admin</title>
+      <short-title>Profiler</short-title>
+      <keywords>admin,profiler</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="JetspeedUserAdmin">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/user-admin.jsp</value>
+     </init-param>   
+    <portlet-name>JetspeedUserAdmin</portlet-name>
+    <display-name>User Administration</display-name>
+    <description>User Administration of portal users in the system.</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserManagerPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>User Administration</title>
+      <short-title>Users</short-title>
+      <keywords>admin,security,users</keywords>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 
