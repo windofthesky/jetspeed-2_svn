@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@page import="javax.portlet.PortletRequest" %>
-<%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="portlet.tld" prefix='portlet'%>
+<%@ taglib uri="c.tld" prefix="c" %>
+<%@ taglib uri="c-rt.tld" prefix="c-rt" %>
 
 <portlet:defineObjects/>
 
@@ -28,10 +29,46 @@ limitations under the License.
   </c:when>
 
   <c:otherwise>
-    User: <c:out value='${renderRequest.userPrincipal.name}'/><br>
-    
-    <br>Render request: <%= renderRequest.getAttribute(PortletRequest.USER_INFO) %>
-    <br>Request: <%= request.getAttribute(PortletRequest.USER_INFO) %>
+    <b>User Attribute for user:</b> <c:out value='${renderRequest.userPrincipal.name}'/><br>
+    <br>
+
+	<table border="1">
+      <tr>
+      	<th colspan="2" align="center">Portlet Request</th>
+	  </tr>
+      <tr>
+      	<th>User Attribute</th>
+      	<th>User Attribute Value</th>
+      </tr>
+      
+      <c-rt:forEach var="userAttr" items="<%= renderRequest.getAttribute(PortletRequest.USER_INFO)%>">    
+      <tr>
+      	<td><c:out value="${userAttr.key}"/></td>
+      	<td><c:out value="${userAttr.value}"/></td>
+      </tr>
+	  </c-rt:forEach>
+
+    </table>    
+
+	<br>
+	
+	<table border="1">
+      <tr>
+      	<th colspan="2" align="center">Servlet Request</th>
+	  </tr>
+      <tr>
+      	<th>User Attribute</th>
+      	<th>User Attribute Value</th>
+      </tr>
+      
+      <c-rt:forEach var="userAttr" items="<%= request.getAttribute(PortletRequest.USER_INFO)%>">    
+      <tr>
+      	<td><c:out value="${userAttr.key}"/></td>
+      	<td><c:out value="${userAttr.value}"/></td>
+      </tr>
+	  </c-rt:forEach>
+
+    </table>
 	 
   </c:otherwise>
 

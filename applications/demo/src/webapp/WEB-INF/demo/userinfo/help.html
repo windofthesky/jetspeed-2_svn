@@ -1,5 +1,29 @@
 <h3>Example user info</h3>
 
 <p>
-  Help to be coming soon.
+  To be able to test the User Info Test Portlet, log in as <code>admin/admin</code>.
+  Test data has been populated to be able to validate user info behaviors..
+</p>
+
+<p>
+  The attribute mapping is done in portlet.xml.  The current portlet maps:<br>
+  
+  <pre>
+  &lt;user-attribute&gt;
+	&lt;description&gt;User Given Name&lt;/description&gt;
+	&lt;name&gt;user.name.given&lt;/name&gt;
+  &lt;/user-attribute&gt;
+  &lt;user-attribute&gt;
+	&lt;description&gt;User Last Name&lt;/description&gt;
+	&lt;name&gt;user.name.family&lt;/name&gt;
+  &lt;/user-attribute&gt;
+  &lt;user-attribute&gt;
+	&lt;description&gt;User eMail&lt;/description&gt;
+	&lt;name&gt;user.home-info.online.email&lt;/name&gt;
+  &lt;/user-attribute&gt;
+  </pre>
+</p>
+
+<p>
+The test data currently only defines <code>user.name.given</code> and <code>user.name.family</code>.
 </p>
