@@ -13,7 +13,7 @@
         >
     <maven:reactor
                basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml"
+               includes="*/project.xml,applications/*/project.xml,services/*/project.xml"
                excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
@@ -70,13 +70,19 @@
                banner="Build and Install the container jar"
                postProcessing="false"
                ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
+               includes="services/registry/project.xml"
+               goals="db.test.recreate,db.recreate,jar:install"
+               banner="Build and Install the services - registry jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
 
-    
      <!-- Build war files -->
      <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
-               goals="db.test.recreate,db.recreate,war:install"
+               goals="db.test.recreate,db.recreate,ojb.registry,war:install"
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>

@@ -11,6 +11,7 @@
     <classpathentry excluding="**/CVS*" kind="src" path="cornerstone/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="cornerstone-demo/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="services/registry/src/java"/>
     <classpathentry kind="src" path="applications/pam/src/java"/>
     <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
