@@ -24,8 +24,8 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
 public class PreferencesProviderImpl implements PreferencesProvider
 {
 
-    /** The {@link PreferencesComponent} instance. */
-    static PreferencesProvider prefComponent;
+    /** The {@link PreferencesProvider} instance. */
+    static PreferencesProvider prefProvider;
     
     /** The persistence store container. */
     private PersistenceStoreContainer storeContainer;
@@ -42,12 +42,12 @@ public class PreferencesProviderImpl implements PreferencesProvider
         this.storeKeyName = storeKeyName;
         this.storeContainer = storeContainer;
         System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
-        PreferencesProviderImpl.prefComponent = this;
+        PreferencesProviderImpl.prefProvider = this;
 
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PreferencesComponent#getStoreContainer()
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#getStoreContainer()
      */
     public PersistenceStoreContainer getStoreContainer()
     {
@@ -55,7 +55,7 @@ public class PreferencesProviderImpl implements PreferencesProvider
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PreferencesComponent#getStoreKeyName()
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#getStoreKeyName()
      */
     public String getStoreKeyName()
     {

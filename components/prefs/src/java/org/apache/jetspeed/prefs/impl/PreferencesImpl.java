@@ -120,9 +120,9 @@ public class PreferencesImpl extends AbstractPreferences
 
         if (log.isDebugEnabled())
             log.debug("Constructing node: " + nodeName);
-        PreferencesProvider prefComponent = PreferencesProviderImpl.prefComponent;
-        this.storeContainer = prefComponent.getStoreContainer();
-        this.jetspeedStoreName = prefComponent.getStoreKeyName();
+        PreferencesProvider prefProvider = PreferencesProviderImpl.prefProvider;
+        this.storeContainer = prefProvider.getStoreContainer();
+        this.jetspeedStoreName = prefProvider.getStoreKeyName();
         this.commonQueries = new CommonQueries(storeContainer, jetspeedStoreName);
 
         this.nodeType = nodeType;
