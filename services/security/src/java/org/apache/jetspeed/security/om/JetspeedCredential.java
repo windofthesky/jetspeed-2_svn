@@ -72,7 +72,7 @@ import java.sql.Timestamp;
  * <p>The credential classname represent the class of credential.  For password
  * this field is null.
  * </p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * TODO Add multiple credentials support.
  */
 public interface JetspeedCredential extends Serializable, Cloneable

@@ -82,7 +82,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * <p>{@link PropertyManagerService} implementation relying on Jetspeed OJB
  * based persistence plugin for persistence.
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyManagerServiceImpl extends BaseCommonService implements PropertyManagerService
 {

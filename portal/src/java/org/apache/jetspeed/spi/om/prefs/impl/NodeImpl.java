@@ -63,7 +63,7 @@ import org.apache.jetspeed.spi.om.prefs.PropertySetDef;
  * <p>{@link Node} interface implementation.</p>
  * <p>Represents a preferences node.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class NodeImpl implements Node
 {

@@ -74,7 +74,7 @@ import org.apache.jetspeed.security.PermissionManagerService;
  *    <li><a href="http://www.javageeks.com/Papers/JavaPolicy/index.html">
  *    When "java.policy" Just Isn't Good Enough.</li>
  * </ul></p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  *
  */
 public class RdbmsPolicy extends Policy

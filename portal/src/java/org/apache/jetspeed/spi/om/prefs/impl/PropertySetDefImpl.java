@@ -62,7 +62,7 @@ import org.apache.jetspeed.spi.om.prefs.PropertySetDef;
  * <p>{@link PropertySetDef} interface implementation.</p>
  * <p>Represents a property set definition.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertySetDefImpl implements PropertySetDef
 {

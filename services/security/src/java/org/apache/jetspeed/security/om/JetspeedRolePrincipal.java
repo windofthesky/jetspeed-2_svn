@@ -59,7 +59,7 @@ import java.sql.Timestamp;
 
 /**
  * <p>Interface representing Jetspeed security role principal object model.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface JetspeedRolePrincipal extends JetspeedPrincipal
 {

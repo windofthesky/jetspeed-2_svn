@@ -63,7 +63,7 @@ import java.util.Collection;
  * to a specific node given that the node name matches the property
  * set name.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  *
  */
 public interface PropertySetDef extends Serializable, Cloneable

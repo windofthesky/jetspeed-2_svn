@@ -60,7 +60,7 @@ import java.util.prefs.PreferencesFactory;
  * <p>{@link java.util.prefs.PreferencesFactory} implementation to
  * return {@link PreferencesImpl}.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PreferencesFactoryImpl implements PreferencesFactory
 {

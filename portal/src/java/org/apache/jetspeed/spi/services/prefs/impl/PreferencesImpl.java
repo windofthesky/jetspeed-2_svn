@@ -81,7 +81,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * <p>{@link Preferences} implementation relying on Jetspeed
  * OJB based persistence plugin.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PreferencesImpl extends AbstractPreferences
 {

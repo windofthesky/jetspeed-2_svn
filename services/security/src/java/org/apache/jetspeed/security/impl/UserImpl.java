@@ -61,7 +61,7 @@ import org.apache.jetspeed.security.User;
 
 /**
  * <p>A user made of a {@link Subject} and the user {@link Preferences}.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class UserImpl implements User
 {

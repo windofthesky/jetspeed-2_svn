@@ -61,7 +61,7 @@ import org.apache.jetspeed.security.RolePrincipal;
 
 /**
  * <p>A group made of a {@link GroupPrincipal} and the user {@link Preferences}.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class GroupImpl implements Group
 {

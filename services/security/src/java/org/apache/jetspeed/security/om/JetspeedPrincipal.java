@@ -72,7 +72,7 @@ import java.sql.Timestamp;
  *       };
  * </code>
  * </pre>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface JetspeedPrincipal extends Serializable, Cloneable
 {

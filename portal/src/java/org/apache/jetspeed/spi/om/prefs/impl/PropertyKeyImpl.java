@@ -61,7 +61,7 @@ import org.apache.jetspeed.spi.om.prefs.PropertyKey;
  * <p>{@link PropertyKey} interface implementation.</p>
  * <p>Represents a property key.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyKeyImpl implements PropertyKey
 {

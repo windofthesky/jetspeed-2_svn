@@ -59,7 +59,7 @@ import java.util.Collection;
 
 /**
  * <p>Interface representing a Jetspeed security group principal object model.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface JetspeedGroupPrincipal extends JetspeedPrincipal
 {

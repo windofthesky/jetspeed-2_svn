@@ -61,7 +61,7 @@ import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
 /**
  * <p>{@link JetspeedRolePrincipal} interface implementation.</p>
  * 
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class JetspeedRolePrincipalImpl extends JetspeedPrincipalImpl implements JetspeedRolePrincipal
 {

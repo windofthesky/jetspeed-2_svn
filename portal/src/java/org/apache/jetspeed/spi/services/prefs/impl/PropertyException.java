@@ -59,7 +59,7 @@ import org.apache.jetspeed.exception.JetspeedException;
  * <p>Exception throwns if a property or its set definition
  * cannot be found or already exists.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyException extends JetspeedException
 {

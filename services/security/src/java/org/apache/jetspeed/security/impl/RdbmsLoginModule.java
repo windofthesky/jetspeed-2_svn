@@ -84,7 +84,7 @@ import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
  *   org.apache.jetspeed.security.auth.RdbmsLoginModule required debug=true;
  * };
  * </code></pre>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class RdbmsLoginModule implements LoginModule
 {

@@ -76,7 +76,7 @@ import java.util.Map;
  *
  * TODO Identify the lifecycle scope of the cache object.
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface PropertyCache extends Serializable
 {

@@ -86,7 +86,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * <p>Group hierarchy elements are being returned as a {@link Group}
  * collection.  The backing implementation must appropriately map 
  * the group hierarchy to a preferences sub-tree.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class GroupManagerServiceImpl extends BaseSecurityServiceImpl implements GroupManagerService
 {

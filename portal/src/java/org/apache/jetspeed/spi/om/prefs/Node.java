@@ -62,7 +62,7 @@ import java.sql.Timestamp;
  * <p>Interface representing a {@link java.util.prefs.Preferences}
  * node.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface Node extends Serializable, Cloneable
 {

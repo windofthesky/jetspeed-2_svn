@@ -86,7 +86,7 @@ import org.apache.jetspeed.util.ArgUtil;
 /**
  * <p>Implementation for managing users and provides access
  * to the {@link User}.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class UserManagerServiceImpl extends BaseSecurityServiceImpl implements UserManagerService
 {

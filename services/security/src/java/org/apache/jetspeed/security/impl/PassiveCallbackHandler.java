@@ -66,7 +66,7 @@ import javax.security.auth.callback.*;
  *    <li><a href="http://www.javaworld.com/javaworld/jw-09-2002/jw-0913-jaas.html">
  *    All that JAAS</a></li>
  * </ul> *
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 
 public class PassiveCallbackHandler implements CallbackHandler

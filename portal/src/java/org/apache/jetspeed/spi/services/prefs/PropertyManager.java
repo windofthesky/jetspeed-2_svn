@@ -62,7 +62,7 @@ import org.apache.jetspeed.spi.services.prefs.impl.PropertyException;
 /**
  * Convenience static wrapper around {@link PropertyManagerService}.
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyManager
 {

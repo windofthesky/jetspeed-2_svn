@@ -65,7 +65,7 @@ import org.apache.jetspeed.spi.services.prefs.impl.PropertyException;
  * properties assigned to that set. All or a subset of the property
  * set definition properties can be assigned to a node.<p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface PropertyManagerService extends CommonService
 {

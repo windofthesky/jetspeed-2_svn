@@ -83,7 +83,7 @@ import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 
 /**
  * <p>Base class for the security services.</p> 
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class BaseSecurityServiceImpl extends BaseCommonService
 {

@@ -57,7 +57,7 @@ import org.apache.jetspeed.security.BasePrincipal;
 
 /**
  * <p>{@link BasePrincipal} interface implementation.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class BasePrincipalImpl implements BasePrincipal
 {

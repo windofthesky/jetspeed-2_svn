@@ -61,7 +61,7 @@ import org.apache.jetspeed.spi.services.prefs.PropertyCache;
 /**
  * <p>{@link PropertyCache} implementation.</p>
  *
- * @author <a href="david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PropertyCacheImpl implements PropertyCache
 {
