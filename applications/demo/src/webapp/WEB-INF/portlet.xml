@@ -385,7 +385,7 @@ limitations under the License.
 		<name>HelpPage</name>
 		  <value>/WEB-INF/view/iframe-help.html</value>
 		</init-param>
-		
+
         <portlet-class>org.apache.jetspeed.portlet.IFrameGenericPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
@@ -414,7 +414,7 @@ limitations under the License.
 			<preference>
 				<name>MAX-WIDTH</name>
 				<value>100%</value>
-			</preference>			
+			</preference>
         </portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
@@ -521,6 +521,38 @@ limitations under the License.
 	<description>User eMail</description>
 	<name>user.home-info.online.email</name>
   </user-attribute>
-  
+
+  <portlet id="web-cont-demo">
+        <portlet-name>WebContentPortlet</portlet-name>
+        <display-name>WebContent Portlet</display-name>
+        <description>
+            Prototype of the WebContent portlet
+        </description>
+		<init-param>
+		<name>EditPage</name>
+		  <value>/WEB-INF/view/edit-wcprefs.vm</value>
+		</init-param>
+
+        <portlet-class>org.apache.jetspeed.portlet.WebContentPortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>VIEW</portlet-mode>
+         </supports>
+        <portlet-preferences>
+            <preference>
+                <name>SRC</name>
+				<value>http://www.apache.org</value>
+            </preference>
+        </portlet-preferences>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>WebContent Prototype Portlet</title>
+            <short-title>WebContent</short-title>
+            <keywords>WebContent,Web, WebNav</keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>
 

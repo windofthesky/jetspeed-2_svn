@@ -38,6 +38,11 @@ limitations under the License.
   <dependencies>
   	&spring-deps;
   	&commons-config-dep;
+  	<dependency>
+      <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
+      <id>portlet-api</id>
+      <version>1.0</version>
+    </dependency>
     <dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
