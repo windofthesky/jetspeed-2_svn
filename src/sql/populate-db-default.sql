@@ -307,6 +307,6 @@ insert into RULE_CRITERION values (13, 'role-group', 1, 'request.session', 'page
 
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j1' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
-
-
-
+insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'docset', 'role-group' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'page', 'j1' );
+insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'docset', 'role-group' );
