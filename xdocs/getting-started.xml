@@ -105,13 +105,13 @@ the ${CATALINA_HOME}/conf/tomcat-users.xml.
 </p>
 <p>
 A minimal example tomcat-users.xml could look like:
-  <pre>
-    &lt;?xml version='1.0' encoding='utf-8'?&gt;
-    &lt;tomcat-users&gt;
-      &lt;role rolename="manager"/&gt;
-      &lt;user username="j2deployer" password="j2deployer" roles="manager"/&gt;
-    &lt;/tomcat-users&gt;
-  </pre>
+  <source><![CDATA[
+    <?xml version='1.0' encoding='utf-8'?>
+    <tomcat-users>
+      <role rolename="manager"/>
+      <user username="j2deployer" password="j2deployer" roles="manager"/>
+    </tomcat-users>]]>
+  </source>
 Make sure to use a more appropriate username and password. <br/>
 With the above example the required autodeployment properties should be set as:
   <pre>
