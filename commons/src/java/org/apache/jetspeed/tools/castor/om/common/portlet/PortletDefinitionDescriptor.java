@@ -57,12 +57,15 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.portlet.PortletMode;
+
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor;
 import org.apache.jetspeed.tools.castor.om.common.PreferenceDescriptor;
 import org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor;
 import org.apache.jetspeed.om.common.LanguageSetImpl;
+import org.apache.pluto.om.portlet.ContentTypeSet;
 
 /**
  * Used to help Castor in mapping XML portlet types to Java objects 
@@ -149,5 +152,20 @@ public class PortletDefinitionDescriptor extends PortletDefinitionImpl
             PreferenceDescriptor pd  = (PreferenceDescriptor)prefs.next();
             pd.setCastorValues(pd.getCastorValues());
         }
+        
+        // convert string collection representation to portlet mode collection
+        ContentTypeSet contentSet = this.getContentTypeSet();
+        Iterator contents = contentSet.iterator();
+        while (contents.hasNext())
+        {
+            ContentTypeDescriptor type = (ContentTypeDescriptor)contents.next();
+            Iterator modes = type.getCastorPortletModes().iterator();
+            while (modes.hasNext())
+            {
+                String mode = (String)modes.next();
+                type.addPortletMode(new PortletMode(mode));        
+            }
+        }
+        
     }
 }

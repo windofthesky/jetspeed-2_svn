@@ -56,6 +56,8 @@ package org.apache.jetspeed.om.common.portlet;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.portlet.PortletMode;
+
 import org.apache.pluto.om.portlet.ContentType;
 /**
  * 
@@ -79,7 +81,7 @@ public interface ContentTypeComposite extends ContentType, Serializable
      * already exists, the same mode is NOT added again.
      * @param mode portlet mode to add.
      */
-    void addPortletMode(String mode);
+    void addPortletMode(PortletMode mode);
 
     /**
      * Checks whether or not the <code>mode</code>
@@ -88,7 +90,7 @@ public interface ContentTypeComposite extends ContentType, Serializable
      * @return <code>true</code> if the <code>mode</code> is
      * supported, otherwise <code>false</code>.
      */
-    boolean supportsPortletMode(String mode);
+    boolean supportsPortletMode(PortletMode mode);
 
     /**
      * 

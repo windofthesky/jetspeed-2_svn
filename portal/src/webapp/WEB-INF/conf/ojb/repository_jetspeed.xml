@@ -385,7 +385,7 @@
          name="portletModes"
          column="MODES"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoPortletModeFieldConversion"
       />  
    </class-descriptor>
    

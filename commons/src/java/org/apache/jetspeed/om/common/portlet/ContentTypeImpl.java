@@ -58,6 +58,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.portlet.PortletMode;
+
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.portlet.ContentType;
 
@@ -135,10 +137,10 @@ public class ContentTypeImpl implements ContentTypeComposite, Serializable
         return hasher.toHashCode();
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#addMode(java.lang.String)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#addPortletMode(javax.portlet.PortletMode)
      */
-    public void addPortletMode(String mode)
+    public void addPortletMode(PortletMode mode)
     {
         portletModes.add(mode);
 
@@ -152,10 +154,10 @@ public class ContentTypeImpl implements ContentTypeComposite, Serializable
         portletModes = modes;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#supportsPortletMode(java.lang.String)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.ContentTypeComposite#supportsPortletMode(javax.portlet.PortletMode)
      */
-    public boolean supportsPortletMode(String mode)
+    public boolean supportsPortletMode(PortletMode mode)
     {
         return portletModes.contains(mode);
     }

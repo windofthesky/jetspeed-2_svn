@@ -55,6 +55,8 @@ package org.apache.jetspeed.tools.pamanager;
 
 import java.util.Iterator;
 
+import javax.portlet.PortletMode;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
@@ -176,7 +178,8 @@ public class TestPortletDescriptor extends JetspeedTest
         // Display Name                
         DisplayName displayName = portlet.getDisplayName(Jetspeed.getDefaultLocale());
         assertNotNull("Display Name is null", displayName);
-        assertTrue("Portlet.DisplayName invalid: " + displayName.getDisplayName(), displayName.getDisplayName().equals("HelloWorld Portlet Wrapper"));
+        assertTrue("Portlet.DisplayName invalid: " + displayName.getDisplayName(), 
+                    displayName.getDisplayName().equals("HelloWorld Portlet Wrapper"));
 
         // Init Parameters
         ParameterSet paramsList = portlet.getInitParameterSet();
@@ -208,7 +211,7 @@ public class TestPortletDescriptor extends JetspeedTest
             int modesCount = 0;
             while (modesIterator.hasNext())
             {
-                String mode = (String) modesIterator.next();
+                PortletMode mode = (PortletMode) modesIterator.next();
                 // System.out.println("mode = " + mode);
                 modesCount++;
             }

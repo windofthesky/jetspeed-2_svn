@@ -58,6 +58,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
+import javax.portlet.PortletMode;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
@@ -232,12 +234,12 @@ public class TestRegistry extends JetspeedTest
         ContentTypeComposite html = JetspeedPortletRegistry.newContentType();
         html.setContentType("html/text");
         ContentTypeComposite wml = JetspeedPortletRegistry.newContentType();
-        html.addPortletMode("EDIT");
-        html.addPortletMode("VIEW");
-        html.addPortletMode("HELP");
+        html.addPortletMode(new PortletMode("EDIT"));
+        html.addPortletMode(new PortletMode("VIEW"));
+        html.addPortletMode(new PortletMode("HELP"));
         wml.setContentType("wml");
-        wml.addPortletMode("HELP");
-        wml.addPortletMode("VIEW");
+        wml.addPortletMode(new PortletMode("HELP"));
+        wml.addPortletMode(new PortletMode("VIEW"));
         pdc.addContentType(html);
         pdc.addContentType(wml);
 
@@ -266,7 +268,8 @@ public class TestRegistry extends JetspeedTest
         Iterator modes = html.getPortletModes();
         while (modes.hasNext())
         {
-            System.out.println("   - Available Mode: " + modes.next());
+            PortletMode mode = (PortletMode)modes.next();
+            System.out.println("   - Available Mode: " + mode);
         }
     }
 
@@ -320,7 +323,7 @@ public class TestRegistry extends JetspeedTest
         while (valItr.hasNext())
         {
             valueCount++;
-			valItr.next();
+            valItr.next();
         }
 
         assertTrue("\"preference 1\" should have 2 values not " + valueCount, valueCount == 2);

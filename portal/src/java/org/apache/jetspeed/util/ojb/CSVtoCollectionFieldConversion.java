@@ -75,7 +75,7 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
 {
     private static final String DELIM = ",";
     private static final String QUOTE = "\"";
-
+    
     /**
      * @see org.apache.ojb.broker.accesslayer.conversions.FieldConversion#javaToSql(java.lang.Object)
      * @task Fix JDK 1.3 complient problem described in the FIXME
@@ -96,7 +96,7 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
             while (itr.hasNext())
             {
                 buffer.append(QUOTE);
-                String value = (String) itr.next();
+                String value = getNext(itr);
 
                 // FIXME: The following is not JDK1.3 complient. So I implement a warning 
                 //        message as a workaround until this field conversion is no longer
@@ -146,7 +146,7 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
             {
                 while (st.nextToken() != StreamTokenizer.TT_EOF)
                 {
-                    list.add(st.sval);
+                    list.add(createObject(st.sval));
                     System.out.println("Parsed token value: "+st.sval);
                 }
             }
@@ -161,6 +161,30 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
         }
 
         return arg0;
+    }
+
+    /**
+     * Makes creation of objects created via csv fields extensible
+     * By default simply return the string value.
+     * 
+     * @param name The string value
+     * @return The string value
+     */
+    protected Object createObject(String name)
+    {
+        return name;
+    }
+
+    /**
+     * Makes getting objects via csv fields extensible
+     * By default simply return the string value.
+     * 
+     * @param name The string value
+     * @return The string value
+     */
+    protected String getNext(Iterator iterator)
+    {
+        return (String) iterator.next();
     }
 
 }

@@ -51,30 +51,38 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.tools.castor.om.common.portlet;
+package org.apache.jetspeed.util.ojb;
 
-import java.util.Collection;
+import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.portlet.ContentTypeImpl;
+import javax.portlet.PortletMode;
+
+import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
 /**
- * Used to help Castor in mapping XML portlet types to Java objects 
+ * CSVtoPortletModeFieldConversion
  *
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ContentTypeDescriptor extends ContentTypeImpl
+public class CSVtoPortletModeFieldConversion extends CSVtoCollectionFieldConversion implements FieldConversion
 {
-    protected Collection castorPortletModes; 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion#getNext(java.util.Iterator)
+     */
+    protected String getNext(Iterator iterator)
+    {
+        PortletMode mode = (PortletMode)iterator.next();
+        return mode.toString();
+    }
     
-    public Collection getCastorPortletModes() 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion#createObject(java.lang.String)
+     */
+    protected Object createObject(String name)
     {
-        return this.castorPortletModes;    
+        return new PortletMode(name);
     }
-
-    public void setCastorPortletModes(Collection modes) 
-    {
-        castorPortletModes = modes;
-    }
+    
     
 }
