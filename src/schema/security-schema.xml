@@ -101,6 +101,9 @@ limitations under the License.
         <column name="URL" required="true" size="254" type="VARCHAR"/>
         <column name="ALLOW_USER_SET" default="0" type="BIT"/>
         <column name="REQUIRES_CERTIFICATE" default="0" type="BIT"/>
+        <unique name="UIX_SITE_URL">
+          <unique-column name="URL" />
+        </unique>                
     </table>
 	
 	
