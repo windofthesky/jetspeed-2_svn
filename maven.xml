@@ -24,6 +24,17 @@ limitations under the License.
     <attainGoal name="subClean"/>
     <attainGoal name="clean"/>
   </goal>
+  
+  <goal name="allTest"
+        description="Test all components" >
+         <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml,components/*/project.xml"
+               excludes="applications/project.xml,cornerstone-demo/project.xml"
+               goals="test"
+               banner="Testing..."
+               ignoreFailures="false"/>
+  </goal>
 
   <goal name="subClean"
         description="Clean all subprojects"
