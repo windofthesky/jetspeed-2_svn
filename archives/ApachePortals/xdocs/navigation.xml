@@ -6,7 +6,7 @@
 
     <body>
     <links>
-      <item name="Jetspeed-1"                 href="http://jakarta.apache.org/jetspeed/"/>
+      <item name="Jetspeed-1"                 href="/jetspeed-1/"/>
       <item name="Jetspeed-2"                     href="/jetspeed-2/"/>
       <item name="Pluto"                     href="http://jakarta.apache.org/pluto/"/>
       <item name="WSRP-4J"                     href="http://ws.apache.org/wsrp4j/"/>
@@ -37,7 +37,7 @@
     </menu>
 
     <menu name="Portals Sub Projects">
-        <item name="Jetspeed-1"               href="http://jakarta.apache.org/jetspeed/"/>
+        <item name="Jetspeed-1"               href="/jetspeed-1/"/>
         <item name="Jetspeed-2"                   href="/jetspeed-2/"/>
         <item name="Pluto"                   href="http://jakarta.apache.org/pluto/"/>
         <item name="WSRP-4J"                   href="http://ws.apache.org/wsrp4j/"/>
