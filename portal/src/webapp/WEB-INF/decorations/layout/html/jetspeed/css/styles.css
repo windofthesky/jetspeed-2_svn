@@ -173,3 +173,72 @@ BODY.layout-Jetspeed
 	background:url(content/jetspeed/images/tabright.gif);
 }
 
+/*
+  Database Browser
+ */
+.jetdbHead
+{
+  text-decoration:underline;
+  background-color:#6868AB;
+  layer-background-color:#CCCCFF;
+  border-style:outset;
+  border-width:2px;
+  border-left-color:white;
+  border-top-color:white;
+  border-bottom-color:black;
+  border-right-color:black;
+  cursor:hand;
+  FONT-SIZE:8pt;
+  FONT-WEIGHT:bold;
+  COLOR: white;
+  ; font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+.jetdbHeadNoLink
+{
+  background-color:#6868AB;
+  layer-background-color:#6868AB;
+  border-style:solid;
+  border-width:2px;
+  border-left-color:#6868AB;
+  border-top-color:#6868AB;
+  border-bottom-color:#6868AB;
+  border-right-color:#6868AB;
+  FONT-SIZE:7pt;
+  FONT-WEIGHT:normal;
+  COLOR: white;
+  ; font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+.jetdbOdd
+{
+  background-color:#66FFFF;
+  layer-background-color:#66FFFF;
+  FONT-SIZE:7pt;
+  FONT-WEIGHT:normal;
+}
+.jetdbEven
+{
+  background-color:#99FF33;
+  layer-background-color:#99FF33;
+  FONT-SIZE:7pt;
+  FONT-WEIGHT:normal;
+}
+
+.jetdbButton
+{
+    background-color: #CCCCCC;
+    border-style: none;
+    color: Black;
+    display: block;
+    font-weight: normal;
+    padding: 0;
+    font-family : Arial, Helvetica, sans-serif;
+    font-size : 8pt;
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #0A0A0A;
+    border-bottom: 1px solid #0A0A0A;
+    width : 65px;
+}
+        
