@@ -99,7 +99,8 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
             {
                throw new PipelineException(e1.getMessage(), e1);
             }
-            request.getRequest().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+            request.getRequest().getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);            
+            
             // set request context subject
             request.setSubject(subject);
             
