@@ -66,7 +66,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     private Map portletParameters;
 
-    public ServletRequestImpl(javax.servlet.http.HttpServletRequest servletRequest, PortletWindow window)
+    public ServletRequestImpl( javax.servlet.http.HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
 
@@ -80,7 +80,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     //  ServletRequestWrapper overlay
 
-    public String getParameter(String name)
+    public String getParameter( String name )
     {
         Object value = this.getParameterMap().get(name);
         if (value == null)
@@ -143,7 +143,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                         }
                     }
                 }
-                
+
                 if (values != null)
                 {
                     String[] temp = new String[paramValues.length + values.length];
@@ -164,7 +164,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return Collections.enumeration(this.getParameterMap().keySet());
     }
 
-    public String[] getParameterValues(String name)
+    public String[] getParameterValues( String name )
     {
         return (String[]) this.getParameterMap().get(name);
     }
@@ -172,7 +172,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     /**
      * @see javax.servlet.http.HttpServletRequest#isUserInRole(java.lang.String)
      */
-    public boolean isUserInRole(String roleName)
+    public boolean isUserInRole( String roleName )
     {
         if (roleName == null)
         {
@@ -209,8 +209,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
         }
         return false;
-   }
-    
+    }
 
     public Principal getUserPrincipal()
     {
@@ -223,20 +222,20 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 Iterator it = principals.iterator();
                 if (it.hasNext())
                 {
-                    return (Principal)it.next();
+                    return (Principal) it.next();
                 }
             }
         }
         return super.getUserPrincipal();
-        
+
     }
 
     /**
      * @see javax.servlet.http.HttpServletRequest#getAttribute(java.lang.String)
      */
-    public Object getAttribute(String name)
+    public Object getAttribute( String name )
     {
-        Object value = super.getAttribute(name);        
+        Object value = super.getAttribute(name);
         if (name.equals(PortletRequest.USER_INFO))
         {
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute(RequestContext.REQUEST_PORTALENV);
@@ -248,8 +247,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 {
                     entityID = entity.getId().toString();
                 }
-                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
-                PortletApplicationDefinition portletAppDef = entity.getPortletDefinition().getPortletApplicationDefinition();
+                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity()
+                        .getPortletApplicationEntity();
+                PortletApplicationDefinition portletAppDef = entity.getPortletDefinition()
+                        .getPortletApplicationDefinition();
 
                 if (null != portletAppDef)
                 {
@@ -268,19 +269,17 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         {
             if (null == value)
             {
-                PortletRequest pr = (PortletRequest)super.getAttribute("javax.portlet.request");
+                PortletRequest pr = (PortletRequest) super.getAttribute("javax.portlet.request");
                 if (pr != null)
                 {
-                    value = super.getAttribute(
-                                NamespaceMapperAccess
-                                    .getNamespaceMapper()
-                                    .encode(portletWindow.getId(), name));
+                    value = super.getAttribute(NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(),
+                            name));
                 }
             }
         }
         return value;
     }
-    
+
     /**
      * @see javax.servlet.ServletRequest#getLocale()
      */
@@ -291,7 +290,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         {
             return preferedLocale;
         }
-        
+
         return super.getLocale();
     }
 
@@ -310,7 +309,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             {
                 locales.add(enum.nextElement());
             }
-            Iterator i =locales.iterator();
+            Iterator i = locales.iterator();
             return new Enumerator(locales);
         }
 
@@ -320,17 +319,17 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     /**
      * @see javax.servlet.http.HttpServletRequest#getHeader(java.lang.String)
      */
-    public String getHeader(String name)
+    public String getHeader( String name )
     {
         // TODO: replace accept-language header
-        
+
         return super.getHeader(name);
     }
 
     /**
      * @see javax.servlet.http.HttpServletRequest#getHeaders(java.lang.String)
      */
-    public Enumeration getHeaders(String name)
+    public Enumeration getHeaders( String name )
     {
         // TODO: replace accept-language header
 
@@ -341,8 +340,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      * <p>
      * setAttribute
      * </p>
-     *
-     * @see javax.servlet.ServletRequest#setAttribute(java.lang.String, java.lang.Object)
+     * 
+     * @see javax.servlet.ServletRequest#setAttribute(java.lang.String,
+     *      java.lang.Object)
      * @param arg0
      * @param arg1
      */
@@ -352,20 +352,20 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         {
             throw new IllegalArgumentException("Attribute name == null");
         }
-        
+
         // This allows us to make jetpseed objects avaiable to portlets
         // This makes the portlet non-portable but is a must admin portlets
-        if(name.startsWith("org.apache.jetspeed"))
+        if (name.startsWith("org.apache.jetspeed"))
         {
-           
 
-            if ( value == null)
+            if (value == null)
             {
                 this.removeAttribute(name);
             }
             else
             {
-                this._getHttpServletRequest().setAttribute(NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(),name), value);
+                this._getHttpServletRequest().setAttribute(
+                        NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name), value);
             }
         }
         super.setAttribute(name, value);
