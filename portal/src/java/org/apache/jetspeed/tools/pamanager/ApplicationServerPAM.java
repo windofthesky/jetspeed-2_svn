@@ -15,20 +15,13 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.exception.RegistryException;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.picocontainer.Startable;
 
@@ -293,68 +286,4 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
         }
     }
     
-    public boolean registerPortletApplication(FileSystemHelper fileSystem, 
-                                              String portletApplicationName)
-    throws RegistryException
-    {
-        MutablePortletApplication pa = 
-            registry.getPortletApplication(portletApplicationName);
-        if (pa != null)
-        {
-            // TODO: get the deployment date
-            return false;
-        }
-        
-        PortletApplicationWar paWar = null;
-        try
-        {
-            paWar = new PortletApplicationWar(fileSystem,
-                        portletApplicationName,
-                        "/" + portletApplicationName);
-        }
-        catch (IOException e)
-        {
-            throw new RegistryException("Failed to create PA WAR", e);
-        }
-    
-        MutablePortletApplication app;
-        PersistenceStore store = registry.getPersistenceStore();
-        String paName = paWar.getPortletApplicationName();
-        
-        try
-        {
-            app = paWar.createPortletApp();
-            
-            if (app == null)
-            {
-                String msg = "Error loading portlet.xml: ";
-                log.error(msg);
-                throw new RegistryException(msg);
-            }
-                        
-            app.setApplicationType(MutablePortletApplication.WEBAPP);
-        
-            // load the web.xml
-            log.info("Loading web.xml into memory...." + portletApplicationName);
-            MutableWebApplication webapp = paWar.createWebApp();
-            paWar.validate();
-            app.setWebApplicationDefinition(webapp);
-            
-            // save it to the registry
-            log.info("Saving the portlet.xml in the registry..." + portletApplicationName);
-            store.getTransaction().begin();
-            registry.registerPortletApplication(app);
-            log.info("Committing registry changes..."  + portletApplicationName);
-            store.getTransaction().commit();
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to register portlet application, " + paName + ", through the portlet registry: "
-            + e.toString();
-            log.error(msg, e);
-            store.getTransaction().rollback();
-            throw new RegistryException(msg, e);
-        }
-        return true;
-    }    
 }

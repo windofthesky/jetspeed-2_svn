@@ -98,4 +98,12 @@ public interface FileSystemHelper
      */
     String getSourcePath();
     
+    /**
+     * Given a path to a resource in this file system, return a checksum 
+     * on that resource's content.
+     * 
+     * @param pathToResource
+     * @return checksum of the content of the resource
+     */
+    long getChecksum(String pathToResource);
 }

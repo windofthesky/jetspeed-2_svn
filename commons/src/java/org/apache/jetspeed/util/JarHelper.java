@@ -34,7 +34,11 @@ import java.util.jar.JarFile;
  * {@link DirectoryHelper}.
  *  
  */
-public class JarHelper implements FileSystemHelper
+public class JarHelper 
+    extends
+        AbstractFileSystemHelper
+    implements 
+        FileSystemHelper
 {
     protected JarFile jarFile;
     protected DirectoryHelper dirHelper;

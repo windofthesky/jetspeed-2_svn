@@ -121,6 +121,12 @@ limitations under the License.
          
       />
 
+      <field-descriptor
+         name="checksum"
+         column="CHECKSUM"
+         jdbc-type="BIGINT"
+      />
+
       <!--conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
 
       <field-descriptor

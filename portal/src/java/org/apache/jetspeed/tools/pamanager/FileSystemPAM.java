@@ -27,7 +27,7 @@ import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -35,9 +35,9 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -47,18 +47,21 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann </a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @author <a href="mailto:mavery@einnovation.com">Matt Avery </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 
-public class FileSystemPAM implements PortletApplicationManagement
+public class FileSystemPAM implements PortletApplicationManagement, DeploymentRegistration
 {
     // Implementation of deplyment interface
     public final int DEPLOY_WAR = 0;
     public final int UPDATE_WEB_XML = 1;
     public final int UPDATE_REGISTRY = 2;
 
+    private static final String PORTLET_XML = "WEB-INF/portlet.xml";
+    
     public static final String SYS_PROPS_DEPLOY_TO_DIR = "org.apache.jetspeed.deploy.target.dir";
-
+    
     private static final Log log = LogFactory.getLog("deployment");
 
     //private DeployUtilities util;
@@ -318,7 +321,7 @@ public class FileSystemPAM implements PortletApplicationManagement
         MutablePortletApplication app;
         PersistenceStore store = registry.getPersistenceStore();
         String paName = paWar.getPortletApplicationName();
-
+        
         try
         {
             app = paWar.createPortletApp();
@@ -338,6 +341,8 @@ public class FileSystemPAM implements PortletApplicationManagement
             {
                 app.setApplicationType(MutablePortletApplication.WEBAPP);
             }
+            
+            app.setChecksum(paWar.getFileSystem().getChecksum(PORTLET_XML));
 
             // load the web.xml
             log.info("Loading web.xml into memory....");
@@ -521,4 +526,82 @@ public class FileSystemPAM implements PortletApplicationManagement
             throw new PortletApplicationException(e);
         }
     }
+    
+
+    public boolean registerPortletApplication(FileSystemHelper fileSystem,
+            String portletApplicationName) 
+    throws RegistryException
+    {
+        long checksum = fileSystem.getChecksum(PORTLET_XML);        
+        MutablePortletApplication pa = registry
+                .getPortletApplication(portletApplicationName);
+        if (pa != null)
+        {            
+            if (checksum == pa.getChecksum())
+            {
+                System.out.println("PORTLET APPLICATION REGISTRATION: NO CHANGE on CHECKSUM for portlet.xml: " 
+                        + portletApplicationName);
+                
+                return false;
+            }
+            System.out.println("PORTLET APPLICATION REGISTRATION: Checksum changed on portlet.xml: " 
+                                + portletApplicationName);
+        }
+
+        PortletApplicationWar paWar = null;
+        try
+        {
+            paWar = new PortletApplicationWar(fileSystem,
+                    portletApplicationName, "/" + portletApplicationName);
+        } catch (IOException e)
+        {
+            throw new RegistryException("Failed to create PA WAR", e);
+        }
+
+        MutablePortletApplication app;
+        PersistenceStore store = registry.getPersistenceStore();
+        String paName = paWar.getPortletApplicationName();
+
+        try
+        {
+            app = paWar.createPortletApp();
+
+            if (app == null)
+            {
+                String msg = "Error loading portlet.xml: ";
+                log.error(msg);
+                throw new RegistryException(msg);
+            }
+
+            app.setApplicationType(MutablePortletApplication.WEBAPP);
+            app.setChecksum(checksum);
+
+            // load the web.xml
+            log
+                    .info("Loading web.xml into memory...."
+                            + portletApplicationName);
+            MutableWebApplication webapp = paWar.createWebApp();
+            paWar.validate();
+            app.setWebApplicationDefinition(webapp);
+
+            // save it to the registry
+            log.info("Saving the portlet.xml in the registry..."
+                    + portletApplicationName);
+            store.getTransaction().begin();
+            registry.registerPortletApplication(app);
+            log.info("Committing registry changes..." + portletApplicationName);
+            store.getTransaction().commit();
+        } catch (Exception e)
+        {
+            String msg = "Unable to register portlet application, " + paName
+                    + ", through the portlet registry: " + e.toString();
+            log.error(msg, e);
+            store.getTransaction().rollback();
+            throw new RegistryException(msg, e);
+        }
+        return true;
+    }    
+
+    
+    
 }

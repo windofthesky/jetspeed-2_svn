@@ -629,4 +629,9 @@ public class PortletApplicationWar
             return null;
         }
     }
+    
+    public FileSystemHelper getFileSystem()
+    {
+        return warStruct;
+    }
 }

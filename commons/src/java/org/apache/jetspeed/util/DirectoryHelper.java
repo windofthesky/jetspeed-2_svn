@@ -21,15 +21,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.util.zip.CheckedInputStream;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class DirectoryHelper implements FileSystemHelper
+public class DirectoryHelper
+    extends
+        AbstractFileSystemHelper
+    implements 
+        FileSystemHelper
 {
 
     protected File directory;
@@ -210,4 +214,5 @@ public class DirectoryHelper implements FileSystemHelper
     {       
         return getRootDirectory().getAbsolutePath();
     }
+        
 }

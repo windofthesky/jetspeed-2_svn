@@ -83,6 +83,8 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
 
     private int applicationType = MutablePortletApplication.WEBAPP;
     
+    private long checksum = 0;
+    
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
@@ -354,4 +356,13 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
         services.add(service);
     }
 
+    public long getChecksum()
+    {
+        return checksum;
+    }
+    
+    public void setChecksum(long checksum)
+    {
+        this.checksum = checksum;
+    }
 }

@@ -144,4 +144,18 @@ public interface MutablePortletApplication extends PortletApplication, Serializa
      * @param service The component service being added.
      */
     void addJetspeedService(JetspeedServiceReference service);
+    
+    /**
+     * The checksum on the portlet XML from the last deployment
+     *  
+     * @param checksum
+     */
+    void setChecksum(long checksum);
+    
+    /**
+     * The checksum on the portlet XML from the last deployment
+     * 
+     * @return
+     */
+    long getChecksum();
 }
