@@ -94,7 +94,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirectPart2.class);
-        suite.setScript("org/apache/jetspeed/containers/registry.container.groovy");
+        suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
         return suite;
     }
 

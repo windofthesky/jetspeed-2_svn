@@ -26,6 +26,7 @@ import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -100,7 +101,8 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirect.class);
-        suite.setScript("org/apache/jetspeed/containers/registry.container.groovy");
+        suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
+        
         return suite;
     }
 
@@ -118,6 +120,7 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
     public void test001() throws Exception
     {
         // Create an Application and a Web app
+        assertNotNull(getContainer().getComponentInstanceOfType(PortletEntityAccessComponent.class));
         store.getTransaction().begin();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
