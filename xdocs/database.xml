@@ -38,7 +38,7 @@ To run with My SQL, add the following properties to your $HOME/build.properties:
 <source test=""><![CDATA[
 
 # -------------------------------------------------------------------------
-# configure MySQL Test DB
+# configure MySQL Test DB (only needed when running unit tests)
 # -------------------------------------------------------------------------
 org.apache.jetspeed.test.database.default.name=mysql
 org.apache.jetspeed.test.database.url = jdbc:mysql://j2-server/j2test
@@ -57,9 +57,9 @@ org.apache.jetspeed.production.database.password = whatever
 
 ]]></source>
 <p>
-In the example above, you will need to have a MySQL server running on a host named 'j2-server'.
-Also, you will need 2 databases, one called 'j2test' for running the unit tests,
-and a second called 'j2' for the production database.
+In the example above, you will need to have a MySQL server running on a host named 'j2-server'
+with a database called 'j2' for production.<br/>
+If you are going to run the unit tests you will also need an additional test database called 'j2test'.<br/>
 A user named 'jetspeed2' should be granted access to both the 'j2' and 'j2test' databases.
 </p>
 
@@ -79,7 +79,7 @@ To run with Oracle, add the following properties to your $HOME/build.properties:
 <source test=""><![CDATA[
 
 # -------------------------------------------------------------------------
-# configure Oracle Test DB
+# configure Oracle Test DB (only needed when running unit tests)
 # -------------------------------------------------------------------------
 # org.apache.jetspeed.test.database.default.name=oracle
 # org.apache.jetspeed.test.database.ojb.platform=oracle9i
@@ -102,8 +102,8 @@ To run with Oracle, add the following properties to your $HOME/build.properties:
 <p>
 In the example above, you will need to have a Oracle server running on a host named 'j2-server'
 and have an Oracle database SID named 'j2db' installed on that server.
-Also, you will need 2 database users (schemas), one called 'j2test' for running the unit tests,
-and a second called 'j2' for the production database.
+Also, you will need a database user (schema) called 'j2' for production usage.<br/>
+If you are going to run the unit tests you will need an additional user called 'j2test'.
 </p>
 
 <subsection name ='Known Issues'>
@@ -116,7 +116,7 @@ run these commands:
 
 maven db.scripts.gen
 maven dropdrops
-maven db.create.test
+maven db.create.test (only when running unit tests)
 maven db.create.production
 
 ]]></source>
@@ -161,15 +161,7 @@ To distribute a specific driver (i.e. Oracle, MySQL), you will need to copy the 
 </tr>
 <tr>
 <td>
-Tomcat 4
-</td>
-<td>
-copy driver(s) to ${TOMCAT_HOME}/shared/lib
-</td>
-</tr>
-<tr>
-<td>
-Tomcat 5
+Tomcat 5 and 5.5
 </td>
 <td>
 copy driver(s) to ${TOMCAT_HOME}/shared/lib

@@ -34,9 +34,9 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
   <li><a href="http://maven.apache.org/start/download.html">Maven 1.0</a> or higher</li>
   <li>Java 1.4.2_02 or higher</li>
   <li>Servlet 2.3:<br/>
-    Tomcat 4.1.x<br/>
-    <b>or</b> <br/>
-    Tomcat 5.0.28 or higher</li>
+  Tomcat 5.0.30 (or higher)<br/>
+  <b>or</b> <br/>
+  Tomcat 5.5.8 (or higher)</li>
 </ul>
 </section>
 <section name='1. Get Maven Ready'>
@@ -62,8 +62,8 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
   </tr>
   <tr> 
     <td>org.apache.jetspeed.catalina.version.major</td>
-    <td>4</td>
-    <td>Are you using Tomcat 4.1.x or 5.x?</td>
+    <td>5</td>
+    <td>Are you using Tomcat 5.0.x (use: 5) or 5.5.x? (use: 5.5)</td>
   </tr>
   <tr> 
     <td>org.apache.jetspeed.server.shared</td>
@@ -89,17 +89,14 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
   </tr>
 </table>
 <p>
-<i>If you are using Tomcat 5, make sure to use version 5.0.28 or higher, otherwise you won't be able to login because
-of an issue with its JAASRealm implementation</i>.
-</p>
-<p>
 To develop or deploy Jetspeed with another database (not the default HSQL), see the property configuration in the 
 <a href='database.html'>Database Configuration documentation</a>.
 </p>
 </section>
 <section name="3. Tomcat Configuration">
 <p>
-Jetspeed 2 now uses the Tomcat manager application for hotdeployment of portlet application war files.
+Jetspeed 2 now can use the Tomcat manager application for managing portlet applications through
+its new Portlet Application Lifecycle Manager Portlet.
 To be able to do so it needs a configured Tomcat user with the predefined 'manager' role in
 the ${CATALINA_HOME}/conf/tomcat-users.xml.
 </p>
@@ -122,31 +119,20 @@ With the above example the required autodeployment properties should be set as:
 </section>
 <section name='4. Building Jetspeed 2'>
 <p>
-If you are using the default Hypersonic database, this procedure requires two terminal sessions. 
-If you are using another database, skip the immediate section below on Terminal Session #1.
+Build the portal and all components for Jetspeed-2:
 </p>
 <source test=""><![CDATA[
-# Terminal Session #1: Start the Hypersonic database
-cd ${jetspeed-2-home}
-maven start.test.server
-]]></source>
-<p>
-Terminal session #2, build the portal and all components and unit test Jetspeed-2:
-</p>
-<source test=""><![CDATA[
-# Terminal Session #2: Build and Unit Test
 cd ${jetspeed-2-home}
 maven allClean allBuild
 ]]></source>
 </section>
 <section name="5. Deploying Jetspeed into Tomcat">
 <p>
-We only cover deploying to Tomcat 4 and Tomcat 5.
+We only cover deploying to Tomcat 5 or Tomcat 5.5.
 Step #1 below is optional if you are NOT using the default Hypersonic database.
 </p>
 <ul>
-<li>1. If you are using the Hypersonic SQL database, make sure you have terminated the test HSQLserver.
-       Then in the same terminal, start the production Hypersonic database by typing 
+<li>1. If you are using the Hypersonic SQL database, start the production Hypersonic database by typing 
        <br/><br/><b>maven start.production.server</b><br/><br/>
 </li>
 <li>2. (in seperate window/terminal session) <br/><br/><b>cd ${jetspeed-2-home}</b><br/><br/>
