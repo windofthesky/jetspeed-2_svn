@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.xml.serialize.OutputFormat;
@@ -408,9 +409,17 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         {
             Document document = (Document) entry.getDocument();
             Document freshDoc = getDocument(document.getId(), false);
-            freshDoc.setParent(document.getParent());
+            Node parent = document.getParent();
+ 
+            freshDoc.setParent(parent);
+            if(parent instanceof Folder)
+            {
+                Folder folder = (Folder) parent;
+                folder.getAllNodes().add(freshDoc);
+            }
+            
             freshDoc.setPath(document.getPath());
-            entry.setDocument(freshDoc);
+            entry.setDocument(freshDoc);            
         }
 
     }
