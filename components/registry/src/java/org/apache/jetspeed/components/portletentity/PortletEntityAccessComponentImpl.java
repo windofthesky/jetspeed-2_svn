@@ -171,17 +171,33 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         try
         {
             prepareTransaction(store);
-            
 			if (portletEntity instanceof StoreablePortletEntityDelegate)
 			{
-			    PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
+                PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
 				store.lockForWrite(realEntity);
+                store.getTransaction().checkpoint();
+                
+                if (realEntity instanceof PortletEntityImpl)
+                {
+                    PortletEntityImpl impl = (PortletEntityImpl)realEntity;
+                    if (impl.getId() == null)
+                    {
+                        System.out.println("setting oid = " + impl.getOid());                    
+                        impl.setId(new Long(impl.getOid()).toString());
+                        store.lockForWrite(realEntity);
+                        store.getTransaction().checkpoint();                        
+                    }
+                }                
 			}            
 			else
 			{
 				store.lockForWrite(portletEntity);
+                store.getTransaction().checkpoint();
+                portletEntity = (PortletEntity)store.getObjectByIdentity(portletEntity);                
 			}
-            store.getTransaction().checkpoint();
+            
+            
+
         }
         catch (Exception e)
         {
@@ -215,8 +231,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     
     protected StoreablePortletEntityDelegate wrapEntity(PortletEntityImpl entity)
     {
-		List list =(List) ((PreferenceSetImpl)entity.getPreferenceSet()).getInnerCollection();
-		return new StoreablePortletEntityDelegate(entity, entity, list, getPersistenceStore());
+        List list =(List) ((PreferenceSetImpl)entity.getPreferenceSet()).getInnerCollection();
+        return new StoreablePortletEntityDelegate(entity, entity, list, getPersistenceStore());
     }
 
 }

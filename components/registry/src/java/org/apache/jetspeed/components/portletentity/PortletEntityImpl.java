@@ -54,6 +54,11 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
         return id;
     }
 
+    public long getOid()
+    {
+        return oid;
+    }
+    
     public void setId(String id)
     {
         this.id = JetspeedObjectID.createFromString(id);
@@ -70,7 +75,7 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     private PortletEntity modifiedObject = null;
 
     private PortletDefinitionComposite portletDefinition = null;
-	
+	    
 	/**
 	 *  
 	 * <p>
