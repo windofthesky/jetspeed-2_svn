@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id$
+-->
+<project>
+  <extend>${basedir}/./../project.xml</extend>
+  <id>rss</id>
+  <name>Jetspeed-2 Language Selector Portlet</name>
+  <description>Jetspeed-2 Language Selector Portlet</description>
+  <shortDescription>Language Selector Portlet</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/rss</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/rss/</url>
+  </repository>
+
+  <dependencies>      
+      <dependency>
+      <id>portlet-api</id>
+      <groupId>portlet-api</groupId>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties> 
+    </dependency>    
+		
+    <dependency>
+      <id>springframework:spring-core</id>
+      <version>1.1.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>		
+	<dependency>
+		<groupId>jdom</groupId>
+		<artifactId>jdom</artifactId>
+		<version>1.0</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties> 		
+	</dependency>
+	<dependency>
+		<groupId>commons-digester</groupId>
+		<artifactId>commons-digester</artifactId>
+		<version>1.5</version>
+		<type>jar</type>
+		<url>http://jakarta.apache.org/commons/digester.html</url>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
+	</dependency>
+	<dependency>
+		<groupId>commons-beanutils</groupId>
+		<artifactId>commons-beanutils</artifactId>
+		<version>1.6.1</version>
+		<type>jar</type>
+		<url>http://jakarta.apache.org/commons/beanutils.html</url>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
+	</dependency>
+	
+	<dependency>
+		<groupId>rome</groupId>
+		<artifactId>rome</artifactId>
+		<version>0.4</version>
+		<type>jar</type>
+		<properties>
+			<war.bundle>true</war.bundle>
+		</properties>
+	</dependency>
+	
+    <dependency>	
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-common</artifactId>
+      <version>0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>	
+
+    <dependency>
+      <id>velocity</id>
+      <version>1.4</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>      
+    </dependency>
+    <dependency>
+      <id>velocity-tools:velocity-tools-view</id>
+      <version>1.1-beta1</version>
+      <url>http://jakarta.apache.org/velocity</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>      
+    </dependency>    
+    <dependency>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-velocity</artifactId>
+      <version>0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+	 <dependency>
+      <id>xml-apis</id>
+      <version>2.0.2</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+	
+	    
+   </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java/</directory>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+  <reports>
+    <report>maven-jdepend-plugin</report>
+<!--
+    <report>maven-checkstyle-plugin</report>
+-->
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
+</project>

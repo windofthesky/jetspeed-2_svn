@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="java:jar"
+         xmlns:j="jelly:core"
+         xmlns:define="jelly:define">
+
+
+  <!-- ================================================================ -->
+  <!-- Hot Deploy for mundane everyday development under Catalina       -->
+  <!-- ================================================================ -->
+  <goal name="hotdeploy">
+    <echo message="Hot Deploying ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}"/>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/WEB-INF/classes">
+        <fileset dir="${maven.build.dir}/classes">
+        </fileset>
+    </copy>
+    <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/">
+      <fileset dir="./src/webapp"/>
+    </copy>
+  </goal>
+
+  <preGoal name="hotdeploy">
+   <attainGoal name= "java:compile"/>
+  </preGoal>
+
+</project>
