@@ -42,9 +42,13 @@ container = new DefaultPicoContainer()
 navigationKeys = "_,a,m,s,r,i,pm,ps,:"
 
 // navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
+// urlClass = "org.apache.jetspeed.container.url.impl.PathPortalURL"
 navStateClass = "org.apache.jetspeed.container.session.impl.SessionNavigationalState"
+urlClass = "org.apache.jetspeed.container.url.impl.SessionPortalURL"
 container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
-               new Parameter[] {new ConstantParameter(navStateClass), new ConstantParameter(navigationKeys)} )
+               new Parameter[] {new ConstantParameter(navStateClass), 
+                                new ConstantParameter(urlClass), 
+                                new ConstantParameter(navigationKeys)} )
 
 //
 // Request Context component

@@ -129,8 +129,13 @@ navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
 
 navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
 //navStateClass = "org.apache.jetspeed.container.session.impl.SessionNavigationalState"
+//urlClass = "org.apache.jetspeed.container.url.impl.SessionPortalURL"
+urlClass = "org.apache.jetspeed.container.url.impl.PathPortalURL"
 container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
-               new Parameter[] {new ConstantParameter(navStateClass), new ConstantParameter(navigationKeys)} )
+               new Parameter[] {new ConstantParameter(navStateClass), 
+                                new ConstantParameter(urlClass), 
+                                new ConstantParameter(navigationKeys)} )
+
 
 //
 // Request Context component
