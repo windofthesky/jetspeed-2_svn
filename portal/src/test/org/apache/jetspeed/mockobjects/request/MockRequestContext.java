@@ -36,16 +36,16 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         
     public MockRequestContext()
     {
-        super(null, null, null, null);
+        super(null, null, null, null, null);
     }
 
     public MockRequestContext(String path)
     {
-        super(null, null, null, null);
+        super(null, null, null, null, null);
         this.path = path;
     }
         
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getRequestParameter(java.lang.String)
      */
     public String getRequestParameter(String key)
@@ -53,7 +53,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         return (String)requestParameters.get(key);
     }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getParameterMap()
      */
     public Map getParameterMap()
@@ -61,7 +61,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         return requestParameters;    
     }
             
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String, java.lang.Object)
      */
     public void setSessionAttribute(String key, Object value)
@@ -69,7 +69,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         this.sessionAttributes.put(key, value);
     }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getSessionAttribute(java.lang.String)
      */
     public Object getSessionAttribute(String key)
@@ -77,7 +77,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         return this.sessionAttributes.get(key);
     }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String, java.lang.Object)
      */
     public void setAttribute(String key, Object value)
@@ -85,7 +85,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         requestAttributes.put(key, value);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getAttribute(java.lang.String)
      */
     public Object getAttribute(String key)
@@ -93,7 +93,7 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
         return requestAttributes.get(key);    
     }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getPath()
      */
     public String getPath()

@@ -43,7 +43,6 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
 
 import org.apache.pluto.om.common.ObjectID;
 
-
 /**
  * <p>Implements the {@link org.apache.jetspeed.userinfo.UserInfoManager} interface.</p>
  * 
@@ -105,8 +104,9 @@ public class UserInfoManagerImpl implements UserInfoManager
      */
     public Map getUserInfoMap(ObjectID oid, RequestContext context)
     {
-        if (log.isDebugEnabled()) log.debug("Getting user info for portlet application: " + oid.toString());
-        
+        if (log.isDebugEnabled())
+            log.debug("Getting user info for portlet application: " + oid.toString());
+
         // Check if user info map is in cache.
         if (userInfoMapCache.containsKey(oid))
         {
@@ -119,7 +119,7 @@ public class UserInfoManagerImpl implements UserInfoManager
             log.debug(PortletRequest.USER_INFO + " is set to null");
             return null;
         }
-        
+
         MutablePortletApplication pa = registry.getPortletApplication(oid);
         if (null == pa)
         {
@@ -129,7 +129,7 @@ public class UserInfoManagerImpl implements UserInfoManager
         Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
         Collection portletUserAttributes = pa.getUserAttributes();
         Map userInfoMap = mapUserInfo(userInfoPrefs, portletUserAttributes);
-        
+
         return userInfoMap;
     }
 

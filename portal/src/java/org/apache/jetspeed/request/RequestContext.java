@@ -29,6 +29,8 @@ import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
+
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -328,5 +330,12 @@ public interface RequestContext
      * @return the path
      */
     String getPath();
+    
+    /**
+     * Returns the user info map of user attributes for a given portlet application.</p>
+     * @param oid The portlet application object id.
+     * @return The PortletRequest.USER_INFO map.
+     */
+    Map getUserInfoMap(ObjectID oid);
         
 }

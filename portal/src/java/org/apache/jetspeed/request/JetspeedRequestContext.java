@@ -34,9 +34,11 @@ import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.userinfo.UserInfoManager;
 
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * Jetspeed Request Context is associated with each portal request.
@@ -66,6 +68,8 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow actionWindow;
     private String encoding;
     private String requestPath = null;
+    /** The user info manager. */
+    private UserInfoManager userInfoMgr;
                
     
     public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
@@ -78,15 +82,16 @@ public class JetspeedRequestContext implements RequestContext
      * @param response
      * @param config
      */
-    public JetspeedRequestContext( 
-                                  HttpServletRequest request, 
+    public JetspeedRequestContext(HttpServletRequest request, 
                                   HttpServletResponse response, 
                                   ServletConfig config,
-                                  NavigationalStateComponent navcomponent)
+                                  NavigationalStateComponent navcomponent,
+                                  UserInfoManager userInfoMgr)
     {
         this.request = request;
         this.response = response;
         this.config = config;
+        this.userInfoMgr = userInfoMgr;
 
         // set context in Request for later use
         if (null != this.request)
@@ -290,7 +295,7 @@ public class JetspeedRequestContext implements RequestContext
         return wrappedResponse;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getSubject()
      */
     public Subject getSubject()
@@ -298,7 +303,7 @@ public class JetspeedRequestContext implements RequestContext
         return this.subject;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setSubject(javax.security.auth.Subject)
      */
     public void setSubject(Subject subject)
@@ -306,7 +311,7 @@ public class JetspeedRequestContext implements RequestContext
         this.subject = subject;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getLocale()
      */
     public Locale getLocale()
@@ -314,7 +319,7 @@ public class JetspeedRequestContext implements RequestContext
         return this.locale;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setLocale(java.util.Locale)
      */
     public void setLocale(Locale locale)
@@ -322,7 +327,7 @@ public class JetspeedRequestContext implements RequestContext
         this.locale = locale;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getRequestParameter(java.lang.String)
      */
     public String getRequestParameter(String key)
@@ -330,7 +335,7 @@ public class JetspeedRequestContext implements RequestContext
         return request.getParameter(key);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getParameterMap()
      */
     public Map getParameterMap()
@@ -338,7 +343,7 @@ public class JetspeedRequestContext implements RequestContext
         return request.getParameterMap();
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getRequestAttribute(java.lang.String)
      */
     public Object getRequestAttribute(String key)
@@ -347,7 +352,7 @@ public class JetspeedRequestContext implements RequestContext
     }
 
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getSessionAttribute(java.lang.String)
      */
     public Object getSessionAttribute(String key)
@@ -355,7 +360,7 @@ public class JetspeedRequestContext implements RequestContext
         return request.getSession().getAttribute(key);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String, java.lang.Object)
      */
     public void setSessionAttribute(String key, Object value)
@@ -363,7 +368,7 @@ public class JetspeedRequestContext implements RequestContext
         request.getSession().setAttribute(key, value);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String, java.lang.Object)
      */
     public void setAttribute(String key, Object value)
@@ -371,15 +376,15 @@ public class JetspeedRequestContext implements RequestContext
         request.setAttribute(key, value);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getAttribute(java.lang.String)
      */
     public Object getAttribute(String key)
-    {
+    {     
         return request.getAttribute(key);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.jetspeed.request.RequestContext#getPath()
      */
     public String getPath()
@@ -426,6 +431,14 @@ public class JetspeedRequestContext implements RequestContext
     public PortalURL getPortalURL()
     {
         return url;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
+     */
+    public Map getUserInfoMap(ObjectID oid)
+    {
+        return userInfoMgr.getUserInfoMap(oid, this);
     }
             
 }

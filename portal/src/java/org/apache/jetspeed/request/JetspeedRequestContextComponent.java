@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
  * JetspeedRequestContextComponent
@@ -31,24 +33,29 @@ import org.apache.jetspeed.container.session.NavigationalStateComponent;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedRequestContextComponent implements RequestContextComponent 
+public class JetspeedRequestContextComponent implements RequestContextComponent
 {
     private String contextClassName = null;
     private Class contextClass = null;
     private NavigationalStateComponent nav;
-    
+    /** The user info manager. */
+    private UserInfoManager userInfoMgr;
+
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
-    
     public JetspeedRequestContextComponent(NavigationalStateComponent nav, String contextClassName)
     {
-        this.nav = nav;        
-        this.contextClassName = contextClassName;        
+        this(nav, contextClassName, null);
     }
-    
-    public RequestContext create(HttpServletRequest req,
-                                 HttpServletResponse resp, 
-                                 ServletConfig config)
+
+    public JetspeedRequestContextComponent(NavigationalStateComponent nav, String contextClassName, UserInfoManager userInfoMgr)
+    {
+        this.nav = nav;
+        this.contextClassName = contextClassName;
+        this.userInfoMgr = userInfoMgr;
+    }
+
+    public RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config)
     {
         RequestContext context = null;
 
@@ -60,12 +67,18 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
             }
 
             // TODO: we could use a pooled object implementation here
-            Constructor constructor = contextClass.getConstructor(new Class[] 
-                          {HttpServletRequest.class, HttpServletResponse.class, ServletConfig.class, NavigationalStateComponent.class});
-            context = (RequestContext) constructor.newInstance(new Object[] {req, resp, config, nav});
+            Constructor constructor =
+                contextClass.getConstructor(
+                    new Class[] {
+                        HttpServletRequest.class,
+                        HttpServletResponse.class,
+                        ServletConfig.class,
+                        NavigationalStateComponent.class,
+                        UserInfoManager.class });
+            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, nav, userInfoMgr });
 
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             String msg = "JetspeedRequestContextComponent: Failed to create a Class object for RequestContext: " + e.toString();
             log.error(msg);
@@ -74,7 +87,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         return context;
     }
 
-    public void release(RequestContext context) 
+    public void release(RequestContext context)
     {
     }
 
@@ -89,5 +102,5 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     {
         return (RequestContext) request.getAttribute(JetspeedRequestContext.REQUEST_PORTALENV);
     }
-    
+
 }

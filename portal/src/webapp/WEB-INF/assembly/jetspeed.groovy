@@ -123,6 +123,27 @@ container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parame
 container.registerComponentImplementation(Capabilities, JetspeedCapabilities, new Parameter[] {new ComponentParameter(PersistenceStoreContainer)} )
 
 //
+// Prefs
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/prefs/containers/prefs.container.groovy", container)
+
+//
+// Security
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/security/containers/security.container.groovy", container)
+
+// Instantiate the Preferences provider.
+container.getComponentInstanceOfType(PreferencesProviderImpl)
+
+// Instantiate the Security provider.
+container.getComponentInstanceOfType(SecurityProviderImpl)
+
+//
+// User Info.
+//
+NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/userinfo/containers/userinfo.container.groovy", container)
+
+//
 // Navigational State component
 //
 // navigationKeys: prefix, action, mode, state, renderparam, pid, prev_mode, prev_state, key_delim
@@ -145,7 +166,8 @@ container.registerComponentImplementation(NavigationalStateComponent, JetspeedNa
 requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
 container.registerComponentImplementation(RequestContextComponent, JetspeedRequestContextComponent, 
     new Parameter[] {new ComponentParameter(NavigationalStateComponent),
-                     new ConstantParameter(requestContextClass)} )
+                     new ConstantParameter(requestContextClass),
+                     new ComponentParameter(UserInfoManager)} )
 
 //
 // Portlet Window component
@@ -175,27 +197,6 @@ container.registerComponentImplementation(PageAggregator,
 container.registerComponentImplementation(PortletAggregator, 
                                            PortletAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer)})
-
-//
-// Prefs
-//
-NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/prefs/containers/prefs.container.groovy", container)
-
-//
-// Security
-//
-NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/security/containers/security.container.groovy", container)
-
-// Instantiate the Preferences provider.
-container.getComponentInstanceOfType(PreferencesProviderImpl)
-
-// Instantiate the Security provider.
-container.getComponentInstanceOfType(SecurityProviderImpl)
-
-//
-// User Info.
-//
-NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/userinfo/containers/userinfo.container.groovy", container)
 
 
 return container
