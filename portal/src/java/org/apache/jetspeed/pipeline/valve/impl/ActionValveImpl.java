@@ -98,6 +98,11 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             log.error("Unexpected IOException in ActionValveImpl", e);
             // throw new PipelineException("Unexpected IOException in ActionValveImpl", e);
         }
+        catch (IllegalStateException e)
+        {
+            log.error("Illegal State Exception. Response was written to in Action Phase", e);
+            responseCommitted = true;
+        }
         finally
         {
             // Check if an action was processed and if its response has been committed
