@@ -85,7 +85,7 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
 </table>
 <p>
 <i>If you are using Tomcat 5.x, the allBuild goal described below will install a 
-patched version of the JAASRealm class in ${catalina.home}/server/classes to
+patched version of the JAASRealm class in ${org.apache.jetspeed.server.home}/server/classes to
 enable Jetspeed JAAS based security.
 For more information about this patch see: 
 <a href='http://issues.apache.org/jira/browse/JS2-55'>
