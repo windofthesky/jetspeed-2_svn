@@ -41,8 +41,43 @@
       </properties>
     </dependency>
     <dependency>
+      <id>cglib</id>
+      <version>2.0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
       <id>asm:asm-util</id>
       <version>1.4.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>spring:spring-core</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>spring:spring-aop</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>spring:spring-context</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>aopalliance</id>
+      <version>1.0</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
