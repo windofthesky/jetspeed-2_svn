@@ -62,8 +62,8 @@ public class RoleFallbackProfilingRule
                 resolver = getDefaultResolver();
             }
             String value = resolver.resolve(context, criterion);
-            if (resolver instanceof RoleCriterionResolver ||
-                resolver instanceof GroupCriterionResolver)
+            if (value != null && (resolver instanceof RoleCriterionResolver ||
+                resolver instanceof GroupCriterionResolver))
             {
                 StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
                 while (tokenizer.hasMoreTokens())
@@ -115,8 +115,8 @@ public class RoleFallbackProfilingRule
             {
                 String value = resolver.resolve(context, criterion);
                 boolean isControl = resolver.isControl(criterion);
-                if (resolver instanceof RoleCriterionResolver ||
-                        resolver instanceof GroupCriterionResolver)
+                if (value != null && (resolver instanceof RoleCriterionResolver ||
+                        resolver instanceof GroupCriterionResolver))
                     {
                         StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
                         while (tokenizer.hasMoreTokens())
