@@ -64,7 +64,14 @@
     </dependency>   
     <dependency>
       <id>commons-configuration</id>
-      <version>1.0-dev</version>
+      <version>SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>dom4j</id>
+      <version>1.4</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>

@@ -1,0 +1,28 @@
+<config>
+<version>2.0</version>
+<container>
+    <name>default</name>
+    <class>org.picocontainer.defaults.DefaultPicoContainer</class>
+    <type>pico</type>
+    <default>true</default>
+    <component>
+        <name>template-locator</name>
+        <class>org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl</class>
+    </component>
+    <component>
+        <name>template-locator2</name>
+        <class>org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl</class>
+    </component>
+</container>
+<container>
+    <name>persistence</name>
+    <class>org.picocontainer.defaults.DefaultPicoContainer</class>
+    <type>pico</type>
+    <default>true</default>
+    <component>
+        <name>whatever</name>
+        <class>org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl</class>
+    </component>
+</container>
+
+</config>

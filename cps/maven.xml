@@ -4,12 +4,23 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.cps.components.TestHSQL'/> 
+  <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
 
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
+
+  <!-- ================================================================ -->
+  <!-- Set System properties for junit                                  -->
+  <!-- ================================================================ -->
+  <preGoal name="test:single">
+      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
+  </preGoal>
+ 
+  <preGoal name="test:test">
+      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
+  </preGoal>
 
 </project>
