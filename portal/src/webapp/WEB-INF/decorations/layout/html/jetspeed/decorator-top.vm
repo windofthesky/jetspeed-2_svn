@@ -33,7 +33,7 @@ limitations under the License.
 
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 
-<div id="layout-${myF.id}" class="layout-Jetspeed" >
+<div id="layout-${myF.id}" class="${_layouyBaseCssClass}" >
 <p>
 <img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
 </p>
