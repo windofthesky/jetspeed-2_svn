@@ -93,17 +93,14 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         String paName = null;
         try
         {
-
-            boolean isLocal = event.getName().startsWith("jetspeed-");
-
             String filePath = event.getPath();
             paName = (String) appNameToFile.get(filePath);
             if (paName == null)
             {
-                String msg = "Unable to locate application name for archive \"" + filePath + "\"";
-                log.warn(msg);
-                throw new DeploymentException(msg);
+                return;
             }
+
+            boolean isLocal = event.getName().startsWith("jetspeed-");
 
             PortletApplicationWar deployedWar = null;
 

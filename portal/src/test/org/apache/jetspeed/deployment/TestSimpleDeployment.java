@@ -151,7 +151,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         autoDeployment.start();
         autoDeployment.fireDeploymentEvent();
 
-        File decoratorVm = new File(deployRootFile.getAbsolutePath() + File.separator + "html" + File.separator
+        File decoratorVm = new File(deployRootFile.getAbsolutePath() + File.separator + "generic" + File.separator + "html" + File.separator
                 + "portletstd" + File.separator + "decorator.vm");
         
         File demoAppDeployed = new File(webAppsDirFile, TEST_PORTLET_APP_NAME);

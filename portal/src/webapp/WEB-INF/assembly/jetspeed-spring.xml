@@ -722,11 +722,7 @@ limitations under the License.
   	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
   </bean>
 
-  
-  
-  
-  
-  <!-- Portlet Application deployment event listener -->
+  <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" 
   	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"   	   
   > 	
@@ -735,7 +731,17 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
   	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
   </bean>
-  
+  <bean id="decoratorDeploymentRegistry" 
+  	   class="org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl"
+  >  	   
+  </bean>
+  <bean id="decoratorDeploymentListener" 
+  	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener"   	   
+  > 	
+  	   <constructor-arg ><ref bean="decoratorDeploymentRegistry"/></constructor-arg>
+       <constructor-arg ><value>${applicationRoot}/WEB-INF/decorations</value></constructor-arg>
+  </bean>
+
   <!-- The deployment manager watches a specific staging directory for
   	   deploying components.  What components get deployed depend of
   	   DeploymentEventListeners registered to it.
@@ -749,6 +755,7 @@ limitations under the License.
        <constructor-arg >
          <list>
             <ref bean="portletAppDeploymentListener"/>      
+            <ref bean="decoratorDeploymentListener"/>      
          </list>
        </constructor-arg>
   </bean>

@@ -743,7 +743,8 @@ public class JetspeedPowerTool implements ViewTool
         TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType, decorationLocator, decorationLocatorDescriptor);
         if(propsTemp == null)
         {
-            propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", GENERIC_TEMPLATE_TYPE, decorationLocator, decorationLocatorDescriptor);
+            fragmentType = GENERIC_TEMPLATE_TYPE;
+            propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType, decorationLocator, decorationLocatorDescriptor);
         }
 
         // get decorator template
