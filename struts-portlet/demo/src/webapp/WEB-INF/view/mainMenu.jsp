@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/tags/app" prefix="app" %>
-<%@ taglib uri="/tags/struts-bean" prefix="bean" %>
-<%@ taglib uri="/tags/struts-portlet" prefix="sp" %>
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+<%@ taglib uri="http://struts.apache.org/tags-portlet" prefix="sp" %>
 <h2><bean:message key="mainMenu.title"/></h2>
 <hr/>
 <h3><bean:message key="mainMenu.heading"/> <bean:write name="user" property="fullName" /></h3>

@@ -1,10 +1,6 @@
 <%-- Errors.jsp - Display unexpected errors, such as a JSP exception
      or missing resources --%>
 <%--
- $Header$
- $Revision$
- $Date$
-
  Copyright 2000-2004 Apache Software Foundation
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +18,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.apache.struts.Globals" %>
 <%@ page import="org.apache.struts.webapp.example.Constants" %>
-<%@ taglib uri="/tags/struts-bean" prefix="bean" %>
-<%@ taglib uri="/tags/struts-html" prefix="html" %>
-<%@ taglib uri="/tags/struts-logic" prefix="logic" %>
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
 <h2>Unexpected Error</h2>
 <hr/>
 <h3>An unexpected error has occured</h3>
