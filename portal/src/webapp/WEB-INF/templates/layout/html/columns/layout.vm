@@ -22,6 +22,8 @@ limitations under the License.
 
 #set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
 
+#set($actions = $jetspeed.PageDecoratorActions)
+
   
  #if($myFragment.getDecorator())
         #set($decorator = $myFragment.getDecorator())
@@ -43,14 +45,29 @@ limitations under the License.
 #if($jetspeed.portletMode.toString() == "edit")
   #set($editing = true)    
   #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
-    #set($viewUrl = $renderResponse.createRenderURL())
-    $!viewUrl.setPortletMode($portletModeView)
-    <a href="$viewUrl">Done</a>
-#else
-    #set($editUrl = $renderResponse.createRenderURL())
-    $!editUrl.setPortletMode($portletModeEdit)
-    <a href="$editUrl">Customize</a>
 #end    
+
+<table  width="100%" cellspacing="0" cellpadding="0" >
+  <tr>
+    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+
+    <td align="left" valign="middle" class="PContent" >
+    </td>
+    <td align="right" valign="middle" class="PContent" >
+      <table border="0" cellpadding="0" cellspacing="0" >
+      <tr>
+      #foreach ($action in $actions)
+      <td align="right" valign="middle" class="PContent" >
+      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+      <td/>
+      #end
+      </tr>
+      </table>
+    </td>
+
+    <td class="PContent" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+  </tr>
+</table>
 
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >
