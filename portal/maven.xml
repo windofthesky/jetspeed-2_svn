@@ -579,12 +579,14 @@ limitations under the License.
   </goal>
 
   <goal name="ojb.set.production.database.platform">
-    <copy file="../etc/db-ojb/repository_database.xml" todir="${maven.build.dest}" overwrite="true">
-    <filterset begintoken="@" endtoken="@">
-        <filter token="PLATFORM" value="${org.apache.jetspeed.production.database.ojb.platform}"/>
-    </filterset>
+    <copy todir="${maven.build.dest}" overwrite="true">
+        <fileset dir="../etc/db-ojb"/>
+        <filterset begintoken="@" endtoken="@">
+            <filter token="PLATFORM"
+                value="${org.apache.jetspeed.production.database.ojb.platform}"/>
+        </filterset>
     </copy>
-  </goal>
+  </goal>  
 
   <preGoal name="jar:jar">
     <attainGoal name="ojb.set.production.database.platform"/>
