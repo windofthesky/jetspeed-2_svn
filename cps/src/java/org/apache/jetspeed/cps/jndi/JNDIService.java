@@ -57,6 +57,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 import org.apache.jetspeed.cps.CommonService;
+import org.apache.jetspeed.cps.components.jndi.*;
 
 /**
  * <p>
@@ -67,12 +68,8 @@ import org.apache.jetspeed.cps.CommonService;
  * @version $Id$
  *
  */
-public interface JNDIService extends CommonService
+public interface JNDIService extends CommonService, JNDIComponent
 {
 	String SERVICE_NAME="JNDIService";
 	
-	Context getRootContext();
-	
-	void bindToCurrentThread() throws NamingException;
-
 }
