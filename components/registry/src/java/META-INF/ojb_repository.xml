@@ -395,17 +395,7 @@ limitations under the License.
          <inverse-foreignkey field-ref="parentId"/>
       </collection-descriptor>
 
-      <collection-descriptor
-         name="prefSet"
-         proxy="true"
-         element-class-ref="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
-         auto-delete="false"
-      	 auto-update = "true"
-      	 auto-retrieve = "true"
-       >         
 
-         <inverse-foreignkey field-ref="parentId"/>
-       </collection-descriptor>
       
        <collection-descriptor
          name="securityRoleRefSet"
@@ -429,6 +419,8 @@ limitations under the License.
 
       </collection-descriptor>
 
+
+   <!--      
       <collection-descriptor
          name="portletEntities"
          element-class-ref="org.apache.jetspeed.components.portletentity.PortletEntityImpl"
@@ -436,9 +428,10 @@ limitations under the License.
       	  auto-update = "true"
       	  auto-retrieve = "true"
       >
+    
            <inverse-foreignkey field-ref="portletId"/>
      </collection-descriptor>
-
+       -->
    </class-descriptor>
    
 
@@ -653,164 +646,7 @@ limitations under the License.
    
     </class-descriptor>
 
-<!--
-   - P R E F E R E N C E S
- -->
 
- 
-    <!-- These preferences are the defaults for a PortletDefinition -->
-    <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
-   	  table="PORTLET_PREFERENCE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="BIGINT"
-         primarykey="true"
-         autoincrement="true"         
-      />
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-            
-      <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="BIGINT"
-
-
-      />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-      
-       <field-descriptor
-         name="readOnly"
-         column="READ_ONLY"
-         jdbc-type="BIT"
-      />    
-      
-      <collection-descriptor
-         name="values"
-         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-         auto-delete="true" auto-update = "true"
-      	 auto-retrieve = "true"
-
-      >         
-         <inverse-foreignkey field-ref="preferenceId"/>
-        
-      </collection-descriptor>
-      
-      <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
-       	 auto-delete="true" auto-update = "true" auto-retrieve = "true"
-
-      >
-         <inverse-foreignkey field-ref="parentId"/>   
-      </collection-descriptor>  
-    </class-descriptor>
-   
-   <!-- These preference map directly to a Portlet Entity --> 
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
-   	  table="PORTLET_PREFERENCE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="BIGINT"
-         primarykey="true"
-         autoincrement="true"
-         
-      />
-      <field-descriptor
-         name="ojbConcreteClass"
-         column="CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-            
-      <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="BIGINT"
-
-      />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-
-       <field-descriptor
-         name="readOnly"
-         column="READ_ONLY"
-         jdbc-type="BIT"
-      />    
-      
-      <collection-descriptor
-         name="values"
-         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-         auto-delete="true" auto-update = "true" auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="preferenceId"/>
-        
-      </collection-descriptor>
-      
-      <collection-descriptor
-         name="descriptions"
-         element-class-ref="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
-         auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-
-      </collection-descriptor>  
-    </class-descriptor>
-    
- 
-        
-   <class-descriptor
-   	  class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-   	  table="PREFERENCE_VALUE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="BIGINT"
-         primarykey="true"
-         autoincrement="true"  
-
-      />
-      
-      <field-descriptor
-         name="preferenceId"
-         column="PREFERENCE_ID"
-         jdbc-type="BIGINT"
-
-      />
-      
-    
-      
-      <field-descriptor
-         name="value"
-         column="VALUE"
-         jdbc-type="VARCHAR"
-      />  
-  
-    </class-descriptor>
     
 
     
@@ -1269,17 +1105,7 @@ limitations under the License.
          <foreignkey field-ref="portletId"/>
       </reference-descriptor>
 
-      <collection-descriptor
-         name="originalPreferences"
-         element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
-         auto-delete="true"
-   	     auto-update = "true"
-      	 auto-retrieve = "true"
-
-       >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-
+ 
   
   </class-descriptor>
   
