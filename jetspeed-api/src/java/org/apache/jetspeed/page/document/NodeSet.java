@@ -58,4 +58,6 @@ public interface NodeSet
     int size();
 
     boolean contains(Node node);
+
+    boolean isEmpty();
 }
