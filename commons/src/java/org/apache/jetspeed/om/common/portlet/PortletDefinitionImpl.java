@@ -53,6 +53,7 @@
  */
 package org.apache.jetspeed.om.common.portlet;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Locale;
@@ -75,7 +76,6 @@ import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.extended.PortletParameterSetImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -87,7 +87,6 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.pluto.om.common.ValidatorDefinition;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -111,6 +110,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private ParameterSetImpl parameterSet;
     private SecurityRoleRefSet securityRoleRefSet;
 
+    private String preferenceValidatorClassname;
+
     private MutableDisplayNameSet displayNames;
     private MutableDescriptionSet descriptions;
 
@@ -121,7 +122,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     protected long appId;
 
     private PreferenceSetImpl prefSet = null;
-    private ValidatorDefinition vd;
     private ContentTypeSetComposite contentTypes;
 
     private ClassLoader portletClassLoader;
@@ -150,7 +150,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      * @see org.apache.pluto.om.portlet.PortletDefinition#getId()
      */
     public ObjectID getId()
-    {   
+    {
         return new JetspeedObjectID(id);
     }
 
@@ -208,14 +208,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public void setPreferenceSet(PreferenceSet preferences)
     {
         this.prefSet = (PreferenceSetImpl) preferences;
-    }
-
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getValidatorDefinition()
-     */
-    public ValidatorDefinition getValidatorDefinition()
-    {
-        return vd;
     }
 
     /**
@@ -634,6 +626,47 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public void setDescription(String desc)
     {
         addDescription(Locale.getDefault(), desc);
+    }
+
+    /** 
+     * <p>
+     * store
+     * </p>
+     * 
+     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#store()
+     * @throws java.io.IOException
+     */
+    public void store() throws IOException
+    {
+        // TODO We ned to implement the store command
+        throw new UnsupportedOperationException("PortletDefinitionImpl.store() is not currently implemented.");
+
+    }
+
+    /**
+     * <p>
+     * getPreferenceValidatorClassname
+     * </p>
+     * 
+     * @return
+     * 
+     */
+    public String getPreferenceValidatorClassname()
+    {
+        return preferenceValidatorClassname;
+    }
+
+    /**
+     * <p>
+     * setPreferenceValidatorClassname
+     * </p>
+     * 
+     * @param string
+     * 
+     */
+    public void setPreferenceValidatorClassname(String string)
+    {
+        preferenceValidatorClassname = string;
     }
 
 }

@@ -55,6 +55,8 @@ package org.apache.jetspeed.om.common.preference;
 
 import java.util.Set;
 
+import javax.portlet.PreferencesValidator;
+
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.PreferenceSetCtrl;
 
@@ -72,4 +74,6 @@ public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
     Set getNames();
     
     int size();
+    
+	void setPreferenceValidator(PreferencesValidator validator);
 }

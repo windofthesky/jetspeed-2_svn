@@ -182,11 +182,13 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
      * if no Description exists for this locale
      */
     String getDescriptionText(Locale locale);
-    
+
     void addDescription(Locale locale, String description);
-    
+
     void addDisplayName(Locale locale, String displayName);
-    
-    
+
+    String getPreferenceValidatorClassname();
+
+    void setPreferenceValidatorClassname(String classname);
 
 }

@@ -59,6 +59,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
+import javax.portlet.PreferencesValidator;
+
 import org.apache.jetspeed.om.common.AbstractSupportSet;
 import org.apache.pluto.om.common.Preference;
 
@@ -76,6 +78,8 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
     protected HashMap prefMap = new HashMap();
 
     private String preferenceType;
+
+    private PreferencesValidator validator;
 
     /**
      * @param wrappedSet
@@ -193,6 +197,39 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
         }
 
         return super.addAll(c);
+    }
+
+    /** 
+     * <p>
+     * getPreferencesValidator
+     * </p>
+     * 
+     * @see org.apache.pluto.om.common.PreferenceSet#getPreferencesValidator()
+     * @return
+     */
+    public PreferencesValidator getPreferencesValidator()
+    {
+        return validator;
+    }
+
+    /**
+     * 
+     * <p>
+     * setPreferenceValidator
+     * </p>
+     * Sets the validaotr that will be used within this prefrence set.
+     * 
+     * @param validator
+     *
+     */
+    public void setPreferenceValidator(PreferencesValidator validator)
+    {
+        if (validator == null)
+        {
+            throw new IllegalArgumentException("PreferenceSetImpl.setPreferenceValidator() cannot have a null validator argument.");
+        }
+
+        this.validator = validator;
     }
 
 }

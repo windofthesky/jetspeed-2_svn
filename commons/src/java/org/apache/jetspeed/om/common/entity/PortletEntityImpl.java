@@ -55,6 +55,8 @@ package org.apache.jetspeed.om.common.entity;
 
 import java.util.Locale;
 
+import javax.portlet.PreferencesValidator;
+
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
@@ -64,6 +66,9 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.util.StringUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 
@@ -82,9 +87,11 @@ import org.apache.jetspeed.util.JetspeedObjectID;
 public class PortletEntityImpl implements InitablePortletEntity
 {
 
+    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
+
     private JetspeedObjectID oid;
 
-    protected PreferenceSetComposite preferences;    
+    protected PreferenceSetComposite preferences;
 
     private PortletApplicationEntity applicationEntity = null;
 
@@ -92,7 +99,7 @@ public class PortletEntityImpl implements InitablePortletEntity
 
     private PortletEntity modifiedObject = null;
 
-    private PortletDefinition portletDefinition = null;
+    private PortletDefinitionComposite portletDefinition = null;
 
     public ObjectID getId()
     {
@@ -187,11 +194,27 @@ public class PortletEntityImpl implements InitablePortletEntity
             new String[] { "portletDefinition", "instanceName" },
             "init()");
 
-        this.portletDefinition = portletDefinition;
+        this.portletDefinition = (PortletDefinitionComposite) portletDefinition;
         oid = JetspeedObjectID.createPortletEntityId(portletDefinition, instanceName);
         preferences = new PreferenceSetImpl();
-    }
+        if (this.portletDefinition.getPreferenceValidatorClassname() != null)
+        {
+            String className = this.portletDefinition.getPreferenceValidatorClassname();
+            log.info("Loading PreferenceValidator " + className);
+            try
+            {
+                Class clazz = Class.forName(className);
+                preferences.setPreferenceValidator((PreferencesValidator) clazz.newInstance());
+            }
+            catch (Exception e)
+            {
+                log.error(
+                    "Unable create PreferenceValidator for portlet " + this.getPortletDefinition().getName() + ": " + e.toString(),
+                    e);
+            }
 
-    
+        }
+
+    }
 
 }

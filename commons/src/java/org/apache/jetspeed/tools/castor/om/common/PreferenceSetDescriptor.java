@@ -72,12 +72,12 @@ public class PreferenceSetDescriptor extends PreferenceSetImpl
         return this;
     }
         
-    public String getPreferencesValidator()
+    public String getPreferenceValidatorClassname()
     {
         return preferencesValidator;
     }
 
-    public void setPreferencesValidator(String preferencesValidator)
+    public void SetPreferenceValidatorClassname(String preferencesValidator)
     {
         this.preferencesValidator = preferencesValidator;
     }

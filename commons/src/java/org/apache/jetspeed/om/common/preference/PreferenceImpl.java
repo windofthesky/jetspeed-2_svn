@@ -83,7 +83,7 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
 {
     private String name;
     protected Collection values;
-    private boolean modifiable;
+    private boolean readOnly;
     /** a collection of <code>PreferenceValueObjects</code>
      * that can be persisted in a unique fashion.
      */
@@ -130,9 +130,9 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
     /**
      * @see org.apache.pluto.om.common.Preference#isModifiable()
      */
-    public boolean isModifiable()
+    public boolean isReadOnly()
     {
-        return modifiable;
+        return readOnly;
     }
 
     /**
@@ -174,9 +174,9 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
     /**
      * @see org.apache.pluto.om.common.PreferenceCtrl#setModifiable(boolean)
      */
-    public void setModifiable(boolean modifiable)
+    public void setReadOnly(boolean modifiable)
     {
-        this.modifiable = modifiable;
+        this.readOnly = modifiable;
     }
 
     /**
@@ -292,6 +292,36 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
     public void setType(String string)
     {
         type = string;
+    }
+
+    /** 
+     * <p>
+     * setReadOnly
+     * </p>
+     * 
+     * Why???
+     * 
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setReadOnly(java.lang.String)
+     * @param arg0
+     */
+    public void setReadOnly(String arg0)
+    {
+        setReadOnly(new Boolean(arg0).booleanValue());
+
+    }
+
+    /** 
+     * <p>
+     * isValueSet
+     * </p>
+     * 
+     * @see org.apache.pluto.om.common.Preference#isValueSet()
+     * @return
+     */
+    public boolean isValueSet()
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }
