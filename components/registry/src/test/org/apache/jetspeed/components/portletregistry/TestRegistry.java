@@ -56,13 +56,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import javax.naming.NameAlreadyBoundException;
+
 import javax.portlet.PortletMode;
+
 import junit.framework.Test;
+
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.datasource.DatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -103,6 +103,7 @@ import org.picocontainer.MutablePicoContainer;
  */
 public class TestRegistry extends AbstractComponentAwareTestCase
 {
+
     private MutablePicoContainer container;
     private static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
     private static final String PORTLET_0_NAME = "Portlet 0";
@@ -133,27 +134,18 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
-        try
-        {
-            DatasourceComponent ds = (DatasourceComponent) container.getComponentInstance(DatasourceComponent.class);
-            JNDIComponent jndi = (JNDIComponent) container.getComponentInstance(JNDIComponent.class);
-            jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
-        }
-        catch (NameAlreadyBoundException e)
-        {
-            // ignore
-        }
         PersistenceStoreContainer pContainer = (PersistenceStoreContainer) container
         .getComponentInstanceOfType(PersistenceStoreContainer.class);
         try
         {
             store = pContainer.getStoreForThread("jetspeed");
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
-            
+
             // TODO Auto-generated catch block
             e1.printStackTrace();
-            throw (Exception)e1;
+            throw (Exception) e1;
         }
         clean();
         buildTestPortletApp();
@@ -247,7 +239,6 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 2");
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 3");
-            
             dc.addContributor(JetspeedLocale.getDefaultLocale(), "Contrib 1");
             dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 1");
             dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 2");
@@ -262,7 +253,6 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             dc.addSource(JetspeedLocale.getDefaultLocale(), "Source 1");
             dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
             dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
-            
             wac.setContextRoot("/root");
             wac.addDescription(JetspeedLocale.getDefaultLocale(), "This is an english desrcitpion");
             wac.addDisplayName(JetspeedLocale.getDefaultLocale(), "This is an english display name");
@@ -276,7 +266,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             pac.addPortletDefinition(portlet0);
             registry.registerPortletApplication(pac);
             store.getTransaction().commit();
-            
+
             // invalidate(new Object[] {wac, portlet0, pac});
         }
         catch (Exception e)
@@ -333,7 +323,6 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         assertNotNull(appExists);
         DublinCore dc = new DublinCoreImpl(appExists.getMetadata());
         assertEquals(dc.getTitles().size(), 3);
-        
         assertEquals(dc.getContributors().size(), 1);
         assertEquals(dc.getCoverages().size(), 2);
         assertEquals(dc.getCreators().size(), 1);
@@ -347,7 +336,6 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         assertEquals(dc.getSources().size(), 1);
         assertEquals(dc.getSubjects().size(), 1);
         assertEquals(dc.getTypes().size(), 1);
-        
     }
 
     public void testAddingPortlet() throws Throwable
@@ -620,11 +608,11 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         store.deleteAll(store.newQuery(clazz, filter));
         store.getTransaction().commit();
     }
-    
+
     protected void invalidate(Object[] objs) throws LockFailedException
     {
         store.getTransaction().begin();
-        for(int i=0; i<objs.length; i++)
+        for (int i = 0; i < objs.length; i++)
         {
             store.invalidate(objs[i]);
         }
