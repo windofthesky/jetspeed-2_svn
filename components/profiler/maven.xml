@@ -54,8 +54,11 @@ limitations under the License.
  </goal> 
  
   <preGoal name="test:test">
-  	 <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-rdbms-2.0-a1-dev.jar" />
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-persistence-2.0-a1-dev.jar" />
+  	 <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-rdbms-2.0-a1-dev.jar" overwrite="true"/>
+     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-persistence-2.0-a1-dev.jar" overwrite="true"/>
+     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-page-manager-2.0-a1-dev.jar" overwrite="true" />
+     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-id-generator-2.0-a1-dev.jar" overwrite="true" />
+     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-file-cache-2.0-a1-dev.jar" overwrite="true" />
   </preGoal>
 
 </project>

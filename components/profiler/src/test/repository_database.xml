@@ -1,0 +1,36 @@
+
+<!--
+Define here all used connections.
+One defined connection should be defined as the default one,
+by set default-connection="true" - this could be done at runtime too.
+
+It is possible to set user/password at
+runtime or let login different users at runtime using the same
+database. Use different PBKey with same jcdAlias name but
+different user/password.
+
+Ditto it is possible to add jdbc-connection-descriptor at runtime
+using the MetadataManager.
+-->
+
+
+    <jdbc-connection-descriptor
+        jcd-alias="jetspeed"
+        platform="Hsqldb"
+        default-connection="true"
+        jdbc-level="2.0"
+         jndi-datasource-name="java:comp/env/jdbc/jetspeed"
+        batch-mode="false"
+     >     
+
+        <connection-pool
+            maxActive="21"
+            validationQuery="" />
+
+        <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">
+            <attribute attribute-name="grabSize" attribute-value="20"/>
+            <attribute attribute-name="autoNaming" attribute-value="true"/>
+            <attribute attribute-name="globalSequenceId" attribute-value="false"/>
+            <attribute attribute-name="globalSequenceStart" attribute-value="10000"/>
+        </sequence-manager>
+   </jdbc-connection-descriptor>
