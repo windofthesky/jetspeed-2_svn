@@ -74,6 +74,8 @@ CREATE TABLE PARAMETER(
     VALUE LONGVARCHAR NOT NULL
 );
 
+
+
 ------------------------------------------------------------------------------
 -- Preference and Preference Values
 ------------------------------------------------------------------------------
@@ -94,12 +96,24 @@ CREATE TABLE PREFERENCE_VALUE(
 
 );
 
+
+-------------------------------------------------------------------------------
+-- Portlet Entity
+-- Represents the managed state of individual portlet
+-- intance within a "page"
+-------------------------------------------------------------------------------
+CREATE TABLE PORTLET_ENTITY(
+    ID INTEGER PRIMARY KEY,
+	PORTLET_DEFINITION_ID INTEGER NOT NULL	
+);
+
+
 ------------------------------------------------------------------------------
 -- User Preference and User Preference Values
 ------------------------------------------------------------------------------
 CREATE TABLE USER_PORTLET_PREFERENCE(
     ID INTEGER PRIMARY KEY,
-    PORTLET_ID INTEGER NOT NULL,
+    PORTLET_ENTITY_ID INTEGER NOT NULL,
     USER_NAME VARCHAR(50),
     NAME VARCHAR(80) NOT NULL
 
