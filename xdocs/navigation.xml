@@ -33,6 +33,22 @@ limitations under the License.
       <item name="Tasks" href="tasks.html"/>
       <item name="Sub Projects" href="projects-overview.html"/>
     </menu>
+    <menu name='Security'>        
+      <item name="Security Overview" href="security-overview.html"/>       
+      <item name="Authentication" href="authentication.html"/>
+      <item name="JAAS Authorization" href="authorization.html"/>
+      <item name="PSML Authorization" href="bronco.html"/>
+      <item name="SPI: Providers and Handlers" href="spi.html"/>
+      <item name="Single Sign on" href="sso.html"/>        
+    </menu>
+    <menu name='Portal Design'>
+      <item name="Portal Design Overview" href="portal-design.html"/>       
+      <item name="Layouts" href="layouts.html"/>
+      <item name="Decorators" href="decorators.html"/>
+      <item name="Jetspeed Power Tool" href="jpt.html"/>        
+      <item name="PSML" href="psml.html"/>
+      <item name="Site" href="site.html"/>
+    </menu>
     <menu name="Support">
       <item name="Mailing List" href="mail-lists.html"/>
       <item name="Bug Database" href="issue-tracking.html"/>

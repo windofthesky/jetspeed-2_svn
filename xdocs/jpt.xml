@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Jetspeed Power Tool</title>
+    <subtitle>Documentation for Designers working with the Jetspeed Power Tool.</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org"/>
+    </authors>
+  </properties>
+  <body>
+<section name='Jetspeed Power Tool'>
+<p>
+The Jetspeed Power Tool (JPT) is a velocity tool used in Layouts and Decorators to generate dynamic content.
+The JPT is a request level velocity tool, and is available to all layouts and decorators.
+The JPT is referenced in your decorator or layout as:
+<source test=""><![CDATA[
+$jetspeed
+]]></source>
+All public JPT APIs can be accessed with:
+<ul>
+    <li>Java dot notation for methods</li>
+    <li>JavaBean shortcuts for properties (getter/setter)</li>    
+</ul>
+Example of calling a method:
+<source test=""><![CDATA[
+# call a method 'getTitle' with 2 parameters
+$jetspeed.getTitle($myPE, $myF)
+]]></source>
+Example of calling getting a property:
+<source test=""><![CDATA[
+# get the page bean, equivalent to $jetspeed.getPage()
+$jetspeed.page
+]]></source>
+</p>
+</section>
+<section name='JPT Velocity API'>
+<p>The table below defines the Jetspeed Power Tool API for Velocity</p>
+<hr/>
+<table>
+  <tr> 
+    <th>API</th>
+    <th><b>decorateAndInclude($fragment)</b></th>
+  </tr>
+  <tr>
+    <td>Description</td>
+    <td>
+        Retrieves the application relative path to a decorator template for a given 
+        fragment parameter <b>($fragment)</b> to be included by Velocity. 
+        Should be passed as a parameter to the Velocity #parse function (#parse includes 
+        another Velocity template). 
+     </td>
+  </tr>
+  <tr>
+    <td>Parameter</td>
+    <td><b>$fragment</b> - the fragment to be included and decorated.</td>         
+  </tr>
+  <tr>
+    <td>Returns</td>
+    <td><b>String</b> - Application relative path to a decorator template.</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>#parse($jetspeed.decorateAndInclude($fragment))<br/>returns<br/>/WEB-INF/decorations/layout/html/tigris/decorator-top.vm</td>
+  </tr>  
+</table>
+<hr/>
+<table>
+  <tr> 
+    <th>API</th>
+    <th><b>getAbsoluteUrl(appRelativePath)</b></th>
+  </tr>
+  <tr>
+    <td>Description</td>
+    <td>
+        Given a relative path to an portlet application resource, returns an absolute URL.
+        This API should not be used to reference template ULS since they are usually inaccessible 
+        as absolute URLs because they are often located in a CMS or behind the secured WEB-INF directory.
+     </td>
+  </tr>
+  <tr>
+    <td>Parameter</td>
+    <td><b>relativePath</b> - a relative path to a resource in the decorator package.</td>         
+  </tr>
+  <tr>
+    <td>Returns</td>
+    <td><b>String</b> - The full absolute path to a web resource</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>$jetspeed.getAbsoluteUrl("/images/test.gif")<br/>returns<br/>http://localhost:8080/jetspeed/portal/images/test.gif</td>
+  </tr>  
+</table>
+<hr/>
+<table>
+  <tr> 
+    <th>API</th>
+    <th><b>columns</b></th>
+  </tr>
+  <tr>
+    <td>Description</td>
+    <td>
+        Returns a list of column for the current fragment during a layout aggregation.
+     </td>
+  </tr>
+  <tr>
+    <td>Parameter</td>
+    <td><b>-</b></td>         
+  </tr>
+  <tr>
+    <td>Returns</td>
+    <td><b>List</b> - a standard Java List of sub-fragments or portlets</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>#set ($table = $jetspeed.columns)<br/>#foreach($entry in $table)
+    </td>
+  </tr>  
+</table>
+<hr/>
+<table>
+  <tr> 
+    <th>API</th>
+    <th><b></b></th>
+  </tr>
+  <tr>
+    <td>Description</td>
+    <td>
+     </td>
+  </tr>
+  <tr>
+    <td>Parameter</td>
+    <td><b></b></td>         
+  </tr>
+  <tr>
+    <td>Returns</td>
+    <td><b></b></td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td></td>
+  </tr>  
+</table>
+<hr/>
+
+<p>
+<i>Documentation for Jetspeed 2.0-M2 release.</i>.
+</p>
+</section>
+
+</body>
+</document>
+
