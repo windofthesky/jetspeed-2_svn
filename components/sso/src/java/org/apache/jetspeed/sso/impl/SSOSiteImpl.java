@@ -16,7 +16,6 @@
 
 package org.apache.jetspeed.sso.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;

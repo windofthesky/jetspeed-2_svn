@@ -29,7 +29,6 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
-import org.apache.portals.bridges.frameworks.FrameworkConstants;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
 import org.apache.portals.bridges.frameworks.messaging.PortletMessageComponent;
 

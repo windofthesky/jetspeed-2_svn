@@ -22,7 +22,6 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
-import org.apache.jetspeed.prefs.PreferencesException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;

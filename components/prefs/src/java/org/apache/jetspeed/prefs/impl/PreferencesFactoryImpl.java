@@ -79,6 +79,6 @@ public class PreferencesFactoryImpl implements PreferencesFactory
     
     public void setPrefsProvider( PreferencesProvider prefsProvider )
     {
-        this.prefsProvider = prefsProvider;
+        PreferencesFactoryImpl.prefsProvider = prefsProvider;
     }
 }

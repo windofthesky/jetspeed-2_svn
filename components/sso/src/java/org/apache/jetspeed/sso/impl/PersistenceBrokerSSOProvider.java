@@ -22,7 +22,6 @@ import java.util.Iterator;
 import org.apache.jetspeed.security.UserPrincipal;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 
