@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -98,8 +99,16 @@ public class ContentFilter implements Filter
                                 + " could not be located.  Make sure your container is properly configured to detect MIME types.");
             }
             log.debug(mimeType + " detected: " + requestURI);
+            StringTokenizer hintTokenizer = new StringTokenizer(urlHint, ",");
+            String[] urlHints = new String[hintTokenizer.countTokens()];
+            int i = 0;
+            while(hintTokenizer.hasMoreTokens())
+            {
+                urlHints[i]=hintTokenizer.nextToken();
+                i++;
+            }
             SimpleContentLocator contentLocator = new SimpleContentLocator(
-                    this.contentDir, urlHint, true);
+                    this.contentDir, urlHints, true, httpRequest.getContextPath());
             long contentLength = contentLocator.mergeContent(requestURI,
                     getContentSearchPathes(httpRequest), response
                             .getOutputStream());

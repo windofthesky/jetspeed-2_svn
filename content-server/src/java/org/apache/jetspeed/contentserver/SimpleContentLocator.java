@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  *  
  */
 public class SimpleContentLocator implements ContentLocator
-{    
+{
 
     private String rootPath;
 
@@ -45,23 +45,26 @@ public class SimpleContentLocator implements ContentLocator
 
     private Map fileCache;
 
-    private String URLHint;
-    
+    private String[] URLHints;
+
     private static final Log log = LogFactory.getLog(SimpleContentLocator.class);
 
-    public SimpleContentLocator(String rootPath, String URLHint, boolean useCachedLookup)
-    {
+    private String contextRoot;
 
+    public SimpleContentLocator( String rootPath, String[] URLHints, boolean useCachedLookup, String contextRoot )
+    {
+        this.contextRoot = contextRoot;
         this.rootPath = rootPath;
         this.useCachedLookup = useCachedLookup;
         fileCache = new HashMap();
-        this.URLHint = URLHint;
+        this.URLHints = URLHints;
     }
 
-    public long mergeContent(String URI, List lookupPathes, OutputStream os)
+    public long mergeContent( String URI, List lookupPathes, OutputStream os )
     {
+ 
         File content = locateContent(URI, lookupPathes);
-        if(content != null)
+        if (content != null)
         {
             return setContent(content, os);
         }
@@ -71,86 +74,99 @@ public class SimpleContentLocator implements ContentLocator
         }
     }
 
-    protected File locateContent(String URI, List lookupPathes)
+    protected File locateContent( String URI, List lookupPathes )
     {
-        int rootLen = URLHint.length();
-        // int rootStart = URI.indexOf(URLHint);
-        int rootStart = URI.lastIndexOf(URLHint);
-        File fqFile = null;
-        if (rootStart != -1)
+        for (int j = 0; j < URLHints.length; j++)
         {
-            String dir = URI.substring(rootStart + rootLen);
-            
-            for (int i = 0; i < lookupPathes.size(); i++)
-            {
-                
-                if (useCachedLookup && fileCache.containsKey(lookupPathes.get(i) + ":" + URI))
+            String URLHint = URLHints[j];
+            int rootLen = URLHint.length();
+            // int rootStart = URI.indexOf(URLHint);
+            int rootStart = URI.lastIndexOf(URLHint);
+            File fqFile = null;
+            if (rootStart != -1)
+            {   
+                String dir = null;
+                if(rootLen > 1)                
                 {
-                    fqFile = (File) fileCache.get(lookupPathes.get(i) + ":"
-                            + URI);
-                    log.debug("Found cached file for URI: " + URI);
+                   dir = URI.substring(rootStart + rootLen);
                 }
                 else
                 {
-                    // String fqPath = pathes.get(i) + "/html" + dir;
-                    String[] sep = new String[]{"", ""} ;
+                    dir = URI.substring(contextRoot.length());
                     
-                    if (lookupPathes.get(i).toString().trim().length() > 1)
-                    {
-                        sep[0] = "/";
-                    }
-                    
-                    if (!dir.startsWith("/"))
-                    {
-                        sep[1] = "/";
-                    }
-                    
-                    String fqPath = this.rootPath + sep[0] + lookupPathes.get(i)
-                                    + sep[1] + dir;
+                }
 
-                    fqFile = new File(fqPath);
-                    log.debug("Actual content located at: " + fqPath);
-                    log.debug("Content exists? " + fqFile.exists());
-                    if (!fqFile.exists())
+                for (int i = 0; i < lookupPathes.size(); i++)
+                {
+
+                    if (useCachedLookup && fileCache.containsKey(lookupPathes.get(i) + ":" + URI))
                     {
-                        fqFile = null;
-                        continue;
+                        fqFile = (File) fileCache.get(lookupPathes.get(i) + ":" + URI);
+                        log.debug("Found cached file for URI: " + URI);
+                        return fqFile;
                     }
-                    
-                    if(useCachedLookup)
+                    else
                     {
-                        fileCache.put(lookupPathes.get(i) + ":" + URI, fqFile);
+                        // String fqPath = pathes.get(i) + "/html" + dir;
+                        String[] sep = new String[]{"", ""};
+
+                        if (lookupPathes.get(i).toString().trim().length() > 1)
+                        {
+                            sep[0] = "/";
+                        }
+
+                        if (!dir.startsWith("/"))
+                        {
+                            sep[1] = "/";
+                        }
+
+                        String fqPath = this.rootPath + sep[0] + lookupPathes.get(i) + sep[1] + dir;
+
+                        fqFile = new File(fqPath);
+                        log.debug("Actual content located at: " + fqPath);
+                        log.debug("Content exists? " + fqFile.exists());
+                        if (!fqFile.exists())
+                        {
+                            fqFile = null;
+                            continue;
+                        }
+
+                        if (useCachedLookup)
+                        {
+                            fileCache.put(lookupPathes.get(i) + ":" + URI, fqFile);
+                        }
+                        return fqFile;
                     }
-                    return fqFile;
                 }
             }
         }
-        
+
         return null;
-        
+
     }
-    
-    protected long setContent(File fqFile, OutputStream os)
+
+    protected long setContent( File fqFile, OutputStream os )
     {
         BufferedInputStream bis = null;
         try
         {
-            // DST: TODO: optimize using larger blocks with Streams helper utility
+            // DST: TODO: optimize using larger blocks with Streams helper
+            // utility
             bis = new BufferedInputStream(new FileInputStream(fqFile));
             for (int j = bis.read(); j != -1; j = bis.read())
             {
                 os.write((byte) j);
             }
-            log.debug("Wrote " + fqFile.length()
-                    + " to the output stream.");
+            log.debug("Wrote " + fqFile.length() + " to the output stream.");
 
             return fqFile.length();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             return -1;
-        } 
+        }
         finally
         {
             try
@@ -159,13 +175,14 @@ public class SimpleContentLocator implements ContentLocator
                 {
                     bis.close();
                 }
-            } catch (IOException e1)
+            }
+            catch (IOException e1)
             {
                 // ignore
 
             }
         }
-        
+
     }
 
 }
