@@ -108,7 +108,7 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         {
             PersistenceStore store = getPersistenceStore();
             Filter filter = store.newFilter();
-            filter.addLike((Object) new String("fullPath"), (Object) (omParentGroup.getFullPath() + "/*"));
+            filter.addLike("fullPath", omParentGroup.getFullPath() + "/*");
             Object query = store.newQuery(JetspeedGroupPrincipalImpl.class, filter);
             Collection omGroups = store.getCollectionByQuery(query);
             if (null == omGroups)
