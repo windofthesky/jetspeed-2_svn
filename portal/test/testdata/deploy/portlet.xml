@@ -2,14 +2,14 @@
 <portlet-app id="TestRegistry" version="1.0">
  <portlet id="HelloPortlet">
     <init-param>
-			<description>test init param</description>
-			<name>hello</name>
-			<value>Hello Portlet</value>
+			<description lang="en">test init param</description>
+			<name lang="en">hello</name>
+			<value lang="en">Hello Portlet</value>
      </init-param>  
     <portlet-name>HelloWorld Portlet</portlet-name>
     <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
     <display-name lang="en">HelloWorld Portlet Wrapper</display-name>  
-    <description>This is a desciption of the HelloWorld portlet</description>
+    <description lang="en">This is a desciption of the HelloWorld portlet</description>
     <expiration-cache>-1</expiration-cache>
     <supports id="Minimal support">
       <mime-type>text/html</mime-type>

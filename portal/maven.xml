@@ -4,8 +4,8 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.services.registry.TestRegistry'/>  
-<!--  <property name='testcase' value='org.apache.jetspeed.tools.pamanager.TestPortletDescriptor'/>  -->
+<!--  <property name='testcase' value='org.apache.jetspeed.services.registry.TestRegistry'/>  -->
+ <property name='testcase' value='org.apache.jetspeed.tools.pamanager.TestPortletDescriptor'/>  
 
  
 <!--
