@@ -33,6 +33,7 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.NamespaceMapperAccess;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -78,8 +79,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
     public PortletURLProvider getPortletURLProvider(PortletWindow portletWindow)
     {
-        return new PortletURLProviderImpl(this,
-                                          portletWindow);
+        return new PortletURLProviderImpl(this.context, portletWindow);
     }
 
      public String getRequestContentType()
@@ -182,7 +182,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
     public String getBasePortalURL()
     {
-         return context.getNavigationalState().getBaseURL();
+         return context.getPortalURL().getBaseURL();
     }
 
     public Map getAllParameters(PortletWindow portletWindow)
@@ -203,14 +203,14 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
             }
         }
 
-        NavigationalState navState = context.getNavigationalState();
+        PortalURL url = context.getPortalURL();
         
-        Iterator iterator = navState.getRenderParamNames(portletWindow);
+        Iterator iterator = url.getRenderParamNames(portletWindow);
         while (iterator.hasNext())
         {
             String name = (String)iterator.next();
 
-            String[] values = navState.getRenderParamValues(portletWindow, name);
+            String[] values = url.getRenderParamValues(portletWindow, name);
 
             portletParameters.put(name, values );
 

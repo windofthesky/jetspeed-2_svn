@@ -44,7 +44,7 @@ public class ResourceURLProviderImpl implements ResourceURLProvider
     {
         this.portletWindow = portletWindow;
         this.context = context;                
-        this.base = context.getNavigationalState().getBaseURL();
+        this.base = context.getPortalURL().getBaseURL();
     }
 
     // ResourceURLProvider implementation.

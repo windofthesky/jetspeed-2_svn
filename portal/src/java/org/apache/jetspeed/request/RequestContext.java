@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.window.PortletWindow;
@@ -152,6 +153,13 @@ public interface RequestContext
      * @return The navigational state context object for the current request.
      */
     public NavigationalState getNavigationalState();
+
+    /**
+     * Gets the Portal URL for the current request.
+     * 
+     * @return The Portal URL object for the current request.
+     */
+    public PortalURL getPortalURL();
     
     /**
      * Get the target Action Window

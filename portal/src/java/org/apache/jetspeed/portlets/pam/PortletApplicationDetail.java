@@ -17,24 +17,16 @@ package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
 //import java.io.InputStream;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
-import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
-
 import org.apache.jetspeed.portlet.ServletPortlet;
-
-//import org.apache.jetspeed.cps.util.Streams;
 
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -45,28 +37,22 @@ import org.apache.jetspeed.portlet.ServletPortlet;
  */
 public class PortletApplicationDetail extends ServletPortlet
 {
- 
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
         PortletContext context = getPortletContext();
-        response.setContentType("text/html");
-        
+        response.setContentType("text/html");        
         PortletURL url = response.createRenderURL();
         PortletURL actionUrl = response.createActionURL();
         url.setWindowState(WindowState.MAXIMIZED);
         actionUrl.setPortletMode(PortletMode.EDIT);
-        
         // url.addParameter("test", "value");
         response.getWriter().println("<br/><b>Init Param 'Template' = " + this.getInitParameter("template") +  "</b>");
         response.getWriter().println("<br/><b>Render URL = <a href='" + url +  "'>" + url + "</a></b>");
         response.getWriter().println("<br/><b>Action URL = <a href='" + actionUrl +  "'>" + actionUrl + "</a></b>");
-        response.getWriter().println("<br/><b>Request dispatching now</b>");
-        
+        response.getWriter().println("<br/><b>Request dispatching now</b>");        
         super.doView(request, response);
      }
-
-    
 	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
 		System.out.println("PorletApplicationDetail: processAction()");

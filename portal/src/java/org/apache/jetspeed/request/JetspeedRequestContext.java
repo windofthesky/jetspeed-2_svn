@@ -31,6 +31,7 @@ import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.om.window.PortletWindow;
@@ -61,6 +62,7 @@ public class JetspeedRequestContext implements RequestContext
     private String mimeType;
     private String mediaType;
     private NavigationalState navstate;
+    private PortalURL url;
     private PortletWindow actionWindow;
     private String encoding;
     
@@ -92,7 +94,8 @@ public class JetspeedRequestContext implements RequestContext
         
         if (navcomponent != null)
         {
-            navstate = navcomponent.create(this);
+            url = navcomponent.createURL(this);
+            navstate = navcomponent.create(this);            
         }
         
     }
@@ -392,7 +395,7 @@ public class JetspeedRequestContext implements RequestContext
         while (tokenizer.hasMoreTokens())
         {
             String token = tokenizer.nextToken();
-            if (this.navstate.isNavigationalParameter(token))
+            if (this.url.isNavigationalParameter(token))
             {
                 break;            
             }
@@ -410,4 +413,10 @@ public class JetspeedRequestContext implements RequestContext
         }
         return result;
     }
+    
+    public PortalURL getPortalURL()
+    {
+        return url;
+    }
+    
 }

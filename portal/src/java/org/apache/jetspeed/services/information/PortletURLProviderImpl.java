@@ -24,8 +24,8 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
 
@@ -38,7 +38,6 @@ import org.apache.pluto.services.information.PortletURLProvider;
  */
 public class PortletURLProviderImpl implements PortletURLProvider
 {
-    private DynamicInformationProviderImpl provider = null;
     private PortletWindow portletWindow = null;
     private PortletMode mode = null;
     private WindowState state = null;
@@ -48,21 +47,25 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private Map parameters = null;
 
     private RequestContext context;
-    private NavigationalState nav;
+    private PortalURL url;
     
-    public PortletURLProviderImpl(DynamicInformationProviderImpl provider, PortletWindow portletWindow)
+    public PortletURLProviderImpl(RequestContext context, PortletWindow portletWindow)
     {
-        this.provider = provider;
         this.portletWindow = portletWindow;
         
         // TODO: assemble this with factory
-        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
         NavigationalStateComponent nsc = (NavigationalStateComponent)Jetspeed.getComponentManager().getComponent(NavigationalStateComponent.class);
         
-        context = rcc.getRequestContext(provider.request);
-        nav = nsc.create(context);
+        context = this.context = context;
+        url = nsc.createURL(context);
     }
 
+    public PortletURLProviderImpl(RequestContext context, NavigationalState nav, PortletWindow portletWindow)
+    {
+        this.context = context;
+        this.portletWindow = portletWindow;
+    }
+    
     public void setPortletMode(PortletMode mode)
     {
         this.mode = mode;
@@ -85,7 +88,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void clearParameters()
     {        
-        nav.clearRenderParameters(portletWindow);
+        url.clearRenderParameters(portletWindow);
     }
 
     public void setParameters(Map parameters)
@@ -97,12 +100,12 @@ public class PortletURLProviderImpl implements PortletURLProvider
     {
         if (mode != null)
         {
-            nav.setMode(portletWindow, mode);
+            url.setMode(portletWindow, mode);
         }
 
         if (state != null)
         {
-            nav.setState(portletWindow, state);
+            url.setState(portletWindow, state);
         }
 
         // STW: Spec reference PLT:12:2
@@ -115,7 +118,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
         if (action)
         {
-            nav.setAction(portletWindow);
+            url.setAction(portletWindow);
         }
 
         if (parameters != null)
@@ -129,18 +132,18 @@ public class PortletURLProviderImpl implements PortletURLProvider
                 : (String[]) value;
                 if (action)
                 {
-                    //nav.setRequestParam(
+                    //url.setRequestParam(
                     //    NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
                     //    values);
-                    nav.setRequestParam(name, values);
+                    url.setRequestParam(name, values);
                 }
                 else
                 {
-                    nav.setRenderParam(portletWindow, name, values);
+                    url.setRenderParam(portletWindow, name, values);
                 }
             }
         }
-        return nav.toString(secure);
+        return url.toString(secure);
     }
 
 }
