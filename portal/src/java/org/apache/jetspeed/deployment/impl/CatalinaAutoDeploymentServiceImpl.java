@@ -125,6 +125,7 @@ public class CatalinaAutoDeploymentServiceImpl extends BaseCommonService impleme
             handlers.put("war", JARObjectHandlerImpl.class);
             scanner = new FileSystemScanner(stagingDirFile.getCanonicalPath(), handlers, dispatcher, delay);
             scanner.setName("Autodeployment File Scanner Thread");
+            scanner.setContextClassLoader(Thread.currentThread().getContextClassLoader());
             scanner.start();
             log.info("Deployment scanner successfuly started!");
         }
