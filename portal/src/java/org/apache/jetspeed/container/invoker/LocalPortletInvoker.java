@@ -85,7 +85,13 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * Local portlet applications are stored within the Jetspeed Portlet application.
  * They are not separate web applications; but are stored under Jetspeed's
  * WEB-INF/apps directory.
- *
+ * <h3>Sample Configuration</h3>
+ * <pre>
+ * <code>
+ * factory.invoker.local = org.apache.jetspeed.container.invoker.LocalPortletInvoker
+ * factory.invoker.local.pool.size = 50
+ * </code> 
+ * </pre>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */

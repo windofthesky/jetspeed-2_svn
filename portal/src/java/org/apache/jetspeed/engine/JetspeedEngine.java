@@ -55,6 +55,7 @@ package org.apache.jetspeed.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -65,6 +66,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.services.JetspeedContainerServices;
 import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
@@ -94,8 +96,10 @@ public class JetspeedEngine implements Engine
 {
     private PortalContext context;
     private ServletConfig config = null;
-    private Pipeline pipeline = null;
-
+    private Pipeline defaultPipeline = null;
+    private Class pipelineClass = null;
+    private HashMap pipelines = new HashMap();
+    
     private static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
@@ -158,11 +162,11 @@ public class JetspeedEngine implements Engine
             log.info("Portlet container created sucessfully usin container class: " + container.getClass().getName());
 
             //
-            // create the pipeline
+            // create the pipelines
             //
-            log.info("Creating Jetspeed pipline...");
-            createPipeline();
-            log.info("Jetspeed pipline created sucessfully.");
+            log.info("Creating Jetspeed piplines...");
+            createPipelines();
+            log.info("Jetspeed piplines created sucessfully.");
             // 
             // Make sure JMX is init'd
             //
@@ -246,8 +250,18 @@ public class JetspeedEngine implements Engine
        // requestContextPerThread.put(Thread.currentThread(), context);
        try
        {
+           String targetPipeline = context.getRequestParameter(PortalReservedParameters.PIPELINE); 
            tlRequestContext.set(context);
-           pipeline.invoke(context);
+           Pipeline pipeline = defaultPipeline;
+           if (targetPipeline != null)
+           {
+                Pipeline specificPipeline = (Pipeline)pipelines.get(targetPipeline);
+                if (specificPipeline != null)
+                {
+                    pipeline = specificPipeline;               
+                }
+           }
+           pipeline.invoke(context);               
        }
        catch (Throwable t)
        {
@@ -318,53 +332,109 @@ public class JetspeedEngine implements Engine
 
     }
 
-    private void createPipeline() throws CPSInitializationException
+    /**
+     * Creates the Jetspeed pipelines for request processing.
+     * 
+     * @throws CPSInitializationException
+     */
+    private void createPipelines() throws CPSInitializationException
     {
-        String clazz = this.getContext().getConfiguration().getString(PIPELINE_CLASS, null);
-        String descriptorName = this.getContext().getConfiguration().getString(PIPELINE_DESCRIPTOR, null);
-
-        if (null == clazz || null == descriptorName)
+        String className = this.getContext().getConfiguration().getString(PIPELINE_CLASS, null);
+        String defaultPipelineName = this.getContext().getConfiguration().getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
+        
+        if (null == className)
         {
-            throw new CPSInitializationException("Failed to initialize pipeline, missing params");
+            throw new CPSInitializationException("Failed to initialize pipeline, missing configuration entry: " + PIPELINE_CLASS);
         }
-
-        Pipeline pipeline;
-        PipelineDescriptor descriptor;
-
         try
         {
-            pipeline = (Pipeline) Class.forName(clazz).newInstance();
+            pipelineClass = Class.forName(className);
         }
         catch (Exception e)
         {
             throw new CPSInitializationException("Failed to initialize pipeline, couldnt create pipeline class");
         }
+
+        String pipelinesDir = this.getContext().getConfiguration().getString(PIPELINE_DIRECTORY, "/WEB-INF/conf/pipelines/");        
+        File directory = new File(getRealPath(pipelinesDir));
+        if (directory == null || !directory.exists())
+        {
+            throw new CPSInitializationException("Failed to initialize pipeline, could not find pipeline directory");
+        }
+        
+        File[] pipelineDescriptors = directory.listFiles();        
+        for (int ix = 0; ix < pipelineDescriptors.length; ix++)
+        {
+            if (pipelineDescriptors[ix].isDirectory())
+            {
+                continue;
+            }
+            Pipeline pipeline = createPipeline(pipelineDescriptors[ix]);            
+            String name = pipelineDescriptors[ix].getName();
+            
+            int index = name.lastIndexOf(".");
+            if (index > 0)
+            {
+                name = name.substring(0, index);
+            }
+            if (name.equalsIgnoreCase(defaultPipelineName))
+            {
+                defaultPipeline = pipeline;
+            }        
+            pipelines.put(name, pipeline);            
+        }
+    }
+    
+    /**
+     * Creates a pipeline from a pipeline descriptor file.
+     * 
+     * @param file the descriptor file describing the pipeline.
+     * @return The new pipeline.
+     * @throws CPSInitializationException
+     */
+    private Pipeline createPipeline(File file) throws CPSInitializationException
+    {
+        Pipeline pipeline;
+        PipelineDescriptor descriptor;
+
         try
         {
-            XmlReader reader = new XmlReader(PipelineDescriptor.class);
-            File file = new File(getRealPath(descriptorName));
+            pipeline = (Pipeline)pipelineClass.newInstance();
+            XmlReader reader = new XmlReader(PipelineDescriptor.class);            
             descriptor = (PipelineDescriptor) reader.parse(new FileInputStream(file));
         }
         catch (Exception e)
         {
             throw new CPSInitializationException("Failed to read pipeline descriptor from deployment");
         }
-        pipeline.setDescriptor(descriptor);
+        
         try
         {
+            pipeline.setDescriptor(descriptor);
             pipeline.initialize();
         }
         catch (Exception e)
         {
             throw new CPSInitializationException("Failed to initialize pipeline: ", e);
         }
-
-        this.pipeline = pipeline;
+        
+        return pipeline;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.engine.Engine#getPipeline(java.lang.String)
+     */
+    public Pipeline getPipeline(String pipelineName)
+    {
+        return (Pipeline)this.pipelines.get(pipelineName);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.engine.Engine#getPipeline()
+     */
     public Pipeline getPipeline()
     {
-        return this.pipeline;
+        return this.defaultPipeline;
     }
     /**
      * @see org.apache.jetspeed.engine.Engine#getCurrentRequestContext()

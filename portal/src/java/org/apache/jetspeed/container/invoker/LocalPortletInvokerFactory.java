@@ -56,7 +56,15 @@ package org.apache.jetspeed.container.invoker;
 import org.apache.jetspeed.PortalContext;
 
 /**
- * LocalPortletInvokerFactory
+ * LocalPortletInvokerFactory is the factory for creating portlet invokers that 
+ * invoke portlets running in 'jetsped local' portlet applications. s
+ * <h3>Sample Configuration</h3>
+ * <pre>
+ * <code>
+ * factory.invoker.local = org.apache.jetspeed.container.invoker.LocalPortletInvoker
+ * factory.invoker.local.pool.size = 50
+ * </code> 
+ * </pre>
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$

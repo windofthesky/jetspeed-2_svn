@@ -51,45 +51,45 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container.invoker;
+package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.PortalContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.pipeline.valve.AbstractValve;
+import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * ServletPortletInvokerFactory is the factory for creating portlet invokers that 
- * use Jetspeed Container servlet. 
- * <h3>Sample Configuration</h3>
- * <pre>
- * <code>
- * factory.invoker.servlet = org.apache.jetspeed.container.invoker.ServletPortletInvoker
- * factory.invoker.servlet.pool.size = 50
- * factory.invoker.servlet.mapping.name = /container
- * </code> 
- * </pre>
+ * PortletValve
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletPortletInvokerFactory extends AbstractPortletInvokerFactory
+public class PortletValve extends AbstractValve
 {
-    public final static String INVOKER_SERVLET = "factory.invoker.servlet";
-    public final static String INVOKER_SERVLET_POOL_SIZE = "factory.invoker.servlet.pool.size";
-    public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
-    public final static String DEFAULT_MAPPING_NAME = "/container";
-    
-    protected String servletMappingName = null;
-    
-    public ServletPortletInvokerFactory(PortalContext pc)
-    {    
-        super();                
-        String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);        
-        int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE, 50);
-        servletMappingName = pc.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
-        init(servletInvokerClass, servletInvokerPoolSize);                
-    }
-    
-    public String getServletMappingName()
+    private static final Log log = LogFactory.getLog( PortletValve.class );
+        
+    public void invoke( RequestContext request, ValveContext context )
+        throws PipelineException
     {
-        return servletMappingName;
+        try
+        {
+            Aggregator aggregator = (Aggregator)CommonPortletServices.getPortalService(Aggregator.PORTLET_SERVICE_NAME);
+  
+            aggregator.build(request);
+        }
+        catch (Exception e)
+        {
+            throw new PipelineException(e);
+        }
+        // Pass control to the next Valve in the Pipeline
+        context.invokeNext( request );
     }
-    
+
+    public String toString()
+    {
+        return "AggregatorValve";
+    }
 }

@@ -1,0 +1,20 @@
+<pipelineDescriptor>
+  <name>PortletPipeline</name>
+  <valveDescriptors>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.localization.impl.LocalizationValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.capability.impl.CapabilityValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.security.impl.SecurityValveImpl</className>
+    </valveDescriptor>
+     <valveDescriptor>
+      <className>org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.aggregator.PortletValve</className>
+    </valveDescriptor>
+  </valveDescriptors>
+</pipelineDescriptor>

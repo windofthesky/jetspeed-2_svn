@@ -66,6 +66,7 @@ import org.apache.jetspeed.request.RequestContext;
 public interface Aggregator extends CommonService
 {
     public String SERVICE_NAME = "Aggregator";
+    public String PORTLET_SERVICE_NAME = "PortletAggregator";
 
     /**
      * Builds the portlet set defined in the context into a portlet tree.

@@ -109,11 +109,18 @@ public interface Engine extends JetspeedEngineConstants
        throws JetspeedException;
 
     /**
-     * Gets the engine's request pipeline.
+     * Gets the engine's request default pipeline.
      * 
      * @return Pipeline The engine's request pipeline.
      */
     public Pipeline getPipeline();
+ 
+    /**
+     * Gets the specified engine's request pipeline.
+     * 
+     * @return Pipeline A specific request pipeline.
+     */ 
+    public Pipeline getPipeline(String pipelineName);
  
     /**
      * Get the Portal Context associated with running thread of the engine

@@ -85,7 +85,16 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * infused into the web (portlet) application. This servlet knows how to delegate
  * to portlets and package their response back into a servlet response.
  * The context name of the servlet should be configurable. The default context name is "/container"
- *
+ * ServletPortletInvokerFactory is the factory for creating portlet invokers that 
+ * use Jetspeed Container servlet. 
+ * <h3>Sample Factory Configuration</h3>
+ * <pre>
+ * <code>
+ * factory.invoker.servlet = org.apache.jetspeed.container.invoker.ServletPortletInvoker
+ * factory.invoker.servlet.pool.size = 50
+ * factory.invoker.servlet.mapping.name = /container
+ * </code> 
+ * </pre>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */

@@ -51,45 +51,18 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container.invoker;
-
-import org.apache.jetspeed.PortalContext;
+package org.apache.jetspeed;
 
 /**
- * ServletPortletInvokerFactory is the factory for creating portlet invokers that 
- * use Jetspeed Container servlet. 
- * <h3>Sample Configuration</h3>
- * <pre>
- * <code>
- * factory.invoker.servlet = org.apache.jetspeed.container.invoker.ServletPortletInvoker
- * factory.invoker.servlet.pool.size = 50
- * factory.invoker.servlet.mapping.name = /container
- * </code> 
- * </pre>
+ * PortalReservedParameters. The constants here define HTTP request parameters 
+ * reserved for use by the Jetspeed Portal.
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletPortletInvokerFactory extends AbstractPortletInvokerFactory
+public final class PortalReservedParameters
 {
-    public final static String INVOKER_SERVLET = "factory.invoker.servlet";
-    public final static String INVOKER_SERVLET_POOL_SIZE = "factory.invoker.servlet.pool.size";
-    public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
-    public final static String DEFAULT_MAPPING_NAME = "/container";
-    
-    protected String servletMappingName = null;
-    
-    public ServletPortletInvokerFactory(PortalContext pc)
-    {    
-        super();                
-        String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);        
-        int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE, 50);
-        servletMappingName = pc.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
-        init(servletInvokerClass, servletInvokerPoolSize);                
-    }
-    
-    public String getServletMappingName()
-    {
-        return servletMappingName;
-    }
-    
+    public final static String PORTLET = "portlet";
+    public final static String PAGE = "page";
+    public final static String PIPELINE = "pipeline";
 }

@@ -51,45 +51,52 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container.invoker;
+package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.PortalContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.psml.FragmentImpl;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * ServletPortletInvokerFactory is the factory for creating portlet invokers that 
- * use Jetspeed Container servlet. 
- * <h3>Sample Configuration</h3>
- * <pre>
- * <code>
- * factory.invoker.servlet = org.apache.jetspeed.container.invoker.ServletPortletInvoker
- * factory.invoker.servlet.pool.size = 50
- * factory.invoker.servlet.mapping.name = /container
- * </code> 
- * </pre>
+ * PortletAggregator is used to produce the content of a single portlet.
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletPortletInvokerFactory extends AbstractPortletInvokerFactory
+public class PortletAggregator extends BaseCommonService implements Aggregator
 {
-    public final static String INVOKER_SERVLET = "factory.invoker.servlet";
-    public final static String INVOKER_SERVLET_POOL_SIZE = "factory.invoker.servlet.pool.size";
-    public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
-    public final static String DEFAULT_MAPPING_NAME = "/container";
+    private final static Log log = LogFactory.getLog(PortletAggregator.class);
     
-    protected String servletMappingName = null;
-    
-    public ServletPortletInvokerFactory(PortalContext pc)
-    {    
-        super();                
-        String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);        
-        int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE, 50);
-        servletMappingName = pc.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
-        init(servletInvokerClass, servletInvokerPoolSize);                
-    }
-    
-    public String getServletMappingName()
+    /* (non-Javadoc)
+     * @see org.apache.fulcrum.Service#init()
+     */
+    public void init() throws InitializationException
     {
-        return servletMappingName;
+        if (isInitialized())
+        {
+            return;
+        }
+
+        setInit(true);
     }
+
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.aggregator.Aggregator#build(org.apache.jetspeed.request.RequestContext)
+     */
+    public void build(RequestContext context) throws JetspeedException
+    {
+        PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
+        Fragment fragment = new FragmentImpl(); // TODO: fragment factory
+        fragment.setType(Fragment.PORTLET);
+        fragment.setName(context.getRequestParameter(PortalReservedParameters.PORTLET));
+        renderer.renderNow(fragment, context);
+    }
 }

@@ -122,7 +122,8 @@ public interface JetspeedEngineConstants
     public static final String WEBAPP_ROOT_KEY = "webappRoot";
 
     public static final String PIPELINE_CLASS = "pipeline.class";
-    public static final String PIPELINE_DESCRIPTOR = "pipeline.descriptor";
+    public static final String PIPELINE_DEFAULT = "pipeline.default";
+    public static final String PIPELINE_DIRECTORY = "pipeline.directory";
 
     /**
      * This specifies the factory to use the Jetspeed java.util.prefs.Preferences
