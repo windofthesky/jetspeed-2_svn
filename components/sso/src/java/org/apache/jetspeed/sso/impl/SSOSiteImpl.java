@@ -16,9 +16,15 @@
 
 package org.apache.jetspeed.sso.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.apache.jetspeed.sso.SSOException;
-import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
+import org.apache.jetspeed.sso.SSOSite;
+import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.om.InternalPrincipal;
 
 /**
 * SSOSiteImpl
@@ -29,7 +35,7 @@ import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 * @version $Id$
 */
 
-public class SSOSiteImpl {
+public class SSOSiteImpl implements SSOSite {
 	
 	// Private member for OJB mapping
 	private int		siteId;
@@ -38,8 +44,8 @@ public class SSOSiteImpl {
 	private boolean	isAllowUserSet;
 	private boolean isCertificateRequired;
 	
-	private Collection	credentials;
-	private Collection	principals;
+	private Collection	credentials = new Vector();//= new ArrayList(0);
+	private Collection	principals = new Vector();// = new ArrayList(0);
 	
 	/**
 	 * 
@@ -57,13 +63,13 @@ public class SSOSiteImpl {
 	 * @return Returns the credentials.
 	 */
 	public Collection getCredentials() {
-		return credentials;
+		return this.credentials;
 	}
 	/**
 	 * @param credentials The credentials to set.
 	 */
 	public void setCredentials(Collection credentials) {
-		this.credentials = credentials;
+		this.credentials.addAll(credentials);
 	}
 	/**
 	 * @return Returns the isAllowUserSet.
@@ -105,13 +111,13 @@ public class SSOSiteImpl {
 	 * @return Returns the principals.
 	 */
 	public Collection getPrincipals() {
-		return principals;
+		return this.principals;
 	}
 	/**
 	 * @param principals The principals to set.
 	 */
 	public void setPrincipals(Collection principals) {
-		this.principals = principals;
+		this.principals.addAll(principals);
 	}
 	/**
 	 * @return Returns the siteId.
@@ -144,7 +150,7 @@ public class SSOSiteImpl {
 	 * Adds the credentail to the credentials collection
 	 *
 	 */
-	public void addCredential(InternalCredentialImpl credential) throws SSOException
+	public void addCredential(InternalCredential credential) throws SSOException
 	{
 		boolean bStatus = false;
 		
@@ -167,7 +173,7 @@ public class SSOSiteImpl {
 	 * removes a credentail from the credentials collection
 	 *
 	 */
-	public void removeCredential(InternalCredentialImpl credential) throws SSOException
+	public void removeCredential(InternalCredential credential) throws SSOException
 	{
 		boolean bStatus = false;
 		
@@ -184,4 +190,61 @@ public class SSOSiteImpl {
 		if ( bStatus == false)
 			throw new SSOException(SSOException.FAILED_REMOVING_CREDENTIALS_FOR_SITE ); 
 	}
+	
+		/**
+		 * Adds the credentail to the credentials collection
+		 *
+		 */
+		public void addPrincipal(InternalPrincipal principal) throws SSOException {
+			boolean bStatus = false;
+			
+			try
+			{
+				bStatus = principals.add(principal);
+			}
+			catch(Exception e)
+			{
+				// Adding credentail to coollection failed -- notify caller with SSOException
+				throw new SSOException(SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE + e.getMessage()); 
+			}
+			
+			if ( bStatus == false)
+				throw new SSOException(SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE ); 	
+		}
+		
+		/**
+		* removePrincipal()
+		 * removes a principal from the principals collection
+		 *
+		 */
+		public void removePrincipal(long principalId) throws SSOException
+		{
+			boolean bStatus = false;
+			InternalPrincipal principalObj = null;
+			Iterator itSitePrincipals = principals.iterator();
+			
+			while (itSitePrincipals.hasNext() )
+			{
+				principalObj = (InternalPrincipal)itSitePrincipals.next();
+				if ( principalObj.getPrincipalId() == principalId)
+				{
+				
+					try
+					{
+						// TODO: Removing results in an OJB exception. Ignore it for the moment but it needs to be fixed soon...
+						//bStatus = principals.remove(principalObj);
+						bStatus = true;
+					}
+					catch(Exception e)
+					{
+						// Adding credentail to coollection failed -- notify caller with SSOException
+						throw new SSOException(SSOException.FAILED_REMOVING_PRINCIPAL_FROM_MAPPING_TABLE_FOR_SITE + e.getMessage()); 
+					}
+					
+					if ( bStatus == false)
+						throw new SSOException(SSOException.FAILED_REMOVING_PRINCIPAL_FROM_MAPPING_TABLE_FOR_SITE ); 
+				}
+					
+			}
+		}
 }

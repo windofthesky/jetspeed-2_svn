@@ -40,7 +40,15 @@ public class SSOException extends JetspeedException {
    /** <p>Failed to store site info in database.</p> */
    public static final String FAILED_STORING_SITE_INFO_IN_DB = "Failed to store site info in database.";
    
-  
+   /** <p>Requested principal doesn't exist in Principal store.</p> */
+   public static final String REQUESTED_PRINCIPAL_DOES_NOT_EXIST = "Requested principal doesn't exist in Principal store.";
+   
+   /** <p>Could not remove Principla from SITE mapping table.</p> */
+   public static final String FAILED_REMOVING_PRINCIPAL_FROM_MAPPING_TABLE_FOR_SITE = "Could not remove Principal from SITE mapping table.";
+   
+   /** <p>Could not add Principal from SITE mapping table.</p> */
+   public static final String FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE = "Could not add Principal from SITE mapping table.";
+   
    /**
     * <p>Default Constructor.</p>
     */

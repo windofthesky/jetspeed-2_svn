@@ -15,12 +15,26 @@
 
 package org.apache.jetspeed.sso;
 
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.sso.SSOProvider;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import javax.security.auth.Subject;
+
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
+
+
+import org.apache.jetspeed.sso.SSOException;
+import java.lang.Exception;
+
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+
 
 /**
  * <p>
@@ -31,9 +45,17 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
  */
 public class TestSSOComponent extends DatasourceEnabledSpringTestCase
 {
-
+	/**
+	 * test url for this UnitTest
+	 */
+	static private String TEST_URL= "http://localhost/jetspeed";
+	static private String TEST_USER= "joe";
+	
+		
     /** The property manager. */
     private static SSOProvider ssoBroker = null;
+    /** The user manager. */
+    protected UserManager ums;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -45,6 +67,7 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
         try
         {
             ssoBroker = (SSOProvider) ctx.getBean("ssoProvider");
+            ums = (UserManager) ctx.getBean("org.apache.jetspeed.security.UserManager");
         }
         catch (Exception ex)
         {
@@ -73,9 +96,57 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
      * Test user root.
      * </p>
      */
-    public void testSSO()
+    public void testSSO() throws Exception
     {
-        // TODO: Test cases
+		// Create a user
+		 try
+		    {
+		        ums.addUser(TEST_USER, "password");
+		    }
+		    catch (SecurityException sex)
+		    {
+		        //assertTrue("user already exists. exception caught: " + sex, false);
+		    }
+	        
+    	// Initialization
+    	Principal principal = new UserPrincipalImpl(TEST_USER);
+        Set principals = new HashSet();
+        principals.add(principal);
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());	
+    	
+    	if ( ssoBroker.hasSSOCredentials(subject, TEST_URL) == false)
+    	{
+    		System.out.println("No SSO Credential for user:" + TEST_USER+ " site: " + TEST_URL);
+    		
+    		// Add credential
+    		try
+			{
+    			ssoBroker.addCredentialsForSite(subject, TEST_URL,"test");
+    			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL);
+			}
+			catch(SSOException ssoex)
+			{
+	    		System.out.println("SSO Credential add FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
+	    		ssoex.printStackTrace();
+	    		throw new Exception(ssoex.getMessage());
+			}
+    	}
+    	else
+    	{
+    		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL);
+    	}
+    	
+     	try
+		{
+	    	// Remove credential for Site
+	    	ssoBroker.removeCredentialsForSite(subject, TEST_URL);
+	    	System.out.println("SSO Credential removed for user:" + TEST_USER+ " site: " + TEST_URL);
+		}
+    	catch(SSOException ssoex)
+		{
+    		System.out.println("SSO Credential remove FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
+    		throw new Exception(ssoex.getMessage());
+		}
     }
 
     /**

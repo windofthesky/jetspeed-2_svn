@@ -27,17 +27,28 @@ limitations under the License.
     -->
     
     <table name="SSO_SITE_TO_CREDENTIALS">
-    	<column name="SITE_ID" required="true" type="INTEGER"/>
-        <column name="PRINCIPAL_ID" required="true" type="INTEGER"/>
-        <column name="CREDENTIAL_ID" required="true" type="INTEGER"/>
+    	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CREDENTIAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <foreign-key foreignTable="SSO_SITE">
+            <reference foreign="SITE_ID" local="SITE_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_CREDENTIAL">
+            <reference foreign="CREDENTIAL_ID" local="CREDENTIAL_ID"/>
+        </foreign-key>
+    </table>
+    
+    <!--
+       Create Site to Principals association Table
+    -->
+    
+    <table name="SSO_SITE_TO_PRINCIPALS">
+    	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+         <foreign-key foreignTable="SSO_SITE">
             <reference foreign="SITE_ID" local="SITE_ID"/>
         </foreign-key>
        <foreign-key foreignTable="SECURITY_PRINCIPAL">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_CREDENTIAL">
-            <reference foreign="CREDENTIAL_ID" local="CREDENTIAL_ID"/>
         </foreign-key>
     </table>
     

@@ -29,11 +29,18 @@ import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.jetspeed.sso.SSOSite;
+
+
+import org.apache.jetspeed.sso.impl.SSOSiteImpl;
+import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
 
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
-import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
+import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
 
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
@@ -67,17 +74,19 @@ public class PersistenceBrokerSSOProvider extends
 	 */
 	public boolean hasSSOCredentials(Subject subject, String site) {
 		// Initialization
-		SSOSiteImpl ssoSite = getSSOSiteObject(site);
+		SSOSite ssoSite = getSSOSiteObject(site);
 		
 		if ( ssoSite == null)
+		{
 			return false;	// no entry for site
+		}
 		
 		// Get the principal from the subject
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
 		String fullPath = principal.getFullPath();
 		
 		// Filter the credentials for the given principals
-		InternalCredentialImpl  credential = getCredential(ssoSite, fullPath);	
+		InternalCredential  credential = getCredential(ssoSite, fullPath);	
 		
 		if (credential == null)
 			return false;
@@ -90,7 +99,7 @@ public class PersistenceBrokerSSOProvider extends
 	 */
 	public void addBasicAuthenticationForSite(HttpServletRequest request,
 			Subject subject, String site) throws SSOException {
-		// TODO Auto-generated method stub
+		// TODO Needs to be done for SSO Final
 
 	}
 
@@ -101,7 +110,7 @@ public class PersistenceBrokerSSOProvider extends
 			throws SSOException {
 		
 		// Initialization
-		SSOSiteImpl ssoSite = getSSOSiteObject(site);
+		SSOSite ssoSite = getSSOSiteObject(site);
 		
 		if ( ssoSite == null)
 			throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);	// no entry for site
@@ -111,7 +120,7 @@ public class PersistenceBrokerSSOProvider extends
 		String fullPath = principal.getFullPath();
 		
 		// Filter the credentials for the given principals
-		InternalCredentialImpl  credential = getCredential(ssoSite, fullPath);	
+		InternalCredential  credential = getCredential(ssoSite, fullPath);	
 		
 		if ( credential == null)
 			throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);	// no entry for site
@@ -129,27 +138,34 @@ public class PersistenceBrokerSSOProvider extends
 			throws SSOException {
 		
 		// Check if the site already exists
-		SSOSiteImpl ssoSite = getSSOSiteObject(site);
+		SSOSite ssoSite = getSSOSiteObject(site);
 		if (ssoSite == null)
 		{
 			// Create a new site
 			ssoSite = new SSOSiteImpl();
 			ssoSite.setSiteURL(site);
+			ssoSite.setName(site);
+			ssoSite.setCertificateRequired(false);
+			ssoSite.setAllowUserSet(true);
 		}
 		
 		// Get the Principal information
 		String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
 			
-		SSOPrincipalImpl principal = this.getPrincipalForPath(subject, fullPath);
+		InternalPrincipal principal = this.getPrincipalForPath(subject, fullPath);
+		
+		if (principal == null)
+			throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
 		
 		// New credential object
-		InternalCredentialImpl credential = new InternalCredentialImpl();
-		ssoSite.addCredential(credential);
-		
-		// Populate the credential information
-		credential.setValue(pwd);
-		credential.setPrincipalId(principal.getPrincipalId());
-		
+		 InternalCredentialImpl credential = 
+            new InternalCredentialImpl(principal.getPrincipalId(),
+            		pwd, 0, DefaultPasswordCredentialImpl.class.getName());
+		 
+		// Add credential to mapping table
+		 ssoSite.addCredential(credential);
+		 ssoSite.addPrincipal(principal);
+	
 		// Update database and reset cache
 		 try
          {
@@ -157,6 +173,7 @@ public class PersistenceBrokerSSOProvider extends
           }
          catch (Exception e)
          {
+         	e.printStackTrace();
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
          }
          
@@ -170,8 +187,45 @@ public class PersistenceBrokerSSOProvider extends
 	 */
 	public void removeCredentialsForSite(Subject subject, String site)
 			throws SSOException {
-		// TODO Auto-generated method stub
-
+		
+		//Get the site
+		SSOSite ssoSite = getSSOSiteObject(site);
+		if (ssoSite == null)
+		{
+			throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
+		}
+		
+		// Get the Principal information
+		String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+			
+		InternalPrincipal principal = this.getPrincipalForPath(subject, fullPath);
+		
+		/*
+		 * Should never happen except if the function gets invoked from outside the current credential store
+		 */
+		if (principal == null)
+			throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
+		
+		// New credential object
+		 InternalCredential credential = getCredential(ssoSite, fullPath);
+		 
+		// Remove credential and principal from mapping
+		 ssoSite.removeCredential(credential);
+		 ssoSite.removePrincipal(principal.getPrincipalId());
+	
+		// Update database and reset cache
+		 try
+         {
+             getPersistenceBrokerTemplate().store(ssoSite);
+          }
+         catch (Exception e)
+         {
+         	e.printStackTrace();
+            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
+         }
+         
+         // Clear cache
+         this.mapSite.clear();
 	}
 	
 	/*
@@ -184,10 +238,10 @@ public class PersistenceBrokerSSOProvider extends
 	 * Obtains the Site information including the credentials for a site (url).
 	 */
 	
-	private SSOSiteImpl getSSOSiteObject(String site)
+	private SSOSite getSSOSiteObject(String site)
 	{
 		//Initialization
-		SSOSiteImpl ssoSite = null;
+		SSOSite ssoSite = null;
 		
 		//Check if the site is in the map
 		if (mapSite.containsKey(site) == false )
@@ -207,7 +261,7 @@ public class PersistenceBrokerSSOProvider extends
 		    	// Get the site from the collection. There should be only one entry (uniqueness)
 		    	if (itSite.hasNext())
 			    {
-			    	ssoSite = (SSOSiteImpl) itSite.next();
+				    	ssoSite = (SSOSite) itSite.next();
 			    }
 		    	
 		    	// Add it to the map
@@ -221,7 +275,7 @@ public class PersistenceBrokerSSOProvider extends
 		}
 		else
 		{
-			ssoSite = (SSOSiteImpl)mapSite.get(site);
+			ssoSite = (SSOSite)mapSite.get(site);
 		}
 		
 		return ssoSite;
@@ -231,25 +285,29 @@ public class PersistenceBrokerSSOProvider extends
 	 * getCredential
 	 * returns the credentials for a given user
 	 */
-	private InternalCredentialImpl  getCredential(SSOSiteImpl ssoSite, String fullPath)
+	private InternalCredential  getCredential(SSOSite ssoSite, String fullPath)
 	{
 		long  principalID = -1;
-		InternalCredentialImpl credential = null;
-		
+		InternalCredential credential = null;
+				
 		/* Error checking
 		 * 1) should have at least one principal
 		 * 2) should have at least one credential
 		 * 
 		 * If one of the above fails return null wich means that the user doesn't have credentials for that site
 		 */
-		if ( ssoSite.getPrincipals() == null || ssoSite.getCredentials() == null)
-			return null;
+		Collection principals = ssoSite.getPrincipals();
+		Collection credentials = ssoSite.getCredentials();
 		
+		if ( principals == null  || credentials == null)
+		{
+			return null;
+		}
 		// Iterate over the principals and extract the principal id for the given full path
-		Iterator itPrincipals = ssoSite.getPrincipals().iterator();
+		Iterator itPrincipals = principals.iterator();
 		while (itPrincipals.hasNext() && principalID == -1 /*not found yet*/)
 		{
-			InternalPrincipalImpl principal = (InternalPrincipalImpl)itPrincipals.next();
+			InternalPrincipal principal = (InternalPrincipal)itPrincipals.next();
 			if ( principal != null && principal.getFullPath().compareToIgnoreCase(fullPath) == 0)
 			{
 				principalID = principal.getPrincipalId();
@@ -260,13 +318,16 @@ public class PersistenceBrokerSSOProvider extends
 			return null;	// No principal found for that site
 		
 		// Last lookup to see if there are credentials for that user
-		Iterator itCredentials = ssoSite.getCredentials().iterator();
+		Iterator itCredentials = credentials.iterator();
 		while (itCredentials.hasNext() && credential == null /*not found yet*/)
 		{
-			InternalCredentialImpl cred = (InternalCredentialImpl)itCredentials.next();
+			InternalCredential cred = (InternalCredential)itCredentials.next();
+			
 			if ( cred != null && cred.getPrincipalId() == principalID)
 			{
 				// Found credentials for Orincipals
+				// TODO: Remove debug
+				System.out.println("Found Credential: " + cred.getValue() + " for PrincipalID " + principalID);
 				credential = cred;
 			}
 		}
@@ -274,7 +335,7 @@ public class PersistenceBrokerSSOProvider extends
 		return credential;
 	}
 	
-	private SSOPrincipalImpl getPrincipalForPath(Subject subject, String fullPath)
+	private InternalPrincipal getPrincipalForPath(Subject subject, String fullPath)
 	{
 		Criteria filter = new Criteria();       
 	    filter.addEqualTo("fullPath", fullPath);
@@ -288,7 +349,7 @@ public class PersistenceBrokerSSOProvider extends
 	    	// Get the site from the collection. There should be only one entry (uniqueness)
 	    	if (itPrincipals.hasNext())
 		    {
-		    	return (SSOPrincipalImpl) itPrincipals.next();
+		    	return (InternalPrincipal) itPrincipals.next();
 		    }
 	    }
 	    

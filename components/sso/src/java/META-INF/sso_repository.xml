@@ -80,14 +80,14 @@ limitations under the License.
       </field-descriptor>
       </class-descriptor>
 
-
+	
 	<!--
 	   - S I T E
 	-->	
 	<class-descriptor
 	    class="org.apache.jetspeed.sso.impl.SSOSiteImpl"
 	    proxy="dynamic"
-	    table="SSOSite"
+	    table="SSO_SITE"
 	>
 	    <documentation>Represents the single sign on site</documentation>
 	    <field-descriptor
@@ -123,44 +123,40 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
-	        name="isRequireCertificate"
-	        column="REQUIRE_CERTIFICATE"
+	        name="isCertificateRequired"
+	        column="REQUIRES_CERTIFICATE"
 	        jdbc-type="BIT"
 	        nullable="false"
 	    >
 	    </field-descriptor>
-   	    
-	    <collection-descriptor
+ 	    <collection-descriptor
 	        name="credentials"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
+	        auto-update="object"
+	        auto-delete="object"
 	        indirection-table="SSO_SITE_TO_CREDENTIALS"
 	    >
 	        <documentation>This is the reference to credentials.</documentation>
 	        <fk-pointing-to-this-class column="SITE_ID"/>
 	        <fk-pointing-to-element-class column="CREDENTIAL_ID"/>
-	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
 	    </collection-descriptor>
-
 	     <collection-descriptor
 	        name="principals"
 	        element-class-ref="org.apache.jetspeed.sso.impl.SSOPrincipalImpl"
-	        proxy="true"
+	       proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
 	        auto-update="link"
 	        auto-delete="link"
-	        indirection-table="SSO_SITE_TO_CREDENTIALS"
+	        indirection-table="SSO_SITE_TO_PRINCIPALS"
 	    >
-	        <documentation>This is the reference to credentials.</documentation>
+	        <documentation>This is the reference to principals.</documentation>
 	        <fk-pointing-to-this-class column="SITE_ID"/>
 	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
 	    </collection-descriptor>
-	   
 	</class-descriptor>
 	
 </descriptor-repository>
