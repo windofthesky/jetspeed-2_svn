@@ -628,7 +628,16 @@ limitations under the License.
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/localeselector"/>
-    <delete file="${org.apache.jetspeed.deploy.war.dir}/security.xml"/>
+    <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+    <j:choose>
+      <j:when test="${catalina_version_major == '5'}" >
+        <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+      </j:when>
+      <j:otherwise>
+        <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
+      </j:otherwise>
+    </j:choose>
+	<delete file="${context_dir}/security.xml"/>
   </goal>
 
 <!--
