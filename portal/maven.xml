@@ -22,17 +22,6 @@ limitations under the License.
   <!-- Target of maven test:single test -->
 <property name='testcase' value='org.apache.jetspeed.engine.TestEngine'/>
 
-<preGoal name="java:prepare-filesystem">
- 	<echo message="====================================" />
-  	<echo message="        Copying OJB Metadata        " />
-  	<echo message="====================================" />
- 	<maven:reactor
-               basedir="${basedir}"
-               includes="services/security/project.xml,components/registry/project.xml"
-               goals="ojb.registry"
-               banner="Copying OJB Metadata for Registry and Security"
-               ignoreFailures="false"/>
- </preGoal>
 
 -->
 
@@ -532,9 +521,15 @@ limitations under the License.
     <attainGoal name="ojb.set.production.database.platform"/>
   </preGoal>
 
-  <preGoal name="war:install">
+  <preGoal name="war:init">  	
    <attainGoal name= "jar:install"/>
+   <j:set var="maven.test.skip" value="true" />
+   <echo>Testing flag is: ${maven.test.skip} for war:install</echo>
   </preGoal>
+  
+  <postGoal name="war:install">  	
+   <j:set var="maven.test.skip" value="false" />
+  </postGoal>
 
   <preGoal name="war:webapp">
     <attainGoal name="ojb.set.production.database.platform"/>
