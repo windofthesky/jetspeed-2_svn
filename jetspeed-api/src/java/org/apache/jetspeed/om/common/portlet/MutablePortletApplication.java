@@ -21,7 +21,6 @@ import java.util.Collection;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
@@ -29,42 +28,46 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
 /**
  * MutablePortletApplication
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
- */
-/**
- *
- * MutablePortletApplication
- *
  * Extends the <code>org.apache.pluto.om.portlet.PortletApplicationDefinition</code>
  * interface adding mutator methods for those attributes that do not have them
  * so as to make manipulating the portlet OM easier.
- * It has additional methods to make it easier to use within Jetspeed.
  *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface MutablePortletApplication extends PortletApplicationDefinition, Serializable
+public interface MutablePortletApplication extends PortletApplication, Serializable
 {
     public static final String PREFS_ROOT ="portlet_application";
-    
-    public GenericMetadata getMetadata();
-    
+        
+    /**
+     * Sets the metadata from the extended jetspeed-portlet.xml
+     * 
+     * @param metadata
+     */
     public void setMetadata(GenericMetadata metadata);
     
+    /**
+     * Associates the web application definition with this portlet application defintion.
+     * 
+     * @param wad
+     */
     void setWebApplicationDefinition(WebApplicationDefinition wad);
 
+    /**
+     * @param name
+     */
     void setName(String name);
 
-    String getName();
-
+    /**
+     * @param pd
+     */
     void addPortletDefinition(PortletDefinition pd);
 
-    Collection getPortletDefinitions();
-
-    PortletDefinition getPortletDefinitionByName(String name);
-
+    /**
+     * @param portlets
+     */
     void setPortletDefinitionList(PortletDefinitionList portlets);
 
     /**
@@ -80,12 +83,6 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
     void setUserAttributeRefs(Collection userAttributeRefs);
     
     /**
-     * <p>Gets the collection of user attribute refs associated
-     * with this portlet application.</p>
-     */
-    Collection getUserAttributeRefs();
-
-    /**
      * <p>Adds a user attribute ref to the user attribute ref set.</p>
      * @param userAttributeRef The user attribute ref.
      */
@@ -97,20 +94,7 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
      */
     void setUserAttributes(Collection userAttributes);
     
-    /**
-     * <p>Gets the collection of user attributes associated
-     * with this portlet application.</p>
-     */
-    Collection getUserAttributes();
-
     void setApplicationIdentifier(String applicationIndentifier);
-
-    String getApplicationIdentifier();
-
-    /**
-     * @return
-     */
-    String getDescription();
 
     /**
      * @param string
@@ -140,19 +124,6 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
      * @param type The type of portlet application.
      */
     void setApplicationType(int type);
-
-    /**
-     * Gets the Portlet Application type.
-     * Valid values are:
-     * <p>
-     *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
-     *               server's web application space.
-     * <p>
-     *      {@link MutablePortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
-     * <p>
-     * @return The type of portlet application.
-     */
-    int getApplicationType();
 
     /**
      * Marks this application as a standard web application,
