@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -94,10 +95,11 @@ public class DeployUtilities
      * Deploys archives from a war file to the WebApps directory
      * @param webAppsDir The application server directory
      * @param warFile The war file to deploy
-     * @throws PortletApplicationException
+     * @throws java.lang.IOException if the target for deployment already exists
+     * or there is a problem locating, reading or expanding the source archive.
      */
 
-    public void deployArchive(String webAppsDir, String warFile, String appName) throws PortletApplicationException
+    public void deployArchive(String webAppsDir, String warFile, String appName) throws IOException
     {
         String warFileName = warFile;
         if (warFileName.indexOf("/") != -1)
@@ -109,48 +111,45 @@ public class DeployUtilities
 
         log.info("deploying WAR file'" + warFileName + ".war' to WEB-INF/...");
 
-        try
+        String destination = webAppsDir + appName;
+        if (new File(destination).exists())
         {
-            String destination = webAppsDir + appName;
+            throw new IOException(
+                "The portlet application archive target, "
+                    + destination
+                    + ", already exists.  Please remove it before attempting to deploy.");
+        }
 
-            JarFile jarFile = new JarFile(warFile);
-            Enumeration files = jarFile.entries();
-            while (files.hasMoreElements())
+        JarFile jarFile = new JarFile(warFile);
+        Enumeration files = jarFile.entries();
+        while (files.hasMoreElements())
+        {
+            JarEntry entry = (JarEntry) files.nextElement();
+
+            File file = new File(destination, entry.getName());
+            File dirF = new File(file.getParent());
+            dirF.mkdirs();
+            if (entry.isDirectory())
             {
-                JarEntry entry = (JarEntry) files.nextElement();
-
-                File file = new File(destination, entry.getName());
-                File dirF = new File(file.getParent());
-                dirF.mkdirs();
-                if (entry.isDirectory())
+                file.mkdirs();
+            }
+            else
+            {
+                byte[] buffer = new byte[1024];
+                int length = 0;
+                InputStream fis = jarFile.getInputStream(entry);
+                FileOutputStream fos = new FileOutputStream(file);
+                while ((length = fis.read(buffer)) >= 0)
                 {
-                    file.mkdirs();
+                    fos.write(buffer, 0, length);
                 }
-                else
-                {
-                    byte[] buffer = new byte[1024];
-                    int length = 0;
-                    InputStream fis = jarFile.getInputStream(entry);
-                    FileOutputStream fos = new FileOutputStream(file);
-                    while ((length = fis.read(buffer)) >= 0)
-                    {
-                        fos.write(buffer, 0, length);
-                    }
-                    fos.close();
-                }
-
+                fos.close();
             }
 
-            log.info("Libraries and classes deployment finished!");
         }
-        catch (Exception e)
-        {
 
-            String msg = "Exception while copying jar files to web apps directory '" + webAppsDir + "'" + e.getMessage();
-            log.error(msg, e);
-            PortletApplicationException pe = new PortletApplicationException(msg);
-            throw pe;
-        }
+        log.info("Libraries and classes deployment finished!");
+
     }
 
     /**
