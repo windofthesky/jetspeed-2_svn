@@ -39,6 +39,13 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
+      <id>jetspeed2:jetspeed-web-content</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>        
+    <dependency>
       <id>mx4j-jmx</id>
       <groupId>mx4j</groupId>
       <version>1.1.1</version>
