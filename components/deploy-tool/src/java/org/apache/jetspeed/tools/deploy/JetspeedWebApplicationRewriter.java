@@ -176,12 +176,12 @@ public class JetspeedWebApplicationRewriter
                 insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
                 changed = true;
             }
-            /* remove this for now .. it seems to broken
+            
             if(portletTaglib == null)
             {
                 Element taglib = new Element ("taglib");
                 Element taguri = (Element) new Element("taglib-uri").addContent("http://java.sun.com/portlet");
-                Element taglocation = (Element) new Element("taglib-location").addContent("/WEB-INF/portlet.tld");
+                Element taglocation = (Element) new Element("taglib-location").addContent("/WEB-INF/tld/portlet.tld");
                 
                 taglib.addContent(taguri);
                 taglib.addContent(taglocation);
@@ -190,7 +190,6 @@ public class JetspeedWebApplicationRewriter
                 changed = true;
                 portletTaglibAdded = true;
             }
-            */
         }
         catch (Exception e)
         {
