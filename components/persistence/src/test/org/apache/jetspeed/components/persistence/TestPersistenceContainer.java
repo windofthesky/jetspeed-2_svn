@@ -25,9 +25,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventLis
 import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore;
 import org.apache.jetspeed.components.util.DatasourceTestCase;
 import org.jmock.Mock;
-import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.matcher.InvokeOnceMatcher;
-import org.jmock.core.stub.ReturnStub;
 
 /**
  * <p>
@@ -124,13 +122,35 @@ public class TestPersistenceContainer extends DatasourceTestCase
         
         store.getTransaction().begin();
         A a = new A();
-        a.setName("a2");
+        a.setName("a1");
         store.makePersistent(a);
         store.getTransaction().commit();
         
         store.getTransaction().begin();
         store.deletePersistent(a);
         store.getTransaction().commit();
+        
+              
+        mockListener.verify();
+        
+        mockListener.reset();
+        
+        mockListener.expects(new InvokeOnceMatcher()).method("afterMakePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("beforeMakePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("afterDeletePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("beforeDeletePersistent").isVoid();
+        
+        PersistenceStore store2 = new PBStore("jetspeed");
+        store2.getTransaction().begin();
+        A a2 = new A();
+ 
+        a.setName("a2");
+        store2.makePersistent(a2);
+        store2.getTransaction().commit();
+        
+        store2.getTransaction().begin();
+        store2.deletePersistent(a2);
+        store2.getTransaction().commit();
         
         mockListener.verify();
     }
