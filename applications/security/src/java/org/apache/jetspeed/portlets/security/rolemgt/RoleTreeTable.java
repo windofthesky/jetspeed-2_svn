@@ -30,6 +30,9 @@ import org.apache.myfaces.custom.tree.model.TreeModel;
  */
 public class RoleTreeTable implements Serializable
 {
+    /** The role tree table bean. */
+    public final static String ROLE_TREE_TABLE = "roleTreeTable";
+    
     private DefaultTreeModel treeModel;
 
     /**
@@ -47,13 +50,15 @@ public class RoleTreeTable implements Serializable
      */
     public RoleTreeTable()
     {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY", "XY"));
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RoleTreeItem("/role", "role"));
+        DefaultMutableTreeNode xy = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY", "XY"));
+        root.insert(xy);
         DefaultMutableTreeNode a = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY/A", "A"));
-        root.insert(a);
+        xy.insert(a);
         DefaultMutableTreeNode b = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY/B", "B"));
-        root.insert(b);
+        xy.insert(b);
         DefaultMutableTreeNode c = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY/C", "C"));
-        root.insert(c);
+        xy.insert(c);
 
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RoleTreeItem("/role/XY/A/a1", "a1"));
         a.insert(node);

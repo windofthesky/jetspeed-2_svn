@@ -57,13 +57,12 @@ public class ChangePasswordPortlet extends GenericServletPortlet
     public static final String WHY = "why";
     public static final String REQUIRED = "required";
     public static final String CANCELLED = "cancelled";
-    public static final String CPS_USER_MANAGER_COMPONENT = "cps:UserManager";
     
     public void init(PortletConfig config)
     throws PortletException 
     {
         super.init(config);
-        manager = (UserManager) getPortletContext().getAttribute(CPS_USER_MANAGER_COMPONENT);
+        manager = (UserManager) getPortletContext().getAttribute(SecurityApplicationResources.CPS_USER_MANAGER_COMPONENT);
         if (null == manager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

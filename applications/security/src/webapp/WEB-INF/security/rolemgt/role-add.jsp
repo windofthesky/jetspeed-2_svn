@@ -28,6 +28,8 @@
 <f:verbatim>&nbsp;</f:verbatim>
 <h:outputText value="#{roleActionForm.parentRole.roleName}" />
 <f:verbatim><br><br></f:verbatim>
+<h:outputText value="#{roleMgtMessages['addRoleInfo']}" styleClass="portlet-msg-info" />
+<f:verbatim><br><br></f:verbatim>
 
 <h:form id="addRoleForm" name="addRoleForm">
 

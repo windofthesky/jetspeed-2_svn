@@ -24,6 +24,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 
 import org.apache.myfaces.custom.tabbedpane.HtmlPanelTabbedPane;
+import org.apache.myfaces.custom.tree.HtmlTree;
 
 /**
  * <p>
@@ -59,6 +60,31 @@ public class RoleMgtRenderUtil
         }
 
         return tabbedPane;
+    }
+    
+    /**
+     * <p>
+     * Utility method used to locate the tree table component.
+     * </p>
+     * 
+     * @param component The component.
+     * @return The {@link HtmlTree}.
+     */
+    public static HtmlTree findTree(UIComponent component)
+    {
+        HtmlTree tree = null;
+
+        UIComponent parent = component.getParent();
+        if (parent instanceof HtmlTree)
+        {
+            tree = (HtmlTree) parent;
+        }
+        else
+        {
+            tree = findTree(parent);
+        }
+
+        return tree;
     }
 
     /**
