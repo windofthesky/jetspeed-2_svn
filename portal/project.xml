@@ -261,8 +261,8 @@ limitations under the License.
     </dependency>
     -->
     <dependency>
-      <id>ojb</id>
-      <version>1.0.rc4</version>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc6</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
