@@ -367,6 +367,25 @@ public class TestPersistenceService extends JetspeedTest
             throw e;
         }
     }
+    
+    public void testDeleteByQuery()
+    {
+        initTestObject();
+
+        PortletApplicationDefinitionImpl app = getTestObject1();
+
+        assertNotNull(app);
+        
+        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        LookupCriteria c = plugin.newLookupCriteria();
+        c.addEqualTo("name", "test adding object");
+        Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
+        plugin.deleteByQuery(query);
+
+        app = getTestObject1();
+
+        assertNull(app);
+    }
 
     protected PersistenceService getService()
     {

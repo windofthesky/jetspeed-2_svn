@@ -1,0 +1,306 @@
+<!--
+   - P R O P E R T Y  S E T  D E F I N I T I O N
+-->	
+<class-descriptor
+    class="org.apache.jetspeed.spi.om.prefs.impl.PropertySetDefImpl"
+    proxy="dynamic"
+    table="pref_property_set_def"
+>
+    <documentation>Represents a property set definition.</documentation>
+    <field-descriptor
+        name="propertySetDefId"
+        column="property_set_def_id"
+        jdbc-type="INTEGER"
+        primarykey="true"
+        indexed="true"
+        autoincrement="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertySetName"
+        column="property_set_name"
+        jdbc-type="VARCHAR"
+        nullable="false"
+        length="100"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertySetType"
+        column="property_set_type"
+        jdbc-type="SMALLINT"
+        nullable="false"
+        length="100"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="creationDate"
+        column="creation_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="modifiedDate"
+        column="modified_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <collection-descriptor
+        name="propertyKeys"
+        element-class-ref="org.apache.jetspeed.spi.om.prefs.impl.PropertyKeyImpl"
+        proxy="true"
+        auto-retrieve="true"
+        auto-update="true"
+        auto-delete="true"
+    >
+        <documentation>This is the reference to a set property keys.</documentation>
+        <inverse-foreignkey field-ref="propertySetDefId"/>
+    </collection-descriptor>
+</class-descriptor>
+
+<!--
+   - N O D E
+-->	
+
+<class-descriptor
+    class="org.apache.jetspeed.spi.om.prefs.impl.NodeImpl"
+    proxy="dynamic"
+    table="pref_node"
+>
+    <documentation>Represents a preferences node.</documentation>
+    <field-descriptor
+        name="nodeId"
+        column="node_id"
+        jdbc-type="INTEGER"
+        primarykey="true"
+        indexed="true"
+        autoincrement="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="parentNodeId"
+        column="parent_node_id"
+        jdbc-type="INTEGER"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertySetDefId"
+        column="property_set_def_id"
+        jdbc-type="INTEGER"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="nodeName"
+        column="node_name"
+        jdbc-type="VARCHAR"
+        nullable="false"
+        length="100"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="nodeType"
+        column="node_type"
+        jdbc-type="SMALLINT"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="fullPath"
+        column="full_path"
+        jdbc-type="VARCHAR"
+        nullable="false"
+        length="254"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="creationDate"
+        column="creation_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="modifiedDate"
+        column="modified_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <reference-descriptor
+        name="propertySetDef"
+        class-ref="org.apache.jetspeed.spi.om.prefs.impl.PropertySetDefImpl"
+        proxy="false"
+        refresh="true"
+        auto-retrieve="true"
+    >
+        <documentation>This is the reference to a property set definition.</documentation>
+        <foreignkey field-ref="propertySetDefId"/>
+    </reference-descriptor>
+    <collection-descriptor
+        name="properties"
+        element-class-ref="org.apache.jetspeed.spi.om.prefs.impl.PropertyImpl"
+        proxy="false"
+        refresh="true"
+        auto-retrieve="true"
+        auto-delete="true"
+    >
+        <documentation>This is the reference to a node properties.</documentation>
+        <inverse-foreignkey field-ref="nodeId"/>
+    </collection-descriptor>
+</class-descriptor>
+
+<!--
+   - P R O P E R T Y  K E Y
+-->	
+
+<class-descriptor
+    class="org.apache.jetspeed.spi.om.prefs.impl.PropertyKeyImpl"
+    proxy="dynamic"
+    table="pref_property_key"
+>
+    <documentation>Represents a property key.</documentation>
+    <field-descriptor
+        name="propertyKeyId"
+        column="property_key_id"
+        jdbc-type="INTEGER"
+        primarykey="true"
+        indexed="true"
+        autoincrement="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertySetDefId"
+        column="property_set_def_id"
+        jdbc-type="INTEGER"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertyKeyName"
+        column="property_name"
+        jdbc-type="VARCHAR"
+        nullable="false"
+        length="100"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertyKeyType"
+        column="property_type"
+        jdbc-type="SMALLINT"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="creationDate"
+        column="creation_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="modifiedDate"
+        column="modified_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+</class-descriptor>
+
+<!--
+   - P R O P E R T Y
+-->	
+
+<class-descriptor
+    class="org.apache.jetspeed.spi.om.prefs.impl.PropertyImpl"
+    proxy="dynamic"
+    table="pref_property_value"
+>
+    <documentation>Represents a property key/value pair.</documentation>
+    <field-descriptor
+        name="propertyValueId"
+        column="property_value_id"
+        jdbc-type="INTEGER"
+        primarykey="true"
+        indexed="true"
+        autoincrement="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="nodeId"
+        column="node_id"
+        jdbc-type="INTEGER"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="propertyKeyId"
+        column="property_key_id"
+        jdbc-type="INTEGER"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="booleanPropertyValue"
+        column="boolean_value"
+        jdbc-type="BIT"
+        nullable="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="datePropertyValue"
+        column="datetime_value"
+        jdbc-type="TIMESTAMP"
+        nullable="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="longPropertyValue"
+        column="long_value"
+        jdbc-type="INTEGER"
+        nullable="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="doublePropertyValue"
+        column="double_value"
+        jdbc-type="DOUBLE"
+        nullable="true"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="textPropertyValue"
+        column="text_value"
+        jdbc-type="VARCHAR"
+        nullable="true"
+        length="254"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="creationDate"
+        column="creation_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <field-descriptor
+        name="modifiedDate"
+        column="modified_date"
+        jdbc-type="TIMESTAMP"
+        nullable="false"
+    >
+    </field-descriptor>
+    <reference-descriptor
+        name="propertyKey"
+        class-ref="org.apache.jetspeed.spi.om.prefs.impl.PropertyKeyImpl"
+        proxy="false"
+     	auto-retrieve="true"
+    	auto-update="false"
+     	auto-delete="false"
+    >
+        <documentation>This is the reference to a property key.</documentation>
+        <foreignkey field-ref="propertyKeyId"/>
+    </reference-descriptor>
+</class-descriptor>

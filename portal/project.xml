@@ -258,11 +258,11 @@
     <unitTest>
       <excludes>
         <exclude>org/apache/jetspeed/aggregator/TestAggregator.java</exclude>
-
         <!-- The follow are failing and should be fixed or removed -->
         <exclude>org/apache/jetspeed/tools/TestWebXML.java</exclude>
         <exclude>org/apache/jetspeed/services/profiler/TestProfilerService.java</exclude>
-
+        <!-- Preferences SPI exclude -->
+        <exclude>org/apache/jetspeed/spi/services/prefs/TestUtils.java</exclude>
        </excludes>
       <includes>
         <include>**/Test*.java</include>

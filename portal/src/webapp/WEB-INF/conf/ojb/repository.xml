@@ -8,6 +8,7 @@
 <!ENTITY internal SYSTEM "repository_internal.xml">
 <!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
 <!ENTITY page SYSTEM "repository_page.xml">
+<!ENTITY preferences SYSTEM "repository_prefs.xml">
 
 ]>
 
@@ -25,5 +26,8 @@
 
     <!-- include jetspeed page and profiler mappings here -->
     &page;
+
+    <!-- include jetspeed defined mappings here -->
+    &preferences;
 
 </descriptor-repository>

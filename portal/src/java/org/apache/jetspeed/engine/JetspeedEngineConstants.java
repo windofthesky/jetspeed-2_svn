@@ -124,5 +124,12 @@ public interface JetspeedEngineConstants
     public static final String PIPELINE_CLASS = "pipeline.class";
     public static final String PIPELINE_DESCRIPTOR = "pipeline.descriptor";
  
+    /**
+     * This specifies the factory to use the Jetspeed java.util.prefs.Preferences
+     * implementation.
+     */
+    public static final String PREFERENCES_FACTORY = "preferences.factory";
+    public static final String PREFERENCES_FACTORY_DEFAULT =
+        "org.apache.jetspeed.spi.services.prefs.impl.PreferencesFactoryImpl";
 
 }

@@ -135,6 +135,14 @@ public class JetspeedEngine implements Engine
             // Set up Commons Logging to use the Log4J Logging
             System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
 
+            // Configure java.util.prefs.PreferencesFactory
+            String preferencesFactory = configuration.getString(PREFERENCES_FACTORY, PREFERENCES_FACTORY_DEFAULT);
+            if ((null != preferencesFactory) && (!preferencesFactory.equals("")))
+            {
+                System.setProperty("java.util.prefs.PreferencesFactory", preferencesFactory);
+                log.info("Configured java.util.prefs.PreferencesFactory from " + log4jFile);
+            }
+
             //
             // bootstrap the initable services
             //
