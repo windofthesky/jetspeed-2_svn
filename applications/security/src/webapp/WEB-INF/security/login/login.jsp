@@ -13,15 +13,29 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
+<%@page import="org.apache.jetspeed.login.LoginConstants" %>
 <html>
   <title>Login</title>
   <body>
-    <form method="POST" action='<%= response.encodeURL("j_security_check")%>'>
-      Username <input type="text" size="15" name="j_username">
+  <% if ( request.getUserPrincipal() != null )
+  		{ %>
+  	Welcome <%= request.getUserPrincipal().getName() %> <br>
+  	<a href='<%= response.encodeURL(request.getContextPath()+"/login/logout") %>'>Logout</a>
+  <% 	}
+    	else
+			{
+					Integer retryCount = (Integer)request.getSession().getAttribute(LoginConstants.RETRYCOUNT);
+					if ( retryCount != null )
+					{ %>
+		<br><i>Invalid username or password (<%=retryCount%>)</i><br>
+		   <% } %>
+		<form method="POST" action='<%= response.encodeURL(request.getContextPath()+"/login/proxy")%>'>
+      Username <input type="text" size="15" name="<%=LoginConstants.USERNAME%>">
       <br>
-      Password <input type="password" size="15" name="j_password">
+      Password <input type="password" size="15" name="<%=LoginConstants.PASSWORD%>">
       <input type="submit" value="Login">
     </form>
+  <% } %>
   </body>
-</html> 
+</html>
 
