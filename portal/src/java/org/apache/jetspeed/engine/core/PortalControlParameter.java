@@ -88,6 +88,7 @@ public class PortalControlParameter
     static public final String RENDER_PARAM = "rp";
     static public final String STATE = "st";
     static public final String KEY_DELIMITER = ":";
+    static public final String PORTLET_ID = "pid";
 
     public static String decodeParameterName(String paramName)
     {
@@ -248,7 +249,7 @@ public class PortalControlParameter
     public PortletWindow getPortletWindowOfAction() throws JetspeedException
     {
         Iterator iterator = getStateLessControlParameter().keySet().iterator();
-		PortletWindow portletWindow = null;
+        PortletWindow portletWindow = null;
         while (iterator.hasNext())
         {
             String name = (String) iterator.next();
@@ -275,13 +276,13 @@ public class PortalControlParameter
                 if (portletDefinition == null)
                 {
                     throw new JetspeedException("Failed to load: " + portletName + " from registry");
-                }                
+                }
 
-                portletWindow = PortletWindowFactory.getWindow(portletDefinition, entityName);               
+                portletWindow = PortletWindowFactory.getWindow(portletDefinition, entityName);
 
             }
         }
-        
+
         return portletWindow;
     }
 
@@ -398,7 +399,10 @@ public class PortalControlParameter
 
     public void setRenderParam(PortletWindow window, String name, String[] values)
     {
-        stateFullControlParameter.put(encodeRenderParamName(window, name), encodeRenderParamValues(values));
+        String encodedKey = encodeRenderParamName(window, name);
+        String encodedValue = encodeRenderParamValues(values);
+        stateFullControlParameter.put(encodedKey, encodedValue);
+        // setRequestParam(encodedKey, values);
     }
 
     /*
@@ -418,6 +422,17 @@ public class PortalControlParameter
         if (prevState != null)
             stateFullControlParameter.put(getPrevStateKey(window), prevState);
         stateFullControlParameter.put(getStateKey(window), state.toString());
+    }
+
+    public String getPIDValue()
+    {
+        String value = (String) stateLessControlParameter.get(getPortletIdKey());
+        return value == null ? "" : value;
+    }
+
+    private String getPortletIdKey()
+    {
+        return PORTLET_ID;
     }
 
 }
