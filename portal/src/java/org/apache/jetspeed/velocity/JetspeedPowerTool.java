@@ -18,13 +18,15 @@ package org.apache.jetspeed.velocity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
@@ -66,34 +68,54 @@ import org.apache.velocity.tools.view.tools.ViewTool;
  * JetspeedPowerTool
  * </p>
  * <p>
- *   The JetspeedPowerTool is meant to be used by template designers to build
- *   templates for internal Jetspeed portlet applications.  It hides the implementation 
- *   details of the more common template actions so that future changes to said implementation
- *   have minimal effect on template.
+ * The JetspeedPowerTool is meant to be used by template designers to build
+ * templates for internal Jetspeed portlet applications. It hides the
+ * implementation details of the more common template actions so that future
+ * changes to said implementation have minimal effect on template.
  * </p>
  * <p>
- *   Where applicable, methods have been marked with a <strong>BEST PRATICES</strong>
- *   meaning that this method should be used instead the synonymous code listed within the
- *   method docuementation.
+ * Where applicable, methods have been marked with a <strong>BEST PRATICES
+ * </strong> meaning that this method should be used instead the synonymous code
+ * listed within the method docuementation.
  * </p>
  * <p>
- * <pre>
- *  Toolbox configuration for Velocity tool box:
- * &lt;tool&gt;
- *   &lt;key&gt;jetspeed&lt;/key&gt;
- *
- *  &lt;scope&gt;request&lt;/scope&gt;
- *  &lt;class&gt;org.apache.jetspeed.velocity.JetspeedPowerTool&lt;/class&gt;
- * &lt;/tool&gt;
- </pre></p>
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * <pre>
+ * 
+ *  
+ *   
+ *    
+ *     
+ *      
+ *       
+ *        
+ *          Toolbox configuration for Velocity tool box:
+ *         &lt;tool&gt;
+ *           &lt;key&gt;jetspeed&lt;/key&gt;
+ *        
+ *          &lt;scope&gt;request&lt;/scope&gt;
+ *          &lt;class&gt;org.apache.jetspeed.velocity.JetspeedPowerTool&lt;/class&gt;
+ *         &lt;/tool&gt;
+ *         
+ *        
+ *       
+ *      
+ *     
+ *    
+ *   
+ *  
+ * </pre>
+ * 
+ * </p>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
 public class JetspeedPowerTool implements ViewTool
 {
 
+    public static final String FRAGMENT_PROCESSING_ERROR_PREFIX = "fragment.processing.error.";
     private static final int ACTION_MINIMIZE = 0;    
     private static final int ACTION_MAXIMIZE = 1;
     private static final int ACTION_NORMAL = 2;
@@ -144,8 +166,11 @@ public class JetspeedPowerTool implements ViewTool
     private ComponentManager cm;
     private PortletWindowAccessor windowAccess;
     /**
-     * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
-     * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
+     * Empty constructor DO NOT USE!!!! This is only here to allow creation of
+     * the via the Velocity Tool Box. For proper use out side the tool box use
+     * 
+     * @see #JetspeedPowerTool(javax.portlet.RenderRequest,
+     *      javax.portlet.RenderResponse, javax.portlet.PortletConfig)
      */
     public JetspeedPowerTool()
     {
@@ -156,8 +181,9 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-      * This is here to make this tool easily useable in 
-      * within standard java classes.
+     * This is here to make this tool easily useable in within standard java
+     * classes.
+     * 
      * @param request
      * @param resp
      * @param config
@@ -182,8 +208,9 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * Use this constructor when using the JetspeedPowerTool within JSP
-     * pages or custom tags.
+     * Use this constructor when using the JetspeedPowerTool within JSP pages or
+     * custom tags.
+     * 
      * @param jspContext
      */
     public JetspeedPowerTool(PageContext jspContext)
@@ -236,16 +263,25 @@ public class JetspeedPowerTool implements ViewTool
      * Gets the window state for the current portlet window (fragment)
      * 
      * @return The window state for the current window
+     * @throws Exception
      */
-    public WindowState getWindowState()
+    public WindowState getWindowState() throws Exception
     {
-        RequestContext context = Jetspeed.getCurrentRequestContext();
-        NavigationalState nav = context.getNavigationalState();
-        return nav.getState(windowAccess.getPortletWindow(getCurrentFragment()));
+        try
+        {
+            RequestContext context = Jetspeed.getCurrentRequestContext();
+            NavigationalState nav = context.getNavigationalState();
+            return nav.getState(windowAccess.getPortletWindow(getCurrentFragment()));
+        }
+        catch (Exception e)
+        {
+            handleError(e, e.toString(), getCurrentFragment());
+            return null;
+        }
     }
     
     /**
-     * Gets the portlet mode for a current portlet window (fragment) 
+     * Gets the portlet mode for a current portlet window (fragment)
      * 
      * @return The portlet mode of the current window
      */
@@ -324,9 +360,10 @@ public class JetspeedPowerTool implements ViewTool
 
     /**
      * 
-     * @return
+     * @return @throws
+     *         Exception
      */
-    public PortletEntity getCurrentPortletEntity()
+    public PortletEntity getCurrentPortletEntity() throws Exception
     {
         try
         {
@@ -334,17 +371,20 @@ public class JetspeedPowerTool implements ViewTool
         }
         catch (Exception e)
         {            
-            handleError(e, "JetspeedPowerTool failed to retreive the current PortletEntity.  "+e.toString() );
+            handleError(e, "JetspeedPowerTool failed to retreive the current PortletEntity.  "+e.toString(), getCurrentFragment() );
             return null;
         }        
     }
 
     /**
      * 
-     * @param f Fragment whose <code>PortletEntity</code> we want to retreive.
+     * @param f
+     *            Fragment whose <code>PortletEntity</code> we want to
+     *            retreive.
      * @return The PortletEntity represented by the current fragment.
+     * @throws Exception
      */
-    public PortletEntity getPortletEntity(Fragment f) 
+    public PortletEntity getPortletEntity(Fragment f) throws Exception 
     {
         PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
         if(portletEntity == null)
@@ -357,12 +397,12 @@ public class JetspeedPowerTool implements ViewTool
             catch (PortletEntityNotGeneratedException e)
             {
                 String msg = "JetspeedPowerTool failed to retreive a PortletEntity for Fragment "+f.getId()+".  "+e.toString();
-                handleError(e, msg);               
+                handleError(e, msg, f);               
             }
             catch (PortletEntityNotStoredException e)
             {
                 String msg = "JetspeedPowerTool failed to store a PortletEntity for Fragment "+f.getId()+".  "+e.toString();
-                handleError(e, msg);  
+                handleError(e, msg, f);  
             }
         }
         return portletEntity;
@@ -373,13 +413,14 @@ public class JetspeedPowerTool implements ViewTool
     /**
      * This method is synonymous with the following code:
      * <p>
-     *   <code>
+     * <code>
      *    ContentDispatcher dispatcher = (ContentDispatcher) renderRequest.getAttribute("dispatcher");<br />   
      * </code>
      * </p>
-     * @see org.apache.jetspeed.aggregator.ContentDispatcher
-     * <strong>BEST PRACTICE:</strong> Use this method in templates instead of 
-     * directly using the equivalent code defined above.
+     * 
+     * @see org.apache.jetspeed.aggregator.ContentDispatcher <strong>BEST
+     *      PRACTICE: </strong> Use this method in templates instead of directly
+     *      using the equivalent code defined above.
      * @return ContentDispatcher for the RenderRequest
      */
     public ContentDispatcher getContentDispatcher()
@@ -389,9 +430,13 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * Checks the the visibilty of this fragment with respect to the current RenderReqeust.
-     * @param f Fragment
-     * @return whether or not the Fragment in question should be considered visible during rendering.
+     * Checks the the visibilty of this fragment with respect to the current
+     * RenderReqeust.
+     * 
+     * @param f
+     *            Fragment
+     * @return whether or not the Fragment in question should be considered
+     *         visible during rendering.
      */
     public boolean isHidden(Fragment f)
     {
@@ -404,15 +449,21 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * Retreives a template using Jetspeed's @see org.apache.jetspeed.locator.TemplateLocator
+     * Retreives a template using Jetspeed's
+     * 
+     * @see org.apache.jetspeed.locator.TemplateLocator
      * 
      * 
-     * @param path Expected to the template.  This may actually be changed by the TL service
-     * based the capability and localization information provided by the client.
-     * @param templateType Type off template we are interested in.
-     * @return Template object containng the pertinent information required to inlcude the
-     * request template path in the current response
-     * @throws TemplateLocatorException if the <code>path</code> does not exist.
+     * @param path
+     *            Expected to the template. This may actually be changed by the
+     *            TL service based the capability and localization information
+     *            provided by the client.
+     * @param templateType
+     *            Type off template we are interested in.
+     * @return Template object containng the pertinent information required to
+     *         inlcude the request template path in the current response
+     * @throws TemplateLocatorException
+     *             if the <code>path</code> does not exist.
      */
     public TemplateDescriptor getTemplate(String path, String templateType) throws TemplateLocatorException
     {
@@ -427,17 +478,19 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * Includes a portal Fragment into the current <code>RenderResponse.</code>  
+     * Includes a portal Fragment into the current <code>RenderResponse.</code>
      * This is the same as calling:
      * <p>
-     *   <code>
+     * <code>
      *    ContentDispatcher dispatcher = (ContentDispatcher) renderRequest.getAttribute("dispatcher");<br />
      *    dispatcher.include(fragment,  renderRequest, renderResponse);<br />
      * </code>
      * </p>
-     * <strong>BEST PRACTICE:</strong> Use this method in templates instead of 
+     * <strong>BEST PRACTICE: </strong> Use this method in templates instead of
      * directly using the equivalent code defined above.
-     * @param f Fragment to include.
+     * 
+     * @param f
+     *            Fragment to include.
      * @throws IOException
      */
     public void include(Fragment f) throws IOException
@@ -447,6 +500,21 @@ public class JetspeedPowerTool implements ViewTool
         // We need to flush so that content gets render in the correct place
         flush();
         getContentDispatcher().include(f, renderRequest, renderResponse);
+        
+        Set exceptions = (Set) renderRequest.getAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX+f.getId());
+    	if(exceptions != null)
+    	{
+    	    Iterator itr = exceptions.iterator();
+    	    while(itr.hasNext())
+    	    {
+    	        Exception e = (Exception) itr.next();
+    	        PrintWriter writer = renderResponse.getWriter();
+                writer.write("<strong>"+e.toString()+"<br/></strong>");
+    	        writer.print("<textarea cols=\"100\" rows=\"15\">");
+    	        e.printStackTrace(writer);
+    	        writer.print("</textarea><br/>");
+    	    }
+    	}
 
     }
     
@@ -471,7 +539,7 @@ public class JetspeedPowerTool implements ViewTool
 
 
     /**
-     * 
+     *  
      */
     public void flush() throws IOException
     {
@@ -490,35 +558,54 @@ public class JetspeedPowerTool implements ViewTool
     /**
      * <p>
      * This does not actaully "include()" as per the ContentDispatcher, instead,
-     * it locates the decorator for this Fragment or, if none has been defined the 
-     * default decorator for this Fragment type from the parent Page.
+     * it locates the decorator for this Fragment or, if none has been defined
+     * the default decorator for this Fragment type from the parent Page.
      * </p>
      * <p>
      * The decorator template itself is responsible for inlcluding the content
-     * of the target Fragment which is easily acheived like so:
-     * <br />
+     * of the target Fragment which is easily acheived like so: <br />
      * in Velocity:
+     * 
      * <pre>
      *   <code>
-     *     $jetspeed.include($jetspeed.currentFragment)
-     *  </code>
+     * $jetspeed.include($jetspeed.currentFragment)
+     * </code>
      * </pre>
+     * 
      * In JSP:
-     *   <pre>
+     * 
+     * <pre>
      *   <code>
-     *    <% 
-     *     JetspeedPowerTool jetspeed = new JetspeedPowerTool(renderRequest, renderResponse, portletConfig);
-     *     jetspeed.include(jetspeed.getCurrentFragment());
-     *    %>
-     *  </code>
+     * 
+     *  
+     *   
+     *    
+     *     
+     *      
+     *       
+     *        
+     *            &lt;% 
+     *             JetspeedPowerTool jetspeed = new JetspeedPowerTool(renderRequest, renderResponse, portletConfig);
+     *             jetspeed.include(jetspeed.getCurrentFragment());
+     *            %&gt;
+     *          
+     *        
+     *       
+     *      
+     *     
+     *    
+     *   
+     *  
+     * </code>
      * </pre>
      * 
      * 
-     * @param f Fragment to "decorate"
+     * @param f
+     *            Fragment to "decorate"
      * @throws IOException
      * @throws TemplateLocatorException
      */
-    public void decorateAndInclude(Fragment f) throws TemplateLocatorException, PortletException, IOException
+    public void decorateAndInclude(Fragment f) throws Exception
     {
         // makes sure that any previous content has been written to
         // preserve natural HTML rendering order
@@ -567,21 +654,39 @@ public class JetspeedPowerTool implements ViewTool
             }
         }
         PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
-        prd.include(renderRequest, renderResponse);
-
-        // Now that were are done with this fragment reset to the last "current" fragment
-        Fragment lastFragment = (Fragment) fragmentStack.pop();
-        if (lastFragment != null)
+        try
         {
-            setCurrentFragment(lastFragment);
+            
+            prd.include(renderRequest, renderResponse);
+            
+        }
+        catch (Exception e1)
+        {
+            renderResponse.getWriter().write(e1.toString());          
+            
+        }
+        finally
+        {
+
+            // Now that were are done with this fragment reset to the last
+            // "current" fragment
+            Fragment lastFragment = (Fragment) fragmentStack.pop();
+        	if (lastFragment != null)
+        	{
+        	    setCurrentFragment(lastFragment);
+        	}
+        	
+        	
         }
     }
 
     /**
      * 
      * 
-     * @throws java.lang.IllegalStateException if the <code>PortletConfig</code>, <code>RenderRequest</code> or
-     * <code>RenderReponse</code> is null.
+     * @throws java.lang.IllegalStateException
+     *             if the <code>PortletConfig</code>,
+     *             <code>RenderRequest</code> or <code>RenderReponse</code>
+     *             is null.
      */
     protected void checkState()
     {
@@ -600,7 +705,7 @@ public class JetspeedPowerTool implements ViewTool
         ComponentManager cm = Jetspeed.getComponentManager();
         templateLocator = (TemplateLocator) cm.getComponent("TemplateLocator");
         decorationLocator = (TemplateLocator) cm.getComponent("DecorationLocator");
-        // By using null, we create a re-useable locator    
+        // By using null, we create a re-useable locator
         try
         {
             capabilityMap = requestContext.getCapabilityMap();
@@ -651,30 +756,34 @@ public class JetspeedPowerTool implements ViewTool
      * <p>
      * handleError
      * </p>
-     *
+     * 
      * @param e
      * @param msg
      */
-    protected void handleError( Exception e, String msg )
+    protected void handleError( Exception e, String msg, Fragment fragment ) throws Exception
     {
         log.error(msg, e);
-        try
+        
+        Set exceptions = (Set) renderRequest.getAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX+fragment.getId());
+        if(exceptions == null)
         {
-            renderResponse.getWriter().write(e.toString());
+            exceptions = new HashSet();
+            renderRequest.setAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX+fragment.getId(), exceptions);
         }
-        catch (IOException e1)
-        {
-            log.error("Failed writing to RenderResponse.  "+e1.toString());
-        }
+        exceptions.add(e);
+        
+       
     }
 
         
 
     
-    public List getDecoratorActions()
+    public List getDecoratorActions() throws Exception
     {
         List actions = new Vector();        
         WindowState state = getWindowState();
+        if(state != null)
+        {
         String s = state.toString();
         if (s.equals(WindowState.NORMAL.toString()))
         {
@@ -704,15 +813,20 @@ public class JetspeedPowerTool implements ViewTool
             actions.add(createAction(ACTION_VIEW));
             actions.add(createAction(ACTION_HELP));                        
         }
-        else // help 
+        else // help
         {
             actions.add(createAction(ACTION_VIEW));
             actions.add(createAction(ACTION_EDIT));                        
         }
         return actions;
+        }
+        else
+        {
+            return null;
+        }
     }
     
-    public DecoratorAction createAction(int kind)
+    public DecoratorAction createAction(int kind) throws Exception
     {
         DecoratorAction action = new DecoratorAction(ACTION_STRINGS[kind], ACTION_STRINGS[kind], "content/images/" + ACTION_STRINGS[kind] + ".gif");
         PortletEntity entity = getCurrentPortletEntity();
@@ -751,14 +865,21 @@ public class JetspeedPowerTool implements ViewTool
      * <p>
      * getTitle
      * </p>
-     * Returns the appropriate for the title based on
-     * locale prferences
+     * Returns the appropriate for the title based on locale prferences
+     * 
      * @param entity
      * @return
      */
     public String getTitle(PortletEntity entity)
     {
-        return Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+        if(entity != null)
+        {
+            return Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+        }
+        else
+        {
+            return "Portlet Unavailable";
+        }
     }
     
 }
