@@ -79,15 +79,6 @@ fileCache = new FileCache(scanRate, cacheSize)
 container.registerComponentInstance("CastorXmlPageManager", 
                                      new CastorXmlPageManager(idgenerator, fileCache, root))
 
-//
-// HSQL Server 
-//                
-
-// container.registerComponentInstance(new HSQLServerComponent(9001, "sa","",applicationRoot+"WEB-INF/db/hsql/Registry",false, true))                     
-container.registerComponentInstance(new HSQLServerComponent(9001, "sa","", System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH),false, true))
-
-
-
 // This JNDI component helps us publish the datasource
 Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
 Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
@@ -95,7 +86,16 @@ container.registerComponentImplementation(jndiClass, tyrexJndiClass)
 
 // Create a datasource based on the HSQL server we just created
 Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
-container.registerComponentInstance(dsClass, new DBCPDatasourceComponent("sa","", "org.hsqldb.jdbcDriver", "jdbc:hsqldb:hsql://127.0.0.1", 5, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+String url = System.getProperty("org.apache.jetspeed.database.url")
+String driver = System.getProperty("org.apache.jetspeed.database.driver")
+String user = System.getProperty("org.apache.jetspeed.database.user")
+String password = System.getProperty("org.apache.jetspeed.database.password")
+
+// Only create a datasource if the properties can be found
+if(url != null)
+{
+	container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+}
 
 
 //

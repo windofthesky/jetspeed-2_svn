@@ -4,25 +4,7 @@
          xmlns:reactor="reactor"
          xmlns:maven="jelly:maven">
 
-  <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.capability.TestCapability'/>
-
-  <!-- ================================================================ -->
-  <!-- Set System properties for junit                                  -->
-  <!-- ================================================================ -->
-  <preGoal name="test:single">
-     <j:set var="java.security.auth.login.config" value="../services/security/src/webapp/WEB-INF/conf/jaas/login.conf"/>
-     <j:set var="applicationRoot" value="src/webapp"/>
-     <j:set var="maven.junit.sysproperties">java.security.auth.login.config applicationRoot</j:set>
-  </preGoal>
- 
-  <preGoal name="test:test">
-    <j:set var="java.security.auth.login.config" value="../services/security/src/webapp/WEB-INF/conf/jaas/login.conf"/>
-    <j:set var="applicationRoot" value="src/webapp"/>
-    <j:set var="maven.junit.sysproperties">java.security.auth.login.config applicationRoot</j:set>
-  </preGoal>
   
-   
  <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
   	<echo message="        Copying OJB Metadata        " />  	
@@ -33,6 +15,15 @@
                goals="ojb.registry"
                banner="Copying OJB Metadata for Registry and Security"
                ignoreFailures="false"/>
+ </preGoal>
+ 
+ <!-- Always rbuild the DB befure we test -->
+ <preGoal name="test:test">
+ 	<attainGoal name="db.recreate" />
+ </preGoal>
+ 
+ <preGoal name="test:single">
+ 	<attainGoal name="db.recreate" />
  </preGoal>
 
 <!--
@@ -67,7 +58,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="register" />
             <arg value="-PortletAppName" />
@@ -87,7 +81,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="unregister" />
             <arg value="-PortletAppName" />
@@ -107,7 +104,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -127,7 +127,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -148,7 +151,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -170,7 +176,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -190,7 +199,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -209,11 +221,11 @@
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.execute">
-    <sql driver="${database.default.driver}"
+    <sql driver="${org.apache.jetspeed.database.driver}"
          classpathref="maven.dependency.classpath"
-         url="${database.default.url}"
-         userid="${database.default.username}"
-         password="${database.default.password}"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
     </sql>
   </goal>
@@ -253,39 +265,7 @@
     <attainGoal name="db.create" />
   </goal>
 
-  <!-- ================================================================ -->
-  <!-- TEST DB SQL SCRIPTS                                              -->
-  <!-- ================================================================ -->
-  <goal name="db.test.create">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
-    <attainGoal name="db.create" />
-  </goal>
-  
-  <goal name="db.test.create.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.create" />
-  </goal>
-
-  <goal name="db.test.drop">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
-    <attainGoal name="db.drop" />
-  </goal>
-  
-  <goal name="db.test.drop.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.drop" />
-  </goal>
-  
-
-  <goal name="db.test.recreate">
-    <attainGoal name="db.test.drop" />
-    <attainGoal name="db.test.create" />
-  </goal>
-  
-   <goal name="db.test.recreate.server">
-    <attainGoal name="db.test.drop.server" />
-    <attainGoal name="db.test.create.server" />
-  </goal>
+ 
 
   <!-- ================================================================ -->
   <!-- Deploy to Catalina and Expand                                    -->
@@ -315,9 +295,12 @@
          <exclude name="WEB-INF/db/**"/>
       </fileset>
     </copy>
-  </goal>
+  </goal> 
   
-    <!-- ================================================================ -->
+  
+
+  
+  <!-- ================================================================ -->
   <!-- Does all three deployment steps at once                                                                        -->
   <!-- ================================================================ -->
   <goal name="fullDeploy">
@@ -353,7 +336,10 @@
          <path refid="maven.dependency.classpath"/>
          <pathelement path="${maven.build.dest}"/>
         </classpath>
-         <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+        <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+        <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+        <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+        <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
          <arg value="-action" />
          <arg value="deploy" />
          <arg value="-PortletAppName" />
@@ -403,7 +389,10 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />

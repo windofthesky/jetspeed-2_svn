@@ -40,11 +40,11 @@
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.execute">
-    <sql driver="${database.default.driver}"
+    <sql driver="${org.apache.jetspeed.database.driver}"
          classpathref="maven.dependency.classpath"
-         url="${database.default.url}"
-         userid="${database.default.username}"
-         password="${database.default.password}"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
     </sql>
   </goal>
@@ -76,37 +76,5 @@
     <attainGoal name="db.create" />
   </goal>
 
-  <!-- ================================================================ -->
-  <!-- TEST DB SQL SCRIPTS                                              -->
-  <!-- ================================================================ -->
-  <goal name="db.test.create">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
-    <attainGoal name="db.create" />
-  </goal>
-
- 
-  <goal name="db.test.create.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.create" />
-  </goal>
-
-  <goal name="db.test.drop">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
-    <attainGoal name="db.drop" />
-  </goal>
   
-  <goal name="db.test.drop.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.drop" />
-  </goal>
-
-  <goal name="db.test.recreate">
-    <attainGoal name="db.test.drop" />
-    <attainGoal name="db.test.create" />
-  </goal>
-  
-  <goal name="db.test.recreate.server">
-    <attainGoal name="db.test.drop.server" />
-    <attainGoal name="db.test.create.server" />
-  </goal>
 </project>

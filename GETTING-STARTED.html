@@ -86,12 +86,6 @@ code {font-size: 10pt;}
     <td width="229">${CATALINA_BASE}/webapps/</td>
     <td width="261">The location to deploy web application in Tomcat.</td>
   </tr>
-  <tr> 
-    <td width="134"><s>deployment.db.alias</s></td>
-    <td width="229"><s>${CATALINA_BASE}/webapps/jetspeed/WEB-INF/db/hsql/Registry</s></td>
-    <td width="261"><s>The location of HypersonicSQL database file that will contain 
-      Jetspeed information like registries and user info.</s></td>
-  </tr>
 </table>
 <h2>3. Build .jar and .war files</h2>
 <p>There are two procedures you can follow that will yeild the same results which 
@@ -102,11 +96,23 @@ code {font-size: 10pt;}
     <th>procedure 2 (long and boring)</th>
   </tr>
   <tr> 
-    <td rowspan="4" valign="top"> 
-      <p><b>Build all jars and wars:</b><br>
+    <td rowspan="6" valign="top"> 
+      <p><b>Start the HSQL test server:</b><br>
+        cd ${jetspeed-2-home}<br>
+        maven start.test.server</p>
+      <p><b>Build all jars and wars:<br>
+        </b>(in seperate window/terminal session)<br>
         cd ${jetspeed-2-home}<br>
         maven allBuild</p>
     </td>
+    <td><b>Start the HSQL test server:</b><br>
+      cd ${jetspeed-2-home}<br>
+      maven start.test.server</td>
+  </tr>
+  <tr>
+    <td><b>(in seperate window/terminal session)</b></td>
+  </tr>
+  <tr> 
     <td><b>Build Portlet-API</b><br>
       cd ${jetspeed-2-home}/portlet-api<br>
       maven jar:install</td>
@@ -131,6 +137,12 @@ code {font-size: 10pt;}
   4. Deploying Jetspeed 2</h2>
 <p><b>Deploy Jetspeed Portal WAR into Catalina</b></p>
 <ol>
+  <li>make sure you have terminated the test HSQLserver</li>
+  <li>cd ${jetspeed-2-home}</li>
+  <li>maven start.proudction.server</li>
+  <li>(in seperate window/terminal session) cd ${jetspeed-2-home}</li>
+  <li>maven installProductionDb this will recreate the DB to deploy into. &nbsp;WARNING 
+    This will drop all the tables and data in the proudction database.</li>
   <li>cd ${jetspeed-2-home}/portal</li>
   <li>maven deploy</li>
 </ol>
@@ -143,7 +155,9 @@ code {font-size: 10pt;}
   <li>maven pam.deploy </li>
 </ol>
 <p><strong>NOTE:</strong> Steps 4 and 5 have been combined into the ${jetspeed-2-home}/portal 
-  <code>&quot;<b>maven fullDeploy</b>&quot;</code> goal.</p>
+  <code>&quot;<b>maven fullDeploy</b>&quot;</code> goal. &nbsp;However, you will 
+  still need to manually start the production HSQL server and populate it as defined 
+  in steps 4.1 - 4.5.</p>
 <h2>6. Start Tomcat</h2>
 <p>Run Tomcat, go to http://localhost:8080/jetspeed.</p>
 <h2>(Optional) How to undeploy the demo application</h2>

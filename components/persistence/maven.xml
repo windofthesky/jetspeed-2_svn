@@ -6,6 +6,7 @@
   <!-- Target of maven test:single test -->
   <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
   
+ 
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
 

@@ -6,9 +6,6 @@
          
   <property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
   
-  <!-- Set up the test DB via System property override -->
-  <property name="HSQLDBServer.db.path" value="./portal/test/db/hsql/Registry"/>
-
   <goal name="allClean"
         description="Clean the master project and all subprojects">
     <attainGoal name="subClean"/>
@@ -80,7 +77,7 @@
     <maven:reactor
                basedir="${basedir}/components/registry"
                includes="project.xml"
-               goals="build.registry.server"
+               goals="build.registry"
                banner="Build and Install the Regsitry Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -102,7 +99,7 @@
     <maven:reactor
                basedir="${basedir}"
                includes="services/security/project.xml"
-               goals="db.recreate,db.test.recreate.server,jar:install,ojb.registry"
+               goals="db.recreate,jar:install,ojb.registry"
                banner="Build and Install the services - security jar"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -111,7 +108,7 @@
      <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
-               goals="db.recreate,db.test.recreate.server,war:install"
+               goals="war:install"
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -162,15 +159,55 @@
   	<echo message="maven.repo.local = ${maven.repo.local}" />
   </goal>
 
-  <goal name="start.test.server">
-         <java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="yes">
+  <goal name="start.production.server">
+  	<echo message="====================================" />
+  	<echo message="  Production/Deployment Database    " />  	
+  	<echo message="====================================" />
+         <java classname="org.hsqldb.Server" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
             <arg value="-database" />          
-            <arg value="./portal/test/db/hsql/Registry" />
+            <arg value="./src/database/hsql/Production" />
+            <arg value="-port" />          
+            <arg value="9001" />
+            <arg value="-silent" />          
+            <arg value="true" />
+            <arg value="-trace" />          
+            <arg value="false" />
         </java>  
+  </goal>
+  
+  <goal name="start.test.server">
+  	<echo message="====================================" />
+  	<echo message="        Testing Database            " />  	
+  	<echo message="====================================" />
+         <java classname="org.hsqldb.Server" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-database" />          
+            <arg value="./src/database/hsql/Test" />
+            <arg value="-port" />          
+            <arg value="9001" />
+            <arg value="-silent" />          
+            <arg value="true" />
+            <arg value="-trace" />          
+            <arg value="false" />
+        </java>  
+  </goal>
+  
+   <goal name="installProductionDb">
+  	<echo message="${basedir}" />
+  	 <maven:reactor
+               basedir="${basedir}"
+               includes="components/registry/project.xml,services/security/project.xml,portal/project.xml"
+               goals="db.recreate"
+               banner="Create production database"
+               postProcessing="false"
+               ignoreFailures="false"/>
   </goal>
   
   

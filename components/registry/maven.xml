@@ -5,6 +5,12 @@
 
   <!-- Target of maven test:single test -->
   <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
+
+  <preGoal name="test:test">
+  	<!-- Create a DB for or tests -->
+  	<attainGoal name="db.recreate"/>
+  </preGoal>
+  
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
@@ -26,11 +32,11 @@
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.execute">
-    <sql driver="${database.default.driver}"
+    <sql driver="${org.apache.jetspeed.database.driver}"
          classpathref="maven.dependency.classpath"
-         url="${database.default.url}"
-         userid="${database.default.username}"
-         password="${database.default.password}"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
     </sql>
   </goal>
@@ -66,58 +72,16 @@
     <attainGoal name="db.create" />
   </goal>
 
-  <!-- ================================================================ -->
-  <!-- TEST DB SQL SCRIPTS                                              -->
-  <!-- ================================================================ -->
-  <goal name="db.test.create">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
-    <attainGoal name="db.create" />
-  </goal>
-  
-  <goal name="db.test.create.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.create" />
-  </goal>
-
-  <goal name="db.test.drop">
-    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/../../portal/test/db/hsql/Registry" />
-    <attainGoal name="db.drop" />
-  </goal>
-  
-  <goal name="db.test.drop.server">
-    <j:set var="database.default.url" value="jdbc:hsqldb:hsql://127.0.0.1:9001" />
-    <attainGoal name="db.drop" />
-  </goal>
-
-  <goal name="db.test.recreate">
-    <attainGoal name="db.test.drop" />
-    <attainGoal name="db.test.create" />
-  </goal>
-  
-  <goal name="db.test.recreate.server">
-    <attainGoal name="db.test.drop.server" />
-    <attainGoal name="db.test.create.server" />
-  </goal>
-  
-   <goal name="deployJar">
+    
+  <goal name="deployJar">
   	<attainGoal name="jar:install"/>
 
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
   
-  <goal name="build.registry">
-  	<attainGoal name="db.recreate"/>
-  	<attainGoal name="db.test.recreate"/>
+  <goal name="build.registry">  	
   	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
- </goal>
- 
-   <goal name="build.registry.server">
-  	<attainGoal name="db.recreate"/>
-  	<attainGoal name="db.test.recreate.server"/>
-  	<attainGoal name="ojb.registry"/>
-  	<attainGoal name="jar:install"/>
- </goal>
- 
+ </goal> 
 
 </project>
