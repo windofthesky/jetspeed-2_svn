@@ -56,11 +56,21 @@ package org.apache.jetspeed.services.persistence;
 import org.apache.fulcrum.Service;
 
 /**
- * 
+ * <p>
  * PersistenceService
- * 
+ * </p>
+ * <p>
  * Generic persistence service that uses a plug in architecture to support
  * persistence operations.  It serves as a common gateway to retreive
+ * and create <code>PersistencePlugins</code>.
+ * </p>
+ * <p>
+ * Plugin configurations are kept in a single xml file, <code>persistence-plugins.xml</code>
+ * which, for standard Jetspeed deployments, is located in ${JETSPEED_HOME}/WEB-INF/conf.
+ * This value can be changed by changing the <code>services.PersistenceService.plugin.file</code>
+ * property in ${JETSPEED_HOME}/WEB-INF/conf/jetspeed.properties.
+ * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
@@ -95,6 +105,12 @@ public interface PersistenceService extends Service
      */
     PersistencePlugin getPlugin(String name);
 
+    /**
+     * Creates a plugin based using the confirugration provided.
+     * @param conf PluginConfiguration that will be used to create this plugin
+     * @return PersistencePlugin crated using the provided <code>conf</code> 
+     * @throws PluginInitializationException if there is a problem creating the plugin
+     */
     PersistencePlugin createPlugin(PluginConfiguration conf) throws PluginInitializationException;
 
 }
