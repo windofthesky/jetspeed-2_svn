@@ -221,7 +221,7 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
                                 + " returning "
                                 + workingPath);
                 }
-                return createTemplateFromPath(path, templateName, realPath, root + workingPath);
+                return createTemplateFromPath(path, templateName, realPath, "/WEB-INF/templates" + workingPath);
             }
             // else strip path of one of its components and loop
             int pt = path.lastIndexOf(PATH_SEPARATOR);

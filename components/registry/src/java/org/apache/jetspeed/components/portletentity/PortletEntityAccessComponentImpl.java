@@ -129,7 +129,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     public StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String entityName)
     {
         ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, entityName);
-        PortletEntity portletEntity = null; // TODO: DST: this is failing, need a unit test for it: getPortletEntity(entityId);
+        PortletEntity portletEntity = getPortletEntity(entityId);
         if (portletEntity == null)
         {
             portletEntity = newPortletEntityInstance(portletDefinition);
