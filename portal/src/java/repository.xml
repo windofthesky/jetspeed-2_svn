@@ -24,6 +24,7 @@ limitations under the License.
 	<!ENTITY page SYSTEM "repository_page.xml">
 	<!ENTITY registry SYSTEM "repository_registry.xml">
 	<!ENTITY preferences SYSTEM "repository_prefs.xml">
+	<!ENTITY security SYSTEM "repository_security.xml">
 ]>
 <descriptor-repository version="1.0" isolation-level="read-uncommitted">
 	<!-- include all used database connections -->
@@ -42,8 +43,9 @@ limitations under the License.
     &registry;
 
     <!-- include jetspeed defined mappings here -->
-    <!--
+    &preferences;
+    
+    <!-- include jetspeed defined mappings here -->
     &security;
-    -->
 
 </descriptor-repository>
