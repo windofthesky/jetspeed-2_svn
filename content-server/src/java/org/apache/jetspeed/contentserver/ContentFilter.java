@@ -16,6 +16,7 @@
 package org.apache.jetspeed.contentserver;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +58,14 @@ public class ContentFilter implements Filter
 
     private String urlHint;
 
+    protected String[] urlHints;
 
+    protected boolean useCache;
 
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
-    public void init(FilterConfig config) throws ServletException
+    public void init( FilterConfig config ) throws ServletException
     {
         this.config = config;
         String dir = config.getInitParameter("content.directory");
@@ -70,11 +73,30 @@ public class ContentFilter implements Filter
         this.contentDir = config.getServletContext().getRealPath(dir);
         // this.themesDir = this.contentDir + "/themes";
         this.contentDirFile = new File(this.contentDir);
+        
+        StringTokenizer hintTokenizer = new StringTokenizer(urlHint, ",");
+        urlHints = new String[hintTokenizer.countTokens()];
+        int i = 0;
+        while (hintTokenizer.hasMoreTokens())
+        {
+            urlHints[i] = hintTokenizer.nextToken();
+            i++;
+        }
+        
+        String useCacheParam = config.getInitParameter("use.caching");
+        if(useCacheParam == null)
+        {
+            useCache = true;
+        }
+        else
+        {
+            useCache = Boolean.valueOf(useCacheParam).booleanValue();
+        }
+        
         if (!contentDirFile.exists())
         {
-            throw new ServletException(
-            "The specified content directory "
-            + contentDirFile.getAbsolutePath() + " does not exist!");
+            throw new ServletException("The specified content directory " + contentDirFile.getAbsolutePath()
+                    + " does not exist!");
         }
     }
 
@@ -82,51 +104,46 @@ public class ContentFilter implements Filter
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response, 
-    FilterChain chain) throws IOException, ServletException
+    public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException,
+            ServletException
     {
         if (request instanceof HttpServletRequest)
         {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             String requestURI = httpRequest.getRequestURI();
-            String mimeType = config.getServletContext().getMimeType(requestURI);
-            if (mimeType == null)
+            
+            SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, urlHints, useCache, httpRequest
+                    .getContextPath(), requestURI, getContentSearchPathes(httpRequest));
+
+            ContentLocatingResponseWrapper respWrapper = new ContentLocatingResponseWrapper(httpResponse,
+                    contentLocator);
+            
+            ContentLocatingRequestWrapper reqWrapper = new ContentLocatingRequestWrapper(httpRequest,
+                    contentLocator);
+            httpRequest.setAttribute("org.apache.jetspeed.content.filtered", "true");
+            chain.doFilter(reqWrapper, respWrapper);
+            if(!respWrapper.wasLocationAttempted() && !respWrapper.outputStreamCalled && !respWrapper.writerCalled)
             {
-                throw new NullPointerException(
-                        "MIME-TYPE for "
-                                + requestURI
-                                + " could not be located.  Make sure your container is properly configured to detect MIME types.");
-            }
-            log.debug(mimeType + " detected: " + requestURI);
-            StringTokenizer hintTokenizer = new StringTokenizer(urlHint, ",");
-            String[] urlHints = new String[hintTokenizer.countTokens()];
-            int i = 0;
-            while(hintTokenizer.hasMoreTokens())
-            {
-                urlHints[i]=hintTokenizer.nextToken();
-                i++;
-            }
-            SimpleContentLocator contentLocator = new SimpleContentLocator(
-                    this.contentDir, urlHints, true, httpRequest.getContextPath());
-            long contentLength = contentLocator.mergeContent(requestURI,
-                    getContentSearchPathes(httpRequest), response
-                            .getOutputStream());
-            if (contentLength > -1)
-            {
-                response.setContentType(mimeType);
-                response.setContentLength((int) contentLength);
-                log.debug("Setting status to OK");
-                httpResponse.setStatus(HttpServletResponse.SC_OK);
-            } else
-            {
-               // chain.doFilter(request, response);
-                httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                try
+                {                   
+                    httpResponse.setContentLength((int) contentLocator.writeToOutputStream(httpResponse.getOutputStream()));
+                    httpResponse.setStatus(HttpServletResponse.SC_OK);
+                }
+                catch (FileNotFoundException e)
+                {
+                    httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+                }
+               
                 
             }
-            return;
+
         }
-        chain.doFilter(request, response);
+        else
+        {
+            chain.doFilter(request, response);
+        }
+
     }
 
     /**
@@ -136,7 +153,7 @@ public class ContentFilter implements Filter
     {
     }
 
-    protected List getContentSearchPathes(HttpServletRequest request)
+    protected List getContentSearchPathes( HttpServletRequest request )
     {
         List contentPathes = (List) request.getSession().getAttribute(SESSION_CONTENT_PATH_ATTR);
         if (contentPathes == null)

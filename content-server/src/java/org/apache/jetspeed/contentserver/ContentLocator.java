@@ -15,8 +15,9 @@
  */
 package org.apache.jetspeed.contentserver;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 
 /**
@@ -30,18 +31,14 @@ import java.util.List;
  */
 public interface ContentLocator
 {
-    /**
-     * 
-     * <p>
-     *  mergeContent
-     * </p>
-     * <p>
-     *  Merges the content that is located in the provided <code>URI</code>     * 
-     * </p>
-     * @param URI Content to locate
-     * @param os OutputStream to write the content to.
-     * @return int the length of actual content in bytes or -1
-     * if the <code>URI</code> was not found.
-     */
-    long mergeContent(String URI, List lookupPathes, OutputStream os);
+
+    OutputStream getOutputStream() throws IOException;
+    
+    InputStream getInputStream() throws IOException;
+    
+    String getRealPath();
+    
+    long writeToOutputStream(OutputStream stream) throws IOException;
+    
+    String getBasePath();
 }
