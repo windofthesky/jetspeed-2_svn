@@ -59,7 +59,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 public abstract class AbstractEngine implements Engine
 {
 
-    protected static final String JNDI_SUPPORT_FLAG_KEY = "portal.use.internal.jndi";
+    public static final String JNDI_SUPPORT_FLAG_KEY = "portal.use.internal.jndi";
     private PortalContext context;
     private ServletConfig config = null;
     private ComponentManager componentManager = null;
