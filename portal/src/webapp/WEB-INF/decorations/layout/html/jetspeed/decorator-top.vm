@@ -40,7 +40,23 @@ limitations under the License.
 <p>
 <img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
 </p>
-
+<p>
+	#set($folder = $request.getAttribute("org.apache.jetspeed.folder"))
+	
+	#if($folder.parent)
+		<a href="${appRoot}/portal${folder.parent.name}">../</a> &nbsp;
+	#end
+	
+	
+	#foreach($childFolder in $folder.folders.iterator())
+		<a href="${appRoot}/portal${childFolder.name}">$childFolder.name</a> &nbsp;		
+	#end
+	
+	#foreach($childPage in $folder.pages.iterator())		
+		<a href="${appRoot}/portal${childPage.id}">$childPage.title</a> &nbsp;
+	#end
+	
+</p>
 ## $jetspeed.include($jetspeed.currentFragment)
 
 <!--  END: layout/html/jetspeed/decorator.vm -->
