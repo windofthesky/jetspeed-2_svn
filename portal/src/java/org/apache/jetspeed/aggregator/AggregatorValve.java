@@ -48,7 +48,7 @@ public class AggregatorValve
         }
         catch (Exception e)
         {
-            throw new PipelineException(e);
+            throw new PipelineException(e.toString(), e);
         }
         // Pass control to the next Valve in the Pipeline
         context.invokeNext( request );
