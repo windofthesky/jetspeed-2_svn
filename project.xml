@@ -96,12 +96,23 @@
 
     </developers>
 
-  <dependencies/>
+  <dependencies>
+  	<!-- Used for pre-starting the DB prior to tests -->
+    <dependency>
+      <id>hsqldb</id>
+      <version>1.7.1</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency> 
+  	
+  </dependencies>
 
   <build>
     <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-    <!--
+
     <sourceDirectory>src/java</sourceDirectory>
+   <!--
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <aspectSourceDirectory></aspectSourceDirectory>
     -->
