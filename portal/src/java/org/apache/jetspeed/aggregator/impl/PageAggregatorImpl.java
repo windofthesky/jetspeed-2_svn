@@ -156,72 +156,74 @@ public class PageAggregatorImpl implements PageAggregator, Startable
                 return;
             }
             
-            if (strategy == STRATEGY_PARALLEL)
+            // initializes the rendering stack with root children
+            // root fragement is always treated synchronously
+            for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
             {
-                // initializes the rendering stack with root children
-                // root fragement is always treated synchronously
-                for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
+                Fragment f = (Fragment) i.next();
+
+                if (!"hidden".equals(f.getState()))
                 {
-                    Fragment f = (Fragment) i.next();
-
-                    if (!"hidden".equals(f.getState()))
-                    {
-                        stack.push(f);
-                    }
-                }
-
-                // Walk through the Fragment tree, and start rendering "portlet" type
-                // fragment
-                while (!stack.isEmpty())
-                {
-                    currentFragment = (Fragment) stack.pop();
-
-                    if (checkAccess(context, ((currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl), "render"))
-                    {
-                        if (currentFragment.getType().equals("portlet"))
-                        {
-                            // make the page aggreator less fragile
-                            // by preventing failed rendering from screwing up the
-                            // whole process
-                            try
-                            {
-                                if (log.isDebugEnabled())
-                                {
-                                    log.debug(
-                                        "Rendering portlet fragment: [[name, "
-                                            + currentFragment.getName()
-                                            + "], [id, "
-                                            + currentFragment.getId()
-                                            + "]]");
-                                }
-                                // TODO This is where we add User Info.
-                                RequestContext portletContext = context;
-                                renderer.render(currentFragment, portletContext);
-                            }
-                            catch (Exception e)
-                            {
-                                log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
-                            }
-                        }
-
-                        // push the children frgaments on the rendering stack
-                        for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
-                        {
-                            Fragment f = (Fragment) i.next();
-
-                            if (!"hidden".equals(f.getState()))
-                            {
-                                stack.push(f);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        log.warn("Access denied RENDER fragment " + currentFragment);
-                    }
+                    stack.push(f);
                 }
             }
 
+            // Walk through the Fragment tree, and start rendering "portlet" type
+            // fragment
+            while (!stack.isEmpty())
+            {
+                currentFragment = (Fragment) stack.pop();
+
+                if (checkAccess(context, ((currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl), "render"))
+                {
+                    if (currentFragment.getType().equals("portlet"))
+                    {
+                        // make the page aggreator less fragile
+                        // by preventing failed rendering from screwing up the
+                        // whole process
+                        try
+                        {
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug(
+                                    "Rendering portlet fragment: [[name, "
+                                        + currentFragment.getName()
+                                        + "], [id, "
+                                        + currentFragment.getId()
+                                        + "]]");
+                            }
+                            // TODO This is where we add User Info.
+                            RequestContext portletContext = context;
+                            renderer.render(currentFragment, portletContext);
+                            if (strategy == STRATEGY_SEQUENTIAL)
+                            {
+                                ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
+                                dispatcher.sync(currentFragment);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
+                        }
+                    }
+
+                    // push the children frgaments on the rendering stack
+                    for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
+                    {
+                        Fragment f = (Fragment) i.next();
+
+                        if (!"hidden".equals(f.getState()))
+                        {
+                            stack.push(f);
+                        }
+                    }
+                }
+                else
+                {
+                    log.warn("Access denied RENDER fragment " + currentFragment);
+                }
+            }
+            
             // Retrieves the content dispatcher appropriate for sequential
             // or parallel rendering
 
@@ -229,20 +231,6 @@ public class PageAggregatorImpl implements PageAggregator, Startable
 
             // Now synchronously trigger the rendering of the whole page
             renderer.renderNow(page.getRootFragment(), context);
-
-            // DEBUG Testing: Use ContentDispatcher to display all children
-            // of root fragment
-            /*
-                        for(Iterator i = page.getRootFragment().getFragments().iterator(); i.hasNext();)
-                        {
-                            Fragment fragment = (Fragment)i.next();
-            
-                            if (!"hidden".equals(fragment.getState()))
-                            {
-                                dispatcher.include(fragment, context.getRequest(), context.getResponse());
-                            }
-                        }
-            */
         }
         else
         {

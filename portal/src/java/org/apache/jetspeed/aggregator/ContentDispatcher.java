@@ -45,4 +45,11 @@ public interface ContentDispatcher
      */
     public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp);
     
+    /**
+     * Sequentially wait on content generation for the given fragment.
+     * 
+     * @param fragment
+     */
+    public void sync(Fragment fragment);
+    
 }

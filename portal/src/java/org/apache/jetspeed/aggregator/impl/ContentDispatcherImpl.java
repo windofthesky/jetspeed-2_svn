@@ -342,4 +342,46 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
             this.complete = state;
         }
     }
+    
+    /* 
+     * Sequentially wait on content generation
+     * @see org.apache.jetspeed.aggregator.ContentDispatcher#sync(org.apache.jetspeed.om.page.Fragment)
+     */
+    public void sync(Fragment fragment)
+    {
+        ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
+
+        PortletContent content = (PortletContent)contents.get(oid);
+        
+        synchronized (content)
+        {
+            if (!content.isComplete())
+            {
+                if ((debugLevel > 0) && log.isDebugEnabled())
+                {
+                    log.debug("Waiting for content OID "+oid);
+                }
+
+                try
+                {
+                    content.wait();
+                }
+                catch (InterruptedException e)
+                {
+                }
+
+                if ((debugLevel > 0) && log.isDebugEnabled())
+                {
+                    log.debug("Been notified that OID "+oid+" is complete");
+                }
+            }
+
+            if ((debugLevel > 1) && log.isDebugEnabled())
+            {
+                log.debug("Content OID "+oid+": "+content.toString());
+            }
+        }
+        
+    }
+    
 }
