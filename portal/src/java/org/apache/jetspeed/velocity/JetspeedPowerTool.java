@@ -67,6 +67,7 @@ import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.services.information.PortletURLProviderImpl;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.io.VelocityWriter;
 import org.apache.velocity.tools.view.context.ViewContext;
@@ -846,37 +847,51 @@ public class JetspeedPowerTool implements ViewTool
         {
             return actions; // allow nothing
         }        
+                
+        ContentTypeSet content = portlet.getContentTypeSet();
         
         if (state.equals(WindowState.NORMAL.toString()))
         {
-            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
+            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
         }
         else if (state.equals(WindowState.MAXIMIZED.toString()))
         {
-            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet.getUniqueName());            
+            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
+            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);            
         }
         else // minimized
         {
-            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet.getUniqueName());                        
+            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
+            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);                        
         }
         
         if (mode.equals(PortletMode.VIEW.toString()))
         {
-            createAction(actions, JetspeedActions.INDEX_EDIT, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_HELP, portlet.getUniqueName());            
+            if (content.supportsPortletMode(PortletMode.EDIT))
+            {
+                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+            }
+            if (content.supportsPortletMode(PortletMode.HELP))
+            {            
+                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+            }
         }
         else if (mode.equals(PortletMode.EDIT.toString()))
         {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_HELP, portlet.getUniqueName());                        
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+            if (content.supportsPortletMode(PortletMode.HELP))
+            {                        
+                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+            }
         }
         else // help
         {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet.getUniqueName());
-            createAction(actions, JetspeedActions.INDEX_EDIT, portlet.getUniqueName());                        
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+            if (content.supportsPortletMode(PortletMode.EDIT))
+            {            
+                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+            }
         }
         return actions;
     }
@@ -911,10 +926,12 @@ public class JetspeedPowerTool implements ViewTool
      * @return
      * @throws Exception
      */
-    public DecoratorAction createAction(List actions, int actionId, String resource) throws Exception
+    public DecoratorAction createAction(List actions, int actionId, PortletDefinitionComposite portlet)
+        throws Exception
     {               
+        String resource = portlet.getUniqueName();
         String actionName = JetspeedActions.ACTIONS[actionId];
-        if (checkPermission(resource, actionName))
+        if (checkPermission(resource, actionName)) // TODO: should be !checkPermission
         {
             return null;
         }
