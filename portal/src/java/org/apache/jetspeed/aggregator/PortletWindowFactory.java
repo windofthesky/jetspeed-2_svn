@@ -53,11 +53,12 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.Iterator;
+
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
+import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
 import org.apache.jetspeed.om.common.window.PortletWindowImpl;
 import org.apache.jetspeed.services.entity.PortletEntityAccess;
-import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
@@ -74,13 +75,34 @@ public class PortletWindowFactory
 {
     public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
     {
-        // TODO: 1. use a factory entity from config file to create PortletEntities
-        // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = PortletEntityAccess.getEntity(Jetspeed.getCurrentRequestContext(), portletDefinition, portletName); 
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
-        ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();        
-        ((PortletWindowListCtrl)windowList).add(portletWindow);        
-        return portletWindow;        
+        InitablePortletEntity entity = PortletEntityAccess.getEntity(portletDefinition, portletName);
+
+        PortletEntityAccess.serviceRequest(entity, Jetspeed.getCurrentRequestContext());
+
+        Iterator prefs = entity.getPortletDefinition().getPreferenceSet().iterator();
+
+        //        Debugging
+        //        System.out.println("Preference list for " + entity.getPortletDefinition().getName());
+        //        while (prefs.hasNext())
+        //        {
+        //
+        //            PreferenceComposite pref = (PreferenceComposite) prefs.next();
+        //            System.out.println("Value list for " + pref.getName());
+        //            if (pref != null)
+        //            {
+        //                Iterator itr = pref.getValues();
+        //                System.out.println("Values iterator "+itr);
+        //                while (itr.hasNext())
+        //                {
+        //                    System.out.println("Value: " + ((String) itr.next()));
+        //                }
+        //            }
+        //        }
+
+        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());
+        ((PortletWindowCtrl) portletWindow).setPortletEntity(entity);
+        PortletWindowList windowList = entity.getPortletWindowList();
+        ((PortletWindowListCtrl) windowList).add(portletWindow);
+        return portletWindow;
     }
 }
