@@ -71,18 +71,25 @@ public class Cornerstone
         return _RuntimeHomeDir;
     }
 
-    public static Object getManager(Class managerInterface)
+    /**
+     * This class acts as a mini implemenation manager for bootstrap classes
+     * which are defined in Cornerstone.properties and can be overridden in
+     * bootstrap.properties.
+     * @param iface Interface of implementation to create
+     * @return Implementation of the interface
+     */
+    public static Object getImplementation(Class iface)
 	{
-    	Object manager = _ManagerMap.get(managerInterface);
-    	if (manager == null)
+    	Object implementation = _ImplementationMap.get(iface);
+    	if (implementation == null)
     	{
-    		Boolean managerLoaded = (Boolean) _ManagerLoadedMap.get(managerInterface);
-    		if (managerLoaded == null)
+    		Boolean implementationLoaded = (Boolean) _ImplementationLoadedMap.get(iface);
+    		if (implementationLoaded == null)
     		{
-    			manager = loadManager(managerInterface);
+    			implementation = loadImplementation(iface);
     		}
     	}
-    	return manager;
+    	return implementation;
     }
 
     protected static void readBootStrapProperties() throws InitException
@@ -138,12 +145,12 @@ public class Cornerstone
     	}
     }
 
-    protected static Object loadManager(Class managerInterface)
+    protected static Object loadImplementation(Class implementationInterface)
     {
-    	String managerInstanceClassNameConfigName = Constant.IMPLEMENTATION + Constant.SLASH + managerInterface.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
-    	String managerClassName = _BootStrapProperties.getProperty(managerInstanceClassNameConfigName);
-    	_ManagerLoadedMap.put(managerInterface, Boolean.TRUE);
-    	if (managerClassName == null)
+    	String implementationClassNameConfigName = Constant.IMPLEMENTATION + Constant.SLASH + implementationInterface.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
+    	String implementationClassName = _BootStrapProperties.getProperty(implementationClassNameConfigName);
+    	_ImplementationLoadedMap.put(implementationInterface, Boolean.TRUE);
+    	if (implementationClassName == null)
         {
         	return null;
         }
@@ -151,13 +158,14 @@ public class Cornerstone
         {	
 	        try
 			{
-				Object manager = Util.createInstance(managerClassName);
-				_ManagerMap.put(managerInterface, manager);
+	        	_Logger.info("loadImplementation(): implementationClassName=" + implementationClassName);
+				Object manager = Util.createInstance(implementationClassName);
+				_ImplementationMap.put(implementationInterface, manager);
 				return manager;
 			}
 			catch (Exception e)
 			{
-	            _Logger.error("failed to create manager of " + managerInterface.getName(), e);
+	            _Logger.error("failed to create manager of " + implementationInterface.getName(), e);
 	            return null;
 			}
         }
@@ -166,8 +174,8 @@ public class Cornerstone
     private static Logger _Logger = Logger.getLogger(Cornerstone.class);
     protected static String _RuntimeHomeDir = DEFAULT_CORNERSTONE_RUNTIME_HOME;
     protected static Properties _BootStrapProperties;
-    protected static Map _ManagerMap = new HashMap();
-    protected static Map _ManagerLoadedMap = new HashMap();
+    protected static Map _ImplementationMap = new HashMap();
+    protected static Map _ImplementationLoadedMap = new HashMap();
 
     // auto initialize so that even if .init() is not called, Cornerstone functions in a default way
     static
