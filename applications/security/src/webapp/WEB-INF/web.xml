@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                         "http://java.sun.com/dtd/web-app_2_3.dtd">
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -14,11 +16,55 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-                         "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-  <display-name>Security Portlets</display-name>
-  <description>Security Portlets</description>
-
-
+ <display-name>Security Portlets</display-name>
+ <description>Security Portlets</description>
+ <servlet>
+  <servlet-name>action</servlet-name>
+  <servlet-class>org.apache.struts.portlet.PortletServlet</servlet-class>
+  <init-param>
+   <param-name>config</param-name>
+   <param-value>/WEB-INF/struts-config.xml</param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>action</servlet-name>
+  <url-pattern>*.do</url-pattern>
+ </servlet-mapping>
+ <welcome-file-list>
+  <welcome-file>security/user-mgt/addUser.jsp</welcome-file>
+ </welcome-file-list>
+ <taglib>
+  <taglib-uri>struts-bean.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-bean.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>struts-logic.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-logic.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>struts-html.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-html.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>c.tld</taglib-uri>
+  <taglib-location>/WEB-INF/c.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>fmt.tld</taglib-uri>
+  <taglib-location>/WEB-INF/fmt.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>sql.tld</taglib-uri>
+  <taglib-location>/WEB-INF/sql.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>x.tld</taglib-uri>
+  <taglib-location>/WEB-INF/x.tld</taglib-location>
+ </taglib>
+ <taglib>
+  <taglib-uri>struts-portlet.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-portlet.tld</taglib-location>
+ </taglib>
 </web-app>

@@ -33,6 +33,28 @@ limitations under the License.
 			<short-title>Login Portlet</short-title>
     	</portlet-info>
   	</portlet>
+  	<portlet id="AddUserPortlet">
+  	    <init-param>
+            <name>ServletContextProvider</name>
+            <value>org.apache.jetspeed.portlet.StrutsServletContextProviderImpl</value>
+        </init-param>
+    	<init-param>
+      		<name>ViewPage</name>
+      		<value>/WEB-INF/security/user-mgt/addUser.jsp</value>
+		</init-param>
+    	<portlet-name>AddUserPortlet</portlet-name>
+    	<display-name>Add User Portlet</display-name>
+    	<portlet-class>org.apache.struts.portlet.StrutsPortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+    	<supports>
+	      <mime-type>text/html</mime-type>
+    	  <portlet-mode>VIEW</portlet-mode>
+    	</supports>
+		<portlet-info>
+			<title>Add User Portlet</title>
+			<short-title>Add User Portlet</short-title>
+    	</portlet-info>
+  	</portlet>
 
 </portlet-app>
 
