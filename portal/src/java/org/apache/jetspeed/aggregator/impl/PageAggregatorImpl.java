@@ -162,6 +162,16 @@ public class PageAggregatorImpl implements PageAggregator
                     context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
                     context.getRequest().setAttribute("org.apache.jetspeed.maximized.Layout", page.getRootFragment());
                     
+                    if(fragment.getDecorator() != null)
+                    {
+                        log.debug("decorator=" + currentFragment.getDecorator());
+            	        addStyle(context, fragment.getDecorator(), Fragment.PORTLET);
+                    } 
+                    else 
+                    {
+                        log.debug("no decorator for defined for portlet fragement," + currentFragment.getId()+".  So using page default, "+defaultPortletDecorator);
+                        addStyle(context, defaultPortletDecorator, Fragment.PORTLET);
+                    }
                     renderer.renderNow(page.getRootFragment(), context);
                     
                     context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Fragment");
