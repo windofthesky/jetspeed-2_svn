@@ -16,6 +16,6 @@ limitations under the License.
 
 <!--  BEGIN: clear/decorator.vm -->
 
-$jetspeed.include($jetspeed.currentFragment)
+$jetspeed.currentFragment.renderedContent
 
 <!--  END: clear/decorator.vm -->
