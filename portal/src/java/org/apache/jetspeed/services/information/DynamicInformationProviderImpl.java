@@ -32,7 +32,8 @@ import org.apache.pluto.services.information.ResourceURLProvider;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.NamespaceMapperAccess;
 import org.apache.pluto.services.information.PortletURLProvider;
-import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.jetspeed.request.RequestContext;
@@ -103,27 +104,16 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
      public PortletMode getPortletMode(PortletWindow portletWindow)
      {
-         NavigationalState navState = context.getNavigationalState();
+         NavigationalState navState = context.getPortalURL().getNavigationalState();
          return navState.getMode(portletWindow);
-     }
-
-     public PortletMode getPreviousPortletMode(PortletWindow portletWindow)
-     {
-         NavigationalState navState = context.getNavigationalState();         
-         return navState.getPreviousMode(portletWindow);
      }
 
      public WindowState getWindowState(PortletWindow portletWindow)
      {
-         NavigationalState navState = context.getNavigationalState();         
+         NavigationalState navState = context.getPortalURL().getNavigationalState();         
          return navState.getState(portletWindow);
      }
 
-     public WindowState getPreviousWindowState(PortletWindow portletWindow)
-     {
-         NavigationalState navState = context.getNavigationalState();         
-         return navState.getPreviousState(portletWindow);
-     }
     public boolean isPortletModeAllowed(PortletMode mode)
     {
         //checks whether PortletMode is supported as example
@@ -212,12 +202,12 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
         PortalURL url = context.getPortalURL();
         
-        Iterator iterator = url.getRenderParamNames(portletWindow);
+        Iterator iterator = url.getNavigationalState().getParameterNames(portletWindow);
         while (iterator.hasNext())
         {
             String name = (String)iterator.next();
 
-            String[] values = url.getRenderParamValues(portletWindow, name);
+            String[] values = url.getNavigationalState().getParameterValues(portletWindow, name);
 
             portletParameters.put(name, values );
 
@@ -240,7 +230,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
      */
     public PortletActionProvider getPortletActionProvider(PortletWindow window)
     {        
-        return new PortletActionProviderImpl(request, config, window);
+        return new PortletActionProviderImpl((MutableNavigationalState)context.getPortalURL().getNavigationalState(), window);
     }
 
     /** 

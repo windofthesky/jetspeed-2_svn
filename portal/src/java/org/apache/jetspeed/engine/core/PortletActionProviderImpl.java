@@ -17,15 +17,10 @@ package org.apache.jetspeed.engine.core;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletActionProvider;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
 
 /**
  * Handle operations that the portlet may perform in an action method.
@@ -36,19 +31,13 @@ import org.apache.jetspeed.request.RequestContextComponent;
  */
 public class PortletActionProviderImpl implements PortletActionProvider
 {
-    HttpServletRequest request = null;
-    ServletConfig config = null;
     private PortletWindow portletWindow;
-    private RequestContext context;
+    private MutableNavigationalState navstate;
     
-    public PortletActionProviderImpl(HttpServletRequest request, ServletConfig config, PortletWindow portletWindow)
+    public PortletActionProviderImpl(MutableNavigationalState navstate, PortletWindow portletWindow)
     {
-        this.request = request;
-        this.config = config;
         this.portletWindow = portletWindow;
-        // TODO: assemble this
-        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
-        this.context = rcc.getRequestContext(request);       
+        this.navstate = navstate;       
     }
 
     /* (non-Javadoc)
@@ -56,10 +45,9 @@ public class PortletActionProviderImpl implements PortletActionProvider
      */
     public void changePortletMode(PortletMode mode)
     {        
-        NavigationalState state = context.getNavigationalState();
-        if (!(state.getMode(portletWindow).equals(mode)) && mode != null)
+        if (mode != null)
         {
-            state.setMode(portletWindow, mode);
+            navstate.setMode(portletWindow, mode);
         }
     }
 
@@ -68,11 +56,9 @@ public class PortletActionProviderImpl implements PortletActionProvider
      */
     public void changePortletWindowState(WindowState state)
     {
-        NavigationalState navstate = context.getNavigationalState();
-        if (!(navstate.getState(portletWindow).equals(state)) && state != null)
+        if (state != null)
         {
-            navstate.setState(portletWindow, state);            
+            navstate.setState(portletWindow,state);
         }
     }
-
 }

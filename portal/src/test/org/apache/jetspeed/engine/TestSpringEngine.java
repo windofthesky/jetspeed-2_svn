@@ -18,7 +18,7 @@ import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.prefs.PreferencesProvider;

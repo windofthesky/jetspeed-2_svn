@@ -54,7 +54,7 @@ import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
@@ -275,7 +275,7 @@ public class JetspeedPowerTool implements ViewTool
         try
         {
             RequestContext context = Jetspeed.getCurrentRequestContext();
-            NavigationalState nav = context.getNavigationalState();
+            NavigationalState nav = context.getPortalURL().getNavigationalState();
             return nav.getState(windowAccess.getPortletWindow(getCurrentFragment()));
         }
         catch (Exception e)
@@ -294,7 +294,7 @@ public class JetspeedPowerTool implements ViewTool
     public PortletMode getPortletMode() throws Exception
     {
         RequestContext context = Jetspeed.getCurrentRequestContext();
-        NavigationalState nav = context.getNavigationalState();
+        NavigationalState nav = context.getPortalURL().getNavigationalState();
         try
         {
             return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));

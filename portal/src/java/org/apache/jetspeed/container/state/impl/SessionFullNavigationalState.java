@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.container.session.impl;
+package org.apache.jetspeed.container.state.impl;
 
-import java.io.Serializable;
-
-import org.apache.jetspeed.container.session.PageState;
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * PageStateImpl
+ * SessionFullNavigationalState, stores all nav parameters in the session, including render parameters
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public class PageStateImpl implements PageState, Serializable
-{
-    private PortletWindow maximized = null;
-
-    public boolean isMaximized()
+public class SessionFullNavigationalState extends SessionNavigationalState
+{    
+    public SessionFullNavigationalState(NavigationalStateCodec codec)
     {
-        return (maximized != null);
+        super(codec);
     }
 
-    public void setMaximizedWindow(PortletWindow maximized)
+    public boolean isRenderParameterStateFull()
     {
-        this.maximized = maximized;
+        return true;
     }
 }

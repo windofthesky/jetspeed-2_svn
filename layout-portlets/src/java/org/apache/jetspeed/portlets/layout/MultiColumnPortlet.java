@@ -69,7 +69,7 @@ public class MultiColumnPortlet extends LayoutPortlet
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
         RequestContext context = Jetspeed.getCurrentRequestContext();
-        PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
+        PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
 
         if (request.getParameter("moveBy") != null && request.getParameter("fragmentId") != null)
         {

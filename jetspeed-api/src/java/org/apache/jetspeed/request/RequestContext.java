@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.Page;
 
@@ -153,15 +152,7 @@ public interface RequestContext
      *
      */
     public String getMediaType();
-
     
-    /**
-     * Gets the navigational state for this current request.
-     * 
-     * @return The navigational state context object for the current request.
-     */
-    public NavigationalState getNavigationalState();
-
     /**
      * Gets the Portal URL for the current request.
      * 

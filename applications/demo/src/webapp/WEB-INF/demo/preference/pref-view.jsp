@@ -25,12 +25,12 @@ limitations under the License.
 <h3><fmt:message key="prefview.label.PreferenceList"/></h3>
 
 <p>
+<fmt:message key="prefview.label.noactionjustrender" var="viewMeParam"/>
+<jsp:useBean id="viewMeParam" type="String"/>
 
-<portlet:renderURL windowState="normal" portletMode="view"  var="baseViewLink"/>
-<c:url value="${baseViewLink}" var="viewLink">
-	 <c:param name="invokeMessage"><fmt:message key="prefview.label.noactionjustrender"/></c:param>
-</c:url>
-
+<portlet:renderURL windowState="normal" portletMode="view" var="viewLink">
+  <portlet:param name="invokeMessage" value="<%=viewMeParam%>"/>
+</portlet:renderURL>
 <a href="<c:out value="${viewLink}" />"><fmt:message key="prefview.label.ViewMe"/></a>
 </p>
 

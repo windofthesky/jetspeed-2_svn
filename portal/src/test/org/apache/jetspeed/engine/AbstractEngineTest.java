@@ -26,6 +26,9 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.ComponentManagement;
 import org.jmock.Mock;
 
+import com.mockrunner.mock.web.MockServletConfig;
+import com.mockrunner.mock.web.MockServletContext;
+
 /**
  * <p>
  * AbstractEngineTest
@@ -74,7 +77,9 @@ public abstract class AbstractEngineTest extends TestCase
         PropertiesConfiguration config = new  PropertiesConfiguration();
         config.load(new FileInputStream("./src/webapp/WEB-INF/conf/jetspeed.properties")); 
         Mock servletConfigMock = new Mock(ServletConfig.class);
-        engine = Jetspeed.createEngine(config, "./src/webapp", (ServletConfig) servletConfigMock.proxy(), getEngineClass());
+        MockServletConfig msc = new MockServletConfig();
+        msc.setServletContext(new MockServletContext());
+        engine = Jetspeed.createEngine(config, "./src/webapp", msc, getEngineClass());
     
     }
     protected void tearDown() throws Exception

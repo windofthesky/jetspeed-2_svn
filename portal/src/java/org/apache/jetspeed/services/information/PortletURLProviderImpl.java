@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.services.information;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -22,8 +23,8 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
@@ -46,26 +47,15 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private boolean clearParameters = false;
     private Map parameters = null;
 
-    private RequestContext context;
     private PortalURL url;
     
     public PortletURLProviderImpl(RequestContext context, PortletWindow portletWindow)
     {
         this.portletWindow = portletWindow;
         
-        // TODO: assemble this with factory
-        NavigationalStateComponent nsc = (NavigationalStateComponent)Jetspeed.getComponentManager().getComponent(NavigationalStateComponent.class);
-        
-        context = this.context = context;
-        url = nsc.createURL(context);
+        url = context.getPortalURL();
     }
 
-    public PortletURLProviderImpl(RequestContext context, NavigationalState nav, PortletWindow portletWindow)
-    {
-        this.context = context;
-        this.portletWindow = portletWindow;
-    }
-    
     public void setPortletMode(PortletMode mode)
     {
         this.mode = mode;
@@ -88,7 +78,8 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void clearParameters()
     {        
-        url.clearRenderParameters(portletWindow);
+        // url.clearRenderParameters(portletWindow);
+        clearParameters = true;        
     }
 
     public void setParameters(Map parameters)
@@ -98,52 +89,25 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public String toString()
     {
-        if (mode != null)
+        if ( clearParameters )
         {
-            url.setMode(portletWindow, mode);
-        }
-
-        if (state != null)
-        {
-            url.setState(portletWindow, state);
-        }
-
-        // STW: Spec reference PLT:12:2
-        // Had to move logic directly up into the actual clear call
-        //        if (clearParameters)
-        //        {
-        //        	// clear any existing paramters per the spec
-        //            controlURL.clearRenderParameters(portletWindow);
-        //        }
-
-        if (action)
-        {
-            url.setAction(portletWindow);
-        }
-
-        if (parameters != null)
-        {
-            Iterator names = parameters.keySet().iterator();
-            while (names.hasNext())
+            if (parameters != null)
             {
-                String name = (String) names.next();
-                Object value = parameters.get(name);
-                String[] values = value instanceof String ? new String[] {(String) value }
-                : (String[]) value;
-                if (action)
+                Iterator names = parameters.keySet().iterator();
+                Map map = new HashMap();
+                while (names.hasNext())
                 {
-                    //url.setRequestParam(
-                    //    NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
-                    //    values);
-                    url.setRequestParam(name, values);
-                }
-                else
-                {
-                    url.setRenderParam(portletWindow, name, values);
+                    String name = (String) names.next();
+                    Object value = parameters.get(name);
+                    String[] values = value instanceof String ? new String[] {(String) value } : (String[]) value;
+                    map.put(name,values);
                 }
             }
+            return url.createPortletURL(portletWindow,parameters,mode,state,action,secure);
         }
-        return url.toString(secure);
+        else
+        {
+            return url.createPortletURL(portletWindow,mode,state,secure);
+        }
     }
-
 }

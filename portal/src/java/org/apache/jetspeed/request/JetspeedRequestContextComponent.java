@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**

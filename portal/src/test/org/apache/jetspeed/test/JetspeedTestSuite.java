@@ -37,6 +37,9 @@ import org.apache.jetspeed.engine.SpringEngine;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.jmock.Mock;
 
+import com.mockrunner.mock.web.MockServletConfig;
+import com.mockrunner.mock.web.MockServletContext;
+
 /**
  * <p>
  * JetspeedTestSuite
@@ -106,7 +109,9 @@ public class JetspeedTestSuite extends TestSuite
             //properties.setProperty(WEBAPP_ROOT_KEY, null);
             initializeConfiguration(properties, applicationRoot);
             Mock servletConfigMock = new Mock(ServletConfig.class);
-            engine = Jetspeed.createEngine(properties, applicationRoot, (ServletConfig) servletConfigMock.proxy(), SpringEngine.class);
+            MockServletConfig msc = new MockServletConfig();
+            msc.setServletContext(new MockServletContext());
+            engine = Jetspeed.createEngine(properties, applicationRoot, msc, SpringEngine.class);
 
         }
         catch (Exception e)

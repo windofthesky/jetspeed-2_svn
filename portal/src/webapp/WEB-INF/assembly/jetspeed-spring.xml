@@ -324,19 +324,19 @@ limitations under the License.
   </bean>
   
   <!--  Navigational State component -->
-  <bean id="org.apache.jetspeed.container.session.NavigationalStateComponent" 
-  	   class="org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent"
+  <bean id="org.apache.jetspeed.container.state.NavigationalStateComponent" 
+  	   class="org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateComponent"
   >  	   
-  	   <constructor-arg index="0"><value>org.apache.jetspeed.container.session.impl.SessionNavigationalState</value></constructor-arg>
-  	   <constructor-arg index="1"><value>org.apache.jetspeed.container.url.impl.SessionPortalURL</value></constructor-arg>
-  	   <constructor-arg index="2"><value>_,a,m,s,r,i,pm,ps,:</value></constructor-arg>  	   
+       <constructor-arg index="0"><value>org.apache.jetspeed.container.state.impl.SessionFullNavigationalState</value></constructor-arg>
+       <constructor-arg index="1"><value>org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL</value></constructor-arg>
+       <constructor-arg index="2"><value>org.apache.jetspeed.container.state.impl.JetspeedNavigationalStateCodec</value></constructor-arg>       
   </bean>
   
   <!-- Request Context -->
    <bean id="org.apache.jetspeed.request.RequestContextComponent" 
   	   class="org.apache.jetspeed.request.JetspeedRequestContextComponent"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.session.NavigationalStateComponent" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.state.NavigationalStateComponent" /></constructor-arg>
   	   <constructor-arg ><value>org.apache.jetspeed.request.JetspeedRequestContext</value></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>  	   
   </bean>

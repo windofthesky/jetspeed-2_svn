@@ -6,12 +6,12 @@
  */
 package org.apache.jetspeed.container.url;
 
-import java.util.Iterator;
+import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -34,69 +34,61 @@ public interface PortalURL
     /** HTTPS protocol. */
     public static final String HTTPS = "https";
     
-    void init(RequestContext context);
-    
     /**
      * Gets the Base URL for this portal.
      * 
      * @return The Base URL of the portal.
      */
     String getBaseURL();   
-    
-    /**
-     * Encodes a window state for the given window on the URL.
-     * 
-     * @param window The targeted window having its state set.
-     * @param state The state being encoded into the URL.
-     */
-    void setState(PortletWindow window, WindowState state);
-    
-    /**
-     * Encodes a portlet mode for the given window on the URL.
-     * 
-     * @param window The targeted window having its mode set.
-     * @param mode The portlet mode being encoded into the URL.
-     */    
-    void setMode(PortletWindow window, PortletMode mode);
-    
-    WindowState getState(PortletWindow window);        
-    PortletMode getMode(PortletWindow window);        
-    PortletMode getPreviousMode(PortletWindow window);    
-    WindowState getPreviousState(PortletWindow window);        
-    
-    ///////////////////////////////////////////////
-    
-    PortalControlParameter getControlParameters();
-    
-    boolean isNavigationalParameter(String token);
-        
-    Iterator getRenderParamNames(PortletWindow window);
-    
-    String[] getRenderParamValues(PortletWindow window, String paramName);
 
-    PortletWindow getPortletWindowOfAction();
+    /**
+     * Gets a secure version of the Base URL for this portal.
+     * 
+     * @return The secure Base URL of the portal.
+     */
+    String getBaseURL(boolean secure);
+
+    /**
+     * Gets the global navigational path of the current request.
+     * <br>
+     * The path does not contain the NavigationalState parameter
+     * 
+     * @return The the global navigational path of the current request.
+     */
+    String getPath();
     
-    void clearRenderParameters(PortletWindow portletWindow);
-    
-    void setAction(PortletWindow window);
-    
-    void setRequestParam(String name, String[] values);
-    
-    void setRenderParam(PortletWindow window, String name, String[] values);
-    
-    String toString();
-    
-    String toString(boolean secure);
-    
-    boolean isStateFullParameter(String param);
-    
-    String getStateKey(PortletWindow window);    
-    String getModeKey(PortletWindow window);    
-    String getActionKey(PortletWindow window);    
-    String getPrevModeKey(PortletWindow window);
-    String getPrevStateKey(PortletWindow window);
-    String getRenderParamKey(PortletWindow window);
-    
-    
-    
+    /**
+     * Gets the NavigationalState for access to the current request portal control parameters
+     * @return the NavigationalState of the PortalURL
+     */
+    NavigationalState getNavigationalState();    
+
+    /**
+     * Create a new PortletURL for a PortletWindow including request or action parameters.
+     * <br>
+     * The Portal Navigational State is encoded within the URL
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param action indicates if an actionURL or renderURL is created
+     * @param secure indicates if a secure url is required 
+     * @return a new actionURL or renderURL as String
+     */
+    String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure);
+
+    /**
+     * Create a new PortletURL for a PortletWindow retaining its (request) parameters.
+     * <br>
+     * The Portal Navigational State is encoded within the URL
+     * 
+     * @param window the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param secure
+     * @param secure indicates if a secure url is required 
+     * @return a new renderURL as String
+     */
+    String createPortletURL(PortletWindow window, PortletMode mode, WindowState state, boolean secure);
 }

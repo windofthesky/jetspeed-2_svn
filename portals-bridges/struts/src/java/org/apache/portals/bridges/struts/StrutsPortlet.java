@@ -297,8 +297,7 @@ public class StrutsPortlet extends GenericPortlet
                         pageURL = StrutsPortletURL.getOriginURL(req);
                         if (pageURL != null)
                             ((ActionResponse) response).setRenderParameter(
-                                    StrutsPortletURL.PAGE, StrutsPortletURL
-                                            .encodePageURL(pageURL));
+                                    StrutsPortletURL.PAGE, pageURL);
                         if (log.isDebugEnabled())
                             log.debug("action render error context");
                         req.getSession().setAttribute(
@@ -319,8 +318,7 @@ public class StrutsPortlet extends GenericPortlet
                             if (renderURL == null && log.isDebugEnabled())
                                 log.debug("action render page: " + pageURL);
                             ((ActionResponse) response).setRenderParameter(
-                                    StrutsPortletURL.PAGE, StrutsPortletURL
-                                            .encodePageURL(pageURL));
+                                    StrutsPortletURL.PAGE, pageURL);
                         }
                     }
                 }

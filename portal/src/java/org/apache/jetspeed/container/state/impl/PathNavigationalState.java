@@ -13,20 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.container.session;
+package org.apache.jetspeed.container.state.impl;
 
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * PageState
+ * PathNavigationalStateContext stores all navigational state in the URL.
+ * This implementation does not currently support persisting navigational state.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PageState
+public class PathNavigationalState extends AbstractNavigationalState 
 {
-    boolean isMaximized();
-    
-    void setMaximizedWindow(PortletWindow maximized);
-    
+
+    public PathNavigationalState(NavigationalStateCodec codec)
+    {
+        super(codec);
+    }
+
+    public void sync(RequestContext context)
+    {        
+    }
+
+    public boolean isNavigationalParameterStateFull()
+    {
+        return false;
+    }
+
+    public boolean isRenderParameterStateFull()
+    {
+        return false;
+    }
 }

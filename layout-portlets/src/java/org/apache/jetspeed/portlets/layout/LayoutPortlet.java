@@ -93,7 +93,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         response.setContentType("text/html");
 
         RequestContext context = Jetspeed.getCurrentRequestContext();
-        PortletWindow window = context.getNavigationalState().getMaximizedWindow(context.getPage());
+        PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         boolean maximized = (window != null);
         
         request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY, getPage(request));

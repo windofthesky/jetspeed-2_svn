@@ -15,530 +15,198 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.ContainerConstants;
-import org.apache.jetspeed.container.session.NavigationalStateComponent;
-import org.apache.jetspeed.container.url.PortalControlParameter;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * PortalURL defines the interface for manipulating Jetspeed Portal URLs.
- * These URLs are used internally by the portal and are not available to
- * Portlet Applications. This class provids common implementation 
- * for all concrete Portal URL implementations.
+ * AbstractPortalURL delivers the base implemention for parsing Jetspeed Portal URLs and creating new Portlet URLs.
+ * Not implemented is the encoding and decoding of the NavigationState parameter in the URL, allowing concrete
+ * implementations to supply different algorithms for it like encoding it as pathInfo or as query string parameter.
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
 public abstract class AbstractPortalURL implements PortalURL
 {
-    protected String serverName;
-    protected String serverScheme;
-    protected String contextPath;
-    protected String basePath;
-    protected int serverPort;
-    protected NavigationalStateComponent nsc;
-    protected RequestContext context;
-    protected Map requestParameters = new HashMap();
-    protected boolean analyzed = false;
-    protected boolean secure;
-    protected List startGlobalNavigation = new ArrayList();
-    protected List startLocalNavigation = new ArrayList();
-    protected HashMap startControlParameter = new HashMap();
-    protected HashMap startStateLessControlParameter = new HashMap();
-    protected PortalControlParameterImpl pcp;
+    public static final String DEFAULT_NAV_STATE_PARAMETER = "_ns";
     
+    private static String navStateParameter;
     
-    public AbstractPortalURL(RequestContext context, NavigationalStateComponent nsc)
+    private NavigationalState navState;
+    private String serverName;    
+    private String serverScheme;
+    private String contextPath;
+    private String basePath;
+    private String path;
+    private String encodedNavState;
+    private String secureBaseURL;
+    private String nonSecureBaseURL;
+    private int serverPort;    
+    private boolean secure;
+    private String characterEncoding;
+    
+    public AbstractPortalURL(RequestContext context, NavigationalState navState)
     {
-        this.context = context;
-        this.nsc = nsc;        
-        init(context);
-        pcp = new PortalControlParameterImpl(this, nsc);
-        pcp.init();
-    }
-    
-    public void init(RequestContext context)
-    {
-        if (null != context.getRequest())
+        if ( navStateParameter == null )
         {
-            this.serverName = context.getRequest().getServerName();
-            this.serverPort = context.getRequest().getServerPort();
-            this.serverScheme = context.getRequest().getScheme();
-            this.contextPath = (String)context.getRequest().getAttribute(ContainerConstants.PORTAL_CONTEXT); 
-            if (contextPath == null)
-            {
-                contextPath = context.getRequest().getContextPath();
-            }
-            if (contextPath == null)
-            {
-                contextPath = "";
-            }                        
-            String servletPath = context.getRequest().getServletPath();
-            if (servletPath == null)
-            {
-                servletPath = "";
-            }
-            this.basePath = contextPath + servletPath;
-            
-            if (basePath == null)
-            {
-                basePath = "";
-            }
-                        
-        }    
-    }
+            navStateParameter = 
+                Jetspeed.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", 
+                        DEFAULT_NAV_STATE_PARAMETER);
+        }
+        
+        this.navState = navState;
+        this.characterEncoding = context.getCharacterEncoding();
 
-    public String getBaseURL()
-    {
-        return getBaseURLBuffer().toString();
+        HttpServletRequest request = context.getRequest();
+        
+        if (null != request)
+        {
+            decodeBaseURL(request);
+            
+            decodeBasePath(request);
+            
+            decodePathAndNavigationalState(request);
+        }
     }
     
-    protected StringBuffer getBaseURLBuffer()
+    public static String getNavigationalStateParameterName()
     {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.serverScheme);
+        return navStateParameter;
+    }
+    
+    protected void decodeBaseURL(HttpServletRequest request)
+    {
+        this.serverName = request.getServerName();
+        this.serverPort = request.getServerPort();
+        this.serverScheme = request.getScheme();
+        this.secure = request.isSecure();
+        StringBuffer buffer = new StringBuffer(this.serverScheme);
         buffer.append("://");
         buffer.append(this.serverName);
-        if ((this.serverScheme.equals(PortalURL.HTTP) && this.serverPort != 80)
-            || (this.serverScheme.equals(PortalURL.HTTPS) && this.serverPort != 443))
+        if ((this.serverScheme.equals(HTTP) && this.serverPort != 80) ||
+                (this.serverScheme.equals(HTTPS) && this.serverPort != 443))
         {
             buffer.append(":");
             buffer.append(this.serverPort);
         }
-        return buffer;
+        if ( secure )
+        {
+            this.secureBaseURL = buffer.toString();
+        }
+        else
+        {
+            this.nonSecureBaseURL = buffer.toString();
+        }
     }
     
-    public boolean isNavigationalParameter(String token)
+    protected void decodeBasePath(HttpServletRequest request)
     {
-        return token.startsWith(nsc.getNavigationKey(NavigationalStateComponent.PREFIX));
+        this.contextPath = (String) request.getAttribute(ContainerConstants.PORTAL_CONTEXT);
+        if (contextPath == null)
+        {
+            contextPath = request.getContextPath();
+        }
+        if (contextPath == null)
+        {
+            contextPath = "";
+        }
+        String servletPath = request.getServletPath();
+        if (servletPath == null)
+        {
+            servletPath = "";
+        }
+        this.basePath = contextPath + servletPath;
+    }
+
+    protected void setEncodedNavigationalState(String encodedNavigationalState)
+    {
+        this.encodedNavState = encodedNavigationalState;        
+        try
+        {
+            navState.init(encodedNavState, characterEncoding);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // should never happen
+            e.printStackTrace();
+        }
+    }
+
+    protected void setPath(String path)
+    {
+        this.path = path;
+    }
+
+    public String getBaseURL()
+    {
+        return getBaseURL(secure);
+    }
+    
+    public String getBaseURL(boolean secure)
+    {
+        // TODO: delivering both secure and non-secure baseURL for PLT.7.1.2
+        //       currently only the baseURL as decoded (secure or non-secure) is returned
+        //       and the secure parameter is ignored
+        return this.secure ? secureBaseURL : nonSecureBaseURL;
+    }
+    
+    public String getBasePath()
+    {
+        return basePath;
+    }
+    
+    public String getPath()
+    {
+        return path;
     }    
-    
-    public boolean isRenderParameter(String token)
-    {
-        String prefix = nsc.getNavigationKey(NavigationalStateComponent.PREFIX);
-        if ( token != null && (token.startsWith(prefix + nsc.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
-        {
-            return true;
-        }
-        return false;    
-    }
-    
-    public String getRenderParamKey(PortletWindow window)
-    {
-        return nsc.getNavigationKey(NavigationalStateComponent.RENDER_PARAM) + "_" + window.getId().toString();
-    }
-    
-    public void setRequestParam(String name, String[] values)
-    {
-        requestParameters.put(name, values);
-    }
-
-    public Map getRequestParameters()
-    {
-        return requestParameters;
-    }
         
-    public String getRequestParametersAsString()
+    public NavigationalState getNavigationalState()
     {
-        if (requestParameters != null)
+        return navState;
+    }
+
+    public String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    {
+        try
         {
-            StringBuffer result = new StringBuffer(100);
-            Iterator iterator = requestParameters.keySet().iterator();
-            boolean hasNext = iterator.hasNext();
-            if (hasNext)
-            {
-                result.append("?");
-            }
-
-            while (hasNext)
-            {
-
-                String name = (String) iterator.next();
-                Object value = requestParameters.get(name);
-                String[] values = value instanceof String ? new String[] {(String) value }
-                : (String[]) value;
-
-                int i;
-
-                result.append(name);
-                result.append("=");
-                result.append(values[0]);
-                for (i = 1; i < values.length; i++)
-                {
-                    result.append("&");
-                    result.append(name);
-                    result.append("=");
-                    result.append(values[i]);
-                };
-
-                hasNext = iterator.hasNext();
-                if (hasNext)
-                    result.append("&");
-            }
-
-            return result.toString();
+            return createPortletURL(navState.encode(window,parameters,mode,state,action), secure);
         }
-        return "";
-    }
-    
-    
-    
-    public String getStateKey(PortletWindow window)
-    {
-        return nsc.getNavigationKey(NavigationalStateComponent.STATE) + "_" + window.getId().toString();
-    }
-    
-    public String getModeKey(PortletWindow window)
-    {
-        return nsc.getNavigationKey(NavigationalStateComponent.MODE) + "_" + window.getId().toString();
-    }
-    
-    public String getActionKey(PortletWindow window)
-    {        
-        return nsc.getNavigationKey(NavigationalStateComponent.ACTION) + "_" + window.getId().toString();
-    }
-    
-    public String getPrevModeKey(PortletWindow window)
-    {
-        return nsc.getNavigationKey(NavigationalStateComponent.PREV_MODE) + "_" + window.getId().toString();
-    }
-    
-    public String getPrevStateKey(PortletWindow window)
-    {
-        return nsc.getNavigationKey(NavigationalStateComponent.PREV_STATE) + "_" + window.getId().toString();
-    }
-    
-    void analyzeRequestInformation()
-    {
-        if (analyzed)
-            return;
-
-        startGlobalNavigation = new ArrayList();
-        startLocalNavigation = new ArrayList();
-        startControlParameter = new HashMap();
-        startStateLessControlParameter = new HashMap();
-
-        // check the complete pathInfo for
-        // * navigational information
-        // * control information
-                        
-
-        if (context.getRequest().getPathInfo() != null)
+        catch (UnsupportedEncodingException e)
         {
-            String pathInfo = new String(context.getRequest().getPathInfo());
-            // DST: TODO: why do we need to parse "." as well as "/"?
-            // this is creating a problem with params like "default.psml"
-            //StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/.");
-            StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
-            int mode = 0; // 0=navigation, 1=control information
-            String name = null;
-            while (tokenizer.hasMoreTokens())
-            {
-                String token = tokenizer.nextToken();
-                
-                if (isNavigationalParameter(token))
-                {
-                    mode = 1;
-                    name = token;
-                }
-                else if (mode == 0)
-                {
-                    startGlobalNavigation.add(token);
-                }
-                else if (mode == 1)
-                {
-                    if ((isStateFullParameter(name)))
-                    {
-                        startControlParameter.put(
-                            pcp.decodeParameterName(name),
-                            pcp.decodeParameterValue(name, token));
-                    }
-                    else
-                    {
-                        startStateLessControlParameter.put(
-                            pcp.decodeParameterName(name),
-                            pcp.decodeParameterValue(name, token));
-                    }
-                    mode = 0;
-                }
-            }
+            // should never happen
+            e.printStackTrace();
+            // to keep the compiler happy
+            return null;
         }
-        analyzed = true;
-
-    }
-    
-    /**
-     * Adds a navigational information pointing to a portal part, e.g. PageGroups
-     * or Pages
-     * 
-     * @param nav    the string pointing to a portal part
-     */
-    public void addGlobalNavigation(String nav)
-    {
-        startGlobalNavigation.add(nav);
     }
 
-    /**
-     * Sets the local navigation. Because the local navigation is always handled
-     * by the Browser, therefore the local navigation cleared.
-     */
-    public void setLocalNavigation()
+    public String createPortletURL(PortletWindow window, PortletMode mode, WindowState state, boolean secure)
     {
-        startLocalNavigation = new ArrayList();
-    }
-
-    /**
-     * Adds a navigational information pointing to a local portal part inside
-     * of a global portal part, e.g. a portlet on a page
-     * 
-     * @param nav    the string pointing to a local portal part
-     */
-    public void addLocalNavigation(String nav)
-    {
-        startLocalNavigation.add(nav);
-    }
-
-    /**
-     * Returns true if the given string is part of the global navigation of this URL
-     * 
-     * @param nav    the string to check
-     * @return true, if the string is part of the navigation
-     */
-    public boolean isPartOfGlobalNavigation(String nav)
-    {
-        return startGlobalNavigation.contains(nav);
-    }
-
-    /**
-     * Returns true if the given string is part of the local navigation of this URL
-     * 
-     * @param nav    the string to check
-     * @return true, if the string is part of the navigation
-     */
-    public boolean isPartOfLocalNavigation(String nav)
-    {
-        return startLocalNavigation.contains(nav);
-    }
-
-    public String getGlobalNavigationAsString()
-    {
-        StringBuffer result = new StringBuffer(200);
-        Iterator iterator = startGlobalNavigation.iterator();
-        if (iterator.hasNext())
+        try
         {
-            result.append((String) iterator.next());
-            while (iterator.hasNext())
-            {
-                result.append("/");
-                result.append((String) iterator.next());
-            }
+            return createPortletURL(navState.encode(window,mode,state), secure);
         }
-        return result.toString();
-    }
-
-    public String getLocalNavigationAsString()
-    {
-        StringBuffer result = new StringBuffer(30);
-        Iterator iterator = startLocalNavigation.iterator();
-        if (iterator.hasNext())
+        catch (UnsupportedEncodingException e)
         {
-            result.append((String) iterator.next());
-            while (iterator.hasNext())
-            {
-                result.append(".");
-                result.append((String) iterator.next());
-            }
+            // should never happen
+            e.printStackTrace();
+            // to keep the compiler happy
+            return null;
         }
-        return result.toString();
-    }
+    }    
 
-    public String getControlParameterAsString(PortalControlParameter controlParam)
-    {
-        Map stateFullParams = startControlParameter;
-        Map stateLessParams = null;
-        if (controlParam != null)
-        {
-            stateFullParams = controlParam.getStateFullControlParameter();
-            stateLessParams = controlParam.getStateLessControlParameter();
-        }
-
-        StringBuffer result = new StringBuffer(100);
-        Iterator iterator = stateFullParams.keySet().iterator();
-        while (iterator.hasNext())
-        {
-            if (iterator.hasNext())
-                result.append("/");
-            String name = (String) iterator.next();
-            result.append(pcp.encodeParameter(name));
-            result.append("/");
-            result.append((String) stateFullParams.get(name));
-        }
-
-        return result.toString();
-    }
-
-
+    protected abstract void decodePathAndNavigationalState(HttpServletRequest request);
     
-    public String toString()
-    {
-        return toString(false);
-    }
-
-    public String toString(boolean secure)
-    {        
-        return toString(pcp, new Boolean(secure));
-    }
-    
-    public String toString(PortalControlParameter controlParam, Boolean p_secure)
-    {
-        StringBuffer buffer = getBaseURLBuffer();
-        buffer.append(this.basePath);
-
-        String global = getGlobalNavigationAsString();
-        if (global.length() > 0)
-        {
-            buffer.append("/");
-            buffer.append(global);
-        }
-
-        String control = getControlParameterAsString(controlParam);
-        if (control.length() > 0)
-        {
-            buffer.append(control);
-        }
-
-        String params = getRequestParametersAsString();
-        if (params.length() > 0)
-        {
-            buffer.append(params);
-        }
-
-        String local = getLocalNavigationAsString();
-        if (local.length() > 0)
-        {
-            buffer.append("#");
-            buffer.append(local);
-        }
-
-        String finalUrl = buffer.toString();
-        return context.getResponse().encodeURL(finalUrl);
-    }
-
-    Map getClonedStateFullControlParameter()
-    {
-        analyzeRequestInformation();
-        return (Map) startControlParameter.clone();
-    }
-
-    Map getClonedStateLessControlParameter()
-    {
-        analyzeRequestInformation();
-        return (Map) startStateLessControlParameter.clone();
-    }
-
-    public void analyzeControlInformation(PortalControlParameterImpl control)
-    {
-        startControlParameter = (HashMap) control.getStateFullControlParameter();
-        startStateLessControlParameter = (HashMap) control.getStateLessControlParameter();
-    }
-
-    public void setRenderParameter(PortletWindow portletWindow, String name, String[] values)
-    {
-        startControlParameter.put(
-            pcp.encodeRenderParamName(portletWindow, name),
-            pcp.encodeRenderParamValues(values));
-
-    }
-
-    public String getContext()
-    {
-        StringBuffer result = getBaseURLBuffer();
-        result.append(this.contextPath);
-        return result.toString();
-    }
-
-    public Iterator getRenderParamNames(PortletWindow window)
-    {
-        return pcp.getRenderParamNames(window);
-    }
-    
-    public String[] getRenderParamValues(PortletWindow window, String paramName)
-    {
-        return pcp.getRenderParamValues(window, paramName);
-    }
-
-    public PortletWindow getPortletWindowOfAction()
-    {
-        return pcp.getPortletWindowOfAction();
-    }
-    
-    public void clearRenderParameters(PortletWindow portletWindow)
-    {
-        pcp.clearRenderParameters(portletWindow);
-    }
-        
-    public void setAction(PortletWindow window)
-    {
-        pcp.setAction(window);
-    }
-    
-    public void setRenderParam(PortletWindow window, String name, String[] values)
-    {
-        pcp.setRenderParam(window, name, values);
-    }
-    
-    public void setMode(PortletWindow window, PortletMode mode) 
-    {
-        pcp.setMode(window, mode);
-    }
-    
-    public void setState(PortletWindow window, WindowState state) 
-    {
-        pcp.setState(window, state);
-    }
-        
-    public PortletMode getPortletMode(PortletWindow window)
-    {
-        return pcp.getMode(window);
-    }
-    
-    public WindowState getState(PortletWindow window)
-    {
-        return pcp.getState(window);
-    }
-    
-    public PortletMode getMode(PortletWindow window)
-    {
-        return pcp.getMode(window);
-    }
-    
-    public PortletMode getPreviousMode(PortletWindow window)
-    {
-        return pcp.getPrevMode(window);
-    }
-    
-    public WindowState getPreviousState(PortletWindow window)
-    {
-        return pcp.getPrevState(window);
-    }
-    
-    public abstract boolean isStateFullParameter(String tag);
-    
-    public PortalControlParameter getControlParameters()
-    {
-        return this.pcp;
-    }
-    
+    protected abstract String createPortletURL(String encodedNavState, boolean secure);
 }

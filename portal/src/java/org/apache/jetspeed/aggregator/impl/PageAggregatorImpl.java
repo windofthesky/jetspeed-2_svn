@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.contentserver.ContentFilter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -152,8 +152,8 @@ public class PageAggregatorImpl implements PageAggregator
         if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
         {
             // handle maximized state
-            NavigationalState nav = context.getNavigationalState();
-            PortletWindow window = nav.getMaximizedWindow(context.getPage());
+            NavigationalState nav = context.getPortalURL().getNavigationalState();
+            PortletWindow window = nav.getMaximizedWindow();
             if (null != window)
             {
                 Fragment fragment = page.getFragmentById(window.getId().toString());

@@ -17,7 +17,6 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.Iterator;
 
-import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -138,9 +136,6 @@ public class BasicAggregator implements Aggregator
 
             HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
-
-            NavigationalState state = request.getNavigationalState();            
-            WindowState windowState = state.getState(portletWindow);
 
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }

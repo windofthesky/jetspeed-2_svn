@@ -110,11 +110,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             if (context != null)
             {
                 PortalURL url = context.getPortalURL();
-                Iterator iter = url.getRenderParamNames(portletWindow);
+                Iterator iter = url.getNavigationalState().getParameterNames(portletWindow);
                 while (iter.hasNext())
                 {
                     String name = (String) iter.next();
-                    String[] values = url.getRenderParamValues(portletWindow, name);
+                    String[] values = url.getNavigationalState().getParameterValues(portletWindow, name);
                     portletParameters.put(name, values);
 
                 }

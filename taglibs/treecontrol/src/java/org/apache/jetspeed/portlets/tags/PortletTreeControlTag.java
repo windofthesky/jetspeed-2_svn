@@ -160,19 +160,22 @@ public class PortletTreeControlTag extends TreeControlTag
         // character in parameter values. 
         String encodedNodeName = URLEncoder.encode(node.getName());
 
-        String action = replace(getAction(), "${name}", encodedNodeName);
+        PortletURL treeActionUrl = renderResponse.createActionURL();
+        treeActionUrl.setParameter("node", node.getName());
+        String treeAction = treeActionUrl.toString();
+//        String action = replace(getAction(), "${name}", encodedNodeName);
 
         
-        String updateTreeAction =
-            replace(getAction(), "tree=${name}", "select=" + encodedNodeName);
-        updateTreeAction =
-            ((HttpServletResponse) pageContext.getResponse()).
-            encodeURL(updateTreeAction);
+//        String updateTreeAction =
+//            replace(getAction(), "tree=${name}", "select=" + encodedNodeName);
+//        updateTreeAction =
+//            ((HttpServletResponse) pageContext.getResponse()).
+//            encodeURL(updateTreeAction);
 
         out.print("    <td>");
         if ((action != null) && !node.isLeaf()) {
             out.print("<a href=\"");
-            out.print(response.encodeURL(action));
+            out.print(response.encodeURL(treeAction));
             out.print("\">");
         }
         out.print("<img src=\"");
@@ -234,10 +237,12 @@ public class PortletTreeControlTag extends TreeControlTag
                     out.print(target);
                     out.print("\"");
                 }
+                /* Invalid, not used, and not usefull
                 // to refresh the tree in the same 'self' frame
                 out.print(" onclick=\"");
                 out.print("self.location.href='" + updateTreeAction + "'");
                 out.print("\"");
+                */
                 out.print(">");
             }
             out.print("<img src=\"");
@@ -275,10 +280,12 @@ public class PortletTreeControlTag extends TreeControlTag
                     out.print(labelStyle);
                     out.print("\"");
                 }
+                /* Invalid, not used, and not usefull
                 // to refresh the tree in the same 'self' frame
                 out.print(" onclick=\"");
                 out.print("self.location.href='" + updateTreeAction + "'");
                 out.print("\"");
+                */
                 out.print(">");
             } else if (labelStyle != null) {
                 out.print("<span class=\"");

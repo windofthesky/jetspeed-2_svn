@@ -28,39 +28,15 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class StrutsPortletURL
 {
-    public static final char PATH_DIVIDER = '|';
-    public static final char PARAM_DIVIDER = '$';
     public static final String PAGE = "_spage";
     public static final String ORIGIN = "_sorig";
-    public static String encodePageURL(String url)
-    {
-        if (url != null && !url.startsWith("http://"))
-        {
-            url = url.replace('?', PARAM_DIVIDER).replace('&', PARAM_DIVIDER)
-                    .replace('/', PATH_DIVIDER);
-        }
-        return url;
-    }
     public static String getPageURL(ServletRequest request)
     {
-        return decodePageURL(request.getParameter(PAGE));
+        return request.getParameter(PAGE);
     }
     public static String getOriginURL(ServletRequest request)
     {
-        return decodePageURL(request.getParameter(ORIGIN));
-    }
-    public static String decodePageURL(String url)
-    {
-        if (url != null)
-        {
-            int firstParamIndex;
-            if ((firstParamIndex = url.indexOf(PARAM_DIVIDER)) != -1)
-                url = (url.substring(0, firstParamIndex) + '?' + url
-                        .substring(firstParamIndex + 1)).replace(PARAM_DIVIDER,
-                        '&');
-            url = url.replace(PATH_DIVIDER, '/');
-        }
-        return url;
+        return request.getParameter(ORIGIN);
     }
     private static PortletURL createPortletURL(ServletRequest request,
             String pageURL, boolean actionURL)
@@ -79,7 +55,7 @@ public class StrutsPortletURL
             if (pageURL.startsWith(contextPath))
                 pageURL = pageURL.substring(contextPath.length());
         }
-        portletURL.setParameter(PAGE, encodePageURL(pageURL));
+        portletURL.setParameter(PAGE, pageURL);
         if (actionURL)
         {
             String originURL = request.getParameter(PAGE);

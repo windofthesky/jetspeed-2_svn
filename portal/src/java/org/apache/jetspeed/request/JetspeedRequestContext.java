@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
 import javax.security.auth.Subject;
@@ -31,8 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
@@ -70,7 +68,6 @@ public class JetspeedRequestContext implements RequestContext
     private CapabilityMap capabilityMap;
     private String mimeType;
     private String mediaType;
-    private NavigationalState navstate;
     private PortalURL url;
     private PortletWindow actionWindow;
     private String encoding;
@@ -107,7 +104,6 @@ public class JetspeedRequestContext implements RequestContext
         if (navcomponent != null)
         {
             url = navcomponent.createURL(this);
-            navstate = navcomponent.create(this);
         }
 
     }
@@ -226,11 +222,6 @@ public class JetspeedRequestContext implements RequestContext
     public String getMediaType()
     {
         return this.mediaType;
-    }
-
-    public NavigationalState getNavigationalState()
-    {
-        return navstate;
     }
 
     /**
@@ -435,38 +426,10 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getPath()
     {
-        if (this.requestPath != null)
+        if (this.requestPath == null)
         {
-            return this.requestPath;
+            this.requestPath = getPortalURL().getPath();
         }
-        String pathInfo = request.getPathInfo();
-        if (pathInfo == null)
-        {
-            this.requestPath = null;
-            return null;
-        }
-        StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
-        StringBuffer path = new StringBuffer();
-        int mode = 0; // 0=navigation, 1=control information
-        int count = 0;
-        String name = null;
-        while (tokenizer.hasMoreTokens())
-        {
-            String token = tokenizer.nextToken();
-            if (this.url.isNavigationalParameter(token))
-            {
-                break;
-            }
-            if (count > 0)
-            {
-                path.append("/");
-            }
-            path.append(token);
-            count++;
-        }
-
-        this.requestPath = "/" + path.toString();
-
         return this.requestPath;
     }
 
