@@ -20,20 +20,25 @@ limitations under the License.
 
 #set($myFragment = $jetspeed.currentFragment)
 
+#set($myLayout = $jetspeed.currentLayout)
+
 #set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
+#set($ldecorator = $myPage.getDefaultDecorator("layout"))  
 
-  
- #if($myFragment.getDecorator())
-        #set($decorator = $myFragment.getDecorator())
-  #end
+#if($myFragment.getDecorator())
+    #set($decorator = $myFragment.getDecorator())
+#end
 
-  #if ($decorator)
-        #set($decoTop = "${decorator}/decorator-top.vm")
-        #set($decoBottom = "${decorator}/decorator-bottom.vm")
-  #end
+#if($myLayout.getDecorator())
+        #set($ldecorator = $myLayout.getDecorator())
+#end
+
+#if ($ldecorator)
+   #set($decoTop = "${ldecorator}/decorator-top.vm")
+   #set($decoBottom = "${ldecorator}/decorator-bottom.vm")
+#end
 
 <!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
-
 
   #if ($decoTop)
       #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
@@ -48,6 +53,6 @@ limitations under the License.
   </tr>
 </table>
 
-#if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
+#if ($decoBottom)
    #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
 #end

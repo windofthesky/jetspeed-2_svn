@@ -59,7 +59,14 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         request.setAttribute("page", getPage(request));
         request.setAttribute("fragment", getFragment(request, maximized));
         request.setAttribute("dispatcher", getDispatcher(request));
-
+        if (maximized)
+        {
+            request.setAttribute("layout", getMaximizedLayout(request));
+        }
+        else
+        {
+            request.setAttribute("layout", getFragment(request, false));
+        }
         // now invoke the JSP associated with this portlet
         JetspeedPowerTool jpt = new JetspeedPowerTool(request, response, getPortletConfig());
         PortletPreferences prefs = request.getPreferences();
@@ -96,7 +103,8 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         super.doView(request, response);
 
         request.removeAttribute("page");
-        request.removeAttribute("fragment");
+        request.removeAttribute("fragment");        
+        request.removeAttribute("layout");
         request.removeAttribute("dispatcher");
     }
 
@@ -110,6 +118,15 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         return fragment;
     }
 
+    protected Fragment getMaximizedLayout(RenderRequest request)
+    {
+        // Very ugly and Pluto dependant but I don't see anything better right now
+        ServletRequest innerRequest = ((HttpServletRequestWrapper) request).getRequest();
+        String attribute = "org.apache.jetspeed.maximized.Layout" ;
+        Fragment fragment = (Fragment) innerRequest.getAttribute(attribute);
+        return fragment;        
+    }    
+    
     protected Page getPage(RenderRequest request)
     {
         // Very ugly and Pluto dependant but I don't see anything better right now

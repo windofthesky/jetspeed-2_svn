@@ -99,6 +99,8 @@ public class JetspeedPowerTool implements ViewTool
     private static final String COLUMNS_ATTR = "columns";
     public static final String PAGE_ATTR = "page";
     public static final String FRAGMENT_ATTR = "fragment";
+    public static final String LAYOUT_ATTR = "layout";
+    
     public static final String HIDDEN = "hidden";
 
     public static final String LAYOUT_TEMPLATE_TYPE = "layout";
@@ -258,7 +260,7 @@ public class JetspeedPowerTool implements ViewTool
         checkState();
         return (Fragment) renderRequest.getAttribute(FRAGMENT_ATTR);
     }
-
+    
     /**
      * 
      * @param f
@@ -268,7 +270,25 @@ public class JetspeedPowerTool implements ViewTool
         checkState();
         renderRequest.setAttribute(FRAGMENT_ATTR, f);
     }
-
+    
+    public void setCurrentLayout()
+    {
+        checkState();
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        Fragment f = (Fragment)context.getRequest().getAttribute(LAYOUT_ATTR);
+        renderRequest.setAttribute(LAYOUT_ATTR, f);        
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public Fragment getCurrentLayout()
+    {
+        checkState();
+        return (Fragment) renderRequest.getAttribute(LAYOUT_ATTR);
+    }
+    
     /**
      * 
      * @return
@@ -489,7 +509,8 @@ public class JetspeedPowerTool implements ViewTool
             fragmentStack.push(getCurrentFragment());
         }
         setCurrentFragment(f);
-
+        setCurrentLayout();
+        
         String decoratorPath = decorator + "/" + DECORATOR_TYPE + ext;
         TemplateDescriptor template = null;
         try

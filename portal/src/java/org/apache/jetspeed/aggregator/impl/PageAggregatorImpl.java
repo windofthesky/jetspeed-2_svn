@@ -146,8 +146,12 @@ public class PageAggregatorImpl implements PageAggregator, Startable
                 if (checkAccess(context, (fragment.getAcl() != null) ? fragment.getAcl() : acl, "render"))
                 {
                     context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
-                    renderer.renderNow(page.getRootFragment(), context);                      
+                    context.getRequest().setAttribute("org.apache.jetspeed.maximized.Layout", page.getRootFragment());
+                    
+                    renderer.renderNow(page.getRootFragment(), context);
+                    
                     context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Fragment");
+                    context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Layout");
                 }
                 return;
             }
