@@ -40,6 +40,11 @@ limitations under the License.
   	&commons-config-dep;
   	
   	<dependency>
+      <id>jetspeed2:jetspeed-rewriter</id>
+      <version>2.0-M2-dev</version>
+    </dependency>
+ 
+  	<dependency>
       <id>jetspeed2:jetspeed-components</id>
       <version>2.0-M2-dev</version>
     </dependency>
