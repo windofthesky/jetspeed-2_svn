@@ -97,6 +97,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         this.format = new OutputFormat();
         format.setIndenting(true);
         format.setIndent(4);
+        format.setEncoding("UTF-8");
 
         loadMapping();
     }
