@@ -54,6 +54,8 @@
 package org.apache.jetspeed.container;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -218,6 +220,8 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 init(request, response);
             }
 
+            // infuseClasspath();
+            
             PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
             Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
 
@@ -280,6 +284,36 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         log.info("Done shutting down!");
     }
 
+    public static final String LOCAL_CLASSES = "/WEB-INF/classes/";    
+    public static final String LOCAL_JARS = "/WEB-INF/lib/";    
 
+    private void infuseClasspath()
+    {
+        try
+        {
+            ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
+            
+            ClassLoader loader; // = (ClassLoader)classLoaders.get(portletApplicationName);            
+//            if (null == loader)
+            {
+                StringBuffer localPath = new StringBuffer("file:");
+                // localPath.append(jetspeedContext.getRealPath(JetspeedPortletContext.LOCAL_PA_ROOT));
+                // localPath.append(portletApplicationName);
+                String localAppPath = "file://c:/bluesunrise/apache/catalina/webapps/jetspeed"; 
+                //localPath.toString(); 
+                URL[] urls = {new URL(localAppPath + LOCAL_CLASSES),
+                              new URL(localAppPath + LOCAL_JARS)};
+                loader = new URLClassLoader(urls, oldLoader);
+                // classLoaders.put(portletApplicationName, loader);
+            }
+            Thread.currentThread().setContextClassLoader(loader);                 
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
+          
+    }
 
 }
