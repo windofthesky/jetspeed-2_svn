@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.descriptor.PipelineDescriptor;
-import org.apache.jetspeed.descriptor.ValveDescriptor;
+import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
+import org.apache.jetspeed.pipeline.descriptor.ValveDescriptor;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
