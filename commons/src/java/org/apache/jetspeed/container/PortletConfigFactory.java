@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.container;
 
-import javax.servlet.ServletConfig;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 
@@ -29,12 +28,9 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class PortletConfigFactory
 {
-    public static PortletConfig createPortletConfig(
-        ServletConfig servletConfig,
-        PortletContext portletContext,
-        PortletDefinition portletDefinition)
+    public static PortletConfig createPortletConfig(PortletContext portletContext,PortletDefinition portletDefinition)
     {
-        return new JetspeedPortletConfig(servletConfig, portletContext, portletDefinition);
+        return new JetspeedPortletConfig(portletContext, portletDefinition);
     }
 
 }

@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletConfig;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 
@@ -41,13 +40,11 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 {
     // private static final Log log = LogFactory.getLog(JetspeedPortletConfig.class);
     
-    private ServletConfig servletConfig;
     private PortletContext portletContext;
     private PortletDefinition portletDefinition;
 
-    public JetspeedPortletConfig(ServletConfig servletConfig, PortletContext portletContext, PortletDefinition portletEntity)
+    public JetspeedPortletConfig(PortletContext portletContext, PortletDefinition portletEntity)
     {
-        this.servletConfig = servletConfig;
         this.portletContext = portletContext;
         this.portletDefinition = portletEntity;
     }
@@ -116,12 +113,6 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     }
 
     //  internal portlet config implementation
-
-    public javax.servlet.ServletConfig getServletConfig()
-    {
-        return servletConfig;
-    }
-
     public PortletDefinition getPortletDefinition()
     {
         return portletDefinition;

@@ -33,15 +33,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
-import org.apache.jetspeed.tools.pamanager.DeploymentRegistration;
+import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.util.FileSystemHelper;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * Jetspeed Container entry point.
@@ -51,98 +49,93 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class JetspeedContainerServlet extends HttpServlet 
 {
- //   private final static Log log = LogFactory.getLog(JetspeedContainerServlet.class);
-   // private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
-
-    /**
-     * Whether init succeeded or not.
-     */
-    private static Throwable initFailure = null;
-
-
-    private static String webappRoot;
+    private String  contextName;
+    private boolean started = false;
+    private Timer   startTimer = null;
 
     // -------------------------------------------------------------------
     // I N I T I A L I Z A T I O N
     // -------------------------------------------------------------------
     private static final String JCS = "JetspeedContainerServlet: ";
-    private static final String INIT_START_MSG = JCS + "starting initialization of context ";
-    private static final String INIT_DONE_MSG = JCS + "Initialization complete for context ";
+    private static final String INIT_START_MSG = JCS + "starting initialization of Portlet Application at: ";
+    private static final String TRY_START_MSG = JCS + "attemping to start Portlet Application at: ";
+    private static final String STARTED_MSG = JCS + "started Portlet Application at: ";
+    private static final String INIT_FAILED_MSG = JCS + "initialization failed for Portlet Application at: ";
+    private static final String INIT_DONE_MSG = JCS + "initialization done for Portlet Application at: ";
+    private static final String STOP_MSG = JCS + "shutting down portlet application at: ";
+    private static final String STOP_FAILED_MSG = JCS + "shutting down error for portlet application at: ";
     
-    /**
-     * Intialize Servlet.
-     */
     public synchronized final void init(ServletConfig config) throws ServletException
     {
         synchronized (this.getClass())
         {            
             super.init(config);
+            
             ServletContext context = getServletContext();
-            String name = context.getServletContextName();
-            if (name == null || name.length() == 0)
+
+            started = false;
+            startTimer = null;            
+            contextName = config.getInitParameter("contextName");
+
+            if (null == contextName || contextName.length() == 0)
             {
-                name = context.getRealPath("/");
-                if (name == null)
+                contextName = null; // just to make sure for the destroy method
+                
+                throw new ServletException(JCS + "Portlet Application contextName not supplied in Init Parameters.");
+            }            
+            String paDir = context.getRealPath("/");
+            if ( paDir == null )
                 {
-                    name = "Jetspeed";
+              throw new ServletException(JCS + " Initialization of PortletApplication at "+contextName+" without access to its real path not supported");
                 }
-            }
-            context.log(INIT_START_MSG + name);            
-            System.out.println(INIT_START_MSG + name);            
+
+            context.log(INIT_START_MSG + contextName);            
+            System.out.println(INIT_START_MSG + contextName);            
 
             try
             {                
-                String registerAtInit = config.getInitParameter("registerAtInit");
-                if (null != registerAtInit)
-                {
-                    context.log(JCS + "Considering PA for registration during servlet init: " + name);
-                    String portletApplication = config.getInitParameter("portletApplication");
-                    if (null == portletApplication)
-                    {
-                        throw new ServletException(JCS + "Portlet Application Name not supplied in Init Parameters.");
-                    }
-                    
-                    registerPortletApplication(context, portletApplication);
-                    
-                }                
+              startPortletApplication(context, paDir, Thread.currentThread().getContextClassLoader());
             }
             catch (Exception e)
             {
-                initFailure = e;
-                String message = JCS + "Initialization of servlet " + name + " failed.";
+                String message = INIT_FAILED_MSG + contextName;
                 context.log(message, e);
                 System.err.println(message);
-                e.printStackTrace(System.err);                
                 throw new ServletException(message, e);
             }
 
-            context.log(INIT_DONE_MSG + name);
-            System.out.println(INIT_DONE_MSG + name);
+            context.log(INIT_DONE_MSG + contextName);
+            System.out.println(INIT_DONE_MSG + contextName);
         }
     }
 
-    private void registerPortletApplication(final ServletContext context, final String portletApplicationName)
+    private void startPortletApplication(final ServletContext context, final String paDir, final ClassLoader paClassLoader)
     throws ServletException
     {
 
-        context.log(JCS + "Attempting to register portlet application: name=" + portletApplicationName);
-        if (attemptRegistration(context, portletApplicationName)) 
+        if (attemptStart(context, contextName, paDir, paClassLoader)) 
         {
-            context.log(JCS + "Registered portlet application: name=" + portletApplicationName);
+          started = true;
             return;
         }
 
-        context.log(JCS + "Could not registered portlet application; starting back ground thread to register when jetspeed comes online: name=" + portletApplicationName);
-        final Timer timer = new Timer(true);
-        timer.schedule(
+        final String START_DELAYED_MSG = JCS + "Could not yet start portlet application at: "+contextName+". Starting back ground thread to start when the portal comes online.";
+        context.log(START_DELAYED_MSG);
+        startTimer = new Timer(true);
+        startTimer.schedule(
                 new TimerTask() {
                     public void run() {
-                        context.log(JCS + "Attempting to register portlet application: name=" + portletApplicationName);
-                        if (attemptRegistration(context, portletApplicationName)) {
-                            context.log(JCS + "Registered portlet application: name=" + portletApplicationName);
-                            timer.cancel();
+                      synchronized(contextName)
+                      {
+                        if (startTimer != null)
+                        {
+                          if (attemptStart(context, contextName, paDir, paClassLoader)) {
+                            startTimer.cancel();
+                            startTimer = null;
                         } else {
-                            context.log(JCS + "Could not register portlet application; will try again later: name=" + portletApplicationName);
+                            context.log(START_DELAYED_MSG);
+                          }
+                        }
                         }
                     }
                 },
@@ -150,34 +143,31 @@ public class JetspeedContainerServlet extends HttpServlet
                 10000);
     }
 
-    private static boolean attemptRegistration(ServletContext context, String portletApplicationName) 
+    private boolean attemptStart(ServletContext context, String contextPath, String paDir, ClassLoader paClassLoader) 
     {
         try
         {
+            context.log(TRY_START_MSG + contextPath);
             PortletServices services = JetspeedPortletServices.getSingleton();
             if (services != null)
             {
-                DeploymentRegistration registrar =
-                    (DeploymentRegistration)services.getService("PAM");
+                PortletApplicationManagement pam =
+                    (PortletApplicationManagement)services.getService("PAM");
 
-                if (registrar != null)
+                if (pam != null)
                 {
-                    FileSystemHelper webapp = new DirectoryHelper(new File(context.getRealPath("/")));
-                    if (registrar.registerPortletApplication(webapp, portletApplicationName))
-                    {
-                        context.log(JCS + "Portlet Application Registered at Servlet Init: " + portletApplicationName);
-                    }
-                    else
-                    {
-                        context.log(JCS + "Portlet Application did not change. Not Registered at Servlet Init: " + portletApplicationName);
-                    }
+                    DirectoryHelper paDirHelper = new DirectoryHelper(new File(paDir));
+                    pam.startPortletApplication(contextPath, paDirHelper, paClassLoader);
+                    started = true;
+                    context.log(STARTED_MSG + contextPath);
                     return true;
                 }
             }
         }
         catch (Exception e)
         {
-            context.log(JCS + "Failed to register PA: " + portletApplicationName, e);
+            context.log(INIT_FAILED_MSG + contextPath, e);
+            return true; // don't try again
         }
         return false;
     }    
@@ -200,28 +190,21 @@ public class JetspeedContainerServlet extends HttpServlet
         Integer method = ContainerConstants.METHOD_NOOP;
         try
         {
-            // Check to make sure that we started up properly.
-            if (initFailure != null)
-            {
-                throw initFailure;
-            }
-
-            // infuseClasspath();
-            
             method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
                 return;
             }
             
-            PortletDefinition portletDefinition = JetspeedPortletFactoryProxy.getCurrentPortletDefinition();                        
-            portletName = portletDefinition.getName();
-            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
+            Portlet portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
+            request.removeAttribute(ContainerConstants.PORTLET);
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                // inject the current request into the actionRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
+                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
 
                 portlet.processAction(actionRequest, actionResponse);
             }
@@ -229,6 +212,8 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 RenderRequest renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 RenderResponse renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
+                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
 
                 portlet.render(renderRequest, renderResponse);
             }
@@ -302,50 +287,42 @@ public class JetspeedContainerServlet extends HttpServlet
     // S E R V L E T  S H U T D O W N
     // -------------------------------------------------------------------
 
-    /**
-     * The <code>Servlet</code> destroy method. Invokes <code>ServiceBroker</code>
-     * tear down method.
-     */
     public final void destroy()
     {
-        getServletContext().log(JCS + "Shutting down portlet app context: " + getServletContext().getServletContextName());
+      if ( contextName != null )
+      {
+        synchronized (contextName)
+        {
+          if ( startTimer != null )
+          {
+            startTimer.cancel();
+            startTimer = null;
     }
+          else if ( started )
+          {
+            started = false;
+            PortletServices services = JetspeedPortletServices.getSingleton();
+            if (services != null)
+            {
+                PortletApplicationManagement pam =
+                    (PortletApplicationManagement)services.getService("PAM");
 
-    public static final String LOCAL_CLASSES = "/WEB-INF/classes/";
-    public static final String LOCAL_JARS = "/WEB-INF/lib/";
-
-    private void infuseClasspath()
+                if (pam != null)
     {
+                    getServletContext().log(STOP_MSG + contextName);
         try
         {
-            ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
-            ClassLoader defaultLoader = Class.class.getClassLoader();
-            
-            System.out.println("thread Loader is " + oldLoader);
-            System.out.println("defaultLoader is " + defaultLoader);
-            /*
-            ClassLoader loader; // = (ClassLoader)classLoaders.get(portletApplicationName);            
-            //            if (null == loader)
+                      pam.stopPortletApplication(contextName);
+                    }
+                    catch (Exception e)
             {
-                StringBuffer localPath = new StringBuffer("file:");
-                // localPath.append(jetspeedContext.getRealPath(JetspeedPortletContext.LOCAL_PA_ROOT));
-                // localPath.append(portletApplicationName);
-                String localAppPath = "file://c:/bluesunrise/apache/catalina/webapps/jetspeed";
-                //localPath.toString(); 
-                URL[] urls = { new URL(localAppPath + LOCAL_CLASSES), new URL(localAppPath + LOCAL_JARS)};
-                loader = new URLClassLoader(urls, oldLoader);
-                // classLoaders.put(portletApplicationName, loader);
+                      getServletContext().log(STOP_FAILED_MSG + contextName, e);
+                    }
+                }
             }
-            Thread.currentThread().setContextClassLoader(loader);
-            */
+            contextName = null;
+            }
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return;
         }
-
     }
-    
- 
 }

@@ -18,14 +18,13 @@ package org.apache.jetspeed.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @version $Id$
  */
 public class DirectoryHelper
     extends
@@ -108,7 +107,11 @@ public class DirectoryHelper
      */
     protected void copyFiles(File srcDir, File dstDir, FileFilter fileFilter) throws IOException
     {
-             
+        FileChannel srcChannel = null;
+        FileChannel dstChannel = null;
+
+        try
+        {
         File[] children = srcDir.listFiles(fileFilter);
         for(int i=0; i<children.length; i++)
         {
@@ -117,8 +120,8 @@ public class DirectoryHelper
             {
                 File toFile = new File(dstDir, child.getName());
                 toFile.createNewFile();
-                FileChannel srcChannel = new FileInputStream(child).getChannel();
-                FileChannel dstChannel = new FileOutputStream(toFile).getChannel();
+                srcChannel = new FileInputStream(child).getChannel();
+                dstChannel = new FileOutputStream(toFile).getChannel();
                 dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
                 srcChannel.close();
                 dstChannel.close();
@@ -128,6 +131,32 @@ public class DirectoryHelper
                 File newSubDir = new File(dstDir, child.getName());
                 newSubDir.mkdir();
                 copyFiles(child, newSubDir, fileFilter);
+            }
+        }
+        }
+        finally
+        {
+            if ( srcChannel != null && srcChannel.isOpen() )
+            {
+                try
+                {
+                    srcChannel.close();
+                }
+                catch (Exception e)
+                {
+                    
+                }
+            }
+            if ( dstChannel != null && dstChannel.isOpen() )
+            {
+                try
+                {
+                    dstChannel.close();
+                }
+                catch (Exception e)
+                {
+                    
+                }
             }
         }
     }

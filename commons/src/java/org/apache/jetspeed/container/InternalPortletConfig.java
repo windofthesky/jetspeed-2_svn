@@ -17,8 +17,6 @@ package org.apache.jetspeed.container;
 
 import org.apache.pluto.om.portlet.PortletDefinition;
 
-import javax.servlet.ServletConfig;
-
 /**
  * This interface defines the internal methods used on the Portlet Config.
  * 
@@ -28,8 +26,6 @@ import javax.servlet.ServletConfig;
  */
 public interface InternalPortletConfig
 {
-     public ServletConfig getServletConfig();
-
      public PortletDefinition getPortletDefinition();
     
 }
