@@ -46,6 +46,7 @@
     
     <class-descriptor
    	  class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl"
+   	  proxy="dynamic"
    	  table="PD_METADATA_FIELDS"
    >
       <field-descriptor
@@ -173,7 +174,7 @@
       <collection-descriptor
          name="portlets"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
-         auto-delete="true"
+         auto-delete="false"
       	 auto-update = "true"
       	 auto-retrieve = "true"
 
@@ -296,7 +297,7 @@
       <collection-descriptor
          name="metadataFields"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl"
-         auto-delete="true"
+         auto-delete="false"
      	 auto-update = "true"
       	 auto-retrieve = "true"
       >         
@@ -318,7 +319,7 @@
      <collection-descriptor
          name="displayNames"
          element-class-ref="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
-         auto-delete="true"
+         auto-delete="false"
       	 auto-update = "true"
       	 auto-retrieve = "true"
       >    
@@ -329,9 +330,9 @@
       <collection-descriptor
          name="languageSet"
          element-class-ref="org.apache.jetspeed.om.impl.LanguageImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
       >
          <inverse-foreignkey field-ref="portletId"/>
 
@@ -340,9 +341,9 @@
       <collection-descriptor
          name="contentTypes"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+       	 auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
       >         
 
          <inverse-foreignkey field-ref="portletId"/>
@@ -352,9 +353,9 @@
       	<collection-descriptor
          name="parameterSet"
          element-class-ref="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
       >         
 
          <inverse-foreignkey field-ref="parentId"/>
@@ -363,9 +364,9 @@
       <collection-descriptor
          name="prefSet"
          element-class-ref="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
        >         
 
          <inverse-foreignkey field-ref="parentId"/>
@@ -374,9 +375,9 @@
        <collection-descriptor
          name="securityRoleRefSet"
          element-class-ref="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
 
        >         
 
@@ -386,9 +387,9 @@
      <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+       	 auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
       >         
 
          <inverse-foreignkey field-ref="parentId"/>
@@ -418,6 +419,7 @@
 -->
    <class-descriptor
    	  class="org.apache.jetspeed.om.impl.LanguageImpl"
+   	  proxy="dynamic"
    	  table="LANGUAGE"
    >
    
@@ -478,6 +480,7 @@
  
    <class-descriptor
    	  class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
+   	  proxy="dynamic"
    	  table="PORTLET_CONTENT_TYPE"
    >   
      <field-descriptor
@@ -578,6 +581,7 @@
 
    <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PortletInitParameterImpl"
+   	  proxy="dynamic"
    	  table="PARAMETER"
    >
       <field-descriptor
@@ -642,6 +646,7 @@
     <!-- These preferences are the defaults for a PortletDefinition -->
     <class-descriptor
    	  class="org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl"
+   	  proxy="dynamic"
    	  table="PORTLET_PREFERENCE"
    >
       
@@ -801,6 +806,7 @@
  -->
     <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PortletDescriptionImpl"
+   	  proxy="dynamic"
    	  table="LOCALIZED_DESCRIPTION"
    >
       
@@ -1118,6 +1124,7 @@
     
     <class-descriptor
    	  class="org.apache.jetspeed.om.impl.PortletDisplayNameImpl"
+   	  proxy="dynamic"
    	  table="LOCALIZED_DISPLAY_NAME"
    >    
         
@@ -1265,6 +1272,7 @@
  -->
      <class-descriptor
    	  class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
+   	  proxy="dynamic"
    	  table="SECURITY_ROLE_REFERENCE"
    >
       

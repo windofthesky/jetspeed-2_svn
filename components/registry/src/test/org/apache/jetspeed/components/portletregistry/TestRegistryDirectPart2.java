@@ -168,11 +168,8 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         store.getTransaction().commit();
         assertNotNull("Web app was not located by query.", webApp);
         assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
-        
-        filter =  store.newFilter();
-        store.getTransaction().begin();
-        store.deleteAll(store.newQuery(PortletApplicationDefinitionImpl.class, filter));
-        store.getTransaction().commit();  
+ 
+        registry.removeApplication(app);
     }
     
     private void validateDublinCore(GenericMetadata metadata)

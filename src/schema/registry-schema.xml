@@ -25,49 +25,7 @@
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
     </table>
-    
-    <!--
-       Create Portlet Application Table
-    -->
-    <table name="PORTLET_APPLICATION">
-        <column name="APPLICATION_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="APP_NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="APP_IDENTIFIER" size="80" type="VARCHAR"/>
-        <column name="VERSION" size="80" type="VARCHAR"/>
-        <column name="APP_TYPE" type="INTEGER"/>
-        <column name="DESCRIPTION" size="80" type="VARCHAR"/>
-        <column name="WEB_APP_ID" required="true" type="INTEGER"/>
-        <unique name="UK_APPLICATION">
-            <unique-column name="APP_NAME"/>
-        </unique>
-    </table>
-    
-    <!--
-       Create Web Application Table
-    -->
-    <table name="WEB_APPLICATION">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
-    </table>
-    
-    <!--
-       Create Portlet Definition Table
-    -->
-    <table name="PORTLET_DEFINITION">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="NAME" size="80" type="VARCHAR"/>
-        <column name="CLASS_NAME" size="100" type="VARCHAR"/>
-        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
-        <column name="PORTLET_IDENTIFIER" size="80" type="VARCHAR"/>
-        <column name="EXPIRATION_CACHE" size="30" type="VARCHAR"/>
-        <column name="PREFERENCE_VALIDATOR" size="255" type="VARCHAR"/>
-        <!-- This breaks some tests since portlet identifier is not required
-        <unique name="UK_PORTLET_IDENT">
-            <unique-column name="PORTLET_IDENTIFIER"/>
-        </unique>
-        -->
-    </table>
-    
+
     <!--
        Create Language Table
     -->
@@ -106,13 +64,6 @@
     <!--
       Preference and Preference Values
     -->
-    <table name="PORTLET_PREFERENCE">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PARENT_ID" required="true" type="INTEGER"/>
-        <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="CLASS_NAME" required="true" size="50" type="VARCHAR"/>
-        <column default="1" name="READ_ONLY" size="1" type="CHAR"/>
-    </table>
     
     <table name="PREFERENCE_VALUE">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
@@ -120,6 +71,14 @@
         <column name="VALUE" type="LONGVARCHAR"/>
     </table>
     
+    <table name="PORTLET_PREFERENCE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PARENT_ID" required="true" type="INTEGER"/>
+        <column name="NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="CLASS_NAME" required="true" size="50" type="VARCHAR"/>
+        <column default="1" name="READ_ONLY" size="1" type="CHAR"/>
+    </table>
+
     <!--
        Portlet Entity
        Represents the managed state of individual portlet instance within a "page"
@@ -166,4 +125,47 @@
         <column name="DISPLAY_NAME" required="true" type="LONGVARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
     </table>
+    
+    <!--
+       Create Portlet Definition Table
+    -->
+    <table name="PORTLET_DEFINITION">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="NAME" size="80" type="VARCHAR"/>
+        <column name="CLASS_NAME" size="100" type="VARCHAR"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
+        <column name="PORTLET_IDENTIFIER" size="80" type="VARCHAR"/>
+        <column name="EXPIRATION_CACHE" size="30" type="VARCHAR"/>
+        <column name="PREFERENCE_VALIDATOR" size="255" type="VARCHAR"/>
+        <!-- This breaks some tests since portlet identifier is not required
+        <unique name="UK_PORTLET_IDENT">
+            <unique-column name="PORTLET_IDENTIFIER"/>
+        </unique>
+        -->
+    </table>
+
+    <!--
+       Create Portlet Application Table
+    -->
+    <table name="PORTLET_APPLICATION">
+        <column name="APPLICATION_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APP_NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="APP_IDENTIFIER" size="80" type="VARCHAR"/>
+        <column name="VERSION" size="80" type="VARCHAR"/>
+        <column name="APP_TYPE" type="INTEGER"/>
+        <column name="DESCRIPTION" size="80" type="VARCHAR"/>
+        <column name="WEB_APP_ID" required="true" type="INTEGER"/>
+        <unique name="UK_APPLICATION">
+            <unique-column name="APP_NAME"/>
+        </unique>
+    </table>
+
+    <!--
+       Create Web Application Table
+    -->
+    <table name="WEB_APPLICATION">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
+    </table>
+    
 </database>
