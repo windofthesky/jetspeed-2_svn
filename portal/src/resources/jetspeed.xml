@@ -19,6 +19,7 @@ limitations under the License.
          appName="Jetspeed"
          userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
          roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
+         @USE_CONTEXTCLASSLOADER@
          debug="3"/>
 
 	<ResourceParams name="jdbc/jetspeed">

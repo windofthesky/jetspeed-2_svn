@@ -417,9 +417,11 @@ limitations under the License.
       <j:choose>
         <j:when test="${catalina_version_major == '5'}" >
           <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+          <j:set var="use_contextclassloader" value='useContextClassLoader="false"'/>
         </j:when>
         <j:otherwise>
           <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
+          <j:set var="use_contextclassloader" value=""/>
         </j:otherwise>
       </j:choose>
       <copy file="./src/resources/jetspeed.xml" tofile="${context_dir}/jetspeed.xml" overwrite="true">
@@ -428,6 +430,7 @@ limitations under the License.
           <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
           <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
           <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+          <filter token="USE_CONTEXTCLASSLOADER" value="${use_contextclassloader}"/>
         </filterset>
       </copy>
       <attainGoal name="catalina:base-shared" />

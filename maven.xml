@@ -169,7 +169,6 @@ limitations under the License.
                
      <!-- Dependency copying -->
      <attainGoal name="copy.shared.deps" />
-     <attainGoal name="check.patch.tomcat5.jaas.realm"/>
   </goal>
 
   <goal name="copy.shared.deps">
@@ -526,21 +525,5 @@ limitations under the License.
     <fail message="Required property org.apache.jetspeed.services.autodeployment.user undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.services.autodeployment.user"/>
     <fail message="Required property org.apache.jetspeed.services.autodeployment.password undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="org.apache.jetspeed.services.autodeployment.password"/>
   </goal>  
-
-  <goal name="check.patch.tomcat5.jaas.realm"
-        description="Check if the Tomcat5 JAASRealm patch is needed">
-    <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
-    <j:if test="${catalina_version_major == '5'}">
-      <mkdir dir="${org.apache.jetspeed.server.home}/server/classes"/>
-      <javac srcdir="src/tomcat5-jaas-patch" destdir="${org.apache.jetspeed.server.home}/server/classes">
-        <classpath>
-          <path refid="maven.dependency.classpath"/>
-          <fileset dir="${org.apache.jetspeed.server.home}/server/lib">
-            <include name="**/*.jar"/>
-          </fileset>
-        </classpath>
-      </javac>
-    </j:if>
-  </goal>
   
 </project>
