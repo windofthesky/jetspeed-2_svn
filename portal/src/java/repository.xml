@@ -20,7 +20,6 @@ limitations under the License.
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 	<!ENTITY database SYSTEM "repository_database.xml">
 	<!ENTITY internal SYSTEM "repository_internal.xml">
-	<!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
 	<!ENTITY page SYSTEM "repository_page.xml">
 ]>
 <descriptor-repository version="1.0" isolation-level="read-uncommitted">
@@ -29,9 +28,6 @@ limitations under the License.
 
     <!-- include ojb internal mappings here -->
     &internal;
-
-    <!-- include jetspeed defined mappings here -->
-    &jetspeed;
 
     <!-- include jetspeed page and profiler mappings here -->
     &page;

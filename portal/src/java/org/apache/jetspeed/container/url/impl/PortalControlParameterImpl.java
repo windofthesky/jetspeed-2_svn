@@ -26,6 +26,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.*;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
@@ -40,14 +41,14 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortalControlParameter
+public class PortalControlParameterImpl implements PortalControlParameter
 {
     private Map stateFullControlParameter = null;
     private Map stateLessControlParameter = null;
     private NavigationalStateComponent nav;
     private PortalURL url;
 
-    public PortalControlParameter(PortalURL url, NavigationalStateComponent nav)
+    public PortalControlParameterImpl(PortalURL url, NavigationalStateComponent nav)
     {
         this.nav = nav;
         this.url = url;

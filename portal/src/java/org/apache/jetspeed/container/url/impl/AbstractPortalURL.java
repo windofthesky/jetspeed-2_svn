@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -26,6 +26,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalControlParameter;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
@@ -55,7 +56,7 @@ public abstract class AbstractPortalURL implements PortalURL
     protected List startLocalNavigation = new ArrayList();
     protected HashMap startControlParameter = new HashMap();
     protected HashMap startStateLessControlParameter = new HashMap();
-    protected PortalControlParameter pcp;
+    protected PortalControlParameterImpl pcp;
     
     
     public AbstractPortalURL(RequestContext context, NavigationalStateComponent nsc)
@@ -63,7 +64,7 @@ public abstract class AbstractPortalURL implements PortalURL
         this.context = context;
         this.nsc = nsc;        
         init(context);
-        pcp = new PortalControlParameter(this, nsc);
+        pcp = new PortalControlParameterImpl(this, nsc);
         pcp.init();
     }
     
@@ -356,7 +357,7 @@ public abstract class AbstractPortalURL implements PortalURL
         return result.toString();
     }
 
-    public String getControlParameterAsString(PortalControlParameter controlParam)
+    public String getControlParameterAsString(PortalControlParameterImpl controlParam)
     {
         Map stateFullParams = startControlParameter;
         Map stateLessParams = null;
@@ -393,7 +394,7 @@ public abstract class AbstractPortalURL implements PortalURL
         return toString(pcp, new Boolean(secure));
     }
     
-    public String toString(PortalControlParameter controlParam, Boolean p_secure)
+    public String toString(PortalControlParameterImpl controlParam, Boolean p_secure)
     {
         StringBuffer buffer = getBaseURLBuffer();
         buffer.append(this.basePath);
@@ -440,7 +441,7 @@ public abstract class AbstractPortalURL implements PortalURL
         return (Map) startStateLessControlParameter.clone();
     }
 
-    public void analyzeControlInformation(PortalControlParameter control)
+    public void analyzeControlInformation(PortalControlParameterImpl control)
     {
         startControlParameter = (HashMap) control.getStateFullControlParameter();
         startStateLessControlParameter = (HashMap) control.getStateLessControlParameter();
