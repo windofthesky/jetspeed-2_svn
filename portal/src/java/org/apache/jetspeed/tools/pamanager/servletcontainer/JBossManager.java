@@ -123,4 +123,8 @@ public class JBossManager implements ApplicationServerManager, Startable
 
     }
 
+    public String getAppServerTarget(String appName)
+    {
+        return appName + ".war";
+    }    
 }

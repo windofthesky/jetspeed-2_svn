@@ -328,7 +328,10 @@ public class TomcatManager implements ApplicationServerManager, Startable
      */
     public void stop()
     {
-        
-
+    }
+    
+    public String getAppServerTarget(String appName)
+    {
+        return appName;
     }
 }

@@ -38,11 +38,10 @@ import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
-import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
-import org.apache.jetspeed.util.descriptor.MetaDataException;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.jetspeed.util.descriptor.WebApplicationDescriptor;
@@ -80,17 +79,25 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     protected PortletWindowAccessor windowAccess;
     private PortletCache portletCache;
 
-    public FileSystemPAM( String webAppsDir, PortletRegistryComponent registry,
-            PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, PortletCache portletCache )
+    protected ApplicationServerManager appServerManager;
+   
+    public FileSystemPAM( String webAppsDir, 
+                          PortletRegistryComponent registry,
+                          PortletEntityAccessComponent entityAccess, 
+                          PortletWindowAccessor windowAccess, 
+                          PortletCache portletCache,
+                          ApplicationServerManager appServerManager)                          
     {
         super();
         ArgUtil.assertNotNull(PortletRegistryComponent.class, registry, this);
         ArgUtil.assertNotNull(PortletEntityAccessComponent.class, entityAccess, this);
+        ArgUtil.assertNotNull(ApplicationServerManager.class, appServerManager, this);
         this.registry = registry;
         this.entityAccess = entityAccess;
         this.webAppsDir = webAppsDir;
         this.portletCache = portletCache;
         this.windowAccess = windowAccess;
+        this.appServerManager = appServerManager;      
     }
 
     /**
@@ -260,10 +267,11 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         int nState = DEPLOY_WAR; //Initialize
         MutablePortletApplication app = null;
         String paName = paWar.getPortletApplicationName();
-
+        String targetAppName = appServerManager.getAppServerTarget(paName);
+        
         try
         {
-            String portletAppDirectory = webAppsDir + "/" + paName;
+            String portletAppDirectory = webAppsDir + "/" + targetAppName;
 
             log.info("Portlet application deployment target directory is " + portletAppDirectory);
 
@@ -324,7 +332,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         }
 
     }
-
+    
     protected void registerApplication( PortletApplicationWar paWar ) throws PortletApplicationException,
             RegistryException
     {

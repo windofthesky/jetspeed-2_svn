@@ -156,4 +156,12 @@ public interface ApplicationServerManager
      * @return
      */
     boolean isConnected();
+    
+    /**
+     * <p> Returns the name of the target directory or archive where the portlet app will be 
+     *     deployed as known to the application server
+     * </p>
+     */
+    String getAppServerTarget(String appName);
+    
 }

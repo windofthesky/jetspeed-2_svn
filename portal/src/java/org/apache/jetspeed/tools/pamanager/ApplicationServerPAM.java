@@ -46,7 +46,6 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
 
     protected static final Log log = LogFactory.getLog("deployment");
     private boolean started;
-    protected ApplicationServerManager appServerManager;
 
     /**
      * 
@@ -58,9 +57,8 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
      */
     public ApplicationServerPAM( String webAppsDir, PortletRegistryComponent registry, PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, ApplicationServerManager appServerManager, PortletCache portletCache )
     {       
-        super(webAppsDir, registry, entityAccess, windowAccess, portletCache);
+        super(webAppsDir, registry, entityAccess, windowAccess, portletCache, appServerManager);
         ArgUtil.assertNotNull(ApplicationServerManager.class, appServerManager, this);
-        this.appServerManager = appServerManager;      
     }
 
     public void start()
