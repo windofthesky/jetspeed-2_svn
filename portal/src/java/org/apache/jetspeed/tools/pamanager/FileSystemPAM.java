@@ -130,7 +130,7 @@ public class FileSystemPAM implements Deployment
                 rollback(nState, webAppsDir, paName, app);
                 return;
             }
-            if (webAppsDir.startsWith(JetspeedPortletContext.LOCAL_PA_ROOT))
+            if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
             {
                 app.setApplicationType(MutablePortletApplication.LOCAL);
             }
