@@ -60,6 +60,26 @@ import org.apache.jetspeed.cps.CommonService;
 /**
  * TemplateLocatorService
  *
+ * <h3>Sample Configuration</h3> 
+ *<pre>
+ * <code>
+ * # -------------------------------------------------------------------
+ * #
+ * # T E M P L A T E  L O C A T O R  S E R V I C E
+ * #
+ * # -------------------------------------------------------------------
+ * services.template.classname = org.apache.jetspeed.cps.template.TemplateLocatorServiceImpl
+ * # This parameter supports a comma separated list of directories
+ * # Each directory is searched in order to find a template.
+ * # This is useful for example, in defining application specific templates in a separate structure from the jetspeed core templates
+ * services.template.roots = WEB-INF/templates/vm
+ * services.template.locator.class = org.apache.jetspeed.cps.template.TemplateLocatorImpl
+ * services.template.class = org.apache.jetspeed.cps.template.TemplateImpl
+ * services.template.locator.default.type = portlet
+ * services.template.default.template.name = default.vm
+ * services.template.default.extension = vm
+ *  </code>
+ * </pre>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
