@@ -16,8 +16,11 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.security.Principal;
+import java.util.Hashtable;
 import java.util.Iterator;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -28,6 +31,9 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.bridges.myfaces.FacesPortlet;
+
+import tyrex.naming.MemoryContext;
+import tyrex.tm.RuntimeContext;
 
 
 /**
@@ -60,6 +66,21 @@ public class UserManagerPortlet extends FacesPortlet
             Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);             
             System.out.println("principal = " + principal.getName());
         }
+        try
+        {
+            Hashtable env = new Hashtable();
+            env.put(Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory");
+            Context root = new MemoryContext(null);                                   
+            Context ctx = root.createSubcontext("comp");
+            ctx.bind("UserManager", userManager); 
+            RuntimeContext runCtx = RuntimeContext.newRuntimeContext(root, null);
+            RuntimeContext.setRuntimeContext(runCtx);            
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();            
+        }
+        
     }
     
     public Principal getPrincipal(Subject subject, Class classe)
