@@ -29,7 +29,12 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+* <p>
+ * TestDefaultInternalPasswordCredentialIntercepto
+ * </p>
+ * 
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
+ * @version $Id$
  */
 public class TestDefaultInternalPasswordCredentialInterceptor extends AbstractSecurityTestcase
 {

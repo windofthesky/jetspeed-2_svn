@@ -27,7 +27,12 @@ import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
+* <p>
+ * TestInternalPasswordCredentialStateHandlingInterceptor
+ * </p>
+ * 
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
+ * @version $Id$
  */
 public class TestInternalPasswordCredentialStateHandlingInterceptor extends AbstractSecurityTestcase
 {
