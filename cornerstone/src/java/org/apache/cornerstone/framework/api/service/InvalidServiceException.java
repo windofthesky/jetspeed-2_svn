@@ -54,12 +54,32 @@
 
 package org.apache.cornerstone.framework.api.service;
 
-public class InvalidServiceException extends Exception
+public class InvalidServiceException extends ServiceException
 {
     public static final String REVISION = "$Revision$";
 
+    /**
+     * @param msg
+     */
     public InvalidServiceException(String msg)
     {
         super(msg);
     }
+
+    /**
+     * @param cause
+     */
+    public InvalidServiceException(Exception cause)
+    {
+        super(cause);
+    }
+
+    /**
+	 * @param msg
+	 * @param cause
+	 */
+	public InvalidServiceException(String msg, Exception cause)
+	{
+		super(msg, cause);
+	}
 }

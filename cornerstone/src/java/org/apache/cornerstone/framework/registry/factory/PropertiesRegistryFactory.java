@@ -52,28 +52,33 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.cornerstone.framework.registry;
+package org.apache.cornerstone.framework.registry.factory;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.util.HashSet;
 import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.registry.IRegistry;
 import org.apache.cornerstone.framework.api.registry.IRegistryEntry;
+import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.factory.BaseFactory;
+import org.apache.cornerstone.framework.registry.BaseRegistry;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
-public class RegistryPropertiesFactory extends BaseFactory
+public class PropertiesRegistryFactory extends BaseFactory
 {
-    public static final String REVISiON = "$Revision$";
+    public static final String REVISION = "$Revision$";
 
+    public static final String SHORT_HAND = "shortHand";
+    public static final String META_SHORT_HAND = Constant.META + Constant.DOT + SHORT_HAND + Constant.DASH;
     public static final String REG_DIR_NAME = "registry";
     public static final String REG_FILE_EXTENSION = ".reg.properties";
+
     public static final String CONFIG_FILE_NAMES_TO_SKIP = "fileNamesToSkip";
 
-    public static RegistryPropertiesFactory getSingleton()
+    public static PropertiesRegistryFactory getSingleton()
     {
         return _Singleton;
     }
@@ -85,50 +90,67 @@ public class RegistryPropertiesFactory extends BaseFactory
 
     public Object createInstance(Object registryParentPath) throws CreationException
     {
-        _registryDir = registryParentPath + File.separator + REG_DIR_NAME;        
+        String registryPath = registryParentPath + File.separator + REG_DIR_NAME;        
                 
         // create the Registry
-        BaseRegistry registry = BaseRegistry.getSingleton();
+        IRegistry registry = BaseRegistry.getSingleton();
 
         // for every file in this path added to the 
         // registry as RegistryEntry
         //
-        File registryFolder = new File(_registryDir);
-        File[] fileList = registryFolder.listFiles();
-        if (fileList != null)
+        File registryDir = new File(registryPath);
+        File[] domains = registryDir.listFiles();
+        if (domains != null)
         {
-            RegistryEntryPropertiesFactory registryEntryFactory = RegistryEntryPropertiesFactory.getSingleton();
-
-            for ( int k = 0; k < fileList.length; k++ )
+            PropertiesRegistryEntryFactory registryEntryFactory = PropertiesRegistryEntryFactory.getSingleton();
+            for ( int k = 0; k < domains.length; k++ )
             {
-                if ( fileList[k].isDirectory() == true)
+                String domainName = domains[k].getName();
+                if (skipFile(domainName)) continue;
+
+                if ( domains[k].isDirectory() )
                 {
-                    File registrySubFolder = new File(fileList[k].getAbsolutePath());
-                    File[] registrySubFolderFiles = registrySubFolder.listFiles();
-
-                    // domainName == subFolderName
-                    String domainName = fileList[k].getName();
-                    if (skipFile(domainName)) continue;
-
-                    for ( int i = 0; i < registrySubFolderFiles.length; i++ )
+                    File domainDir = new File(domains[k].getAbsolutePath());
+                    File[] interfaces = domainDir.listFiles();
+                    for ( int i = 0; i < interfaces.length; i++ )
                     {
-                        // current file is
-                        //File currentRegistryFile = fileList[i];
-                        if ( registrySubFolderFiles[i].isFile() == true )
+                        String interfaceName = interfaces[i].getName();
+                        if (skipFile(interfaceName)) continue;
+
+                        if ( interfaces[i].isDirectory() )
                         {
-                            registryEntryFactory.setCurrentFile(registrySubFolderFiles[i]);
-                            IRegistryEntry currentRegistryEntry = (IRegistryEntry)registryEntryFactory.createInstance();
-                            String fileName = registrySubFolderFiles[i].getName();
-                            if (skipFile(fileName)) continue;
-                            String registryEntryName = fileName.substring(0, fileName.indexOf(REG_FILE_EXTENSION));
-    
-                            registry.register(domainName, registryEntryName, currentRegistryEntry);
+                            File[] implementations = interfaces[i].listFiles();
+                            for (int j = 0; j < implementations.length; j++)
+                            {
+                            	IRegistryEntry registryEntry = (IRegistryEntry)registryEntryFactory.createInstance(implementations[j]);
+                                String implementationName = implementations[j].getName();
+                            	String registryEntryName =
+                                    implementationName.startsWith(Constant.DOT) ?
+									"" :
+                                    implementationName.substring(0, implementationName.indexOf(REG_FILE_EXTENSION));
+                            	registry.register(domainName, interfaceName, registryEntryName, registryEntry);
+                            }
+                        }
+                        else if (interfaceName.startsWith(META_SHORT_HAND))
+                        {
+                            String nameValuePair = interfaceName.substring(META_SHORT_HAND.length());
+                            int dash = nameValuePair.indexOf(Constant.DASH);
+                            if (dash > 0)
+                            {
+                                String alias = nameValuePair.substring(0, dash);
+                                String fullName = nameValuePair.substring(dash + 1);
+                                registry.setInterfaceShortHand(domainName, alias, fullName);
+                            }
+                        }
+                        else
+                        {
+                        	_Logger.info("Unrecognized file '" + interfaces[i].getName() + "' found in registry '" + registryPath + "'; ignored");
                         }
                     }
                 }
                 else
                 {
-                    _Logger.info("Unrecognized file '" + fileList[k].getName() + "' found in registry '" + _registryDir + "'; ignored");
+                    _Logger.info("Unrecognized file '" + domains[k].getName() + "' found in registry '" + registryPath + "'; ignored");
                 }
             }
         }
@@ -136,8 +158,9 @@ public class RegistryPropertiesFactory extends BaseFactory
         return registry;
     }
 
-    protected RegistryPropertiesFactory()
+    protected PropertiesRegistryFactory()
     {
+        super();
         String names = getConfigProperty(CONFIG_FILE_NAMES_TO_SKIP);
         List nameList = Util.convertStringsToList(names);
         _setOfFileNamesToSkip = new HashSet();
@@ -156,8 +179,7 @@ public class RegistryPropertiesFactory extends BaseFactory
         }
     }
 
-    private static Logger _Logger = Logger.getLogger(RegistryPropertiesFactory.class);
-    private static RegistryPropertiesFactory _Singleton = new RegistryPropertiesFactory();
-    protected String _registryDir;
+    private static Logger _Logger = Logger.getLogger(PropertiesRegistryFactory.class);
+    private static PropertiesRegistryFactory _Singleton = new PropertiesRegistryFactory();
     protected Set _setOfFileNamesToSkip;
 }

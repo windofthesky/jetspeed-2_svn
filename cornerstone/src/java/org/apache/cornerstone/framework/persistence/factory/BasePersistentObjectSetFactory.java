@@ -54,34 +54,16 @@
 
 package org.apache.cornerstone.framework.persistence.factory;
 
-import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
 
 public class BasePersistentObjectSetFactory extends BasePersistentObjectCollectionFactory
 {
     public static final String REVISION = "$Revision$";
 
-    /**
-     * @throws PersistenceException
-     */
-    protected BasePersistentObjectSetFactory() throws PersistenceException
-    {
-    }
-
-    /* (non-Javadoc)
-     * @see cornerstone.framework.common.persistence.BasePersistentObjectCollectionFactory#createCollection()
-     */
-    protected Object createCollection()
-    {
-        return new HashSet();
-    }
-
     /* (non-Javadoc)
      * @see cornerstone.framework.common.persistence.BasePersistentObjectCollectionFactory#addElement(java.lang.Object, java.lang.String, java.lang.Object)
      */
-    protected void addElement(Object collection, String primaryKeyPropertyName,    Object element)
+    protected void addElement(Object collection, String primaryKeyPropertyName, Object element)
     {
         Set set = (Set) collection;
         set.add(element);

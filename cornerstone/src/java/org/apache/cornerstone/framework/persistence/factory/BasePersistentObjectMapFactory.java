@@ -54,27 +54,12 @@
 
 package org.apache.cornerstone.framework.persistence.factory;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
 
-public class BasePersistentObjectMapFactory    extends BasePersistentObjectCollectionFactory
+public class BasePersistentObjectMapFactory extends BasePersistentObjectCollectionFactory
 {
     public static final String REVISION = "$Revision$";
-
-    /**
-     * @throws PersistenceException
-     */
-    protected BasePersistentObjectMapFactory() throws PersistenceException
-    {
-    }
-
-    protected Object createCollection()
-    {
-        return new HashMap();
-    }
 
     protected void addElement(Object collection, String primaryKeyPropertyName, Object element)
     {

@@ -57,7 +57,8 @@ package org.apache.cornerstone.framework.service.controller;
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.service.IService;
 import org.apache.cornerstone.framework.api.service.ServiceException;
-import org.apache.cornerstone.framework.service.ServiceManager;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.init.Cornerstone;
 
 /*
  * Sample registry entry (mySwitchService.reg.properties):
@@ -76,8 +77,9 @@ public class SwitchServiceController extends BaseServiceController
     public static final String CONDITION = "condition";
     public static final String CASE = "case";
     public static final String DEFAULT = "default";
-    public static final String DEFAULT_CASE_CONFIG_NAME = SWITCH + "." + CASE + "." + DEFAULT + "." + ServiceManager.NAME;
-    public static final String SWITCH_CONDITION_NAME = SWITCH + "." + CONDITION + "." + ServiceManager.NAME;
+
+    public static final String CONFIG_DEFAULT_CASE_CONFIG_NAME = SWITCH + Constant.DOT + CASE + Constant.DOT + DEFAULT + Constant.DOT + Constant.PARENT_NAME;
+    public static final String CONFIG_SWITCH_CONDITION_NAME = SWITCH + Constant.DOT + CONDITION + Constant.DOT + Constant.PARENT_NAME;
 
     // TODO: dummy
     public static final String INVOKE_DIRECT_INPUTS = "";
@@ -91,18 +93,18 @@ public class SwitchServiceController extends BaseServiceController
 
     protected Object invokeMiddle(IContext context) throws ServiceException
     {
-        String switchCase = DEFAULT_CASE_CONFIG_NAME;
-        String switchConditionName = getConfigProperty(SWITCH_CONDITION_NAME);
+        String switchCase = CONFIG_DEFAULT_CASE_CONFIG_NAME;
+        String switchConditionName = getConfigProperty(CONFIG_SWITCH_CONDITION_NAME);
         if (switchConditionName == null)
         {
-            throw new ServiceException("config property '" + SWITCH_CONDITION_NAME + "' undefined");
+            throw new ServiceException("config property '" + CONFIG_SWITCH_CONDITION_NAME + "' undefined");
         }
         String switchConditionValue = (String) context.getValue(switchConditionName);
         if (switchConditionValue != null) {
-            switchCase = SWITCH + "." + CASE + "." + switchConditionValue + "." + ServiceManager.NAME;
+            switchCase = SWITCH + Constant.DOT + CASE + Constant.DOT + switchConditionValue + Constant.DOT + Constant.PARENT_NAME;
         }
         String serviceName = getConfigProperty(switchCase);
-        IService service = ServiceManager.getSingleton().createServiceByName(serviceName);
+        IService service = Cornerstone.getServiceManager().createServiceByName(serviceName);
         if (service != null)
             return service.invoke(context);
         else

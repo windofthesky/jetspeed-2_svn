@@ -59,13 +59,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.ImplementationException;
+import org.apache.cornerstone.framework.api.persistence.factory.IPersistenceFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistentObjectFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
+import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.context.BaseContext;
-import org.apache.cornerstone.framework.singleton.SingletonManager;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
@@ -84,7 +87,13 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
 
     public static final String PARAMETERS = "parameters";
     public static final String DEFAULT = "default";
-    public static final String SINGLE_OBJECT_FACTORY_CLASS_NAME = "singleObjectFactory.className";
+    public static final String COLLECTION = "collection";
+    public static final String ELEMENT = "element";
+
+    public static final String CONFIG_ELEMENT_PARENT_NAME = ELEMENT + Constant.DOT + Constant.PARENT_NAME;
+    public static final String CONFIG_COLLECTION_INSTANCE_CLASS_NAME = COLLECTION + Constant.DOT + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_COLLECTION_FACTORY_CLASS_NAME = COLLECTION + Constant.DOT + Constant.FACTORY_CLASS_NAME;
+    public static final String CONFIG_COLLECTION_PARENT_NAME = COLLECTION + Constant.DOT + Constant.PARENT_NAME;
 
     public Object createInstance() throws CreationException
     {
@@ -94,7 +103,7 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
             throw new CreationException("config property '" + defaultQueryNameConfigName + "' missing");
 
         IContext context = new BaseContext();
-        context.setValue(QUERY_NAME, defaultQueryName);
+        context.setValue(IPersistenceFactory.CTX_QUERY_NAME, defaultQueryName);
         return createInstance(context);
     }
 
@@ -127,7 +136,7 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
             String query = getQuery(context);
             statement = conn.prepareStatement(query);
 
-            String queryName = (String) context.getValue(QUERY_NAME);
+            String queryName = (String) context.getValue(IPersistenceFactory.CTX_QUERY_NAME);
             String queryConfigName = QUERY + "." + queryName;
             String queryParametersConfigName = queryConfigName + "." + PARAMETERS;
             String queryParametersString = getConfigProperty(queryParametersConfigName);
@@ -165,14 +174,7 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
 
     public String mapColumnNameToPropertyName(String columnName)
     {
-        return _singleObjectFactory.mapColumnNameToPropertyName(columnName);
-    }
-
-    /**
-     * @throws PersistenceException
-     */
-    protected BasePersistentObjectCollectionFactory() throws PersistenceException
-    {
+        return _elementFactory.mapColumnNameToPropertyName(columnName);
     }
 
     protected Object retrieveAndPopulate(IContext context) throws PersistenceException
@@ -198,7 +200,7 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
             }
             else
             {
-                String queryName = (String) context.getValue(QUERY_NAME);
+                String queryName = (String) context.getValue(IPersistenceFactory.CTX_QUERY_NAME);
                 String queryConfigName = QUERY + "." + queryName;
                 String queryParametersConfigName = queryConfigName + "." + PARAMETERS;
                 String queryParametersString = getConfigProperty(queryParametersConfigName);
@@ -216,12 +218,12 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
             }
             rs = statement.executeQuery();
             Object collection = createCollection();
-            IPersistentObjectFactory singleObjectFactory = getSingleObjectFactory();
-            String primaryKeyPropertyName = singleObjectFactory.getPrimaryKeyPropertyName();
+            IPersistentObjectFactory elementFactory = getElementFactory();
+            String primaryKeyPropertyName = elementFactory.getPrimaryKeyPropertyName();
             while (rs.next())
             {
-                Object object = singleObjectFactory.createInstance();
-                populate(object, rs);
+                Object object = elementFactory.createInstance();
+                populateProperties(object, rs);
                 addElement(collection, primaryKeyPropertyName, object);
             }
             return collection;
@@ -245,24 +247,69 @@ public abstract class BasePersistentObjectCollectionFactory extends BasePersiste
         }
     }
 
-    protected IPersistentObjectFactory getSingleObjectFactory()
+    protected IPersistentObjectFactory getElementFactory() throws PersistenceException
     {
-        if (_singleObjectFactory == null)
+        if (_elementFactory == null)
         {
-            String singleObjectFactoryClassName = getConfigProperty(SINGLE_OBJECT_FACTORY_CLASS_NAME);
-            System.out.println("singleObjectFactoryClassName:" + singleObjectFactoryClassName);
-            if (singleObjectFactoryClassName != null && (singleObjectFactoryClassName.trim().length() > 0 ) )
-            {
-                _singleObjectFactory = (IPersistentObjectFactory) SingletonManager.getSingleton(singleObjectFactoryClassName);
-            }
+            String elementParentName = getConfigProperty(CONFIG_ELEMENT_PARENT_NAME);
+            if (elementParentName == null || elementParentName.trim().length() == 0)
+            	throw new PersistenceException("config '" + CONFIG_ELEMENT_PARENT_NAME + "' missing");
+            try
+			{
+				_elementFactory = (IPersistentObjectFactory) Cornerstone.getImplementationManager().createImplementation(
+					IFactory.class,
+					elementParentName
+				);
+			}
+			catch (ImplementationException ie)
+			{
+				throw new PersistenceException("failed to create element factory", ie.getCause());
+			}
         }
-        return _singleObjectFactory;
+        return _elementFactory;
     }
 
-    protected abstract Object createCollection();
-    
+    protected Object createCollection() throws CreationException
+    {
+        try
+        {
+        	String configCollectionInstanceClassName = getConfigProperty(CONFIG_COLLECTION_INSTANCE_CLASS_NAME);
+            if (configCollectionInstanceClassName != null)
+            {
+            	return Class.forName(configCollectionInstanceClassName).newInstance();
+            }
+
+            String configCollectionFactoryClassName = getConfigProperty(CONFIG_COLLECTION_FACTORY_CLASS_NAME);
+            if (configCollectionFactoryClassName != null)
+            {
+            	IFactory factory = (IFactory) Class.forName(configCollectionFactoryClassName).newInstance();
+                return factory.createInstance();
+            }
+
+            String configCollectionParentName = getConfigProperty(CONFIG_COLLECTION_PARENT_NAME);
+            if (configCollectionParentName != null)
+            {
+                int slash = configCollectionParentName.indexOf(Constant.SLASH);
+                if (slash < 0)
+                    throw new CreationException("expected format of '" + CONFIG_COLLECTION_PARENT_NAME + "' is <interfaceName>/<variantName>");
+                String interfaceName = configCollectionParentName.substring(0, slash);
+                String variantName = configCollectionParentName.substring(slash + 1);
+            	return Cornerstone.getImplementationManager().createImplementation(interfaceName, variantName);
+            }
+
+            throw new CreationException(
+            	"collection type definition missing; use '" + CONFIG_COLLECTION_INSTANCE_CLASS_NAME + "' or '" +
+            	CONFIG_COLLECTION_FACTORY_CLASS_NAME + "' or '" + CONFIG_COLLECTION_PARENT_NAME + "'"
+            );
+        }
+        catch (Exception e)
+        {
+        	throw new CreationException(e);
+        }
+    }
+
     protected abstract void addElement(Object collection, String primaryKeyPropertyName, Object element);
 
     private static Logger _Logger = Logger.getLogger(BasePersistentObjectCollectionFactory.class);
-    protected IPersistentObjectFactory _singleObjectFactory;
+    protected IPersistentObjectFactory _elementFactory;
 }

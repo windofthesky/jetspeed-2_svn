@@ -54,9 +54,7 @@
 
 package org.apache.cornerstone.framework.api.persistence.factory;
 
-import org.apache.cornerstone.framework.api.factory.IFactory;
-
-public interface IPersistentObjectFactory extends IFactory
+public interface IPersistentObjectFactory extends IPersistenceFactory
 {
     public static final String REVISION = "$Revision$";
 

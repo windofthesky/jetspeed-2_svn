@@ -54,14 +54,11 @@
 
 package org.apache.cornerstone.framework.registry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 import org.apache.cornerstone.framework.api.registry.IRegistry;
 import org.apache.cornerstone.framework.api.registry.IRegistryEntry;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.log4j.Logger;
 
 /**
@@ -79,7 +76,7 @@ import org.apache.log4j.Logger;
  * 
  */
 
-public class BaseRegistry extends Singleton implements IRegistry
+public class BaseRegistry extends BaseObject implements IRegistry
 {
     public static final String REVISION = "$Revision$";
 
@@ -88,21 +85,11 @@ public class BaseRegistry extends Singleton implements IRegistry
     * 
     * @return Registry the registry singleton object
     */
-    public static BaseRegistry getSingleton()
+    public static IRegistry getSingleton()
     {
         return _Singleton;
     }
 
-    /**
-    * Gets the Map of all RegistryDomain names as keys
-    * 
-    * @return Map the registry Map
-    */
-    public Set getRegistryDomainSet()
-    {
-        return _registryDomainMap.keySet();
-    }
-    
     /**
      * Gets the Map of all RegistryEntry objects for a particular registryDomainName
      * ie each registryEntry, has one registryEntry properties file, and hence
@@ -113,13 +100,17 @@ public class BaseRegistry extends Singleton implements IRegistry
      * @return Map the registry Map
      * 
      */
-    public Set getRegistryEntryNameSet(String registryDomainName)
+    public Set getEntryNameSet(String domainName, String interfaceName)
     {
-        Map registryEntryMap = (Map) _registryDomainMap.get(registryDomainName);
-        if (registryEntryMap == null)
+        Map interfaceMap = (Map) _domainMap.get(domainName);
+        if (interfaceMap == null)
+            return new HashSet();
+
+        Map entryMap = (Map) interfaceMap.get(interfaceName);
+        if (entryMap == null)
             return new HashSet();
         else
-            return registryEntryMap.keySet();
+        	return entryMap.keySet();
     }
 
     /**
@@ -129,13 +120,21 @@ public class BaseRegistry extends Singleton implements IRegistry
      * @param String registryEntryName
      * @return IRegistryEntry the registry entry object
      */
-    public IRegistryEntry getRegistryEntry(String registryDomainName, String registryEntryName)
+    public IRegistryEntry getEntry(String domainName, String interfaceName, String entryName)
     {
-        Map registryEntryMap = (Map) _registryDomainMap.get(registryDomainName);
-        if (registryEntryMap == null)
+        String interfaceShortHand = getInterfaceShortHand(domainName, interfaceName);
+        if (interfaceShortHand != null)
+            interfaceName = interfaceShortHand;
+
+        Map interfaceMap = (Map) _domainMap.get(domainName);
+        if (interfaceMap == null)
             return null;
-        else        
-            return (IRegistryEntry)registryEntryMap.get(registryEntryName);
+
+        Map entryMap = (Map) interfaceMap.get(interfaceName);
+        if (entryMap == null)
+            return null;
+        else
+        	return (IRegistryEntry) entryMap.get(entryName);
     }
 
     /**
@@ -146,17 +145,25 @@ public class BaseRegistry extends Singleton implements IRegistry
      * @param String registryEntry
      * 
      */
-    public void register(String registryDomainName, String registryEntryName, IRegistryEntry registryEntry)
+    public void register(String domainName, String interfaceName, String entryName, IRegistryEntry entry)
     {
         // register the registryEntryName in the registryEntryRegistry file
-        Map currentRegistryEntryMap = (Map) _registryDomainMap.get(registryDomainName);
-        if (currentRegistryEntryMap == null)
+        Map interfaceMap = (Map) _domainMap.get(domainName);
+        if (interfaceMap == null)
         {
-            currentRegistryEntryMap = new HashMap();
-            _registryDomainMap.put(registryDomainName, currentRegistryEntryMap);
+            interfaceMap = new HashMap();
+            _domainMap.put(domainName, interfaceMap);
         }
-        currentRegistryEntryMap.put(registryEntryName, registryEntry);
-        _Logger.info(registryDomainName + ":" + registryEntryName + " registered");
+
+        Map entryMap = (Map) interfaceMap.get(interfaceName);
+        if (entryMap == null)
+        {
+        	entryMap = new HashMap();
+            interfaceMap.put(interfaceName, entryMap);
+        }
+
+        entryMap.put(entryName, entry);
+        _Logger.info(domainName + Constant.SLASH + interfaceName + Constant.SLASH + entryName + " registered");
     }
 
     /**
@@ -170,16 +177,32 @@ public class BaseRegistry extends Singleton implements IRegistry
      * @param String registryEntryName
      * 
      */    
-    public void unregister(String registryDomainName,String registryEntryName)
+    public void unregister(String domainName, String interfaceName, String entryName)
     {
-        // remove the registry registryEntryName fron the list
-        Map registryEntryMap = (Map)(this._registryDomainMap.get(registryDomainName));
-        if (registryEntryMap != null)
-            registryEntryMap.remove(registryEntryName);
+        Map interfaceMap = (Map)(_domainMap.get(domainName));
+        if (interfaceMap != null)
+        {
+            Map entryMap = (Map) interfaceMap.get(interfaceName);
+            if (entryMap != null)
+            	entryMap.remove(entryName);
+        }
     }
 
-    protected Map _registryDomainMap = new HashMap();
+    public String getInterfaceShortHand(String domainName, String fullName)
+    {
+        String key = domainName + Constant.SLASH + fullName;
+    	return _interfaceShortHandMap.getProperty(key);
+    }
 
-    private static BaseRegistry _Singleton = new BaseRegistry();
+    public void setInterfaceShortHand(String domainName, String shortHand, String fullName)
+    {
+        String key = domainName + Constant.SLASH + fullName;
+        _interfaceShortHandMap.setProperty(key, shortHand);
+        if (_Logger.isInfoEnabled()) _Logger.info("shortHand: '" + shortHand + "' => '" + fullName + "'");
+    }
+
     private static Logger _Logger = Logger.getLogger(BaseRegistry.class); 
+    private static BaseRegistry _Singleton = new BaseRegistry();
+    protected Map _domainMap = new HashMap();
+    protected Properties _interfaceShortHandMap = new Properties();
 }

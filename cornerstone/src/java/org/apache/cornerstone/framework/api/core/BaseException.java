@@ -83,7 +83,7 @@ public class BaseException extends Exception
      */
     public Throwable getCause()
     {
-        Throwable cause = getCause();
+        Throwable cause = super.getCause();
         if (cause == null)
             return this;
         else if (cause instanceof BaseException)

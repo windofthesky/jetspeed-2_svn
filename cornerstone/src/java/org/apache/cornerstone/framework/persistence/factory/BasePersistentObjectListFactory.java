@@ -54,26 +54,11 @@
 
 package org.apache.cornerstone.framework.persistence.factory;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
 
 public class BasePersistentObjectListFactory extends BasePersistentObjectCollectionFactory
 {
     public static final String REVISION = "$Revision$";
-
-    /**
-     * @throws PersistenceException
-     */
-    protected BasePersistentObjectListFactory() throws PersistenceException
-    {
-    }
-
-    protected Object createCollection()
-    {
-        return new ArrayList();
-    }
 
     protected void addElement(Object collection, String primaryKeyPropertyName, Object element)
     {

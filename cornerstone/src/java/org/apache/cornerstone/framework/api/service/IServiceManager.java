@@ -58,22 +58,22 @@ public interface IServiceManager
 {
     public static final String REVISION = "$Revision$";
 
-    /**
-     * Gets new instance of service by its class name.
-     * @param className class name of service
-     * @return new instance of service class
-     */
-    public IService createServiceByClassName(String className)
-        throws ServiceException;
-
-    /**
-     * Gets new instance of service by its factory class name.
-     * @param factoryClassName class name of service factory
-     * @return new instance created by calling createInstance() on
-     *   service factory.
-     */
-    public IService createServiceByFactoryClassName(String factoryClassName)
-        throws ServiceException;
+//    /**
+//     * Gets new instance of service by its class name.
+//     * @param className class name of service
+//     * @return new instance of service class
+//     */
+//    public IService createServiceByClassName(String className)
+//        throws ServiceException;
+//
+//    /**
+//     * Gets new instance of service by its factory class name.
+//     * @param factoryClassName class name of service factory
+//     * @return new instance created by calling createInstance() on
+//     *   service factory.
+//     */
+//    public IService createServiceByFactoryClassName(String factoryClassName)
+//        throws ServiceException;
 
     /**
      * Gets new instance of service by its registry name.

@@ -55,6 +55,7 @@
 package org.apache.cornerstone.framework.util;
 
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,9 +65,10 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-
+import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.log4j.Logger;
 
@@ -277,16 +279,16 @@ public class Util
      * @param ts
      * @return Cisco standard date format.
      */
-    public static String convertToStringDate(Timestamp ts)
-    {
-        if (ts == null) return null;
-
-        int year = ts.getYear() + 1900;
-        int month = ts.getMonth();
-        int date = ts.getDate();
-
-        return "" + date + "-" + MONTH_NAME[month] + "-" + year;
-    }
+//    public static String convertToStringDate(Timestamp ts)
+//    {
+//        if (ts == null) return null;
+//
+//        int year = ts.getYear() + 1900;
+//        int month = ts.getMonth();
+//        int date = ts.getDate();
+//
+//        return "" + date + "-" + MONTH_NAME[month] + "-" + year;
+//    }
 
     public static final SimpleDateFormat DATE_TIME_FORMAT =
         new SimpleDateFormat(" hh:mma z");
@@ -296,10 +298,10 @@ public class Util
      * @param ts
      * @return String of time.
      */
-    public static String convertToStringDateTime(Timestamp ts)
-    {
-        return convertToStringDate(ts) + DATE_TIME_FORMAT.format(ts);
-    }
+//    public static String convertToStringDateTime(Timestamp ts)
+//    {
+//        return convertToStringDate(ts) + DATE_TIME_FORMAT.format(ts);
+//    }
 
     /**
      * Converts a date of format dd/MMM/yyyy to a timestamp.
@@ -457,6 +459,69 @@ public class Util
     public static boolean isEmpty(String s)
     {
         return s == null || s.trim().length() == 0;
+    }
+
+    /**
+     * 
+     * @param props Source properties.
+     * @param prefix Prefix to qualify which properties to include in the result.
+     * @return Another Properties whose keys are those in the source without the prefix.
+     * 
+     * For example, if props is {"x.a.b.c.":"1", "x.b.c.d":"2", "c.d.e":"3"} and
+     * prefix is "x.", then result is {"a.b.c":"1", "b.c.d":"2"}.
+     */
+    public static Properties getPropertiesOfPrefix(Properties props, String prefix)
+    {
+    	Properties result = new OrderedProperties();
+        if (prefix != null)
+        {
+            int prefixLength = prefix.length();
+            for (Enumeration e = props.keys(); e.hasMoreElements();)
+            {
+        		String key = (String) e.nextElement();
+                if (key.startsWith(prefix))
+                {
+                    String keyWithoutPrefix = key.substring(prefixLength);
+                    String value = props.getProperty(key);
+                    result.setProperty(keyWithoutPrefix, value);
+                }
+            }
+        }
+        return result;
+    }
+
+	/**
+	 * @param parameterProperties
+	 * @param context
+	 */
+	public static void addPropertiesToContext(Properties props, IContext context)
+	{
+        for (Enumeration e = props.keys(); e.hasMoreElements();)
+        {
+        	String name = (String) e.nextElement();
+            String value = props.getProperty(name);
+            context.setValue(name, value);
+        }
+	}
+
+    public static Object createInstance(String className) throws Exception
+    {
+        Class c = Class.forName(className);
+        Object s;
+        try
+        {
+            // call getSingleton() if it exists
+            Class[] types = {};
+            Method m = c.getMethod(Constant.METHOD_GET_SINGLETON, types);
+            Object[] params = {};
+            s = m.invoke(null, params); // static method
+        }
+        catch (NoSuchMethodException nsme)
+        {
+            // no getSingleton(), so just call default constructor
+            s = c.newInstance();
+        }
+        return s;
     }
 
     private static Logger _Logger = Logger.getLogger(Util.class);

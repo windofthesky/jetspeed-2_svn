@@ -73,11 +73,12 @@ import org.apache.cornerstone.framework.api.action.ActionException;
 import org.apache.cornerstone.framework.api.action.IAction;
 import org.apache.cornerstone.framework.api.action.IActionManager;
 import org.apache.cornerstone.framework.api.context.IContext;
+import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.core.ClassUtil;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.mvc.action.ActionResult;
 import org.apache.cornerstone.framework.mvc.action.AuthorizationFailedActionException;
 import org.apache.cornerstone.framework.mvc.action.BasePresentationAction;
-import org.apache.cornerstone.framework.singleton.SingletonManager;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
@@ -85,10 +86,16 @@ public class ControllerServlet extends HttpServlet
 {
     public static final String REVISION = "$Revision$";
 
-    public static final String ACTION_MANAGER_CLASS_NAME = "actionManager.className";
-    public static final String SESSION_CONTEXT_CLASS_NAME = "action.sessionContext.className";
-    public static final String REQUEST_CONTEXT_CLASS_NAME = "action.requestContext.className";
-    public static final String ERROR_PRESENTATION_TEMPLATE = "error.presentationTemplate";
+    public static final String CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME = "actionManager." + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_SESSION_CONTEXT_INSTANCE_CLASS_NAME = "action.sessionContext." + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_REQUEST_CONTEXT_INSTANCE_CLASS_NAME = "action.requestContext." + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_ERROR_PRESENTATION_TEMPLATE = "error.presentationTemplate";
+
+    public static final String CONFIG_PARAMS =
+        CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME +
+        Constant.COMMA + CONFIG_SESSION_CONTEXT_INSTANCE_CLASS_NAME +
+        Constant.COMMA + CONFIG_REQUEST_CONTEXT_INSTANCE_CLASS_NAME +
+        Constant.COMMA + CONFIG_ERROR_PRESENTATION_TEMPLATE;
 
     public static final String EXCEPTION = ControllerServlet.class.getName() + ".exception";
     public static final String ERROR_MESSAGE = ControllerServlet.class.getName() + ".errorMessage";
@@ -101,26 +108,26 @@ public class ControllerServlet extends HttpServlet
         _config = ClassUtil.getClassConfig(getClass());
 
         // action manager
-        String actionManagerClassName = _config.getProperty(ACTION_MANAGER_CLASS_NAME);
+        String actionManagerClassName = _config.getProperty(CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME);
         if (actionManagerClassName == null)
         {
-            throw new ServletException(ACTION_MANAGER_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
+            throw new ServletException(CONFIG_ACTION_MANAGER_INSTANCE_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
         }
-        _actionManager = (IActionManager) SingletonManager.getSingleton(actionManagerClassName);
+        _actionManager = (IActionManager) Cornerstone.getSingletonManager().getSingleton(actionManagerClassName);
 
         // action session context
-        _sessionContextClassName = _config.getProperty(SESSION_CONTEXT_CLASS_NAME);
+        _sessionContextClassName = _config.getProperty(CONFIG_SESSION_CONTEXT_INSTANCE_CLASS_NAME);
         if (_sessionContextClassName == null)
         {
-            throw new ServletException(SESSION_CONTEXT_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
+            throw new ServletException(CONFIG_SESSION_CONTEXT_INSTANCE_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
         }
-        _requestContextClassName = _config.getProperty(REQUEST_CONTEXT_CLASS_NAME);
+        _requestContextClassName = _config.getProperty(CONFIG_REQUEST_CONTEXT_INSTANCE_CLASS_NAME);
         if (_requestContextClassName == null)
         {
-            throw new ServletException(REQUEST_CONTEXT_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
+            throw new ServletException(CONFIG_REQUEST_CONTEXT_INSTANCE_CLASS_NAME + "undefined in " + getClass().getName() + ".properties");
         }
 
-        _errorPresentationTemplate = _config.getProperty(ERROR_PRESENTATION_TEMPLATE);
+        _errorPresentationTemplate = _config.getProperty(CONFIG_ERROR_PRESENTATION_TEMPLATE);
     }
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException

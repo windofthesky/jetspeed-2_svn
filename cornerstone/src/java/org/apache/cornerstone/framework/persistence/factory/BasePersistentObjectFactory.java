@@ -63,18 +63,30 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
-
+import java.util.Properties;
+import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.api.persistence.factory.IPersistentObjectFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.context.BaseContext;
+import org.apache.cornerstone.framework.init.Cornerstone;
+import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
-public abstract class BasePersistentObjectFactory extends BasePersistenceFactory implements IPersistentObjectFactory
+public class BasePersistentObjectFactory extends BasePersistenceFactory implements IPersistentObjectFactory
 {
     public static final String REVISION = "$Revision$";
 
-    public static final String QUERY_RETRIEVE_BY_ID = "retrieveById";
+    public static final String ASSOCIATION = "association";
+    public static final String FACTORY_PARENT_NAME = Constant.FACTORY + Constant.DOT + Constant.PARENT_NAME;
+    public static final String PARAMETER = "parameter";
+    public static final String DOT_PARAMETER = Constant.DOT + PARAMETER;
+
+    public static final String QUERY_BY_ID = "byId";
     public static final String QUERY_INSERT = "insert";
     public static final String QUERY_UPDATE = "update";
     public static final String QUERY_DELETE = "delete";
@@ -88,11 +100,6 @@ public abstract class BasePersistentObjectFactory extends BasePersistenceFactory
     {
         return getConfigProperty(PRIMARY_KEY_COLUMN_NAME);
     }
-
-    /* (non-Javadoc)
-     * @see com.cisco.salesit.framework.common.core.IFactory#createInstance()
-     */
-    public abstract Object createInstance() throws CreationException;
 
     /* (non-Javadoc)
      * @see com.cisco.salesit.framework.common.persistence.IPersistentObjectFactory#store(java.lang.Object)
@@ -136,15 +143,8 @@ public abstract class BasePersistentObjectFactory extends BasePersistenceFactory
         }
         catch (PersistenceException pe)
         {
-            throw new CreationException(pe);
+            throw new CreationException(pe.getCause());
         }
-    }
-
-    /**
-     * @throws PersistenceException
-     */
-    protected BasePersistentObjectFactory() throws PersistenceException
-    {
     }
 
     protected void doInsertOrUpdate(boolean isInsert, Object object, String queryName, String primaryKeyPropertyName) throws PersistenceException
@@ -219,7 +219,7 @@ public abstract class BasePersistentObjectFactory extends BasePersistenceFactory
 
     protected Object retrieveAndPopulate(Object id) throws PersistenceException
     {
-        String queryConfigName = QUERY + "." + QUERY_RETRIEVE_BY_ID;
+        String queryConfigName = QUERY + "." + QUERY_BY_ID;
         String query = getConfigProperty(queryConfigName);
         if (query == null)
             throw new PersistenceException("config property '" + queryConfigName + "' not found");
@@ -235,7 +235,8 @@ public abstract class BasePersistentObjectFactory extends BasePersistenceFactory
             if (rs.next())
             {
                 Object object = createInstance();
-                populate(object, rs);
+                populateProperties(object, rs);
+                populateAssociations();
                 return object;
             }
             else
@@ -293,6 +294,59 @@ public abstract class BasePersistentObjectFactory extends BasePersistenceFactory
                 _Logger.error(se);
             }
         }        
+    }
+
+    protected void populateAssociations()
+    {
+    	
+    }
+
+    protected Object createAssociation(
+        Object product,
+        String associationName,
+        String instanceSpecName,
+        String instanceSpecValue
+    )
+        throws CreationException
+    {
+        if (FACTORY_PARENT_NAME.equals(instanceSpecName))
+        {
+            String paramPrefix = CONFIG_PRODUCT_PROPERTY_DOT + associationName + Constant.DOT + Constant.FACTORY + DOT_PARAMETER + Constant.DOT;
+            Properties parameterProperties = Util.getPropertiesOfPrefix(getConfig(), paramPrefix);
+            Object propertyValue = createInstanceByFactoryParentName(instanceSpecValue, parameterProperties);
+            return propertyValue;
+        }
+        else
+        {
+            throw new CreationException(
+                "instanceSpecName '" + instanceSpecName + "' of association '" +
+                associationName + "' not understood;" +
+                "allowed: '" + FACTORY_PARENT_NAME +
+                "'"
+            );
+        }
+    }
+
+    protected Object createInstanceByFactoryParentName(String factoryParentName, Properties parameterProperties) throws CreationException
+    {
+        try
+        {
+            IFactory factory = (IFactory) Cornerstone.getImplementationManager().createImplementation(IFactory.class, factoryParentName);
+            if (parameterProperties == null || parameterProperties.size() == 0)
+            {    
+                return factory.createInstance();
+            }
+            else
+            {
+                IContext context = new BaseContext();
+                Util.addPropertiesToContext(parameterProperties, context);
+                return factory.createInstance(context);
+            }
+        }
+        catch (ImplementationException ie)
+        {
+            throw new CreationException(ie.getCause());
+        }
     }
 
     private static Logger _Logger = Logger.getLogger(BasePersistentObjectFactory.class);

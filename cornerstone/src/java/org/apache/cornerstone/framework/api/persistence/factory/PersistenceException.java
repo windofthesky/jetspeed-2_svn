@@ -70,7 +70,7 @@ public class PersistenceException extends BaseException
         super(cause);
     }
 
-    public PersistenceException(String msg, Exception cause)
+    public PersistenceException(String msg, Throwable cause)
     {
         super(msg, cause);
     }

@@ -52,37 +52,73 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.cornerstone.framework.singleton;
+package org.apache.cornerstone.framework.registry.factory;
 
-import org.apache.cornerstone.framework.core.BaseObject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.registry.IRegistryEntry;
+import org.apache.cornerstone.framework.factory.BaseFactory;
+import org.apache.cornerstone.framework.registry.BaseRegistryEntry;
+import org.apache.log4j.Logger;
 
-/**
-Superclass of all classes that have singleton instances.  All subclasses
-should have:
-<pre>
-    private static SubclassName _Singleton = new SubclassName();
-</pre>
-to create the singleton reliably and:
-<pre>
-    public static SubclassName getSingleton()
-    {
-        return _Singleton;
-    }
-</pre>
-to return the singleton. Superclass' constructor does the registration with
-SingletonManager.
-*/
-
-public abstract class Singleton extends BaseObject
+public class PropertiesRegistryEntryFactory extends BaseFactory
 {
     public static final String REVISION = "$Revision$";
 
-    /**
-     * Protected constructor that is supposed to be called once to
-     * add this instance to SingletonManager.
-     */
-    protected Singleton()
+    public static PropertiesRegistryEntryFactory getSingleton()
     {
-        SingletonManager.addSingleton(this);
+        return _Singleton;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.cornerstone.framework.factory.BaseFactory#createInstance()
+     */
+    public Object createInstance() throws CreationException
+    {
+    	throw new CreationException("please use the other signature that uses a File");
+    }
+
+    /**
+     * Creates a RegistryEntry object
+     * @return Object as RegistryEntry
+     */
+    public Object createInstance(Object file) throws CreationException
+    {
+        File registryEntryFile = (File) file;
+        FileInputStream fis = null;
+        try
+        {
+            Properties registryProperties = new Properties();
+            fis = new FileInputStream(registryEntryFile);
+            registryProperties.load(fis);
+            IRegistryEntry registryEntry = new BaseRegistryEntry(registryProperties);
+            return registryEntry;
+        }
+        catch(IOException e)
+        {
+            String message = "failed to read registry entry file '" + registryEntryFile.getAbsolutePath() + "'";
+            _Logger.error(message, e);
+            throw new CreationException(message, e);
+        }
+        finally
+        {
+        	if (fis != null)
+            {   
+				try
+				{
+					fis.close();
+				}
+				catch (IOException e1)
+				{
+                    _Logger.error("failed to close registry entry file '" + registryEntryFile.getAbsolutePath() + "'");
+				}
+            }
+        }
+    }
+    
+    private static Logger _Logger = Logger.getLogger(PropertiesRegistryEntryFactory.class);
+    private static PropertiesRegistryEntryFactory _Singleton = new PropertiesRegistryEntryFactory();
 }

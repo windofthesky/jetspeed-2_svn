@@ -65,6 +65,10 @@ public class Constant
 
     public static final String DOT = ".";
     public static final String COLON = ":";
+    public static final String COMMA = ",";
+    public static final String DASH = "-";
+    public static final String SLASH = "/";
+    public static final String META = "_";
 
     /**
     The deliminator of configuration names.
@@ -92,4 +96,31 @@ public class Constant
     public static final String UTF8 = "UTF-8";
     public static final String LOAD_ON_DEMAND = "loadOnDemand";
     public static final String TRUE = "true";
+
+    public static final String INSTANCE = "instance";
+    public static final String FACTORY = "factory";
+    public static final String PARENT = "parent";
+    public static final String CLASS_NAME = "className";
+    public static final String NAME = "name";
+
+    public static final String INSTANCE_CLASS_NAME = INSTANCE + DOT + CLASS_NAME;
+    public static final String FACTORY_CLASS_NAME = FACTORY + DOT + CLASS_NAME;
+    public static final String PARENT_NAME = PARENT + DOT + NAME;
+
+    public static final String PROPERTY = "property";
+    public static final String PROPERTY_DOT = PROPERTY + DOT;
+
+    public static final String PRODUCT = "product";
+    public static final String PRODUCT_DOT = PRODUCT + DOT;
+
+    public static final String REGISTRY = "registry";
+    public static final String SERVICE = "service";
+    public static final String ACTION = "action";
+    public static final String IMPLEMENTATION = "implementation";
+
+	public static final String DRIVER = "driver";
+	public static final String CONNECTION = "connection";
+	public static final String URL = "url";
+
+	public static final String METHOD_GET_SINGLETON = "getSingleton";
 }

@@ -70,7 +70,7 @@ public class OrderedProperties extends PropertiesTree
 
     public Object put(Object key, Object value)
     {
-        if (_Logger.isDebugEnabled()) _Logger.debug("put: key=" + key + " value=" + value);
+//        if (_Logger.isDebugEnabled()) _Logger.debug("put: key=" + key + " value=" + value);
         Object v = super.put(key, value);
         if (!_keyList.contains(key))    // order is not changed when modified
             _keyList.add(key);

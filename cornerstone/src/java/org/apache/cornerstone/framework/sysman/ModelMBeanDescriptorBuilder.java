@@ -56,9 +56,8 @@ package org.apache.cornerstone.framework.sysman;
 
 import javax.management.Descriptor;
 import javax.management.modelmbean.DescriptorSupport;
-
 import org.apache.cornerstone.framework.api.sysman.IModelMBeanDescriptorBuilder;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.log4j.Logger;
 
 /**
@@ -66,11 +65,9 @@ import org.apache.log4j.Logger;
  * Operations, attricutes, notifcation, and mbeans of a particular
  * Object that wishes to be modelled as an Model MBean.
  *
- *
- *
  */
 
-public class ModelMBeanDescriptorBuilder extends Singleton implements IModelMBeanDescriptorBuilder
+public class ModelMBeanDescriptorBuilder extends BaseObject implements IModelMBeanDescriptorBuilder
 {
     public static final String REVISION = "$Revision$";
     

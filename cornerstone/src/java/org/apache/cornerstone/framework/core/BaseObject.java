@@ -54,13 +54,11 @@
 
 package org.apache.cornerstone.framework.core;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
+import java.util.*;
 import org.apache.cornerstone.framework.api.config.IConfigurable;
+import org.apache.cornerstone.framework.api.core.IObject;
 import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.OrderedProperties;
 import org.apache.log4j.Logger;
 
@@ -69,13 +67,23 @@ The common superclass of all framework classes that adds configurability
 through the class' own properties file.
 */
 
-public abstract class BaseObject implements IConfigurable
+public abstract class BaseObject implements IObject, IConfigurable
 {
     public static final String REVISION = "$Revision$";
 
-    public OrderedProperties getConfig(Class c)
+    public static final String CONFIG_META_INSTANCE_IS_SINGLETON = Constant.META + Constant.DOT + Constant.INSTANCE + Constant.DOT + "isSingleton";
+
+    public void init()
     {
-        return ClassUtil.getClassConfig(c);
+        // copy class config
+    	_config = new OrderedProperties();
+        OrderedProperties classConfig = ClassUtil.getClassConfig(getClass());
+        _config.putAll(classConfig);
+    }
+
+    public OrderedProperties getConfig()
+    {
+    	return _config;
     }
 
     /**
@@ -85,8 +93,8 @@ public abstract class BaseObject implements IConfigurable
      */
     public String getConfigProperty(String p)
     {
-        Properties config = getConfig(getClass());
-        return config.getProperty(p);
+    	String value = _config.getProperty(p);
+        return value;
     }
 
     /**
@@ -192,7 +200,6 @@ public abstract class BaseObject implements IConfigurable
      */
     public void overwriteConfig(Properties overwrites)
     {
-        Properties config = getConfig(getClass());
         for (
             Enumeration e = overwrites.propertyNames();
             e.hasMoreElements();
@@ -200,7 +207,7 @@ public abstract class BaseObject implements IConfigurable
         {
             String name = (String) e.nextElement();
             String value = overwrites.getProperty(name);
-            config.setProperty(name, value);
+            _config.setProperty(name, value);
         }
     }
 
@@ -214,6 +221,22 @@ public abstract class BaseObject implements IConfigurable
         _ClassVariableMap.put(getClassVariableKey(name), value);
     }
 
+	protected BaseObject()
+	{
+        init();
+
+        String configIsSingleton = getConfigProperty(CONFIG_META_INSTANCE_IS_SINGLETON);
+        Boolean isSingleton = new Boolean(configIsSingleton);
+
+        // does singleton already exist?
+        if (isSingleton == Boolean.TRUE)
+        {
+        	Object existingInstance = Cornerstone.getSingletonManager().getSingleton(getClass().getName());
+            if (existingInstance != null)
+                throw new RuntimeException("singleton already exists; cannot create another instance");
+        }
+	}
+
     protected String getClassVariableKey(String name)
     {
         return getClass().getName() + ":" + name;
@@ -221,4 +244,5 @@ public abstract class BaseObject implements IConfigurable
 
     private static Logger _Logger = Logger.getLogger(BaseObject.class);
     protected static Map _ClassVariableMap = new HashMap();
+    protected OrderedProperties _config;
 }

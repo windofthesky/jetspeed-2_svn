@@ -57,10 +57,10 @@ package org.apache.cornerstone.framework.worker;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Vector;
-
 import org.apache.cornerstone.framework.api.worker.IWorker;
 import org.apache.cornerstone.framework.api.worker.IWorkerManager;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.log4j.Logger;
 
 /**
@@ -71,23 +71,26 @@ import org.apache.log4j.Logger;
  *
  */
 
-public abstract class BaseWorkerManager extends Singleton implements IWorkerManager
+public abstract class BaseWorkerManager extends BaseObject implements IWorkerManager
 {
     public static final String REVISION = "$Revision$";
 
-    public static final String WORKER_CLASS_NAME = "worker.className";    
-    public static final String WORKER_COUNT = "worker.count";
+    public static final String WORKER = "worker";
+    public static final String WORKER_DOT = WORKER + Constant.DOT;
+
+    public static final String CONFIG_WORKER_INSTANCE_CLASS_NAME = WORKER_DOT + Constant.INSTANCE_CLASS_NAME;    
+    public static final String CONFIG_WORKER_COUNT = WORKER_DOT + "count";
 
     protected BaseWorkerManager()
     {
         _jobQueue = new Queue();
-        String strWorkerCount = getConfigProperty(WORKER_COUNT);
+        String strWorkerCount = getConfigProperty(CONFIG_WORKER_COUNT);
         if ( strWorkerCount != null && strWorkerCount.trim().length() > 0)
         {
             _workerCount = Integer.parseInt(strWorkerCount);
             
             // get the worker classname
-            String workerClassName = getConfigProperty(WORKER_CLASS_NAME);
+            String workerClassName = getConfigProperty(CONFIG_WORKER_INSTANCE_CLASS_NAME);
                          
             for ( int i = 0 ; i < _workerCount; i++ )
             {

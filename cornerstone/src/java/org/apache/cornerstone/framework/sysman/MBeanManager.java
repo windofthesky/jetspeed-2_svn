@@ -72,16 +72,14 @@ import java.lang.reflect.Method;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-
 import org.apache.cornerstone.framework.api.pubsub.ISubscriber;
 import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.cornerstone.framework.pubsub.BasePubSubManager;
-import org.apache.cornerstone.framework.singleton.Singleton;
 import org.apache.log4j.Logger;
-
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 
-public class MBeanManager extends Singleton implements ISubscriber
+public class MBeanManager extends BaseObject implements ISubscriber
 {
     public static final String MBEAN_MGR_NAME = "MBeanManager";
     

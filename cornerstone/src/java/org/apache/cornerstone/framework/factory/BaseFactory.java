@@ -56,30 +56,26 @@ package org.apache.cornerstone.framework.factory;
 
 import org.apache.cornerstone.framework.api.factory.CreationException;
 import org.apache.cornerstone.framework.api.factory.IFactory;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.core.BaseObject;
 
-/**
-<code>BaseFactory</code> is the superclass of all factory classes.  All factories are singletons.
-*/
-
-public abstract class BaseFactory extends Singleton implements IFactory
+public abstract class BaseFactory extends BaseObject implements IFactory
 {
-    public static final String REVISION = "$Revision$";
+	public static final String REVISION = "$Revision$";
 
-    /**
-     * Creates an instance.  Main factory method to virtualize default
-     * constructor.
-     * @return new instance created.
-    */
-    public abstract Object createInstance() throws CreationException;
+	/**
+	 * Creates an instance.  Main factory method to virtualize default
+	 * constructor.
+	 * @return new instance created.
+	*/
+	public abstract Object createInstance() throws CreationException;
 
-    /**
-     * Creates an instance given a parameter.
-     * @param Object parameter for creation.
-     * @return instance created by calling createInstance().
-    */
-    public Object createInstance(Object param) throws CreationException
-    {
-        return createInstance();
-    }
+	/**
+	 * Creates an instance given a parameter.
+	 * @param Object parameter for creation.
+	 * @return instance created by calling createInstance().
+	*/
+	public Object createInstance(Object param) throws CreationException
+	{
+		return createInstance();
+	}
 }

@@ -73,7 +73,7 @@ public class ModelMBeanInfoBuilderFactory extends BaseFactory
     */
     public static ModelMBeanInfoBuilderFactory getSingleton()
     {
-        return _singleton;
+        return _Singleton;
     }
 
     /**
@@ -98,5 +98,5 @@ public class ModelMBeanInfoBuilderFactory extends BaseFactory
     }
 
     private static Logger _Logger = Logger.getLogger(ModelMBeanInfoBuilderFactory.class);
-    private static ModelMBeanInfoBuilderFactory _singleton = new ModelMBeanInfoBuilderFactory();
+    private static ModelMBeanInfoBuilderFactory _Singleton = new ModelMBeanInfoBuilderFactory();
 }

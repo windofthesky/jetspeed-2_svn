@@ -61,13 +61,6 @@ public interface IRegistry
     public static final String REVISION = "$Revision$";
 
     /**
-    * Gets the Map of all RegistryDomain names as keys
-    * 
-    * @return Map the registry Map
-    */
-    public Set getRegistryDomainSet();
-    
-    /**
     * Gets the Map of all RegistryEntry objects for a particular registryDomainName
     * ie each registryEntry, has one registryEntry properties file, and hence
     * it will have one entry in this map represented as
@@ -77,7 +70,7 @@ public interface IRegistry
     * @return Map the registry Map
     * 
     */
-    public Set getRegistryEntryNameSet(String registryDomainName);
+    public Set getEntryNameSet(String domainName, String interfaceName);
     
     /**
     * Gets the RegistryEntry for a particular registryDomainNamr and registryEntryName pair.
@@ -86,7 +79,7 @@ public interface IRegistry
     * @param String registryEntryName
     * @return IRegistryEntry the registry entry object
     */
-    public IRegistryEntry getRegistryEntry(String registryDomainName,String registryEntryName);
+    public IRegistryEntry getEntry(String domainName, String interfaceName, String entryName);
     
     /**
     * Registers the registryEntry name having the registryEntry provided under the
@@ -96,7 +89,7 @@ public interface IRegistry
     * @param String registryEntry
     * 
     */
-    public void register(String registryDomainName,String registryEntryName, IRegistryEntry registryEntry);
+    public void register(String domainName,String interfaceName, String entryName, IRegistryEntry entry);
     
     /**
     * Un-Registers the registryEntry name and registryDomainName pair
@@ -109,5 +102,8 @@ public interface IRegistry
     * @param String registryEntryName
     * 
     */    
-    public void unregister(String registryDomainName,String registryEntryName);
+    public void unregister(String domainName, String interfaceName, String entryName);
+
+    public String getInterfaceShortHand(String domainName, String fullName);
+    public void setInterfaceShortHand(String domainName, String shortHand, String fullName);
 }

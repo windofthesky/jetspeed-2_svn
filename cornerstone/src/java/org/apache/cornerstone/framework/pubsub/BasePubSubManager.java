@@ -54,17 +54,13 @@
 
 package org.apache.cornerstone.framework.pubsub;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import org.apache.cornerstone.framework.api.pubsub.IPubSubManager;
 import org.apache.cornerstone.framework.api.pubsub.ISubscriber;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.log4j.Logger;
 
-public class BasePubSubManager extends Singleton implements IPubSubManager
+public class BasePubSubManager extends BaseObject implements IPubSubManager
 {
     public static final String REVISION = "$Revision$";
 

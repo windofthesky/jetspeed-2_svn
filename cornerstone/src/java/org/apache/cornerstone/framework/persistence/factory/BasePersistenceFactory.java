@@ -59,36 +59,61 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
-
+import java.util.Properties;
 import org.apache.cornerstone.framework.api.context.IContext;
-import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.persistence.connection.ConnectionException;
 import org.apache.cornerstone.framework.api.persistence.connection.IConnectionManager;
+import org.apache.cornerstone.framework.api.persistence.factory.IPersistenceFactory;
 import org.apache.cornerstone.framework.api.persistence.factory.PersistenceException;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
-import org.apache.cornerstone.framework.factory.BaseFactory;
-import org.apache.cornerstone.framework.singleton.SingletonManager;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.factory.ioc.InversionOfControlFactory;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.OrderedProperties;
 import org.apache.log4j.Logger;
 
-public abstract class BasePersistenceFactory extends BaseFactory
+public abstract class BasePersistenceFactory extends InversionOfControlFactory implements IPersistenceFactory
 {
     public static final String REVISION = "$Revision$";
 
-    public static final String CONNECTION_MANAGER_CLASS_NAME = "connectionManager.className";
-    public static final String DATA_SOURCE_NAME = "datasource.name";
-    public static final String DB_COLUMN_TO_PROPERTY_MAP = "db.columnToPropertyMap";
+    public static final String CONFIG_CONNECTION_MANAGER_INSTANCE_CLASS_NAME = "connectionManager." + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_DATA_SOURCE_NAME = "dataSource.name";
+    public static final String CONFIG_DB_COLUMN_TO_PROPERTY_MAP = "db.columnToPropertyMap";
+
     public static final String QUERY = "query";
     public static final String SEGMENT = "segment";
-    public static final String QUERY_NAME = BasePersistenceFactory.class.getName() + ".queryName";
+
     public static final String QUERY_SEGMENT_NAME_LIST = BasePersistenceFactory.class.getName() + ".querySegmentNameList";
     public static final String QUERY_PARAMETER_NAME_LIST = BasePersistenceFactory.class.getName() + ".queryParameterNameList";
     public static final String QUERY_SEGMENT_NAME_AND = "and";
     
-    public abstract Object createInstance() throws CreationException;
+	protected void postInit()
+	{
+		String connectionManagerClassName = getConfigProperty(CONFIG_CONNECTION_MANAGER_INSTANCE_CLASS_NAME);
+		if (connectionManagerClassName == null)
+		{
+			Exception e = new PersistenceException("config property '" + CONFIG_CONNECTION_MANAGER_INSTANCE_CLASS_NAME + "' missing");
+			_Logger.error("", e);
+		}
+		_connectionManager = (IConnectionManager) Cornerstone.getSingletonManager().getSingleton(connectionManagerClassName);
+
+		_dataSourceName = getConfigProperty(CONFIG_DATA_SOURCE_NAME);
+		if (_dataSourceName == null)
+		{
+			Exception e = new PersistenceException("config property '" + CONFIG_DATA_SOURCE_NAME + "' missing");
+			_Logger.error("", e);
+		}
+	}
+
+	public void overwriteConfig(Properties overwrites)
+	{
+		super.overwriteConfig(overwrites);
+		postInit();
+	}
 
     public String mapColumnNameToPropertyName(String columnName)
     {
-        String columnNameConfigPropertyName = DB_COLUMN_TO_PROPERTY_MAP + "." + columnName.toLowerCase();
+        String columnNameConfigPropertyName = CONFIG_DB_COLUMN_TO_PROPERTY_MAP + "." + columnName.toLowerCase();
         return getConfigPropertyWithDefault(columnNameConfigPropertyName, columnName);
     }
 
@@ -102,15 +127,14 @@ public abstract class BasePersistenceFactory extends BaseFactory
         if (_propertyNameToColumnNameMap == null)
         {
             _propertyNameToColumnNameMap = new OrderedProperties();
-            OrderedProperties classConfig = (OrderedProperties) getConfig(getClass());
-            List keyList = classConfig.getKeyList();
+            List keyList = _config.getKeyList();
             for (int i = 0; i < keyList.size(); i++)
             {
                 String configPropertyName = (String) keyList.get(i);
-                if (configPropertyName.startsWith(DB_COLUMN_TO_PROPERTY_MAP))
+                if (configPropertyName.startsWith(CONFIG_DB_COLUMN_TO_PROPERTY_MAP))
                 {
-                    String columnName = configPropertyName.substring(DB_COLUMN_TO_PROPERTY_MAP.length() + 1);
-                    String beanPropertyName = classConfig.getProperty(configPropertyName);
+                    String columnName = configPropertyName.substring(CONFIG_DB_COLUMN_TO_PROPERTY_MAP.length() + 1);
+                    String beanPropertyName = _config.getProperty(configPropertyName);
                     _propertyNameToColumnNameMap.setProperty(beanPropertyName, columnName);
                 }
             }
@@ -118,16 +142,9 @@ public abstract class BasePersistenceFactory extends BaseFactory
         return _propertyNameToColumnNameMap;
     }
 
-    protected BasePersistenceFactory() throws PersistenceException
+    protected BasePersistenceFactory()
     {
-        String connectionManagerClassName = getConfigProperty(CONNECTION_MANAGER_CLASS_NAME);
-        if (connectionManagerClassName == null)
-            throw new PersistenceException("config property '" + CONNECTION_MANAGER_CLASS_NAME + "' missing");
-        _connectionManager = (IConnectionManager) SingletonManager.getSingleton(connectionManagerClassName);
-
-        _dataSourceName = getConfigProperty(DATA_SOURCE_NAME);
-        if (_dataSourceName == null)
-            throw new PersistenceException("config property '" + DATA_SOURCE_NAME + "' missing");
+    	init();
     }
 
     protected Connection getConnection() throws PersistenceException
@@ -137,13 +154,13 @@ public abstract class BasePersistenceFactory extends BaseFactory
             Connection connection = _connectionManager.getConnection(_dataSourceName);
             return connection;
         }
-        catch (SQLException se)
+        catch (ConnectionException ce)
         {
-            throw new PersistenceException(se);
+            throw new PersistenceException(ce.getCause());
         }
     }
     
-    protected void populate(Object object, ResultSet rs) throws SQLException
+    protected void populateProperties(Object object, ResultSet rs) throws SQLException
     {
         ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -158,9 +175,9 @@ public abstract class BasePersistenceFactory extends BaseFactory
 
     protected String getQuery(IContext queryContext) throws PersistenceException
     {
-        String queryName = (String) queryContext.getValue(QUERY_NAME);
+        String queryName = (String) queryContext.getValue(IPersistenceFactory.CTX_QUERY_NAME);
         if (queryName == null)
-            throw new PersistenceException("'" + QUERY_NAME + "' missing from context");
+            throw new PersistenceException("'" + IPersistenceFactory.CTX_QUERY_NAME + "' missing from context");
 
         String queryConfigName = QUERY + "." + queryName;
         String query = getConfigProperty(queryConfigName);

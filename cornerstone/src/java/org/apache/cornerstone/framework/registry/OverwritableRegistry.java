@@ -52,60 +52,56 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.cornerstone.framework.singleton;
+package org.apache.cornerstone.framework.registry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.cornerstone.framework.api.registry.IRegistry;
+import org.apache.cornerstone.framework.api.registry.IRegistryEntry;
 
-/**
-Manager for all singleton instances.
-*/
-
-public class SingletonManager
+public class OverwritableRegistry extends BaseRegistry
 {
     public static final String REVISION = "$Revision$";
 
-    /**
-     * Retrieves the singleton instance of a class.
-     * @param className
-     * @return singleton instance of class className.
-     */
-    public static Object getSingleton(String className)
+    public static IRegistry getSingleton()
     {
-        try
-        {
-            // make sure class is loaded first
-            Class c = Class.forName(className);
-            Object s = _SingletonMap.get(className);
-            if (s == null)
-            {
-                s = c.newInstance();
-                _SingletonMap.put(className, s);
-            }
-            return s;
-        }
-        catch (Exception e)
-        {
-            _Logger.error("failed to create singleton for class " + className, e);
-            return null;
-        }
+    	return _Singleton;
     }
 
-    /**
-     * Registers a singleton instance with this manager.
-     * @param singleton
-     */
-    public static void addSingleton(Object singleton)
+    public void init()
     {
-        _SingletonMap.put(singleton.getClass().getName(), singleton);
-        if (_Logger.isInfoEnabled())
-        {
-            _Logger.info("SingletonManager: " + singleton + " added");
-        }
+        _parent = null;
     }
 
-    protected static Map _SingletonMap = new HashMap();
-    private static Logger _Logger = Logger.getLogger(SingletonManager.class);
+    public void setParent(IRegistry overwrittenRegistry)
+    {
+    	_parent = overwrittenRegistry;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.cornerstone.framework.api.registry.IRegistry#getRegistryEntry(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public IRegistryEntry getEntry(String domainName, String interfaceName, String entryName)
+    {
+        IRegistryEntry localEntry = super.getEntry(domainName, interfaceName, entryName);
+        if (localEntry == null)
+            return _parent.getEntry(domainName, interfaceName, entryName);
+        else
+            return localEntry;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.cornerstone.framework.api.registry.IRegistry#getRegistryEntryNameSet(java.lang.String, java.lang.String)
+     */
+    public Set getEntryNameSet(String domainName, String interfaceName)
+    {
+        Set localEntryNameSet = super.getEntryNameSet(domainName, interfaceName);
+        Set parentEntryNameSet = _parent.getEntryNameSet(domainName, interfaceName);
+        Set entryNameSet = localEntryNameSet;
+        entryNameSet.addAll(parentEntryNameSet);
+        return entryNameSet;
+    }
+
+    private static OverwritableRegistry _Singleton = new OverwritableRegistry();
+    protected IRegistry _parent;    // the registry overwritten by this registry
 }

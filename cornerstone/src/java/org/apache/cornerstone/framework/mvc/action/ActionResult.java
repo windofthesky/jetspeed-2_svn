@@ -118,7 +118,7 @@ public class ActionResult
         }
     }
 
-    protected String _exitName = BasePresentationAction.EXIT_DEFAULT;
+    protected String _exitName = BasePresentationAction.CONFIG_EXIT_DEFAULT;
     protected String _exitUrl;
     protected Object _pbean;
     protected List _messageList;

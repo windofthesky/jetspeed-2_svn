@@ -57,8 +57,6 @@ package org.apache.cornerstone.framework.mvc.action;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
-
-import org.apache.cornerstone.framework.action.ActionManager;
 import org.apache.cornerstone.framework.action.BaseAction;
 import org.apache.cornerstone.framework.api.action.ActionException;
 import org.apache.cornerstone.framework.api.action.IAction;
@@ -67,6 +65,7 @@ import org.apache.cornerstone.framework.bean.helper.BeanHelper;
 import org.apache.cornerstone.framework.bean.visitor.BeanJSConverter;
 import org.apache.cornerstone.framework.bean.visitor.BeanPrinter;
 import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.log4j.Logger;
 
 public abstract class BasePresentationAction extends BaseAction
@@ -77,7 +76,7 @@ public abstract class BasePresentationAction extends BaseAction
     public static final String CONFIG_AUTHORIZER_NAME = "authorizer.name";
     public static final String CONFIG_MESSAGE_AUTHORIZATION_FAILED = "message.authorizationFailed";
 
-    public static final String PRESENTATION_BEAN_TRANSIENT = "presentationBean.transient";
+    public static final String CONFIG_PRESENTATION_BEAN_TRANSIENT = "presentationBean.transient";
 
     public static final String ACTION_NAME = BasePresentationAction.class.getName() + ".actionName";
     public static final String REQUEST = BasePresentationAction.class.getName() + ".request";
@@ -87,8 +86,8 @@ public abstract class BasePresentationAction extends BaseAction
     public static final String MODEL_CHANGES = BasePresentationAction.class.getName() + ".modelChanges";
 
     public static final String EXIT = "exit";
-    public static final String EXIT_DEFAULT = EXIT + ".default";
-    public static final String EXIT_ERROR = EXIT + ".error";
+    public static final String CONFIG_EXIT_DEFAULT = EXIT + ".default";
+    public static final String CONFIG_EXIT_ERROR = EXIT + ".error";
 
     public static final String SESSION_CONTEXT = "sessionContext";
 
@@ -101,7 +100,13 @@ public abstract class BasePresentationAction extends BaseAction
     public static final String ACTION_VARIABLE_PBEAN = SESSION_VARIABLE_PREFIX + "presentation.bean";
     public static final String ACTION_VARIABLE_PBEAN_JS = SESSION_VARIABLE_PREFIX + "presentation.bean" + JS_SUFFIX;
     public static final String ACTION_VARIABLE_USER_PROFILE = SESSION_VARIABLE_PREFIX + "userProfile";
-    
+
+    public static final String CONFIG_PARAMS =
+        CONFIG_EXIT_DEFAULT +
+        Constant.COMMA + CONFIG_EXIT_ERROR +
+        Constant.COMMA + CONFIG_AUTHORIZER_NAME +
+        Constant.COMMA + CONFIG_MESSAGE_AUTHORIZATION_FAILED +
+        Constant.COMMA + CONFIG_PRESENTATION_BEAN_TRANSIENT;
 
     public static final String INVOKE_DIRECT_INPUTS = "";
     public static final String INVOKE_DIRECT_OUTPUT = ACTION_VARIABLE_PBEAN + ".defaultOutput";
@@ -114,7 +119,7 @@ public abstract class BasePresentationAction extends BaseAction
     {
         if (_presentationBeanTransient == null)
         {
-            String presentationBeanTransient = getConfigPropertyWithDefault(PRESENTATION_BEAN_TRANSIENT, "false");
+            String presentationBeanTransient = getConfigPropertyWithDefault(CONFIG_PRESENTATION_BEAN_TRANSIENT, "false");
             _presentationBeanTransient = Boolean.valueOf(presentationBeanTransient);
         }
         return _presentationBeanTransient == Boolean.TRUE;
@@ -198,7 +203,7 @@ public abstract class BasePresentationAction extends BaseAction
         if (isExitNameAction(exitValue))
         {
             String actionName = exitValue.substring(ACTION_PREFIX.length());
-            IAction action = ActionManager.getSingleton().createActionByName(actionName);
+            IAction action = Cornerstone.getActionManager().createActionByName(actionName);
             _Logger.debug("chaining to action '" + actionName + "'");
             context.setValue(PREVIOUS_RESULT, result);
             return action.invoke(context);
@@ -279,7 +284,7 @@ public abstract class BasePresentationAction extends BaseAction
         {
             String authorizerName = getConfigProperty(CONFIG_AUTHORIZER_NAME);
             // create every time because actions are not reentrant 
-            IAction authorizer = ActionManager.getSingleton().createActionByName(authorizerName);
+            IAction authorizer = Cornerstone.getActionManager().createActionByName(authorizerName);
             return authorizer;
         }
         else

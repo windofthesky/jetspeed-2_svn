@@ -55,7 +55,6 @@
 package org.apache.cornerstone.framework.api.persistence.connection;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public interface IConnectionManager
 {
@@ -67,7 +66,7 @@ public interface IConnectionManager
      * @return
      * @throws SQLException
      */
-    public Connection getConnection(String dataSourceName) throws SQLException;
+    public Connection getConnection(String dataSourceName) throws ConnectionException;
 
     /**
      * Gets the current transaction in thread.  If none, a new connection is created and placed in thread local.
@@ -76,7 +75,7 @@ public interface IConnectionManager
      * @return
      * @throws SQLException
      */
-    public Connection getConnection(String dataSourceName, boolean AutoCommit) throws SQLException;
+    public Connection getConnection(String dataSourceName, boolean AutoCommit) throws ConnectionException;
 
     /**
      * Subclasses should overwrite this method to create a new connection.
@@ -84,12 +83,12 @@ public interface IConnectionManager
      * @return
      * @throws SQLException
      */
-    public Connection createConnection(String dataSourceName) throws SQLException;
+    public Connection createConnection(String dataSourceName) throws ConnectionException;
 
     /**
      * This method should be called instead of simply "connection.close()".
      * @param connection
      * @throws SQLException
      */
-    public void closeConnection(Connection connection) throws SQLException;
+    public void closeConnection(Connection connection) throws ConnectionException;
 }

@@ -83,6 +83,7 @@ public interface IService extends IConfigurable
     public IServiceDescriptor getDescriptor() throws InvalidServiceException;
 
     public String getName();
+    public void setName(String name);
 
     public IServiceMetric getMetric();
 

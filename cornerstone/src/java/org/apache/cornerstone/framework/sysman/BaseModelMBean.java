@@ -81,13 +81,13 @@ public class BaseModelMBean extends BaseObject
     public static final String REVISION = "$Revision$";
 
     public static final String CLASS = "class";
-    public static final String PERSIST_POLICY = "persistPolicy";
-    public static final String PERSIST_PERIOD_IN_SECONDS = "persisPeriodInSeconds";
-    public static final String PERSIST_LOCATION_DEFAULT_DIR ="persistLocationDefaultDir";
-    public static final String CURRENCY_TIME_LIMIT = "currencyTimeLimit";
-    public static final String DEFAULT_NOTIFICATION = "defaultNotification";
+    public static final String CONFIG_PERSIST_POLICY = "persistPolicy";
+    public static final String CONFIG_PERSIST_PERIOD_IN_SECONDS = "persisPeriodInSeconds";
+    public static final String CONFIG_PERSIST_LOCATION_DEFAULT_DIR ="persistLocationDefaultDir";
+    public static final String CONFIG_CURRENCY_TIME_LIMIT = "currencyTimeLimit";
+    public static final String CONFIG_DEFAULT_NOTIFICATION = "defaultNotification";
     public static final String NOTIFICATION_TYPE = "default";
-    public static final String DEFAULT_NOTIFICATION_DESCRITPTION = "defaultNotificationDescription";
+    public static final String CONFIG_DEFAULT_NOTIFICATION_DESCRITPTION = "defaultNotificationDescription";
     public static final String GET_METHOD_PREFIX = "get";
     public static final String SET_METHOD_PREFIX = "set";
     public static final String DEFAULT_METHOD_PARAMETER_NAME = "par";
@@ -154,12 +154,12 @@ public class BaseModelMBean extends BaseObject
             attributeDescriptor = _modelMBeanDescriptorBuilder.buildAttributeDescriptor(     
                 currentProperty, 
                 currentProperty, 
-                getConfigProperty(PERSIST_POLICY), 
-                getConfigProperty(PERSIST_PERIOD_IN_SECONDS), 
+                getConfigProperty(CONFIG_PERSIST_POLICY), 
+                getConfigProperty(CONFIG_PERSIST_PERIOD_IN_SECONDS), 
                 null, 
                 readMethodName, 
                 writeMethodName, 
-                getConfigProperty(CURRENCY_TIME_LIMIT)
+                getConfigProperty(CONFIG_CURRENCY_TIME_LIMIT)
             );
 
             // add the descriptor of the attribute to the model of the MBean
@@ -204,8 +204,8 @@ public class BaseModelMBean extends BaseObject
         String[] notificationTypes = {NOTIFICATION_TYPE};
         _modelMBeanInfoBuilder.addModelMBeanNotification(
             notificationTypes,
-            getConfigProperty(DEFAULT_NOTIFICATION),
-            getConfigProperty(DEFAULT_NOTIFICATION_DESCRITPTION)                        
+            getConfigProperty(CONFIG_DEFAULT_NOTIFICATION),
+            getConfigProperty(CONFIG_DEFAULT_NOTIFICATION_DESCRITPTION)                        
         );
 
         // build the mbean
@@ -214,9 +214,9 @@ public class BaseModelMBean extends BaseObject
         mbeanDescriptor = _modelMBeanDescriptorBuilder.buildMBeanDescriptor(
             className,
             className,
-            getConfigProperty(PERSIST_POLICY),
-            getConfigProperty(PERSIST_PERIOD_IN_SECONDS),
-            getConfigProperty(PERSIST_LOCATION_DEFAULT_DIR),
+            getConfigProperty(CONFIG_PERSIST_POLICY),
+            getConfigProperty(CONFIG_PERSIST_PERIOD_IN_SECONDS),
+            getConfigProperty(CONFIG_PERSIST_LOCATION_DEFAULT_DIR),
             className,
             null,
             null

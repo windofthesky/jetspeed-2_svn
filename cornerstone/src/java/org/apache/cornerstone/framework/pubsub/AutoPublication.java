@@ -58,13 +58,13 @@ public class AutoPublication extends BasePublication
 {
     public final static String REVISION = "$Revision$";
 
-    public final static String PUBLICATION_TOPIC = "publication.topic";
+    public final static String CONFIG_PUBLICATION_TOPIC = "publication.topic";
     
     public AutoPublication(String name)
     {
         _name = name;
 
-        String topic = getConfigProperty(PUBLICATION_TOPIC);
+        String topic = getConfigProperty(CONFIG_PUBLICATION_TOPIC);
         if ( topic != null )
         {
             publish(topic);

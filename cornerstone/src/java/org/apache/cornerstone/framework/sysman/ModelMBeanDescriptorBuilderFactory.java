@@ -56,7 +56,7 @@ package org.apache.cornerstone.framework.sysman;
 
 import org.apache.cornerstone.framework.api.sysman.IModelMBeanDescriptorBuilder;
 import org.apache.cornerstone.framework.factory.BaseFactory;
-import org.apache.cornerstone.framework.singleton.SingletonManager;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.log4j.Logger;
 
 /**
@@ -83,7 +83,7 @@ public class ModelMBeanDescriptorBuilderFactory extends BaseFactory
     */
     public Object createInstance()
     {
-        ModelMBeanDescriptorBuilder modelMBeanDescriptorBuilder = (ModelMBeanDescriptorBuilder) SingletonManager.getSingleton("com.cisco.salesit.framework.sysmgmt.ModelMBeanDescriptorBuilder");
+        ModelMBeanDescriptorBuilder modelMBeanDescriptorBuilder = (ModelMBeanDescriptorBuilder) Cornerstone.getSingletonManager().getSingleton("com.cisco.salesit.framework.sysmgmt.ModelMBeanDescriptorBuilder");
 
         if ( modelMBeanDescriptorBuilder != null )
         {

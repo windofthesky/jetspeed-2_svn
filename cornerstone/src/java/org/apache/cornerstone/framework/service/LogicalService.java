@@ -65,27 +65,29 @@ import org.apache.cornerstone.framework.api.service.IServiceDescriptor;
 import org.apache.cornerstone.framework.api.service.InvalidServiceException;
 import org.apache.cornerstone.framework.api.service.ServiceException;
 import org.apache.cornerstone.framework.api.service.metric.IServiceMetric;
+import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.log4j.Logger;
 
 public class LogicalService implements IService
 {
-    public static final String METRIC_CLASS_NAME = "metric.className";
-    public static final String METRIC_ENABLED = "metric.enabled";
     public static final String METRIC = "metric";
+    public static final String METRIC_DOT = METRIC + Constant.DOT;
+
+    public static final String CONFIG_METRIC_INSTANCE_CLASS_NAME = METRIC_DOT + Constant.INSTANCE_CLASS_NAME;
+    public static final String CONFIG_METRIC_ENABLED = METRIC_DOT + "enabled";
 
     public LogicalService(String logicalName, IService parent)
     {
-        _logicalName = logicalName;
         _parent = parent;
 
-        String metricEnabledString = getConfigPropertyWithDefault(METRIC_ENABLED, "false");
+        String metricEnabledString = getConfigPropertyWithDefault(CONFIG_METRIC_ENABLED, "false");
         Boolean metricEnabled = new Boolean(metricEnabledString);
         if (metricEnabled.booleanValue())
         {
             IServiceMetric metric = getMetric();
             if (metric == null)
             {
-                String metricClassName = getConfigProperty(METRIC_CLASS_NAME);
+                String metricClassName = getConfigProperty(CONFIG_METRIC_INSTANCE_CLASS_NAME);
                 try
                 {
                     Class[] paramTypes = {IService.class};
@@ -137,7 +139,12 @@ public class LogicalService implements IService
 
     public String getName()
     {
-        return _logicalName;
+        return _parent.getName();
+    }
+
+    public void setName(String name)
+    {
+    	_parent.setName(name);
     }
 
     /* (non-Javadoc)
@@ -224,17 +231,15 @@ public class LogicalService implements IService
 
     protected String getClassVariableKey(String name)
     {
-        // TODO: shouldn't this be _parent.getClass().getName() + ":" + name?
-        return getClass().getName() + ":" + name;
+        return _parent.getClass().getName() + ":" + name;
     }
 
     protected String getMetricClassVariableName()
     {
-        return METRIC + "-" + _logicalName;
+        return METRIC + "-" + getName();
     }
 
     protected IService _parent;
-    protected String _logicalName;
 
     private static Logger _Logger = Logger.getLogger(LogicalService.class);
     protected static Map _ClassVariableMap = new HashMap();

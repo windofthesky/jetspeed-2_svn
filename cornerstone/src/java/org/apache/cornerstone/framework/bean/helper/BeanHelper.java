@@ -59,12 +59,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.cornerstone.framework.singleton.Singleton;
+import org.apache.cornerstone.framework.core.BaseObject;
 import org.apache.log4j.Logger;
 
-public class BeanHelper extends Singleton
+public class BeanHelper extends BaseObject
 {
     public static final String REVISION = "$Revision$";
 

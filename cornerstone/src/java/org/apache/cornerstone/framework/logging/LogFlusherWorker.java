@@ -56,9 +56,7 @@ package org.apache.cornerstone.framework.logging;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
-
 import org.apache.cornerstone.framework.api.logging.ILogEntry;
 import org.apache.cornerstone.framework.api.worker.IWorkerManager;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
@@ -129,9 +127,9 @@ public class LogFlusherWorker extends BaseWorker
             insertSuccess = prpdStmt.executeBatch();
             endTime = System.currentTimeMillis();
         }
-        catch (SQLException se)
+        catch (Exception e)
         {
-            _Logger.error("failed to store log entry", se);
+            _Logger.error("failed to store log entry", e);
         }
         finally
         {

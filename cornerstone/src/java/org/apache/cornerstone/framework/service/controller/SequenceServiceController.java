@@ -59,8 +59,10 @@ import java.util.List;
 
 import org.apache.cornerstone.framework.api.context.IContext;
 import org.apache.cornerstone.framework.api.service.IService;
+import org.apache.cornerstone.framework.api.service.IServiceDescriptor;
 import org.apache.cornerstone.framework.api.service.ServiceException;
-import org.apache.cornerstone.framework.service.ServiceManager;
+import org.apache.cornerstone.framework.constant.Constant;
+import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
@@ -68,19 +70,15 @@ import org.apache.log4j.Logger;
 Service controller that invokes its services in sequence.
 */
 
-public class SequentialServiceController extends BaseServiceController
+public class SequenceServiceController extends BaseServiceController
 {
     public static final String REVISION = "$Revision$";
 
-    public static final String SEQUENCE = "sequence";
-    public static final String CLASS_NAME = "className";
-    public static final String FACTORY_CLASS_NAME = "factoryClassName";
-    public static final String REGISTRY_NAME = "name";
+    public static final String CONFIG_SEQUENCE = "sequence";
 
     /**
      * Invokes all my services in sequence.
-     * @param context context object that has all input and output
-     *   parameters.
+     * @param context context object that has all input and output parameters.
      * @return value of service.
      * @exception ServiceException
      */
@@ -95,6 +93,10 @@ public class SequentialServiceController extends BaseServiceController
             {
                 IService service = (IService) serviceList.get(i);
                 result = service.invoke(context);
+
+                IServiceDescriptor sd = service.getDescriptor();
+                String outputName = sd.getOutputName();
+                context.setValue(outputName, result);
             }
         }
 
@@ -112,28 +114,14 @@ public class SequentialServiceController extends BaseServiceController
         {
             _serviceList = new ArrayList();
             String serviceListString =
-                getConfigProperty(SEQUENCE);
+                getConfigProperty(CONFIG_SEQUENCE);
             List serviceNameList =
                 Util.convertStringsToList(serviceListString);
             for (int i = 0; i < serviceNameList.size(); i++)
             {
-                String serviceName = (String) serviceNameList.get(i);
-                String serviceRegistryName = getConfigProperty(SEQUENCE, serviceName, REGISTRY_NAME);
-                String serviceFactoryClassName = getConfigProperty(SEQUENCE, serviceName, FACTORY_CLASS_NAME);
-                String serviceClassName = getConfigProperty(SEQUENCE, serviceName, CLASS_NAME);
-
-                if (serviceRegistryName != null)
-                {
-                    _serviceList.add(ServiceManager.getSingleton().createServiceByName(serviceRegistryName));
-                }
-                else if (serviceFactoryClassName != null)
-                {
-                    _serviceList.add(ServiceManager.getSingleton().createServiceByFactoryClassName(serviceFactoryClassName));
-                }
-                else
-                {
-                    _serviceList.add(ServiceManager.getSingleton().createServiceByFactoryClassName(serviceClassName));
-                }
+                String sequenceElemetnName = (String) serviceNameList.get(i);
+                String serviceLogicalName = getConfigProperty(CONFIG_SEQUENCE, sequenceElemetnName, Constant.PARENT_NAME);
+                _serviceList.add(Cornerstone.getServiceManager().createServiceByName(serviceLogicalName));
             }
         }
 
@@ -141,5 +129,5 @@ public class SequentialServiceController extends BaseServiceController
     }
 
     protected List _serviceList = null;
-    private static Logger _Logger = Logger.getLogger(SequentialServiceController.class);
+    private static Logger _Logger = Logger.getLogger(SequenceServiceController.class);
 }

@@ -52,67 +52,71 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.cornerstone.framework.registry;
+package org.apache.cornerstone.framework.singleton;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Properties;
-
-import org.apache.cornerstone.framework.api.registry.IRegistryEntry;
-import org.apache.cornerstone.framework.factory.BaseFactory;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
+import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
 
-public class RegistryEntryPropertiesFactory extends BaseFactory
+/**
+Manager for all singleton instances.
+*/
+
+public class BaseSingletonManager implements ISingletonManager
 {
     public static final String REVISION = "$Revision$";
 
-    public static RegistryEntryPropertiesFactory getSingleton()
+    public static BaseSingletonManager getSingleton()
     {
-        return _Singleton;
+    	return _Singleton;
     }
 
     /**
-     * Creates a RegistryEntry object
-     * @return Object as RegistryEntry
+     * Retrieves the singleton instance of a class.
+     * @param className
+     * @return singleton instance of class className.
      */
-    public Object createInstance()
+    public Object getSingleton(String className)
     {
-        IRegistryEntry registryEntry = null;
-        Properties registryProperties = new Properties();
-        FileInputStream registryFileInputStream = null;
-        
         try
         {
-            registryFileInputStream = new FileInputStream(_currentFile);
-            registryProperties.load(registryFileInputStream);
-            registryEntry = new BaseRegistryEntry(registryProperties);
-        }
-        catch(java.io.IOException e)
-        {
-            _Logger.error("failed to read registry entry file '" + _currentFile.getAbsolutePath() + "'", e);
-        }finally{
-            try{
-                registryFileInputStream.close();
-            }catch(java.io.IOException e)
+            // make sure class is loaded first
+            Object s = _singletonMap.get(className);
+            if (s == null)
             {
-                _Logger.error("failed to close registry entry file '" + _currentFile.getAbsolutePath() + "'", e);
+                s = Util.createInstance(className);
+                addSingleton(s);
             }
+            return s;
         }
-
-        return registryEntry;
+        catch (Exception e)
+        {
+            _Logger.error("failed to create singleton for class " + className, e);
+            return null;
+        }
     }
-    
-    /**
-     * Allows the factory to create a RegistryEntry object
-     * for the current regiustry file being dealt with.
-     * @param File file
-     */
-    public void setCurrentFile(File file)
+
+    protected BaseSingletonManager()
     {
-        _currentFile = file;
+    	addSingleton(this);
     }
 
-    private static Logger _Logger = Logger.getLogger(RegistryEntryPropertiesFactory.class);
-    private static RegistryEntryPropertiesFactory _Singleton = new RegistryEntryPropertiesFactory();
-    protected File _currentFile;
+    /**
+     * Registers a singleton instance with this manager.
+     * @param singleton
+     */
+    protected void addSingleton(Object singleton)
+    {
+        _singletonMap.put(singleton.getClass().getName(), singleton);
+        if (_Logger.isInfoEnabled())
+        {
+            _Logger.info(singleton + " added");
+        }
+    }
+
+    private static Logger _Logger = Logger.getLogger(BaseSingletonManager.class);
+    private static BaseSingletonManager _Singleton = new BaseSingletonManager();
+    protected Map _singletonMap = new HashMap();
 }

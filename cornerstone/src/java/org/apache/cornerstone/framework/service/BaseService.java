@@ -85,7 +85,12 @@ public abstract class BaseService extends BaseObject implements IService
 
     public String getName()
     {
-        return getClass().getName();
+        return _name;
+    }
+
+    public void setName(String name)
+    {
+    	_name = name;
     }
 
     public IServiceMetric getMetric()
@@ -188,10 +193,6 @@ public abstract class BaseService extends BaseObject implements IService
         {
             throw se;
         }
-        catch(InvalidServiceException ise)
-        {
-            throw new ServiceException(ise);
-        }
         catch(InvocationTargetException ite)
         {
             Throwable targetException = ite.getTargetException();
@@ -248,10 +249,10 @@ public abstract class BaseService extends BaseObject implements IService
         }
     }
 
+    private static Logger _Logger = Logger.getLogger(BaseService.class);
     protected static Map _ServiceDescriptorMap = new HashMap();
 
+    protected String _name = getClass().getName();
     protected long _invokeStartTime;
     protected IServiceMetric _metric;
-    
-    private Logger _Logger = Logger.getLogger(BaseService.class);
 }

@@ -1,4 +1,4 @@
-<project default="java:jar"
+<project default="full-build"
          xmlns:j="jelly:core" 
          xmlns:define="jelly:define"
          xmlns:reactor="reactor">
@@ -10,5 +10,144 @@
       </fileset>
 	</move>	
 </goal>
+
+
+<preGoal name="java:compile">
+	<attainGoal name="generateActionSourceJava" />
+	<attainGoal name="generateActionSourceResource" />
+</preGoal>
+
+<goal name="build.runtime" >
+	<copy todir="${CORNERSTONE_RUNTIME_REGISTRY_DIR}">
+		<fileset dir="${registryDir}"/>
+	</copy>
+	<copy file="${configDir}/bootstrap.properties" todir="${CORNERSTONE_RUNTIME_HOME}"/>
+</goal>
+
+<goal name="full-build">
+	<attainGoal name="build.runtime" />
+	<attainGoal name="jar:install" />
+</goal>
+
+
+<target name="generateActionSourceJava">
+		<!-- copy files -->
+		<copy todir="src/java/org/apache/cornerstone/framework/api/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/api/service"/>
+		</copy>
+		<copy todir="src/java/org/apache/cornerstone/framework/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/service"/>
+		</copy>
+		<!-- rename files -->
+		<move todir="src/java/org/apache/cornerstone/framework/api/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/api/action">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="IService*.java" to="IAction*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/api/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/api/action">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="*ServiceException.java" to="*ActionException.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/api/action/controller">
+			<fileset dir="src/java/org/apache/cornerstone/framework/api/action/controller">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="IService*.java" to="IAction*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/api/action/metric">
+			<fileset dir="src/java/org/apache/cornerstone/framework/api/action/metric">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="IService*.java" to="IAction*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="Service*.java" to="Action*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="BaseService*.java" to="BaseAction*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="*Service.java" to="*Action.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action/controller">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action/controller">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="*ServiceController.java" to="*ActionController.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action/metric">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action/metric">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="Service*.java" to="Action*.java"/>
+		</move>
+		<move todir="src/java/org/apache/cornerstone/framework/action/metric">
+			<fileset dir="src/java/org/apache/cornerstone/framework/action/metric">
+				<include name="*.java"/>
+			</fileset>
+			<mapper type="glob" from="BaseService*.java" to="BaseAction*.java"/>
+		</move>
+		<!-- replace contents -->
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action" token="SERVICE" value="ACTION"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/metric" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/metric" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/metric" token="SERVICE" value="ACTION"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/controller" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/controller" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/api/action/controller" token="SERVICE" value="ACTION"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action" token="SERVICE" value="ACTION"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/metric" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/metric" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/metric" token="SERVICE" value="ACTION"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/controller" token="Service" value="Action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/controller" token="service" value="action"/>
+		<replace dir="src/java/org/apache/cornerstone/framework/action/controller" token="SERVICE" value="ACTION"/>
+</target>
+
+<goal name="generateActionSourceResource">
+		<!-- copy files -->
+		<copy todir="src/resources/org/apache/cornerstone/framework/action">
+			<fileset dir="src/resources/org/apache/cornerstone/framework/service"/>
+		</copy>
+		<!-- rename files -->
+		<move todir="src/resources/org/apache/cornerstone/framework/action">
+			<fileset dir="src/resources/org/apache/cornerstone/framework/action">
+				<include name="*.properties"/>
+			</fileset>
+			<mapper type="glob" from="Service*.properties" to="Action*.properties"/>
+		</move>
+		<move todir="src/resources/org/apache/cornerstone/framework/action">
+			<fileset dir="src/resources/org/apache/cornerstone/framework/action">
+				<include name="*.properties"/>
+			</fileset>
+			<mapper type="glob" from="BaseService*.properties" to="BaseAction*.properties"/>
+		</move>
+		<move todir="src/resources/org/apache/cornerstone/framework/action">
+			<fileset dir="src/resources/org/apache/cornerstone/framework/action">
+				<include name="*.properties"/>
+			</fileset>
+			<mapper type="glob" from="*Service.properties" to="*Action.properties"/>
+		</move>
+		<!-- replace contents -->
+		<replace dir="src/resources/org/apache/cornerstone/framework/action" token="Service" value="Action"/>
+		<replace dir="src/resources/org/apache/cornerstone/framework/action" token="service" value="action"/>
+		<replace dir="src/resources/org/apache/cornerstone/framework/action" token="SERVICE" value="ACTION"/>
+	</goal>
   
 </project>
