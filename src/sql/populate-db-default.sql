@@ -298,6 +298,13 @@ insert into PROFILING_RULE values ('path',
    'use a path to locate.');
 insert into RULE_CRITERION values (10, 'path', 0, 'path', 'path', '/', 0);
 
+insert into PROFILING_RULE values ('role-group', 
+     'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
+     'A role based fallback algorithm that searches all groups and roles for a user');
+insert into RULE_CRITERION values (11, 'role-group', 0, 'role', 'role', null, 2);
+insert into RULE_CRITERION values (12, 'role-group', 1, 'group', 'group', null, 2);
+insert into RULE_CRITERION values (13, 'role-group', 1, 'request.session', 'page', 'default-page', 0);
+
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'j1' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'role-fallback' );
 
