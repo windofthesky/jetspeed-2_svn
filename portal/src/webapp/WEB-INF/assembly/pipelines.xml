@@ -19,7 +19,11 @@ limitations under the License.
   <bean id="localizationValve"
         class="org.apache.jetspeed.localization.impl.LocalizationValveImpl"
         init-method="initialize"
-  /> 
+  >
+    <constructor-arg>
+      <value><!--@defaultLanguage--><!--defaultLanguage@--></value>
+    </constructor-arg>
+  </bean> 
   
   <bean id="capabilityValve"
         class="org.apache.jetspeed.capabilities.impl.CapabilityValveImpl"

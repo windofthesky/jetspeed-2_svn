@@ -18,6 +18,8 @@ package org.apache.jetspeed.localization.impl;
 import java.util.Enumeration;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -33,7 +35,48 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class LocalizationValveImpl extends AbstractValve implements LocalizationValve
 {
+    private static final Log log = LogFactory.getLog(LocalizationValveImpl.class);
+    private Locale defaultLocale = null;
+    
+    public LocalizationValveImpl() {}
+    
+    public LocalizationValveImpl(String defaultLanguage)
+    {
+        String language = defaultLanguage != null ? defaultLanguage.trim() : "";
+        if (language.length()>0)
+        {
+            // Code taken from LocaleSelectorPorltet
+            String country = "";
+            String variant = "";
+            int countryIndex = language.indexOf('_');
+            if (countryIndex > -1)
+            {
+                country = language.substring(countryIndex + 1).trim();
+                language = language.substring(0, countryIndex).trim();
+                int vDash = country.indexOf("_");
+                if (vDash > 0)
+                {
+                    String cTemp = country.substring(0, vDash);
+                    variant = country.substring(vDash + 1);
+                    country = cTemp;
+                }
+            }
 
+            defaultLocale = new Locale(language, country, variant);
+            if ( defaultLocale.getLanguage().length() == 0 )
+            {
+                // not a valid language
+                defaultLocale = null;
+                log.warn("Invalid or unrecognized default language: "+language);
+            }
+            else
+            {
+                log.info("Default language set: "+defaultLocale);
+            }
+                
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -47,11 +90,16 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         Locale locale =
             (Locale) request.getSessionAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
+        if ( locale == null && defaultLocale != null )
+        {
+            locale = defaultLocale;
+        }
+
         if (locale == null)
         {
             locale = request.getRequest().getLocale();
         }
-
+        
         if (locale == null)
         {
             Enumeration preferedLocales = request.getRequest().getLocales();
