@@ -1156,20 +1156,20 @@ public class JetspeedPowerTool implements ViewTool
      */
     public String getTitle(PortletEntity entity, Fragment f)
     {
-        String title=null;
+        String title = null;
         
-        if(f != null)
+        if (f != null)
         {
             title = f.getTitle();
         }
         
-        if(entity != null && title == null)
+        if (entity != null && title == null)
         {
             title = Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
         }
-        else if(title == null)
+        if (title == null)
         {
-            title = "Portlet Unavailable";
+            title = entity.getPortletDefinition().getName();
         }
         
         return title;
@@ -1187,14 +1187,16 @@ public class JetspeedPowerTool implements ViewTool
      */
     public String getTitle(PortletEntity entity)
     {
-        if(entity != null)
+        String title = null;
+        if (entity != null)
         {
-            return Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+            title  = Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
         }
-        else
+        if (title == null)
         {
-            return "Portlet Unavailable";
+            title = entity.getPortletDefinition().getName();
         }
+        return title;
     }
     
     public Object getComponent(String name)
