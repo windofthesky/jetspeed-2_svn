@@ -34,12 +34,22 @@ limitations under the License.
     <td class="PTitleLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
 
     <td align="left" valign="middle" class="PTitle" >
-       ${myPE.portletDefinition.name}
+       ${myPE.portletDefinition.name} 
     </td>
     
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 
+### testing, this weill be removed  
+  <tr>
+    <td class="PContentLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+
+    <td align="left" valign="middle" class="PContent" >
+       state = $jetspeed.windowState  mode = $jetspeed.portletMode
+    </td>
+    
+    <td class="PContentRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>  
+  </tr>
 
 ##
 ## Portlet Content
