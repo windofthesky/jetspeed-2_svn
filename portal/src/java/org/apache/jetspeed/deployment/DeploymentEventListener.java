@@ -29,4 +29,6 @@ public interface DeploymentEventListener
 	public void invokeDeploy(DeploymentEvent event) throws DeploymentException;
 	
 	public void invokeUndeploy(DeploymentEvent event) throws DeploymentException;	
+	
+	public void invokeRedeploy(DeploymentEvent event) throws DeploymentException;	
 }
