@@ -1,17 +1,17 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.jetspeed.mockobjects.request;
 
@@ -35,9 +35,10 @@ import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * MockRequestContext
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @version $Id: MockRequestContext.java,v 1.1.2.1 2004/04/20 19:40:40 weaver
+ *          Exp $
  */
 public class MockRequestContext implements RequestContext
 {
@@ -45,8 +46,16 @@ public class MockRequestContext implements RequestContext
     private Map requestAttributes = new HashMap();
     private Map sessionAttributes = new HashMap();
     private String path;
-        
-    /* (non-Javadoc)
+    private ProfileLocator locator;
+    private Subject subject;
+    private Locale locale;
+    private String mediaType;
+    private String mimeType;
+    private Page page;
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getActionWindow()
      */
     public PortletWindow getActionWindow()
@@ -54,7 +63,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getCapabilityMap()
      */
     public CapabilityMap getCapabilityMap()
@@ -62,7 +74,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getCharacterEncoding()
      */
     public String getCharacterEncoding()
@@ -70,7 +85,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getConfig()
      */
     public ServletConfig getConfig()
@@ -78,7 +96,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getContentDispatcher()
      */
     public ContentDispatcher getContentDispatcher()
@@ -86,31 +107,41 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getLocale()
      */
     public Locale getLocale()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.locale;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getMediaType()
      */
     public String getMediaType()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.mediaType;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getMimeType()
      */
     public String getMimeType()
     {
-        // TODO Auto-generated method stub
-        return null;
+
+        return this.mimeType;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getNavigationalState()
      */
     public NavigationalState getNavigationalState()
@@ -118,15 +149,21 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getPage()
      */
     public Page getPage()
     {
         // TODO Auto-generated method stub
-        return null;
+        return this.page;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getPortalURL()
      */
     public PortalURL getPortalURL()
@@ -134,15 +171,20 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getProfileLocator()
      */
     public ProfileLocator getProfileLocator()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return locator;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getRequest()
      */
     public HttpServletRequest getRequest()
@@ -150,7 +192,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
      */
     public HttpServletRequest getRequestForWindow( PortletWindow window )
@@ -158,7 +203,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getResponse()
      */
     public HttpServletResponse getResponse()
@@ -166,7 +214,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
      */
     public HttpServletResponse getResponseForWindow( PortletWindow window )
@@ -174,15 +225,20 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getSubject()
      */
     public Subject getSubject()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return subject;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setActionWindow(org.apache.pluto.om.window.PortletWindow)
      */
     public void setActionWindow( PortletWindow window )
@@ -190,7 +246,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setCapabilityMap(org.apache.jetspeed.capability.CapabilityMap)
      */
     public void setCapabilityMap( CapabilityMap map )
@@ -198,7 +257,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setCharacterEncoding(java.lang.String)
      */
     public void setCharacterEncoding( String enc )
@@ -206,7 +268,10 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setContentDispatcher(org.apache.jetspeed.aggregator.ContentDispatcher)
      */
     public void setContentDispatcher( ContentDispatcher dispatcher )
@@ -214,119 +279,154 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setLocale(java.util.Locale)
      */
     public void setLocale( Locale locale )
     {
-        // TODO Auto-generated method stub
+        this.locale = locale;
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setMediaType(java.lang.String)
      */
     public void setMediaType( String mediaType )
     {
-        // TODO Auto-generated method stub
+        this.mediaType = mediaType;
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setMimeType(java.lang.String)
      */
     public void setMimeType( String mimeType )
     {
-        // TODO Auto-generated method stub
+       this.mimeType = mimeType;
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setPage(org.apache.jetspeed.om.page.Page)
      */
     public void setPage( Page page )
     {
-        // TODO Auto-generated method stub
+        this.page = page;
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setProfileLocator(org.apache.jetspeed.profiler.ProfileLocator)
      */
     public void setProfileLocator( ProfileLocator locator )
     {
-        // TODO Auto-generated method stub
+        this.locator = locator;
 
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#setSubject(javax.security.auth.Subject)
      */
     public void setSubject( Subject subject )
     {
-        // TODO Auto-generated method stub
+        this.subject = subject;
 
     }
+
     public MockRequestContext()
     {
-       // super(null, null, null, null);
+        // super(null, null, null, null);
     }
 
-    public MockRequestContext(String path)
+    public MockRequestContext( String path )
     {
         // super(null, null, null, null);
         this.path = path;
     }
-        
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getRequestParameter(java.lang.String)
      */
-    public String getRequestParameter(String key)
+    public String getRequestParameter( String key )
     {
-        return (String)requestParameters.get(key);
+        return (String) requestParameters.get(key);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getParameterMap()
      */
     public Map getParameterMap()
     {
-        return requestParameters;    
+        return requestParameters;
     }
-            
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String, java.lang.Object)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String,
+     *      java.lang.Object)
      */
-    public void setSessionAttribute(String key, Object value)
+    public void setSessionAttribute( String key, Object value )
     {
         this.sessionAttributes.put(key, value);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getSessionAttribute(java.lang.String)
      */
-    public Object getSessionAttribute(String key)
+    public Object getSessionAttribute( String key )
     {
         return this.sessionAttributes.get(key);
     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String, java.lang.Object)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String,
+     *      java.lang.Object)
      */
-    public void setAttribute(String key, Object value)
+    public void setAttribute( String key, Object value )
     {
         requestAttributes.put(key, value);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getAttribute(java.lang.String)
      */
-    public Object getAttribute(String key)
+    public Object getAttribute( String key )
     {
-        return requestAttributes.get(key);    
+        return requestAttributes.get(key);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.request.RequestContext#getPath()
      */
     public String getPath()
     {
         return path;
     }
-    
+
 }
