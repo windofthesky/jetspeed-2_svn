@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.sso.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -29,16 +30,18 @@ import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;
-
+import org.apache.jetspeed.sso.SSOPrincipal;
 
 import org.apache.jetspeed.sso.impl.SSOSiteImpl;
 import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
 
+
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
 import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
+import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
 
 import org.apache.ojb.broker.query.Criteria;
@@ -80,17 +83,18 @@ public class PersistenceBrokerSSOProvider extends
 			return false;	// no entry for site
 		}
 		
+		
 		// Get the principal from the subject
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
 		String fullPath = principal.getFullPath();
 		
-		// Filter the credentials for the given principals
-		InternalCredential  credential = getCredential(ssoSite, fullPath);	
+		//	Check if the principal has any remote principals
+		Collection remotePrincipals = getRemotePrincipalsForPrincipal(ssoSite, fullPath);
 		
-		if (credential == null)
-			return false;
+		if (remotePrincipals == null || remotePrincipals.size() < 1)
+			return false;	// No remote credentials for Principal
 		else
-			return true;
+			return true;	// User has credentials for site
 	}
 
 	/* (non-Javadoc)
@@ -110,12 +114,10 @@ public class PersistenceBrokerSSOProvider extends
 		String fullPath = principal.getFullPath();
 		
 		// Filter the credentials for the given principals
-		InternalCredential  credential = getCredential(ssoSite, fullPath);	
+		SSOContext context = getCredential(ssoSite, fullPath);	
 		
-		if ( credential == null)
+		if ( context == null)
 			throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);	// no entry for site
-		
-		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), principal.getName(),credential.getValue());
 		
 		return context;
 	}
@@ -127,7 +129,7 @@ public class PersistenceBrokerSSOProvider extends
 	public void addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)
 			throws SSOException {
 		
-		// Check if the site already exists
+		// Check if an entry for the site already exists otherwise create a new one
 		SSOSite ssoSite = getSSOSiteObject(site);
 		if (ssoSite == null)
 		{
@@ -139,23 +141,33 @@ public class PersistenceBrokerSSOProvider extends
 			ssoSite.setAllowUserSet(true);
 		}
 		
-		// Get the Principal information
+		// Get the Principal information (logged in user)
 		String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
-			
-		InternalPrincipal principal = this.getPrincipalForPath(subject, fullPath);
+		String principalName = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
+		
+		// Add an entry for the principal to the site if it doesn't exist
+		SSOPrincipal principal = this.getPrincipalForSite(ssoSite, fullPath);
 		
 		if (principal == null)
-			throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
+			throw new SSOException(SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE);
 		
-		// New credential object
+		// Create a remote principal and add it to the principal
+		InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(remoteUser);
+		remotePrincipal.setFullPath("/sso/user/"+ principalName + "/" + remoteUser);
+	
+		// New credential object for remote principal
 		 InternalCredentialImpl credential = 
-            new InternalCredentialImpl(principal.getPrincipalId(),
+            new InternalCredentialImpl(remotePrincipal.getPrincipalId(),
             		pwd, 0, DefaultPasswordCredentialImpl.class.getName());
 		 
-		// Add credential to mapping table
-		 ssoSite.addCredential(credential);
-		 ssoSite.addPrincipal(principal);
-	
+		 if ( remotePrincipal.getCredentials() == null)
+		 	remotePrincipal.setCredentials(new ArrayList(0));
+		 
+		remotePrincipal.getCredentials().add( credential);
+		 
+		 
+		 principal.addRemotePrincipal(remotePrincipal);
+		 	
 		// Update database and reset cache
 		 try
          {
@@ -178,6 +190,10 @@ public class PersistenceBrokerSSOProvider extends
 	public void removeCredentialsForSite(Subject subject, String site)
 			throws SSOException {
 		
+		// Initailization
+		InternalUserPrincipal remotePrincipal = null;
+		SSOPrincipal principal = null;
+		
 		//Get the site
 		SSOSite ssoSite = getSSOSiteObject(site);
 		if (ssoSite == null)
@@ -187,22 +203,32 @@ public class PersistenceBrokerSSOProvider extends
 		
 		// Get the Principal information
 		String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+		
+		try
+		{
+			// Remove remote principal from the association table
+			remotePrincipal = removeRemotePrincipalForPrincipal(ssoSite, fullPath);
 			
-		InternalPrincipal principal = this.getPrincipalForPath(subject, fullPath);
-		
-		/*
-		 * Should never happen except if the function gets invoked from outside the current credential store
-		 */
-		if (principal == null)
-			throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
-		
-		// New credential object
-		 InternalCredential credential = getCredential(ssoSite, fullPath);
-		 
-		// Remove credential and principal from mapping
-		 ssoSite.removeCredential(credential);
-		 ssoSite.removePrincipal(principal.getPrincipalId());
-	
+			// Remove the principal association
+			principal = this.getPrincipalForSite(ssoSite, fullPath);
+			if ( principal != null )
+				ssoSite.getPrincipals().remove(principal);
+			
+			// Remove Remote principal and associated credential from persistence store
+			if (remotePrincipal != null)
+				getPersistenceBrokerTemplate().delete(remotePrincipal);
+			
+		}
+		catch(SSOException ssoex)
+		{
+			throw new SSOException(ssoex);
+		}
+		catch (Exception e)
+        {
+        	e.printStackTrace();
+           throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
+        }
+								
 		// Update database and reset cache
 		 try
          {
@@ -217,6 +243,67 @@ public class PersistenceBrokerSSOProvider extends
          // Clear cache
          this.mapSite.clear();
 	}
+	
+	/**
+	 * updateCredentialsForSite
+	 * @param subject	Current subject
+	 * @param remoteUser	remote user login
+	 * @param site		URL or description of site
+	 * @param pwd	Password for credentail
+	 */
+	public void  updateCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
+	    throws SSOException
+	    {
+	        // Check if the the current user has a credential for the site
+		
+			// Update the credential
+			//		 Initailization
+			InternalUserPrincipal remotePrincipal = null;
+			
+			//Get the site
+			SSOSite ssoSite = getSSOSiteObject(site);
+			if (ssoSite == null)
+			{
+				throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
+			}
+			
+			// Get the Principal information
+			String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+			String principalName  = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
+			
+			// Get collection of remote principals and find a match for the one to remove
+			Collection remotePrincipals = getRemotePrincipalsForPrincipal(ssoSite, fullPath);
+			if ( remotePrincipals == null || remotePrincipals.size() < 1)
+				throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
+			
+			// User can have one remote user per site
+			Iterator itRemotePrincipals = remotePrincipals.iterator();
+			remotePrincipal = (InternalUserPrincipal)itRemotePrincipals.next();
+			
+			// Update principal information
+			remotePrincipal.setFullPath("/sso/user/"+ principalName + "/" + remoteUser);
+			InternalCredential credential = (InternalCredential)remotePrincipal.getCredentials().iterator().next();
+					
+			// New credential object
+			 if ( credential != null) 
+				// Remove credential and principal from mapping
+				 credential.setValue(pwd);
+			
+			// Update database and reset cache
+			 try
+			 {
+			     getPersistenceBrokerTemplate().store(ssoSite);
+			  }
+			 catch (Exception e)
+			 {
+			 	e.printStackTrace();
+			    throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
+			 }
+			 
+			 // Clear cache
+			 this.mapSite.clear();
+		
+	    }
 	
 	/*
 	 * Helper utilities
@@ -275,82 +362,208 @@ public class PersistenceBrokerSSOProvider extends
 	 * getCredential
 	 * returns the credentials for a given user
 	 */
-	private InternalCredential  getCredential(SSOSite ssoSite, String fullPath)
+	private SSOContext  getCredential(SSOSite ssoSite, String fullPath)
 	{
-		long  principalID = -1;
 		InternalCredential credential = null;
+		String remoteUser = null;
+		String remoteFullPath = null;
 				
 		/* Error checking
 		 * 1) should have at least one principal
-		 * 2) should have at least one credential
 		 * 
 		 * If one of the above fails return null wich means that the user doesn't have credentials for that site
 		 */
 		Collection principals = ssoSite.getPrincipals();
-		Collection credentials = ssoSite.getCredentials();
 		
-		if ( principals == null  || credentials == null)
+		if ( principals == null )
 		{
 			return null;
 		}
+		
 		// Iterate over the principals and extract the principal id for the given full path
+		SSOPrincipal principal = null;
+		
 		Iterator itPrincipals = principals.iterator();
-		while (itPrincipals.hasNext() && principalID == -1 /*not found yet*/)
+		while (itPrincipals.hasNext() && principal == null /*not found yet*/)
 		{
-			InternalPrincipal principal = (InternalPrincipal)itPrincipals.next();
-			if ( principal != null && principal.getFullPath().compareToIgnoreCase(fullPath) == 0)
+			SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
+			if ( tmp != null && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
 			{
-				principalID = principal.getPrincipalId();
+				// Found it stop iteration
+				principal = tmp;
 			}
 		}
 		
-		if ( principalID == -1)
+		if ( principal == null)
 			return null;	// No principal found for that site
 		
-		// Last lookup to see if there are credentials for that user
-		Iterator itCredentials = credentials.iterator();
-		while (itCredentials.hasNext() && credential == null /*not found yet*/)
+		// Extract the remote principal
+		Collection remotePrincipals = principal.getRemotePrincipals();
+		if (remotePrincipals == null || remotePrincipals.size() < 1)
+			return null;	// no remote principals
+		
+		InternalUserPrincipal remotePrincipal = (InternalUserPrincipal)remotePrincipals.iterator().next();
+		
+		// Get credentail  for this remote user
+		if ( remotePrincipal.getCredentials() != null)
+			credential = (InternalCredential)remotePrincipal.getCredentials().iterator().next();
+		
+		// Error checking  -- should have a credential at this point
+		if ( credential == null)
 		{
-			InternalCredential cred = (InternalCredential)itCredentials.next();
-			
-			if ( cred != null && cred.getPrincipalId() == principalID)
+			System.out.println("Warning: Remote User " + remotePrincipal.getFullPath() + " doesn't have a credential");
+			return null; 
+		}
+		else
+		{
+			System.out.println("Found Credential: " + credential.getValue() + " for PrincipalID " + remotePrincipal.getPrincipalId() + " Name: "+remotePrincipal.getFullPath() );
+		}
+		
+		// Create new context
+		String name = remotePrincipal.getFullPath();
+		int ix = name.lastIndexOf('/');
+		if ( ix != -1)
+			name = name.substring(ix);
+		
+		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, credential.getValue());
+		
+		return context;
+	}
+	
+	/*
+	 * Get a Collection of remote Principals for the logged in principal identified by the full path
+	 */
+	private Collection getRemotePrincipalsForPrincipal(SSOSite ssoSite, String fullPath)
+	{
+		// The site orincipals list contains a list of remote principals for the user
+		Collection principals = ssoSite.getPrincipals();
+		
+		if ( principals == null )
+			return null;	// No principals for this site
+		
+		Iterator ixPrincipals = principals.iterator();
+		while (ixPrincipals.hasNext())
+		{
+			SSOPrincipal principal = (SSOPrincipal)ixPrincipals.next();
+			if ( principal != null && principal.getFullPath().compareToIgnoreCase(fullPath) == 0)
 			{
-				// Found credentials for Orincipals
-				// TODO: Remove debug
-				System.out.println("Found Credential: " + cred.getValue() + " for PrincipalID " + principalID);
-				credential = cred;
+				// Found Principal -- extract remote principals 
+				return principal.getRemotePrincipals();
 			}
 		}
 		
-		return credential;
+		// Principal is not in list
+		return null;
 	}
 	
-	private InternalPrincipal getPrincipalForPath(Subject subject, String fullPath)
+	/*
+	 * getPrincipalForSite()
+	 * returns a principal that matches the full path for the site or creates a new entry if it doesn't exist
+	 */
+	private SSOPrincipal getPrincipalForSite(SSOSite ssoSite, String fullPath)
 	{
-		Criteria filter = new Criteria();       
-	    filter.addEqualTo("fullPath", fullPath);
-	    
-	    QueryByCriteria query = QueryFactory.newQuery(SSOPrincipalImpl.class, filter);
-	    Collection principals = getPersistenceBrokerTemplate().getCollectionByQuery(query);                    
-	    
-	    if ( principals != null && principals.isEmpty() != true)
-	    {
-	    	Iterator itPrincipals = principals.iterator();
-	    	// Get the site from the collection. There should be only one entry (uniqueness)
-	    	if (itPrincipals.hasNext())
+		SSOPrincipal principal = null;
+		
+		if ( ssoSite.getPrincipals() != null)
+		{
+			Iterator itPrincipals = ssoSite.getPrincipals().iterator();
+			while (itPrincipals.hasNext() && principal == null)
+			{
+				SSOPrincipal tmp  = (SSOPrincipal)itPrincipals.next();
+				if ( tmp != null && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+					principal = tmp;	// Found existing entry
+			}
+		}
+		
+		// Not yest in the site list. Add it but make sure that a user exists
+		if ( principal == null)
+		{
+			Criteria filter = new Criteria();       
+		    filter.addEqualTo("fullPath", fullPath);
+		    
+		    QueryByCriteria query = QueryFactory.newQuery(SSOPrincipalImpl.class, filter);
+		    Collection principals = getPersistenceBrokerTemplate().getCollectionByQuery(query);                    
+		    
+		    if ( principals != null && principals.isEmpty() != true)
 		    {
-		    	return (InternalPrincipal) itPrincipals.next();
+		    	Iterator itPrincipals = principals.iterator();
+		    	// Get the site from the collection. There should be only one entry (uniqueness)
+		    	if (itPrincipals.hasNext())
+			    {
+		    		principal = (SSOPrincipal) itPrincipals.next();
+		    		try
+					{
+		    			ssoSite.addPrincipal(principal);
+					}
+		    		catch (SSOException ssoex)
+					{
+		    			System.out.println("ERROR-SSO: Failed adding principal to principla map. Error: " + ssoex.getMessage());
+					}
+			    }
 		    }
-	    }
-	    
-	    // Principal for path doesn't exist
-	    return null;
-	    
+		}
+	    		
+		return principal;		
 	}
-    
-    public void  updateCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
-    throws SSOException
-    {
-        
-    }
+	
+	/**
+	 * getCredentialForPrincipal
+	 * @param site
+	 * @param principalId
+	 * @return InternalCredential for the principal ID
+	 */
+	private InternalCredential getCredentialForPrincipal(SSOSite site, long principalId)
+	{
+		if ( site.getCredentials() != null)
+		{
+			Iterator itCredentials = site.getCredentials().iterator();
+			while(itCredentials.hasNext() )
+			{
+				InternalCredential tmp = (InternalCredential)itCredentials.next();
+				if ( tmp != null && tmp.getPrincipalId() == principalId)
+					return tmp;
+			}
+		}
+	
+		return null;
+	}
+	
+	/**
+	 * removeRemotePrincipalForPrincipal
+	 * @param site
+	 * @param fullPath
+	 * @return
+	 * 
+	 * removes remotePrincipal for a site & principal
+	 */
+	private InternalUserPrincipal  removeRemotePrincipalForPrincipal(SSOSite site, String fullPath) throws SSOException
+	{
+		if (site.getPrincipals() != null)
+		{
+			Iterator itPrincipals = site.getPrincipals().iterator();
+			while (itPrincipals.hasNext())
+			{
+				SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
+				if ( tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+				{
+					// Found -- get the remotePrincipal
+					Collection collRemotePrincipals = tmp.getRemotePrincipals() ;
+					if (collRemotePrincipals != null)
+					{
+					
+						Iterator itRemotePrincipals = collRemotePrincipals.iterator();
+						if  (itRemotePrincipals.hasNext())
+						{
+							InternalUserPrincipal remotePrincipal = (InternalUserPrincipal)itRemotePrincipals.next();
+							// Found remove the object
+							collRemotePrincipals.remove(remotePrincipal);
+							return remotePrincipal;
+						}
+					}
+				}
+			}
+		}		
+		
+		throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
+	}
 }

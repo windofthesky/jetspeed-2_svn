@@ -16,8 +16,11 @@
 package org.apache.jetspeed.sso.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.jetspeed.security.om.InternalPrincipal;
+
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.sso.SSOPrincipal;
 
 /**
 * <p>
@@ -28,7 +31,7 @@ import org.apache.jetspeed.security.om.InternalPrincipal;
 *
 * @author <a href="mailto:rogerrut	@apache.org">Roger Ruttimann</a>
 */
-public class SSOPrincipalImpl implements InternalPrincipal {
+public class SSOPrincipalImpl implements SSOPrincipal {
 	 /** The principal id. */
 	   private long principalId;
 
@@ -52,6 +55,10 @@ public class SSOPrincipalImpl implements InternalPrincipal {
 	   
 	   /** Permissions not used by required by the interface*/
 	   private Collection permissions;
+	   
+	   /** Remote principals for Principal */
+	   private Collection remotePrincipals;
+	   
 
 	   /**
 	    * <p>
@@ -88,6 +95,20 @@ public class SSOPrincipalImpl implements InternalPrincipal {
 	       this.permissions = null;	// Not used
 	       this.creationDate = new Timestamp(System.currentTimeMillis());
 	       this.modifiedDate = this.creationDate;
+	   }
+	   
+	   /**
+	    * addRemotePrincipal()
+	    * adds a principal to the list of remote principals
+	    */
+	   public void  addRemotePrincipal(InternalUserPrincipal principal)
+	   {
+	   		if (remotePrincipals == null)
+	   		{
+	   			remotePrincipals = new ArrayList(1);
+	   		}
+	   		
+	   		remotePrincipals.add(principal);
 	   }
 
 	   /**
@@ -218,5 +239,17 @@ public class SSOPrincipalImpl implements InternalPrincipal {
 	   {
 	       this.enabled = enabled;
 	   }    
+	/**
+	 * @return Returns the remotePrincipals.
+	 */
+	public Collection getRemotePrincipals() {
+		return remotePrincipals;
+	}
+	/**
+	 * @param remotePrincipals The remotePrincipals to set.
+	 */
+	public void setRemotePrincipals(Collection remotePrincipals) {
+		this.remotePrincipals = remotePrincipals;
+	}
 }
 

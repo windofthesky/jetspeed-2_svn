@@ -50,6 +50,9 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
 	 */
 	static private String TEST_URL= "http://localhost/jetspeed";
 	static private String TEST_USER= "joe";
+	static private String REMOTE_USER= "remoteJS";
+	static private String REMOTE_PWD_1 = "remote_1";
+	static private String REMOTE_PWD_2 = "remote_2";
 	
 		
     /** The property manager. */
@@ -121,7 +124,7 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     		// Add credential
     		try
 			{
-    			ssoBroker.addCredentialsForSite(subject, "TODO", TEST_URL,"test");
+    			ssoBroker.addCredentialsForSite(subject, REMOTE_USER, TEST_URL,REMOTE_PWD_1);
     			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL);
 			}
 			catch(SSOException ssoex)
@@ -135,6 +138,26 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     	{
     		System.out.println("SSO Credential found for user:" + TEST_USER+ " site: " + TEST_URL);
     	}
+    	
+    	// Test credential update
+    	SSOContext ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
+    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword());
+    	
+    	try
+		{
+    		// Update Remote credential
+    		System.out.println("SSO Credential Update" );
+    		ssoBroker.updateCredentialsForSite(subject, REMOTE_USER , TEST_URL, REMOTE_PWD_2);
+    		
+    		ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
+    		System.out.println("SSO Credential updated: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword());
+    		
+		}
+    	catch(SSOException ssoex)
+		{
+    		System.out.println("SSO Credential update FAILED for user:" + TEST_USER+ " site: " + TEST_URL);
+    		throw new Exception(ssoex.getMessage());
+		}
     	
      	try
 		{

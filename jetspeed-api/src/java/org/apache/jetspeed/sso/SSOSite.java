@@ -16,7 +16,7 @@ package org.apache.jetspeed.sso;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.sso.SSOPrincipal;
 
 /**
  * @author rruttimann
@@ -115,7 +115,7 @@ public interface SSOSite {
 	 * Adds the credentail to the credentials collection
 	 *
 	 */
-	public void addPrincipal(InternalPrincipal principal) throws SSOException;
+	public void addPrincipal(SSOPrincipal principal) throws SSOException;
 	
 	/**
 	* removePrincipal()

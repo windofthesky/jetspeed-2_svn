@@ -16,6 +16,7 @@ package org.apache.jetspeed.sso;
 
 import javax.security.auth.Subject;
 
+
 /**
 * <p>Utility component to handle SSO requests</p>
 * 

@@ -78,6 +78,20 @@ limitations under the License.
           nullable="false"
       >
       </field-descriptor>
+      <collection-descriptor
+	        name="remotePrincipals"
+	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
+	        proxy="true"
+	        refresh="true"
+	        auto-retrieve="true"
+	        auto-update="object"
+	        auto-delete="object"
+	        indirection-table="SSO_PRINCIPAL_TO_REMOTE_PRINCIPAL"
+	    >
+	        <documentation>This is the reference to principals.</documentation>
+	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
+	        <fk-pointing-to-element-class column="REMOTE_PRINCIPAL_ID"/>
+	    </collection-descriptor>
       </class-descriptor>
 
 	
@@ -129,28 +143,14 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
- 	    <collection-descriptor
-	        name="credentials"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="object"
-	        auto-delete="object"
-	        indirection-table="SSO_SITE_TO_CREDENTIALS"
-	    >
-	        <documentation>This is the reference to credentials.</documentation>
-	        <fk-pointing-to-this-class column="SITE_ID"/>
-	        <fk-pointing-to-element-class column="CREDENTIAL_ID"/>
-	    </collection-descriptor>
 	     <collection-descriptor
 	        name="principals"
 	        element-class-ref="org.apache.jetspeed.sso.impl.SSOPrincipalImpl"
 	       proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
+	        auto-update="object"
+	        auto-delete="object"
 	        indirection-table="SSO_SITE_TO_PRINCIPALS"
 	    >
 	        <documentation>This is the reference to principals.</documentation>

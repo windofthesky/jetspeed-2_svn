@@ -23,7 +23,7 @@ import java.util.Vector;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOSite;
 import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.sso.SSOPrincipal;
 
 /**
 * SSOSiteImpl
@@ -194,7 +194,7 @@ public class SSOSiteImpl implements SSOSite {
 		 * Adds the credentail to the credentials collection
 		 *
 		 */
-		public void addPrincipal(InternalPrincipal principal) throws SSOException {
+		public void addPrincipal(SSOPrincipal principal) throws SSOException {
 			boolean bStatus = false;
 			
 			try
@@ -219,20 +219,20 @@ public class SSOSiteImpl implements SSOSite {
 		public void removePrincipal(long principalId) throws SSOException
 		{
 			boolean bStatus = false;
-			InternalPrincipal principalObj = null;
+			SSOPrincipal principalObj = null;
 			Iterator itSitePrincipals = principals.iterator();
 			
 			while (itSitePrincipals.hasNext() )
 			{
-				principalObj = (InternalPrincipal)itSitePrincipals.next();
+				principalObj = (SSOPrincipal)itSitePrincipals.next();
 				if ( principalObj.getPrincipalId() == principalId)
 				{
 				
 					try
 					{
 						// TODO: Removing results in an OJB exception. Ignore it for the moment but it needs to be fixed soon...
-						//bStatus = principals.remove(principalObj);
-						bStatus = true;
+						bStatus = principals.remove(principalObj);
+						//bStatus = true;
 					}
 					catch(Exception e)
 					{
