@@ -36,6 +36,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.picocontainer.MutablePicoContainer;
 
@@ -243,7 +244,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
 
         RequestContext request = new MockRequestContext("default-other");
         
-        request.setSubject(createSubject("anon"));
+        request.setSubject(SecurityHelper.createSubject("anon"));
         request.setLocale(new Locale("en", "US"));        
         request.setMediaType("HTML");
         request.setMimeType("text/html");
@@ -320,14 +321,6 @@ public class TestProfiler extends AbstractComponentAwareTestCase
         assertTrue("fallback count = 0, " + count, count == 0);
                 
     }
-    
-    private Subject createSubject(String principalName)
-    {
-        Principal principal = new UserPrincipalImpl(principalName);
-        Set principals = new HashSet();
-        principals.add(principal);
-        return new Subject(true, principals, new HashSet(), new HashSet());        
-    }
 
     public void testPage() throws Exception
     {
@@ -335,7 +328,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
 
         RequestContext request = new MockRequestContext();
     
-        request.setSubject(createSubject("anon"));
+        request.setSubject(SecurityHelper.createSubject("anon"));
         request.setLocale(new Locale("en", "US"));        
         request.setMediaType("HTML");
         request.setMimeType("text/html");
