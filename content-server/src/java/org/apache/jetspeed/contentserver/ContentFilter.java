@@ -120,7 +120,9 @@ public class ContentFilter implements Filter
                 httpResponse.setStatus(HttpServletResponse.SC_OK);
             } else
             {
-                chain.doFilter(request, response);
+               // chain.doFilter(request, response);
+                httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                
             }
             return;
         }
