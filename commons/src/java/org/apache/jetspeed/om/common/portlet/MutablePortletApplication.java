@@ -62,6 +62,12 @@ import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
 
 /**
+ * MutablePortletApplication
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
+ */
+/**
  * 
  * MutablePortletApplication
  * 
@@ -115,4 +121,41 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
      */
     void setVersion(String version);
 
+    /**
+     * Sets the Portlet Application type. 
+     * Valid values are:
+     * <p>
+     *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
+     *               server's web application space.
+     * <p> 
+     *      {@link MutablePortletApplication#PORTLET_APP} - A portlet application stored within Jetspeed's web application.
+     * <p>  
+     * @param type The type of portlet application.
+     */
+    void setApplicationType(int type);
+
+    /**
+     * Gets the Portlet Application type.
+     * Valid values are:
+     * <p>
+     *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
+     *               server's web application space.
+     * <p> 
+     *      {@link MutablePortletApplication#PORTLET_APP} - A portlet application stored within Jetspeed's web application.
+     * <p>  
+     * @return The type of portlet application.
+     */    
+    int getApplicationType();
+    
+    /**
+     * Marks this application as a standard web application, 
+     * stored in the web application server's web application space.
+     */    
+    public static final int WEB_APP = 0;
+    
+    /**
+     * Marks this application as a portlet application, 
+     * stored in Jetspeed managed portlet application space.
+     */        
+    public static final int PORTLET_APP = 1; 
 }
