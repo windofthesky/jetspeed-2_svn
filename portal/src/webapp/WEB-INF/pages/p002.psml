@@ -17,13 +17,13 @@ limitations under the License.
 <page >
   <defaults
      skin="light-blue"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>My Second PSML page</title>
   <fragment id="xx2.0" type="layout" name="jetspeed::VelocityTwoColumns">
   
-	  <fragment id="xx2.1" type="portlet" name="demo::CustomerList"/>
+	  <fragment id="xx2.1" type="portlet" name="demo::SSOIFramePortlet"/>
 
   </fragment>
   <metadata name="title" xml:lang="ja">

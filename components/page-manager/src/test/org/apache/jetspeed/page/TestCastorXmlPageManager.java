@@ -58,7 +58,7 @@ import org.apache.jetspeed.util.DirectoryHelper;
  */
 public class TestCastorXmlPageManager extends TestCase
 {
-    private String testId = "test002";
+    private String testId = "/test002.psml";
     protected CastorXmlPageManager pageManager;
     protected DirectoryHelper dirHelper;
 
@@ -174,9 +174,9 @@ protected void setUp() throws Exception
 
     public void testGetPage() throws Exception
     {
-        Page testpage = pageManager.getPage("test001");
+        Page testpage = pageManager.getPage("/test001.psml");
         assertNotNull(testpage);
-        assertTrue(testpage.getId().equals("test001"));
+        assertTrue(testpage.getId().equals("/test001.psml"));
         assertTrue(testpage.getTitle().equals("Test Page"));
         assertTrue(testpage.getDefaultSkin().equals("test-skin"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
@@ -332,13 +332,12 @@ protected void setUp() throws Exception
             exceptionFound = true;
         }
         assertTrue(exceptionFound);
-
     }
 
     public void testFolders() throws Exception
     {
 
-        Folder folder1 = pageManager.getFolder("folder1");
+        Folder folder1 = pageManager.getFolder("/folder1");
         assertNotNull(folder1);
                 
         assertEquals(2, folder1.getFolders().size());
@@ -346,17 +345,17 @@ protected void setUp() throws Exception
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
         assertEquals("default-page.psml", folder2.getDefaultPage(true));
-        assertEquals("folder1/folder2", folder2.getPath());
+        assertEquals("/folder1/folder2", folder2.getPath());
         assertEquals("folder2", folder2.getName());
         Folder folder3 = (Folder) childItr.next();
-        assertEquals("folder1/folder3", folder3.getPath());
+        assertEquals("/folder1/folder3", folder3.getPath());
         assertEquals("test001.psml", folder3.getDefaultPage(true));
 
         assertEquals(1, folder2.getPages().size());
         assertEquals(2, folder3.getPages().size());
         
         // Check link order
-        Iterator linkItr = folder3.getAllNodes().iterator();
+        Iterator linkItr = folder3.getAll().iterator();
         assertEquals("Jetspeed2Wiki.link", ((Link)linkItr.next()).getName());
         assertEquals("Jetspeed2.link", ((Link)linkItr.next()).getName());        
         assertEquals("apache_portals.link", ((Link)linkItr.next()).getName());
@@ -366,41 +365,41 @@ protected void setUp() throws Exception
         
 
         //Test FolderSet with both absolute and relative names
-        assertNotNull(folder1.getFolders().get("folder1/folder2"));
+        assertNotNull(folder1.getFolders().get("/folder1/folder2"));
         assertNotNull(folder1.getFolders().get("folder2"));
-        assertEquals(folder1.getFolders().get("folder1/folder2"), folder1.getFolders().get("folder2"));
+        assertEquals(folder1.getFolders().get("/folder1/folder2"), folder1.getFolders().get("folder2"));
 
         //Test PageSet with both absolute and relative names
-        assertNotNull(folder3.getPages().get("folder1/folder3/test001.psml"));
+        assertNotNull(folder3.getPages().get("/folder1/folder3/test001.psml"));
         assertNotNull(folder3.getPages().get("test001.psml"));
-        assertEquals("test001.psml", folder3.getPages().get("folder1/folder3/test001.psml").getName());
+        assertEquals("test001.psml", folder3.getPages().get("/folder1/folder3/test001.psml").getName());
         
         assertTrue(folder3.isHidden());
         assertTrue(folder3.getPage("default-page.psml").isHidden());
         assertTrue(folder3.getLinks().get("Jetspeed2.link").isHidden());
         assertFalse(folder3.getLinks().get("apache.link").isHidden());
         
-        assertNotNull(folder3.getAllNodes().get("Jetspeed2.link"));
-        assertNull(folder3.getAllNodes().exclusiveSubset("Jetspeed2\\.link").get("Jetspeed2.link"));
-        assertNull(folder3.getAllNodes().inclusiveSubset("apache\\.link").get("Jetspeed2.link"));
-        assertNotNull(folder3.getAllNodes().inclusiveSubset("apache\\.link").get("apache.link"));
+        assertNotNull(folder3.getAll().get("Jetspeed2.link"));
+        assertNull(folder3.getAll().exclusiveSubset("Jetspeed2\\.link").get("Jetspeed2.link"));
+        assertNull(folder3.getAll().inclusiveSubset("apache\\.link").get("Jetspeed2.link"));
+        assertNotNull(folder3.getAll().inclusiveSubset("apache\\.link").get("apache.link"));
         
 
     }
 
     public void testFolderMetaData() throws Exception
     {
-        Folder folder1French = pageManager.getFolder("folder1");        
+        Folder folder1French = pageManager.getFolder("/folder1");        
 ;
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRENCH));
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRANCE));
 
-        Folder folder1English = pageManager.getFolder("folder1");
+        Folder folder1English = pageManager.getFolder("/folder1");
 
         assertEquals("English Title for Folder 1", folder1English.getTitle(Locale.ENGLISH));
 
         // check that default works
-        Folder folder1German = pageManager.getFolder("folder1");
+        Folder folder1German = pageManager.getFolder("/folder1");
        
         assertEquals("Default Title for Folder 1", folder1German.getTitle(Locale.GERMAN));
         
@@ -413,7 +412,7 @@ protected void setUp() throws Exception
 
     public void testPageMetaData() throws Exception
     {
-        Page page = pageManager.getPage("default-page.psml");
+        Page page = pageManager.getPage("/default-page.psml");
         assertNotNull(page);
         String frenchTitle = page.getTitle(Locale.FRENCH);
         assertNotNull(frenchTitle);
@@ -425,7 +424,7 @@ protected void setUp() throws Exception
 
     public void testLinks() throws Exception
     {
-        Link link = pageManager.getLink("apache_portals.link");
+        Link link = pageManager.getLink("/apache_portals.link");
         assertNotNull(link);
         assertEquals("http://portals.apache.org", link.getUrl());
         assertEquals("Apache Portals Website", link.getTitle());

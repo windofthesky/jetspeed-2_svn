@@ -74,7 +74,7 @@ limitations under the License.
       <tr>
         <td nowrap>    
           <br><span title="$docSet.getTitle($preferedLocale)">${docSet.getShortTitle($preferedLocale)}</span>:
-          #includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
+          #includeDocumentSetNavigation("linksWithIcon1" $docSet $docSetNodes $TOP_TO_BOTTOM)
         </td>
       </tr>
     #end

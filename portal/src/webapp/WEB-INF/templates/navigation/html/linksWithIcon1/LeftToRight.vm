@@ -1,4 +1,4 @@
-<div >
+<div>
   #foreach($node in $_nodeSet.iterator()) 
     #if($node.type == ".psml")
       <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
@@ -6,6 +6,10 @@
       <a href="$node.url" target="$node.target" class="Link" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
     #elseif($node.type == "folder")
       <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
+    #elseif($node.type == ".ds")
+      #set($__nodePrefix = "${_nodePrefix}${node.url}")
+      #set($__nodeSet = $profiledPageContext.getDocumentSetNodes($__nodePrefix))
+      #includeNestedNavigation($_name $__nodeSet $_orientation $__nodePrefix)
     #else
       <a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a>	
     #end

@@ -86,10 +86,12 @@ limitations under the License.
 #foreach($docSetName in $profiledPageContext.documentSetNames)
   #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
   #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
-          <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
-          ${docSet.getShortTitle($preferedLocale)}
+          <div>
+            <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
+            ${docSet.getShortTitle($preferedLocale)}
+            </div>
           </div>
-#includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
+#includeDocumentSetNavigation("linksWithIcon1" $docSet $docSetNodes $TOP_TO_BOTTOM)
 #end
         </div>
       </div>

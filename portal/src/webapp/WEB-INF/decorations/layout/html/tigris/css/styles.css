@@ -234,13 +234,14 @@ body.layout-tigris
 
 .layout-tigris .toolgroup .body div {
     padding-bottom: .3em;
-    padding-left: .5em;
+    padding-left: 0;
     voice-family: "\"}\"";
     voice-family: inherit;
     font-size: x-small;
 }
 
 .layout-tigris .toolgroup .body div div {
+    padding-left: .5em;
 }
 
 .layout-tigris .toolgroup .pagetitle{

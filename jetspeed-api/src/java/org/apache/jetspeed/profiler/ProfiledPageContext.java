@@ -185,4 +185,15 @@ public interface ProfiledPageContext
      * @param nodes The expanded document set nodes.
      */
     void setDocumentSet(String name, DocumentSet documentSet, NodeSet nodes);
+
+    /**
+     * Set a named nested document set and expanded nodes. These
+     * document sets do not appear in the names iterator but
+     * are mapped by name along with their expanded nodes.
+     *  
+     * @param name The name of the document set.
+     * @param documentSet The document set.
+     * @param nodes The expanded document set nodes.
+     */
+    void setNestedDocumentSet(String name, DocumentSet documentSet, NodeSet nodes);
 }

@@ -208,6 +208,7 @@ public abstract class AbstractPageManager
         public NodeSet documentSets;
         public Map documentSetNames;
         public Map documentSetNodeSets;
+        public NodeSet nestedDocumentSets;
 
         public CacheablePageContext(Page page, Folder folder, NodeSet siblingPages, Folder parentFolder, NodeSet siblingFolders, NodeSet rootLinks, NodeSet documentSets, Map documentSetNames, Map documentSetNodeSets)
         {
@@ -220,6 +221,27 @@ public abstract class AbstractPageManager
             this.documentSets = documentSets;
             this.documentSetNames = documentSetNames;
             this.documentSetNodeSets = documentSetNodeSets;
+
+            // compute nested document sets nodes set: these
+            // do not appear in the document set but are mapped
+            // in docuemnt set names/node sets
+            if ((this.documentSetNames != null) && (this.documentSets != null) && (this.documentSetNames.size() > this.documentSets.size()))
+            {
+                Iterator mappedIter = this.documentSetNames.entrySet().iterator();
+                while (mappedIter.hasNext())
+                {
+                    Map.Entry mappedEntry = (Map.Entry)mappedIter.next();
+                    DocumentSet documentSet = (DocumentSet)mappedEntry.getKey();
+                    if (!this.documentSets.contains(documentSet))
+                    {
+                        if (this.nestedDocumentSets == null)
+                        {
+                            this.nestedDocumentSets = new NodeSetImpl(null);
+                        }
+                        this.nestedDocumentSets.add(documentSet);
+                    }
+                }
+            }
 
             // debug profiled page context elements
             if (log.isDebugEnabled())
@@ -267,26 +289,38 @@ public abstract class AbstractPageManager
                     Iterator debugIter = this.documentSets.iterator();
                     while (debugIter.hasNext())
                     {
-                        DocumentSet debug = (DocumentSet) debugIter.next();
-                        String debugName = (String) this.documentSetNames.get(debug);
-                        NodeSet debugNodes = (NodeSet) this.documentSetNodeSets.get(debug);
-                        String debugMessage = "document set " + debug + ", name = " + debugName + ", nodes = {";
-                        Iterator nodesIter = debugNodes.iterator();
-                        if (nodesIter.hasNext())
+                        log.debug("CacheablePageContext(), " + debugDocumentSetMessage((DocumentSet)debugIter.next()));
+                    }
+                    if ((this.nestedDocumentSets != null) && (this.nestedDocumentSets.size() > 0))
+                    {
+                        debugIter = this.nestedDocumentSets.iterator();
+                        while (debugIter.hasNext())
                         {
-                            debugMessage += ((Node) nodesIter.next()).getUrl();
+                            log.debug("CacheablePageContext(), nested " + debugDocumentSetMessage((DocumentSet)debugIter.next()));
                         }
-                        while (nodesIter.hasNext())
-                        {
-                            debugMessage += ", " + ((Node) nodesIter.next()).getUrl();
-                        }
-                        debugMessage += "}, url = " + debug.getUrl();
-                        log.debug("CacheablePageContext(), " + debugMessage);
                     }
                 }
                 else
                     log.debug("CacheablePageContext(), documentSets/documentSetNames/documentSetNodeSets = null/empty");
             }
+        }
+
+        private String debugDocumentSetMessage(DocumentSet debug)
+        {
+            String debugName = (String) this.documentSetNames.get(debug);
+            NodeSet debugNodes = (NodeSet) this.documentSetNodeSets.get(debug);
+            String debugMessage = "document set " + debug + ", name = " + debugName + ", nodes = {";
+            Iterator nodesIter = debugNodes.iterator();
+            if (nodesIter.hasNext())
+            {
+                debugMessage += ((Node) nodesIter.next()).getUrl();
+            }
+            while (nodesIter.hasNext())
+            {
+                debugMessage += ", " + ((Node) nodesIter.next()).getUrl();
+            }
+            debugMessage += "}, url = " + debug.getUrl();
+            return debugMessage;
         }
     }
 
@@ -305,10 +339,23 @@ public abstract class AbstractPageManager
             Iterator documentSetIter = checkAccess(cachedPageContext.documentSets, SecuredResource.VIEW_ACTION).iterator();
             while (documentSetIter.hasNext())
             {
-                DocumentSet documentSet = (DocumentSet) documentSetIter.next();
-                String documentSetName = (String) cachedPageContext.documentSetNames.get(documentSet);
-                NodeSet documentSetNodes = checkAccess((NodeSet) cachedPageContext.documentSetNodeSets.get(documentSet), SecuredResource.VIEW_ACTION);
+                // populate root document set
+                DocumentSet documentSet = (DocumentSet)documentSetIter.next();
+                String documentSetName = (String)cachedPageContext.documentSetNames.get(documentSet);
+                NodeSet documentSetNodes = checkAccess((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), SecuredResource.VIEW_ACTION);
                 pageContext.setDocumentSet(documentSetName, documentSet, documentSetNodes);
+            }
+            if (cachedPageContext.nestedDocumentSets != null)
+            {
+                Iterator nestedDocumentSetIter = checkAccess(cachedPageContext.nestedDocumentSets, SecuredResource.VIEW_ACTION).iterator();
+                while (nestedDocumentSetIter.hasNext())
+                {
+                    // populate nested document set
+                    DocumentSet documentSet = (DocumentSet)nestedDocumentSetIter.next();
+                    String documentSetName = (String)cachedPageContext.documentSetNames.get(documentSet);
+                    NodeSet documentSetNodes = checkAccess((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), SecuredResource.VIEW_ACTION);
+                    pageContext.setNestedDocumentSet(documentSetName, documentSet, documentSetNodes);
+                }
             }
         }
     }

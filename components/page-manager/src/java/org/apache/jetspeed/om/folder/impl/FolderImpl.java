@@ -494,17 +494,56 @@ public class FolderImpl extends AbstractNode implements Folder
         return getPageSecurity(false);
     }
 
-    /**
-     * <p>
-     * getMetaData
-     * </p>
+    /*
+     * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.om.folder.Folder#getMetaData()
-     * @return
+     * @see org.apache.jetspeed.om.folder.Folder#getAll()
      */
-    public FolderMetaData getMetaData()
+    public NodeSet getAll() throws FolderNotFoundException, DocumentException
     {
-        return metadata;
+        // return secure set of all nodes: disable access checks on
+        // folders to facilitate navigation, but enforce on documents
+        // while creating filtered nodes
+        NodeSet nodes = getAllNodes();
+        NodeSet filteredNodes = null;
+        Iterator checkAccessIter = nodes.iterator();
+        while (checkAccessIter.hasNext())
+        {
+            Node node = (Node)checkAccessIter.next();
+            try
+            {
+                ((AbstractNode) node).checkAccess(SecuredResource.VIEW_ACTION);
+                if (filteredNodes != null)
+                {
+                    filteredNodes.add(node);
+                }
+            }
+            catch (SecurityException se)
+            {
+                if (filteredNodes == null)
+                {
+                    filteredNodes = new NodeSetImpl(getPath(), ((NodeSetImpl) nodes).getComparator());
+                    Iterator copyIter = nodes.iterator();
+                    while (copyIter.hasNext())
+                    {
+                        Node copyNode = (Node)copyIter.next();
+                        if (copyNode != node)
+                        {
+                            filteredNodes.add(copyNode);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (filteredNodes != null)
+        {
+            return filteredNodes;
+        }
+        return nodes;
     }
 
     /**
@@ -584,6 +623,19 @@ public class FolderImpl extends AbstractNode implements Folder
         }
         
         return allNodes;
+    }
+
+    /**
+     * <p>
+     * getMetaData
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getMetaData()
+     * @return
+     */
+    public FolderMetaData getMetaData()
+    {
+        return metadata;
     }
     /**
      * <p>

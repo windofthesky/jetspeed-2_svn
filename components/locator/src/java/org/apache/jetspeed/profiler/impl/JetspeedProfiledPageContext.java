@@ -150,14 +150,27 @@ public class JetspeedProfiledPageContext implements ProfiledPageContext
     {
         if ((name != null) && (documentSet != null) && (nodes != null))
         {
-            if (this.documentSets == null)
-            {
-                this.documentSetNames = new ArrayList(12);
-                this.documentSets = new HashMap(12);
-            }
+            addDocumentSet(name, documentSet, nodes);
             this.documentSetNames.add(name);
-            this.documentSets.put(name, new DocumentSetEntry(documentSet, nodes));
         }
+    }
+
+    public void setNestedDocumentSet(String name, DocumentSet documentSet, NodeSet nodes)
+    {
+        if ((name != null) && (documentSet != null) && (nodes != null))
+        {
+            addDocumentSet(name, documentSet, nodes);
+        }
+    }
+
+    private void addDocumentSet(String name, DocumentSet documentSet, NodeSet nodes)
+    {
+        if (this.documentSets == null)
+        {
+            this.documentSetNames = new ArrayList(12);
+            this.documentSets = new HashMap(12);
+        }
+        this.documentSets.put(name, new DocumentSetEntry(documentSet, nodes));
     }
 
     private class DocumentSetEntry

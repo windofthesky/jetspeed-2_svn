@@ -56,4 +56,6 @@ public interface NodeSet
     NodeSet exclusiveSubset(String regex);
 
     int size();
+
+    boolean contains(Node node);
 }

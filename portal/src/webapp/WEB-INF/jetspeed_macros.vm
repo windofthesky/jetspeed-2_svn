@@ -22,14 +22,23 @@
  #end
 #end
 
-#macro (defineConfig $name $type)
-  #set($_navConfig =$jetspeed.getTypeConfiguration("navigation", $name, "templates"))
+#* Includes a nested navigation component *#
+#macro (includeNestedNavigation $_name $_nodeSet $_orientation $_nodePrefix)
+  #parse($jetspeed.getTemplate("${_name}/${_orientation}${_ext}", "navigation").appRelativePath)
 #end
 
 #* Includes a navigation component *#
-#macro (includeNavigation $name $_nodeSet $orientation)
- #defineConfig($name "navigation")
- #set($_ext = $_navConfig.getString("template.extension"))
- #parse($jetspeed.getTemplate("${name}/${orientation}${_ext}", "navigation").appRelativePath)
+#macro (defineConfig $name $type)
+  #set($_navConfig =$jetspeed.getTypeConfiguration("navigation", $name, "templates"))
 #end
-
+#macro (includeNavigation $_name $_nodeSet $_orientation)
+  #defineConfig($_name "navigation")
+  #set($_ext = $_navConfig.getString("template.extension"))
+  #includeNestedNavigation($_name $_nodeSet $_orientation "")
+#end
+#macro (includeDocumentSetNavigation $_name $_node $_nodeSet $_orientation)
+  #defineConfig($_name "navigation")
+  #set($_ext = $_navConfig.getString("template.extension"))
+  #set($_nodePrefix = $_node.url)
+  #includeNestedNavigation($_name $_nodeSet $_orientation $_nodePrefix)
+#end

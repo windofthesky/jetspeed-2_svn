@@ -63,7 +63,7 @@ limitations under the License.
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)へ戻る</a>
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)�?�戻る</a>
 #end
         &nbsp;
       </div>
@@ -78,7 +78,7 @@ limitations under the License.
     <td>
       <div class="toolgroup">    
         <div class="label">
-          フォルダとページ
+          フォルダ�?�ページ
         </div>
         <div class="body">
 #includeNavigation("folders" $profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
@@ -86,10 +86,12 @@ limitations under the License.
 #foreach($docSetName in $profiledPageContext.documentSetNames)
   #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
   #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
-          <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
-          ${docSet.getShortTitle($preferedLocale)}
+          <div>
+            <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
+            ${docSet.getShortTitle($preferedLocale)}
+            </div>
           </div>
-#includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
+#includeDocumentSetNavigation("linksWithIcon1" $docSet $docSetNodes $TOP_TO_BOTTOM)
 #end
         </div>
       </div>

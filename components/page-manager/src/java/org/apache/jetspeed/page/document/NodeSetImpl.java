@@ -105,13 +105,12 @@ public class NodeSetImpl implements NodeSet
      */
     public void add( Node node )
     {
-        nodes.put(node.getPath(), node);
         String path = node.getPath();
+        nodes.put(path, node);
         if (subsets.containsKey(node.getType()))
         {
             ((NodeSet) subsets.get(node.getType())).add(node);
         }
-
     }
 
     /**
@@ -119,7 +118,7 @@ public class NodeSetImpl implements NodeSet
      * size
      * </p>
      * 
-     * @see org.apache.jetspeed.om.page.DocumentSet#size()
+     * @see org.apache.jetspeed.page.document.NodeSet#size()
      * @return
      */
     public int size()
@@ -277,5 +276,40 @@ public class NodeSetImpl implements NodeSet
             patternCache.put(regex, pattern);
             return pattern;
         }       
+    }
+
+    /**
+     * <p>
+     * contains
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.NodeSet#contains()
+     * @return
+     */
+    public boolean contains( Node node )
+    {
+        return nodes.values().contains(node);
+    }
+
+    /**
+     * <p>
+     * remove
+     * </p>
+     * 
+     * @param node to remove
+     * @return removed node
+     */
+    public Node remove(Node node)
+    {
+        String path = node.getPath();
+        if (nodes.get(path) == node)
+        {
+            nodes.remove(path);
+            if (subsets.containsKey(node.getType()))
+            {
+                ((NodeSetImpl) subsets.get(node.getType())).remove(node);
+            }
+        }
+        return null;
     }
 }

@@ -199,12 +199,13 @@ public interface Folder extends Node
     /**
      * 
      * <p>
-     * getAllNodes
+     * getAll
      * </p>
      *
-     * @return All Nodes immediatley under this Folder.
-     * @throws DocumentException
+     * @return A <code>NodeSet</code> containing all sub-folders and documents directly under
+     * this folder.
      * @throws FolderNotFoundException
+     * @throws DocumentException
      */
-    NodeSet getAllNodes() throws FolderNotFoundException, DocumentException;
+    NodeSet getAll() throws FolderNotFoundException, DocumentException;
 }
