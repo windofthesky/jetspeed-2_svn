@@ -52,19 +52,6 @@ limitations under the License.
     <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
   </tr>
 
-### testing, this will be removed  
-  <tr>
-    <td class="PContentLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-
-    <td align="left" valign="middle" class="PContent" >
-       state = $jetspeed.windowState  mode = $jetspeed.portletMode
-    </td>
-
-    <td align="right" valign="middle" class="PContent" />
-    
-    <td class="PContentRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>  
-  </tr>
-
 ##
 ## Portlet Content
 ##
