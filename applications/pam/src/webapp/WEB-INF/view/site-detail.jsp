@@ -37,9 +37,24 @@ limitations under the License.
 
 <c:choose>
 	<c:when test="${folder != null}">
-		Name: <c:out value="${folder.name}"/> <br />
-		Title: <c:out value="${folder.title}"/> <br />
-		Parent: <c:out value="${folder.parent.title}"/> <br />
+		Name (Node): <c:out value="${folder.name}"/> <br />
+		Path (Node): <c:out value="${folder.path}"/> <br />
+		Title (BaseElement): <c:out value="${folder.title}"/> <br />
+		Parent (Node): <c:out value="${folder.parent.title}"/> <br />
+		ID (BaseElement): <c:out value="${folder.id}"/> <br />
+		Type (Node): <c:out value="${folder.type}"/> <br />
+		URL (Node): <c:out value="${folder.url}"/> <br />
+		ACL (SecuredResource): <c:out value="${folder.acl}"/> <br />
+		Hidden (Node): <c:out value="${folder.hidden}"/> <br />
+		Default Page (Folder): <c:out value="${folder.defaultPage}"/> <br />
+		Default Theme (Folder): <c:out value="${folder.defaultTheme}"/> <br />
+		
+		
+		<c:forEach var="field" items="${folder.metadataFields}">
+			<c:out value="${field.name}"/> | <c:out value="${field.value}"/> | <c:out value="${field.locale}"/> <br />
+		</c:forEach>
+		
+		
 	</c:when>
 
 	<c:when test="${page != null}">
