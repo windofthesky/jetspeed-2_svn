@@ -207,6 +207,16 @@ limitations under the License.
          <inverse-foreignkey field-ref="appId"/>
       </collection-descriptor>
 
+	  <collection-descriptor
+         name="services"
+         element-class-ref="org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl"
+         auto-delete="true"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
+       >         
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+
    </class-descriptor>
    
 
@@ -1272,6 +1282,38 @@ limitations under the License.
          jdbc-type="VARCHAR"         
       />
         
+   </class-descriptor>
+
+
+   <!-- 
+   - S E R V I C E S
+   -->
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl"
+   	  proxy="dynamic"
+   	  table="JETSPEED_SERVICE"
+   >
+      
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"        
+      />
+      
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"         
+      />   
    </class-descriptor>
 
 </descriptor-repository>  
