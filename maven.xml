@@ -30,7 +30,7 @@ limitations under the License.
         >
     <maven:reactor
                basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml"
+               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml"
                excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
@@ -63,6 +63,13 @@ limitations under the License.
                banner="Build and Install the Portlet API jar"
                postProcessing="false"
                ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}/struts-portlet"
+               includes="project.xml"
+               goals="install"
+               banner="Build and Install the common jar"
+               postProcessing="false"
+               ignoreFailures="false"/>               
     <maven:reactor
                basedir="${basedir}/commons"
                includes="project.xml"
