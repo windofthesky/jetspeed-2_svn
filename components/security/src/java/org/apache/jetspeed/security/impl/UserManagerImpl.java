@@ -75,7 +75,8 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
         // Create a new credential with the given password.
         short credentialType = 0;
         JetspeedCredential omCredential = new JetspeedCredentialImpl(omUser.getPrincipalId(), password, credentialType, null);
-        if (log.isDebugEnabled()) log.debug("Credential: " + omCredential.toString());
+        if (log.isDebugEnabled())
+            log.debug("Credential: " + omCredential.toString());
         boolean userMatch = ((null != omUser) && (credentials.contains(omCredential)));
 
         return userMatch;
@@ -102,6 +103,8 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
         // If does not exist, create.
         JetspeedUserPrincipal omUser = new JetspeedUserPrincipalImpl(fullPath);
         Preferences preferences = Preferences.userRoot().node(fullPath);
+        if (log.isDebugEnabled())
+            log.debug("Added user preferences node: " + fullPath);
         PersistenceStore store = getPersistenceStore();
         try
         {
@@ -117,6 +120,8 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
                 credentials.add(omCredential);
                 omUser.setCredentials(credentials);
                 store.getTransaction().checkpoint();
+                if (log.isDebugEnabled())
+                    log.debug("Added user: " + omUser.getFullPath());
             }
         }
         catch (Exception e)
@@ -151,18 +156,12 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
             PersistenceStore store = getPersistenceStore();
             try
             {
-                // TODO Issue removing credentials with OJB RC4. Manual remove.
-                // TODO Foreign key integrity constraint violation.
-                Collection omCredentials = omUser.getCredentials();
-                for (Iterator iter = omCredentials.iterator(); iter.hasNext();)
-                {
-                    JetspeedCredential curCredentials = (JetspeedCredential) iter.next();
-                    store.deletePersistent(curCredentials);
-                    store.getTransaction().checkpoint();
-                }
                 // Remove user.
                 store.deletePersistent(omUser);
                 store.getTransaction().checkpoint();
+                if (log.isDebugEnabled())
+                    log.debug("Deleted user: " + omUser.getFullPath());
+
             }
             catch (Exception e)
             {
@@ -171,15 +170,24 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
                 store.getTransaction().rollback();
                 throw new SecurityException(msg, e);
             }
-            // Remove preferences
-            Preferences preferences = Preferences.userRoot().node(omUser.getFullPath());
-            try
+            if (!userExists(username))
             {
-                preferences.removeNode();
+                // Remove preferences
+                Preferences preferences = Preferences.userRoot().node(omUser.getFullPath());
+                try
+                {
+                    preferences.removeNode();
+                }
+                catch (BackingStoreException bse)
+                {
+                    bse.printStackTrace();
+                }
             }
-            catch (BackingStoreException bse)
+            else
             {
-                bse.printStackTrace();
+                String msg = "Could not remove user.";
+                log.error(msg);
+                throw new SecurityException(msg);
             }
         }
     }
@@ -193,6 +201,10 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
 
         JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         boolean userExists = (null != omUser);
+        if (log.isDebugEnabled())
+            log.debug("User exists: " + userExists);
+        if (log.isDebugEnabled() && (null != omUser))
+            log.debug("User: [[id, " + omUser.getPrincipalId() + "], [fullPath, " + omUser.getFullPath() + "]]");
         return userExists;
     }
 
