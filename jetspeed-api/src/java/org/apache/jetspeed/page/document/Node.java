@@ -33,6 +33,9 @@ import org.apache.jetspeed.om.page.BaseElement;
  */
 public interface Node extends BaseElement
 {
+    String PATH_SEPARATOR = "/";
+    char PATH_SEPARATOR_CHAR = '/';
+
     /**
      * 
      * <p>

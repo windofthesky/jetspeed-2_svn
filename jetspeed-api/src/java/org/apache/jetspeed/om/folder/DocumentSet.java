@@ -32,10 +32,6 @@ public interface DocumentSet extends Document
 {
     String DOCUMENT_TYPE = ".ds";
     
-    String getDocumentSetName();
-    
-    void setDocumentSetName(String setName);
-
     String getProfileLocatorName();
     
     void setProfileLocatorName(String locatorName);
