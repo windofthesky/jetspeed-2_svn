@@ -79,6 +79,7 @@
             <pathelement path="${maven.build.dest}"/>
           </classpath>
             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
+            <sysproperty key="pam.jetspeed.properties" value="/WEB-INF/conf/jetspeed.properties"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />

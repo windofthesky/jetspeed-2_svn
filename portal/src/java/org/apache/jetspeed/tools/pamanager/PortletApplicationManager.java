@@ -109,7 +109,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     {
         String arg;
         Engine engine = null;
-        int i = 0;
+        int i = 0;        
 
         // Read the command line
         String strWebAppDir = "";
@@ -123,7 +123,9 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 		String strPassword = "";
 		String strServer = "localhost";
 		int intServerPort = 8080;
-
+        String jetspeedPropertiesFile = System.getProperty("pam.jetspeed.properties", "/WEB-INF/conf/jetspeed.properties");
+        String appsDirectory = System.getProperty("pam.apps.directory", "/WEB-INF/apps/");
+        
         while (i < args.length && args[i].startsWith("-"))
         {
             arg = args[i++];
@@ -215,7 +217,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         {
             // Start the registry service -- it's needed by many actions
             Configuration properties =
-                (Configuration) new PropertiesConfiguration(strAppRoot + "/WEB-INF/conf/jetspeed.properties");
+                (Configuration) new PropertiesConfiguration(strAppRoot + jetspeedPropertiesFile);
 
             properties.setProperty(APPLICATION_ROOT_KEY, strAppRoot);
 
@@ -246,7 +248,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 {
                     if (applicationType.equals("local"))
                     {
-                        String portletAppRoot = strAppRoot + "/WEB-INF/apps/";
+                        String portletAppRoot = strAppRoot + appsDirectory;
                         deploy(portletAppRoot, strWarFileName, strPortletAppName);
                     }
                     else
@@ -602,7 +604,9 @@ public class PortletApplicationManager implements JetspeedEngineConstants
       */
     public static void overrideProperties(String strApplicationRoot, Configuration properties) throws IOException
     {
-        String testPropsPath = strApplicationRoot + "/WEB-INF/conf/pam.properties";
+        String pamPropertiesFile = System.getProperty("pam.properties", "/WEB-INF/conf/pam.properties");
+        
+        String testPropsPath = strApplicationRoot + pamPropertiesFile;
         File testFile = new File(testPropsPath);
         if (testFile.exists())
         {
