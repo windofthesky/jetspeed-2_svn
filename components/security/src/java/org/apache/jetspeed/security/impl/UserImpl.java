@@ -26,6 +26,8 @@ import org.apache.jetspeed.security.User;
  */
 public class UserImpl implements User
 {
+    private Subject subject;
+    private Preferences preferences;
 
     /**
      * <p>Default constructor.</p>
@@ -45,8 +47,6 @@ public class UserImpl implements User
         this.preferences = preferences;
     }
 
-    private Subject subject;
-
     /**
      * @see org.apache.jetspeed.security.User#getSubject()
      */
@@ -62,8 +62,6 @@ public class UserImpl implements User
     {
         this.subject = subject;
     }
-
-    private Preferences preferences;
 
     /**
      * @see org.apache.jetspeed.security.User#getPreferences()
@@ -81,4 +79,12 @@ public class UserImpl implements User
         this.preferences = preferences;
     }
 
+    public Preferences getUserAttributes()
+    {
+        if (preferences != null)
+        {
+            return preferences.node("userinfo");
+        }
+        return null;
+    }
 }

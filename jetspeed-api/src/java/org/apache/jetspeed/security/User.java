@@ -48,7 +48,15 @@ public interface User
     /**
      * <p>Setter for the user {@link Preferences} node, providing access to the
      * user preferences properties.</p>
+     *  
      * @param preferences The {@link Preferences}.
      */
     void setPreferences(Preferences preferences);
+    
+    /**
+     * Get the user attributes for a given user
+     * @return a preference set of user attributes for a given user
+     */
+    Preferences getUserAttributes();
+    
 }
