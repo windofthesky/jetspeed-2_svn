@@ -359,7 +359,7 @@ public abstract class AbstractPortalURL implements PortalURL
         return result.toString();
     }
 
-    public String getControlParameterAsString(PortalControlParameterImpl controlParam)
+    public String getControlParameterAsString(PortalControlParameter controlParam)
     {
         Map stateFullParams = startControlParameter;
         Map stateLessParams = null;
@@ -396,7 +396,7 @@ public abstract class AbstractPortalURL implements PortalURL
         return toString(pcp, new Boolean(secure));
     }
     
-    public String toString(PortalControlParameterImpl controlParam, Boolean p_secure)
+    public String toString(PortalControlParameter controlParam, Boolean p_secure)
     {
         StringBuffer buffer = getBaseURLBuffer();
         buffer.append(this.basePath);
