@@ -16,7 +16,6 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -190,7 +189,8 @@ public class DeployUtilities
 
                     if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
                     {
-                        return new InputSource(new FileInputStream("./web-app_2_3.dtd"));
+                        //return new InputSource(new FileInputStream("./web-app_2_3.dtd"));
+                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
                     }
                     else
                         return null;
