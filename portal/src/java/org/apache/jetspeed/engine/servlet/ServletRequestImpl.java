@@ -256,10 +256,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     {
         ArrayList locales = new ArrayList();
         locales.add(preferedLocale);
-        Enumeration enum = super.getLocales();
-        while (enum.hasMoreElements())
+        Enumeration localeEnums = super.getLocales();
+        while (localeEnums.hasMoreElements())
         {
-            locales.add(enum.nextElement());
+            locales.add(localeEnums.nextElement());
         }
         Iterator i = locales.iterator();
         return new Enumerator(locales);

@@ -178,11 +178,11 @@ public class PHPApplicationPortlet extends GenericPortlet {
     			phpScript.setScriptName(phpParameter);
     			
     			// Get all the parameters from the request and add them as query arguments
-    			Enumeration enum = actionRequest.getParameterNames();
+    			Enumeration names = actionRequest.getParameterNames();
     			String name, value;
-    			while (enum.hasMoreElements())
+    			while (names.hasMoreElements())
     			{
-    				name = (String)enum.nextElement();
+    				name = (String)names.nextElement();
     				// ACTION_PARAMETER_PHP already processed just ignore it
     				if (name.compareToIgnoreCase(PHPParameters.ACTION_PARAMETER_PHP) != 0)
     				{

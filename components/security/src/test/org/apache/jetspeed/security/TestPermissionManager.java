@@ -486,13 +486,13 @@ public class TestPermissionManager extends AbstractSecurityTestcase
      */
     private boolean validatePermissions(Permissions permissions, Permission permission, int size)
     {
-        Enumeration enum = permissions.elements();
+        Enumeration permissionEnums = permissions.elements();
         boolean hasPermission = false;
         int count = 0;
-        while (enum.hasMoreElements())
+        while (permissionEnums.hasMoreElements())
         {
             count++;
-            Permission enumPerm = (Permission) enum.nextElement();
+            Permission enumPerm = (Permission) permissionEnums.nextElement();
             if (enumPerm.equals(permission))
             {
                 hasPermission = true;

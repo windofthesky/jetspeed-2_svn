@@ -279,9 +279,9 @@ public class LanguageImpl implements MutableLanguage, Serializable
         {
             if (bundle != null)
             {
-                for (Enumeration enum = bundle.getKeys(); enum.hasMoreElements();)
+                for (Enumeration keys = bundle.getKeys(); keys.hasMoreElements();)
                 {
-                    String key = (String) enum.nextElement();
+                    String key = (String) keys.nextElement();
                     Object value = bundle.getObject(key);
                     data.put(key, value);
                 }

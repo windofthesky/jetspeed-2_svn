@@ -243,17 +243,17 @@ public class PortletExternalContextImpl extends ExternalContext
      */
     public Iterator getRequestParameterNames()
     {
-        final Enumeration enum = this.portletRequest.getParameterNames();
+        final Enumeration names = this.portletRequest.getParameterNames();
         Iterator it = new Iterator()
         {
             public boolean hasNext()
             {
-                return enum.hasMoreElements();
+                return names.hasMoreElements();
             }
 
             public Object next()
             {
-                return enum.nextElement();
+                return names.nextElement();
             }
 
             public void remove()

@@ -179,11 +179,11 @@ public class PerlPortlet extends GenericPortlet {
     			cgi.setScriptName(perlParameter);
     			
     			// Get all the parameters from the request and add them as query arguments
-    			Enumeration enum = actionRequest.getParameterNames();
+    			Enumeration names = actionRequest.getParameterNames();
     			String name, value;
-    			while (enum.hasMoreElements())
+    			while (names.hasMoreElements())
     			{
-    				name = (String)enum.nextElement();
+    				name = (String)names.nextElement();
     				// PERL_PARAMETER already processed just ignore it
     				if (name.compareToIgnoreCase(PerlParameters.ACTION_PARAMETER_PERL) != 0)
     				{
