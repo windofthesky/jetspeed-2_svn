@@ -78,21 +78,25 @@ public class LocaleSelectorPortlet extends GenericPortlet
 
         if (language != null)
         {
+			String[] localeArray = language.split("[-|_]");
             String country = "";
             String variant = "";
-            int countryIndex = language.indexOf('_');
-            if (countryIndex > -1)
-            {
-                country = language.substring(countryIndex + 1).trim();
-                language = language.substring(0, countryIndex).trim();
-                int vDash = country.indexOf("_");
-                if (vDash > 0)
-                {
-                    String cTemp = country.substring(0, vDash);
-                    variant = country.substring(vDash + 1);
-                    country = cTemp;
-                }
-            }
+			for(int i=0; i<localeArray.length; i++)
+			{
+				if(i == 0)
+				{
+					language = localeArray[i];
+				}
+				else if(i == 1)
+				{
+					country = localeArray[i];
+				}
+				else if(i == 2)
+				{
+					variant = localeArray[i];
+				}
+			}
+            
 
             // TODO Set the prefered locale to user's persistent storage if not anon user
             Locale preferedLocale = new Locale(language, country, variant);
