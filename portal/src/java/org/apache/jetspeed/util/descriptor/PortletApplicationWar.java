@@ -53,6 +53,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This class facilitates opertions a portlet applications WAR file or WAR file-like
@@ -438,6 +441,24 @@ public class PortletApplicationWar
 
         try
         {
+            // Use the local dtd instead of remote dtd. This
+            // allows to deploy the application offline
+            builder.setEntityResolver(new EntityResolver()
+            {
+                public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId)
+                    throws SAXException, java.io.IOException
+                {
+
+                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+                    {
+                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
+                    }
+                    else
+                        return null;
+                }
+            });
+
+
             Document doc = builder.build(webXmlIn);
 
             Element root = doc.getRootElement();
@@ -541,31 +562,19 @@ public class PortletApplicationWar
         List elementsBeforeList = Arrays.asList(elementsBefore);
         toInsert.detach();
         int insertAfter = 0;  
-        boolean moreAfter = false;
         for (int i = 0; i < allChildren.size(); i++)
         {
             Element element = (Element) allChildren.get(i);
             if (elementsBeforeList.contains(element.getName()))
             {
-                insertAfter = i;
-                moreAfter = false;
-            }
-            else 
-            {
-                moreAfter = true;
+                // determine the Content index of the element to insert after
+                insertAfter = root.indexOf(element);
             }
         }
-        
+       
         try
         {
-            if ( moreAfter )
-            {
-                root.addContent((insertAfter+2), toInsert);
-            }
-            else
-            {
-                root.addContent((insertAfter+3), toInsert);
-            }
+            root.addContent((insertAfter+1), toInsert);
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
