@@ -34,7 +34,6 @@ import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 
-
 /**
  * SSOIFramePortlet
  * 
@@ -152,7 +151,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         // get the POST params -- requires HTML post params named
         // ssoUserName 
         String ssoPrincipal = request.getParameter(SSO_FORM_PRINCIPAL);
-        String ssoCredential = request.getParameter(SSO_FORM_CREDENTIAL);
+        String ssoCredential = request.getParameter(SSO_FORM_CREDENTIAL);        
         /*
         if (ssoPrincipal == null || ssoCredential == null)
         {

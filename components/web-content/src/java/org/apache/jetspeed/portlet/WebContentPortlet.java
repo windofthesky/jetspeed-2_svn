@@ -33,13 +33,16 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.jetspeed.rewriter.JetspeedRewriterController;
 import org.apache.jetspeed.rewriter.RewriterController;
 import org.apache.jetspeed.rewriter.RewriterException;
+import org.apache.jetspeed.rewriter.RulesetRewriter;
 import org.apache.jetspeed.rewriter.RulesetRewriterImpl;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.rewriter.html.SwingParserAdaptor;
+import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
 
 //standard java stuff
 import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -99,7 +102,7 @@ public class WebContentPortlet extends GenericVelocityPortlet {
    boolean isSSOEnabled = false;
    
    /* WebContent rewriter */
-   WebContentRewriter rewriter = new WebContentRewriter();
+   RulesetRewriter rewriter = null;
    RewriterController rewriteController = null;
 
     public WebContentPortlet() {
@@ -264,9 +267,16 @@ public class WebContentPortlet extends GenericVelocityPortlet {
     */
    private RewriterController getController(String contextPath) throws Exception
    {        
-       Class[] rewrtierClasses = new Class[]{WebContentRewriter.class, RulesetRewriterImpl.class};
+       Class[] rewriterClasses = new Class[]{WebContentRewriter.class, WebContentRewriter.class};
        Class[] adaptorClasses = new Class[]{SwingParserAdaptor.class, SaxParserAdaptor.class};
-       return new JetspeedRewriterController(contextPath + "conf/rewriter-rules-mapping.xml", Arrays.asList(rewrtierClasses), Arrays.asList(adaptorClasses));
+       RewriterController rwc = new JetspeedRewriterController(contextPath + "conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
+       
+       FileReader reader = new FileReader(contextPath + "conf/default-rewriter-rules.xml");
+       
+       Ruleset ruleset = rwc.loadRuleset(reader);
+       reader.close();
+       rewriter = rwc.createRewriter(ruleset);       
+       return rwc;
    }
    
    /*
