@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components.portletregistry;
-
-import java.util.Iterator;
+package org.apache.jetspeed.components.portletregistry.direct;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
 /**
  * 
@@ -36,8 +31,16 @@ import org.apache.jetspeed.components.persistence.store.Transaction;
  * @version $Id$
  *  
  */
-public class TestRegistryDirectPart1a extends AbstractRegistryTest
+public class TestRegistryDirectPart1b extends AbstractRegistryTest
 {
+    /**
+     * 
+     */
+    public TestRegistryDirectPart1b()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
     /*
      * (non-Javadoc)
      * 
@@ -61,7 +64,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
     /**
      * @param testName
      */
-    public TestRegistryDirectPart1a(String testName)
+    public TestRegistryDirectPart1b(String testName)
     {
         super(testName);
     }
@@ -69,7 +72,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRegistryDirectPart1a.class);
+        return new TestSuite(TestRegistryDirectPart1b.class);
     }
     
     public void testUpdates() throws Exception

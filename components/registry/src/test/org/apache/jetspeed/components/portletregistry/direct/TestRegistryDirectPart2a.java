@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components.portletregistry;
+package org.apache.jetspeed.components.portletregistry.direct;
 
 import java.util.Iterator;
 
@@ -21,6 +21,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -34,9 +35,17 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @version $Id$
  *  
  */
-public class TestRegistryDirectPart2 extends AbstractRegistryTest
+public class TestRegistryDirectPart2a extends AbstractRegistryTest
 {
 
+    /**
+     * 
+     */
+    public TestRegistryDirectPart2a()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
     /*
      * (non-Javadoc)
      * 
@@ -46,7 +55,14 @@ public class TestRegistryDirectPart2 extends AbstractRegistryTest
     {
         super.setUp();
         PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        try
+        {
+            new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        }
+        catch (IllegalStateException e)
+        {
+            
+        }
     }
 
     /*
@@ -73,13 +89,13 @@ public class TestRegistryDirectPart2 extends AbstractRegistryTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRegistryDirectPart2.class);
+        return new TestSuite(TestRegistryDirectPart2a.class);
     }
 
     /**
      * @param testName
      */
-    public TestRegistryDirectPart2(String testName)
+    public TestRegistryDirectPart2a(String testName)
     {
         super(testName);
     }

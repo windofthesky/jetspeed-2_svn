@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components.portletregistry;
+package org.apache.jetspeed.components.portletregistry.direct;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -22,6 +22,8 @@ import javax.portlet.PortletMode;
 
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
+import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
+import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.DublinCore;
@@ -52,11 +54,17 @@ import org.apache.pluto.om.common.PreferenceSetCtrl;
  * @version $Id$
  *  
  */
-public class TestRegistryDirect extends AbstractRegistryTest
+public class TestRegistryDirectPart1a extends AbstractRegistryTest
 {
 
-        
-
+    /**
+     *  
+     */
+    public TestRegistryDirectPart1a()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
     /*
      * (non-Javadoc)
@@ -66,12 +74,19 @@ public class TestRegistryDirect extends AbstractRegistryTest
     protected void setUp() throws Exception
     {
         super.setUp();
-        
+
         PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
-        
+        try
+        {
+            new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        }
+        catch (IllegalStateException e)
+        {
+
+        }
+
         buildTestData();
-        
+
     }
 
     /*
@@ -81,13 +96,13 @@ public class TestRegistryDirect extends AbstractRegistryTest
      */
     protected void tearDown() throws Exception
     {
-       //  super.tearDown();
+        //  super.tearDown();
     }
 
     /**
      * @param testName
      */
-    public TestRegistryDirect(String testName)
+    public TestRegistryDirectPart1a( String testName )
     {
         super(testName);
     }
@@ -96,19 +111,19 @@ public class TestRegistryDirect extends AbstractRegistryTest
      * <p>
      * buildTestData
      * </p>
-     *
+     * 
      * @throws RegistryException
      * @throws LockFailedException
      */
     private void buildTestData() throws RegistryException, LockFailedException
     {
         // Create an Application and a Web app
-        
+
         persistenceStore.getTransaction().begin();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
-        
+
         UserAttributeRef uaRef = new UserAttributeRefImpl("user-name-family", "user.name.family");
         app.addUserAttributeRef(uaRef);
 
@@ -119,7 +134,7 @@ public class TestRegistryDirect extends AbstractRegistryTest
         app.addJetspeedService(service1);
         JetspeedServiceReference service2 = new JetspeedServiceReferenceImpl("PortletRegistryComponent");
         app.addJetspeedService(service2);
-        
+
         addDublinCore(app.getMetadata());
 
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
@@ -139,14 +154,15 @@ public class TestRegistryDirect extends AbstractRegistryTest
 
         // PreferenceComposite pc = new PrefsPreference();
         app.addPortletDefinition(portlet);
-        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet(); 
-        PreferenceComposite pc =(PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]{"value 1", "value 2"}));
+        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet();
+        PreferenceComposite pc = (PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]{
+                "value 1", "value 2"}));
         pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
-        
-        assertNotNull(pc.getValueAt(0));
-       
 
-        portlet.addLanguage(registry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1", null));
+        assertNotNull(pc.getValueAt(0));
+
+        portlet.addLanguage(registry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1",
+                null));
 
         ContentTypeComposite html = new ContentTypeImpl();
         html.setContentType("html/text");
@@ -160,13 +176,12 @@ public class TestRegistryDirect extends AbstractRegistryTest
         portlet.addContentType(html);
         portlet.addContentType(wml);
 
-        
         app.setWebApplicationDefinition(webApp);
         persistenceStore.makePersistent(app);
         persistenceStore.getTransaction().commit();
     }
 
-    private void addDublinCore(GenericMetadata metadata)
+    private void addDublinCore( GenericMetadata metadata )
     {
         DublinCore dc = new DublinCoreImpl(metadata);
         dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
@@ -187,7 +202,7 @@ public class TestRegistryDirect extends AbstractRegistryTest
         dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
         dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
     }
-    
+
     public void testData() throws Exception
     {
         verifyData(false);
