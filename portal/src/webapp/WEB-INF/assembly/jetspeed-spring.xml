@@ -547,21 +547,7 @@ limitations under the License.
 			</props>
 		</property>
    </bean>
-  
-  <!-- Security: RDBMS Policy implementation for JAAS -->
-  <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" 
-  	   class="org.apache.jetspeed.security.impl.RdbmsPolicy"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>  	   
-  </bean>
-  
-  <!-- Security: Authorization Provider -->
-  <bean id="org.apache.jetspeed.security.AuthorizationProvider" 
-  	   class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>   
-  </bean>
-  
+    
   <!-- User Info -->
   <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 
   	   class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl"
