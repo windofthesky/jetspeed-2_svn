@@ -148,7 +148,7 @@ code {font-size: 10pt;}
     <th>procedure 2 (long and boring)</th>
   </tr>
   <tr> 
-    <td rowspan="5" valign="top"> 
+    <td rowspan="4" valign="top"> 
       <p><b>Build all jars and wars:</b><br>
         cd ${jetspeed-2-home}<br>
         maven allBuild</p>
@@ -171,12 +171,6 @@ code {font-size: 10pt;}
     <td><b>Build Jetspeed Portal</b><br>
       cd ${jetspeed-2-home}/portal<br>
       maven war</td>
-  </tr>
-  <tr> 
-    <td><b>Install into Catalina Shared</b><br>
-      cd ${jetspeed-2-home}<br>
-      maven catalina:base-shared<br>
-      maven catalina:shared</td>
   </tr>
 </table>
 <h2><br>
