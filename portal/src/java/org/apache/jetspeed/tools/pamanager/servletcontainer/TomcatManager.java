@@ -9,6 +9,7 @@ package org.apache.jetspeed.tools.pamanager.servletcontainer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -28,7 +29,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
  * @version $Id$
  *
  */
-public class TomcatManager 
+public class TomcatManager
 {
     private static final String DEFUALT_MANAGER_APP_PATH = "/manager";
 
@@ -43,7 +44,7 @@ public class TomcatManager
     private String removePath = managerAppPath + "/remove";
     private String deployPath = managerAppPath + "/deploy";
     private String installPath = managerAppPath + "/install";
-	private String reloadPath = managerAppPath + "/reload";
+    private String reloadPath = managerAppPath + "/reload";
     private String serverInfoPath = managerAppPath + "/serverinfo";
 
     private HttpClient client;
@@ -51,8 +52,8 @@ public class TomcatManager
     private HttpMethod start;
 
     private HttpMethod stop;
-    
-	private HttpMethod reload;
+
+    private HttpMethod reload;
 
     private HttpMethod remove;
 
@@ -94,19 +95,19 @@ public class TomcatManager
 
         // perform a test, we can use this to close a
         GetMethod test = new GetMethod(serverInfoPath);
-//        try
-//        {
-//            client.executeMethod(test);
-//        }
-//        finally
-//        {
-//            test.releaseConnection();
-//        }
+        //        try
+        //        {
+        //            client.executeMethod(test);
+        //        }
+        //        finally
+        //        {
+        //            test.releaseConnection();
+        //        }
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
         remove = new GetMethod(removePath);
         install = new GetMethod(installPath);
-		reload = new GetMethod(reloadPath);
+        reload = new GetMethod(reloadPath);
         deploy = new PutMethod(deployPath);
     }
 
@@ -139,21 +140,21 @@ public class TomcatManager
             stop.setPath(stopPath);
         }
     }
-    
-	public String reload(String appPath) throws HttpException, IOException
-	{
-		try
-		{
-			reload.setQueryString(buildPathQueryArgs(appPath));
-			client.executeMethod(reload);
-			return reload.getResponseBodyAsString();
-		}
-		finally
-		{
-			reload.recycle();
-			reload.setPath(reloadPath);
-		}
-	}
+
+    public String reload(String appPath) throws HttpException, IOException
+    {
+        try
+        {
+            reload.setQueryString(buildPathQueryArgs(appPath));
+            client.executeMethod(reload);
+            return reload.getResponseBodyAsString();
+        }
+        finally
+        {
+            reload.recycle();
+            reload.setPath(reloadPath);
+        }
+    }
 
     public String remove(String appPath) throws HttpException, IOException
     {
@@ -175,14 +176,10 @@ public class TomcatManager
     {
         try
         {
-            install.setQueryString(buildWarQueryArgs(warPath));
-            if (contexPath != null)
-            {
-                install.setQueryString(buildPathQueryArgs(contexPath));
-            }
+            install.setQueryString(buildWarQueryArgs(warPath, contexPath));
 
             client.executeMethod(install);
-            return deploy.getResponseBodyAsString();
+            return install.getResponseBodyAsString();
         }
         finally
         {
@@ -191,8 +188,6 @@ public class TomcatManager
         }
 
     }
-
-
 
     public String deploy(String appPath, InputStream is, int size) throws HttpException, IOException
     {
@@ -220,12 +215,30 @@ public class TomcatManager
 
     protected NameValuePair[] buildPathQueryArgs(String appPath)
     {
+        if (!appPath.startsWith("/"))
+        {
+            appPath = "/" + appPath;
+        }
         return new NameValuePair[] { new NameValuePair("path", appPath)};
     }
 
-    protected NameValuePair[] buildWarQueryArgs(String appPath)
+    protected NameValuePair[] buildWarQueryArgs(String warPath, String appPath) throws MalformedURLException
     {
-        return new NameValuePair[] { new NameValuePair("war", appPath)};
+        if (appPath != null)
+        {
+            if (!appPath.startsWith("/"))
+            {
+                appPath = "/" + appPath;
+            }
+            return new NameValuePair[] {
+                new NameValuePair("war", new File(warPath).toURL().toString()),
+                new NameValuePair("path", appPath)};
+        }
+        else
+        {
+            return new NameValuePair[] { new NameValuePair("war", warPath)};
+        }
+
     }
 
     /**
