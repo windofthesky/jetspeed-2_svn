@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -50,7 +52,7 @@ public class PortletAggregatorImpl implements PortletAggregator
     /* (non-Javadoc)
      * @see org.apache.jetspeed.aggregator.Aggregator#build(org.apache.jetspeed.request.RequestContext)
      */
-    public void build(RequestContext context) throws JetspeedException
+    public void build(RequestContext context) throws JetspeedException, IOException
     {
         Fragment fragment = new FragmentImpl(); // TODO: fragment factory
         fragment.setType(Fragment.PORTLET);
@@ -77,8 +79,12 @@ public class PortletAggregatorImpl implements PortletAggregator
 //        {
 //            log.debug("no decorator for portlet:" + fragment.getId());
 //        }
-
+        
+        ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
         renderer.renderNow(fragment, context);
+        dispatcher.include(fragment);
+        context.getResponse().getWriter().write(fragment.getRenderedContent());
+        
     }
     
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 

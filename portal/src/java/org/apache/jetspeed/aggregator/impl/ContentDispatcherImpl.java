@@ -17,20 +17,17 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.Hashtable;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
-import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.UnrenderedContentException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -38,10 +35,12 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * <p>The ContentDispatcher allows customer classes to retrieved
- *    rendered content for a specific fragment</p>
- *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * <p>
+ * The ContentDispatcher allows customer classes to retrieved rendered content
+ * for a specific fragment
+ * </p>
+ * 
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta </a>
  * @version $Id$
  */
 public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatcherCtrl
@@ -55,250 +54,99 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
 
     private static int debugLevel = 1;
 
-    private PortletRenderer renderer;
     
-    public ContentDispatcherImpl(boolean isParallel, PortletRenderer renderer)
-    {
-        this.renderer = renderer;
+
+    public ContentDispatcherImpl( boolean isParallel )
+    {        
         this.isParallel = isParallel;
     }
 
     /**
-     * Include in the provided PortletResponse output stream the rendered content
-     * of the request fragment.
-     * If the fragment rendered content is not yet available, the method will
-     * hold until it's completely rendered.
-     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
+     * Include in the provided PortletResponse output stream the rendered
+     * content of the request fragment. If the fragment rendered content is not
+     * yet available, the method will hold until it's completely rendered.
+     * 
+     * @throws FailedToRenderFragmentException
+     *                   if the Fragment to include could not be rendered.
+     * @throws UnrenderedContentException
      */
-    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp) throws FailedToRenderFragmentException 
+    public void include( Fragment fragment )
+            throws  UnrenderedContentException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
+        PortletContent content = (PortletContent) contents.get(oid);
+        log.debug("Including content for OID " + oid);
 
-        if ((debugLevel > 1) && log.isDebugEnabled())
-        {
-            log.debug("Including content for OID "+ oid);
-        }
-
-        // If we work synchronously, call Renderer.renderNow
         if (!isParallel)
         {
-            if ((debugLevel > 0) && log.isDebugEnabled())
-            {
-                log.debug("Synchronous rendering for OID "+ oid);
-            }
-
-            // access servlet request to determine request context in order
-            // to render inner layout fragment with appropriate request attributes
-            if (fragment.getType().equals(Fragment.LAYOUT))
-            {
-                RequestContext context = (RequestContext) req.getAttribute("org.apache.jetspeed.request.RequestContext");
-                renderer.renderNow(fragment, context);
-                return;
-            }
-            // render synchronously
-            renderer.renderNow(fragment,req,rsp);
-            return;
-        }
-
-        PortletContent content = (PortletContent)contents.get(oid);
-
-        if (content!=null)
-        {
-            synchronized (content)
-            {
-                if (!content.isComplete())
-                {
-                    if ((debugLevel > 0) && log.isDebugEnabled())
-                    {
-                        log.debug("Waiting for content OID "+oid);
-                    }
-
-                    try
-                    {
-                        content.wait();
-                    }
-                    catch (InterruptedException e)
-                    {
-                    }
-
-                    if ((debugLevel > 0) && log.isDebugEnabled())
-                    {
-                        log.debug("Been notified that OID "+oid+" is complete");
-                    }
-                }
-
-                if ((debugLevel > 1) && log.isDebugEnabled())
-                {
-                    log.debug("Content OID "+oid+": "+content.toString());
-                }
-            }
-
-            try
-            {
-                try
-                {
-                    rsp.getWriter().write(content.toString());
-                }
-                catch (IllegalStateException e)
-                {
-                    rsp.getOutputStream().print(content.toString());
-                }
-            }
-            catch (Exception e)
-            {
-                log.error("Unable to include content OID "+oid+" in response object", e);
-            }
-            finally
-            {
-                synchronized(contents)
-                {
-                    if ((debugLevel > 1) && log.isDebugEnabled())
-                    {
-                        log.debug("Removing content OID "+oid);
-                    }
-                    ((PortletContent)contents.remove(oid)).release();
-                }
-            }
+             log.debug("Synchronous rendering for OID " + oid);
+             if(content.toString().length() > 0)
+             {
+                fragment.setRenderedContent(content.toString());
+             }
         }
         else
         {
-            // should only happen when a layout tries to render an inner layout
-            // trigger a synchronous rendering of this fragment
 
-            if ((debugLevel > 1) && log.isDebugEnabled())
+            if (content != null)
             {
-                log.debug("Content is null for OID "+oid);
-            }
-
-            // access servlet request to determine request context in order
-            // to render inner layout fragment with appropriate request attributes
-            if (fragment.getType().equals(Fragment.LAYOUT))
-            {
-                RequestContext context = (RequestContext) req.getAttribute("org.apache.jetspeed.request.RequestContext");
-                renderer.renderNow(fragment, context);
-                return;
-            }
-            // render synchronously
-            renderer.renderNow(fragment,req,rsp);
-            return;
-        }
-    }
-
-    /**
-     * Include in the provided PortletResponse output stream the rendered content
-     * of the request fragment.
-     * If the fragment rendered content is not yet available, the method will
-     * hold until it's completely rendered.
-     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
-     */
-    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp) throws FailedToRenderFragmentException
-    {
-        ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-
-        if ((debugLevel > 1) && log.isDebugEnabled())
-        {
-            log.debug("Including content for OID "+ oid);
-        }
-
-        PortletContent content = (PortletContent)contents.get(oid);
-
-        if (content!=null)
-        {
-            synchronized (content)
-            {
-                if (!content.isComplete())
+                synchronized (content)
                 {
-                    if ((debugLevel > 0) && log.isDebugEnabled())
+                    if (!content.isComplete())
                     {
-                        log.debug("Waiting for content OID "+oid);
+                        log.debug("Waiting for content OID " + oid);
+                        try
+                        {
+                            content.wait();
+                        }
+                        catch (InterruptedException e)
+                        {
+                        }
+                        log.debug("Been notified that OID " + oid + " is complete");
                     }
 
-                    try
-                    {
-                        content.wait();
-                    }
-                    catch (InterruptedException e)
-                    {
-                    }
-
-                    if ((debugLevel > 0) && log.isDebugEnabled())
-                    {
-                        log.debug("Been notified that OID "+oid+" is complete");
-                    }
+                    log.debug("Content OID " + oid + ": " + content.toString());
                 }
 
-                if ((debugLevel > 1) && log.isDebugEnabled())
-                {
-                    log.debug("Content OID "+oid+": "+content.toString());
-                }
-            }
-
-            try
-            {
                 try
                 {
-                    rsp.getWriter().write(content.toString());
-                }
-                catch (IllegalStateException e)
-                {
-                    //rsp.getPortletOutputStream().print(content.toString());
-                }
-            }
-            catch (Exception e)
-            {
-                log.error("Unable to include content OID "+oid+" in response object", e);
-            }
-            finally
-            {
-                synchronized(contents)
-                {
-                    if ((debugLevel > 1) && log.isDebugEnabled())
+                    if(content.toString().length() > 0)
                     {
-                        log.debug("Removing content OID "+oid);
+                        fragment.setRenderedContent(content.toString());
                     }
-                    ((PortletContent)contents.remove(oid)).release();
+                }
+                catch (Exception e)
+                {
+                    log.error("Unable to include content OID " + oid + " in response object", e);
+                }
+                finally
+                {
+                    synchronized (contents)
+                    {
+                        log.debug("Removing content OID " + oid);
+                        ((PortletContent) contents.remove(oid)).release();
+                    }
                 }
             }
-        }
-        else
-        {
-            // should only happen when a layout tries to render an inner layout
-            // trigger a synchronous rendering of this fragment
-
-            if ((debugLevel > 1) && log.isDebugEnabled())
+            else
             {
-                log.debug("Content is null for OID "+oid);
+                throw new UnrenderedContentException("It appears that the content for fragment "+oid+" was not rendered.  "+
+                        "Please verify that your aggregagtion implementation fully renders all content.");
             }
-
-            // access servlet request to determine request context in order
-            // to render inner layout fragment with appropriate request attributes
-            if (fragment.getType().equals(Fragment.LAYOUT))
-            {
-                HttpServletRequest request = (HttpServletRequest)((HttpServletRequestWrapper)req).getRequest();
-                RequestContext context = (RequestContext) request.getAttribute("org.apache.jetspeed.request.RequestContext");
-                renderer.renderNow(fragment, context);
-                return;
-            }
-            // unwrap the RenderRequest and RenderResponse to avoid having to cascade several
-            // portlet requests/responses
-            HttpServletRequest request = (HttpServletRequest)((HttpServletRequestWrapper)req).getRequest();
-            HttpServletResponse response = (HttpServletResponse)((HttpServletResponseWrapper)rsp).getResponse();
-            renderer.renderNow(fragment,request,response);
-            return;
         }
     }
 
-    public void notify(ObjectID oid)
+    public void notify( ObjectID oid )
     {
-        PortletContent content = (PortletContent)contents.get(oid);
+        PortletContent content = (PortletContent) contents.get(oid);
 
-        if (content!=null)
+        if (content != null)
         {
             synchronized (content)
             {
                 if ((debugLevel > 0) && log.isDebugEnabled())
                 {
-                    log.debug("Notifying complete OID "+oid);
+                    log.debug("Notifying complete OID " + oid);
                 }
                 content.setComplete(true);
                 content.notifyAll();
@@ -306,16 +154,39 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
         }
     }
 
-    public HttpServletResponse getResponseForWindow(PortletWindow window, RequestContext request)
+    public HttpServletResponse getResponseForWindow( PortletWindow window, RequestContext request )
     {
         PortletContent myContent = new PortletContent();
 
+        return getResponseForId(request, myContent, window.getId());
+    }
+    
+    public HttpServletResponse getResponseForFragment( Fragment fragment, RequestContext request )
+    {
+        PortletContent myContent = new PortletContent();
+        ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
+        
+        return getResponseForId(request, myContent, oid);
+    }
+
+    /**
+     * <p>
+     * getResponseForId
+     * </p>
+     *
+     * @param request
+     * @param myContent
+     * @param oid
+     * @return
+     */
+    protected HttpServletResponse getResponseForId( RequestContext request, PortletContent myContent, ObjectID oid )
+    {
         synchronized (contents)
         {
-            contents.put(window.getId(), myContent);
+            contents.put(oid, myContent);
         }
 
-        return new HttpBufferedResponse(request.getResponse(),myContent.getWriter());
+        return new HttpBufferedResponse(request.getResponse(), myContent.getWriter());
     }
 
     protected class PortletContent
@@ -351,7 +222,7 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
             return cw.toString();
         }
 
-        public void writeTo(java.io.Writer out) throws java.io.IOException
+        public void writeTo( java.io.Writer out ) throws java.io.IOException
         {
             writer.flush();
             cw.writeTo(out);
@@ -368,29 +239,30 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
             return complete;
         }
 
-        void setComplete(boolean state)
+        void setComplete( boolean state )
         {
             this.complete = state;
         }
     }
-    
-    /* 
+
+    /*
      * Sequentially wait on content generation
+     * 
      * @see org.apache.jetspeed.aggregator.ContentDispatcher#sync(org.apache.jetspeed.om.page.Fragment)
      */
-    public void sync(Fragment fragment)
+    public void sync( Fragment fragment )
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
 
-        PortletContent content = (PortletContent)contents.get(oid);
-        
+        PortletContent content = (PortletContent) contents.get(oid);
+
         synchronized (content)
         {
             if (!content.isComplete())
             {
                 if ((debugLevel > 0) && log.isDebugEnabled())
                 {
-                    log.debug("Waiting for content OID "+oid);
+                    log.debug("Waiting for content OID " + oid);
                 }
 
                 try
@@ -403,16 +275,16 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
 
                 if ((debugLevel > 0) && log.isDebugEnabled())
                 {
-                    log.debug("Been notified that OID "+oid+" is complete");
+                    log.debug("Been notified that OID " + oid + " is complete");
                 }
             }
 
             if ((debugLevel > 1) && log.isDebugEnabled())
             {
-                log.debug("Content OID "+oid+": "+content.toString());
+                log.debug("Content OID " + oid + ": " + content.toString());
             }
         }
-        
+
     }
-    
+
 }

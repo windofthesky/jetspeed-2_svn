@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * When no work is available, the worker simply sets itself in a waiting mode
  * pending reactivation by the WorkerMonitor
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta</a>
  * @version $Id$
  */
 public class Worker extends Thread

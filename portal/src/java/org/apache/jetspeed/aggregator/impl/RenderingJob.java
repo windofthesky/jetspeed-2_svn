@@ -23,7 +23,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.UnrenderedContentException;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -32,7 +37,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * asynchronous portlet rendering as well as implementing the rendering logic
  * in its Runnable method.
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta</a>
  * @version $Id$
  */
 public class RenderingJob implements Runnable
@@ -44,57 +49,23 @@ public class RenderingJob implements Runnable
     private PortletWindow window = null;
     private HttpServletRequest request = null;
     private HttpServletResponse response = null;
-    private ContentDispatcherCtrl dispatcher = null;
+    private ContentDispatcherCtrl dispatcherCtrl = null;
+    private ContentDispatcher dispatcher = null;
     private PortletContainer container = null;
-
-    public void setWindow(PortletWindow window)
-    {
-        this.window = window;
-    }
-
-    public PortletWindow getWindow()
-    {
-        return this.window;
-    }
-
-    public void setRequest(HttpServletRequest request)
-    {
-        this.request = request;
-    }
-
-    public HttpServletRequest getRequest()
-    {
-        return this.request;
-    }
-
-    public void setResponse(HttpServletResponse response)
-    {
-        this.response = response;
-    }
-
-    public HttpServletResponse getResponse()
-    {
-        return this.response;
-    }
-
-    public void setDispatcher(ContentDispatcherCtrl dispatcher)
-    {
-        this.dispatcher = dispatcher;
-    }
-
-    public ContentDispatcherCtrl getDispatcher()
-    {
-        return this.dispatcher;
-    }
-
-    public void setContainer(PortletContainer container)
+    private Fragment fragment = null;
+    private RequestContext requestContext = null;
+    
+    public RenderingJob(PortletContainer container, ContentDispatcher dispatcher, Fragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
     {
         this.container = container;
-    }
-
-    public PortletContainer getContainer()
-    {
-        return this.container;
+        this.dispatcher = dispatcher;
+        this.dispatcherCtrl = (ContentDispatcherCtrl) dispatcher;
+        this.fragment = fragment;
+        this.request = request;
+        this.response = response;
+        this.requestContext = requestContext; 
+        this.window = window;
+        
     }
 
     /**
@@ -102,13 +73,40 @@ public class RenderingJob implements Runnable
      * the WorkerMonitor. When done, pause until next scheduled scan.
      */
     public void run()
+    {       
+        try
+        {
+            execute();
+            dispatcher.include(fragment);                   
+        }
+        catch (UnrenderedContentException e)
+        {
+            log.error("Failed to include fragment: "+e.toString(), e);
+        }
+        finally
+        {
+            log.debug("Notifying dispatcher OID "+this.window.getId());
+            dispatcherCtrl.notify(this.window.getId());
+        }
+    }
+    
+    /**
+     * <p>
+     * execute
+     * </p>
+     *
+     * 
+     */
+    protected void execute()
     {
         try
         {
-            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
-            container.renderPortlet(this.window, this.request, this.response);
-            log.debug("Notifying dispatcher OID "+this.window.getId());
-          
+            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);            
+            this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
+            this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
+            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+            this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
+            container.renderPortlet(this.window, this.request, this.response);     
         }
         catch (Throwable t)
         {
@@ -116,7 +114,7 @@ public class RenderingJob implements Runnable
             log.error("Error rendering portlet OID " + this.window.getId(), t);
 			try
             {
-                t.printStackTrace(this.response.getWriter());
+                t.printStackTrace(dispatcherCtrl.getResponseForWindow(this.window, this.requestContext).getWriter());
             }
             catch (IOException e)
             {
@@ -127,13 +125,25 @@ public class RenderingJob implements Runnable
         {
 			try
             {            	
-                this.response.flushBuffer();
-                dispatcher.notify(this.window.getId());
+                this.response.flushBuffer();                       
             }
             catch (Exception e)
             {
                 log.error("Error flushing response buffer: "+e.toString(), e);
             }
         }
+    }
+
+    /**
+     * 
+     * <p>
+     * getWindow
+     * </p>
+     *
+     * @return The window this job is in charge of rendering
+     */
+    public PortletWindow getWindow()
+    {
+        return window;
     }
 }
