@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.sso;
 
-import java.io.InputStream;
-
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -25,9 +23,7 @@ import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.HttpAuthenticator;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

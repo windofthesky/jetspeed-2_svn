@@ -16,7 +16,6 @@
 package org.apache.jetspeed.demo.servlet;
 
 import java.io.IOException;
-import java.security.Principal;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

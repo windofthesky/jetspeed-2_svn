@@ -16,7 +16,6 @@
 package org.apache.jetspeed.velocity;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -52,7 +51,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.Constants;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.exception.ResourceNotFoundException;
