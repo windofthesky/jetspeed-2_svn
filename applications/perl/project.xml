@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id$
+-->
+<project>
+  <extend>${basedir}/./../project.xml</extend>
+  <id>perl</id>
+  <currentVersion>2.0-a1-dev</currentVersion>
+  <name>Jetspeed-2 perl Portlet Application</name>
+  <description>perl Portlet</description>
+  <shortDescription>perl Portlets</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/perl</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/perl/</url>
+  </repository>
+
+  <dependencies>
+    <dependency>
+      <id>portlet-api</id>
+      <groupId>portlet-api</groupId>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jstl</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>taglibs:standard</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>taglibs:request</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties> 
+    </dependency>
+    <dependency>
+      <id>jetspeed-commons</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <!-- warred jars -->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.6.1</version>
+      <url>http://jakarta.apache.org/commons/beanutils.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>2.1</version>
+      <url>http://jakarta.apache.org/commons/collections.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.5</version>
+      <url>http://jakarta.apache.org/commons/digester.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.0</version>
+      <url>http://jakarta.apache.org/commons/fileupload/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.0</version>
+      <url>http://jakarta.apache.org/commons/lang.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.1.2</version>
+      <url>http://jakarta.apache.org/commons/validator/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.7</version>
+      <url>http://jakarta.apache.org/oro/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+   </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+  </build>
+
+  <reports>
+    <report>maven-jdepend-plugin</report>
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
+</project>
