@@ -1,4 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+
+
 <%
 	if(request.getParameter("setTheme") != null)
 	{
@@ -8,8 +11,11 @@
 <html>
   <head>
     <title>Test content</title>
+    <script language="JavaScript1.2" type="text/javascript" src="content/theme/script/test.js"></script>
   </head>
-  <body>
+  <body onLoad="Hello();">
+   <h1 id="target">
+   </h1>
    <p>
    	 This is a normal, static image: <img src="images/myimage.gif" align="middle"/>
    </p>
@@ -23,5 +29,6 @@
      <br />
       <a href="index.jsp?setTheme=blue">Set theme to Blue</a>
    </p>
+   <iframe src="content/theme/page.html" width="300" height="300" />
   </body>
  </html>  
