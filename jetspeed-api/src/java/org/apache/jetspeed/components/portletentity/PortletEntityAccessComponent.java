@@ -16,6 +16,7 @@
 package org.apache.jetspeed.components.portletentity;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -31,18 +32,108 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public interface PortletEntityAccessComponent
 {
+    /**
+     * 
+     * <p>
+     * getPortletEntity
+     * </p>
+     *
+     * @param id
+     * @return
+     */
 	MutablePortletEntity getPortletEntity(ObjectID id);
-
-
-//	MutablePortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
+    
+	/**
+	 * 
+	 * <p>
+	 * generateEntityFromFragment
+	 * </p>
+	 *
+	 * @param fragment
+	 * @param principal
+	 * @return
+	 * @throws PortletEntityNotGeneratedException
+	 */
+	MutablePortletEntity generateEntityFromFragment(Fragment fragment, String principal) throws PortletEntityNotGeneratedException;
+	
+	/**
+	 * 
+	 * <p>
+	 * generateEntityFromFragment
+	 * </p>
+	 *
+	 * @param fragment
+	 * @return
+	 * @throws PortletEntityNotGeneratedException
+	 */
+	MutablePortletEntity generateEntityFromFragment(Fragment fragment) throws PortletEntityNotGeneratedException;
        
+	/**
+	 * 
+	 * <p>
+	 * generateEntityKey
+	 * </p>
+	 *
+	 * @param fragment
+	 * @param principal
+	 * @return
+	 */
+	ObjectID generateEntityKey(Fragment fragment, String principal);
 
+	/**
+	 * 
+	 * <p>
+	 * newPortletEntityInstance
+	 * </p>
+	 *
+	 * @param portletDefinition
+	 * @return
+	 */
 	MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
-
-
+	
+	/**
+	 * 
+	 * <p>
+	 * getPortletEntityForFragment
+	 * </p>
+	 *
+	 * @param fragment
+	 * @param principal
+	 * @return
+	 */
+	MutablePortletEntity getPortletEntityForFragment(Fragment fragment, String principal);
+	
+	/**
+	 * 
+	 * <p>
+	 * getPortletEntityForFragment
+	 * </p>
+	 *
+	 * @param fragment
+	 * @return
+	 */
+	MutablePortletEntity getPortletEntityForFragment(Fragment fragment);
+    
+	/**
+	 * 
+	 * <p>
+	 * removePortletEntity
+	 * </p>
+	 *
+	 * @param portletEntity
+	 * @throws PortletEntityNotDeletedException
+	 */
 	void removePortletEntity(PortletEntity portletEntity) throws PortletEntityNotDeletedException;
 
-
+    /**
+     * 
+     * <p>
+     * storePortletEntity
+     * </p>
+     *
+     * @param portletEntity
+     * @throws PortletEntityNotStoredException
+     */
 	void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException;
 
 }
