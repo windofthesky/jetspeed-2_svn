@@ -389,7 +389,7 @@ limitations under the License.
         </fileset>
     </copy>
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}/">
-      <fileset dir="${maven.war.src}">
+      <fileset dir="./src/webapp">
          <exclude name="WEB-INF/db/**"/>
       </fileset>
     </copy>
