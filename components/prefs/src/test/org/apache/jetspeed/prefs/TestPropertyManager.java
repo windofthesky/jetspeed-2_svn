@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.naming.NameAlreadyBoundException;
-
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
