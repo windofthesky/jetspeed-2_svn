@@ -36,7 +36,7 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  * @version $Id$
  * @task Remove this class when the container/engine retain preferences
  */
-public class PickANumberServlet extends GenericServletPortlet
+public class PickANumberPortlet extends GenericServletPortlet
 {
     /**
      * Default action page when preference does not exist
@@ -102,7 +102,7 @@ public class PickANumberServlet extends GenericServletPortlet
     /**
      * Set default page values when class is created
      */
-    public PickANumberServlet()
+    public PickANumberPortlet()
     {
         setDefaultActionPage(DEFAULT_ACTION_PAGE);
         setDefaultCustomPage(DEFAULT_CUSTOM_PAGE);

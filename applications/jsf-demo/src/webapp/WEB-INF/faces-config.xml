@@ -123,6 +123,28 @@ limitations under the License.
     </navigation-case>
   </navigation-rule>
 
+	<navigation-rule>
+        <from-view-id>/WEB-INF/view/calendar-view.jsp</from-view-id> 
+		<navigation-case>
+			<from-outcome>editNotes</from-outcome>
+            <to-view-id>/WEB-INF/view/calendar-notes.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+        <from-view-id>/WEB-INF/view/calendar-notes.jsp</from-view-id> 
+		<navigation-case>
+			<from-outcome>returnFromNotes</from-outcome>
+            <to-view-id>/WEB-INF/view/calendar-view.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	
+    <managed-bean>
+        <managed-bean-name>calendar</managed-bean-name>
+        <managed-bean-class>org.apache.portals.applications.desktop.calendar.CalendarBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
   <managed-bean>
     <description>
       The "backing file" bean that backs up the guessNumber webapp

@@ -40,4 +40,39 @@ limitations under the License.
             <short-title>guessNumber</short-title>
         </portlet-info>
     </portlet>
+	
+   <portlet>
+        <description>Calendar Portlet</description>		
+        <portlet-name>CalendarPortlet</portlet-name>		
+        <display-name>Calendar</display-name>		
+        <portlet-class>org.apache.portals.bridges.myfaces.FacesPortlet</portlet-class>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/view/calendar-view.jsp</value>
+        </init-param>
+        <init-param>
+            <name>HelpPage</name>
+            <value>/WEB-INF/view/calendar-help.html</value>
+        </init-param>
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/view/calendar-edit.jsp</value>
+        </init-param>
+        <expiration-cache>-1</expiration-cache>		        
+        <supports>
+			<mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+		</supports>
+        <supported-locale>en</supported-locale>        
+        <supported-locale>de</supported-locale>
+	    <resource-bundle>org.apache.portals.applications.desktop.resources.Calendar</resource-bundle>            
+		<portlet-info>
+            <title>Calendar</title>
+            <short-title>Calendar</short-title>
+			<keywords>calendar,desktop</keywords>
+        </portlet-info>
+	</portlet>
+	
 </portlet-app>

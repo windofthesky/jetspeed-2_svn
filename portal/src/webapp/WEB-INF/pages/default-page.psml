@@ -28,7 +28,7 @@ limitations under the License.
   </metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="dp-3" type="portlet" name="localeselector::LocaleSelector">
+    <fragment id="dp-3" type="portlet" name="pam::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
@@ -47,11 +47,15 @@ limitations under the License.
     <fragment id="dp-9" type="portlet" name="demo::IFramePortlet">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
-    </fragment>	
+    </fragment>
     <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="1" />
-    </fragment>	
+    </fragment>
+    <fragment id="dp-18" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
   </fragment>
 
   <!-- allow all users to view -->

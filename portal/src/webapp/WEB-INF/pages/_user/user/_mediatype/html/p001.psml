@@ -22,7 +22,7 @@ limitations under the License.
   />
   <title>[USER 001] PSML Page</title>
   <fragment id="u1-xx1" type="layout" name="jetspeed::TwoColumns">
-    <fragment id="u1-xx3" type="portlet" name="demo::HelloPortlet">
+    <fragment id="u1-xx3" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>

@@ -29,6 +29,12 @@ limitations under the License.
         <dc:creator>J2 Team</dc:creator>
     </portlet>
 
+    <portlet>
+        <portlet-name>LocaleSelectorPortlet</portlet-name>
+        <dc:title>Locale Selector Portlet</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+    </portlet>
+
 	<js:services>
 	    <js:service name='SearchComponent'/>
 		<js:service name='PortletRegistryComponent'/>

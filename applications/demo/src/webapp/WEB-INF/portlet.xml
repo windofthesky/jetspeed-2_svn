@@ -15,7 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <portlet-app id="demo" version="1.0">
-  <portlet id="HelloPortlet">
+
+<portlet id="HelloPortlet">
     <init-param>
       <description>test init param</description>
       <name>hello</name>
@@ -42,6 +43,62 @@ limitations under the License.
     </portlet-info>
   </portlet>
   
+  <user-attribute>
+	<description>User Given Name</description>
+	<name>user.name.given</name>
+  </user-attribute>
+  <user-attribute>
+	<description>User Last Name</description>
+	<name>user.name.family</name>
+  </user-attribute>
+  <user-attribute>
+	<description>User eMail</description>
+	<name>user.home-info.online.email</name>
+  </user-attribute>
+  
+  <portlet>
+    <description>Bookmark Portlet</description>
+    <portlet-name>BookmarkPortlet</portlet-name>
+    <display-name>Bookmark Portlet</display-name>
+    <portlet-class>org.apache.portals.applications.desktop.BookmarkPortlet</portlet-class>
+    <init-param>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/bookmark-view.jsp</value>
+     </init-param>   
+    <init-param>
+		<name>EditPage</name>
+			<value>/WEB-INF/view/bookmark-edit.jsp</value>
+     </init-param>   
+    <init-param>
+		<name>HelpPage</name>
+			<value>/WEB-INF/view/bookmark-help.jsp</value>
+     </init-param>   
+    <expiration-cache>0</expiration-cache>            
+    <supports>
+      <mime-type>text/html</mime-type>                
+      <portlet-mode>VIEW</portlet-mode>                
+      <portlet-mode>EDIT</portlet-mode>                
+      <portlet-mode>HELP</portlet-mode>                
+    </supports>                                
+    <supported-locale>en</supported-locale>                
+    <supported-locale>de</supported-locale>            
+    <resource-bundle>org.apache.portals.applications.desktop.resources.Bookmark</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>Jetspeed-2 Site</name>                    
+        <value>http://portals.apache.org/jetspeed-2/</value>    
+      </preference>                               		
+      <preference>                            
+        <name>Bluesunrise Site</name>                    
+        <value>http://www.bluesunrise.com/</value>    
+      </preference>                               
+      <preference>                            
+        <name>Apache Home</name>                    
+        <value>http://www.apache.org/</value>    
+      </preference>                               	  
+    </portlet-preferences>        
+  </portlet>
+	  
   <portlet id="PreferencePortlet">
     <portlet-name>PreferencePortlet</portlet-name>
     <display-name>PreferencePortlet</display-name>
@@ -110,7 +167,7 @@ limitations under the License.
     </init-param>              
     <portlet-name>PickANumberPortlet</portlet-name>
     <display-name>Pick a number game</display-name>
-    <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
+    <portlet-class>org.apache.jetspeed.demo.simple.PickANumberPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>

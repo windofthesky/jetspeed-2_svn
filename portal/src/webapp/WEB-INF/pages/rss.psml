@@ -26,6 +26,13 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-
   </fragment>
+  <!-- allow all users to view -->
+  <security-constraints>
+    <security-constraint>
+      <users>*</users>
+      <permissions>view, edit</permissions>
+    </security-constraint>
+  </security-constraints>
+  
 </page>

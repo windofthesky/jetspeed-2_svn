@@ -21,13 +21,16 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   
-   <title>JSF Guess Number Portlet</title>
+   <title>JSF Demo</title>
   <fragment id="jsfportletspage" type="layout" name="jetspeed::VelocityTwoColumns">
      <fragment id="jsfGuessNumber1" type="portlet" name="jsf-demo::guessNumber">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
-     </fragment>                                                            
-    
+     </fragment>
+     <fragment id="jsfCalendar" type="portlet" name="jsf-demo::CalendarPortlet">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+     </fragment>                                                            	                                                                 
   </fragment>
   <metadata name="title" xml:lang="ja">
         JSF 数当てポートレット
