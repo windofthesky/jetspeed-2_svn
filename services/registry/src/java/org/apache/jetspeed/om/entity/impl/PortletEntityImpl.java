@@ -250,6 +250,10 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
      */
     public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
     {
+    	if(originalPreferences == null)
+    	{
+			originalPreferences = new PreferenceSetImpl();
+    	}
         ((Collection) originalPreferences).addAll((Collection) preferences);
     }
 
