@@ -102,6 +102,9 @@ limitations under the License.
 				<th><fmt:message key="pam.details.name"/></th>
 				<th><fmt:message key="pam.details.value"/></th>
 			</tr>
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</td>
 		<c:forEach var="pref" items="${prefIter}">
 			<tr>
 				<td>
@@ -174,7 +177,12 @@ limitations under the License.
 <c:if test="${selectedPortletTab.id == 'pd_languages'}">
 	<c:set var="langSet" value="${selectedPDef.languageSet}"/>
 	
-	<table>
+	<portlet:actionURL var="edit_language_link" >
+    </portlet:actionURL>
+	
+	<form action="<c:out value="${edit_language_link}"/>">
+		<input type="hidden" name="portlet_action" value=""/>
+	<table border="1">
 		<tr>
 			<th>&nbsp;</th>
 			<th><fmt:message key="pam.details.title"/></th>
@@ -186,23 +194,27 @@ limitations under the License.
 		<tr>
 			<td>
 				<input type="checkbox" name="language_remove_id" value="<c:out value="${status.index}"/>"/>
+				<input type="hidden" name="language_edit_id" value="<c:out value="${status.index}"/>"/>
 			</td>
 			<td>
-				<c:out value="${lang.title}"/>
+				<input type="text" name="title:<c:out value="${status.index}"/>" value="<c:out value="${lang.title}"/>"/>
 			</td>
 			<td>
-				<c:out value="${lang.shortTitle}"/>
+				<input type="text" name="short_title:<c:out value="${status.index}"/>" value="<c:out value="${lang.shortTitle}"/>"/>
 			</td>
 			<td>
 				<table>
-				<c:forEach var="keyword" items="${lang.keywords}">
+				<c:forEach var="keyword" items="${lang.keywords}" varStatus="keywordStatus">
 					<tr>
 						<td>
-							<c:out value="${keyword}"/>
+							<input type="text" name="keyword:<c:out value="${status.index}"/>:<c:out value="${keywordStatus.index}"/>" value="<c:out value="${keyword}"/>"/>
 						</td>
 					</tr>
 				</c:forEach>
 				</table>
+				<%--
+				<input type="text" name="keyword:<c:out value="${status.index}"/>" value="<c:forEach var="keyword" items="${lang.keywords}" varStatus="keywordStatus"><c:out value="${keyword}"/>,</c:forEach>"/>
+				--%>
 			</td>
 			<td>
 				<c:out value="${lang.locale}"/>
@@ -210,6 +222,51 @@ limitations under the License.
 		</tr>
 	</c:forEach>
 	</table>
+	
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet.edit_language'"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_language'"/>
+	</form>
+	
+	<form action="<c:out value="${edit_language_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.add_language"/>
+		
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.title"/>
+				</td>
+				<td>
+					<input type="text" name="title" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.short_title"/>
+				</td>
+				<td>
+					<input type="text" name="short_title" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.keyword"/>
+				</td>
+				<td>
+					<input type="text" name="keyword" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.locale"/>
+				</td>
+				<td>
+					<input type="text" name="locale" value=""/>
+				</td>
+			</tr>
+		</table>
+		
+		<input type="submit" value="<fmt:message key="pam.details.add_language"/>"/>
+	</form>
 </c:if>
 
 <c:if test="${selectedPortletTab.id == 'pd_parameters'}">

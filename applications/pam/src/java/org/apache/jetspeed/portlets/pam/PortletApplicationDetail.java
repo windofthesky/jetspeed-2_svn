@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -35,12 +36,13 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
-import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -205,6 +207,10 @@ public class PortletApplicationDetail extends ServletPortlet
                 else if(action.endsWith("preference"))
                 {
                     processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
+                }
+                else if(action.endsWith("language"))
+                {
+                    processLanguage(actionRequest, actionResponse, pa, pdef, action);
                 }
             }
         }
@@ -469,5 +475,122 @@ public class PortletApplicationDetail extends ServletPortlet
             
             registry.getPersistenceStore().getTransaction().commit();
         }
+    }
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param pdef
+     * @param action
+     */
+    private void processLanguage(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    {
+         if(action.equals("add_language"))
+         {
+             registry.getPersistenceStore().getTransaction().begin();
+
+             String title = actionRequest.getParameter("title");
+             String shortTitle = actionRequest.getParameter("short_title");
+             String keywords = actionRequest.getParameter("keyword");
+             String locale = actionRequest.getParameter("locale");
+
+             LanguageImpl language = new LanguageImpl();
+             language.setTitle(title);
+             language.setShortTitle(shortTitle);
+             language.setKeywords(keywords);
+             language.setLocale(new Locale(locale));
+             portlet.addLanguage(language);
+
+             registry.getPersistenceStore().getTransaction().commit();
+         }
+         else if(action.equals("remove_language"))
+         {
+             String[] removeIds = actionRequest.getParameterValues("language_remove_id");
+
+             if(removeIds != null)
+             {
+                 registry.getPersistenceStore().getTransaction().begin();
+
+                 int id = 0;
+                 Iterator langIter = portlet.getLanguageSet().iterator();
+                 while (langIter.hasNext())
+                 {
+                     langIter.next();
+
+                     int currentId = id++;
+                     for(int i=0; i<removeIds.length; i++)
+                     {
+                         String removeId = removeIds[i];
+                         String tempId = "" + currentId;
+                         if(removeId.equals(tempId))
+                         {
+                             langIter.remove();
+                             break;
+                         }
+                     }
+                 }
+
+                 registry.getPersistenceStore().getTransaction().commit();
+	         }
+         }
+         else if(action.equals("edit_language"))
+         {
+             String[] editIds = actionRequest.getParameterValues("language_edit_id");
+
+             if(editIds != null)
+             {
+                 registry.getPersistenceStore().getTransaction().begin();
+
+                 //technically, the size and set of edit ids should be 
+                 //equal to the size and set of the language set
+
+                 int id = 0;
+                 Iterator langIter = portlet.getLanguageSet().iterator();
+                 while (langIter.hasNext())
+                 {
+                     String title = actionRequest.getParameter("title:" + id);
+                     String shortTitle = actionRequest.getParameter("short_title:" + id);
+
+                     //must cast to interface to avoid class loader issues
+                     MutableLanguage lang = (MutableLanguage) langIter.next();
+
+                     if(!lang.getTitle().equals(title))
+                     {
+                         lang.setTitle(title);
+                     }
+
+                     //TODO:  is there a better way to do this?
+                     //setting the keywords like this will cause all the old keywords
+                     //to be delted from the db and re-inserted
+                     
+                     Iterator keywordIter = lang.getKeywords();
+                     int keywordIndex = 0;
+                     ArrayList keywordList = new ArrayList();
+                     
+                     while (keywordIter.hasNext())
+                     {
+                         String keyword = (String) keywordIter.next();
+                         String keywordParam = actionRequest.getParameter("keyword:" + id + ":" + keywordIndex);
+
+                         if(keywordParam != null && keywordParam.length() > 0)
+                         {
+                             keywordList.add(keywordParam);
+                         }
+
+                         keywordIndex++;
+                     }
+
+                     lang.setKeywords(keywordList);
+                     
+                     if(!lang.getShortTitle().equals(shortTitle))
+                     {
+                         lang.setShortTitle(shortTitle);
+                     }
+
+                     registry.getPersistenceStore().getTransaction().commit();
+                 }
+             }
+         }
     }
 }
