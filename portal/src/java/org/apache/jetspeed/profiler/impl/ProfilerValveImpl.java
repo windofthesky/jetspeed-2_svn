@@ -73,23 +73,30 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             // get profiler locators for request subject/principal using the profiler
             Subject subject = request.getSubject();
             if (subject == null)
+            {
                 throw new ProfilerException("Missing subject for request: " + request.getPath());
+            }
             Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
             if (principal == null)
+            {
                 throw new ProfilerException("Missing principal for request: " + request.getPath());
-            String [] locatorNames = profiler.getLocatorNamesForPrincipal(principal);
-            if ((locatorNames == null) || (locatorNames.length == 0))
-                locatorNames = new String[]{ProfileLocator.PAGE_LOCATOR};
-            Map locators = (Map) new HashMap(16);
-            for (int i = 0; (i < locatorNames.length); i++)
-                locators.put(locatorNames[i], profiler.getProfile(request,locatorNames[i]));
+            }
 
+            // get all locators for the current user
+            Map locators = profiler.getProfileLocators(request, principal);
+            if (locators.size() == 0)
+            {
+                locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
+            }
+            
             // get profiled page context using the profiler and page manager
             ProfiledPageContext profiledPageContext = profiler.createProfiledPageContext(locators);
             pageManager.computeProfiledPageContext(profiledPageContext);
             if (profiledPageContext.getPage() == null)
+            {
                 throw new NodeNotFoundException("Unable to profile request: " + request.getPath());
-
+            }
+            
             // set request page and profile locator
             request.setPage(profiledPageContext.getPage());
             request.setProfileLocators(profiledPageContext.getLocators());
