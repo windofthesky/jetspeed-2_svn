@@ -54,21 +54,21 @@
 package org.apache.jetspeed.om.entity.impl;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
-import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
-import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.jetspeed.entity.PortletEntityNotStoredException;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.preference.impl.AbstractPreference;
+import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
+import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerAware;
-import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
@@ -86,8 +86,11 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, PersistenceBrokerAware
+public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
 {
+
+    private long id;
+    private long portletId;
 
     private JetspeedObjectID oid;
 
@@ -103,8 +106,11 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
 
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
-    protected PreferenceSetComposite preferences = new PreferenceSetImpl();
-    protected PreferenceSetComposite originalPreferences;
+    protected PreferenceSetImpl mutatingPreferencesWrapper = new PreferenceSetImpl();
+
+    protected List originalPreferences;
+
+    protected List mutatingPreferences;
 
     private PortletApplicationEntity applicationEntity = null;
 
@@ -116,7 +122,36 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
 
     public PreferenceSet getPreferenceSet()
     {
-        return preferences;
+        if (mutatingPreferences == null)
+        {
+            if (originalPreferences == null)
+            {
+                originalPreferences = new ArrayList();
+                mutatingPreferences = new ArrayList();
+            }
+            else
+            {
+                initMutatingPreferences();
+            }
+
+        }
+        mutatingPreferencesWrapper.setInnerCollection(mutatingPreferences);
+        return mutatingPreferencesWrapper;
+    }
+
+    protected void initMutatingPreferences()
+    {
+        mutatingPreferences = new ArrayList(originalPreferences.size());
+        if (originalPreferences != null)
+        {
+
+            Iterator itr = originalPreferences.iterator();
+            while (itr.hasNext())
+            {
+                AbstractPreference pref = (AbstractPreference) itr.next();
+                mutatingPreferences.add(pref.clone());
+            }
+        }
     }
 
     public PortletDefinition getPortletDefinition()
@@ -138,22 +173,60 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
     {
         try
         {
+
+            if (mutatingPreferences != null && mutatingPreferences.size() > 0)
+            {
+                boolean originalPrefsExist = true;
+                if (originalPreferences == null)
+                {
+                    originalPreferences = new ArrayList(mutatingPreferences.size());
+                    originalPrefsExist = false;
+                }
+
+                try
+                {
+                    for (int i = 0; i < mutatingPreferences.size(); i++)
+                    {
+                        AbstractPreference pref = (AbstractPreference) mutatingPreferences.get(i);
+                        if (originalPrefsExist)
+                        {
+                            AbstractPreference orgPref = (AbstractPreference) originalPreferences.get(i);
+                            if (orgPref != null)
+                            {
+                                BeanUtils.copyProperties(orgPref, pref);
+                            }
+                            else
+                            {
+                                originalPreferences.add(pref.clone());
+                            }
+
+                        }
+                        else
+                        {
+                            originalPreferences.add(pref.clone());
+                        }
+
+                    }
+                }
+                catch (Exception e1)
+                {
+                    throw new IOException("Unable to map mutated preferences into the originals: " + e1.toString());
+                }
+
+            }
+
             PortletEntityAccess.storePortletEntity(this);
         }
         catch (PortletEntityNotStoredException e)
         {
-            throw new IOException("Unable to store Portlet Entity. "+e.toString());
+            throw new IOException("Unable to store Portlet Entity. " + e.toString());
         }
 
     }
 
     public void reset() throws java.io.IOException
     {
-        ((Collection) preferences).clear();
-        if (originalPreferences != null)
-        {
-            ((Collection) preferences).addAll((Collection) originalPreferences);
-        }
+        initMutatingPreferences();
     }
 
     // internal methods used for debugging purposes only
@@ -207,113 +280,6 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
     public void setPortletDefinition(PortletDefinition composite)
     {
         portletDefinition = (PortletDefinitionComposite) composite;
-    }
-
-    /** 
-     * <p>
-     * afterDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-       
-
-    }
-
-    /** 
-     * <p>
-     * afterInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-       
-
-    }
-
-    /** 
-     * <p>
-     * afterLookup
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-    	if(originalPreferences == null)
-    	{
-			originalPreferences = new PreferenceSetImpl();
-    	}
-        ((Collection) originalPreferences).addAll((Collection) preferences);
-    }
-
-    /** 
-     * <p>
-     * afterUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        
-
-    }
-
-    /** 
-     * <p>
-     * beforeDelete
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-        
-
-    }
-
-    /** 
-     * <p>
-     * beforeInsert
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-       
-
-    }
-
-    /** 
-     * <p>
-     * beforeUpdate
-     * </p>
-     * 
-     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
-     * @param arg0
-     * @throws org.apache.ojb.broker.PersistenceBrokerException
-     */
-    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
-    {
-      
     }
 
 }
