@@ -16,6 +16,7 @@
 package org.apache.jetspeed.velocity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -246,6 +247,28 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
 
         // fallback to global velocity engine singleton
         return super.getTemplate(name, encoding);
+    }
+
+    /**
+     * Loads Velocity configuration information and returns that 
+     * information as an ExtendedProperties, which will be used to 
+     * initialize the Velocity runtime.
+     *
+     * @see org.apache.velocity.tools.view.servlet.VelocityViewServlet.loadConfiguration()
+     *
+     * @param config ServletConfig passed to the servlets init() function.
+     * @return ExtendedProperties loaded with Velocity runtime configuration values.
+     * @throws IOException I/O problem accessing the specified file, if specified.
+     */
+    protected ExtendedProperties loadConfiguration(ServletConfig config)
+        throws IOException
+    {
+        // configure Velocity engines for Jetspeed Log4J logging
+        // delivered as "velocity" category
+        ExtendedProperties configuration = super.loadConfiguration(config);
+        configuration.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
+        configuration.setProperty("runtime.log.logsystem.log4j.category", "velocity");
+        return configuration;
     }
 
     /**
