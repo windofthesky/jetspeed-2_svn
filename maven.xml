@@ -37,78 +37,65 @@
     <!-- Build jars -->
     <maven:reactor
                basedir="${basedir}/portlet-api"
-               includes="portlet-api/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the Portlet API jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/commons"
-               includes="commons/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the common jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/components/cm"
-               includes="components/cm/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the Component Manager jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/components/rdbms"
-               includes="components/rdbms/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the RDBMS jar"
                postProcessing="false"
                ignoreFailures="false"/>
    <maven:reactor
                basedir="${basedir}/components/persistence"
-               includes="components/persistence/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the Persistence jar"
                postProcessing="false"
                ignoreFailures="false"/>
-   <maven:reactor
-               basedir="${basedir}/components/registry"
-               includes="components/registry/project.xml"
-               goals="jar:install"
-               banner="Build and Install the Registry jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/components/registry"
-               includes="components/jetspeed/project.xml"
-               goals="jar:install"
-               banner="Build and Install the Jetspeed Components jar"
+               includes="project.xml"
+               goals="build_registry"
+               banner="Build and Install the Regsitry Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/cps"
-               includes="cps/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/plugin"
-               includes="plugin/project.xml"
+               includes="project.xml"
                goals="jar:install"
                banner="Build and Install the Plugin jar"
                postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="services/registry/project.xml"
-               goals="db.recreate,db.test.recreate,jar:install"
-               banner="Build and Install the services - registry jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
+               ignoreFailures="false"/>        
+
     <maven:reactor
                basedir="${basedir}"
                includes="services/security/project.xml"
-               goals="db.recreate,db.test.recreate,jar:install"
+               goals="db.recreate,db.test.recreate,jar:install,ojb.registry"
                banner="Build and Install the services - security jar"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -117,7 +104,7 @@
      <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
-               goals="db.recreate,db.test.recreate,ojb.registry,war:install"
+               goals="db.recreate,db.test.recreate,war:install"
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>
