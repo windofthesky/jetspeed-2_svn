@@ -372,4 +372,31 @@ public class TestProfiler extends PersistenceSupportedTestCase
             assertTrue("locator name = " + result[ix], result[ix].equals("page"));
         }
     }
+    
+    public void testMaintenance() throws Exception
+    {
+        System.out.println("Maintenance tests commencing....");
+        assertNotNull("profiler service is null", profiler);
+        ProfilingRule rule = new StandardProfilingRule();
+        rule.setClassname("org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule");
+        rule.setId("testmo");
+        rule.setTitle("The Grand Title");
+        profiler.addProfilingRule(rule);
+        ProfilingRule rule2 = profiler.getRule("testmo");
+        assertNotNull("rule couldnt be added", rule2);
+        assertTrue("rule id bad", rule.getId().equals(rule2.getId()));
+        
+        rule2.setTitle("The New Title");
+        profiler.updateProfilingRule(rule2);
+                
+        ProfilingRule rule3= profiler.getRule("testmo");
+        assertNotNull("rule couldnt be retrieved", rule3);
+        assertTrue("rule title is bad", rule3.getTitle().equals(rule2.getTitle()));
+                
+        profiler.removeProfilingRule(rule);
+        ProfilingRule rule4 = profiler.getRule("testmo");
+        assertNull("rule couldnt be deleted", rule4);
+        
+        System.out.println("Maintenance tests completed.");
+    }
 }
