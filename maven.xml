@@ -416,6 +416,7 @@ limitations under the License.
     </goal>
 
    <goal name="dropdrops">
+    <attainGoal name="java:compile"/>
     <attainGoal name="db.test.properties"/>
     <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/cornerstonedemo-schema.sql" />
     <attainGoal name="run.dropdrops" />
