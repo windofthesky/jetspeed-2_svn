@@ -51,21 +51,25 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.common.preference;
 
-import java.io.Serializable;
+import java.util.Set;
+
+import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.common.PreferenceSetCtrl;
 
 /**
- * 
- * PreferenceValueImpl
- * <br />
- * Represents preference values associated the preferences
- * specified within the registry.
+ * <p>
+ * PreferenceSetComposite
+ * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PreferenceValueImpl extends AbstractPreferenceValue implements Serializable, PreferenceValue
+public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
 {
+    Set getNames();
+    
+    int size();
 }

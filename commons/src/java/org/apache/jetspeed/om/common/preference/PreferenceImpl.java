@@ -51,23 +51,17 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
-
-import java.util.Set;
-
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
+package org.apache.jetspeed.om.common.preference;
 
 /**
- * <p>
- * PreferenceSetComposite
- * </p>
+ * 
+ * PreferenceImpl
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
+public class PreferenceImpl extends AbstractPreferenceImpl
 {
-    Set getPreferenceNames();
+
 }

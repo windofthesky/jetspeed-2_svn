@@ -51,46 +51,19 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.om.common.preference;
 
-package org.apache.jetspeed.om.common;
-
-import java.io.Serializable;
-import java.util.Locale;
-
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceCtrl;
 
 /**
- * 
- * PreferenceComposite
+ * <p>
+ * PortletPreference
+ * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
+public class UserPreference extends AbstractPreferenceImpl
 {
-    void addDescription(Locale locale, String Description);
-
-    Description getDescription(Locale locale);
-
-    /**
-     * @throws java.lang.ArrayIndexOutofBounds if index is outside the constraints
-     * @param index
-     * @return The String value at the specified index or <code>null</code>
-     * if no values are present.
-     */
-    String getValueAt(int index);
-
-    void setValueAt(int index, String value);
-
-    /**
-     * 
-     * @return
-     */
-    String[] getValueArray();
-    
-    
 
 }

@@ -52,7 +52,7 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.common.preference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,6 +61,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.om.common.DescriptionImpl;
+import org.apache.jetspeed.om.common.DescriptionSetImpl;
+import org.apache.jetspeed.om.common.MutableDescription;
+import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.Preference;

@@ -52,103 +52,45 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.common.preference;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Locale;
 
-import java.util.Set;
-
+import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.common.PreferenceCtrl;
 
 /**
  * 
- * PreferenceSetImpl
+ * PreferenceComposite
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceSetComposite, Serializable
+public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
 {
+    void addDescription(Locale locale, String Description);
 
-    protected HashMap prefMap = new HashMap();
-
-    /**
-     * @param wrappedSet
-     */
-    public PreferenceSetImpl(Set wrappedSet)
-    {
-        super(wrappedSet);
-    }
-
-    public PreferenceSetImpl()
-    {
-        prefMap = new HashMap();
-    }
+    Description getDescription(Locale locale);
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSet#get(java.lang.String)
+     * @throws java.lang.ArrayIndexOutofBounds if index is outside the constraints
+     * @param index
+     * @return The String value at the specified index or <code>null</code>
+     * if no values are present.
      */
-    public Preference get(String name)
-    {
-        return (Preference) prefMap.get(name);
-    }
+    String getValueAt(int index);
+
+    void setValueAt(int index, String value);
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#add(java.lang.String, java.util.Collection)
+     * 
+     * @return
      */
-    public Preference add(String name, Collection values)
-    {
-        PreferenceImpl pref = new PreferenceImpl();
-        pref.setName(name);
-        pref.setValues(values);
-        add(pref);
-        return pref;
-    }
-
-    /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(java.lang.String)
-     */
-    public Preference remove(String name)
-    {
-        Preference pref = (Preference) prefMap.get(name);
-        remove(pref);
-        return pref;
-    }
-
-    /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(org.apache.pluto.om.common.Preference)
-     */
-    public void remove(Preference preference)
-    {
-        remove((Object) preference);
-    }
-
-    /**
-     * @see java.util.Collection#add(java.lang.Object)
-     */
-    public boolean add(Object o)
-    {
-        Preference pref = (Preference) o;
-        prefMap.put(pref.getName(), pref);
-        return super.add(pref);
-    }
-
-    /**
-     * @see java.util.Collection#remove(java.lang.Object)
-     */
-    public boolean remove(Object o)
-    {
-        Preference pref = (Preference) o;
-        prefMap.remove(pref.getName());
-        return super.remove(o);
-    }
-
-    public Set getPreferenceNames()
-    {
-        return prefMap.keySet();
-    }
+    String[] getValueArray();
+    
+    
 
 }

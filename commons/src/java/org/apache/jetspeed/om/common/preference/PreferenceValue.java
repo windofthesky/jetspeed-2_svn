@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.common.preference;
 
 /**
  * PreferenceValue

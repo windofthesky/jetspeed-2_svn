@@ -51,17 +51,100 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.common.preference;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.pluto.om.common.Preference;
 
 /**
+ * UserPreferencesImpl
+ * <br/>
+ * This is a concrete implentation of the <code>javax.portlet.PortletPreferencesObject</code>
+ * <br/>
+ * You should use this object to read and write user preferences for portlets
+ * back to the container. 
  * 
- * PreferenceImpl
- * 
+ * @see javax.portlet.PortletPreferencesObject
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PreferenceImpl extends AbstractPreferenceImpl
+public class UserPreferencesImpl extends PreferenceSetImpl implements PreferenceSetComposite
 {
+    private static final String NULL_KEY_MSG = "The preference \"key\" argument cannot be null";
+
+    private PreferenceSetComposite defaultPreferences;
+    /**
+     * Creates an instance of UserPreferencesImpl using the
+     * the PreferenceSet from the registry that matches with the portlet
+     * this UserPreferencesImpl is associated with.   The PreferenceSet
+     * IS NEVER modified by this UserPreferencesImpl, it is just used
+     * as guide for a users PortletPreferences.
+     * 
+     * @param prefSet PreferenceSet from the registry that will be used as a
+     * base for the PortletPreferenceImpl.
+     */
+    public UserPreferencesImpl(PreferenceSetComposite defaultPreferences)
+    {
+        this();
+        this.defaultPreferences = defaultPreferences;
+    }
+
+    public UserPreferencesImpl()
+    {
+        super();
+    }
+
+    /**
+     * 
+     * @param defaultPreferences
+     */
+    public void setDefaultPreferences(PreferenceSetComposite defaultPreferences)
+    {
+        this.defaultPreferences = defaultPreferences;
+    }
+
+    /**
+     *  
+     * <p>
+     * get
+     * </p>
+     * 
+     * @see org.apache.pluto.om.common.PreferenceSet#get(java.lang.String)
+     * @param name
+     * @return
+     */
+    public Preference get(String name)
+    {
+
+        Preference pref = super.get(name);
+
+        // Use default
+        if (pref == null)
+        {
+            pref = defaultPreferences.get(name);
+        }
+
+        return pref;
+    }
+
+    /** 
+     * <p>
+     * getPreferenceNames
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.common.preference.PreferenceSetComposite#getPreferenceNames()
+     * @return
+     */
+    public Set getNames()
+    {
+        Set names = super.getNames();
+      
+        names.addAll(defaultPreferences.getNames());
+
+        return names;
+    }
 
 }
