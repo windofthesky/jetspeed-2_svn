@@ -99,9 +99,9 @@ public class TestUserManager extends AbstractComponentAwareTestCase
     }
 
     /**
-     * <p>Test add user.</p>
+     * <p>Test add/remove user.</p>
      */
-    public void testAddUser()
+    public void testAddRemoveUser()
     {
         try
         {
@@ -120,14 +120,6 @@ public class TestUserManager extends AbstractComponentAwareTestCase
         catch (SecurityException sex)
         {
         }
-
-    }
-
-    /**
-     * <p>Test remove user.</p>
-     */
-    public void testRemoveUser()
-    {
         try
         {
             ums.removeUser("anon");
@@ -140,6 +132,7 @@ public class TestUserManager extends AbstractComponentAwareTestCase
         {
             assertTrue("user should have been removed: ", false);
         }
+
     }
 
     /**
@@ -222,8 +215,8 @@ public class TestUserManager extends AbstractComponentAwareTestCase
     {
         try
         {
-            ums.removeUser("anon");
-            ums.removeUser("test");
+            if (ums.userExists("anon")) ums.removeUser("anon");
+            if (ums.userExists("test")) ums.removeUser("test");
         }
         catch (SecurityException sex)
         {
