@@ -183,12 +183,17 @@ public class GenericVelocityPortlet extends GenericServletPortlet
         return (Context) request.getAttribute(PORTLET_BRIDGE_CONTEXT);
     }
 
-    public void doPreferencesEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    public void setupPreferencesEdit(RenderRequest request, RenderResponse response)
     {
         Context context = getContext(request);
         PortletPreferences prefs = request.getPreferences();
         Iterator it = prefs.getMap().entrySet().iterator();
         context.put("prefs", it);
+    }
+    
+    public void doPreferencesEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        setupPreferencesEdit(request, response);
         super.doEdit(request, response);
     }
 
