@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<datasources>
 <local-tx-datasource>
   <!-- The jndi name of the DataSource, it is prefixed with java:/ -->
   <!-- Datasources are not available outside the virtual machine -->
@@ -27,4 +28,4 @@ limitations under the License.
   <max-pool-size>20</max-pool-size>
   <idle-timeout-minutes>0</idle-timeout-minutes>
 </local-tx-datasource>
-
+</datasources>
