@@ -1,4 +1,4 @@
-
+<descriptor-repository version="1.0" isolation-level="read-uncommitted">
 
    <class-descriptor
    	  class="org.apache.jetspeed.components.persistence.A"
@@ -76,5 +76,5 @@
       </reference-descriptor>
      
    </class-descriptor>
-   
+ </descriptor-repository>  
   
