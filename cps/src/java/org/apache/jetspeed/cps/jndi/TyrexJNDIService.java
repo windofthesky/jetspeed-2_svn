@@ -11,7 +11,7 @@ import javax.naming.NamingException;
 
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.components.jndi.*;
+import org.apache.jetspeed.components.jndi.*;
 
 /**
  * <p>
@@ -84,7 +84,7 @@ public class TyrexJNDIService extends BaseCommonService implements JNDIService
      * unbindFromCurrentThread
      * </p>
      * 
-     * @see org.apache.jetspeed.cps.components.jndi.JNDIComponent#unbindFromCurrentThread()
+     * @see org.apache.jetspeed.components.jndi.JNDIComponent#unbindFromCurrentThread()
      * @throws NamingException
      */
     public void unbindFromCurrentThread() throws NamingException

@@ -57,7 +57,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.cps.components.jndi.*;
+import org.apache.jetspeed.components.jndi.*;
 
 /**
  * <p>
