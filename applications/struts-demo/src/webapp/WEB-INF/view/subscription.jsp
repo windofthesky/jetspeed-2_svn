@@ -18,9 +18,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/tags/app"    prefix="app" %>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
-<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
-<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 <h2>
 <logic:equal name="SubscriptionForm" property="action"
             scope="request" value="Create">
@@ -38,7 +37,7 @@
 <hr/>
 <html:errors/>
 
-<sp:form action="/SaveSubscription" focus="host">
+<html:form action="/SaveSubscription" focus="host">
 <html:hidden property="action"/>
 <table border="0" width="100%">
 
@@ -143,6 +142,6 @@
 
 </table>
 
-</sp:form>
+</html:form>
 
 <jsp:include page="footer.jsp" />

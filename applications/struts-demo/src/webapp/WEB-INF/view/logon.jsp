@@ -18,15 +18,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/tags/app"         prefix="app" %>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
-<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
-<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 <!--
 <title><bean:message key="logon.title"/></title>
 -->
 
 <html:errors/>
 
-<sp:form action="/SubmitLogon" focus="username"
+<html:form action="/SubmitLogon" focus="username"
          onsubmit="return validateLogonForm(this);">
 <table border="0" width="100%">
 
@@ -60,11 +59,11 @@
 
 </table>
 
-</sp:form>
+</html:form>
 
 <html:javascript formName="LogonForm"
         dynamicJavascript="true"
          staticJavascript="false" cdata="false"/>
-<sp:script src="/staticJavascript.jsp"/>
+<html:script src="/staticJavascript.jsp"/>
 
 <jsp:include page="footer.jsp" />

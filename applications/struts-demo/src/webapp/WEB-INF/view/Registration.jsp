@@ -18,9 +18,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/tags/app"    prefix="app" %>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
-<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
-<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 <h2>
 <logic:equal name="RegistrationForm" property="action"
             scope="request" value="Create">
@@ -34,7 +33,7 @@
 <hr/>
 <html:errors/>
 
-<sp:form action="/SaveRegistration" focus="username"
+<html:form action="/SaveRegistration" focus="username"
          onsubmit="return validateRegistrationForm(this);">
 <html:hidden property="action"/>
 <table border="0" width="100%">
@@ -122,7 +121,7 @@
   </tr>
 
 </table>
-</sp:form>
+</html:form>
 
 <logic:equal name="RegistrationForm" property="action"
             scope="request" value="Edit">
@@ -178,10 +177,10 @@
 
 </table>
 
-<sp:link action="/EditSubscription?action=Create" paramId="username"
+<html:link action="/EditSubscription?action=Create" paramId="username"
  paramName="RegistrationForm" paramProperty="username">
   <bean:message key="registration.addSubscription"/>
-</sp:link>
+</html:link>
 
 
 </logic:equal>
@@ -190,6 +189,6 @@
         dynamicJavascript="true"
          staticJavascript="false" cdata="false"/>
 
-<sp:script src="/staticJavascript.jsp"/>
+<html:script src="/staticJavascript.jsp"/>
 
 <jsp:include page="footer.jsp" />

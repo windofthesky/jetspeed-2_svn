@@ -16,6 +16,6 @@
   $Id$
 --%>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
-<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 <hr />
-<p><sp:link action="/Welcome"><bean:message key="index.title"/></sp:link></p>
+<p><html:link action="/Welcome"><bean:message key="index.title"/></html:link></p>

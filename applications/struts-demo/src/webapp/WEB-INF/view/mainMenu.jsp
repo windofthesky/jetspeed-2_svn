@@ -18,11 +18,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/tags/app" prefix="app" %>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
-<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 <h2><bean:message key="mainMenu.title"/></h2>
 <hr/>
 <h3><bean:message key="mainMenu.heading"/> <bean:write name="user" property="fullName" /></h3>
 <ul>
-<li><sp:link action="/EditRegistration?action=Edit"><bean:message key="mainMenu.registration"/></sp:link></li>
-<li><sp:link forward="logoff"><bean:message key="mainMenu.logoff"/></sp:link></li>
+<li><html:link action="/EditRegistration?action=Edit"><bean:message key="mainMenu.registration"/></html:link></li>
+<li><html:link forward="logoff"><bean:message key="mainMenu.logoff"/></html:link></li>
 </ul>
