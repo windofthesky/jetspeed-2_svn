@@ -15,9 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project>
+
+  <title>Portals Bridges - Struts Bridge</title>
+
   <body>
-      <links>
-        <item name="Jetspeed 2" href="../../index.html"/>
-      </links>
+    <links>
+      <item name="Portlet Specification" href="http://www.jcp.org/en/jsr/detail?id=168"/>
+      <item name="Jetspeed 2" href="../../index.html"/>
+    </links>
+      
+    <menu name="Documentation">
+      <item name="Summary" href="index.html"/>
+      <item name="Features" href="features.html"/>
+    </menu>      
   </body>
 </project>
