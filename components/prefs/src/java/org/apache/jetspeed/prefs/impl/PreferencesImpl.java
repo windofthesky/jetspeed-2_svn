@@ -392,7 +392,7 @@ public class PreferencesImpl extends AbstractPreferences
             }
             else
             {
-                log.error("Could not retrieve property values for node " + nodeObj.getFullPath());
+                log.error("Could not retrieve property keys for node " + nodeObj.getFullPath());
             }
         }
         return (String[]) propertyNames.toArray(new String[0]);
@@ -419,6 +419,11 @@ public class PreferencesImpl extends AbstractPreferences
         Node nodeObj = (Node) nodeResult[NODE];
         Collection nodeKeys = nodeObj.getNodeKeys();
         Collection properties = nodeObj.getNodeProperties();
+        if (null == properties)
+        {
+            log.error("Could not retrieve node property: [key: " + key + ", value:" + value + "]");
+            return;
+        }
         ArrayList newProperties = new ArrayList(properties.size() + 1);
         boolean foundProp = false;
         boolean foundKey = false;
@@ -466,7 +471,7 @@ public class PreferencesImpl extends AbstractPreferences
         PersistenceStore store = getPersistenceStore();
         if (log.isDebugEnabled())
             log.debug("Updated properties: " + newProperties.size());
-        // What going on:
+        // What's going on.
         if (newProperties.size() > 0)
             log.debug("Properties: " + ((Property) newProperties.get(0)).toString());
 
