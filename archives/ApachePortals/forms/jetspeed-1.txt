@@ -62,18 +62,21 @@ or
 
 [3] Initial Committer list 
 
-... 
+Santiago Gala santiago@apache.org
+David Sean Taylor taylor@apache.org
+Raphael Luta raphael@apache.org
+Mark Orciuch mark_oriuch@nqsltd.com
+Paul Spencer paulsp@apache.org
+Scott Weaver weaver@apache.org
+Roger Ruttimann roger.ruttimann@earthlink.net
+David Le Strat dlestrat@apache.org
+Jeremy Ford jford@apache.org
+Glenn Golden ggolden@umich.edu  
+
 
 [4] Issue Tracker
- (i) Bugzilla URL: http://nagoya.apache.org/bugzilla/buglist.cgi?product=jetspeed-1 
-
-or 
-
-(ii) Scarab 
-
-     John or DLR ... please fill in
-
-or 
+ (i) JIRA URL: http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10493
+  DONE
 
 (iii) Jira 
 
