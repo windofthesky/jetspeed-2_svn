@@ -38,9 +38,19 @@ BODY.layout-Jetspeed  {
 	else it will use the text height	
 	**/
 	height:25px;	
+	color:black;
 	background:url(content/jetspeed/images/tabmiddle_low.gif);
 }
  
+.layout-Jetspeed .LTabLow A:link, 
+.layout-Jetspeed .LTabLow A:visited,
+.layout-Jetspeed .LTabLow A:hover, 
+.layout-Jetspeed .LTabLow A:active
+{
+	color:black;
+	text-decoration: none;
+}
+
 .layout-Jetspeed .LTabRightLow
 {
 	width:10px;
@@ -56,6 +66,7 @@ BODY.layout-Jetspeed  {
 .layout-Jetspeed .LTab
 {
 	height:25px;	
+	color:black;
 	background:url(content/jetspeed/images/tabmiddle.gif);
 }
  
