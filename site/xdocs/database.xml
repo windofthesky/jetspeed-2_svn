@@ -116,6 +116,8 @@ run these commands:
 
 maven db.scripts.gen
 maven dropdrops
+maven db.create.test
+maven db.create.production
 
 ]]></source>
 </subsection>
