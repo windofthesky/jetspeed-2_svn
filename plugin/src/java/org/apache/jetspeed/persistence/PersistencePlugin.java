@@ -221,4 +221,16 @@ public interface PersistencePlugin extends Plugin
      * @param object The object to be invalidated from the cache
      */
     void invalidateObject(Object object);
+    
+    /**
+     * 
+     * <p>
+     * clearCache
+     * </p>
+     * 
+     * Clears out any cahcing mechanisms completely
+     *
+     */
+    void clearCache();
+    
 }

@@ -541,12 +541,26 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     {
         return getCollectionByQuery(clazz, new Criteria());
     }
-    
+
     public void invalidateObject(Object object)
     {
         PersistenceBroker broker = getBroker();
         broker.removeFromCache(object);
     }
-    
+
+    /** 
+     * <p>
+     * clearCache
+     * </p>
+     * 
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#clearCache()
+     * 
+     */
+    public void clearCache()
+    {
+        PersistenceBroker broker = getBroker();
+        broker.clearCache();
+
+    }
 
 }
