@@ -66,7 +66,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     private Collection metadataFields = null;
 
     /** Metadata property */
-    private Collection services = null;
+    private Collection services = new ArrayList();
     
     /** Description */
     private String description;
@@ -343,11 +343,6 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public Collection getJetspeedServices()
     {
-        if(services == null)
-        {
-            services = new ArrayList();
-        }
-        
         return services;
     }
     
@@ -356,10 +351,6 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void addJetspeedService(JetspeedServiceReference service)
     {
-        if(services == null)
-        {
-            services = new ArrayList();
-        }
         services.add(service);
     }
 
