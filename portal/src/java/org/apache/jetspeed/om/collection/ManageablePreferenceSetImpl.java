@@ -53,26 +53,30 @@
  */
 package org.apache.jetspeed.om.collection;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
+import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.PreferenceSetCtrl;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public class ManageablePreferenceSetImpl extends PreferenceSetImpl implements PreferenceSet, PreferenceSetCtrl, ManageableCollection
+public class ManageablePreferenceSetImpl
+    extends PreferenceSetImpl
+    implements PreferenceSet, PreferenceSetCtrl, ManageableCollection
 {
 
     private HashMap prefMap = new HashMap();
-
     /**
      * @param wrappedSet
      */
@@ -118,5 +122,6 @@ public class ManageablePreferenceSetImpl extends PreferenceSetImpl implements Pr
         // Nothin'
 
     }
+
 
 }

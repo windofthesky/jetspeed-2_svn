@@ -72,7 +72,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.AbstractPreferenceImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
