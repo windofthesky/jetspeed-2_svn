@@ -99,12 +99,9 @@ limitations under the License.
 
 <pam:tree tree="j2_tree" images="/pam/images" scope="portlet_request"
           action="<%= nodeLink %>"
+          style="tree-control"
+          styleSelected="portlet-section-alternate"
+          
   />
   
-  <%--
-  style="tree-control"
-        styleSelected="tree-control-selected"
-      styleUnselected="tree-control-unselected"
-      --%>
-
 </div>
