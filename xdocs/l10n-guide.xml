@@ -76,7 +76,7 @@ For more information about Jetspeed 2 build and deploy steps, see "<a href="gett
 </p>
 <h5>6. Create a new JIRA issue, and attach <code>*_&lt;your language, [country and variant]&gt;.properties</code></h5>
 <p>
-JIRA site for Jetspeed 2 is <a href="http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492">http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</a>. To create a new JIRA issue, go to "CREATE NEW ISSUE"(select "l10n" as Component/s name).
+JIRA site for Jetspeed 2 is <a href="http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492">http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10492</a>. To create a new JIRA issue, go to "CREATE NEW ISSUE"(select "l10n" as Component/s name).
 </p>
 
 </subsection>
