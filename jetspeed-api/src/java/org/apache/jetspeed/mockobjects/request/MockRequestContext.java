@@ -32,7 +32,9 @@ import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 
@@ -456,4 +458,18 @@ public class MockRequestContext implements RequestContext
         return path;
     }
 
+    /**
+     * <p>
+     * getPreferedLanguage
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.om.portlet.PortletDefinition)
+     * @param portlet
+     * @return
+     */
+    public Language getPreferedLanguage( PortletDefinition portlet )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
