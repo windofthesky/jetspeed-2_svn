@@ -128,6 +128,10 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
             {
                 bundle = loadResourceBundle(locale);
             }
+            if (bundle == null)
+            {
+                return new LanguageImpl(locale, "");
+            }            
             fallBack = createLanguage(locale, bundle);
         }
         else
