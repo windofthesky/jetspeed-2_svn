@@ -23,10 +23,7 @@ limitations under the License.
       <className>org.apache.jetspeed.capabilities.impl.CapabilityValveImpl</className>
     </valveDescriptor>
     <valveDescriptor>
-      <className>org.apache.jetspeed.security.impl.SecurityValveImpl</className>
-    </valveDescriptor>
-     <valveDescriptor>
-      <className>org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl</className>
+      <className>org.apache.jetspeed.container.ContainerValve</className>
     </valveDescriptor>
     <valveDescriptor>
       <className>org.apache.jetspeed.aggregator.PortletValve</className>
