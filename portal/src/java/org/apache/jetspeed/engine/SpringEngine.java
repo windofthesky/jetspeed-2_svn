@@ -72,35 +72,4 @@ public class SpringEngine extends AbstractEngine
         componentManager = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
     }
 
-    protected void enableJNDI( Configuration configuration ) throws IOException
-    {
-        try
-        {
-            XmlBeanFactory dsBeanFactory = null;
-            if (useInternalJNDI)
-            {
-                
-
-                JNDIComponent jndi = (JNDIComponent) componentManager.getComponent(JNDIComponent.class.getName());
-                if (jndi != null)
-                {
-                    DatasourceComponent ds = (DatasourceComponent) componentManager.getComponent(DatasourceComponent.class
-                            .getName());
-                    if (ds != null)
-                    {
-                        jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
-                        jndi.bindToCurrentThread();
-                    }
-                }
-                
-            }
-        }
-        catch (NamingException e)
-        {
-            // skip for now
-        }
-    
-      
-    }
-
 }
