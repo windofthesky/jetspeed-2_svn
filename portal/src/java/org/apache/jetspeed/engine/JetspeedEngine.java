@@ -55,7 +55,6 @@ package org.apache.jetspeed.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -100,7 +99,7 @@ public class JetspeedEngine implements Engine
     private static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
-    private ThreadLocal TLrequestContext = new ThreadLocal();
+    private ThreadLocal tlRequestContext = new ThreadLocal();
     // private final HashMap requestContextPerThread = new HashMap();
 
     /**
@@ -199,7 +198,8 @@ public class JetspeedEngine implements Engine
             InformationProviderServiceService ips = InformationProviderManager.getService();
             ips.init(config, null);
             environment.addServiceForClass(InformationProviderService.class, ips);
-            //TODO !!! Pluto has changed this siganture There is now a container unique id string and Properties. WE need to figure what these are really for.
+            //TODO !!! Pluto has changed this siganture There is now a container unique id string and Properties. 
+            // WE need to figure what these are really for.
             container.init("jetspeed", config, environment, new Properties());
         }
         catch (Throwable e)
@@ -236,7 +236,7 @@ public class JetspeedEngine implements Engine
     public void service(RequestContext context) throws JetspeedException
     {
        // requestContextPerThread.put(Thread.currentThread(), context);
-       TLrequestContext.set(context);
+       tlRequestContext.set(context);
        pipeline.invoke(context);
     }
 
@@ -356,7 +356,7 @@ public class JetspeedEngine implements Engine
      */
     public RequestContext getCurrentRequestContext()
     {
-        return (RequestContext) TLrequestContext.get();
+        return (RequestContext) tlRequestContext.get();
     }
 
 }

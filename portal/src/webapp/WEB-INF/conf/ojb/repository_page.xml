@@ -1,112 +1,140 @@
-<!--
-   - P A G E
--->	
- 
-  <class-descriptor
-   	  class="org.apache.jetspeed.om.page.impl.PageImpl"
-   	  table="PAGE"
-   >     
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="VARCHAR"
-         primarykey="true"
-         autoincrement="false"         
-      />
-      <field-descriptor
-         name="title"
-         column="TITLE"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="defaultSkin"
-         column="DEFAULT_SKIN"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="defaultDecorator"
-         column="DEFAULT_DECORATOR"
-         jdbc-type="VARCHAR"
-      /> 
-      <field-descriptor
-         name="defaultPortletDecorator"
-         column="DEFAULT_PORTLET_DECORATOR"
-         jdbc-type="VARCHAR"
-      /> 
-      <field-descriptor
-         name="acl"
-         column="ACL"
-         jdbc-type="VARCHAR"
-      />              
-      <collection-descriptor
-      	  name="pageFragments" 
-          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl" 
-          indirection-table="PAGE_FRAGMENTS">
-          <fk-pointing-to-this-class column="PAGE_ID"/>
-          <fk-pointing-to-element-class column="FRAGMENT_ID"/>
-       </collection-descriptor>              
-   </class-descriptor>
-   
-<!--
-   - F R A G M E N T
--->	
- 
-  <class-descriptor
-   	  class="org.apache.jetspeed.om.page.impl.FragmentImpl"
-   	  table="FRAGMENT"
-   >     
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="VARCHAR"
-         primarykey="true"
-         autoincrement="false"         
-      />
-      <field-descriptor
-         name="title"
-         column="TITLE"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="component"
-         column="Component"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="Skin"
-         column="SKIN"
-         jdbc-type="VARCHAR"
-      />
-      <field-descriptor
-         name="decorator"
-         column="DECORATOR"
-         jdbc-type="VARCHAR"
-      /> 
-      <field-descriptor
-         name="acl"
-         column="ACL"
-         jdbc-type="VARCHAR"
-      />              
-      <field-descriptor
-         name="type"
-         column="TYPE"
-         jdbc-type="VARCHAR"
-      />              
-      <field-descriptor
-         name="state"
-         column="STATE"
-         jdbc-type="VARCHAR"
-      />              
 
-        <collection-descriptor
-      	  name="subFragments" 
-          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl" 
-          indirection-table="FRAGMENTS">
-          <fk-pointing-to-this-class column="FRAGMENT_ID"/>
-          <fk-pointing-to-element-class column="SUB_FRAGMENT_ID"/>
-       </collection-descriptor>              
-            
+<!--
+   - P R O F I L I N G  R U L E
+-->	
+  
+   <class-descriptor class="org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule">
+      <extent-class class-ref="org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule" />
+      <extent-class class-ref="org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule" />
    </class-descriptor>
+          
+<class-descriptor
+    class="org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule"
+    table="PROFILING_RULE"
+>     
+    <field-descriptor
+     name="id"
+     column="RULE_ID"
+     jdbc-type="VARCHAR"
+     primarykey="true"
+     autoincrement="false"         
+    />
+    <field-descriptor
+     name="ojbConcreteClass"
+     column="CLASS_NAME"
+     jdbc-type="VARCHAR"
+    />
+    <field-descriptor
+     name="title"
+     column="TITLE"
+     jdbc-type="VARCHAR"
+    />    
+    <collection-descriptor
+      name="criterion" 
+      element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
+      indirection-table="RULE_CRITERION">
+      <fk-pointing-to-this-class column="RULE_ID"/>
+      <fk-pointing-to-element-class column="CRITERION_ID"/>
+    </collection-descriptor>              
+
+</class-descriptor>
+
+<class-descriptor
+    class="org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule"
+    table="PROFILING_RULE"
+>     
+    <field-descriptor
+     name="id"
+     column="RULE_ID"
+     jdbc-type="VARCHAR"
+     primarykey="true"
+     autoincrement="false"         
+    />
+    <field-descriptor
+     name="ojbConcreteClass"
+     column="CLASS_NAME"
+     jdbc-type="VARCHAR"
+    />
+    <field-descriptor
+     name="title"
+     column="TITLE"
+     jdbc-type="VARCHAR"
+    />    
+    <collection-descriptor
+      name="criterion" 
+      element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
+      indirection-table="RULE_CRITERION">
+      <fk-pointing-to-this-class column="RULE_ID"/>
+      <fk-pointing-to-element-class column="CRITERION_ID"/>
+    </collection-descriptor>              
+
+</class-descriptor>
+
+<!--
+   - R U L E  C R I T E R I O N
+-->	
+
+<class-descriptor
+    class="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl"
+    table="RULE_CRITERION"
+>     
+    <field-descriptor
+     name="id"
+     column="RULE_ID"
+     jdbc-type="VARCHAR"
+    />
+    <field-descriptor
+     name="fallbackOrder"
+     column="FALLBACK_ORDER"
+     jdbc-type="INTEGER"
+    />    
+    <field-descriptor
+     name="type"
+     column="REQUEST_TYPE"
+     jdbc-type="VARCHAR"
+    />    
+    <field-descriptor
+     name="name"
+     column="NAME"
+     jdbc-type="VARCHAR"
+    />    
+    <field-descriptor
+     name="value"
+     column="VALUE"
+     jdbc-type="VARCHAR"
+    />    
+
+</class-descriptor>
+
+<!--
+   - P R I N C I P A L  R U L E
+-->	
+
+<class-descriptor
+    class="org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl"
+    table="PRINCIPAL_RULE_ASSOC"
+>     
+    <field-descriptor
+     name="principalName"
+     column="PRINCIPAL_NAME"
+     jdbc-type="VARCHAR"
+    />
+    <field-descriptor
+     name="ruleId"
+     column="RULE_ID"
+     jdbc-type="VARCHAR"
+    />
+    <reference-descriptor 
+      name="profilingRule" 
+      class-ref="org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule" 
+      auto-delete="false"    
+      >
+     <foreignkey field-ref="ruleId"/>
+    </reference-descriptor>
+
+</class-descriptor>
+
+
 
    
       

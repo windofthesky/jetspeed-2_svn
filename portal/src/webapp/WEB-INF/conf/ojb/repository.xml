@@ -7,6 +7,7 @@
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
 <!ENTITY jetspeed SYSTEM "repository_jetspeed.xml">
+<!ENTITY page SYSTEM "repository_page.xml">
 
 ]>
 
@@ -22,5 +23,7 @@
     <!-- include jetspeed defined mappings here -->
     &jetspeed;
 
+    <!-- include jetspeed page and profiler mappings here -->
+    &page;
 
 </descriptor-repository>
