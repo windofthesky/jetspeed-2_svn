@@ -95,22 +95,24 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
     public void testGetUserPrincipals() throws Exception
     {
         Iterator principals = ush.getUserPrincipals("").iterator();
-        int count = 0;
+        boolean foundUser1 =false;
+        boolean foundUser2 =false;
+        
         while (principals.hasNext())
         {
             Principal principal = (Principal) principals.next();
-            if (0 == count)
-            {
-                assertNotNull(principal);
-                assertEquals("testuser1", principal.getName());
+            assertNotNull(principal);
+            
+            if (principal.getName().equals("testuser1"))
+            {                
+                foundUser1 = true;
             }
-            else if (1 == count)
+            else if (principal.getName().equals("testuser2"))
             {
-                assertNotNull(principal);
-                assertEquals("testuser2", principal.getName());
-            }
-            count ++;
+               foundUser2 = true;
+            }            
         }
+        assertTrue(foundUser1 && foundUser2);
     }
 
     /**
