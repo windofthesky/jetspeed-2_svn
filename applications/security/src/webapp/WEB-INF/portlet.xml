@@ -58,6 +58,35 @@ limitations under the License.
 			<short-title>Add User Portlet</short-title>
     	</portlet-info>
   	</portlet>
+  	<!-- *********************** -->
+  	<!-- Role Management Portlet -->
+  	<!-- *********************** -->
+  	<portlet id="RoleMgtPortlet">
+      <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+        <value>/WEB-INF/security/rolemgt/role-mgt.jsp</value>
+      </init-param>   
+      <portlet-name>RoleMgtPortlet</portlet-name>
+      <display-name>Role Management</display-name>
+      <description>Manage the portal roles.</description>
+      <portlet-class>org.apache.jetspeed.portlets.security.rolemgt.RoleMgtPortlet</portlet-class>
+      <expiration-cache>-1</expiration-cache>
+      <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+      </supports>
+      <supported-locale>en</supported-locale>
+      <resource-bundle>org.apache.jetspeed.portlets.security.resources.RoleMgtResources</resource-bundle>
+      <portlet-info>
+        <title>Role Management</title>
+        <short-title>Role Management</short-title>
+        <keywords>security,role</keywords>
+      </portlet-info>
+    </portlet>
+    <!-- *********************** -->
+  	<!-- Change Password Portlet -->
+  	<!-- *********************** -->
     <portlet id="ChangePasswordPortlet">
       <init-param>
         <description>This parameter sets the template used in view mode.</description>

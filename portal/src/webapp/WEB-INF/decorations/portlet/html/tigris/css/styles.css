@@ -143,32 +143,36 @@ limitations under the License.
 /* PLT.C.3 Messages                  */
 /* --------------------------------- */
 .portlet-tigris .portlet-msg-status {
-    /* TODO create status icon */
-    /*background: url(content/tigris/images/icon_status_sml.gif) no-repeat;*/
+    background: url(content/tigris/images/icon_status_sml.gif);
+    background-repeat: no-repeat;
     padding-left: 20px;
     min-height: 15px;
 }
 
 .portlet-tigris .portlet-msg-info {
-    background: url(content/tigris/images/icon_info_sml.gif) no-repeat;
+    background: url(content/tigris/images/icon_info_sml.gif);
+    background-repeat: no-repeat;
     padding-left: 20px;
     min-height: 15px;
 }
 
 .portlet-tigris .portlet-msg-error {
-    background: url(content/tigris/images/icon_error_sml.gif) no-repeat;
+    background: url(content/tigris/images/icon_error_sml.gif);
+    background-repeat: no-repeat;
     padding-left: 20px;
     min-height: 15px;
 }
 
 .portlet-tigris .portlet-msg-alert {
-    background: url(content/tigris/images/icon_warning_sml.gif) no-repeat;
+    background: url(content/tigris/images/icon_warning_sml.gif);
+    background-repeat: no-repeat;
     padding-left: 20px;
     min-height: 15px;
 }
 
 .portlet-tigris .portlet-msg-success {
-    background: url(content/tigris/images/icon_success_sml.gif) no-repeat;
+    background: url(content/tigris/images/icon_success_sml.gif);
+    background-repeat: no-repeat;
     padding-left: 20px;
     min-height: 15px;
 }
@@ -487,23 +491,51 @@ limitations under the License.
 /* --------------------------------- */
 /* Tree component                    */
 /* --------------------------------- */
-th, td, input {
+
+.portlet-tigris .tree {
+   lineheight: 18px;
+   font-family: arial, sans-serif;
+}
+
+.portlet-tigris .tree-node {
+   padding: 2px 15px 2px 5px;
+}
+
+.portlet-tigris .tree-node a {
+   text-decoration: none;
+}
+
+.portlet-tigris .tree-node-selected {
+   padding: 2px 15px 2px 5px;
+}
+
+.portlet-tigris .tree-node-selected a {
+   text-decoration: none;
+   font-weight: bold;
+}
+
+/* --------------------------------- */
+/* Portlet Table                     */
+/* --------------------------------- */
+.portlet-tigris th, td, input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 }
 
-table, th, td {
+.portlet-tigris table, th, td {
+	vertical-align: top;
 	font-size: small;
 	border: none;
+	white-space: nowrap;
 }
 
-.treeHeader {
+.portlet-tigris .portlet-table-header {
 	background-color: #bbb;
 	border: 0.75px solid #fff;
 	padding: 2px 3px;
 	text-align: left;
 }
 
-.treeFooter {
+.portlet-tigris .portlet-table-footer {
 	font-size: x-small;
 	padding: 5px;
 	margin: .67em 2px;
@@ -515,46 +547,40 @@ table, th, td {
 }
 
 
-.treeRow1 td {
+.portlet-tigris .portlet-table-row1 td {
 	font-size: small;
 	background: #ddd;
 	border-bottom: 1px solid #fff;
 }
 
-.treeRow2 td {
+.portlet-tigris .portlet-table-row2 td {
 	font-size: small;
 	background: #efefef;
 	border-bottom: 1px solid #fff;
 }
 
-.treeCol1 {
+.portlet-tigris .portlet-table-col1 {
 	border-right: 1px solid #fff;
 	padding: 2px 15px 2px 5px;
 }
 
-.treeCol2 {
+.portlet-tigris .portlet-table-col2 {
 	border-left: 1px solid #fff;
 	padding: 2px 15px 2px 5px;
 }
 
-.tree {
-   lineheight: 18px;
-   font-family: arial, sans-serif;
+/* --------------------------------- */
+/* Portlet Data Scroller Table       */
+/* --------------------------------- */
+
+.portlet-tigris .portlet-scroller-grid td {
+    horizontal-align: center;
 }
 
-.treenode {
-   padding: 2px 15px 2px 5px;
+.portlet-tigris .portlet-scroller {
+    horizontal-align: center;
 }
 
-.treenode a {
-   text-decoration: none;
-}
-
-.treenodeSelected {
-   padding: 2px 15px 2px 5px;
-}
-
-.treenodeSelected a {
-   text-decoration: none;
-   font-weight: bold;
+.portlet-tigris .portlet-paginator {
+	horizontal-align: center;
 }

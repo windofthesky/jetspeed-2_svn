@@ -117,14 +117,7 @@ limitations under the License.
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    <dependency>
-      <groupId>jspapi</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.0-20040521</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>         
+        
    </dependencies>
 
   <build>

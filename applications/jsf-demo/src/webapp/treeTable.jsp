@@ -30,12 +30,12 @@
         <x:tree id="tree" value="#{treeTable.treeModel}"
         		var="treeItem"
         		styleClass="tree"
-        	    nodeClass="treenode"
-        	    headerClass="treeHeader"
-        	    footerClass="treeFooter"
-    	        rowClasses="treeRow1, treeRow2"
-    	        columnClasses="treeCol1, treeCol2"
-	            selectedNodeClass="treenodeSelected"
+        	    nodeClass="tree-node"
+        	    headerClass="portlet-table-header"
+        	    footerClass="portlet-table-footer"
+    	        rowClasses="portlet-table-row1, portlet-table-row2"
+    	        columnClasses="portlet-table-col1, portlet-table-col2"
+	            selectedNodeClass="tree-node-selected"
 	            expandRoot="true">
 	        <h:column>
 	        	<f:facet name="header">
@@ -43,12 +43,12 @@
                 </f:facet>
                	<h:outputText value="#{treeItem.isoCode}" />
             </h:column>
-	        <x:treecolumn>
+	        <x:treeColumn>
 	        	<f:facet name="header">
                 	<h:outputText value="Header 2" />
                 </f:facet>
 	        	<h:outputText value="#{treeItem.name}" />
-	        </x:treecolumn>
+	        </x:treeColumn>
 	        <h:column>
 	        	<f:facet name="header">
                 	<h:outputText value="Header 3" />
