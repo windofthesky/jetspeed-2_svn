@@ -104,6 +104,10 @@ limitations under the License.
       <name>sizes</name>
       <value>33%,33%,33%</value>
     </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>ThreeColumns</value>
+    </init-param>
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
