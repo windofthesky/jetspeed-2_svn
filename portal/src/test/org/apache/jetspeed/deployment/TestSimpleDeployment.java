@@ -23,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
+import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
@@ -32,6 +33,8 @@ import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
@@ -67,6 +70,10 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     protected File webAppsDirFile;
     protected File copyFrom;
     protected PortletWindowAccessor windowAccess;
+    protected PortletCache portletCache;
+    protected PortletFactory portletFactory;
+    
+ 
 
     /**
      * @param testName
@@ -140,7 +147,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
                 .getAbsolutePath());
 
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess), portletRegistry );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache), portletRegistry, portletFactory );
         ArrayList eventListeners = new ArrayList(2);
         eventListeners.add(ddel);
         eventListeners.add(dpal);
@@ -174,7 +181,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
             PortletDefinition def = (PortletDefinition) portletDefItr.next();
             try
             {
-                Portlet portlet = JetspeedPortletFactory.loadPortletClass(def.getClassName());
+                Portlet portlet = JetspeedPortletFactoryProxy.loadPortletClass(def.getClassName());
                 assertNotNull(portlet);
             }
             catch (Exception e)
@@ -236,7 +243,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     public void testUndeployVersusRedeploy() throws Exception
     {
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess), portletRegistry );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache), portletRegistry, portletFactory );
         ArrayList eventListeners = new ArrayList(1);
         
         eventListeners.add(dpal);
@@ -382,6 +389,10 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
             
             copyDeployables();
             windowAccess = new PortletWindowAccessorImpl(entityAccess);  
+            
+            portletCache = new PortletCache();
+            portletFactory = new JetspeedPortletFactory(portletCache);
+            new JetspeedPortletFactoryProxy(portletFactory);
 
         }
         catch (Exception e)
@@ -446,7 +457,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
      */
     public void tearDown() throws Exception
     {
-        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess);
+        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache);
 
         try
         {
@@ -476,6 +487,7 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
 
         // DirectoryUtils.rmdir(new File("./target/deployment"));
         new DirectoryHelper(new File("./target/deployment")).remove();
+        JetspeedPortletFactoryProxy.reset();
         super.tearDown();
 
     }
