@@ -26,5 +26,7 @@ limitations under the License.
 	  <fragment id="xx9" type="portlet" name="HW_App::CustomerList"/>
 
   </fragment>
-  
+  <metadata name="title" xml:lang="ja">
+        PSML ページ 2
+  </metadata>  
 </page>

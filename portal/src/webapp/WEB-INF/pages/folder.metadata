@@ -2,6 +2,7 @@
 <folder>
   <title >Root Folder</title>  
   <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
+  <metadata name="title" xml:lang="ja">ルートフォルダ</metadata>
   <documentOrder>Jetspeed2.link</documentOrder>
   <documentOrder>Jetspeed2Wiki.link</documentOrder>
   <documentOrder>apache_portals.link</documentOrder>

@@ -23,4 +23,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
   </fragment>
+  <metadata name="title" xml:lang="ja">
+        言語選択
+  </metadata>
 </page>

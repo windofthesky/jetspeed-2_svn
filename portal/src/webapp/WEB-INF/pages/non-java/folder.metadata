@@ -2,4 +2,5 @@
 <folder>
   <title >Non-Java Portlets</title>  
   <metadata name="title" xml:lang="fr">Portlet non-Java</metadata>
+  <metadata name="title" xml:lang="ja">non-Javaポートレット</metadata>
 </folder>

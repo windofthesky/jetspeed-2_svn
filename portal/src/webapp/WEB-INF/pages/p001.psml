@@ -39,4 +39,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
+  <metadata name="title" xml:lang="ja">
+        PSML ページ 1
+  </metadata>
 </page>

@@ -29,4 +29,7 @@ limitations under the License.
      </fragment>                                                            
     
   </fragment>
+  <metadata name="title" xml:lang="ja">
+        JSF 数当てポートレット
+  </metadata>
 </page>
