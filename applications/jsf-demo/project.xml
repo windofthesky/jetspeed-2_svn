@@ -87,7 +87,7 @@ limitations under the License.
     <dependency>
       <groupId>myfaces</groupId>
       <artifactId>myfaces-jsf-api</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.7-PATCHED</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -95,7 +95,7 @@ limitations under the License.
     <dependency>
       <groupId>myfaces</groupId>
       <artifactId>myfaces</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.7-PATCHED</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -103,7 +103,7 @@ limitations under the License.
     <dependency>
       <groupId>myfaces</groupId>
       <artifactId>myfaces-components</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.7-PATCHED</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
