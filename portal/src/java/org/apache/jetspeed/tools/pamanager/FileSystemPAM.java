@@ -181,6 +181,11 @@ public class FileSystemPAM implements Deployment
             rollback(nState, webAppsDir, paName, app);
             throw new PortletApplicationException(e.getMessage());
         }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            
+        }
 
     }
 
