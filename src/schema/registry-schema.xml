@@ -115,7 +115,7 @@ limitations under the License.
     <table name="SECURITY_ROLE_REFERENCE">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PORTLET_DEFINITION_ID" required="true" type="INTEGER"/>
-        <column name="ROLE_NAME" size="150" type="VARCHAR"/>
+        <column name="ROLE_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="ROLE_LINK" size="150" type="VARCHAR"/>
     </table>
     
