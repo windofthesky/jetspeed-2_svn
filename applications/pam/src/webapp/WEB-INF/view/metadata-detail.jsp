@@ -10,7 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
-<form name="Edit_Metatdata_Form" action="<c:out value="${edit_metadata_link}"/>">
+<form name="Edit_Metatdata_Form" action="<c:out value="${edit_metadata_link}"/>" method="post">
 	<input type="hidden" name="portlet_action" value=""/>
 	<table>
 		<tr>
@@ -43,7 +43,7 @@ limitations under the License.
 	<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>remove_metadata'"/>
 </form>
 		
-<form action="<c:out value="${edit_metadata_link}"/>">
+<form action="<c:out value="${edit_metadata_link}"/>" method="post">
 	<input type="hidden" name="portlet_action" value="<c:out value="${action_prefix}"/>add_metadata"/>
 	<div>
 		<table>

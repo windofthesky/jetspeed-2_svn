@@ -98,7 +98,7 @@ limitations under the License.
 <c:if test="${currentTab.id == 'site_security'  && node != null}">
 		<portlet:actionURL var="edit_page_link" />
 
-		<form action="<c:out value="${edit_page_link}"/>">
+		<form action="<c:out value="${edit_page_link}"/>" method="post">
 			<c:if test="${folder != null}">
 				<input type="hidden" name="action_type" value="folder"/>
 			</c:if>

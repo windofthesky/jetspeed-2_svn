@@ -58,7 +58,7 @@ limitations under the License.
   <div id="attributes">	
   <portlet:actionURL var="edit_user_attr_link" />
   
-	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_user_attribute"/>
 		
 		<table>
@@ -86,7 +86,7 @@ limitations under the License.
 		<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_attribute'"/>
 		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_attribute'"/>
 	</form>
-	<form name="Add_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+	<form name="Add_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_attribute"/>
 		
 		<table>
@@ -119,7 +119,7 @@ limitations under the License.
   <div id="Role">
   <portlet:actionURL var="edit_role_link" />
   
-	<form name="Edit_Role_Form" action="<c:out value="${edit_role_link}"/>">
+	<form name="Edit_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_role"/>		
 		<table>
 			<tr>
@@ -139,7 +139,7 @@ limitations under the License.
 		</table>
 		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_role'"/>
     </form>
-	<form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>">
+	<form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_role"/>
 		
 		<table>
@@ -165,7 +165,7 @@ limitations under the License.
   <div id="Group">
   <portlet:actionURL var="edit_group_link" />
   
-	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>">
+	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_group"/>		
 		<table>
 			<tr>
@@ -185,7 +185,7 @@ limitations under the License.
 		</table>
 		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_group'"/>
     </form>
-	<form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>">
+	<form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_group"/>
 		
 		<table>
@@ -212,7 +212,7 @@ limitations under the License.
   <div id="Profile">
   <portlet:actionURL var="edit_role_link" />
   
-	<form name="Edit_Group_Form" action="<c:out value="${edit_role_link}"/>">
+	<form name="Edit_Group_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.update_user_rule"/>		
 		<table>
 			<tr>

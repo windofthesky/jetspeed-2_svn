@@ -30,7 +30,7 @@ limitations under the License.
 	<portlet:actionURL var="edit_portlet_link" >
     </portlet:actionURL>
 	
-	<form action="<c:out value="${edit_portlet_link}"/>">
+	<form action="<c:out value="${edit_portlet_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.edit_portlet"/>
 	<table>
 		<tr>
@@ -98,7 +98,7 @@ limitations under the License.
 		<input type="submit" value="<fmt:message key="pam.details.edit_display_name"/>"/>
 	</form>
 	
-	<form action="<c:out value="${edit_portlet_link}"/>">
+	<form action="<c:out value="${edit_portlet_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.edit_portlet"/>
 		<table>
 			<tr>
@@ -151,7 +151,7 @@ limitations under the License.
 	<portlet:actionURL var="edit_preferenece_link" >
     </portlet:actionURL>
 	
-	<form action="<c:out value="${edit_preferenece_link}"/>">
+	<form action="<c:out value="${edit_preferenece_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value=""/>
 		<table border="1">
 			<tr>
@@ -193,7 +193,7 @@ limitations under the License.
 	<hr />
 	
 	
-	<form action="<c:out value="${edit_preferenece_link}"/>">
+	<form action="<c:out value="${edit_preferenece_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.add_preference"/>
 		<table>
 			<tr>
@@ -237,7 +237,7 @@ limitations under the License.
 	<portlet:actionURL var="edit_language_link" >
     </portlet:actionURL>
 	
-	<form action="<c:out value="${edit_language_link}"/>">
+	<form action="<c:out value="${edit_language_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value=""/>
 	<table border="1">
 		<tr>
@@ -284,7 +284,7 @@ limitations under the License.
 		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_language'"/>
 	</form>
 	
-	<form action="<c:out value="${edit_language_link}"/>">
+	<form action="<c:out value="${edit_language_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.add_language"/>
 		
 		<table>
@@ -349,7 +349,7 @@ limitations under the License.
 		see prefs section
 	--%>
 	
-	<form action="<c:out value="${edit_parameter_link}"/>">
+	<form action="<c:out value="${edit_parameter_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value=""/>
 	
 	<table border="1">
@@ -399,7 +399,7 @@ limitations under the License.
 	
 	</form>
 	
-	<form action="<c:out value="${edit_parameter_link}"/>">
+	<form action="<c:out value="${edit_parameter_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.add_parameter"/>
 		<table>
 			<tr>
@@ -458,7 +458,7 @@ limitations under the License.
     </portlet:actionURL>
 
 	<c:if test="${! empty roleSet.innerCollection}">
-	<form action="<c:out value="${edit_security_link}"/>">
+	<form action="<c:out value="${edit_security_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value=""/>	
 	
 		<table border="1">
@@ -509,7 +509,7 @@ limitations under the License.
 	</form>
 	</c:if>
 
-	<form action="<c:out value="${edit_security_link}"/>">
+	<form action="<c:out value="${edit_security_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.add_security"/>
 		<table>
 			<tr>
@@ -569,7 +569,7 @@ limitations under the License.
     </portlet:actionURL>
 
 	<c:if test="${! empty contentTypeSet.innerCollection}">
-	<form action="<c:out value="${edit_content_type_link}"/>">
+	<form action="<c:out value="${edit_content_type_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value=""/>
 		<table border="1">
 			<tr>
@@ -600,7 +600,7 @@ limitations under the License.
 	</form>
 	</c:if>
 	
-	<form action="<c:out value="${edit_content_type_link}"/>">
+	<form action="<c:out value="${edit_content_type_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet.add_content_type"/>
 		<table>
 			<tr>

@@ -53,7 +53,7 @@ limitations under the License.
 	<portlet:actionURL var="select_portlet_link" >
         <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
     </portlet:actionURL>
-	<form action="<c:out value="${select_portlet_link}"/>">
+	<form action="<c:out value="${select_portlet_link}"/>" method="post">
 		<select name="select_portlet" onChange="this.form.submit();">
 		
 			<option value="" <c:if test="! ${selectedPDef}"> selected="true"</c:if> >
@@ -98,7 +98,7 @@ limitations under the License.
 	<portlet:actionURL var="edit_user_attr_link" >
 	</portlet:actionURL>
 		
-	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet_app.edit_user_attribute"/>
 		
 		<table>
@@ -128,7 +128,7 @@ limitations under the License.
 		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet_app.remove_user_attribute'"/>
 	</form>
 	
-	<form action="<c:out value="${edit_user_attr_link}"/>">
+	<form action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="portlet_app.add_user_attribute"/>
 		
 		<table>
