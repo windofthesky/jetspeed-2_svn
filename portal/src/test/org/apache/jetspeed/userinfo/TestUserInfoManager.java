@@ -26,9 +26,7 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -132,9 +130,20 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
             PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
         assertNotNull("App is null", app);
 
-        store.getTransaction().begin();
-        store.makePersistent(app);
-        store.getTransaction().commit();
+        // persist the app
+        try
+        {
+            store.getTransaction().begin();
+            registry.registerPortletApplication(app);
+            store.getTransaction().commit();
+        }
+        catch (Exception e)
+        {
+            String msg =
+                "Unable to register portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
+            store.getTransaction().rollback();
+            throw new Exception(msg, e);
+        }
 
         RequestContext request = initRequestContext("anon");
 
@@ -151,9 +160,19 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
 
-        store.getTransaction().begin();
-        store.deletePersistent(app);
-        store.getTransaction().commit();
+        // remove the app
+        try
+        {
+            store.getTransaction().begin();
+            registry.removeApplication(app);
+            store.getTransaction().commit();
+        }
+        catch (Exception e)
+        {
+            String msg =
+                "Unable to remove portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
+            throw new Exception(msg, e);
+        }
                 
         destroyUser();
     }
