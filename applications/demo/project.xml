@@ -63,6 +63,14 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
      </dependency>
+     <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties> 
+    </dependency>
+     <!--
       <dependency>
       <id>veltag</id>
       <groupId>velocity</groupId>
@@ -71,7 +79,7 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
      </dependency>      
-    
+    -->
    </dependencies>
 
 
