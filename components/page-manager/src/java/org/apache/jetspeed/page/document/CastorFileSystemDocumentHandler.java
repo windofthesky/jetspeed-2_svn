@@ -144,7 +144,12 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         String id = document.getId();
 
         // marshal page to disk
-        File f = new File(this.documentRootDir, id + this.documentType);
+        String fileName = id;        
+        if (id != null && !id.endsWith(this.documentType))
+        {
+            fileName = id + this.documentType;
+        }
+        File f = new File(this.documentRootDir, fileName);
         FileWriter writer = null;
 
         try
