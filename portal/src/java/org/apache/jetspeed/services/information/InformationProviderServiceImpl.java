@@ -17,10 +17,9 @@ package org.apache.jetspeed.services.information;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
+import org.apache.pluto.services.information.InformationProviderService;
 import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
@@ -29,7 +28,7 @@ import org.apache.pluto.services.information.StaticInformationProvider;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class InformationProviderServiceImpl extends BaseCommonService implements Factory, InformationProviderServiceService
+public class InformationProviderServiceImpl implements Factory, InformationProviderService
 {
     private javax.servlet.ServletConfig servletConfig;
     private static final Log log = LogFactory.getLog(InformationProviderServiceImpl.class);
@@ -37,11 +36,6 @@ public class InformationProviderServiceImpl extends BaseCommonService implements
     public void init(javax.servlet.ServletConfig config, java.util.Map properties) throws Exception
     {
         servletConfig = config;
-    }
-
-    public void destroy() throws Exception
-    {
-
     }
 
     public StaticInformationProvider getStaticProvider()
@@ -83,47 +77,16 @@ public class InformationProviderServiceImpl extends BaseCommonService implements
         return provider;
     }
 
-    //    public PortalContextProvider getPortalContextProvider()
-    //    {
-    //        javax.servlet.ServletContext context = servletConfig.getServletContext();
-    //
-    //        PortalContextProvider provider =
-    //            (PortalContextProvider) context.getAttribute("org.apache.engine.core.PortalContextProvider");
-    //
-    //        if (provider == null)
-    //        {
-    //            provider = new PortalContextProviderImpl();
-    //            context.setAttribute("org.apache.engine.core.PortalContextProvider", provider);
-    //        }
-    //
-    //        return provider;
-    //    }
-
-    //    public PortletActionProvider getPortletActionProvider(javax.servlet.http.HttpServletRequest request)
-    //    {
-    //        PortletActionProvider provider =
-    //            (PortletActionProvider) request.getAttribute("org.apache.engine.core.PortletActionProvider");
-    //
-    //        if (provider == null)
-    //        {
-
-    //            provider = new PortletActionProviderImpl(request, servletConfig);
-    //            request.setAttribute("org.apache.engine.core.PortletActionProvider", provider);
-    //        }
-    //
-    //        return provider;
-    //    }
-
     /**
-     * @see org.apache.fulcrum.Service#init()
+     * <p>
+     * destroy
+     * </p>
+     *
+     * @see org.apache.pluto.factory.Factory#destroy()
+     * @throws java.lang.Exception
      */
-    public void init() throws CPSInitializationException
-    {
-        if (!isInitialized())
-        {
-            setInit(true);
-        }
+    public void destroy() throws Exception
+    {       
 
     }
-
 }
