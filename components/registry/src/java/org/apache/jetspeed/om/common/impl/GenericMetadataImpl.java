@@ -53,13 +53,7 @@ public class GenericMetadataImpl implements GenericMetadata
         field.setValue(value);
         field.setLocale(locale);
         
-        if(fields == null)
-        {
-            fields = new ArrayList();
-        }
-        
-        fields.add(field);
-        fieldMap.put(name, field);
+        addField(field);
     }
 
     /* (non-Javadoc)
@@ -90,8 +84,16 @@ public class GenericMetadataImpl implements GenericMetadata
     public void setFields(String name, Collection values)
     {
         fieldMap.remove(name);
-        fieldMap.put(name, values);
-        fields.removeAll(values);
+        if(values != null)
+        {    
+            Iterator iter = values.iterator();
+            while(iter.hasNext())
+            {
+                LocalizedField field = (LocalizedField)iter.next();
+                fieldMap.put(field.getName(), field);
+            }
+            fields.removeAll(values);
+        }
     }
     
     /**
