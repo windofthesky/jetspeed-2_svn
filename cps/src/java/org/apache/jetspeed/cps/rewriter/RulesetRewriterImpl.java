@@ -176,17 +176,21 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
                 {
                     continue;
                 }                                        
-                String rewritten = this.rewriteUrl(value, tag.getId(), name);
-                if (rule.getSuffix() != null)
-                {
-                    rewritten = rewritten.concat(rule.getSuffix());
-                }
                 
-                attributes.addAttribute(name, rewritten);
-                                    
-                if (rule.getPopup())
+                String rewritten = this.rewriteUrl(value, tag.getId(), name);
+                if (null != rewritten) // return null indicates "don't rewrite" 
                 {
-                    attributes.addAttribute("TARGET", "_BLANK");                        
+                    if (rule.getSuffix() != null)
+                    {
+                        rewritten = rewritten.concat(rule.getSuffix());
+                    }
+                    
+                    attributes.addAttribute(name, rewritten);
+                                        
+                    if (rule.getPopup())
+                    {
+                        attributes.addAttribute("TARGET", "_BLANK");                        
+                    }
                 }
             }            
         }
