@@ -66,9 +66,29 @@ public class PBStore implements PersistenceStore
     
     
     public PBStore(String jcd)
-    {
+    {        
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
+            // We are doing this because of OJB always defaulting to current threads
+            // class loader, which will break if OJB classes are loaded at a lower
+            // level in the class loader hierarchy
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            
+        	Enumeration enum = getClass().getClassLoader().getResources("OJB.properties");
+        	int count = 0;
+        	while(enum.hasMoreElements())
+        	{
+        		log.debug("Located OJB.properties classpath resource: "+enum.nextElement());
+        		count++;
+        	}
+        	
+        	if(count > 1)
+        	{
+        		log.warn("More than one OJB.properties file was located on the classpath!");
+        	}
+        	
+        	
             pbKey = new PBKey(jcd);
    
             if (jcd != null)
@@ -104,7 +124,11 @@ public class PBStore implements PersistenceStore
             {
            e.getCause().printStackTrace();
             }
-        }        
+        } 
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
     }
 
     /* (non-Javadoc)

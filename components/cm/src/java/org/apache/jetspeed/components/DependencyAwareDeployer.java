@@ -8,6 +8,8 @@ package org.apache.jetspeed.components;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +22,13 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.impl.VFSClassLoader;
+import org.apache.jetspeed.components.util.ContextClassLoaderAlteringProxy;
 import org.nanocontainer.NanoContainer;
 import org.nanocontainer.deployer.Deployer;
 import org.nanocontainer.integrationkit.ContainerBuilder;
+import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.PicoContainer;
+import org.picocontainer.defaults.ClassHierarchyIntrospector;
 import org.picocontainer.defaults.ObjectReference;
 import org.picocontainer.defaults.SimpleReference;
 
@@ -77,7 +83,23 @@ public class DependencyAwareDeployer implements Deployer
 
         NanoContainer nanoContainer = new NanoContainer(scriptReader, builderClassName, applicationClassLoader);
         ContainerBuilder builder = nanoContainer.getContainerBuilder();
-        builder.buildContainer(result, parentContainerRef, null);
+        
+        ContainerBuilder builderProxy = (ContainerBuilder) Proxy.newProxyInstance(applicationClassLoader, new Class[]{ContainerBuilder.class}, new ContextClassLoaderAlteringProxy(builder, applicationClassLoader));
+        
+        builderProxy.buildContainer(result, parentContainerRef, null);
+        PicoContainer realContainer = (PicoContainer) result.get();
+        
+        Class[] containerInterfaces = ClassHierarchyIntrospector.getAllInterfaces(realContainer.getClass());
+        
+        PicoContainer parentContainer = realContainer.getParent();
+        if(parentContainer != null && realContainer instanceof MutablePicoContainer)            
+        {
+            Class[] parentContainerInterfaces = ClassHierarchyIntrospector.getAllInterfaces(parentContainer.getClass());
+            ((MutablePicoContainer)realContainer).setParent((PicoContainer) Proxy.newProxyInstance(applicationClassLoader, parentContainerInterfaces, new ContextClassLoaderAlteringProxy(parentContainer, applicationClassLoader)));
+        }
+        
+        PicoContainer proxyContainer = (PicoContainer) Proxy.newProxyInstance(applicationClassLoader, containerInterfaces, new ContextClassLoaderAlteringProxy(realContainer, applicationClassLoader));
+        result.set(proxyContainer);
 
         return result;
     }

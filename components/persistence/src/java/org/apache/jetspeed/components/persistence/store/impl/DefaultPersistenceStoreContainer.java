@@ -413,6 +413,7 @@ public class DefaultPersistenceStoreContainer
             monitor.setDaemon(true);
             monitor.setPriority(Thread.MIN_PRIORITY);
             // monitor.setContextClassLoader(Thread.currentThread().getContextClassLoader());
+            monitor.setContextClassLoader(getClass().getClassLoader());
             monitor.start();
             started=true;
         }

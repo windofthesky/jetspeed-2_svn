@@ -33,7 +33,7 @@ import org.picocontainer.defaults.SimpleReference;
  *          weaver Exp $
  *  
  */
-public class NanoDeployerBasedTestSuite extends TestSuite
+public class NanoDeployerBasedTestSuite extends TestSuite implements RootContainer
 {
     private MutablePicoContainer container;
     private String[] applicationFolders;
@@ -78,7 +78,7 @@ public class NanoDeployerBasedTestSuite extends TestSuite
     }
 
     protected void buildContainer() throws Exception
-    {
+    {       
         ArrayList containers = new ArrayList();
         File deploy = new File("./target/deploy");
         if (deploy.exists())
@@ -171,5 +171,21 @@ public class NanoDeployerBasedTestSuite extends TestSuite
     public void setApplicationFolders( String[] appFolders )
     {
         this.applicationFolders = appFolders;
+    }
+    
+    
+    /**
+     * @return Returns the container.
+     */
+    public MutablePicoContainer getContainer()
+    {
+        return container;
+    }
+    /**
+     * @param container The container to set.
+     */
+    public void setContainer(MutablePicoContainer container)
+    {
+        this.container = container;
     }
 }

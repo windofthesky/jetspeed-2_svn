@@ -1,18 +1,4 @@
-<!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
+<!-- @version $Id$ -->
 <!--
 Define here all used connections.
 One defined connection should be defined as the default one,
@@ -29,13 +15,21 @@ using the MetadataManager.
 
 
     <jdbc-connection-descriptor
-        jcd-alias="jetspeed"
+   		jcd-alias="jetspeed"
         platform="Hsqldb"
         default-connection="true"
         jdbc-level="2.0"
         jndi-datasource-name="java:comp/env/jdbc/jetspeed"
-        batch-mode="false"
-     >     
+        eager-release="false"
+   		batch-mode="false"
+        useAutoCommit="1"
+        ignoreAutoCommitExceptions="false"
+     >
+
+        <object-cache class="org.apache.ojb.broker.cache.ObjectCacheDefaultImpl">
+            <attribute attribute-name="timeout" attribute-value="900"/>
+            <attribute attribute-name="autoSync" attribute-value="true"/>
+        </object-cache>
 
         <connection-pool
             maxActive="21"
@@ -47,4 +41,4 @@ using the MetadataManager.
             <attribute attribute-name="globalSequenceId" attribute-value="false"/>
             <attribute attribute-name="globalSequenceStart" attribute-value="10000"/>
         </sequence-manager>
-   </jdbc-connection-descriptor>
+   </jdbc-connection-descriptor> 

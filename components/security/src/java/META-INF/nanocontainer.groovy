@@ -39,7 +39,7 @@ import java.io.File
 
 
 
-container = new ChildAwareContainer()
+container = new ChildAwareContainer(parent)
 container.registerComponentImplementation(UserManager, UserManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 container.registerComponentImplementation(GroupManager, GroupManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )
 container.registerComponentImplementation(RoleManager, RoleManagerImpl, new Parameter[] {new ComponentParameter(PersistenceStoreContainer), new ConstantParameter("jetspeed")} )

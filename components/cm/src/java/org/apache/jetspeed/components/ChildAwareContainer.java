@@ -262,14 +262,26 @@ public class ChildAwareContainer implements MutablePicoContainer
      */
     public void start()
     {
-        wrappedContainer.start();
+//        ClassLoader originalClassLoader=null;
+//        try
+//        {
+//          originalClassLoader = Thread.currentThread().getContextClassLoader();
+            wrappedContainer.start();
+//        }
+//        finally
+//        {
+//            if(originalClassLoader != null)
+//            {
+//                setC
+//            }
+//        }
     }
 
     /**
      *  
      */
     public void stop()
-    {
+    {        
         wrappedContainer.stop();
     }
 
