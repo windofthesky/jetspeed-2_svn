@@ -38,6 +38,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="register" />
             <arg value="-PortletAppName" />
@@ -57,6 +58,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="unregister" />
             <arg value="-PortletAppName" />
@@ -76,6 +78,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -95,6 +98,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -115,6 +119,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -136,6 +141,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -155,6 +161,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+            <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -301,6 +308,7 @@
          <path refid="maven.dependency.classpath"/>
          <pathelement path="${maven.build.dest}"/>
         </classpath>
+         <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
          <arg value="-action" />
          <arg value="deploy" />
          <arg value="-PortletAppName" />
@@ -349,6 +357,7 @@
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
+             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
