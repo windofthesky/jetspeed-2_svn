@@ -78,9 +78,8 @@ public class JetspeedProfiler implements Profiler, Startable
     
     public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, String storeName)
 	{
-        this.pContainer = pContainer;
-        this.pageManager = pageManager;
-        this.storeName = storeName;
+        this(pContainer, pageManager);
+        this.storeName = storeName;        
     }
     
     /**
@@ -98,9 +97,7 @@ public class JetspeedProfiler implements Profiler, Startable
      */
     public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, Properties properties)
 	{
-        this.pContainer = pContainer;
-        this.pageManager = pageManager;        
-        this.storeName = properties.getProperty("storeName", "jetspeed");        
+        this(pContainer, pageManager, properties.getProperty("storeName", "jetspeed"));
         this.defaultRule = properties.getProperty("defaultRule", "j1");
         this.anonymousUser = properties.getProperty("anonymousUser", "anon");
         initModelClasses(properties); // TODO: move this to start()
@@ -108,6 +105,17 @@ public class JetspeedProfiler implements Profiler, Startable
 
     public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager)
 	{
+        
+        if(pageManager == null)
+        {
+            throw new IllegalArgumentException("JetspeedProfiler requires a non-null PageManager instance.");
+        }
+        
+        if(pContainer == null)
+        {
+            throw new IllegalArgumentException("JetspeedProfiler requires a non-null PersistenceStoreContainer instance.");
+        }
+        
         this.pageManager = pageManager;        
         this.pContainer = pContainer;
 	}
