@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.capability.TestCapability'/>        
+<property name='testcase' value='org.apache.jetspeed.spi.services.prefs.TestPreferences'/>        
  
 <!--
   <goal name="jaxb:portlet"

@@ -4,7 +4,7 @@
 <class-descriptor
     class="org.apache.jetspeed.spi.om.prefs.impl.PropertySetDefImpl"
     proxy="dynamic"
-    table="pref_property_set_def"
+    table="PREF_PROPERTY_SET_DEF"
 >
     <documentation>Represents a property set definition.</documentation>
     <field-descriptor
@@ -66,7 +66,7 @@
 <class-descriptor
     class="org.apache.jetspeed.spi.om.prefs.impl.NodeImpl"
     proxy="dynamic"
-    table="pref_node"
+    table="PREF_NODE"
 >
     <documentation>Represents a preferences node.</documentation>
     <field-descriptor
@@ -159,7 +159,7 @@
 <class-descriptor
     class="org.apache.jetspeed.spi.om.prefs.impl.PropertyKeyImpl"
     proxy="dynamic"
-    table="pref_property_key"
+    table="PREF_PROPERTY_KEY"
 >
     <documentation>Represents a property key.</documentation>
     <field-descriptor
@@ -216,7 +216,7 @@
 <class-descriptor
     class="org.apache.jetspeed.spi.om.prefs.impl.PropertyImpl"
     proxy="dynamic"
-    table="pref_property_value"
+    table="PREF_PROPERTY_VALUE"
 >
     <documentation>Represents a property key/value pair.</documentation>
     <field-descriptor

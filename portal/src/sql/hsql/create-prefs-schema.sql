@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 -- pref_property_set_def
 -----------------------------------------------------------------------------
-CREATE TABLE pref_property_set_def
+CREATE TABLE PREF_PROPERTY_SET_DEF
 (
     property_set_def_id INTEGER NOT NULL PRIMARY KEY,
     property_set_name VARCHAR(100),
@@ -14,7 +14,7 @@ CREATE TABLE pref_property_set_def
 -----------------------------------------------------------------------------
 -- pref_node
 -----------------------------------------------------------------------------
-CREATE TABLE pref_node
+CREATE TABLE PREF_NODE
 (
     node_id INTEGER NOT NULL PRIMARY KEY,
     parent_node_id INTEGER NULL,
@@ -30,7 +30,7 @@ CREATE TABLE pref_node
 -----------------------------------------------------------------------------
 -- pref_property_value
 -----------------------------------------------------------------------------
-CREATE TABLE pref_property_value
+CREATE TABLE PREF_PROPERTY_VALUE
 (
     property_value_id INTEGER NOT NULL PRIMARY KEY,
     property_key_id INTEGER,
@@ -47,7 +47,7 @@ CREATE TABLE pref_property_value
 -----------------------------------------------------------------------------
 -- pref_property_key
 -----------------------------------------------------------------------------
-CREATE TABLE pref_property_key
+CREATE TABLE PREF_PROPERTY_KEY
 (
     property_key_id INTEGER NOT NULL PRIMARY KEY,
     property_set_def_id INTEGER,
@@ -57,24 +57,24 @@ CREATE TABLE pref_property_key
     modified_date TIMESTAMP
 );
 
-	ALTER TABLE pref_node
-		ADD CONSTRAINT pref_node_FK1 FOREIGN KEY (parent_node_id)
-			REFERENCES pref_node (node_id);
+    ALTER TABLE PREF_NODE
+        ADD CONSTRAINT PREF_NODE_FK1 FOREIGN KEY (parent_node_id)
+            REFERENCES PREF_NODE (node_id);
 
-    ALTER TABLE pref_node
-        ADD CONSTRAINT pref_node_FK_2 FOREIGN KEY (property_set_def_id)
-            REFERENCES pref_property_set_def (property_set_def_id);
+    ALTER TABLE PREF_NODE
+        ADD CONSTRAINT PREF_NODE_FK_2 FOREIGN KEY (property_set_def_id)
+            REFERENCES PREF_PROPERTY_SET_DEF (property_set_def_id);
 
-	ALTER TABLE pref_property_value
-        ADD CONSTRAINT pref_property_value_FK_1 FOREIGN KEY (node_id)
-            REFERENCES pref_node (node_id);
+    ALTER TABLE PREF_PROPERTY_VALUE
+        ADD CONSTRAINT PREF_PROPERTY_VALUE_FK_1 FOREIGN KEY (node_id)
+            REFERENCES PREF_NODE (node_id);
             
-    ALTER TABLE pref_property_value
-        ADD CONSTRAINT pref_property_value_FK_2 FOREIGN KEY (property_key_id)
-            REFERENCES pref_property_key (property_key_id);
+    ALTER TABLE PREF_PROPERTY_VALUE
+        ADD CONSTRAINT PREF_PROPERTY_VALUE_FK_2 FOREIGN KEY (property_key_id)
+            REFERENCES PREF_PROPERTY_KEY (property_key_id);
 
-    ALTER TABLE pref_property_key
-        ADD CONSTRAINT pref_property_key_FK_1 FOREIGN KEY (property_set_def_id)
-            REFERENCES pref_property_set_def (property_set_def_id);
+    ALTER TABLE PREF_PROPERTY_KEY
+        ADD CONSTRAINT PREF_PROPERTY_KEY_FK_1 FOREIGN KEY (property_set_def_id)
+            REFERENCES PREF_PROPERTY_SET_DEF (property_set_def_id);
 
 
