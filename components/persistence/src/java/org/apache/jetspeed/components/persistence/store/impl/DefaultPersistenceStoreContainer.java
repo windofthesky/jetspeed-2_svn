@@ -22,13 +22,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.ChildAwareContainer;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.defaults.ComponentAdapterFactory;
-import org.picocontainer.defaults.DefaultPicoContainer;
 
 /**
  * <p>
@@ -42,7 +42,7 @@ import org.picocontainer.defaults.DefaultPicoContainer;
  *
  */
 public class DefaultPersistenceStoreContainer
-    extends DefaultPicoContainer
+    extends ChildAwareContainer
     implements PersistenceStoreContainer, PersistenceStoreEventListener
 {
     /** Holds the current threads PersistenceStore */
