@@ -23,33 +23,31 @@ import java.util.List;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
-import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
 
 /**
- * SSOBrowser
+ * RoleChooserPortlet
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class UserChooserPortlet extends BrowserPortlet
+public class RoleChooserPortlet extends BrowserPortlet
 {
-    private UserManager userManager;
+    private RoleManager roleManager;
     
     public void init(PortletConfig config)
     throws PortletException 
     {
         super.init(config);
-        userManager = (UserManager) 
-            getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
-        if (null == userManager)
+        roleManager = (RoleManager) 
+            getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        if (null == roleManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
@@ -62,26 +60,26 @@ public class UserChooserPortlet extends BrowserPortlet
         List resultSetTypeList = new ArrayList();
         try
         {
-            Iterator users = userManager.getUsers("");
+            Iterator roles = roleManager.getRoles("");
                         
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("User");
+            resultSetTitleList.add("Role");
 
             // TODO: need to try to normalize List/Collection/Iterators
             List list = new ArrayList();
-            while (users.hasNext())
+            while (roles.hasNext())
             {
-                User user = (User)users.next();
-                Principal principal = getPrincipal(user.getSubject(),
-                        UserPrincipal.class);                
+                Role role = (Role)roles.next();
+                
+                Principal principal = role.getPrincipal();                
                 list.add(principal.getName());
             }            
             BrowserIterator iterator = new DatabaseBrowserIterator(
                     list, resultSetTitleList, resultSetTypeList,
                     windowSize);
             setBrowserIterator(request, iterator);
-            iterator.sort("User");
+            iterator.sort("Role");
         }
         catch (Exception e)
         {
@@ -90,18 +88,5 @@ public class UserChooserPortlet extends BrowserPortlet
             throw e;
         }        
     }
-   
-    public Principal getPrincipal(Subject subject, Class classe) {
-        Principal principal = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext()) {
-            Principal p = (Principal) principals.next();
-            if (classe.isInstance(p)) {
-                principal = p;
-                break;
-            }
-        }
-        return principal;
-    }
-    
+       
 }

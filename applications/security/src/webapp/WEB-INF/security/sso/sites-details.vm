@@ -21,13 +21,13 @@ limitations under the License.
 
 *#
 
-#set ($pipeline = $renderResponse.createRenderURL())
-#set ($pipeline = "$pipeline?pipeline=portlet-pipeline&entity=$chooser.Id")
+## set ($pipeline = $renderResponse.createRenderURL())
+## set ($pipeline = "$pipeline?pipeline=portlet-pipeline&entity=$chooser.Id")
 
 <script>
-function openWindow(element)
+function openWindow(pipeline)
 {	
-    var vWinUsers = window.open('$pipeline', 'UserPicker', 'status=no,resizable=yes,top=100,left=200,width=100,height=250,scrollbars=yes');
+    var vWinUsers = window.open(pipeline, 'UserPicker', 'status=no,resizable=yes,top=100,left=200,width=100,height=250,scrollbars=yes');
     vWinUsers.opener = self;
 	vWinUsers.focus();
 }
@@ -91,15 +91,20 @@ function openWindow(element)
 </table>
 <br/>
 <form name='securityform' action="$renderResponse.createActionURL()" method="post">
+<input type='hidden' name='principal.type' value='user'/>
 <table>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Portal Principal:&nbsp;</td>
     <td class="portlet-section-body" align="left">
       <input type="text" name="portal.principal" size="30" value="$!currentP" class="portlet-form-field-label">
-	 <a href="javascript:openWindow('portal.principal');">
+	 <a href="javascript:openWindow('$userChooser');">
         <img title="Select a user"
              name="assigneeImage" 
              src="/security/images/user-chooser.gif" hspace=0 height=16 width=16 border=0 align=absmiddle></a>      
+	 <a href="javascript:openWindow('$groupChooser');">
+        <img title="Select a user"
+             name="assigneeImage" 
+             src="/security/images/group-chooser.gif" hspace=0 height=16 width=16 border=0 align=absmiddle></a>                   
     </td>      
     </td>
   </tr>

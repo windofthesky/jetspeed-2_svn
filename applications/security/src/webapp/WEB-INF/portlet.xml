@@ -235,10 +235,80 @@ limitations under the License.
     </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>            
     <portlet-info>
       <title>User Select</title>
       <short-title>Users</short-title>
       <keywords>admin,security,users</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="RoleChooser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/users/role-chooser.vm</value>
+     </init-param>   
+    <portlet-name>RoleChooser</portlet-name>
+    <display-name>Roles</display-name>
+    <description>Role Chooser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.RoleChooserPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>                
+    <portlet-info>
+      <title>Role Select</title>
+      <short-title>Roles</short-title>
+      <keywords>admin,security,roles</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="GroupChooser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/users/group-chooser.vm</value>
+     </init-param>   
+    <portlet-name>GroupChooser</portlet-name>
+    <display-name>Groups</display-name>
+    <description>Group Chooser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.GroupChooserPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>                
+    <portlet-info>
+      <title>Group Select</title>
+      <short-title>Groups</short-title>
+      <keywords>admin,security,groups</keywords>
     </portlet-info>
 </portlet>
 

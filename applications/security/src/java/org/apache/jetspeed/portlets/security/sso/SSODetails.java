@@ -28,18 +28,18 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
@@ -56,13 +56,8 @@ public class SSODetails extends BrowserPortlet
 {
     private SSOProvider sso;
     private UserManager userManager;
-    private PortletEntityAccessComponent entityAccess;
-    private PortletRegistry registry;
-    private PortletEntity chooserEntity = null;
-    
-    private static final String USER_CHOOSER_ENTITY_KEY = "_js2-security-714";
-    private static final String PORTLET_NAME = "security::UserChooser";
-    
+    private GroupManager groupManager;
+        
     public void init(PortletConfig config)
     throws PortletException 
     {
@@ -77,40 +72,11 @@ public class SSODetails extends BrowserPortlet
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
-
-        registry = (PortletRegistry) 
-            getPortletContext().getAttribute(SecurityResources.CPS_REGISTRY_COMPONENT);
-        if (null == registry)
+        groupManager = (GroupManager) getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        if (null == userManager)
         {
-            throw new PortletException("Failed to find the Registry on portlet initialization");
-        }      
-        entityAccess = (PortletEntityAccessComponent) 
-            getPortletContext().getAttribute(SecurityResources.CPS_ENTITY_ACCESS_COMPONENT);
-        if (null == entityAccess)
-        {
-            throw new PortletException("Failed to find the Entity Accessor on portlet initialization");
-        }      
-        
-        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(PORTLET_NAME);
-        if (null == portletDef)
-        {
-            throw new PortletException("Could not find portlet definition in registry for " + PORTLET_NAME);
-        }
-        
-        PortletEntity entity = entityAccess.getPortletEntity(USER_CHOOSER_ENTITY_KEY);
-        if (entity == null)
-        {            
-            entity = entityAccess.newPortletEntityInstance(portletDef, USER_CHOOSER_ENTITY_KEY);
-            try
-            {
-                entityAccess.storePortletEntity(entity);
-            }
-            catch (Exception e)
-            {
-                throw new PortletException("Could not create entity for " + PORTLET_NAME);
-            }
-        }
-        chooserEntity = entity;
+            throw new PortletException("Failed to find the User Manager on portlet initialization");
+        }        
     }
        
     
@@ -165,10 +131,28 @@ public class SSODetails extends BrowserPortlet
         if (selectedSite != null)
         {        
             context.put("currentSite", selectedSite);
-        }        
-        context.put("chooser", chooserEntity);        
+        }
+        
+        // get relative link, TODO: encapsulate Jetspeed links access into component
+        String userChooser = getAbsoluteUrl(request, "/Administrative/choosers/users.psml");
+        String groupChooser = getAbsoluteUrl(request, "/Administrative/choosers/groups.psml");
+        
+        context.put("userChooser", userChooser);
+        context.put("groupChooser", groupChooser);
+        
         super.doView(request, response);
     }
+    
+    public String getAbsoluteUrl(RenderRequest renderRequest, String relativePath)
+    {
+        RequestContext requestContext = (RequestContext) renderRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        HttpServletRequest request = requestContext.getRequest();
+        StringBuffer path = new StringBuffer();
+        return path.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
+                request.getServerPort()).append(request.getContextPath()).append(request.getServletPath()).append(
+                relativePath).toString();
+    }
+    
     
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
@@ -189,6 +173,9 @@ public class SSODetails extends BrowserPortlet
             }
             else if (save != null)
             {
+                // Roger: here is the principal type
+                String principalType = request.getParameter("principal.type");
+                System.out.println("principal.type = " + principalType);
                 String portalPrincipal = request.getParameter("portal.principal");                
                 String remotePrincipal = request.getParameter("remote.principal");
                 String remoteCredential = request.getParameter("remote.credential");

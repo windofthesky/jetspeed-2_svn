@@ -29,7 +29,7 @@ limitations under the License.
         var openerEl = openerForm.elements['portal.principal'];
         var openerType = openerForm.elements['principal.type'];        
         openerEl.value = value;
-        openerType.value = 'user';
+        openerType.value = 'role';
         window.close();
     }
 	function rowHover(row)
@@ -58,11 +58,11 @@ limitations under the License.
       </td>
     #end
   </tr>
-  #foreach ( $user in $table )
+  #foreach ( $role in $table )
   <tr>
       #set ($rowstyle = "jetdbOdd")
-      <td class="$rowstyle" nowrap width="25%" onclick="select('$user');" onmouseover="rowHover(this)">
-        <div align="center">$user</div>
+      <td class="$rowstyle" nowrap width="25%" onclick="select('$role');" onmouseover="rowHover(this)">
+        <div align="center">$role</div>
       </td>
    </tr>
   #end
