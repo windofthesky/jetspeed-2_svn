@@ -320,6 +320,15 @@ limitations under the License.
           <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
         </filterset>
       </copy>
+<!-- uncomment for Tomcat5 -->
+      <copy file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/../conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+        </filterset>
+      </copy>
       <attainGoal name="catalina:base-shared" />
       <attainGoal name="catalina:shared" />
   </goal>
