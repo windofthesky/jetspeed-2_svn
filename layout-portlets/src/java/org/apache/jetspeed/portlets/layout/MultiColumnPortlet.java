@@ -114,6 +114,16 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         request.setAttribute("columns", columns);
         request.setAttribute("numberOfColumns", new Integer(numColumns));
+        
+        List columnSizes = this.columnSizes;
+
+        // Determine custom column sizes in the psml
+        String customSizes = f.getPropertyValue(this.layoutType, "sizes");
+        if ( customSizes != null && customSizes.trim().length() > 0 )
+        {
+            columnSizes = getCellSizes(customSizes);
+        }
+                
         request.setAttribute("columnSizes", columnSizes);        
 
         // now invoke the JSP associated with this portlet
