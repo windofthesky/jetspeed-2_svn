@@ -65,7 +65,7 @@ public class PortletAggregatorImpl implements PortletAggregator
         String decorator = fragment.getDecorator();
         if( decorator == null)
         {
-            decorator = context.getPage().getDefaultDecorator(fragment.getType());
+           // decorator = context.getPage().getDefaultDecorator(fragment.getType());
             log.debug("No sepecific decorator portlet so using page default: "+decorator);
         }
         
