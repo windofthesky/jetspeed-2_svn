@@ -123,8 +123,8 @@ public interface NavigationalStateComponent
     
     /**
      * <p>
-     * Check to see if the request contains the given request parameter.
-     * Returns true if the request containers the request parameter, false if it does not.
+     * Parse the request and pull out the name/value pair for the given the given request parameter.
+     * Returns the parameter string and its value if the request containers the request parameter, null if it does not.
      * Valid parameter types
      * </p>
      * <ul>
@@ -137,8 +137,8 @@ public interface NavigationalStateComponent
      *
      * @param request The HTTP request.
      * @param parameterType The NavigationStateComponent-defined parameter type.
-     * @return boolean true if the specified parameter type exists as a request parameter. 
+     * @return String[2] the parameter name and vlaue if the specified parameter type exists as a request parameter. 
      */    
-    boolean hasPortalParameter(HttpServletRequest request, int parameterType);
+    String[] parsePortalParameter(HttpServletRequest request, int parameterType);
     
 }
