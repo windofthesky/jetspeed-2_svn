@@ -58,6 +58,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -95,6 +96,11 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     private WebApplicationDefinition webApplication;
     /** PK of this Portlet Application's Web Application */
     protected long webApplicationId;
+    
+    /** DublinCore property */
+    private DublinCore dublinCore;
+    /** PK of this DublinCore */
+    protected long dublinCoreId;
 
     /** Description */
     private String description;
@@ -269,6 +275,22 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public int getApplicationType()
     {
         return applicationType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getDublinCore()
+     */
+    public DublinCore getDublinCore()
+    {
+        return dublinCore;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setDublinCore(org.apache.jetspeed.om.common.DublinCore)
+     */
+    public void setDublinCore(DublinCore dublinCore)
+    {
+        this.dublinCore = dublinCore;
     }
 
 }
