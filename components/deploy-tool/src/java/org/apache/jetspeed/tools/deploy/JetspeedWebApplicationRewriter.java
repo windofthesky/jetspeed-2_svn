@@ -223,6 +223,7 @@ public class JetspeedWebApplicationRewriter
         List elementsBeforeList = Arrays.asList(elementsBefore);
         toInsert.detach();
         int insertAfter = 0;
+        int count = 0;
         for (int i = 0; i < allChildren.size(); i++)
         {
             Element element = (Element) allChildren.get(i);
@@ -231,11 +232,14 @@ public class JetspeedWebApplicationRewriter
                 // determine the Content index of the element to insert after
                 insertAfter = root.indexOf(element);
             }
+            count++;
         }
     
+        insertAfter = (count == 0) ? 0 : insertAfter + 1;
+        
         try
         {
-            root.addContent((insertAfter + 1), toInsert);
+            root.addContent(insertAfter, toInsert);
         }
         catch (ArrayIndexOutOfBoundsException e)
         {

@@ -295,7 +295,14 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
 
             if (startState <= nState)
             {
-                registerApplication(paWar);
+                if (targetWar == null)
+                {
+                    registerApplication(paWar);
+                }
+                else
+                {
+                    registerApplication(targetWar);
+                }
             }
 
             nState = UPDATE_REGISTRY;

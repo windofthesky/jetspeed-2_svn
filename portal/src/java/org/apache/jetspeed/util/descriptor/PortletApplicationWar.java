@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -72,6 +73,13 @@ import org.xml.sax.SAXException;
  */
 public class PortletApplicationWar
 {
+    protected static final String WEB_XML_STRING = 
+            "<?xml version='1.0' encoding='ISO-8859-1'?>" +
+            "<!DOCTYPE web-app " +
+            "PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' " + 
+           "'http://java.sun.com/dtd/web-app_2_3.dtd'>\n" +
+            "<web-app></web-app>";
+
     protected static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
     protected static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
@@ -303,11 +311,10 @@ public class PortletApplicationWar
     protected OutputStream getOutputStream( String path ) throws IOException
     {
         File child = new File(warStruct.getRootDirectory(), path);
-        if (child == null || !child.exists())
+        if (child == null)             
         {
             throw new FileNotFoundException("Unable to locate file or path " + child);
         }
-
         FileOutputStream fileOutputStream = new FileOutputStream(child);
         openedResources.add(fileOutputStream);
         return fileOutputStream;
@@ -466,10 +473,29 @@ public class PortletApplicationWar
                 }
             });
 
-            webXmlIn = getInputStream(WEB_XML_PATH);
-            Document doc = builder.build(webXmlIn);
-
-            webXmlIn.close();
+            Document doc = null;
+            
+            try
+            {
+                webXmlIn = getInputStream(WEB_XML_PATH);
+                doc = builder.build(webXmlIn);
+            }
+            catch (FileNotFoundException fnfe)
+            {
+                // web.xml does not exist, create it
+                File file = File.createTempFile("j2-temp-", ".xml");
+                FileWriter writer = new FileWriter(file);
+                writer.write(WEB_XML_STRING);
+                writer.close();
+                doc = builder.build(file);
+                file.delete();
+            }
+            
+            
+            if (webXmlIn != null)
+            {
+                webXmlIn.close();
+            }
 
 
             JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(doc);
@@ -488,6 +514,7 @@ public class PortletApplicationWar
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new MetaDataException("Unable to process web.xml for infusion " + e.toString(), e);
         }
         finally
