@@ -162,7 +162,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         if (profilingEnabled)
         {
             // profile page request using profile locator
-
             Folder [] profiledFolder = new Folder[1];
             Page [] profiledPage = new Page[1];
             List profiledFolders = new ArrayList();
@@ -243,8 +242,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 Comparator documentComparator = new DocumentOrderComparator(documentOrder);
 
                 // profile sibling pages by aggregating all siblings in profiled folders
-                // using profiled general document order, (do not filter unordered siblings)
+                // using profiled general document order, (do not filter unordered siblings);
+                // force profiled page to exist as sibling to support pages profiled using
+                // alternate locators that may not select page in profiled folder: the
+                // profiled page must appear in the sibling pages collection.
                 siblingPages = new NodeSetImpl(null, documentComparator);
+                siblingPages = addUniqueOrDescribedUrlNode((NodeSetImpl) siblingPages, (AbstractNode) page);
                 foldersIter = profiledFolders.iterator();
                 while (foldersIter.hasNext())
                 {
