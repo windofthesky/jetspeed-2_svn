@@ -27,9 +27,23 @@ limitations under the License.
 <c:set var="selectedPDef" value="${requestScope.portletDefinition}"/>
 
 app.name = <c:out value="${name}"/><br />
-app.version = <c:out value="${version}"/>
+app.version = <c:out value="${version}"/> <br />
 
-<p>TODO: Details</p>
+<%--
+app.description = <c:out value="${pa.description}"/> <br />
+
+<c:choose>
+	<c:when test="${pa.applicationType == '0'}">
+		app.type = WEBAPP <br />
+	</c:when>
+	<c:when test="${pa.applicationType == '1'}">
+		app.type = LOCAL <br />
+	</c:when>
+</c:choose>
+
+app.id = <c:out value="${pa.applicationIdentifier}"/>
+--%>
+
 <div id="tabs">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	  <tr>
@@ -72,6 +86,10 @@ app.version = <c:out value="${version}"/>
     </portlet:actionURL>
 	<form action="<c:out value="${select_portlet_link}"/>">
 		<select name="select_portlet">
+		
+			<option value="" <c:if test="! ${selectedPDef}"> selected="true"</c:if>
+			>Please Choose Portlet</option>
+		
 		<c:forEach var="portletDef" items="${pa.portletDefinitions}">
 		    <c:set var="pdefName" value="${portletDef.name}"/>
 		    
@@ -94,11 +112,50 @@ app.version = <c:out value="${version}"/>
   </div>
     
   <div id="selectedPortlet" class="">
+    
     <span class="portlet-section-header">Selected Portlet</span>
-    <c:out value="${selectedPDef.name}"/>
+	<c:out value="${selectedPDef.name}"/>
+   
+	<%--
+    <%@ include file="portlet-detail.jsp" %>
+    --%>
+    
   </div>
 </c:if>
 <%--End of Portlets tab data--%>
+
+<%--Beginning of UserAttr tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'UserAttr'}">
+  <div id="Details">
+	<portlet:actionURL var="edit_user_attr_link" >
+	</portlet:actionURL>
+		
+	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
+		<input type="hidden" name="portlet_action" value="edit_user_attribute"/>
+		<c:forEach var="userAttr" items="${pa.userAttributes}">
+			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
+			
+			<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
+			<c:out value="${userAttr.name}"/> | 
+			<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>"/> <br />
+		</c:forEach>
+		
+		<input type="submit" value="Edit" onClick="this.form.portlet_action.value = 'edit_user_attribute'"/>
+		<input type="submit" value="Remove Selected" onClick="this.form.portlet_action.value = 'remove_user_attribute'"/>
+	</form>
+	
+	<form action="<c:out value="${edit_user_attr_link}"/>">
+			<input type="hidden" name="portlet_action" value="add_user_attribute"/>
+			
+			Name: <input type="text" name="user_attr_name" value=""/> <br />
+			Description: <input type="text" name="user_attr_desc" value=""/> <br />
+			<input type="submit" value="Add User Attr"/>
+		</form>
+  </div>
+</c:if>
+<%--End of UserAttr tab data--%>
+
 
 <%--Beginning of Metadata tab data--%>
 <%--TODO:  switch to c:choose --%>
@@ -148,6 +205,37 @@ app.version = <c:out value="${version}"/>
 	</div>
 </c:if>
 <%--End of Metadata tab data--%>
+
+<%--Beginning of Details tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'Details'}">
+	<div id="details">
+		app.name = <c:out value="${name}"/><br />
+		app.version = <c:out value="${version}"/> <br />
+		app.description = <c:out value="${pa.description}"/> <br />
+
+		<c:choose>
+			<c:when test="${pa.applicationType == '0'}">
+				app.type = WEBAPP <br />
+			</c:when>
+			<c:when test="${pa.applicationType == '1'}">
+				app.type = LOCAL <br />
+			</c:when>
+		</c:choose>
+
+		app.id = <c:out value="${pa.applicationIdentifier}"/>
+	
+	
+		<%--Name | AppId | Id <br />--%>
+		<hr />
+		Jetspeed Services
+		<hr />
+		<c:forEach var="service" items="${pa.jetspeedServices}">
+			<c:out value="${service.name}"/> <br /> <%--| <c:out value="${service.appId}"/> | <c:out value="${service.id}"/><br />--%>
+		</c:forEach>
+	</div>
+</c:if>
+<%--End of Details tab data--%>
 
 <br />
 <br />

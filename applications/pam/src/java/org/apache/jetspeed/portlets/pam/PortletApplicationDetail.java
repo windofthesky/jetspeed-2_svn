@@ -35,7 +35,9 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -68,10 +70,12 @@ public class PortletApplicationDetail extends ServletPortlet
         TabBean tb1 = new TabBean("Details", "Details");
         TabBean tb2 = new TabBean("Metadata", "Metadata");
         TabBean tb3 = new TabBean("Portlets", "Portlets");
+        TabBean tb4 = new TabBean("UserAttr", "User Attributes");
         
         tabMap.put(tb1.getId(), tb1);
         tabMap.put(tb2.getId(), tb2);
         tabMap.put(tb3.getId(), tb3);
+        tabMap.put(tb4.getId(), tb4);
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -129,75 +133,170 @@ public class PortletApplicationDetail extends ServletPortlet
         String action = actionRequest.getParameter(PORTLET_ACTION);
         if(action != null)
         {
-            if(action.equals("edit_metadata"))
+            if(action.endsWith("metadata"))
             {
-                GenericMetadata md = pa.getMetadata();
-                Iterator fieldsIter = md.getFields().iterator();
-                
-                registry.getPersistenceStore().getTransaction().begin();
-                
-                while (fieldsIter.hasNext())
-                {
-                    LocalizedField field = (LocalizedField) fieldsIter.next();
-                    String id = field.getId().toString();
-                    String value = actionRequest.getParameter(id + ":value");
-                    if(value != null)
-                    {
-                        if(!value.equals(field.getValue()))
-                        {
-                            field.setValue(value);
-                        }
-                    }
-                }
-                
-                registry.getPersistenceStore().getTransaction().commit();
+                processMetadataAction(actionRequest, actionResponse, pa, action);
             }
-            else if(action.equals("remove_metadata"))
+            else if(action.endsWith("user_attribute"))
             {
-                GenericMetadata md = pa.getMetadata();
-                Iterator fieldsIter = md.getFields().iterator();
-                
-                registry.getPersistenceStore().getTransaction().begin();
-                while (fieldsIter.hasNext())
-                {
-                    LocalizedField field = (LocalizedField) fieldsIter.next();
-                    String id = field.getId().toString();
-                    String[] ids = actionRequest.getParameterValues("metadata_id");
-                    if(ids != null)
-                    {
-                        for(int i=0; i<ids.length; i++)
-                        {
-                            String mid = ids[i];
-                            if(mid.equals(id))
-                            {
-                                fieldsIter.remove();
-                            }
-                        }
-                    }
-                }
-                registry.getPersistenceStore().getTransaction().commit();
-            }
-            else if(action.equals("add_metadata"))
-            {
-                GenericMetadata md = pa.getMetadata();
-                
-                PersistenceStore store = registry.getPersistenceStore();
-                System.out.println("Transcation is open: " + store.getTransaction().isOpen());
-                store.getTransaction().begin();
-                System.out.println("Transcation is open: " + store.getTransaction().isOpen());
-                String name = actionRequest.getParameter("name");
-                String value = actionRequest.getParameter("value");
-                String localeParam = actionRequest.getParameter("locale");
-                if(localeParam == null)
-                {
-                    localeParam = "en"; //need to default better
-                }
-                Locale locale = new Locale(localeParam);
-                
-                md.addField(locale, name, value);
-                
-                store.getTransaction().commit();
+                processUserAttributeAction(actionRequest, actionResponse, pa, action);
             }
         }
 	}
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param action
+     */
+    private void processUserAttributeAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, String action) throws PortletException, IOException
+    {
+        if(action.equals("edit_user_attribute"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            Iterator userAttrIter = pa.getUserAttributes().iterator();
+            while (userAttrIter.hasNext())
+            {
+                UserAttribute userAttr = (UserAttribute) userAttrIter.next();
+                
+                String userAttrName = userAttr.getName();
+                String description = actionRequest.getParameter(userAttrName + ":description");
+                if(!userAttr.getDescription().equals(description))
+                {
+                    userAttr.setDescription(description);
+                }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("add_user_attribute"))
+        {
+            String userAttrName = actionRequest.getParameter("user_attr_name");
+            String userAttrDesc = actionRequest.getParameter("user_attr_desc");
+            if(userAttrName != null)
+            {
+                registry.getPersistenceStore().getTransaction().begin();
+            
+                //TODO: should this come from a factory??
+                UserAttribute userAttribute = new UserAttributeImpl();
+                userAttribute.setName(userAttrName);
+                userAttribute.setDescription(userAttrDesc);
+                pa.addUserAttribute(userAttribute);
+	            
+	            registry.getPersistenceStore().getTransaction().commit();
+            }
+        }
+        else if(action.equals("remove_user_attribute"))
+        {
+            String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
+
+            if(userAttrNames != null)
+            {
+                registry.getPersistenceStore().getTransaction().begin();
+                                
+	            Iterator userAttrIter = pa.getUserAttributes().iterator();
+	            while (userAttrIter.hasNext())
+	            {
+	                UserAttribute userAttr = (UserAttribute) userAttrIter.next();
+	                for(int i=0; i<userAttrNames.length; i++)
+	                {
+	                    String userAttrName = userAttrNames[i];
+	                    if(userAttr.getName().equals(userAttrName))
+	                    {
+	                        userAttrIter.remove();
+	                        break;
+	                    }
+	                }
+	            }
+	            
+	            registry.getPersistenceStore().getTransaction().commit();
+                
+            }
+        }
+    }
+
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param action
+     * @throws PortletException
+     * @throws IOException
+     */
+    private void processMetadataAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, String action) throws PortletException, IOException
+    {
+        if(action.equals("edit_metadata"))
+        {
+            GenericMetadata md = pa.getMetadata();
+            Iterator fieldsIter = md.getFields().iterator();
+            
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            while (fieldsIter.hasNext())
+            {
+                LocalizedField field = (LocalizedField) fieldsIter.next();
+                String id = field.getId().toString();
+                String value = actionRequest.getParameter(id + ":value");
+                if(value != null)
+                {
+                    if(!value.equals(field.getValue()))
+                    {
+                        field.setValue(value);
+                    }
+                }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("remove_metadata"))
+        {
+            GenericMetadata md = pa.getMetadata();
+            Iterator fieldsIter = md.getFields().iterator();
+            String[] ids = actionRequest.getParameterValues("metadata_id");
+            
+            if(ids != null)
+            {
+	            registry.getPersistenceStore().getTransaction().begin();
+	            while (fieldsIter.hasNext())
+	            {
+	                LocalizedField field = (LocalizedField) fieldsIter.next();
+	                String id = field.getId().toString();
+
+                    for(int i=0; i<ids.length; i++)
+                    {
+                        String mid = ids[i];
+                        if(mid.equals(id))
+                        {
+                            fieldsIter.remove();
+                            break;
+                        }
+                    }
+                }
+            }
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("add_metadata"))
+        {
+            GenericMetadata md = pa.getMetadata();
+            
+            PersistenceStore store = registry.getPersistenceStore();
+            System.out.println("Transcation is open: " + store.getTransaction().isOpen());
+            store.getTransaction().begin();
+            System.out.println("Transcation is open: " + store.getTransaction().isOpen());
+            String name = actionRequest.getParameter("name");
+            String value = actionRequest.getParameter("value");
+            String localeParam = actionRequest.getParameter("locale");
+            if(localeParam == null)
+            {
+                localeParam = "en"; //need to default better
+            }
+            Locale locale = new Locale(localeParam);
+            
+            md.addField(locale, name, value);
+            
+            store.getTransaction().commit();
+        }
+    }
 }
