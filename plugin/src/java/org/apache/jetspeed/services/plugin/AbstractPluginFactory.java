@@ -136,7 +136,7 @@ public abstract class AbstractPluginFactory extends BaseService
         }
         catch (Exception e)
         {
-            String message = "Unable to initialize PersistenceService.";
+            String message = "Unable to initialize PersistenceService. "+CauseExtractor.getCompositeMessage(e);
             log.fatal(message, e);
             if (!(e instanceof InitializationException))
             {
