@@ -17,11 +17,15 @@ package org.apache.jetspeed.engine.servlet;
 
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -69,57 +73,55 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     }
 
-    public Map getParameterMap()
+    public Map getParameterMap() 
     {
-        /*
-         * DST TODO: REMOVING this code for now so that FORM post parameters are passed on.
-         * I will schedule time to rewrite and ensure it works with the spec 
-         * 
         //get control params
-        if (portletParameters == null)
+        if (portletParameters == null) 
         {
-
             portletParameters = new HashMap();
 
-            Iterator iterator = control.getRenderParamNames(portletWindow);
-            while (iterator.hasNext())
+            JetspeedRequestContext context = (JetspeedRequestContext)
+                  getAttribute("org.apache.jetspeed.request.RequestContext");
+            if (context != null) 
             {
-                String name = (String) iterator.next();
+                PortalURL url = context.getPortalURL();
+                Iterator iter = url.getRenderParamNames(portletWindow);
+                while (iter.hasNext()) 
+                {
+                    String name = (String) iter.next();
+                    String[] values = url.getRenderParamValues(
+                            portletWindow, name);
+                    portletParameters.put(name, values);
 
-                String[] values = control.getRenderParamValues(portletWindow, name);
-
-                portletParameters.put(name, values);
-
+                }
             }
 
             //get request params
-            String pid = control.getPIDValue();
-            String wid = portletWindow.getId().toString();
-            if (pid.equals(wid))
+            for (Enumeration parameters = super.getParameterNames();  parameters.hasMoreElements(); ) 
             {
-                for (Enumeration parameters = super.getParameterNames(); parameters.hasMoreElements();)
-                {
-                    String paramName = (String) parameters.nextElement();
-                    String[] paramValues = (String[]) super.getParameterValues(paramName);
-                    String[] values = (String[]) portletParameters.get(paramName);
+                String paramName = (String) parameters.nextElement();
+                String[] paramValues = (String[]) super
+                        .getParameterValues(paramName);
+                String[] values = (String[]) portletParameters.get(paramName);
 
-                    if (values != null)
-                    {
-                        String[] temp = new String[paramValues.length + values.length];
-                        System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
-                        System.arraycopy(values, 0, temp, paramValues.length, values.length);
-                        paramValues = temp;
-                    }
-                    portletParameters.put(paramName, paramValues);
+                if (values != null) 
+                {
+                    String[] temp = new String[paramValues.length
+                            + values.length];
+                    System.arraycopy(paramValues, 0, temp, 0,
+                            paramValues.length);
+                    System.arraycopy(values, 0, temp, paramValues.length,
+                            values.length);
+                    paramValues = temp;
                 }
+                portletParameters.put(paramName, paramValues);
             }
         }
-
         return Collections.unmodifiableMap(portletParameters);
-        */
-        return Collections.unmodifiableMap(super.getParameterMap());
+        // return Collections.unmodifiableMap(super.getParameterMap().keySet());
+        
     }
-
+        
     public Enumeration getParameterNames()
     {
         return Collections.enumeration(this.getParameterMap().keySet());
