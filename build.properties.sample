@@ -1,3 +1,6 @@
+# jetspeed 2 home required for build
+jetspeed2.home = /jetspeed2
+
 # jetspeed required properties
 org.apache.jetspeed.server.home = /tomcat4
 org.apache.jetspeed.catalina.version.major = 4
