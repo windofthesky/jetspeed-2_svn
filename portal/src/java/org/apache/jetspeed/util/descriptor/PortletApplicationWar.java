@@ -403,12 +403,12 @@ public class PortletApplicationWar
         {
           warStruct.delete(new AllFileSelector());
           warStruct.delete();
-          checkFile.delete();
-          fsManager.getFilesCache().clear(warStruct.getFileSystem());
+          checkFile.delete();         
+          fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
         }
         else
         {
-            fsManager.getFilesCache().clear(warStruct.getFileSystem());
+            fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
             throw new FileNotFoundException("PortletApplicationWar ,"+warStruct.getURL().getFile()+", does not exist.");
         }
     }
@@ -648,6 +648,7 @@ public class PortletApplicationWar
     {
         warStruct.close();
         fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
+       
         //fsManager.getFilesCache().clear(warStruct.getFileSystem());
     }
 
