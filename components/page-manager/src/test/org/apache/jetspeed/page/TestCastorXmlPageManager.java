@@ -299,8 +299,17 @@ public class TestCastorXmlPageManager extends TestCase
             assertNotNull(errmsg, null);
         }
 
-        page = pageManager.getPage(this.testId);
-        assertNull(page);
+        boolean exceptionFound = false;
+        try
+        {
+            page = pageManager.getPage(this.testId);
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+        
     }
     
     public void testFolders() throws Exception
