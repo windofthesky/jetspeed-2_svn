@@ -44,7 +44,8 @@ public class PBTransaction implements Transaction
      */
     public void begin()
     {
-        if (!pb.isClosed() && !pb.isInTransaction())
+        store.checkBroker();
+        if (!pb.isInTransaction())
         {
             invoker.beforeBegin();
             pb.beginTransaction();
@@ -59,6 +60,7 @@ public class PBTransaction implements Transaction
      */
     public void commit()
     {
+        store.checkBroker();
         invoker.beforeCommit();
         Iterator itr = store.toBeStored.iterator();
         while(itr.hasNext())
@@ -76,6 +78,7 @@ public class PBTransaction implements Transaction
      */
     public void rollback()
     {
+        store.checkBroker();
         invoker.beforeRollback();
         pb.abortTransaction();
         invoker.afterRollback();
@@ -88,6 +91,7 @@ public class PBTransaction implements Transaction
      */
     public void checkpoint()
     {
+        store.checkBroker();
         Iterator itr = store.toBeStored.iterator();
         while(itr.hasNext())
         {
@@ -103,6 +107,7 @@ public class PBTransaction implements Transaction
      */
     public boolean isOpen()
     {
+        store.checkBroker();
         return pb.isInTransaction();
     }
 
