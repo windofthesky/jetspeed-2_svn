@@ -9,6 +9,7 @@
     <portlet-name>HelloWorld Portlet</portlet-name>
     <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
     <display-name lang="en">HelloWorld Portlet Wrapper</display-name>  
+    <description>This is a desciption of the HelloWorld portlet</description>
     <expiration-cache>-1</expiration-cache>
     <supports id="Minimal support">
       <mime-type>text/html</mime-type>
@@ -25,14 +26,20 @@
       <preference> 
         <name>time-server</name>
         <value>http://timeserver.myco.com</value>
-        <modifiable>0</modifiable>
+        <value>http://timeserver.foo.com</value>
+        <read-only>false</read-only>
       </preference>
       <preference>
         <name>port</name>
         <value>404</value>
-        <modifiable>1</modifiable>
+        <read-only>true</read-only>
       </preference>    
     </portlet-preferences>
+    <security-role-ref>
+    	<description lang="en">This is the admin role</description>
+    	<role-name>admin</role-name>
+    	<role-link>users/admin</role-link>
+    </security-role-ref>
   </portlet>
  
   <portlet id="DisplayRequestPortlet">
