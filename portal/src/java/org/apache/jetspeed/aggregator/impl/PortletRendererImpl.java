@@ -24,6 +24,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
@@ -234,17 +235,20 @@ public class PortletRendererImpl implements PortletRenderer
 
         PortletWindow portletWindow = getPortletWindow(fragment);
         ContentDispatcherCtrl dispatcherCtrl = getDispatcherCtrl(requestContext, true);
-        dispatcher = getDispatcher(requestContext, true);
+        dispatcher = getDispatcher(requestContext, true);        
         request = requestContext.getRequestForWindow(portletWindow);
         response = dispatcherCtrl.getResponseForWindow(portletWindow, requestContext);
-
+       
+        
         request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
-        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
-
+        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);        
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
-        return new RenderingJob(container, dispatcher, fragment, request, response, requestContext, portletWindow);
+        
+        PortletContent portletContent = dispatcher.getPortletContent(fragment);
+        fragment.setPortletContent(portletContent);
+        return new RenderingJob(container, portletContent, fragment, request, response, requestContext, portletWindow);
 
     }
 }

@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
@@ -47,24 +45,23 @@ public class RenderingJob implements Runnable
     private PortletWindow window = null;
     private HttpServletRequest request = null;
     private HttpServletResponse response = null;
-    private ContentDispatcherCtrl dispatcherCtrl = null;
-    private ContentDispatcher dispatcher = null;
+    
     private PortletContainer container = null;
     private Fragment fragment = null;
     private RequestContext requestContext = null;
 
     private PortletContent portletContent;
     
-    public RenderingJob(PortletContainer container, ContentDispatcher dispatcher, Fragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
+    public RenderingJob(PortletContainer container, PortletContent portletContent, Fragment fragment, HttpServletRequest request, HttpServletResponse response, RequestContext requestContext, PortletWindow window)
     {
         this.container = container;
-        this.dispatcher = dispatcher;
-        this.dispatcherCtrl = (ContentDispatcherCtrl) dispatcher;
+        
         this.fragment = fragment;
         this.request = request;
         this.response = response;
         this.requestContext = requestContext; 
         this.window = window;
+        this.portletContent = portletContent;     
         
     }
 
@@ -76,6 +73,8 @@ public class RenderingJob implements Runnable
     {       
         try
         {
+            // A little baby hack to make sure the worker thread has PortletContent to write too.
+            fragment.setPortletContent(portletContent);
             execute();                     
         }
         finally
@@ -98,17 +97,16 @@ public class RenderingJob implements Runnable
      */
     protected void execute()
     {
-        portletContent = dispatcher.getPortletContent(fragment);
+        
         try
-        {
+        {           
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);            
             this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
-            this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
+          //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
             container.renderPortlet(this.window, this.request, this.response);               
-            this.response.flushBuffer();             
-            fragment.setPortletContent(portletContent);                        
+            this.response.flushBuffer();                           
         }
         catch (Throwable t)
         {
