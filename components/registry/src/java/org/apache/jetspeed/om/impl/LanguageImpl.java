@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +30,6 @@ import java.util.StringTokenizer;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Language;
-import org.apache.pluto.util.Enumerator;
 
 /**
  * 
@@ -283,7 +283,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
         public Enumeration getKeys()
         {
-            return new Enumerator(data.keySet());
+            return Collections.enumeration(data.keySet());
         }
     }
 
