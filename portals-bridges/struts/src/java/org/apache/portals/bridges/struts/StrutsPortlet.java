@@ -333,7 +333,8 @@ public class StrutsPortlet extends GenericPortlet
                 try
                 {
                     rd.include(new PortletServletRequestWrapper(servletContext, req), res);
-                } catch (ServletException e)
+                } 
+                catch (ServletException e)
                 {
                     if (log.isErrorEnabled())
                         log.error("Include exception", e);
@@ -369,10 +370,6 @@ public class StrutsPortlet extends GenericPortlet
                     }
                     else
                     {
-                        strutsPortletConfig.getRenderContextAttributes().saveAttributes(req);
-                        ((ActionResponse) response).setRenderParameter(
-                                StrutsPortletURL.KEEP_RENDER_ATTRIBUTES, "1");
-
                         if ((renderURL = (String) req
                                 .getAttribute(StrutsPortlet.REDIRECT_URL)) != null)
                         {
@@ -382,6 +379,10 @@ public class StrutsPortlet extends GenericPortlet
                         } 
                         else
                         {
+                            strutsPortletConfig.getRenderContextAttributes().saveAttributes(req);
+                            ((ActionResponse) response).setRenderParameter(
+                                    StrutsPortletURL.KEEP_RENDER_ATTRIBUTES, "1");
+
                             if ((renderURL = (String) req
                                     .getAttribute(StrutsPortlet.REDIRECT_PAGE_URL)) != null)
                             {

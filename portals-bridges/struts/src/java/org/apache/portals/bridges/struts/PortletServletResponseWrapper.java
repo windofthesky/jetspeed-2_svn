@@ -97,13 +97,22 @@ public class PortletServletResponseWrapper extends HttpServletResponseWrapper
         else
         {
             String contextPath = request.getContextPath();
-            if (path.startsWith(contextPath))
+
+            // context targeted url captured as Struts Page URL
+            if (path.startsWith(contextPath+"/"))
             {
                 request.setAttribute(StrutsPortlet.REDIRECT_PAGE_URL, path
                         .substring(contextPath.length()));
             }
+            // servlet container root url relative url NOT targetted at the Struts App
+            else if ( path.startsWith("/"))
+            {
+                request.setAttribute(StrutsPortlet.REDIRECT_URL, path);
+            }
+            // context relative url captured as Struts Page URL
             else
             {
+                // TODO: I think this should be translated as relative to current Struts PAGE_URL
                 request.setAttribute(StrutsPortlet.REDIRECT_PAGE_URL, path);
             }
         }
