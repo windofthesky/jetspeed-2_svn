@@ -84,5 +84,7 @@ public interface MutableDescription extends Description
     void setLocale(Locale locale);
 
     String getType();
+    
+    void setType(String type);
 
 }

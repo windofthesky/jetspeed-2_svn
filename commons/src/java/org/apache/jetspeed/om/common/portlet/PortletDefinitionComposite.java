@@ -54,22 +54,24 @@
 package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.DescriptionSet;
+import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
-import org.apache.pluto.om.common.PreferenceSet;
 
 /**
  * 
@@ -143,7 +145,9 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
 
     void setPortletApplicationDefinition(PortletApplicationDefinition pad);
 
-    PreferenceComposite addPreference(String name, Collection values);
+    PreferenceComposite addPreference(String name, String[] values);
+
+    void addPreference(Preference preference);
 
     void setPortletIdentifier(String portletIndentifier);
 
@@ -187,8 +191,33 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
 
     void addDisplayName(Locale locale, String displayName);
 
+    /**
+     * 
+     * <p>
+     * addDisplayName
+     * </p>
+     * 
+     * @param displayName
+     *
+     */
+    void addDisplayName(DisplayName displayName);
+
     String getPreferenceValidatorClassname();
 
     void setPreferenceValidatorClassname(String classname);
+
+    /**
+     * 
+     * <p>
+     * addSecurityRoleRef
+     * </p>
+     * 
+     * Adds the <code>securityRef</code> to the existing
+     * set of SecurityRoleRefs of this PortletDefinition
+     * 
+     * @param securityRef SecurityRoleRef to add.
+     *
+     */
+    void addSecurityRoleRef(SecurityRoleRef securityRef);
 
 }

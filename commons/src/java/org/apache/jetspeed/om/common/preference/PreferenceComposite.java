@@ -71,8 +71,6 @@ import org.apache.pluto.om.common.PreferenceCtrl;
  */
 public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
 {
-    public static final String TYPE_DEFAULT = "default preference";
-    public static final String TYPE_USER = "user preference";
     void addDescription(Locale locale, String Description);
 
     Description getDescription(Locale locale);
@@ -85,18 +83,49 @@ public interface PreferenceComposite extends PreferenceCtrl, Preference, Seriali
      */
     String getValueAt(int index);
 
+    /**
+     * 
+     * <p>
+     * setValueAt
+     * </p>
+     * Sets the current Preference's value at <code>index</code>
+     * to the specified <code>value</code> 
+     * 
+     * @param index Index hows value will be set.
+     * @param value Value to set
+     *
+     */
     void setValueAt(int index, String value);
+
+    /**
+     * 
+     * <p>
+     * addValue
+     * </p>
+     * Adds a new value to this Preference.
+     * @param value Vale to add to the preference
+     *
+     */
+    void addValue(String value);
 
     /**
      * 
      * @return
      */
     String[] getValueArray();
-    
-    String getType();
-    
-    void setType(String type);
-    
-    
+
+    /**
+     * 
+     * <p>
+     * setValues
+     * </p>
+     * 
+     * Replaces the current set of values of this preference
+     * with this one. 
+     * 
+     * @param stringValues 
+     *
+     */
+    void setValues(String[] stringValues);
 
 }

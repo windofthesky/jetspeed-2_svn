@@ -74,4 +74,6 @@ public interface MutableDisplayName extends DisplayName
     void setLocale(Locale locale);
 
     String getType();
+    
+    void setType(String type);
 }
