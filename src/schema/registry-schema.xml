@@ -122,13 +122,17 @@
     
     <!--
        Portlet Entity
-       Represents the managed state of individual portlet
-       instance within a "page"
+       Represents the managed state of individual portlet instance within a "page"
+       The instance within a "page" key is based on Window ID + principal
+       Without the principal, the key represents the default preferences for the window
     -->
     <table name="PORTLET_ENTITY">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PORTLET_DEFINITION_ID" required="true" type="INTEGER"/>
-        <column name="GUID" required="true" size="255" type="VARCHAR"/>
+        <column name="ID" required="true" size="255" type="VARCHAR"/>
+        <unique name="UK_ENTITY_ID">
+            <unique-column name="ID"/>
+        </unique>
     </table>
     
     <!--
