@@ -22,7 +22,7 @@
 	<dc:type>Default Type</dc:type>
 	<js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
 	
-<!--
+
 	<portlet id="HelloPortlet">
 		<portlet-name>HelloPortlet</portlet-name>
 		<dc:title>HP Title 1</dc:title>
@@ -43,5 +43,5 @@
 		<dc:type>HP Default Type</dc:type>
 		<js:metadata name="my_metadata" xml:lang="en">HP English My_Metadata</js:metadata>
 	</portlet>
--->
+
 </portlet-app>
