@@ -67,15 +67,6 @@ public class PortletApplicationBrowser extends ServletPortlet
         if (registry != null)
         {
             List apps = registry.getPortletApplications();
-            /*
-            Iterator it = apps.iterator();
-            while (it.hasNext())
-            {
-                MutablePortletApplication pa = (MutablePortletApplication)it.next();
-                System.out.println("PA = " + pa.getName());                
-            }
-            */
-            
             TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
             if(control == null)
             {
@@ -84,7 +75,6 @@ public class PortletApplicationBrowser extends ServletPortlet
             	request.getPortletSession().setAttribute("j2_tree", control);
             }
             request.setAttribute("j2_tree", control);
-            request.setAttribute("apps", apps);            
         }        
         super.doView(request, response);
         
