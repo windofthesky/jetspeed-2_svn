@@ -53,7 +53,11 @@ public class PortletRegistryHelper
      */
     private static int splitUniqueName(String uniqueName)
     {
-        int split = uniqueName.indexOf(PortletRegistryComponentImpl.PORTLET_UNIQUE_NAME_SEPARATOR);
+        int split = 0;
+        if (null != uniqueName)
+        {
+            split = uniqueName.indexOf(PortletRegistryComponentImpl.PORTLET_UNIQUE_NAME_SEPARATOR);
+        }
         if (split < 1)
         {
             throw new IllegalArgumentException(
