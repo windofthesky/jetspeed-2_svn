@@ -16,7 +16,7 @@
 package org.apache.jetspeed.om.page.psml;
 
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.impl.GenericMetadataImpl;
+import org.apache.jetspeed.om.impl.GenericMetadataImpl;
 
 /**
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>

@@ -16,11 +16,7 @@ limitations under the License.
 <!--
  	- L O C A L I Z E D   F I E L D
 -->   
-<!--
-   <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
-      <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />
-    </class-descriptor>
-   -->
+
 <descriptor-repository version="1.0">
    <class-descriptor
    	  class="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
@@ -202,6 +198,16 @@ limitations under the License.
 	  <collection-descriptor
          name="userAttributes"
          element-class-ref="org.apache.jetspeed.om.impl.UserAttributeImpl"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
+       >         
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="userAttributeRefs"
+         element-class-ref="org.apache.jetspeed.om.impl.UserAttributeRefImpl"
          auto-delete="false"
       	 auto-update = "true"
       	 auto-retrieve = "true"
@@ -1340,44 +1346,6 @@ limitations under the License.
   
    </class-descriptor>
    
-   <!-- 
-   - U S E R  A T T R I B U T E
-   -->
-     <class-descriptor
-   	  class="org.apache.jetspeed.om.impl.UserAttributeImpl"
-   	  proxy="dynamic"
-   	  table="USER_ATTRIBUTE"
-   >
-      
-        <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="BIGINT"
-         primarykey="true"
-         autoincrement="true"
-         access="anonymous"        
-      />
-      
-      <field-descriptor
-         name="appId"
-         column="APPLICATION_ID"
-         jdbc-type="BIGINT"
-      />
-      
-      <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"         
-      />   
-      
-       <field-descriptor
-         name="description"
-         column="DESCRIPTION"
-         jdbc-type="VARCHAR"         
-      />
-        
-   </class-descriptor>
-   
    <!--                                                              
    - S E C U R I T Y  R O L E                                        
    -->                                                               
@@ -1413,6 +1381,82 @@ limitations under the License.
          jdbc-type="VARCHAR"                                         
       />                                                             
                                                                      
-   </class-descriptor>                                               
+   </class-descriptor>
+                                           
+   <!-- 
+   - U S E R  A T T R I B U T E  R E F
+   -->
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.UserAttributeRefImpl"
+   	  proxy="dynamic"
+   	  table="USER_ATTRIBUTE_REF"
+   >
+      
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"        
+      />
+      
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"         
+      />   
+      
+       <field-descriptor
+         name="nameLink"
+         column="NAME_LINK"
+         jdbc-type="VARCHAR"         
+      />
+        
+   </class-descriptor>
    
+   <!-- 
+   - U S E R  A T T R I B U T E
+   -->
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.UserAttributeImpl"
+   	  proxy="dynamic"
+   	  table="USER_ATTRIBUTE"
+   >
+      
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"        
+      />
+      
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"         
+      />   
+      
+       <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"         
+      />
+        
+   </class-descriptor>
+
 </descriptor-repository>  

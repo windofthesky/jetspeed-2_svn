@@ -26,9 +26,9 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.pluto.om.common.ObjectID;
@@ -122,7 +122,7 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
             (PortletApplicationDefinitionImpl) store.getObjectByQuery(
                 store.newQuery(PortletApplicationDefinitionImpl.class, filter));
         store.getTransaction().commit();
-        assertNotNull("Failed to reteive portlet application", app);
+        assertNotNull("Failed to retreive portlet application", app);
 
         validateDublinCore(app.getMetadata());
 
@@ -135,6 +135,7 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
+        assertTrue("\"user.name.family\" user attribute ref was not found.", app.getUserAttributeRefs().size() == 1);
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
 

@@ -79,4 +79,10 @@ limitations under the License.
         <js:metadata name="field2" xml:lang="en">Value 1</js:metadata>
         <js:metadata name="field2" xml:lang="en">Value 2</js:metadata>
     </portlet>
+    
+    <js:user-attribute-ref>
+		<js:name>user-name-given</js:name>
+		<js:name-link>user.name.given</js:name-link>
+  	</js:user-attribute-ref>
+
 </portlet-app>

@@ -21,6 +21,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 
@@ -57,6 +58,11 @@ public class JetspeedDescriptorUtilities
             digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
             digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
 			digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
+			
+			digester.addObjectCreate("portlet-app/user-attribute-ref", UserAttributeRefImpl.class);
+            digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name", "name");
+            digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name-link", "nameLink");
+            digester.addSetNext("portlet-app/portlet/security-role-ref", "addUserAttributeRef");
             
             digester.parse(reader);
             result = true;
@@ -66,8 +72,9 @@ public class JetspeedDescriptorUtilities
         }
         catch (Throwable t)
         {
-            String msg = "Could not unmarshal \"" + pathPortletXML+"\".  "+t.toString();
+            String msg = "Could not unmarshal \"" + pathPortletXML +"\".  " + t.toString();
             log.error(msg, t);
+            throw new PortletApplicationException(msg, t);
         }
 
         return result;

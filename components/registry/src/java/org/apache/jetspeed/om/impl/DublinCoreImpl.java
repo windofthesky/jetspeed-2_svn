@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.impl;
+package org.apache.jetspeed.om.impl;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -47,23 +47,6 @@ public class DublinCoreImpl implements DublinCore
     public static final String SOURCE = "source";
     public static final String SUBJECT = "subject";
     public static final String TYPE = "type";
-    /*
-    public static final String PREFIX = "dc:";
-    public static final String TITLES = PREFIX + "title";
-    public static final String CONTRIBUTORS = PREFIX + "contributor";
-    public static final String COVERAGES = PREFIX + "coverage";
-    public static final String CREATORS = PREFIX + "creator";
-    public static final String DESCRIPTIONS = PREFIX + "description";
-    public static final String FORMATS = PREFIX + "format";
-    public static final String IDENTIFIERS = PREFIX + "identifier";
-    public static final String LANGUAGES = PREFIX + "language";
-    public static final String PUBLISHERS = PREFIX + "publisher";
-    public static final String RELATIONS = PREFIX + "relation";
-    public static final String RIGHTS = PREFIX + "right";
-    public static final String SOURCES = PREFIX + "source";
-    public static final String SUBJECTS = PREFIX + "subject";
-    public static final String TYPES = PREFIX + "type";
-	*/
     
     GenericMetadata metadata = null;
     

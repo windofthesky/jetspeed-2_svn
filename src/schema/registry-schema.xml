@@ -118,6 +118,31 @@ limitations under the License.
         <column name="ROLE_NAME" size="150" type="VARCHAR"/>
         <column name="ROLE_LINK" size="150" type="VARCHAR"/>
     </table>
+    
+    <!--                                                                   
+       Security Role                                                        
+    -->                                                                     
+    <table name="SECURITY_ROLE">                                            
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="WEB_APPLICATION_ID" required="true" type="INTEGER"/>  
+        <column name="ROLE_NAME" required="true" size="150" type="VARCHAR"/>
+        <column name="DESCRIPTION" size="150" type="VARCHAR"/>              
+        <!-- This is causing removing portlet application to fail with OJB RC4.
+        <foreign-key foreignTable="WEB_APPLICATION">                        
+            <reference foreign="ID" local="WEB_APPLICATION_ID"/>            
+        </foreign-key>
+        -->                                                   
+    </table> 
+
+    <!--
+       User Attribute Reference
+    -->
+    <table name="USER_ATTRIBUTE_REF">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
+        <column name="NAME" size="150" type="VARCHAR"/>
+        <column name="NAME_LINK" size="150" type="VARCHAR"/>
+    </table>
 
 	<!--
        User Attribute
@@ -184,22 +209,7 @@ limitations under the License.
         <unique name="UK_APPLICATION">
             <unique-column name="APP_NAME"/>
         </unique>
-    </table>
-
-    <!--                                                                   
-       Security Role                                                        
-    -->                                                                     
-    <table name="SECURITY_ROLE">                                            
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="WEB_APPLICATION_ID" required="true" type="INTEGER"/>  
-        <column name="ROLE_NAME" required="true" size="150" type="VARCHAR"/>
-        <column name="DESCRIPTION" size="150" type="VARCHAR"/>              
-        <!-- This is causing removing portlet application to fail with OJB RC4.
-        <foreign-key foreignTable="WEB_APPLICATION">                        
-            <reference foreign="ID" local="WEB_APPLICATION_ID"/>            
-        </foreign-key>
-        -->                                                   
-    </table>                                                                
+    </table>                                                               
 
     <!--
        Create Web Application Table

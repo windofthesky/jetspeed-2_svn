@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.om.portlet.impl;
 
-import org.apache.jetspeed.om.common.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.om.impl.LocalizedFieldImpl;
 
 /**
  * 

@@ -427,8 +427,7 @@ public class FileSystemPAM implements Deployment, Registration
             store.getTransaction().begin();
             registry.registerPortletApplication(app);
             log.info("Committing registry changes...");
-            store.getTransaction().commit();                        
-
+            store.getTransaction().commit();
         }
         catch (Exception e)
         {

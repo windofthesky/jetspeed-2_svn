@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.UserAttribute;
+import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -66,16 +67,27 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
 
     /**
      * <p>Adds a user attribute to the user attribute set.</p>
-     * @param name The user attribute name.
-     * @param description The user attribute description.
-     */
-    void addUserAttribute(String name, String description);
-
-    /**
-     * <p>Adds a user attribute to the user attribute set.</p>
      * @param userAttribute The user attribute.
      */
     void addUserAttribute(UserAttribute userAttribute);
+
+    /**
+     * <p>Sets a user-attribute-ref to the collection of user attribute refs associated
+     * with this portlet application.</p>
+     */
+    void setUserAttributeRefs(Collection userAttributeRefs);
+    
+    /**
+     * <p>Gets the collection of user attribute refs associated
+     * with this portlet application.</p>
+     */
+    Collection getUserAttributeRefs();
+
+    /**
+     * <p>Adds a user attribute ref to the user attribute ref set.</p>
+     * @param userAttributeRef The user attribute ref.
+     */
+    void addUserAttributeRef(UserAttributeRef userAttributeRef);
 
     /**
      * <p>Sets a user-attribute to the collection of user attributes associated

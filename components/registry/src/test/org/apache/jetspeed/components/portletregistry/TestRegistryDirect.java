@@ -30,11 +30,13 @@ import org.apache.jetspeed.components.persistence.store.util.PersistenceSupporte
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
+import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -117,6 +119,9 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
         
+        UserAttributeRef uaRef = new UserAttributeRefImpl("user-name-family", "user.name.family");
+        app.addUserAttributeRef(uaRef);
+
         UserAttribute ua = new UserAttributeImpl("user.name.family", "User Last Name");
         app.addUserAttribute(ua);
 

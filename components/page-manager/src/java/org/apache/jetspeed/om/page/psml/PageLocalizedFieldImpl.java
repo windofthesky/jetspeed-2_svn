@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.om.common.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.om.impl.LocalizedFieldImpl;
 
 /**
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
