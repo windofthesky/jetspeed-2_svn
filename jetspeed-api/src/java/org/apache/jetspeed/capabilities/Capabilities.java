@@ -31,9 +31,10 @@ public interface Capabilities
      * Creates a Capability Map with Capabilities, Mimetypes and mediaTypes for the given UserAgentPattern
      * @param userAgent Agent from the request
      * @return CapabilityMap populated with Capabilities, Mimetypes and Mediatype
-     * that match the userAgent
+     * that match the userAgent.  Never returns <code>null</code>
+     * @throws UnableToBuildCapabilityMapException  If a capability could not be created
      */
-    CapabilityMap getCapabilityMap(String userAgent);
+    CapabilityMap getCapabilityMap(String userAgent) throws UnableToBuildCapabilityMapException;
 
     /**
      * Obtain an iterator of all existing clients.

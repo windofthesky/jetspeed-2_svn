@@ -29,6 +29,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
+import org.apache.jetspeed.capabilities.UnableToBuildCapabilityMapException;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
@@ -118,9 +119,10 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
 
     /**
      * @param userAgent Agent from the request
+     * @throws UnableToBuildCapabilityMapException
      * @see org.apache.jetspeed.services.capability.CapabilityService#getCapabilityMap(java.lang.String)
      */
-    public CapabilityMap getCapabilityMap(String userAgent)
+    public CapabilityMap getCapabilityMap(String userAgent) throws UnableToBuildCapabilityMapException
     {        
         CapabilityMap map = null;
         boolean bClientFound = false;
@@ -211,8 +213,16 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
             }
 
         }
-
-        return map;
+        
+        if(map != null)
+        {
+               return map;
+        }
+        else
+        {
+            throw new UnableToBuildCapabilityMapException("We were unable to build a capability map for the agent, "+userAgent+
+                                ".  This might be an indiciation that the capability database has not been correctly initialized.");
+        }
     }
 
     /**
