@@ -26,20 +26,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cache.file.FileCache;
+import org.apache.jetspeed.cache.file.FileCacheEntry;
+import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.DocumentSetPath;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
-import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -54,9 +58,9 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to
@@ -66,7 +70,7 @@ import org.apache.jetspeed.profiler.ProfileLocatorProperty;
  * @author <a href="mailto:weaver@apache.org">Scott T Weaver </a>
  * @version $Id$
  */
-public class CastorXmlPageManager extends AbstractPageManager implements PageManager
+public class CastorXmlPageManager extends AbstractPageManager implements PageManager, FileCacheEventListener
 {
     private final static Log log = LogFactory.getLog(CastorXmlPageManager.class);
 
@@ -82,51 +86,41 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     private Map perl5PathRegexpCache;
 
+    private FileCache fileCache;
+
     // default configuration values
 
     public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
-                                 FolderHandler folderHandler, int cacheSize,
+                                 FolderHandler folderHandler, FileCache fileCache, int cacheSize,
                                  boolean profilingEnabled ) throws FileNotFoundException
     {
         super(generator);
         this.handlerFactory = hanlderFactory;
         this.folderHandler = folderHandler;
+        this.fileCache = fileCache;
+        this.fileCache.addListener(this);
         this.profilingEnabled = profilingEnabled;
         initCaches(cacheSize);
     }
 
     public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
-                                 FolderHandler folderHandler, int cacheSize,
+                                 FolderHandler folderHandler, FileCache fileCache, int cacheSize,
                                  boolean profilingEnabled, List modelClasses ) throws FileNotFoundException
     {
         super(generator, modelClasses);
         this.handlerFactory = hanlderFactory;
         this.folderHandler = folderHandler;
+        this.fileCache = fileCache;
+        this.fileCache.addListener(this);
         this.profilingEnabled = profilingEnabled;
         initCaches(cacheSize);
-    }
-
-    private void initCaches( int cacheSize )
-    {
-        if (cacheSize > 0)
-        {
-            // use LRU maps to limit cache size
-            this.pageContextCache = new LRUMap(cacheSize);
-            this.perl5PathRegexpCache = new LRUMap(cacheSize*2);
-        }
-        else
-        {
-            // use unlimited cache size
-            this.pageContextCache = new HashMap();
-            this.perl5PathRegexpCache = new HashMap();
-        }
     }
 
     /**
      * <p>
      * Compute profiled page context elements based on named profile
      * locators associated with a session/principal in supplied
-     * context instance.
+     * context instance. 
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getProfiledPageContext(org.apache.jetspeed.page.ProfiledPageContext)
@@ -141,16 +135,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // construct key and test for page context cache hit
         String pageContextCacheKey = pageContextCacheKey(pageContext);
         log.debug("computeProfiledPageContext() invoked, cache key = " + pageContextCacheKey + ", (profilingEnabled = " + profilingEnabled + ")");
-        ProfiledPageContext cachedPageContext = null;
-        synchronized ( pageContextCache )
-        {
-            cachedPageContext = (ProfiledPageContext) pageContextCache.get(pageContextCacheKey);
-        }
+        ProfiledPageContext cachedPageContext = lookupProfiledPageContext(pageContextCacheKey);
         if (cachedPageContext != null)
         {
             // copy profiled page context from cached page context and return
             copyProfiledPageContext(cachedPageContext, pageContext);
-            log.debug("computeProfiledPageContext() cache hit, cache key = " + pageContextCacheKey);
             return ;
         }
 
@@ -319,10 +308,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         }
                     }
                     Comparator linkDocumentComparator = new DocumentOrderComparator(linkDocumentOrder);
-                    DocumentOrderFilter linkDocumentFilter = new DocumentOrderFilter(linkDocumentOrder);
 
-                    // profile root links using profiled document order, filtering
-                    // links not explicitly ordered if ordering is specified
+                    // profile root links using profiled document order
                     rootLinks = new NodeSetImpl(null, linkDocumentComparator);
                     foldersIter = profiledFolders.iterator();
                     while (foldersIter.hasNext())
@@ -334,11 +321,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             Iterator aggregateLinksIter = aggregateLinks.iterator();
                             while (aggregateLinksIter.hasNext())
                             {
-                                Node rootLink = (Node) aggregateLinksIter.next();
-                                if (! linkDocumentFilter.filter(rootLink))
-                                {
-                                    rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl) rootLinks, rootLink);
-                                }
+                                rootLinks = addUniqueOrDescribedUrlNode((NodeSetImpl) rootLinks, (Node) aggregateLinksIter.next());
                             }
                         }
                     }
@@ -380,7 +363,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 String pagePath = requestPath;
                 if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
                 {
-                    pagePath = folder.getDefaultPage();
+                    pagePath = folder.getDefaultPage(true);
                 }
                 page = folder.getPage(pagePath);
             }
@@ -394,7 +377,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 try
                 {
                     folder = getFolder("/");
-                    String pagePath = folder.getDefaultPage();
+                    String pagePath = folder.getDefaultPage(true);
                     page = folder.getPage(pagePath);
                 }
                 catch (NodeException ne)
@@ -471,47 +454,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         populateProfiledPageContext(pageContext, folder, page, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNodeSets);
 
         // cache ProfiledPageContext instance
-        synchronized ( pageContextCache )
-        {
-            pageContextCache.put(pageContextCacheKey, pageContext);
-        }
-        log.debug("computeProfiledPageContext() cached, cache key = " + pageContextCacheKey);
+        cacheProfiledPageContext(pageContextCacheKey, pageContext);
     }
-
-    private String pageContextCacheKey(ProfiledPageContext pageContext)
-    {
-        // compute key from sorted profile locator strings
-        StringBuffer cacheKeyBuffer = new StringBuffer();
-        if (pageContext.getLocators() != null)
-        {
-            // get page context locators extent and sort by locator name
-            List locators = new ArrayList(pageContext.getLocators().entrySet());
-            Comparator locatorComparator = new Comparator()
-                {
-                    public int compare(Object locator1, Object locator2)
-                    {
-                        // compare locator names
-                        return ((String) ((Map.Entry) locator1).getKey()).compareTo((String) ((Map.Entry) locator1).getKey());
-                    }
-                } ;
-            Collections.sort(locators, locatorComparator);
-
-            // construct key using locator names and locators
-            Iterator locatorIter = locators.iterator();
-            while (locatorIter.hasNext())
-            {
-                Map.Entry locator = (Map.Entry) locatorIter.next();
-                if (cacheKeyBuffer.length() > 0)
-                {
-                    cacheKeyBuffer.append(',');
-                }
-                cacheKeyBuffer.append(locator.getKey());
-                cacheKeyBuffer.append(ProfileLocator.PATH_SEPARATOR);
-                cacheKeyBuffer.append(locator.getValue());
-            }
-        }
-        return cacheKeyBuffer.toString();
-    } 
 
     private NodeSetImpl expandAndProfileDocumentSet(Map profileLocators, DocumentSet documentSet, NodeSetImpl expandedNodes)
     {
@@ -809,6 +753,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         searchFolders.clear();
 
         // iterate through search paths looking for page in page manager content
+        int numSearchFoldersFound = 0;
+        Folder lastSearchFolderFound = null;
+        String lastSearchFolderFoundPath = null;
         Iterator pathsIter = pageSearchPaths.iterator();
         while (pathsIter.hasNext())
         {
@@ -822,6 +769,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             Page searchPage = null;
             try
             {
+                // match folder
                 if (folderPath.endsWith(Page.DOCUMENT_TYPE) || folderPath.endsWith("/"))
                 {
                     int lastSlashIndex = folderPath.lastIndexOf('/');
@@ -835,12 +783,59 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     }
                 }
                 searchFolder = getFolder(folderPath);
-                String pagePath = searchRequestPath;
-                if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
+
+                // match page if not previously matched
+                if (page[0] == null)
                 {
-                    pagePath = searchFolder.getDefaultPage();
+                    String pagePath = searchRequestPath;
+                    if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
+                    {
+                        // only allow aggressive default page defaulting if
+                        // trying to find page as last resort in root directory;
+                        // otherwise, return only fallback page or explicitly
+                        // specified default page name
+                        boolean allowDefaulting = folderPath.equals( "/" );
+                        pagePath = searchFolder.getDefaultPage(allowDefaulting);
+                        
+                        // if page path not fallback default page, profile again
+                        // to make sure the default page is not overridden, note
+                        // that the fallback page has already been profiled since
+                        // it would have been matched previously and that no
+                        // override is possible in first maching folder.
+                        if ((pagePath != null) && ! pagePath.equals(FolderImpl.FALLBACK_DEFAULT_PAGE) && (numSearchFoldersFound > 0))
+                        {
+                            // append default page to search paths
+                            ListIterator pageSearchPathsIter = pageSearchPaths.listIterator();
+                            while (pageSearchPathsIter.hasNext())
+                            {
+                                String pageSearchPath = (String) pageSearchPathsIter.next();
+                                if (pageSearchPath.endsWith( "/" ))
+                                {
+                                    pageSearchPathsIter.set(pageSearchPath + pagePath);
+                                }
+                                else
+                                {
+                                    pageSearchPathsIter.set(pageSearchPath + "/" + pagePath);
+                                }
+                            }
+
+                            // profile default page
+                            log.debug("findProfiledPageAndFolders(): invoking again with default page: " + pagePath);
+                            return findProfiledPageAndFolders(pageSearchPaths, folder, page, folders, searchFolders);
+                        }
+                    }
+
+                    // access matched page
+                    if (pagePath != null)
+                    {
+                        searchPage = searchFolder.getPage(pagePath);
+                    }
                 }
-                searchPage = searchFolder.getPage(pagePath);
+
+                // track found search folders
+                numSearchFoldersFound++;
+                lastSearchFolderFound = searchFolder;
+                lastSearchFolderFoundPath = searchRequestPath;
             }
             catch (NodeException ne)
             {
@@ -942,6 +937,37 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
         }
 
+        // if no page or folder found, attempt aggressive default
+        // page defaulting if only one search path found and no explict
+        // page requested: page selected cannot be ambiguous and using
+        // any non root folder default is valid and better than a root
+        // fallback default page.
+        if ((page[0] == null) && (numSearchFoldersFound == 1) && ! lastSearchFolderFound.getPath().equals( "/" ) &&
+            (! lastSearchFolderFoundPath.endsWith(Page.DOCUMENT_TYPE)))
+        {
+            // single search folder found: allow aggressive defaulting
+            String defaultPagePath = lastSearchFolderFound.getDefaultPage(true);
+
+            // use single search folder default page if found
+            Page lastSearchFolderFoundPage = null;
+            try
+            {
+                lastSearchFolderFoundPage = lastSearchFolderFound.getPage(defaultPagePath);
+            }
+            catch (NodeException ne)
+            {
+            }
+            if (lastSearchFolderFoundPage != null)
+            {
+                page[0] = lastSearchFolderFoundPage;
+                folder[0] = lastSearchFolderFound;
+                
+                log.debug("findProfiledPageAndFolders(), using matched default searchFolder = " + lastSearchFolderFound);
+                log.debug("findProfiledPageAndFolders(), using matched default searchPage = " + lastSearchFolderFoundPage);
+            }
+        }
+
+        // return true if profiled page and folder found
         return ((page[0] != null) && (folder[0] != null));
     }
 
@@ -949,13 +975,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     {
         // explicitly override profiled node urls to hide real ids and paths
         // that are artifacts of profiled content in file system
-        if (profiledNode instanceof AbstractNode)
+        if ((profiledNode instanceof AbstractNode) && ! (profiledNode instanceof Link))
         {
             AbstractNode profiledAbstractNode = (AbstractNode) profiledNode;
             if (! profiledAbstractNode.isUrlSet())
             {
                 String url = stripProfiledPath(profiledAbstractNode.getUrl());
-                if (url.startsWith("/") && (url.length() > 0))
+                if (url.startsWith("/"))
                 {
                     profiledAbstractNode.setUrl(url);
                     if (profiledAbstractNode.getPath().equals(profiledAbstractNode.getTitle()))
@@ -999,40 +1025,45 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     private NodeSetImpl addUniqueOrDescribedUrlNode(NodeSetImpl set, Node node)
     {
-        // add node to node set only if url set and unique
-        // or has metadata and entry in set does not; returns
-        // new set if replace required
+        // add node to node set only if url set
         if (node.getUrl() == null)
             return set;
-        Iterator setIter = set.iterator();
-        while (setIter.hasNext())
+
+        // add node to node set if is a link, has a unique url,
+        // or has metadata and entry in set does not; returns
+        // new set if replace required
+        if (! (node instanceof Link))
         {
-            Node setNode = (Node) setIter.next();
-            if (node.getUrl().equals(setNode.getUrl()))
+            Iterator setIter = set.iterator();
+            while (setIter.hasNext())
             {
-                // replace placeholder with described node
-                if ((node.getMetadata() != null) && (setNode.getMetadata() == null))
+                Node setNode = (Node) setIter.next();
+                if (node.getUrl().equals(setNode.getUrl()))
                 {
-                    // cannot remove from NodeSet: copy to replace setNode and return new set
-                    NodeSetImpl newSet = new NodeSetImpl(null, set.getComparator());
-                    Iterator copyIter = set.iterator();
-                    while (copyIter.hasNext())
+                    // replace placeholder with described node
+                    if ((node.getMetadata() != null) && (setNode.getMetadata() == null))
                     {
-                        Node copyNode = (Node) copyIter.next();
-                        if (copyNode != setNode)
+                        // cannot remove from NodeSet: copy to replace setNode and return new set
+                        NodeSetImpl newSet = new NodeSetImpl(null, set.getComparator());
+                        Iterator copyIter = set.iterator();
+                        while (copyIter.hasNext())
                         {
-                            newSet.add(copyNode);
+                            Node copyNode = (Node) copyIter.next();
+                            if (copyNode != setNode)
+                            {
+                                newSet.add(copyNode);
+                            }
+                            else
+                            {
+                                newSet.add(node);
+                            }
                         }
-                        else
-                        {
-                            newSet.add(node);
-                        }
+                        return newSet;
                     }
-                    return newSet;
+                    
+                    // skip duplicate node
+                    return set;
                 }
-                
-                // skip duplicate node
-                return set;
             }
         }
 
@@ -1085,35 +1116,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
             // compare names against each other
             return name1.compareTo(name2);
-        }
-    }
-
-    private static class DocumentOrderFilter
-    {
-        private List order;
-
-        public DocumentOrderFilter(List documentOrderList)
-        {
-            this.order = documentOrderList;
-        }
-
-        public boolean filter(Object rootLink)
-        {
-            if (order != null)
-            {
-                // filter names of links against order
-                String name = rootLink.toString();
-                int nameIndex = name.lastIndexOf('/');
-                if (nameIndex != -1)
-                {
-                    name = name.substring(nameIndex + 1);
-                }
-                if (order.indexOf(name) == -1)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 
@@ -1176,21 +1178,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         return path;
     }
 
-    private String pathToPerl5Regexp(String path)
+    private synchronized String pathToPerl5Regexp(String path)
     {
         // convert conventional path expressions to java/perl5 form and cache
-        synchronized ( perl5PathRegexpCache )
+        String perl5Path = lookupPerl5Regexp(path);
+        if (perl5Path == null)
         {
-            String perl5Path = (String) perl5PathRegexpCache.get(path);
-            if (perl5Path == null)
-            {
-                perl5Path = path.replaceAll("\\.", "\\\\.");
-                perl5Path = perl5Path.replaceAll("\\?", ".");
-                perl5Path = perl5Path.replaceAll("\\*", ".*");
-                perl5PathRegexpCache.put(path, perl5Path);
-            }
-            return perl5Path;
+            perl5Path = path.replaceAll("\\.", "\\\\.");
+            perl5Path = perl5Path.replaceAll("\\?", ".");
+            perl5Path = perl5Path.replaceAll("\\*", ".*");
+            cachePerl5Regexp(path, perl5Path);
         }
+        return perl5Path;
     }
 
     private NodeSet filterDocumentSet(NodeSet set)
@@ -1394,4 +1393,147 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     {
         return folderHandler.getNodes(path,regex,documentType);
     }
+
+    /**
+     * <p>
+     * refresh file cache entry
+     * </p>
+     * 
+     * @see org.apache.jetspeed.cache.file.FileCacheEventListener#refresh(org.apache.jetspeed.cache.file.FileCacheEntry)
+     * @param entry
+     * @throws Exception
+     */
+    public void refresh( FileCacheEntry entry ) throws Exception
+    {
+        // file cache managed component refreshed: clear cached page
+        // contexts. TODO: manage cache by last accessed time and/or
+        // explicit dependencies: requires underlying FileCache to
+        // have last access times tracked.
+        evictAllPageContextCache();
+    }
+
+    /**
+     * <p>
+     * evict file cache entry
+     * </p>
+     * 
+     * @see org.apache.jetspeed.cache.file.FileCacheEventListener#evict(org.apache.jetspeed.cache.file.FileCacheEntry)
+     * @param entry
+     * @throws Exception
+     */
+    public void evict( FileCacheEntry entry ) throws Exception
+    {
+        // file cache managed component refreshed: clear cached page
+        // contexts. TODO: manage cache by last accessed time and/or
+        // explicit dependencies: requires underlying FileCache to
+        // have last access times tracked.
+        evictAllPageContextCache();
+    }
+
+    private void initCaches( int cacheSize )
+    {
+        if (cacheSize > 0)
+        {
+            // use LRU maps to limit cache size
+            this.pageContextCache = new LRUMap(cacheSize);
+            this.perl5PathRegexpCache = new LRUMap(cacheSize*2);
+        }
+        else
+        {
+            // use unlimited cache size
+            this.pageContextCache = new HashMap();
+            this.perl5PathRegexpCache = new HashMap();
+        }
+    }
+
+    private void cacheProfiledPageContext(String pageContextCacheKey, ProfiledPageContext pageContext)
+    {
+        // lock and cache page context using entry object to track create timestamp
+        synchronized ( pageContextCache )
+        {
+            pageContextCache.put(pageContextCacheKey, pageContext);
+        }
+        log.debug("cacheProfiledPageContext() cached, cache key = " + pageContextCacheKey);
+    }
+
+    private ProfiledPageContext lookupProfiledPageContext(String pageContextCacheKey)
+    {
+        // lock and lookup entry object and return page context
+        ProfiledPageContext pageContext = null;
+        synchronized ( pageContextCache )
+        {
+            pageContext = (ProfiledPageContext) pageContextCache.get(pageContextCacheKey); 
+        }
+        if (pageContext != null)
+        {
+            log.debug("lookupProfiledPageContext() cache hit, cache key = " + pageContextCacheKey);
+        }
+        return pageContext;
+    }
+
+    private void evictAllPageContextCache()
+    {
+        // evict all cached page contexts. TODO: manage cache by last
+        // accessed time and/or explicit dependencies: requires
+        // underlying FileCache to have last access times tracked.
+        synchronized ( pageContextCache )
+        {
+            pageContextCache.clear();
+        }        
+        log.debug("evictAllProfiledPageContext() invoked, all page contexts evicted from cache");
+    }
+
+    private void cachePerl5Regexp(String regexpKey, String regexp)
+    {
+        // lock and cache regexp
+        synchronized ( perl5PathRegexpCache )
+        {
+            perl5PathRegexpCache.put(regexpKey, regexp);
+        }
+    }
+
+    private String lookupPerl5Regexp(String regexpKey)
+    {
+        // lock and lookup regexp
+        synchronized ( perl5PathRegexpCache )
+        {
+            return (String) perl5PathRegexpCache.get(regexpKey);
+        }
+    }
+
+    private String pageContextCacheKey(ProfiledPageContext pageContext)
+    {
+        // compute key from sorted profile locator strings
+        StringBuffer cacheKeyBuffer = new StringBuffer();
+        if (pageContext.getLocators() != null)
+        {
+            // get page context locators extent and sort by locator name
+            List locators = new ArrayList(pageContext.getLocators().entrySet());
+            Comparator locatorComparator = new Comparator()
+                {
+                    public int compare(Object locator1, Object locator2)
+                    {
+                        // compare locator names
+                        return ((String) ((Map.Entry) locator1).getKey()).compareTo((String) ((Map.Entry) locator1).getKey());
+                    }
+                } ;
+            Collections.sort(locators, locatorComparator);
+
+            // construct key using locator names and locators
+            Iterator locatorIter = locators.iterator();
+            while (locatorIter.hasNext())
+            {
+                Map.Entry locator = (Map.Entry) locatorIter.next();
+                if (cacheKeyBuffer.length() > 0)
+                {
+                    cacheKeyBuffer.append(',');
+                }
+                cacheKeyBuffer.append(locator.getKey());
+                cacheKeyBuffer.append(ProfileLocator.PATH_SEPARATOR);
+                cacheKeyBuffer.append(locator.getValue());
+            }
+        }
+        return cacheKeyBuffer.toString();
+    } 
+
 }

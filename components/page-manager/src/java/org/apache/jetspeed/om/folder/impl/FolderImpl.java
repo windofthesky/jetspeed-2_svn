@@ -88,9 +88,9 @@ public class FolderImpl extends AbstractNode implements Folder
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage()
+     * @see org.apache.jetspeed.om.folder.Folder#getDefaultPage(boolean)
      */
-    public String getDefaultPage()
+    public String getDefaultPage(boolean allowDefaulting)
     {
         try
         {   
@@ -99,25 +99,31 @@ public class FolderImpl extends AbstractNode implements Folder
             {
                 defaultPage = FALLBACK_DEFAULT_PAGE;
             }
-            ;
             return getPage(defaultPage).getName();
         }
         catch (NodeException e)
         {
-            try
+            if (allowDefaulting)
             {
-                Iterator pagesIter = getPages().iterator();
-                if (pagesIter.hasNext())
-                    return ((Page) pagesIter.next()).getId();
-                else
+                try
+                {
+                    Iterator pagesIter = getPages().iterator();
+                    if (pagesIter.hasNext())
+                    {
+                        return ((Page) pagesIter.next()).getName();
+                    }
+                    else
+                    {
+                        return PAGE_NOT_FOUND_PAGE;
+                    }
+                }
+                catch (NodeException e1)
+                {
                     return PAGE_NOT_FOUND_PAGE;
-            }
-            catch (NodeException e1)
-            {
-                return PAGE_NOT_FOUND_PAGE;
+                }
             }
         }
-
+        return null;
     }
 
     /*

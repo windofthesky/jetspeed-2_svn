@@ -40,9 +40,10 @@ public interface Folder extends Node
      * getDefaultPage
      * </p>
      *
+     * @param allowDefaulting flag to enable defaulting logic when not explicitly set
      * @return A String representing the default psml page for this folder
      */
-    String getDefaultPage();
+    String getDefaultPage(boolean allowDefaulting);
     
     /**
      * 
