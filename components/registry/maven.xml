@@ -17,6 +17,7 @@
   <!-- ================================================================ -->
   <goal name="ojb.registry">
     <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/target/classes/repository_registry.xml"/>
+    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/target/test-classes/repository_registry.xml"/>
    </goal>
 
 
