@@ -14,6 +14,8 @@
 */
 package org.apache.jetspeed.rewriter;
 
+import java.net.URL;
+
 import javax.portlet.PortletURL;
 
 /**
@@ -32,6 +34,11 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter 
      */
     private PortletURL actionURL = null;
     
+    /*
+     * Base URL
+     */
+    private String baseURL = null;
+    
     /**
      * Setters/getters for members
      */
@@ -43,6 +50,16 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter 
     public PortletURL getActionURL()
     {
         return this.actionURL;
+    }
+    
+    public void setBaseURL(String url)
+    {
+        this.baseURL = url;
+    }
+    
+    public String getBaseURL()
+    {
+        return this.baseURL;
     }
     
 	/** rewriteURL
@@ -59,14 +76,49 @@ public class WebContentRewriter extends RulesetRewriterImpl implements Rewriter 
 	     * TODO: no default. Use default Jetspeed JIRA to make sure that the method was called
 	     */
 	    String modifiedURL = "http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492";
-	    if ( this.actionURL != null)
-	    {
-	        // create Action URL
-			actionURL.setParameter(this.ACTION_PARAMETER_URL, url);
-			
-			modifiedURL = actionURL.toString();
+	    
+	    //	Check if it's a relative or full URL
+        if ( url.startsWith("/") || url.indexOf("http") == -1)
+        {
+            try
+            {
+	            if (baseURL != null)
+	            {
+	                URL full = new URL(new URL(baseURL), url);
+	                modifiedURL = full.toString();
+	            }
+	            else
+	            {
+	                modifiedURL = url; // leave as is
+	            }
+            }
+            catch(Exception e)
+            {
+                modifiedURL = url;
+            }
+        }
+        else
+        {
+            // Apply action URL's not to images
+            if (url.indexOf(".gif") == -1 && url.indexOf(".jpg") == -1)
+            {
+			    if ( this.actionURL != null)
+			    {
+			        // create Action URL
+					actionURL.setParameter(ACTION_PARAMETER_URL, url);
+					
+					modifiedURL = actionURL.toString();
+		        }
+		        else
+		        {
+		            modifiedURL = url;
+		        }
+            }
+            else
+            {
+                modifiedURL = url;
+            }
 	    }
-		
 		return modifiedURL;
 	}
 

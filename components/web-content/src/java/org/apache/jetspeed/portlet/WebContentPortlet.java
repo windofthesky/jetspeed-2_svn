@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
 /**
  * WebContentPortlet
  *
- * TODO:
+ * TODO: Preferences, cache stream instead of URL
  *  *
  * @author <a href="mailto:rogerrutr@apache.org">Roger Ruttimann</a>
  * @version $Id$
@@ -162,6 +162,10 @@ public class WebContentPortlet extends GenericVelocityPortlet {
         try
 		{
             sourceURL = (String)request.getPortletSession().getAttribute(WebContentPortlet.SESSION_PARAMETER,  PortletSession.APPLICATION_SCOPE);
+            
+            // TODO: This is just a kludge. Filtering of bad uRL's should be more sophisticated
+            if (sourceURL.startsWith("/") || sourceURL.startsWith(".."))
+                sourceURL=null;
 		}
     	catch (Exception e )
 		{
@@ -174,12 +178,13 @@ public class WebContentPortlet extends GenericVelocityPortlet {
     	    // Use the cache
     	    sourceURL = lastURL;
     	}
-    	else
+    	
+    	if (sourceURL == null)
     	{
     	    // Use the URL defined in the preferences
     	    sourceURL = defaultViewSource;
     	}
-    	
+    	    	
     	// If all above fails throw an error asking the user to define an URL in edit mode
     	if ( sourceURL == null)
     	    throw new PortletException("WebContent source not specified. Go to edit mode and specify an URL.");
@@ -232,6 +237,16 @@ public class WebContentPortlet extends GenericVelocityPortlet {
         try
         {
             htmlWriter = new OutputStreamWriter(byteOutputStream, this.defaultEncoding);
+            
+            // Set the action URL in the rewriter
+            ((WebContentRewriter)rewriter).setActionURL(response.createActionURL());
+            
+            URL baseURL = new URL(sourceAttr);
+            String baseurl = baseURL.getProtocol() + "://"+ baseURL.getHost();
+//          TODO: Remove debug
+    	    System.out.println("BaseURL: " + baseurl);
+            
+            ((WebContentRewriter)rewriter).setBaseURL(baseurl);
         
             rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getReader(sourceAttr), htmlWriter);
         }
