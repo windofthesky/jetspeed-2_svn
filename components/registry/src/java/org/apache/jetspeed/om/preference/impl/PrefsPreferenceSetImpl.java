@@ -288,6 +288,11 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
                 childrenNames = prefsRootNode.childrenNames();
                 pointer = 0;
             }
+            catch (IllegalStateException ise)
+            {
+                // node has been removed
+                childrenNames = new String[0];
+            }                    
             catch (BackingStoreException e)
             {
                 String msg = "Preference backing store failed: " + e.toString();
