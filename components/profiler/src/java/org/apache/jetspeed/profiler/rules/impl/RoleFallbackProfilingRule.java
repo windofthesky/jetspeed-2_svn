@@ -16,6 +16,7 @@
 package org.apache.jetspeed.profiler.rules.impl;
 
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +62,28 @@ public class RoleFallbackProfilingRule
                 resolver = getDefaultResolver();
             }
             String value = resolver.resolve(context, criterion);
-            key.append(criterion.getName());
-            key.append(ProfileLocator.PATH_SEPARATOR);
-            key.append(value);
+            if (resolver instanceof RoleCriterionResolver ||
+                resolver instanceof GroupCriterionResolver)
+            {
+                StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
+                while (tokenizer.hasMoreTokens())
+                {
+                    String token = (String)tokenizer.nextToken();
+                    key.append(criterion.getName());
+                    key.append(ProfileLocator.PATH_SEPARATOR);
+                    key.append(token);
+                    if (tokenizer.hasMoreTokens())
+                    {
+                        key.append(ProfileLocator.PATH_SEPARATOR);
+                    }
+                }
+            }
+            else
+            {
+                key.append(criterion.getName());
+                key.append(ProfileLocator.PATH_SEPARATOR);
+                key.append(value);
+            }
             if (criteria.hasNext())
             {
                 key.append(ProfileLocator.PATH_SEPARATOR);
@@ -95,7 +115,20 @@ public class RoleFallbackProfilingRule
             {
                 String value = resolver.resolve(context, criterion);
                 boolean isControl = resolver.isControl(criterion);
-                locator.add(criterion, isControl, value);
+                if (resolver instanceof RoleCriterionResolver ||
+                        resolver instanceof GroupCriterionResolver)
+                    {
+                        StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
+                        while (tokenizer.hasMoreTokens())
+                        {
+                            String token = (String)tokenizer.nextToken();
+                            locator.add(criterion, isControl, token);
+                        }
+                    }
+                    else
+                    {
+                        locator.add(criterion, isControl, value);
+                    }
             }                
         }               
              

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.profiler.rules.impl;
 
 import java.security.Principal;
+import java.util.Iterator;
 
 import javax.security.auth.Subject;
 
@@ -61,13 +62,8 @@ public class GroupCriterionResolver
              log.error(msg);
              return null;
          }
-            
-         Principal principal = SecurityHelper.getPrincipal(subject, GroupPrincipal.class);
-         if (principal != null)
-         {
-             return principal.getName();              
-         }
-         return null;
+
+         return resolvePrincipals(context, criterion, subject, GroupPrincipal.class);
       }
      
      /* (non-Javadoc)

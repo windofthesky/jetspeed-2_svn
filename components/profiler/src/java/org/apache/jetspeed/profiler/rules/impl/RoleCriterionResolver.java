@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityHelper;
 
@@ -62,12 +63,7 @@ public class RoleCriterionResolver
             return null;
         }
             
-        Principal principal = SecurityHelper.getPrincipal(subject, RolePrincipal.class);
-        if (principal != null)
-        {
-            return principal.getName();              
-        }
-        return null;
+        return resolvePrincipals(context, criterion, subject, RolePrincipal.class);
      }
     
     /* (non-Javadoc)

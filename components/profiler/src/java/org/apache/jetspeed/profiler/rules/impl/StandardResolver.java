@@ -15,9 +15,16 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import java.security.Principal;
+import java.util.Iterator;
+
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
 
 /**
  * Standard Jetspeed-1 style resolver for criterion.
@@ -31,6 +38,8 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class StandardResolver implements RuleCriterionResolver
 {
+    public static final String VALUE_DELIMITER = ",";
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
      */
@@ -55,5 +64,28 @@ public class StandardResolver implements RuleCriterionResolver
             return false;
         }
         return true;
+    }
+    
+    protected String resolvePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
+    {
+        StringBuffer result = new StringBuffer();
+        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
+        int count = 0;
+        while (principals.hasNext())
+        {
+            Principal principal = (Principal)principals.next();
+            if (count > 0)
+            {
+                result.append(VALUE_DELIMITER);
+            }
+            result.append(principal.getName());
+            count++;
+        }
+        if (count == 0)
+        {
+            return null;
+        }
+        return result.toString();
+        
     }
 }
