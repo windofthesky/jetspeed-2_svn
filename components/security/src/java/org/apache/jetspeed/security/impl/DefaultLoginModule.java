@@ -21,6 +21,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
@@ -164,7 +165,7 @@ public class DefaultLoginModule implements LoginModule
             callbacks[1] = null;
             if (!success)
             {
-                throw new LoginException("Authentication failed: Password does not match");
+                throw new FailedLoginException("Authentication failed: Password does not match");
             }
 
             return (true);
