@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.capability;
+package org.apache.jetspeed.capabilities;
 
 import java.util.Iterator;
 
@@ -81,7 +81,7 @@ public class TestCapability extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCapability.class);
-        suite.setScript("org/apache/jetspeed/capability/containers/capability-container.groovy");
+        suite.setScript("org/apache/jetspeed/capabilities/containers/capability-container.groovy");
         return suite;
     }
 

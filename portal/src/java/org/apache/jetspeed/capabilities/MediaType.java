@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.capability;
+package org.apache.jetspeed.capabilities;
 
 import java.util.Vector;
 import java.util.Collection;

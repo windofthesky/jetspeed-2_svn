@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.jetspeed.capability.MediaType;
+import org.apache.jetspeed.capabilities.MediaType;
 import java.util.Vector;
 import java.util.Collection;
 

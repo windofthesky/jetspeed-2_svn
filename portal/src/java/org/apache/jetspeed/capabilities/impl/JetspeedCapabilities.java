@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,15 +24,15 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.capability.Capabilities;
-import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.capability.Client;
-import org.apache.jetspeed.capability.MediaType;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.capabilities.Client;
+import org.apache.jetspeed.capabilities.MediaType;
 import org.picocontainer.Startable;
 
 
-import org.apache.jetspeed.capability.Capability;
-import org.apache.jetspeed.capability.MimeType;
+import org.apache.jetspeed.capabilities.Capability;
+import org.apache.jetspeed.capabilities.MimeType;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -236,7 +236,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
      * @param useragent     the useragent to match
      * @return the found client or null if the user-agent does not match any
      *  defined client
-     * @see org.apache.jetspeed.capability.CapabilityService#findClient(java.lang.String)
+     * @see org.apache.jetspeed.capabilities.CapabilityService#findClient(java.lang.String)
      */
 
     public Client findClient(String userAgent)
@@ -303,7 +303,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
     }
 
     /* 
-     * @see org.apache.jetspeed.capability.CapabilityService#getClients()
+     * @see org.apache.jetspeed.capabilities.CapabilityService#getClients()
      */
     public Iterator getClients()
     {
@@ -317,7 +317,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
     }
 
     /* 
-     * @see org.apache.jetspeed.capability.CapabilityService#getMediaTypesForMimeTypes(java.util.Iterator)
+     * @see org.apache.jetspeed.capabilities.CapabilityService#getMediaTypesForMimeTypes(java.util.Iterator)
      */
     public Collection getMediaTypesForMimeTypes(Iterator mimetypes)
     {
@@ -355,7 +355,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
     }
 
     /* 
-     * @see org.apache.jetspeed.capability.CapabilityService#deleteCapabilityMapCache()
+     * @see org.apache.jetspeed.capabilities.CapabilityService#deleteCapabilityMapCache()
      */
     public void deleteCapabilityMapCache()
     {
@@ -364,7 +364,7 @@ public class JetspeedCapabilities implements Capabilities, Startable
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.capability.CapabilityService#getMediaType(java.lang.String)
+     * @see org.apache.jetspeed.capabilities.CapabilityService#getMediaType(java.lang.String)
      */
     public MediaType getMediaType(String mediaType)
     {

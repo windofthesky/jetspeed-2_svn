@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,10 +24,10 @@ import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.capability.Capabilities;
-import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.capability.MediaType;
-import org.apache.jetspeed.capability.MimeType;
+import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.capabilities.MediaType;
+import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Invokes the capability mapper in the request pipeline

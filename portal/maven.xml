@@ -20,7 +20,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.deployment.TestSimpleDeployment'/>
+<property name='testcase' value='org.apache.jetspeed.capabilities.TestCapability'/>
 
 <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />

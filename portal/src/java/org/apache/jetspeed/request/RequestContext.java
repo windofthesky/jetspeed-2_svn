@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.capability.CapabilityMap;
+import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;

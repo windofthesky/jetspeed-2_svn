@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.capability.Client;
-import org.apache.jetspeed.capability.Capability;
-import org.apache.jetspeed.capability.MediaType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.capabilities.Client;
+import org.apache.jetspeed.capabilities.Capability;
+import org.apache.jetspeed.capabilities.MediaType;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.jetspeed.capability.MimeType;
+import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Implementation for capabilityMap interface
@@ -34,6 +36,9 @@ import org.apache.jetspeed.capability.MimeType;
  */
 class CapabilityMapImpl implements CapabilityMap
 {
+    private static final Log log =
+        LogFactory.getLog(JetspeedCapabilities.class);
+    
     // Members
     private String useragent; // User agent for request
     private Map mimeTypeMap = new HashMap(); // supported Mimetypes for Agent
@@ -100,7 +105,7 @@ class CapabilityMapImpl implements CapabilityMap
             if (mt.getMimetypeId() == prefMimeTypeId)
                 return mt;
         }
-        System.out.println("+++ NEVER " + prefMimeTypeId);        
+        log.error("Could not find preferred Mime Type for " + prefMimeTypeId);        
 
         // Should never reach this point. A preferred value needs to be set
         return null; // TODO: NEVER RETURN NULL

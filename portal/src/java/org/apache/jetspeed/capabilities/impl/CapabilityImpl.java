@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.jetspeed.capability.MimeType;
+import org.apache.jetspeed.capabilities.Capability;
 
 /**
- * Mimetype implementation class.
+ * Capability implementation class.
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
 
-public class MimeTypeImpl implements MimeType
+public class CapabilityImpl implements Capability
 {
-    private int mimeTypeId;
+    private int capabilityId;
     private String name;
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#setMimetypeId(int)
+     * @see org.apache.jetspeed.om.registry.Capability#setCapabilityId(int)
      */
-    public void setMimetypeId(int id)
+    public void setCapabilityId(int id)
     {
-        this.mimeTypeId = id;
+        this.capabilityId = id;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#getMimetypeId()
+     * @see org.apache.jetspeed.om.registry.Capability#getCapabilityId()
      */
-    public int getMimetypeId()
+    public int getCapabilityId()
     {
-        return this.mimeTypeId;
+        return this.capabilityId;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#setName(java.lang.String)
+     * @see org.apache.jetspeed.om.registry.Capability#setName(java.lang.String)
      */
     public void setName(String name)
     {
@@ -55,7 +55,7 @@ public class MimeTypeImpl implements MimeType
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#getName()
+     * @see org.apache.jetspeed.om.registry.Capability#getName()
      */
     public String getName()
     {

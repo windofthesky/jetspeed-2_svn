@@ -35,8 +35,8 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler
-import org.apache.jetspeed.capability.Capabilities
-import org.apache.jetspeed.capability.impl.JetspeedCapabilities
+import org.apache.jetspeed.capabilities.Capabilities
+import org.apache.jetspeed.capabilities.impl.JetspeedCapabilities
 
 import org.apache.jetspeed.aggregator.PageAggregator
 import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl

@@ -22,7 +22,7 @@ limitations under the License.
    - M E D I A T Y P E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.capability.impl.MediaTypeImpl"
+   	  class="org.apache.jetspeed.capabilities.impl.MediaTypeImpl"
    	  table="MEDIA_TYPE"
    >
       
@@ -60,7 +60,7 @@ limitations under the License.
       
       <collection-descriptor
           name="capabilities"
-          element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
+          element-class-ref="org.apache.jetspeed.capabilities.impl.CapabilityImpl"
  
           indirection-table="CLIENT_TO_CAPABILITY"
        >
@@ -70,7 +70,7 @@ limitations under the License.
        
        <collection-descriptor
           name="mimetypes"
-          element-class-ref="org.apache.jetspeed.capability.impl.MimeTypeImpl"
+          element-class-ref="org.apache.jetspeed.capabilities.impl.MimeTypeImpl"
  
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
@@ -84,7 +84,7 @@ limitations under the License.
    - C L I E N T
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.capability.impl.ClientImpl"
+   	  class="org.apache.jetspeed.capabilities.impl.ClientImpl"
    	  table="CLIENT"
    >
         <field-descriptor
@@ -133,7 +133,7 @@ limitations under the License.
       
       <collection-descriptor
           name="capabilities"
-          element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
+          element-class-ref="org.apache.jetspeed.capabilities.impl.CapabilityImpl"
  
           indirection-table="CLIENT_TO_CAPABILITY"
        >
@@ -143,7 +143,7 @@ limitations under the License.
        
        <collection-descriptor
           name="mimetypes"
-          element-class-ref="org.apache.jetspeed.capability.impl.MimeTypeImpl"
+          element-class-ref="org.apache.jetspeed.capabilities.impl.MimeTypeImpl"
  
           indirection-table="CLIENT_TO_MIMETYPE"
        >
@@ -157,7 +157,7 @@ limitations under the License.
    - M I M E T Y P E 
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.capability.impl.MimeTypeImpl"
+   	  class="org.apache.jetspeed.capabilities.impl.MimeTypeImpl"
    	  table="MIMETYPE"
    >
         <field-descriptor
@@ -180,7 +180,7 @@ limitations under the License.
    - C A P A B I L I T Y
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.capability.impl.CapabilityImpl"
+   	  class="org.apache.jetspeed.capabilities.impl.CapabilityImpl"
    	  table="CAPABILITY"
    >
         <field-descriptor

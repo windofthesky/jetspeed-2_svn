@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.capability;
+package org.apache.jetspeed.capabilities;
 
 /**
  * Capability class.

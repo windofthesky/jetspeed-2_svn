@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.capability.impl;
+package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.jetspeed.capability.Client;
+import org.apache.jetspeed.capabilities.Client;
 import java.util.Collection;
 
 /**

@@ -28,7 +28,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.services.factory.FactoryManager;
-import org.apache.jetspeed.capability.CapabilityMap;
+import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
