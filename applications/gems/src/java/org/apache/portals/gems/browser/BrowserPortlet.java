@@ -95,6 +95,10 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 
     protected static final String PREVIOUS = "prev";
 
+    protected static final String FIRST = "first";
+
+    protected static final String LAST = "last";
+    
     protected static final String VELOCITY_NULL_ENTRY = "-";
 
     // portlet entry Id
@@ -134,9 +138,7 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         PortletPreferences prefs = request.getPreferences();
 
         windowSize = Integer.parseInt(prefs.getValue(WINDOW_SIZE, "10"));
-        next = start + windowSize;
-        prev = start - windowSize;
-
+        
         try
         {
             if (iterator == null)
@@ -146,6 +148,7 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 readUserParameters(request, context);
                 getRows(request, sql, windowSize);
                 iterator = getBrowserIterator(request);
+                start = 0;
             } 
             else
             {
@@ -153,16 +156,30 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 {
                     iterator.sort(sortColName);
                 }
-                iterator.setTop(start);
             }
 
+            resultSetSize = iterator.getResultSetSize();                    
+            if (start >= resultSetSize)
+            {
+                if ((start - windowSize) > 0)
+                    start = resultSetSize - windowSize;
+                else
+                    start = 0;            
+            }        
+            next = start + windowSize;
+            prev = start - windowSize;
+            if (prev < 0 && start > 0)
+               prev = 0;
+            iterator.setTop(start);
+            
+            
             readLinkParameters(request, context);
 
             if (iterator != null)
             {
                 resultSetSize = iterator.getResultSetSize();
 
-                if (next < resultSetSize)
+                if (next <= resultSetSize)
                 {
                     context.put(NEXT, String.valueOf(next));
                 }
@@ -175,7 +192,8 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 context.put(BROWSER_TITLE_ITERATOR, iterator
                         .getResultSetTitleList());
                 context.put(BROWSER_TABLE_SIZE, new Integer(resultSetSize));
-
+                context.put(WINDOW_SIZE, new Integer(windowSize));
+                context.put(START, new Integer(start));
                 /*
                  * System.out.println("buildNormalContext Sort column name=
                  * "+sortColName); System.out.println("buildNormalContext
@@ -301,7 +319,17 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
             String startStr = request.getParameter(attrName);
             if (startStr != null && startStr.length() > 0)
             {
-                start = Integer.parseInt(startStr);
+                try
+                {
+                    start = Integer.parseInt(startStr);                    
+                }
+                catch (Exception e)
+                {
+                    if (iterator != null)
+                        start = iterator.getTop();
+                    else
+                        start = 0;
+                }
             } else if (start == -1 && iterator != null)
             {
                 start = iterator.getTop();

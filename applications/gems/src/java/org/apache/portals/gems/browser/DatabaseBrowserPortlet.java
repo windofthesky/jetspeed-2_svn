@@ -289,7 +289,7 @@ public class DatabaseBrowserPortlet
     throws PortletException, IOException
     {
         response.setContentType("text/html");
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "dbConnectTest");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "DatabaseBrowserPortlet", "dbConnectTest");
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
@@ -313,7 +313,7 @@ public class DatabaseBrowserPortlet
                     prefs.store();                    
                     getConnection(request);
                     StatusMessage msg = new StatusMessage("Connection made successfully.", StatusMessage.SUCCESS);                    
-                    PortletMessaging.publish(request, "dbConnectTest", msg);                    
+                    PortletMessaging.publish(request, "DatabaseBrowserPortlet", "dbConnectTest", msg);                    
                 }
                 catch (Exception e)
                 {
@@ -324,7 +324,7 @@ public class DatabaseBrowserPortlet
                         msg = msg + ", " + cause.getMessage();
                     }
                     StatusMessage sm = new StatusMessage(msg, StatusMessage.ERROR);
-                    PortletMessaging.publish(request, "dbConnectTest", sm);
+                    PortletMessaging.publish(request, "DatabaseBrowserPortlet", "dbConnectTest", sm);
                 }
                 response.setPortletMode(PortletMode.EDIT);
                 return;

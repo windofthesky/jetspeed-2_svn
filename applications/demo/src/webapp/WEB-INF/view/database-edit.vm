@@ -99,7 +99,7 @@
   <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.window.size")</font></th>
     <td>
-      <input type="input" name="windowSize" value="$!prefsMap.get('windowSize')" size="5" maxlength="5" class="portlet-form-field-label"/> 
+      <input type="input" name="WindowSize" value="$!prefsMap.get('WindowSize')" size="5" maxlength="5" class="portlet-form-field-label"/> 
     </td>
   </tr>
   <tr>

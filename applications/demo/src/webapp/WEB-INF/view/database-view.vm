@@ -108,25 +108,64 @@ limitations under the License.
       <td valign="middle" height="30">
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='first'/>                    
+            <input class="jetdbButton" type="submit" value="<<">
+            <input type="hidden" name="start" value="0">
+          </form>
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='prev'/>                    
-            <input class="jetdbButton" type="submit" value="$MESSAGES.getString('dbprev')">
+            <input class="jetdbButton" type="submit" value="<">
             <input type="hidden" name="start" value="$prev">
           </form>
         </div>
       </td>
-    <td width="50">&nbsp; </td>
     #end
+    #if ($tableSize > 0)
+      <form action="$renderResponse.createActionURL()" method="post">
+      <td valign="middle" height="30">
+        <div align="center">
+          	<input type='hidden' name='db.browser.action' value='change'/>                    
+            <input type="input" name='start' size='5' value="$start">
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type="input" readonly size='10' value="of $tableSize">            
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input class="jetdbButton" type="submit" value="Go">            
+        </div>
+      </td>  
+
+      </form>
+
+      
+    #end    
     #if ($next)
       <td valign="middle">
         <div align="center">
           <form action="$renderResponse.createActionURL()" method="post">
           	<input type='hidden' name='db.browser.action' value='next'/>          
-            <input class="jetdbButton" type="submit" value="$MESSAGES.getString('dbnext')">
+            <input class="jetdbButton" type="submit" value=">">
             <input type="hidden" name="start" value="$next">
           </form>
         </div>
       </td>
-      <td width="50">&nbsp; </td>
+      <td valign="middle" height="30">
+        <div align="center">
+          <form action="$renderResponse.createActionURL()" method="post">
+          	<input type='hidden' name='db.browser.action' value='last'/>                    
+            <input class="jetdbButton" type="submit" value=">>">
+            <input type="hidden" name="start" value="$tableSize">
+          </form>
+        </div>
+      </td>  
     #end
     #if ($tableSize > 0)
       <td valign="middle">

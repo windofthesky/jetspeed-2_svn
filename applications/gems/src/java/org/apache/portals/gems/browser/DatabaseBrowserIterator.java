@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DatabaseBrowserIterator implements BrowserIterator
 {
+    private static final long serialVersionUID = 1;    
 
     /**
      * Static initialization of the logger for this class

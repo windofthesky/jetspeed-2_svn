@@ -26,6 +26,7 @@ import java.io.Serializable;
  */
 public class ActionParameter implements Serializable
 {
+    private static final long serialVersionUID = 1;    
 
     String name;
 
