@@ -105,8 +105,12 @@ public class PageAggregatorImpl implements PageAggregator, Startable
         {
             layoutDecorator = page.getDefaultDecorator(currentFragment.getType());
         }
-        
+       
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         //TODO: Remove hard coding of locations and use CM + TL
+        //      DST: Im going to encapsulate this into a class, which can be accessed by 
+        //           the PowerTool when aggregating content, and make sure to modify the search path
+        //           according to the current decorator. Assigned issue to JiRa JS2-24        
         List contentPathes = (List) context.getSessionAttribute(ContentFilter.SESSION_CONTENT_PATH_ATTR);
         
         if(contentPathes == null)
@@ -119,15 +123,16 @@ public class PageAggregatorImpl implements PageAggregator, Startable
         {
             // define the lookup order
             contentPathes.add(currentFragment.getType()+"/html/"+layoutDecorator);
-            contentPathes.add("portlet/html");
+            contentPathes.add("portlet/html/jetspeed");
+            contentPathes.add("portlet/html");            
             contentPathes.add("generic/html");
             contentPathes.add("/html");
         }
         else
         {
             contentPathes.set(0, currentFragment.getType()+"/html/"+layoutDecorator);
-        }
-        
+        }        
+        ///////////////////////////////////////////////////////////////////////////////////////////////
 
         if (checkAccess(context,(currentFragment.getAcl()!=null)?currentFragment.getAcl():acl, "render"))
         {

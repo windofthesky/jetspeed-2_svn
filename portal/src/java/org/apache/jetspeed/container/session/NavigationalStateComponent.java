@@ -15,6 +15,9 @@
  */
 package org.apache.jetspeed.container.session;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -92,5 +95,25 @@ public interface NavigationalStateComponent
      * @return The window id from the key
      */    
     String getWindowIdFromKey(String key);
+    
+    /**
+     * Given a window state name, look up its object.
+     * Ensures that we always use the same objects for WindowStates
+     * allowing for comparison by value.
+     * 
+     * @param name The string representation of the window state.
+     * @return The corresponding WindowState object
+     */
+    //WindowState lookupWindowState(String name);
+
+    /**
+     * Given a portlet mode name, look up its object.
+     * Ensures that we always use the same objects for Portlet Modes
+     * allowing for comparison by value.
+     * 
+     * @param name The string representation of the portlet mode.
+     * @return The corresponding PortletMode object
+     */    
+    //PortletMode lookupPortletMode(String name);
     
 }

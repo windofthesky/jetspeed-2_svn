@@ -199,4 +199,5 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             return null;        
         return tokenizer.nextToken();                
     }
+        
 }

@@ -21,6 +21,7 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
+import java.util.Vector;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -50,6 +51,7 @@ import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.information.PortletURLProviderImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -583,4 +585,65 @@ public class JetspeedPowerTool implements ViewTool
         }
     }
 
+    private static final int ACTION_MINIMIZE = 0;    
+    private static final int ACTION_MAXIMIZE = 1;
+    private static final int ACTION_NORMAL = 2;
+    private static final int ACTION_VIEW = 3;
+    private static final int ACTION_EDIT = 4;
+    private static final int ACTION_HELP = 5;
+        
+    private static final String ACTION_STRINGS[] =
+    {
+            "minimize", "maximize", "restore", "view", "edit", "help"
+    };
+    
+    public List getDecoratorActions()
+    {
+        List actions = new Vector();        
+        WindowState state = getWindowState();
+        String s = state.toString();
+        if (s.equals(WindowState.NORMAL.toString()))
+        {
+            actions.add(createAction(ACTION_MINIMIZE));
+            actions.add(createAction(ACTION_MAXIMIZE));
+        }
+        else if (s.equals(WindowState.MAXIMIZED.toString()))
+        {
+            actions.add(createAction(ACTION_MINIMIZE));
+            actions.add(createAction(ACTION_NORMAL));            
+        }
+        else // minimized
+        {
+            actions.add(createAction(ACTION_MAXIMIZE));
+            actions.add(createAction(ACTION_NORMAL));                        
+        }
+        return actions;
+    }
+    
+    public DecoratorAction createAction(int kind)
+    {
+        DecoratorAction action = new DecoratorAction(ACTION_STRINGS[kind], ACTION_STRINGS[kind], "content/images/" + ACTION_STRINGS[kind] + ".gif");
+        PortletEntity entity = getCurrentPortletEntity();
+        
+        // TODO: use a factory to create this object
+        PortletURLProviderImpl url = new PortletURLProviderImpl(Jetspeed.getCurrentRequestContext(), 
+                                                                windowAccess.getPortletWindow(getCurrentFragment()));
+        switch (kind)
+        {
+            case ACTION_MAXIMIZE:
+                url.setWindowState(WindowState.MAXIMIZED);
+                break;
+            case ACTION_MINIMIZE:
+                url.setWindowState(WindowState.MINIMIZED);
+                break;
+            case ACTION_NORMAL:
+                url.setWindowState(WindowState.NORMAL);
+                break;
+        }
+        
+        action.setAction(url.toString());
+        return action;
+        
+    }
+    
 }
