@@ -69,6 +69,15 @@ import org.apache.pluto.om.common.ParameterCtrl;
  */
 public interface ParameterComposite extends Parameter, ParameterCtrl, Serializable
 {
+	
+	String TYPE_PORTLET = "org.apache.pluto.om.common.Parameter.portlet";
+
+
+	String TYPE_WEB_APP = "org.apache.pluto.om.common.Parameter.webapp";
+
+
+	
+	
     void addDescription(Locale locale, String desc);
     
 }

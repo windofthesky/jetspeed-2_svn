@@ -71,20 +71,16 @@ import org.apache.pluto.om.common.Description;
 public interface MutableDescription extends Description
 {
 
-    String TYPE_PORTLET_APP = "portlet application";
-    String TYPE_WEB_APP = "web application";
-    String TYPE_PORTLET = "portlet";
-    String TYPE_PORTLET_ENTITY = "portlet entity";
-    String TYPE_PARAMETER = "parameter";
-    String TYPE_PREFERENCE = "preference";
-    String TYPE_SEC_ROLE_REF = "security role ref";
+    String TYPE_PORTLET_APP = "org.apache.pluto.om.common.Description.portletApplication";
+    String TYPE_WEB_APP = "org.apache.pluto.om.common.Description.webApplication";
+    String TYPE_PORTLET = "org.apache.pluto.om.common.Description.portlet";
+    String TYPE_PORTLET_ENTITY = "org.apache.pluto.om.common.Description.portletEntity";
+    String TYPE_PARAMETER = "org.apache.pluto.om.common.Description.parameter";
+    String TYPE_PREFERENCE = "org.apache.pluto.om.common.Description.preference";
+    String TYPE_SEC_ROLE_REF = "org.apache.pluto.om.common.Description.securityRoleRef";
 
     void setDescription(String description);
 
     void setLocale(Locale locale);
-
-    String getType();
-    
-    void setType(String type);
 
 }

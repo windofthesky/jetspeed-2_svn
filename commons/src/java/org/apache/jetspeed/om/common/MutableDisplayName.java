@@ -66,14 +66,11 @@ import org.apache.pluto.om.common.DisplayName;
  */
 public interface MutableDisplayName extends DisplayName
 {
-    String TYPE_WEB_APP = "web application";
-    String TYPE_PORTLET = "portlet";
+    String TYPE_WEB_APP = "org.apache.pluto.om.common.DisplayName.webapp";
+    String TYPE_PORTLET = "org.apache.pluto.om.common.DisplayName.portlet";
 
     void setDisplayName(String displayName);
 
     void setLocale(Locale locale);
-
-    String getType();
     
-    void setType(String type);
 }
