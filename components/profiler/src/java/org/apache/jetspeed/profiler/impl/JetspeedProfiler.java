@@ -30,6 +30,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
@@ -388,6 +389,62 @@ public class JetspeedProfiler implements Profiler
             locators.put(locatorNames[ix], getProfile(context, locatorNames[ix]));   
         }
         return locators;
+    }
+    
+    public void addProfilingRule(ProfilingRule rule)
+    throws ProfilerException
+    {
+        try
+        {
+            System.out.println("making pers : " + rule.getId());
+            Transaction tx = persistentStore.getTransaction();
+            tx.begin();
+            persistentStore.makePersistent(rule);
+            persistentStore.lockForWrite(rule);
+            tx.commit();
+            System.out.println("done making pers : " + rule.getId());
+            
+        }
+        catch (Exception e)
+        {
+            throw new ProfilerException("failed to store: " + rule.getId(), e);
+        }
+    }
+
+    public void updateProfilingRule(ProfilingRule rule)
+    throws ProfilerException
+    {
+        try
+        {
+            System.out.println("UP making pers : " + rule.getId());
+            Transaction tx = persistentStore.getTransaction();
+            tx.begin();
+            persistentStore.lockForWrite(rule);
+            tx.commit();
+            System.out.println("UP done making pers : " + rule.getId());
+            
+        }
+        catch (Exception e)
+        {
+            throw new ProfilerException("failed to store: " + rule.getId(), e);
+        }
+    }
+    
+    public void removeProfilingRule(ProfilingRule rule)
+    throws ProfilerException    
+    {
+        try
+        {
+            Transaction tx = persistentStore.getTransaction();
+            tx.begin();
+            persistentStore.deletePersistent(rule);
+            tx.commit();
+        }
+        catch (Exception e)
+        {
+            throw new ProfilerException("failed to remove: " + rule.getId(), e);
+        }
+        
     }
     
 }
