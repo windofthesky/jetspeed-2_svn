@@ -59,7 +59,7 @@ public interface PortletWindowAccessor
      * @param windowId
      * @return new window
      */
-    PortletWindow createPortetWindow(PortletEntity entity, String windowId);
+    PortletWindow createPortletWindow(PortletEntity entity, String windowId);
 
     /**
      * Create a temporary portlet window
@@ -68,5 +68,5 @@ public interface PortletWindowAccessor
      * @param windowId
      * @return
      */
-    PortletWindow createPortetWindow(String windowId);
+    PortletWindow createPortletWindow(String windowId);
 }
