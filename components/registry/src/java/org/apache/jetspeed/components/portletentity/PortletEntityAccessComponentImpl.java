@@ -175,29 +175,16 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 			{
                 PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
 				store.lockForWrite(realEntity);
-                store.getTransaction().checkpoint();
-                
-                if (realEntity instanceof PortletEntityImpl)
-                {
-                    PortletEntityImpl impl = (PortletEntityImpl)realEntity;
-                    if (impl.getId() == null)
-                    {
-                        System.out.println("setting oid = " + impl.getOid());                    
-                        impl.setId(new Long(impl.getOid()).toString());
-                        store.lockForWrite(realEntity);
-                        store.getTransaction().checkpoint();                        
-                    }
-                }                
+                store.getTransaction().checkpoint();                
+                autoCreateEntityId(realEntity, store);
 			}            
 			else
 			{
 				store.lockForWrite(portletEntity);
                 store.getTransaction().checkpoint();
-                portletEntity = (PortletEntity)store.getObjectByIdentity(portletEntity);                
+                autoCreateEntityId(portletEntity, store);                
 			}
-            
-            
-
+                        
         }
         catch (Exception e)
         {
@@ -210,6 +197,23 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
     }
 
+    
+    private void autoCreateEntityId(PortletEntity realEntity, PersistenceStore store)
+        throws Exception
+    {
+        if (realEntity instanceof PortletEntityImpl)
+        {
+            PortletEntityImpl impl = (PortletEntityImpl)realEntity;
+            if (impl.getId() == null)
+            {
+                System.out.println("setting oid = " + impl.getOid());                    
+                impl.setId(new Long(impl.getOid()).toString());
+                store.lockForWrite(realEntity);
+                store.getTransaction().checkpoint();                        
+            }
+        }                        
+    }
+    
     /**
      * Checks to see if the <code>store</code>'s current transaction
      * needs to be started or not.
