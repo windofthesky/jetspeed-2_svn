@@ -24,12 +24,15 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
+import org.apache.portals.messaging.PortletMessaging;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -37,7 +40,6 @@ import org.apache.jetspeed.rewriter.JetspeedRewriterController;
 import org.apache.jetspeed.rewriter.RewriterController;
 import org.apache.jetspeed.rewriter.RewriterException;
 import org.apache.jetspeed.rewriter.RulesetRewriter;
-import org.apache.jetspeed.rewriter.RulesetRewriterImpl;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.rewriter.html.SwingParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
@@ -96,8 +98,14 @@ public class WebContentPortlet extends GenericVelocityPortlet
      * Action Parameter
      */
 
-    /** WebContent Session Parameter */
-    public static final String SESSION_PARAMETER = "WCSP";
+    /** WebContent Messages 
+     *  TODO: this is a simple implementation
+     *  until we introduce a more sophisticated caching algorithm 
+     * 
+     * */
+    public static final String CURRENT_URL = "webcontent.url.current";
+    public static final String LAST_URL = "webcontent.url.last";
+    public static final String CACHE = "webcontent.cache";
 
     /** Default encoding */
     public String defaultEncoding = "iso-8859-1";
@@ -110,9 +118,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
     RewriterController rewriteController = null;
 
-    /* Internal Cache */
-    private String lastURL = null; // TODO: can't keep this here and have 1..n portlets
-    private byte[] cache = null; // TODO: can't keep this here and have 1..n portlets
     
     public WebContentPortlet()
     {
@@ -148,7 +153,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // Check if an action parameter was defined        
         String webContentParameter = actionRequest.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
         
-        if (actionRequest.getPortletMode() == PortletMode.EDIT)
+        if (webContentParameter == null || actionRequest.getPortletMode() == PortletMode.EDIT)
         {
             processPreferencesAction(actionRequest, actionResponse);            
             webContentParameter = actionRequest.getPreferences().getValue("SRC", "http://portals.apache.org");
@@ -161,8 +166,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         if (webContentParameter != null && webContentParameter.length() > 0)
         {
             String sessionObj = new String(webContentParameter);
-            actionRequest.getPortletSession().setAttribute(WebContentPortlet.SESSION_PARAMETER, sessionObj,
-                    PortletSession.PORTLET_SCOPE);
+            PortletMessaging.publish(actionRequest, CURRENT_URL, sessionObj);
         }
     }
 
@@ -172,16 +176,24 @@ public class WebContentPortlet extends GenericVelocityPortlet
      */
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
+        String viewPage = (String)request.getAttribute(PARAM_VIEW_PAGE);
+        if (viewPage != null)
+        {
+            super.doView(request, response);
+            return;
+        }
+        
         // Find the source URL to execute
         String sourceURL = null;
+        String lastURL = null;
         boolean useCache = false;
         
         // Check if the source was defined in the session
         try
         {
-            sourceURL = (String) request.getPortletSession().getAttribute(WebContentPortlet.SESSION_PARAMETER,
-                    PortletSession.PORTLET_SCOPE);
+            sourceURL = (String)PortletMessaging.receive(request, CURRENT_URL);
 
+            lastURL  = (String)PortletMessaging.receive(request, LAST_URL);
             // TODO: This is just a kludge. Filtering of bad uRL's should be
             // more sophisticated
             if (sourceURL.startsWith("/") || sourceURL.startsWith("..")) sourceURL = null;
@@ -242,18 +254,16 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // Set the content type
         response.setContentType("text/html");
         byte[] content;
+        byte[] cache = (byte[])request.getPortletSession().getAttribute(CACHE, PortletSession.PORTLET_SCOPE);
         if (useCache && cache != null)
         {
-            System.out.println("USING CACHE");
             content = cache;            
         }
         else
         {
-            // Draw the content
-            System.out.println("***NOT*** USING CACHE");
-            
+            // Draw the content            
             content = doWebContent(request, sourceURL, response);
-            cache = content;
+            request.getPortletSession().setAttribute(CACHE, content, PortletSession.PORTLET_SCOPE);
         }
 
         // drain the stream to the portlet window
@@ -263,6 +273,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         
         // Done just save the last URL
         lastURL = sourceURL;
+        PortletMessaging.publish(request, LAST_URL, lastURL);
 
     }
 
@@ -288,14 +299,20 @@ public class WebContentPortlet extends GenericVelocityPortlet
             htmlWriter = new OutputStreamWriter(byteOutputStream, this.defaultEncoding);
 
             // Set the action URL in the rewriter
-           ((WebContentRewriter) rewriter).setActionURL(response.createActionURL());
+           WindowState ws = request.getWindowState();             
+           PortletURL action = response.createActionURL();
+           if (ws == WindowState.MAXIMIZED)
+           {
+               action.setWindowState(WindowState.MAXIMIZED); // shouldnt have to do this               
+           }           
+           ((WebContentRewriter) rewriter).setActionURL(action);
 
             URL baseURL = new URL(sourceAttr);
             String baseurl = baseURL.getProtocol() + "://" + baseURL.getHost();
 
             rewriter.setBaseUrl(baseurl);
             String source = getURLSource(sourceAttr, request, response);
-            System.out.println("Rewriting SOURCE: " + source);
+            // System.out.println("Rewriting SOURCE: " + source);
             rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getRemoteReader(source), htmlWriter);
             htmlWriter.flush();
             

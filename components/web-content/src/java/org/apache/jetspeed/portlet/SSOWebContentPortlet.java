@@ -30,6 +30,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
@@ -80,10 +81,12 @@ public class SSOWebContentPortlet extends WebContentPortlet
     {
         // save the prefs
         super.processAction(request, actionResponse);
+
+        String webContentParameter = request.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
         
-        if (request.getPortletMode() == PortletMode.EDIT)
+        if (webContentParameter == null || request.getPortletMode() == PortletMode.EDIT)            
         {
-        
+            // processPreferencesAction(request, actionResponse);
             // get the POST params -- requires HTML post params named
             // ssoUserName 
             String ssoPrincipal = request.getParameter(SSO_FORM_PRINCIPAL);
@@ -143,7 +146,7 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 // no credentials configured in SSO store
                 // switch to SSO Configure View
                 request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
-                setupPreferencesEdit(request, response);                
+                setupPreferencesEdit(request, response);    
             }
             else
             {
