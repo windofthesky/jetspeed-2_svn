@@ -14,26 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@page import="org.apache.jetspeed.login.LoginConstants" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
+
 <html>
-  <title>Login</title>
+  <title><fmt:message key="login.label.Login"/></title>
   <body>
   <% if ( request.getUserPrincipal() != null )
   		{ %>
-  	Welcome <%= request.getUserPrincipal().getName() %> <br>
-  	<a href='<%= response.encodeURL(request.getContextPath()+"/login/logout") %>'>Logout</a>
+  	<fmt:message key="login.label.Welcome"><fmt:param><%= request.getUserPrincipal().getName() %></fmt:param></fmt:message><br>
+  	<a href='<%= response.encodeURL(request.getContextPath()+"/login/logout") %>'><fmt:message key="login.label.Logout"/></a>
   <% 	}
     	else
 			{
 					Integer retryCount = (Integer)request.getSession().getAttribute(LoginConstants.RETRYCOUNT);
 					if ( retryCount != null )
 					{ %>
-		<br><i>Invalid username or password (<%=retryCount%>)</i><br>
+		<br><i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param><%=retryCount%></fmt:param></fmt:message></i><br>
 		   <% } %>
 		<form method="POST" action='<%= response.encodeURL(request.getContextPath()+"/login/proxy")%>'>
-      Username <input type="text" size="15" name="<%=LoginConstants.USERNAME%>">
+      <fmt:message key="login.label.Username"/> <input type="text" size="15" name="<%=LoginConstants.USERNAME%>">
       <br>
-      Password <input type="password" size="15" name="<%=LoginConstants.PASSWORD%>">
-      <input type="submit" value="Login">
+      <fmt:message key="login.label.Password"/> <input type="password" size="15" name="<%=LoginConstants.PASSWORD%>">
+      <input type="submit" value="<fmt:message key="login.label.Login"/>">
     </form>
   <% } %>
   </body>
