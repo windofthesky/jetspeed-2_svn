@@ -316,10 +316,8 @@ public class PropertyManagerServiceImpl extends BaseCommonService implements Pro
                         propertySetDefId,
                         (String) currentPropertyKey.get(PROPERTYKEY_NAME),
                         ((Short) currentPropertyKey.get(PROPERTYKEY_TYPE)).shortValue());
-                System.out.println("Adding property key: " + (String) currentPropertyKey.get(PROPERTYKEY_NAME));
                 propertyKeysObj.add(ppk);
             }
-            System.out.println(propertyKeysObj.size());
 
             try
             {

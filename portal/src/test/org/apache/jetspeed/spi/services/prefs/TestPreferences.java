@@ -105,9 +105,22 @@ public class TestPreferences extends JetspeedTest
         junit.awtui.TestRunner.main(new String[] { TestPreferences.class.getName()});
     }
 
-    public void setup()
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    public void setUp()
     {
-        System.out.println("Setup: Testing the java.util.prefs.Preferences implementation");
+        super.setUp();
+        destroyPropertySetDefTestObject();
+    }
+
+    /**
+     * @see junit.framework.TestCase#tearDown()
+     */
+    public void tearDown()
+    {
+        super.tearDown();
+        destroyPropertySetDefTestObject();
     }
 
     /**
@@ -140,9 +153,13 @@ public class TestPreferences extends JetspeedTest
     public void testUserRoot()
     {
         Preferences prefs = Preferences.userRoot();
-        if ((null == prefs) || (!(prefs.absolutePath().equals("/"))))
+        if (null != prefs)
         {
-            assertTrue(false);
+            assertTrue("expected user root == '/', " + prefs.absolutePath(), prefs.absolutePath().equals("/"));
+        }
+        else
+        {
+            assertTrue("expected user root == '/', " + prefs, false);
         }
     }
 
@@ -152,9 +169,13 @@ public class TestPreferences extends JetspeedTest
     public void testSystemRoot()
     {
         Preferences prefs = Preferences.systemRoot();
-        if ((null == prefs) || (!(prefs.absolutePath().equals("/"))))
+        if (null != prefs)
         {
-            assertTrue(false);
+            assertTrue("expected system root == '/', " + prefs.absolutePath(), prefs.absolutePath().equals("/"));
+        }
+        else
+        {
+            assertTrue("expected system root == '/', " + prefs, false);
         }
     }
 
@@ -170,12 +191,12 @@ public class TestPreferences extends JetspeedTest
             String[] childrenNames = prefs.childrenNames();
             if (childrenNames.length > 0)
             {
-                assertTrue(false);
+                assertTrue("expected no children, " + childrenNames.length + ", " + childrenNames[0], childrenNames.length == 0);
             }
         }
         catch (BackingStoreException bse)
         {
-            assertTrue(false);
+            assertTrue("backing store exception: " + bse, false);
         }
 
         // TODO Test with children.
@@ -194,24 +215,42 @@ public class TestPreferences extends JetspeedTest
         // Absolute path.
         // 1. The node does not exist. Create it.
         Preferences prefs0 = Preferences.userRoot().node(testAbsNodeName);
-        if ((null == prefs0) || (!(prefs0.absolutePath().equals(testAbsNodeName))))
+        if (null != prefs0)
         {
-            assertTrue(false);
+            assertTrue(
+                "expected node == '" + testAbsNodeName + "', " + prefs0.absolutePath(),
+                prefs0.absolutePath().equals(testAbsNodeName));
+        }
+        else
+        {
+            assertTrue("expected node == '" + testAbsNodeName + "', " + prefs0, false);
         }
 
         // 2. If node exists. Get it.
         Preferences prefs1 = Preferences.userRoot().node(testAbsNodeName);
-        if ((null == prefs1) || (!(prefs1.absolutePath().equals(testAbsNodeName))))
+        if (null != prefs1)
         {
-            assertTrue(false);
+            assertTrue(
+                "expected node == '" + testAbsNodeName + "', " + prefs1.absolutePath(),
+                prefs1.absolutePath().equals(testAbsNodeName));
+        }
+        else
+        {
+            assertTrue("expected node == '" + testAbsNodeName + "', " + prefs1, false);
         }
 
         //Relative path.
         Preferences prefs3 = Preferences.userRoot().node(testAbsNodeName0);
         Preferences prefs4 = prefs3.node(testRelNodeName);
-        if ((null == prefs4) || (!(prefs4.absolutePath().equals(testAbsNodeName0 + "/" + testRelNodeName))))
+        if (null != prefs4)
         {
-            assertTrue(false);
+            assertTrue(
+                "expected node == '" + testAbsNodeName0 + "/" + testRelNodeName + "', " + prefs4.absolutePath(),
+                prefs4.absolutePath().equals(testAbsNodeName0 + "/" + testRelNodeName));
+        }
+        else
+        {
+            assertTrue("expected node == '" + testAbsNodeName0 + "/" + testRelNodeName + "', " + prefs4, false);
         }
 
         // Remove all nodes.
@@ -221,7 +260,7 @@ public class TestPreferences extends JetspeedTest
         }
         catch (BackingStoreException bse)
         {
-            assertTrue(false);
+            assertTrue("backing store exception: " + bse, false);
         }
     }
 
@@ -235,7 +274,7 @@ public class TestPreferences extends JetspeedTest
         String propertySetNodeName = "propertyset1";
         String fullPropertySetPath = "/" + userNodeName + "/" + principalNodeName + "/" + propertySetNodeName;
         int[] propertySetDefIds = new int[2];
-        
+
         try
         {
             initPropertySetDefTestObject();
@@ -253,13 +292,13 @@ public class TestPreferences extends JetspeedTest
         {
             assertTrue(false);
         }
-        
+
         // 2. Current node is defined as property set.
         Preferences prefs1 = Preferences.userRoot().node(fullPropertySetPath);
         prefs1.put("propertyName00", "true");
         String prop1 = prefs1.get("propertyName00", null);
         assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
-        
+
         // Test remove property.
         prefs1.remove("propertyName00");
         prop1 = prefs1.get("propertyName00", null);
@@ -283,12 +322,9 @@ public class TestPreferences extends JetspeedTest
         }
         catch (BackingStoreException bse)
         {
-            assertTrue(false);
+            assertTrue("backing store exception: " + bse, false);
         }
-        destroyPropertySetDefTestObject();
     }
-
-
 
     /**
      * <p>Init property set definition object.</p>
@@ -353,70 +389,5 @@ public class TestPreferences extends JetspeedTest
         {
         }
     }
-
-    /**
-     * <p>Init property values collection object.</p>
-     * @param propertySetDefId The property set definition id.
-     * @param propertyKeyIds The property key ids.
-     * @return A collection of property values.
-     */
-    /*
-    protected Collection initPropertyValuesCollectionTestObject(Map propertyKeys)
-    {
-        PropertyManagerService propms = getPropertyManagerService();
-        Collection propertyValues = new ArrayList(4);
-        // This is a boolean property.
-        Integer ppkId00 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName00");
-        if (null != ppkId00)
-        {
-            Map propertyValue00 = new HashMap();
-            propertyValue00.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId00);
-            propertyValue00.put(ProfileManagerService.PROPERTY_VALUE, new Boolean("true"));
-            propertyValues.add(propertyValue00);
-        } // This is a long property
-        Integer ppkId01 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName01");
-        if (null != ppkId01)
-        {
-            Map propertyValue01 = new HashMap();
-            propertyValue01.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId01);
-            propertyValue01.put(ProfileManagerService.PROPERTY_VALUE, new Long("123"));
-            propertyValues.add(propertyValue01);
-        } // This is a double property.
-        Integer ppkId02 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName02");
-        if (null != ppkId02)
-        {
-            Map propertyValue02 = new HashMap();
-            propertyValue02.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId02);
-            propertyValue02.put(ProfileManagerService.PROPERTY_VALUE, new Double("123.23"));
-            propertyValues.add(propertyValue02);
-        } // This is a text property.
-        Integer ppkId03 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName03");
-        if (null != ppkId03)
-        {
-            Map propertyValue03 = new HashMap();
-            propertyValue03.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId03);
-            propertyValue03.put(ProfileManagerService.PROPERTY_VALUE, "value3");
-            propertyValues.add(propertyValue03);
-        } // This is a boolean property.
-        Integer ppkId10 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName10");
-        if (null != ppkId10)
-        {
-            Map propertyValue10 = new HashMap();
-            propertyValue10.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId10);
-            propertyValue10.put(ProfileManagerService.PROPERTY_VALUE, new Boolean("true"));
-            propertyValues.add(propertyValue10);
-        } // This is a long property
-        Integer ppkId11 = (Integer) TestUtils.getMapKeyByValue(propertyKeys, "propertyName11");
-        if (null != ppkId11)
-        {
-            Map propertyValue11 = new HashMap();
-            propertyValue11.put(ProfileManagerService.PROPERTY_KEY_ID, ppkId11);
-            propertyValue11.put(ProfileManagerService.PROPERTY_VALUE, new Long("123"));
-            propertyValues.add(propertyValue11);
-        }
-    
-        return propertyValues;
-    }
-    */
 
 }

@@ -93,6 +93,13 @@ public class FactoryManagerServiceImpl
     
     private final static String CONFIG_FACTORY_PRE = "plutofactory.";
 
+    /** Map of factories, keyed off Pluto interface name to portal factory class */
+    private Map  factoryMap  = new HashMap();
+    
+    /** List of portal factory classes */    
+    private List factoryList = new LinkedList();
+
+
     public FactoryManagerServiceImpl()
     {
     }
@@ -285,10 +292,5 @@ public class FactoryManagerServiceImpl
 
         return ((Factory) factoryMap.get (managedInterface));
     }
-
-    // --- PRIVATE MEMBERS --- //
-
-    private Map  factoryMap  = new HashMap ();
-    private List factoryList = new LinkedList ();
 
 }

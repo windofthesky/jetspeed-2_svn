@@ -102,9 +102,22 @@ public class TestPropertyManagerService extends JetspeedTest
         junit.awtui.TestRunner.main(new String[] { TestPropertyManagerService.class.getName()});
     }
 
-    public void setup()
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    public void setUp()
     {
-        System.out.println("Setup: Testing the property manager service implementation");
+        super.setUp();
+        destroyPropertySetDefTestObject(true);
+    }
+
+    /**
+     * @see junit.framework.TestCase#tearDown()
+     */
+    public void tearDown()
+    {
+        super.tearDown();
+        destroyPropertySetDefTestObject(true);
     }
 
     /**
@@ -151,7 +164,7 @@ public class TestPropertyManagerService extends JetspeedTest
         catch (PropertyException pex)
         {
             // Property set defintion already exists.
-            assertTrue(false);
+            assertTrue("property set definition already exists. exception caught: " + pex, false);
         }
 
         destroyPropertySetDefTestObject(false);
@@ -171,7 +184,7 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not initialize property set definition. exception caught: " + pex, false);
         }
 
         pms.updatePropertySetDef(propertySetDefs[0], "propertysetupdate0", USER_PROPERTY_SET_TYPE);
@@ -180,11 +193,14 @@ public class TestPropertyManagerService extends JetspeedTest
         try
         {
             updatedPropertySetDefId = pms.getPropertySetDefIdByType("propertysetupdate0", USER_PROPERTY_SET_TYPE);
-            assertEquals(propertySetDefs[0], updatedPropertySetDefId);
+            assertEquals(
+                "expected property set def id == " + propertySetDefs[0] + ", ",
+                propertySetDefs[0],
+                updatedPropertySetDefId);
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not get property set definition id. exception caught: " + pex, false);
         }
 
         pms.updatePropertySetDef(updatedPropertySetDefId, "propertyset0", USER_PROPERTY_SET_TYPE);
@@ -205,19 +221,19 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not initialize property set definition. exception caught: " + pex, false);
         }
 
         try
         {
             Map propSetsMap = pms.getAllPropertySetsByType(USER_PROPERTY_SET_TYPE);
-            assertTrue(propSetsMap.containsValue("propertyset0"));
-            assertTrue(propSetsMap.containsValue("propertyset1"));
-            assertTrue(propSetsMap.containsValue("propertyset2"));
+            assertTrue("property set map should contain: propertyset0, ", propSetsMap.containsValue("propertyset0"));
+            assertTrue("property set map should contain: propertyset1, ", propSetsMap.containsValue("propertyset1"));
+            assertTrue("property set map should contain: propertyset2, ", propSetsMap.containsValue("propertyset2"));
         }
-        catch (PropertyException propexc)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not get property set map: " + pex, false);
         }
 
         destroyPropertySetDefTestObject(true);
@@ -237,7 +253,7 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not initialize property set definition. exception caught: " + pex, false);
         }
 
         try
@@ -246,7 +262,7 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not remove property set definition. exception caught: " + pex, false);
         }
 
         int propertySetDefId = -1;
@@ -256,7 +272,9 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(true);
+            assertTrue(
+                "caught expected exception while getting property set definition id for propertyset0. exception caught: " + pex,
+                true);
         }
     }
 
@@ -274,7 +292,7 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not initialize property set definition. exception caught: " + pex, false);
         }
 
         try
@@ -285,11 +303,13 @@ public class TestPropertyManagerService extends JetspeedTest
                     "propertyName0".toLowerCase());
             pms.updatePropertyKey(ppkId.intValue(), "PropertyNameUpdate0");
             Map updatedPropertyMap = pms.getPropertyKeysBySetDef(propertySetDefs[0]);
-            assertTrue(updatedPropertyMap.containsValue("PropertyNameUpdate0"));
+            assertTrue(
+                "updated property set map should contain: PropertyNameUpdate0 in lower case, ",
+                updatedPropertyMap.containsValue("PropertyNameUpdate0"));
         }
-        catch (PropertyException propexc)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not get updated property set map: " + pex, false);
         }
 
         destroyPropertySetDefTestObject(true);
@@ -326,9 +346,9 @@ public class TestPropertyManagerService extends JetspeedTest
 
             prefs1.put("propertyName0", "true");
         }
-        catch (PropertyException propexc)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not add property keys: " + pex, false);
         }
 
         // Now let's remove the keys.
@@ -339,20 +359,20 @@ public class TestPropertyManagerService extends JetspeedTest
                 propms.removePropertyKey(((Integer) i.next()).intValue());
             }
         }
-        catch (PropertyException propexc)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not remove property keys: " + pex, false);
         }
 
         // Let's verify it was removed.
         try
         {
             Map propKeysCol = propms.getPropertyKeysBySetDef(propertySetDefs[0]);
-            assertEquals(0, propKeysCol.size());
+            assertEquals("expected property key map size == 0, ", 0, propKeysCol.size());
         }
-        catch (PropertyException propexc)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not get property keys: " + pex, false);
         }
 
         // Clean up everything else.
@@ -363,15 +383,15 @@ public class TestPropertyManagerService extends JetspeedTest
         }
         catch (BackingStoreException bse)
         {
-            assertTrue(false);
+            assertTrue("backing store exception: " + bse, false);
         }
         try
         {
             propms.removePropertySetDef(propertySetDefs[0]);
         }
-        catch (PropertyException propex)
+        catch (PropertyException pex)
         {
-            assertTrue(false);
+            assertTrue("could not remove property set definition: " + pex, false);
         }
 
     }
