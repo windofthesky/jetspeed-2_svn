@@ -114,13 +114,8 @@ import org.apache.jetspeed.services.JetspeedPortletServices
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite
 
-//Commons VFS
-import org.apache.commons.vfs.impl.StandardFileSystemManager
-import org.apache.commons.vfs.FileSystemManager
-import org.apache.commons.vfs.VFS
-
 // Autodeploy
-import org.apache.jetspeed.deployment.impl.AutoDeploymentManager
+import org.apache.jetspeed.deployment.impl.StandardDeploymentManager
 import org.apache.jetspeed.tools.pamanager.ApplicationServerPAM
 import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener
 
@@ -469,17 +464,8 @@ container.registerComponentImplementation(
                       doParams([cmpParam(PortletRenderer)])
 )
 
-/* **********************************************************
- *  Commons VFS                                             *
- * ******************************************************** */
-vfsConfigUri = portalConfig.getString("vfs.configuration.uri", "${applicationRoot}/WEB-INF/conf/vfs-providers.xml")             
+           
                             
-                            
-standardManager = new StandardFileSystemManager()
-standardManager.setConfiguration(vfsConfigUri)
-standardManager.init()
-container.registerComponentInstance(FileSystemManager, standardManager);
-
 
 /* **********************************************************
  *  Autodeployment                                          *
@@ -513,7 +499,6 @@ container.registerComponent(singletonAdapter(
                              doParams([
                                        cstParam(webAppDeployDirectory),
                                        cmpParam(PortletRegistryComponent),
-                                       cmpParam(FileSystemManager),
                                        cmpParam(PortletEntityAccessComponent), 
                                        cmpParam(PortletWindowAccessor),
                                        cmpParam(ApplicationServerManager) 
@@ -524,16 +509,14 @@ container.registerComponent(singletonAdapter(
 
 portletApplicationListener = new DeployPortletAppEventListener(webAppDeployDirectory, 
                                    container.getComponentInstance("PAM"), 
-                                   container.getComponentInstance(PortletRegistryComponent), 
-                                   container.getComponentInstance(FileSystemManager));  
+                                   container.getComponentInstance(PortletRegistryComponent));  
 
 container.registerComponent(singletonAdapter(
                              "autodeployment", 
-                             AutoDeploymentManager,
+                             StandardDeploymentManager,
                              doParams([cstParam(deployStagingDir), 
                                        cstParam(deployScanningDelay),
-                                       cstParam([portletApplicationListener]),
-                                       cmpParam(FileSystemManager)
+                                       cstParam([portletApplicationListener])
                                        ]
                              )
                           )

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,7 +27,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.commons.vfs.VFS;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -36,6 +36,7 @@ import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.common.DisplayName;
@@ -360,7 +361,8 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
 
     public void testInfusingWebXML() throws Exception
     {
-        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/", VFS.getManager());
+        File warFile = new File("./test/testdata/deploy/webapp");
+        PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
         SAXBuilder builder = new SAXBuilder(false);
 
@@ -416,9 +418,10 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
             srcReader.close();
             paWar.close();
             targetReader.close();
-            PortletApplicationWar targetWar = new PortletApplicationWar("./target/webapp", "unit-test", "/",  VFS.getManager()) ;
-            targetWar.removeWar();
-            targetWar.close();
+            File warFile2 = new File("./target/webapp");
+            DirectoryHelper dirHelper = new DirectoryHelper(warFile2);
+            dirHelper.remove();
+            dirHelper.close();
         }
 
     }

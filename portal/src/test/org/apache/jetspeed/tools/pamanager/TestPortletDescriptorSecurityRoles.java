@@ -15,15 +15,17 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.commons.vfs.VFS;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.common.SecurityRoleRef;
@@ -80,7 +82,8 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");
-        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  VFS.getManager());
+        File warFile = new File("./test/testdata/deploy/webapp");
+        PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
         MutablePortletApplication app = paWar.createPortletApp();
         assertNotNull("App is null", app);
