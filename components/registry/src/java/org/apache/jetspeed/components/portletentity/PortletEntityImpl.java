@@ -16,6 +16,7 @@
 package org.apache.jetspeed.components.portletentity;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,10 +29,16 @@ import java.util.prefs.Preferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.Storeable;
+import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
+import org.apache.jetspeed.components.persistence.store.RemovalAware;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.portlet.PrincipalAware;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
@@ -52,7 +59,7 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
  */
-public class PortletEntityImpl implements MutablePortletEntity, Storeable
+public class PortletEntityImpl implements MutablePortletEntity, Storeable, PrincipalAware, RemovalAware
 {
 
     private long oid;
@@ -67,7 +74,8 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
 
     protected List originalPreferences;
 
-    protected PrefsPreferenceSetImpl preferenceSet;
+    // protected PrefsPreferenceSetImpl preferenceSet;
+    protected ThreadLocal preferenceSetRef = new ThreadLocal();
 
     protected Map originalValues;
 
@@ -78,8 +86,17 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
     private PortletEntity modifiedObject = null;
 
     private PortletDefinitionComposite portletDefinition = null;
+    
+    protected String portletName;
+    
+    protected String appName;
 
-    private boolean dirty=false;
+    private boolean dirty = false;
+
+    // protected Principal principal;
+    protected ThreadLocal principalRef = new ThreadLocal();
+
+    public static final String NO_PRINCIPAL = "no-principal";
 
     /**
      * <p>
@@ -120,14 +137,22 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
      */
     public PreferenceSet getPreferenceSet()
     {
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
         try
         {
             if (preferenceSet == null || !dirty)
             {
-                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() + "/" + PrefsPreference.PORTLET_PREFERENCES_ROOT;
+                Principal currentUser = getPrincipal();
+                //TODO: need to be setting this from PortletEntityAccessComponent until then it will always be null.                
+                if (currentUser == null)
+                {
+                    currentUser = new PortletEntityUserPrincipal(NO_PRINCIPAL);
+                }
+                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() +"/"+ currentUser.getName() +"/"
+                        + PrefsPreference.PORTLET_PREFERENCES_ROOT;
                 Preferences prefNode = Preferences.userRoot().node(prefNodePath);
                 preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-
+                preferenceSetRef.set(preferenceSet);
                 backupValues(preferenceSet);
                 dirty = true;
             }
@@ -147,20 +172,20 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
      * <p>
      * backupValues
      * </p>
-     *
      * 
+     *  
      */
-    protected void backupValues(PreferenceSet preferenceSet)
+    protected void backupValues( PreferenceSet preferenceSet )
     {
         originalValues = new HashMap();
         Iterator itr = preferenceSet.iterator();
         while (itr.hasNext())
         {
             PrefsPreference pref = (PrefsPreference) itr.next();
-         
+
             String[] currentValues = pref.getValueArray();
             String[] backUp = new String[currentValues.length];
-            System.arraycopy( currentValues, 0, backUp ,0, currentValues.length);
+            System.arraycopy(currentValues, 0, backUp, 0, currentValues.length);
             originalValues.put(pref.getName(), backUp);
 
         }
@@ -168,6 +193,14 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
 
     public PortletDefinition getPortletDefinition()
     {
+        if(portletDefinition == null)
+        {
+            Filter filter = store.newFilter();
+            filter.addEqualTo("app.name", appName);
+            filter.addEqualTo("name", portletName);
+            Object query = store.newQuery(PortletDefinitionImpl.class, filter);
+            this.portletDefinition = (PortletDefinitionComposite) store.getObjectByQuery(query);
+        }
         return this.portletDefinition;
     }
 
@@ -195,25 +228,25 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
             throw new IllegalStateException("You must call PortletEntityImpl.setStore() before "
                     + "invoking PortletEntityImpl.store().");
         }
-        
-    
+
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
         try
         {
-            prepareTransaction(store);            
-			store.lockForWrite(this);
-			if(preferenceSet != null)
-			{
-				preferenceSet.flush();
-			}			
+            prepareTransaction(store);
+            store.lockForWrite(this);
+            if (preferenceSet != null)
+            {
+                preferenceSet.flush();
+            }
             store.getTransaction().checkpoint();
             dirty = false;
-            if(preferenceSet != null)
+            if (preferenceSet != null)
             {
                 backupValues(preferenceSet);
             }
         }
         catch (Exception e)
-        {           
+        {
             String msg = "Failed to store portlet entity:" + e.toString();
             IOException ioe = new IOException(msg);
             ioe.initCause(e);
@@ -228,52 +261,53 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
      * <p>
      * reset
      * </p>
-     * 
+     *  
      */
 
     public void reset() throws IOException
     {
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
         try
         {
-            if(originalValues != null && preferenceSet != null )
+            if (originalValues != null && preferenceSet != null)
             {
-            	Iterator prefs = preferenceSet.iterator();
-            	
-            	while(prefs.hasNext())
-            	{
-            		PrefsPreference pref = (PrefsPreference) prefs.next();
-            		if(originalValues.containsKey(pref.getName()))
-            		{
-            			pref.setValues((String[]) originalValues.get(pref.getName()));
-            		}
-            		else
-            		{
-            			preferenceSet.remove(pref);
-            		}
-            		preferenceSet.flush();
-            	}    		
-            	
-            	Iterator keys = originalValues.keySet().iterator();
-            	while(keys.hasNext())
-            	{
-            	    String key = (String) keys.next();
-            	    if(preferenceSet.get(key) == null)
-            	    {
-            	        preferenceSet.add(key,Arrays.asList((String[])originalValues.get(key)));
-            	    }
-            	}
+                Iterator prefs = preferenceSet.iterator();
+
+                while (prefs.hasNext())
+                {
+                    PrefsPreference pref = (PrefsPreference) prefs.next();
+                    if (originalValues.containsKey(pref.getName()))
+                    {
+                        pref.setValues((String[]) originalValues.get(pref.getName()));
+                    }
+                    else
+                    {
+                        preferenceSet.remove(pref);
+                    }
+                    preferenceSet.flush();
+                }
+
+                Iterator keys = originalValues.keySet().iterator();
+                while (keys.hasNext())
+                {
+                    String key = (String) keys.next();
+                    if (preferenceSet.get(key) == null)
+                    {
+                        preferenceSet.add(key, Arrays.asList((String[]) originalValues.get(key)));
+                    }
+                }
             }
             dirty = false;
             backupValues(preferenceSet);
         }
         catch (BackingStoreException e)
         {
-            String msg = "Preference backing store failed: "+e.toString();
+            String msg = "Preference backing store failed: " + e.toString();
             IOException ioe = new IOException(msg);
             ioe.initCause(e);
             throw ioe;
         }
-        
+
     }
 
     // internal methods used for debugging purposes only
@@ -327,14 +361,17 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
     public void setPortletDefinition( PortletDefinition composite )
     {
         portletDefinition = (PortletDefinitionComposite) composite;
+        this.appName = ((MutablePortletApplication)portletDefinition.getPortletApplicationDefinition()).getName();
+        this.portletName = portletDefinition.getName();
     }
 
     /**
-     * Checks to see if the <code>store</code>'s current transaction
-     * needs to be started or not.
+     * Checks to see if the <code>store</code>'s current transaction needs to
+     * be started or not.
+     * 
      * @param store
      */
-    protected void prepareTransaction(PersistenceStore store)
+    protected void prepareTransaction( PersistenceStore store )
     {
         Transaction tx = store.getTransaction();
         if (!tx.isOpen())
@@ -343,4 +380,138 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable
         }
     }
 
+    /**
+     * @return Returns the principal.
+     */
+    public Principal getPrincipal()
+    {
+        return (Principal) principalRef.get();
+    }
+
+    /**
+     * @param principal
+     *            The principal to set.
+     */
+    protected void setPrincipal( Principal principal )
+    {
+        principalRef.set(principal);
+    }
+
+    class PortletEntityUserPrincipal implements Principal
+    {
+        String name;
+
+        protected PortletEntityUserPrincipal( String name )
+        {
+            this.name = name;
+        }
+
+        /**
+         * <p>
+         * getName
+         * </p>
+         * 
+         * @see java.security.Principal#getName()
+         * @return
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * <p>
+         * equals
+         * </p>
+         * 
+         * @see java.lang.Object#equals(java.lang.Object)
+         * @param obj
+         * @return
+         */
+        public boolean equals( Object obj )
+        {
+            if (obj != null && obj instanceof PortletEntityUserPrincipal)
+            {
+                PortletEntityUserPrincipal p = (PortletEntityUserPrincipal) obj;
+                return name != null && p.name != null && name.equals(p.name);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /**
+         * <p>
+         * hashCode
+         * </p>
+         * 
+         * @see java.lang.Object#hashCode()
+         * @return
+         */
+        public int hashCode()
+        {
+            if (name != null)
+            {
+                return (getClass().getName()+ ":" + name).hashCode();
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        /**
+         * <p>
+         * toString
+         * </p>
+         * 
+         * @see java.lang.Object#toString()
+         * @return
+         */
+        public String toString()
+        {
+            return name;
+        }
+    }
+    /**
+     * <p>
+     * postRemoval
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.persistence.store.RemovalAware#postRemoval(org.apache.jetspeed.components.persistence.store.PersistenceStore)
+     * @param store
+     * @throws {@link org.apache.jetspeed.persistence.store.PersistenceStoreRuntimeExcpetion}
+     * if the removal of the {@link java.util.prefs.Preference} related to this entity fails
+     */
+    public void postRemoval( PersistenceStore store )
+    {
+      
+
+    }
+    /**
+     * <p>
+     * preRemoval
+     * </p>
+     *	not implemented.
+     *
+     * @see org.apache.jetspeed.components.persistence.store.RemovalAware#preRemoval(org.apache.jetspeed.components.persistence.store.PersistenceStore)
+     * @param store
+     */
+    public void preRemoval( PersistenceStore store )
+    {
+        String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId();
+        try
+        {
+            if(Preferences.userRoot().nodeExists(rootForEntity))
+            {
+                Preferences.userRoot().node(rootForEntity).removeNode();
+            }
+        }
+        catch (BackingStoreException e)
+        {           
+            throw new PersistenceStoreRuntimeExcpetion(e.toString(), e);
+        }        
+
+    }
 }
