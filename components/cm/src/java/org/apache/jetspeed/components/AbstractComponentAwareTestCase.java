@@ -6,6 +6,8 @@
  */
 package org.apache.jetspeed.components;
 
+import org.picocontainer.MutablePicoContainer;
+
 import junit.framework.TestCase;
 
 /**
@@ -17,6 +19,7 @@ import junit.framework.TestCase;
 public abstract class AbstractComponentAwareTestCase extends TestCase
 {
     private ComponentManager ncm;
+    private MutablePicoContainer container;
     
     /**
      * @param arg0
@@ -42,5 +45,21 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
     }
 
 
+
+    /**
+     * @return Returns the container.
+     */
+    public MutablePicoContainer getContainer()
+    {
+        return container;
+    }
+
+    /**
+     * @param container The container to set.
+     */
+    public void setContainer(MutablePicoContainer container)
+    {
+        this.container = container;
+    }
 
 }
