@@ -17,7 +17,6 @@ package org.apache.jetspeed.components;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
