@@ -16,7 +16,9 @@
 package org.apache.portals.bridges.velocity;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -187,8 +189,19 @@ public class GenericVelocityPortlet extends GenericServletPortlet
     {
         Context context = getContext(request);
         PortletPreferences prefs = request.getPreferences();
-        Iterator it = prefs.getMap().entrySet().iterator();
+        Map map = prefs.getMap();
+        Iterator it = map.entrySet().iterator();
         context.put("prefs", it);
+        
+        Map result = new HashMap(map.size());
+        Iterator f = map.entrySet().iterator();
+        while(f.hasNext())
+        {
+            Map.Entry e = (Map.Entry)f.next();
+            String []why = (String[])e.getValue();
+            result.put(e.getKey(), why[0]);            
+        }
+        context.put("prefsMap", result);
     }
     
     public void doPreferencesEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
