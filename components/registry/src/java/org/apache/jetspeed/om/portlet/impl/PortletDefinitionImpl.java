@@ -497,6 +497,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         hasher.append(name);
         if (app != null)
         {
+            hasher.append(getId().toString());
             hasher.append(app.getName());
         }
         return hasher.toHashCode();
