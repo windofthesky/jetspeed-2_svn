@@ -158,6 +158,13 @@ limitations under the License.
           <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
           <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
         </filterset>
+        <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
+             in a test failure (TestSpringEngine)
+             This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
+        -->
+        <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+          <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+        </filterset>
       </copy>
      </util:available>
     
@@ -187,6 +194,13 @@ limitations under the License.
       <filterset begintoken="@" endtoken="@">
         <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
         <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+      </filterset>
+      <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
+           in a test failure (TestSpringEngine)
+           This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
+      -->
+      <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+        <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
       </filterset>
     </copy>
   	

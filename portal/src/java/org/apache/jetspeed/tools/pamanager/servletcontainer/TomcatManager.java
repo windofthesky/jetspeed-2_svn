@@ -16,6 +16,8 @@
 package org.apache.jetspeed.tools.pamanager.servletcontainer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -32,6 +34,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.picocontainer.Startable;
 
 /**
@@ -46,18 +53,25 @@ import org.picocontainer.Startable;
 public class TomcatManager implements ApplicationServerManager, Startable
 {
     private static final String DEFUALT_MANAGER_APP_PATH = "/manager";
+    private static final String EMBEDDED_CONTEXT_FILE_PATH = "/META-INF/tomcat-context.xml";
     protected static final Log log = LogFactory.getLog("deployment");
 
+    private String catalinaBase;
+    private String catalinaEngine;
+    private int catalinaVersionMajor;
     private String hostUrl;
     private int hostPort;
     private String userName;
     private String password;
-
+    
+    private String catalinaContextPath;
+    
     private String managerAppPath = DEFUALT_MANAGER_APP_PATH;
     private String stopPath = managerAppPath + "/stop";
     private String startPath = managerAppPath + "/start";
     private String removePath = managerAppPath + "/remove";
     private String deployPath = managerAppPath + "/deploy";
+    private String undeployPath = managerAppPath + "/undeploy";
     private String installPath = managerAppPath + "/install";
     private String reloadPath = managerAppPath + "/reload";
     private String serverInfoPath = managerAppPath + "/serverinfo";
@@ -76,22 +90,33 @@ public class TomcatManager implements ApplicationServerManager, Startable
 
     private HttpMethod install;
 
-    protected GetMethod testConnectionMethod;
-
-    public TomcatManager(String hostName, int hostPort, String userName, String password) throws HttpException, IOException
+    public TomcatManager(String catalinaBase, String catalinaEngine, int catalinaVersionMajor, String hostName, int hostPort, String userName, String password) throws HttpException, IOException
     {
         super();
+        
+        if ( !catalinaBase.endsWith("/") )
+        {
+            this.catalinaBase = catalinaBase + "/";
+        }
+        else
+        {
+            this.catalinaBase = catalinaBase;
+        }    
+        this.catalinaEngine = catalinaEngine;
+        this.catalinaVersionMajor = catalinaVersionMajor;
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;
         this.password = password;        
+        
+        if ( catalinaVersionMajor > 4 )
+        {
+            catalinaContextPath = this.catalinaBase + "/conf/" + this.catalinaEngine + "/" + this.hostUrl + "/";
+        }
     }
-
-  
 
     public void start() 
     {     
-
         client = new HttpClient();
 
         HostConfiguration hostConfig = new HostConfiguration();
@@ -102,15 +127,13 @@ public class TomcatManager implements ApplicationServerManager, Startable
         client.getState().setAuthenticationPreemptive(true);
         client.getState().setCredentials(null, hostUrl, new UsernamePasswordCredentials(userName, password));
 
-        testConnectionMethod = new GetMethod(serverInfoPath);
-        //        try
-        //        {
-        //            client.executeMethod(test);
-        //        }
-        //        finally
-        //        {
-        //            test.releaseConnection();
-        //        }
+        if ( catalinaVersionMajor > 4 )
+        {
+            // Tomcat 5 deprecated manager/install and manager/remove.
+            // Those are now handled by manager/deploy and manager/undeploy respectively.
+            installPath = deployPath;
+            removePath = undeployPath;
+        }
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
         remove = new GetMethod(removePath);
@@ -175,7 +198,6 @@ public class TomcatManager implements ApplicationServerManager, Startable
 
     public String remove(String appPath) throws HttpException, IOException
     {
-
         try
         {
             remove.setQueryString(buildPathQueryArgs(appPath));
@@ -189,11 +211,72 @@ public class TomcatManager implements ApplicationServerManager, Startable
         }
     }
 
-    public String install(String warPath, String contexPath) throws HttpException, IOException
+    public String install(String warPath, String contextPath) throws HttpException, IOException
     {
         try
         {
-            install.setQueryString(buildWarQueryArgs(warPath, contexPath));
+            File contextFile = new File(warPath+EMBEDDED_CONTEXT_FILE_PATH);
+            File warPathFile = new File(warPath);
+            String canonicalWarPath = warPathFile.getCanonicalPath();
+
+            if ( contextPath == null )
+            {
+                contextPath = "/"+ warPathFile.getName();
+            }
+            else if (!contextPath.startsWith("/"))
+            {
+                contextPath = "/" + contextPath;
+            }
+
+            if ( contextFile.exists() )
+            {
+                FileInputStream fileInputStream = null;
+                FileOutputStream fileOutputStream = null;
+                
+                try
+                {
+                    SAXBuilder saxBuilder = new SAXBuilder();
+                    fileInputStream = new FileInputStream(contextFile);
+                    Document document = saxBuilder.build(fileInputStream);
+                    if (!document.getRootElement().getName().equals("Context"))
+                    {
+                        throw new IOException(EMBEDDED_CONTEXT_FILE_PATH+" invalid!!!");
+                    }
+                    document.getRootElement().setAttribute("path", contextPath);
+                    document.getRootElement().setAttribute("docBase", canonicalWarPath);
+                    XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+                    
+                    File newContextFile = null;
+                    if ( catalinaVersionMajor > 4 )
+                    {
+                        newContextFile = new File( catalinaContextPath+warPathFile.getName()+".xml");
+                    }
+                    else 
+                    {
+                        newContextFile = new File( warPathFile.getParentFile(), warPathFile.getName()+".xml");
+                    }
+                    fileOutputStream = new FileOutputStream(newContextFile);
+                    output.output(document, fileOutputStream);
+                    fileOutputStream.flush();
+                    
+                    install.setQueryString(buildConfigQueryArgs(newContextFile.getCanonicalPath(), contextPath));
+                }
+                catch (JDOMException e)
+                {
+                    IOException ioe = new IOException(EMBEDDED_CONTEXT_FILE_PATH+" invalid");
+                    ioe.initCause(e);
+                    throw ioe;
+                }
+                finally
+                {
+                    if ( fileInputStream != null )
+                        fileInputStream.close();
+                    if ( fileOutputStream != null )
+                        fileOutputStream.close();
+                }
+            }
+            else
+                install.setQueryString(buildWarQueryArgs(canonicalWarPath, contextPath));
 
             client.executeMethod(install);
             return install.getResponseBodyAsString();
@@ -241,21 +324,16 @@ public class TomcatManager implements ApplicationServerManager, Startable
 
     protected NameValuePair[] buildWarQueryArgs(String warPath, String appPath) throws MalformedURLException
     {
-        if (appPath != null)
-        {
-            if (!appPath.startsWith("/"))
-            {
-                appPath = "/" + appPath;
-            }
-            return new NameValuePair[] {
+        return new NameValuePair[] {
                 new NameValuePair("war", new File(warPath).toURL().toString()),
                 new NameValuePair("path", appPath)};
-        }
-        else
-        {
-            return new NameValuePair[] { new NameValuePair("war", warPath)};
-        }
+    }
 
+    protected NameValuePair[] buildConfigQueryArgs(String configPath, String appPath) throws MalformedURLException
+    {
+        return new NameValuePair[] {
+                new NameValuePair("config", new File(configPath).toURL().toString()),
+                new NameValuePair("path", appPath)};
     }
 
     /**
