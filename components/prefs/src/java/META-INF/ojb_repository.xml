@@ -91,7 +91,10 @@ limitations under the License.
 	    <collection-descriptor
 	        name="nodeProperties"
 	        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyImpl"
-	        otm-dependent="true"
+	        auto-retrieve="true"
+	        auto-update="true"
+	        auto-delete="true"
+	        refresh="true"
 	    >
 	        <documentation>This is the reference to a node properties.</documentation>
 	        <inverse-foreignkey field-ref="nodeId"/>
