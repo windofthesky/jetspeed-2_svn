@@ -32,42 +32,59 @@ import org.apache.struts.taglib.TagUtils;
 public class RewriteTag extends org.apache.struts.taglib.html.RewriteTag 
 {
     /**
-     * Indicates if a RenderURL or ActionURL must be generated.
+     * Indicates which type of a url must be generated: action, render or resource.
      * <p>If not specified, the type will be determined by
-     * {@link PortletURLTypes#isActionURL(String)}</p>.
+     * {@link PortletURLTypes#getType(String)}</p>.
      */
-    protected Boolean actionURL = null;
+    protected PortletURLTypes.URLType urlType = null;
         
+    /**
+     * @return "true" if an ActionURL must be rendered
+     */
     public String getActionURL()
     {
-        return actionURL != null ? action.toString() : null;
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.ACTION) ? "true" : "false";
     }
 
     /**
-     * Render an ActionURL when set to "true" otherwise render a RenderURL
-     * @param actionURL "true" renders an ActionURL otherwise a RenderURL
+     * Render an ActionURL when set to "true"
+     * @param value "true" renders an ActionURL
      */
-    public void setActionURL(String actionURL)
+    public void setActionURL(String value)
     {
-        this.actionURL = actionURL != null ? actionURL.equalsIgnoreCase("true") ? Boolean.TRUE : Boolean.FALSE : null; 
+        this.urlType = value != null && value.equalsIgnoreCase("true") ? PortletURLTypes.URLType.ACTION : null; 
     }
     
     public String getRenderURL()
     {
-        return actionURL != null ? actionURL.booleanValue() ? "false" : "true" : null;
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.RENDER) ? "true" : "false";
     }
         
     /**
-     * Render a RenderURL when set to "true" otherwise render an ActionURL
-     * @param renderURL "true" renders a RenderURL otherwise an ActionURL
+     * Render a RenderURL when set to "true"
+     * @param value "true" renders a RenderURL
      */
-    public void setRenderURL(String renderURL)
+    public void setRenderURL(String value)
     {
-        this.actionURL = renderURL != null ? renderURL.equalsIgnoreCase("true") ? Boolean.FALSE : Boolean.TRUE : null; 
+        this.urlType = value != null && value.equalsIgnoreCase("true") ? PortletURLTypes.URLType.RENDER : null; 
+    }
+
+    public String getResourceURL()
+    {
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.RESOURCE) ? "true" : "false";
+    }
+        
+    /**
+     * Render a ResourceURL when set to "true"
+     * @param value "true" renders a ResourceURL
+     */
+    public void setResourceURL(String value)
+    {
+        this.urlType = value != null && value.equalsIgnoreCase("true") ? PortletURLTypes.URLType.RESOURCE : null; 
     }
 
     /**
-     * Generates a PortletURL for the link when in the context of a
+     * Generates a PortletURL or a ResourceURL for the link when in the context of a
      * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
      * the default behaviour is maintained.
      * @return the link url
@@ -77,10 +94,34 @@ public class RewriteTag extends org.apache.struts.taglib.html.RewriteTag
     {
         if ( PortletServlet.isPortletRequest(pageContext.getRequest()))
         {
+            String url = null;
             BodyContent bodyContent = pageContext.pushBody();
-            super.doStartTag();
-            String url = TagsSupport.getPortletURL(pageContext,super.calculateURL(),actionURL);
-            pageContext.popBody();
+            try
+            {
+                super.doStartTag();
+                url = bodyContent.getString();
+                
+                // process embedded anchor
+                String anchor = null;
+                int hash = url.indexOf('#');
+                if ( hash > -1 )
+                {
+                    // save embedded anchor to be appended later and strip it from the url
+                    anchor = url.substring(hash);
+                    url = url.substring(0,hash);
+                }
+                
+                url = TagsSupport.getURL(pageContext, url, urlType);
+
+                if ( anchor != null )
+                {
+                    url = url + anchor;
+                }
+            }
+            finally
+            {
+                pageContext.popBody();
+            }
             TagUtils.getInstance().write(pageContext, url);
             return (SKIP_BODY);
         }
@@ -93,6 +134,6 @@ public class RewriteTag extends org.apache.struts.taglib.html.RewriteTag
     public void release() {
 
         super.release();
-        actionURL = null;
+        urlType = null;
     }
 }

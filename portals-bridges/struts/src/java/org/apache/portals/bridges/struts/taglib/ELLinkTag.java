@@ -32,72 +32,75 @@ import org.apache.strutsel.taglib.utils.EvalHelper;
 public class ELLinkTag extends org.apache.strutsel.taglib.html.ELLinkTag 
 {
     /**
-     * Indicates if a RenderURL or ActionURL must be generated.
+     * Indicates which type of a url must be generated: action, render or resource.
      * <p>If not specified, the type will be determined by
-     * {@link PortletURLTypes#isActionURL(String)}</p>.
+     * {@link PortletURLTypes#getType(String)}</p>.
      */
-    protected Boolean actionURL = null;
+    protected PortletURLTypes.URLType urlType = null;
         
+    /**
+     * @return "true" if an ActionURL must be rendered
+     */
     public String getActionURL()
     {
-        return actionURL != null ? action.toString() : null;
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.ACTION) ? "true" : "false";
     }
 
+    private String actionURL;
     /**
-     * Render an ActionURL when set to "true" otherwise render a RenderURL
-     * @param actionURL "true" renders an ActionURL otherwise a RenderURL
+     * Render an ActionURL when set to "true"
+     * <p>
+     * Supports jstl expression language.
+     * </p>
+     * @param actionURL when (evaluated to) "true" renders an ActionURL
      */
     public void setActionURL(String actionURL)
     {
-        this.actionURL = actionURL != null ? actionURL.equalsIgnoreCase("true") ? Boolean.TRUE : Boolean.FALSE : null; 
+        // delay evaluation of urlType to doStartTag
+        this.actionURL = actionURL;
     }
     
     public String getRenderURL()
     {
-        return actionURL != null ? actionURL.booleanValue() ? "false" : "true" : null;
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.RENDER) ? "true" : "false";
     }
         
+    private String renderURL;
     /**
-     * Render a RenderURL when set to "true" otherwise render an ActionURL
-     * @param renderURL "true" renders a RenderURL otherwise an ActionURL
+     * Render a RenderURL when set to "true"
+     * <p>
+     * Supports jstl expression language.
+     * </p>
+     * @param renderURL when (evaluated to) "true" renders a RenderURL
      */
     public void setRenderURL(String renderURL)
     {
-        this.actionURL = renderURL != null ? renderURL.equalsIgnoreCase("true") ? Boolean.FALSE : Boolean.TRUE : null; 
+        // delay evaluation of urlType to doStartTag
+        this.renderURL = renderURL;
     }
 
+    public String getResourceURL()
+    {
+        return urlType != null && urlType.equals(PortletURLTypes.URLType.RESOURCE) ? "true" : "false";
+    }
+        
+    private String resourceURL;
+    
     /**
-     * struts-el support for {@link #setActionURL(String)}
+     * Render a ResourceURL when set to "true"
+     * <p>
+     * Supports jstl expression language.
+     * </p>
+     * @param resourceURL when (evaluated to) "true" renders a ResourceURL
      */
-    protected String actionURLExpr = null;
+    public void setResourceURL(String resourceURL)
+    {
+        // delay evaluation of urlType to doStartTag
+        this.resourceURL = resourceURL;
+    }
 
-    public String getActionURLExpr()
-    {
-        return actionURLExpr;
-    }
-    
-    public void setActionURLExpr(String actionURLExpr)
-    {
-        this.actionURLExpr = actionURLExpr;
-    }
-    
     /**
-     * struts-el support for {@link #setRenderURL(String)}
-     */
-    protected String renderURLExpr = null;
-
-    public String getRenderURLExpr()
-    {
-        return renderURLExpr;
-    }
-    
-    public void setRenderURLExpr(String renderURLExpr)
-    {
-        this.renderURLExpr = renderURLExpr;
-    }
-    
-    /**
-     * Generates a PortletURL for the link when in the context of a
+     * Generates a PortletURL or a ResourceURL for the link when in the context of a
      * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
      * the default behaviour is maintained.
      * @return the link url
@@ -107,7 +110,25 @@ public class ELLinkTag extends org.apache.strutsel.taglib.html.ELLinkTag
     {
         if ( PortletServlet.isPortletRequest(pageContext.getRequest() ))
         {
-            return TagsSupport.getPortletURL(pageContext, super.calculateURL(), actionURL);
+            String url = super.calculateURL();
+            
+            // process embedded anchor
+            String anchor = null;
+            int hash = url.indexOf('#');
+            if ( hash > -1 )
+            {
+                // save embedded anchor to be appended later and strip it from the url
+                anchor = url.substring(hash);
+                url = url.substring(0,hash);
+            }
+            
+            url = TagsSupport.getURL(pageContext, url, urlType);
+
+            if ( anchor != null )
+            {
+                url = url + anchor;
+            }
+            return url;
         }
         else
         {
@@ -121,27 +142,42 @@ public class ELLinkTag extends org.apache.strutsel.taglib.html.ELLinkTag
     }
     
     /**
-     * Resolve the {@link #actionURLExpr} and {@link #renderURLExpr} attributes using the JSTL expression
-     * evaluation engine ({@link EvalHelper}).
+     * Resolve the {@link #actionURL}, {@link #renderURL} and {@link #resourceURL} attributes
+     * using the Struts JSTL expression evaluation engine ({@link EvalHelper}).
      * @exception JspException if a JSP exception has occurred
      */
     private void evaluateExpressions() throws JspException {
-        String  string  = null;
+        Boolean value;
 
-        if ((string = EvalHelper.evalString("actionURL", getActionURLExpr(),this, pageContext)) != null)
+        value = EvalHelper.evalBoolean("actionURL", getActionURL(),this, pageContext);
+        if ( value != null && value.booleanValue() )
         {
-            setActionURL(string);
+            urlType = PortletURLTypes.URLType.ACTION;
         }
-        if ((string = EvalHelper.evalString("renderURL", getRenderURLExpr(),this, pageContext)) != null)
+        if ( urlType == null )
         {
-            setRenderURL(string);
+            value = EvalHelper.evalBoolean("renderURL", getRenderURL(),this, pageContext);
+            if ( value != null && value.booleanValue() )
+            {
+                urlType = PortletURLTypes.URLType.RENDER;
+            }            
+        }
+        if ( urlType == null )
+        {
+            value = EvalHelper.evalBoolean("resourceURL", getResourceURL(),this, pageContext);
+            if ( value != null && value.booleanValue() )
+            {
+                urlType = PortletURLTypes.URLType.RESOURCE;
+            }            
         }
     }
     
-    public void release() 
-    {
+    public void release() {
+
         super.release();
+        urlType = null;
         actionURL = null;
-        actionURLExpr = null;
+        renderURL = null;
+        resourceURL = null;
     }
 }

@@ -31,10 +31,36 @@ public class PortletURLTypes extends AbstractConfigComponent
         	}
         };
         
+    public static class URLType
+    {
+        public static final URLType ACTION = new URLType(0,"action");
+        public static final URLType RENDER = new URLType(1,"render");
+        public static final URLType RESOURCE = new URLType(2,"resource");
+        
+        private int id;
+        private String name;
+        
+        private URLType(int id, String name)
+        {
+            this.id = id;
+            this.name = name;
+        }
+        
+        public String getName()
+        {
+            return name;
+        }
+        
+        public boolean equals(URLType type)
+        {
+            return type != null ? type.id == id : false;
+        }
+    }
+            
     public static class PortletURLType
     {
-        private String  path;
-        private boolean action;
+        private String path;
+        private URLType type;
 
         public PortletURLType(){}
         public String getPath()
@@ -47,23 +73,23 @@ public class PortletURLTypes extends AbstractConfigComponent
             this.path = path;
         }
 
-        public void setAction(boolean action)
+        public void setType(URLType type)
         {
-            this.action = action;
+            this.type = type;
         }
 
-        public boolean isAction()
+        public URLType getType()
         {
-            return action;
+            return type;
         }
         
         public String toString()
         {
-            return "PortletURLType: path="+path+", action="+action;
+            return "PortletURLType: path="+path+", type="+type;
         }
     }
     
-    private boolean defaultAction;
+    private URLType defaultPortletURLType = URLType.RENDER;
     private PortletURLType[] portletURLTypes = new PortletURLType[0];
     private ArrayList portletURLTypeList;
     
@@ -72,21 +98,28 @@ public class PortletURLTypes extends AbstractConfigComponent
     public void addActionType(PortletURLType portletURLType)
     {
         checkLoaded();
-        portletURLType.setAction(true);
+        portletURLType.setType(URLType.ACTION);
         portletURLTypeList.add(portletURLType);
     }
     
     public void addRenderType(PortletURLType portletURLType)
     {
         checkLoaded();
-        portletURLType.setAction(false);
+        portletURLType.setType(URLType.RENDER);
+        portletURLTypeList.add(portletURLType);
+    }
+    
+    public void addResourceType(PortletURLType portletURLType)
+    {
+        checkLoaded();
+        portletURLType.setType(URLType.RESOURCE);
         portletURLTypeList.add(portletURLType);
     }
     
     public void setDefault(String value)
     {
         checkLoaded();
-        this.defaultAction = "action".equals(value.toLowerCase());
+        this.defaultPortletURLType = "action".equals(value.toLowerCase()) ? URLType.ACTION : URLType.RENDER;
     }
     
     public void configure(Digester digester)
@@ -100,6 +133,9 @@ public class PortletURLTypes extends AbstractConfigComponent
         digester.addObjectCreate("config/portlet-url-type/render", PortletURLType.class);
         digester.addSetProperties("config/portlet-url-type/render");
         digester.addSetNext("config/portlet-url-type/render", "addRenderType");
+        digester.addObjectCreate("config/portlet-url-type/resource", PortletURLType.class);
+        digester.addSetProperties("config/portlet-url-type/resource");
+        digester.addSetNext("config/portlet-url-type/resource", "addResourceType");
         digester.addCallMethod("config/portlet-url-type", "afterLoad");
     }
     
@@ -123,17 +159,17 @@ public class PortletURLTypes extends AbstractConfigComponent
         portletURLTypeList = null;
     }
     
-    public boolean isActionURL(String path)
+    public URLType getType(String path)
     {
-        boolean action = defaultAction;
+        URLType type = defaultPortletURLType;
         for (int i = 0; i < portletURLTypes.length; i++ )
         {
             if (path.startsWith(portletURLTypes[i].path))
             {
-                action = portletURLTypes[i].action;
+                type = portletURLTypes[i].getType();
                 break;
             }
         }
-        return action;
+        return type;
     }
 }

@@ -90,22 +90,21 @@ class TagsSupport
     }
     
     /**
-     * Creates an action or render PortletURL.
+     * Creates an action or render PortletURL, or a ResourceURL.
      * <p>
      * The url parameter is first {@link #getContextRelativeURL(PageContext, String) resolved}
      * to an context relative url.<br/>
      * Then, a prefixed contextPath is removed from the resulting url.<br/>
-     * If the actionURL parameter is specified (not null), a action or render PortletURL
-     * is created based on its value.<br/>
-     * Otherwise, {@link PortletURLTypes#isActionURL(String)} is used to determine which
-     * type of PortletURL must be created.
+     * If the type parameter is specified (not null), the type of url created is based on its value.<br/>
+     * Otherwise, {@link PortletURLTypes#getType(String)} is used to determine which
+     * type of url must be created.
      * </p>
      * @param pageContext the JSP pageContext
      * @param url the url to resolve
-     * @param actionURL indicator if a ActionURL or RenderURL must be created
-     * @return an action or render PortletURL
+     * @param type indicated which type of url must be created
+     * @return an action or render PortletURL, or a ResourceURL
      */
-    public static String getPortletURL(PageContext pageContext, String url, Boolean actionURL)
+    public static String getURL(PageContext pageContext, String url, PortletURLTypes.URLType type)
     {
         url = getContextRelativeURL(pageContext,url,false);
         String contextPath = ((HttpServletRequest)pageContext.getRequest()).getContextPath();
@@ -114,24 +113,23 @@ class TagsSupport
             url = url.substring(contextPath.length());
         }
         
-        boolean action = false;
-        if ( actionURL != null )
-        {
-            action = actionURL.booleanValue();
-        }
-        else if ( url != null )
+        if ( type == null )
         {
             StrutsPortletConfig strutsPortletConfig = (StrutsPortletConfig)pageContext.getAttribute(StrutsPortlet.STRUTS_PORTLET_CONFIG,PageContext.APPLICATION_SCOPE);
-            action = strutsPortletConfig.getPortletURLTypes().isActionURL(url);                                
+            type = strutsPortletConfig.getPortletURLTypes().getType(url);
         }
         
-        if ( action )
+        if ( type.equals(PortletURLTypes.URLType.ACTION) )
         {
             return StrutsPortletURL.createActionURL(pageContext.getRequest(),url).toString();
         }
-        else
+        else if ( type.equals(PortletURLTypes.URLType.RENDER) )
         {
             return StrutsPortletURL.createRenderURL(pageContext.getRequest(),url).toString();
+        }        
+        else // type.equals(PortletURLTypes.URLType.RESOURCE)
+        {
+            return contextPath + "/" + url;
         }        
     }
 

@@ -1445,6 +1445,11 @@ limitations under the License.
 <rtexprvalue>true</rtexprvalue>
 </attribute>
 <attribute>
+<name>resourceURL</name>
+<required>false</required>
+<rtexprvalue>true</rtexprvalue>
+</attribute>
+<attribute>
 <name>accesskey</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
@@ -2391,6 +2396,11 @@ limitations under the License.
 <rtexprvalue>true</rtexprvalue>
 </attribute>
 <attribute>
+<name>resourceURL</name>
+<required>false</required>
+<rtexprvalue>true</rtexprvalue>
+</attribute>
+<attribute>
 <name>action</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
@@ -3057,20 +3067,6 @@ limitations under the License.
 <name>xhtml</name>
 <tagclass>org.apache.struts.taglib.html.XhtmlTag</tagclass>
 <bodycontent>empty</bodycontent>
-</tag>
-<tag>
-<name>script</name>
-<tagclass>org.apache.portals.bridges.struts.taglib.ScriptTag</tagclass>
-<attribute>
-<name>language</name>
-<required>false</required>
-<rtexprvalue>true</rtexprvalue>
-</attribute>
-<attribute>
-<name>src</name>
-<required>true</required>
-<rtexprvalue>true</rtexprvalue>
-</attribute>
 </tag>
 </taglib>
 
