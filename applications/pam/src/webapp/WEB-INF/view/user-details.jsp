@@ -210,10 +210,10 @@ limitations under the License.
 <%--TODO:  switch to c:choose --%>
 <c:if test="${selectedTab.id == 'user_profile'}">
   <div id="Profile">
-  <portlet:actionURL var="edit_group_link" />
+  <portlet:actionURL var="edit_role_link" />
   
-	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>">
-		<input type="hidden" name="portlet_action" value="security_user.edit_group"/>		
+	<form name="Edit_Group_Form" action="<c:out value="${edit_role_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.update_user_rule"/>		
 		<table>
 			<tr>
 				<th>&nbsp;</th>
@@ -223,8 +223,7 @@ limitations under the License.
 		<c:forEach var="rule" items="${rules}">
 			<tr>			
 				<td>
-					<input type="checkbox" name="user_rule_id" value="<c:out value="${rule.id}"/>"/>
-					
+					<input type="radio" name="user_profile_id"  <c:if test="${rule.id == selectedRule}">checked</c:if>  value="<c:out value="${rule.id}"/>"/>
 				</td>
 				<td>
 					<c:out value="${rule.id}"/>
@@ -235,8 +234,8 @@ limitations under the License.
 			</tr>
 		</c:forEach>
 		</table>
+	<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_rule'"/>
     </form>
-
   </div>
 </c:if>
 <%--End of Profile tab data--%>

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.security;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
@@ -37,11 +39,13 @@ import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * This portlet is a tabbed editor user interface for editing user attributes
@@ -57,6 +61,7 @@ public class UserDetailsPortlet extends ServletPortlet
     private final String VIEW_ROLES = "roles";
     private final String VIEW_GROUPS = "groups";
     private final String VIEW_RULES = "rules";
+    private final String VIEW_SELECTED_RULE = "selectedRule";
     
     private final String USER_ACTION_PREFIX = "security_user.";
     private final String ACTION_UPDATE_ATTRIBUTE = "update_user_attribute";
@@ -143,7 +148,8 @@ public class UserDetailsPortlet extends ServletPortlet
             {
                 selectedTab = (TabBean) userTabMap.values().iterator().next();
             }
-            request.setAttribute(VIEW_USER, new JetspeedUserBean(user));
+            JetspeedUserBean bean = new JetspeedUserBean(user);
+            request.setAttribute(VIEW_USER, bean);
             if (selectedTab.getId().equals(TAB_ROLE))
             {
                 request.setAttribute(VIEW_ROLES, getRoles(userName));                
@@ -154,6 +160,12 @@ public class UserDetailsPortlet extends ServletPortlet
             }
             else if (selectedTab.getId().equals(TAB_PROFILE))
             {
+                Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);      
+                ProfilingRule rule = profiler.getRuleForPrincipal(userPrincipal);
+                if (rule != null)
+                {
+                    request.setAttribute(VIEW_SELECTED_RULE, rule.getId());
+                }
                 request.setAttribute(VIEW_RULES, getProfilerRules());                  
             }
            
@@ -208,8 +220,27 @@ public class UserDetailsPortlet extends ServletPortlet
             {
                 addUserGroup(actionRequest, actionResponse);
             }
-            
+            else if (action.endsWith(this.ACTION_UPDATE_RULE))
+            {
+                updateUserProfile(actionRequest, actionResponse);
+            }
         }
+    }    
+    
+    public Principal createPrincipal(Subject subject, Class classe)
+    {
+        Principal principal = null;
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = (Principal) principals.next();
+            if (classe.isInstance(p))
+            {
+                principal = p;
+                break;
+            }
+        }
+        return principal;
     }    
 
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
@@ -459,8 +490,44 @@ public class UserDetailsPortlet extends ServletPortlet
     }
     
     private Collection getProfilerRules()
-    {
+    {        
         return profiler.getRules();
     }
     
+    private void updateUserProfile(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String profileId = actionRequest.getParameter("user_profile_id");
+
+            if(profileId != null)
+            {
+                try
+                {
+                    Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);      
+                    ProfilingRule rule = profiler.getRule(profileId);
+                    if (userPrincipal != null)
+                    {
+                        if (rule == null)
+                        {
+                            profiler.setRuleForPrincipal(userPrincipal, profiler.getDefaultRule());
+                        }
+                        else
+                        {
+                            profiler.setRuleForPrincipal(userPrincipal, rule);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // TODO: logging
+                    System.err.println("failed to update user + profile: " + userName + ", "  + profileId + e);                       
+                }                
+            }            
+        }
+    }        
 }
