@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.bridges.frameworks.model;
+package org.apache.portals.bridges.frameworks;
 
 
 /**
@@ -27,4 +27,16 @@ public interface ForwardConstants
     final String SUCCESS = "success";
     final String FAILURE = "failure";
     
+    final String MODE_PREFIX = "mode:";
+    final String STATE_PREFIX = "state:";
+    
+    final String MAXIMIZED = "maximized";
+    final String MINIMIZED = "minimized";
+    final String NORMAL = "normal";
+    
+    final String VIEW = "view";
+    final String EDIT = "edit";
+    final String HELP = "help";
+    
+    final String DELIMITER = ",";
 }
