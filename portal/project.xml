@@ -193,14 +193,9 @@ limitations under the License.
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
-    <dependency>
-      <id>pluto</id>
-      <groupId>pluto</groupId>
-      <version>1.0.1-rc1</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-     </dependency>
+      
+      &pluto-deps;
+      
      <dependency>
       <id>castor</id>
       <version>0.9.4.3</version>

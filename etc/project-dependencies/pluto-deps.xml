@@ -1,0 +1,9 @@
+<dependency>
+  <groupId>pluto</groupId>
+  <artifactId>pluto</artifactId>
+  <version>1.0.1-rc1</version>
+  <type>jar</type>
+  <properties>
+    <war.bundle>false</war.bundle>
+  </properties>
+</dependency>

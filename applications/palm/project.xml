@@ -101,15 +101,9 @@ limitations under the License.
           <war.bundle>true</war.bundle>
         </properties>
       </dependency>
-      <dependency>
-        <groupId>pluto</groupId>
-        <artifactId>pluto</artifactId>
-        <version>1.0.1-rc1</version>
-        <type>jar</type>
-        <properties>
-          <war.bundle>false</war.bundle>
-        </properties>
-      </dependency>
+      
+      &pluto-deps;
+      
       <dependency>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>

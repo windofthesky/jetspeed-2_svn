@@ -6,6 +6,7 @@
 <!ENTITY myfaces-deps SYSTEM "file:etc/project-dependencies/myfaces-deps.xml">
 <!ENTITY jmock-deps SYSTEM "file:etc/project-dependencies/jmock-deps.xml">
 <!ENTITY commons-config-dep SYSTEM "file:etc/project-dependencies/commons-config-dep.xml">
+<!ENTITY pluto-deps SYSTEM "file:etc/project-dependencies/pluto-deps.xml">
 
 <!-- Project resources -->
 <!ENTITY db-ojb-resources SYSTEM "file:etc/project-resources/db-ojb-resources.xml">

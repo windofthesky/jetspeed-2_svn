@@ -1,4 +1,5 @@
 <!-- Project dependencies -->
+<!ENTITY pluto-deps SYSTEM "file:../../etc/project-dependencies/pluto-deps.xml">
 
 <!-- Project reports -->
 <!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

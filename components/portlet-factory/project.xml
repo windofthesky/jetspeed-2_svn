@@ -37,14 +37,9 @@ limitations under the License.
   </repository>
 
   <dependencies>
-     <dependency>
-      <id>pluto</id>
-      <groupId>pluto</groupId>
-      <version>1.0.1-rc1</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-     </dependency>
+      
+      &pluto-deps;
+      
     <dependency>
       <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
       <id>portlet-api</id>

@@ -1,0 +1,6 @@
+<!-- Project dependencies -->
+<!ENTITY pluto-deps SYSTEM "file:../etc/project-dependencies/pluto-deps.xml">
+
+<!-- Project resources -->
+
+<!-- Project reports -->

@@ -1,6 +1,7 @@
 <!-- Project dependencies -->
 <!ENTITY spring-deps SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
 <!ENTITY commons-config-dep SYSTEM "file:../../etc/project-dependencies/commons-config-dep.xml">
+<!ENTITY pluto-deps SYSTEM "file:../../etc/project-dependencies/pluto-deps.xml">
 
 <!-- Project resources -->
 <!ENTITY log4j-resources SYSTEM "file:../../etc/project-resources/log4j-resources.xml">	

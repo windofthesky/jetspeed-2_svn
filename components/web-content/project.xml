@@ -101,12 +101,9 @@ limitations under the License.
       <id>xml-apis</id>
       <version>2.0.2</version>
     </dependency>
-    <dependency>
-      <id>pluto</id>
-      <groupId>pluto</groupId>
-      <version>1.0.1-rc1</version>
-    </dependency>
-
+      
+      &pluto-deps;
+      
     <dependency>
       <id>velocity</id>
       <version>1.4</version>

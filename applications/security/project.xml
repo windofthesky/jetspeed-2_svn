@@ -232,14 +232,9 @@ limitations under the License.
 	
 	<!-- needed for hack around PLUTO-83 bug in ChangePasswordPortlet
          TODO: should be removed again when rc2 is release -->
-    <dependency>
-      <id>pluto</id>
-      <groupId>pluto</groupId>
-      <version>1.0.1-rc1</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-     </dependency>
+      
+      &pluto-deps;
+      
        <dependency>
             <groupId>jetspeed2</groupId>
             <artifactId>jetspeed2-taglib-treecontrol</artifactId>

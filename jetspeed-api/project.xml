@@ -40,10 +40,9 @@ limitations under the License.
       <id>junit</id>
       <version>3.8.1</version>
     </dependency>
-    <dependency>
-      <id>pluto</id>
-      <version>1.0.1-rc1</version>
-    </dependency>   
+      
+      &pluto-deps;
+      
      <dependency>      
       <id>portlet-api</id>
       <version>1.0</version>
