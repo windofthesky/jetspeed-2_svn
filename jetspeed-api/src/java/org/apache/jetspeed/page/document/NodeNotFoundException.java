@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder;
-
-import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.document.NodeNotFoundException;
+package org.apache.jetspeed.page.document;
 
 /**
  * <p>
- * FolderNotFoundException
+ * NodeNotFoundException
  * </p>
  * <p>
  *
@@ -29,13 +26,13 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
  * @version $Id$
  *
  */
-public class FolderNotFoundException extends NodeNotFoundException
+public class NodeNotFoundException extends NodeException
 {
 
     /**
      * 
      */
-    public FolderNotFoundException()
+    public NodeNotFoundException()
     {
         super();
         // TODO Auto-generated constructor stub
@@ -44,7 +41,7 @@ public class FolderNotFoundException extends NodeNotFoundException
     /**
      * @param message
      */
-    public FolderNotFoundException( String message )
+    public NodeNotFoundException( String message )
     {
         super(message);
         // TODO Auto-generated constructor stub
@@ -53,7 +50,7 @@ public class FolderNotFoundException extends NodeNotFoundException
     /**
      * @param nested
      */
-    public FolderNotFoundException( Throwable nested )
+    public NodeNotFoundException( Throwable nested )
     {
         super(nested);
         // TODO Auto-generated constructor stub
@@ -63,7 +60,7 @@ public class FolderNotFoundException extends NodeNotFoundException
      * @param msg
      * @param nested
      */
-    public FolderNotFoundException( String msg, Throwable nested )
+    public NodeNotFoundException( String msg, Throwable nested )
     {
         super(msg, nested);
         // TODO Auto-generated constructor stub

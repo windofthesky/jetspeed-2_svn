@@ -27,7 +27,7 @@ package org.apache.jetspeed.page.document;
  * @version $Id$
  *
  */
-public class DocumentNotFoundException extends DocumentException
+public class DocumentNotFoundException extends NodeNotFoundException
 {
 
     /**

@@ -27,14 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.DocumentException;
-import org.apache.jetspeed.page.document.DocumentHandler;
-import org.apache.jetspeed.page.document.DocumentNotFoundException;
-import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
-import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
@@ -223,7 +217,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
 
     }
 
-    protected Object unmarshallDocument( Class clazz, String path, String extension ) throws FolderNotFoundException,
+    protected Object unmarshallDocument( Class clazz, String path, String extension ) throws NodeNotFoundException,
             DocumentException
     {
         Document document = null;
@@ -413,7 +407,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
         if (entry.getDocument() instanceof Document && ((Document) entry.getDocument()).getId().endsWith(documentType))
         {
             Document document = (Document) entry.getDocument();
-            Document freshDoc = getDocument(document.getId());
+            Document freshDoc = getDocument(document.getId(), false);
             freshDoc.setParent(document.getParent());
             freshDoc.setPath(document.getPath());
             entry.setDocument(freshDoc);
