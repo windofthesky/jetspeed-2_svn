@@ -39,7 +39,7 @@ limitations under the License.
   <url>http://portals.apache.org/~paulsp/jetspeed-2</url>
   <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
   <siteAddress>portals.apache.org</siteAddress>
-  <siteDirectory>public_html/jetspeed-2</siteDirectory>
+  <siteDirectory>/www/portals.apache.org/jetspeed-2</siteDirectory>
   <distributionDirectory></distributionDirectory>
 
   <repository>                 
