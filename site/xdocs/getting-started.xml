@@ -90,8 +90,7 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
 </table>
 <p>
 <i>If you are using Tomcat 5, make sure to use version 5.0.28 or higher, otherwise you won't be able to login because
-of an issue with its JAASRealm implementation
-</i>.
+of an issue with its JAASRealm implementation</i>.
 </p>
 <p>
 To develop or deploy Jetspeed with another database (not the default HSQL), see the property configuration in the 
