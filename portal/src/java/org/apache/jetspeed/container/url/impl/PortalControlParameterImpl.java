@@ -201,7 +201,7 @@ public class PortalControlParameterImpl implements PortalControlParameter
 
     public void setAction(PortletWindow window)
     {
-        getStateFullControlParameter().put(url.getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
+        getStateLessControlParameter().put(url.getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
     }
 
     public void setMode(PortletWindow window, PortletMode mode)
