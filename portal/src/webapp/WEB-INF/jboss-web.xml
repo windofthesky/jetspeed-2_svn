@@ -18,6 +18,7 @@ limitations under the License.
   <resource-ref>
     <res-ref-name>jdbc/jetspeed</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
-    <jndi-name>java:/jdbc/jetspeed</jndi-name>
+    <jndi-name>java:/JetspeedDS</jndi-name>
   </resource-ref>
 </jboss-web>
+

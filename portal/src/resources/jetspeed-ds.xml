@@ -16,7 +16,7 @@ limitations under the License.
 <local-tx-datasource>
   <!-- The jndi name of the DataSource, it is prefixed with java:/ -->
   <!-- Datasources are not available outside the virtual machine -->
-  <jndi-name>jdbc/jetspeed</jndi-name>
+  <jndi-name>JetspeedDS</jndi-name>
   <connection-url>jdbc:hsqldb:hsql://127.0.0.1:9001</connection-url>
   <!-- The driver class -->
   <driver-class>org.hsqldb.jdbcDriver</driver-class>
@@ -25,5 +25,6 @@ limitations under the License.
   <password></password>
   <min-pool-size>5</min-pool-size>
   <max-pool-size>20</max-pool-size>
-  <idle-timeout-minutes>0</idle-timeout-minutes>   
+  <idle-timeout-minutes>0</idle-timeout-minutes>
 </local-tx-datasource>
+
