@@ -1,5 +1,3 @@
-<%@ page import="net.sourceforge.myfaces.custom.tree.DefaultMutableTreeNode,
-                 net.sourceforge.myfaces.custom.tree.model.DefaultTreeModel"%>
 <%@ page session="true" contentType="text/html;charset=utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -23,59 +21,109 @@
  */
 //-->
 
-<link href='css/security-admin.css' type='text/css'/>
+<f:loadBundle basename="org.apache.jetspeed.portlets.profiler.resources.ProfilerResources" var="MESSAGE" />
 
 <f:view>
 <h:panelGrid columns='2'>
 <h:panelGroup>
 <h:dataTable
     value="#{rules.extent}"
-    var="erule"
+    var="mRule"
     styleClass="portlet-section-body"
-    headerClass="portlet-form-button"
-    rowClasses="portlet-menu-item-selected,portlet-MintyBlue"
+    headerClass="portlet-section-subheader"
 >
     <h:column>
        <f:facet name="header">
-          <h:outputText value="Rule Id" />
+          <h:outputText  styleClass='portlet-section-header' value="#{MESSAGE['profiler.title.rules']}" />          
        </f:facet>
        <x:commandLink actionListener="#{rule.listen}" immediate="true" >
-            <h:outputText value="#{erule.id}" />
-            <f:param name='selectedRule' value="#{erule.id}"/>
+            <h:outputText value="#{mRule.id}" />
+            <f:param name='selectedRule' value="#{mRule.id}"/>
        </x:commandLink>
-    </h:column>
-    
-    <h:column>
-       <f:facet name="header">
-         <h:outputText value="Description"
-            style="font-weight: bold"/>
-       </f:facet>
-        <h:outputText value='#{erule.title}'/>
-    </h:column>
-    <h:column>
-        <h:selectBooleanCheckbox value="false"/>
     </h:column>
 </h:dataTable>
 </h:panelGroup>
-<h:panelGroup>
+<h:panelGroup rendered="#{rule != null && rule.id != '{empty}'}">
+
     <h:form id="ruleForm" name="ruleForm">
-        <h:panelGrid columns="2" >
-            <f:facet name="header">
-                <h:outputText id="cfH" value="Edit Rule"/>
-            </f:facet>
-            <f:facet name="footer">
-                <h:outputText value="End"/>
-            </f:facet>
+        <h:panelGrid columns="3">
 
-            <h:outputLabel for="title" value="Title"/>
-            <h:panelGroup>
-                <h:inputText id="title" value="#{rule.title}" required="true" />
-                <h:message for="title" styleClass="error" showDetail="true" showSummary="false" />
-            </h:panelGroup>
+        <h:outputLabel for="xid" value="#{MESSAGE['profiler.rule.id']}: "/>
+        <h:inputText readonly='#{rule.updating}' id="xid" styleClass='portlet-form-label' value="#{rule.id}" size='80'/>
+        <h:message for="xid" styleClass="error" showDetail="true" showSummary="false" />
 
-        </h:panelGrid>
+        <h:outputLabel for="title" value="#{MESSAGE['profiler.rule.title']}: "/>
+        <h:inputText id="title" styleClass='portlet-section-header' value="#{rule.title}"  size='100'/>
+        <h:message for="title" styleClass="error" showDetail="true" showSummary="false" />
+
+        <h:outputLabel for="classname" value="#{MESSAGE['profiler.rule.class']}: "/>
+        <h:selectOneMenu id="classname" styleClass='portlet-section-header' value="#{rule.classname}">
+        	<f:selectItems value="#{rule.classnames}"/>
+        </h:selectOneMenu>
+        <h:message for="classname" styleClass="error" showDetail="true" showSummary="false" />
+        
+        </h:panelGrid>        
+        
+        <h:panelGroup/>
+	    <h:commandButton id="saveProfile" value="#{MESSAGE['profiler.rule.save']}" action="#{rule.saveProfile}"/>
+	    <h:commandButton id="newProfile" value="#{MESSAGE['profiler.rule.new']}" action="#{rule.createNewProfile}"/>
+	    <h:commandButton id="removeProfile" value="#{MESSAGE['profiler.rule.remove']}" action="#{rule.removeProfile}"/>
+        <h:panelGroup/>
+                
     </h:form>
 
+<!-- criteria -->
+    <br/>
+	<h:outputText styleClass='portlet-section-header' value="#{MESSAGE['criteria.title']}"/>
+	<br/>
+	
+	<h:dataTable
+	    value="#{rule.criteria}"
+	    var="mCriterion"
+	    styleClass="portlet-section-body"
+	    headerClass="portlet-section-body"	    
+	>
+	    <h:column>
+	       <f:facet name="header">
+	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.name']}" />          
+	       </f:facet>
+	       <x:commandLink action='gotoCriterionForm' actionListener="#{criterion.listen}" immediate="true" >
+	            <h:outputText value="#{mCriterion.name}" />
+	            <f:param name='selectedCriterion' value="#{mCriterion.name}"/>
+	            <f:param name='selectedRule' value="#{rule.id}"/>	            
+	       </x:commandLink>
+	    </h:column>
+	     <h:column>      
+	       <f:facet name="header">
+	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.value']}" />          
+	       </f:facet>
+	        <h:outputText value="#{mCriterion.value}" />       
+	    </h:column>
+	     <h:column>      
+	       <f:facet name="header">
+	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.resolver']}" />          
+	       </f:facet>
+	        <h:outputText value="#{mCriterion.type}" />       
+	    </h:column>
+	     <h:column>      
+	       <f:facet name="header">
+	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.fallback.order']}" />          
+	       </f:facet>
+	        <h:outputText value="#{mCriterion.fallbackOrder}" />       
+	    </h:column>
+	    
+	</h:dataTable>
+        
+        <h:panelGroup/>
+	    <h:commandLink id="addCriterion" value="#{MESSAGE['criteria.new']}"  immediate='true'
+	                     action="gotoCriterionForm" actionListener="#{criterion.listen}">
+	    	<f:param name='selectedRule' value="#{rule.id}" />	            	    
+	    </h:commandLink>
+        <h:panelGroup/>
+        
+    
 </h:panelGroup>
+
 </h:panelGrid>
+
 </f:view>

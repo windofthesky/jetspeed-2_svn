@@ -142,7 +142,12 @@ limitations under the License.
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
 		<name>ViewPage</name>
-			<value>/WEB-INF/view/profiler-admin.jsp</value>
+		<value>/WEB-INF/view/profiler-admin.jsp</value>
+     </init-param>   
+    <init-param>
+    	<description>This parameter sets the template used in help mode.</description>
+		<name>HelpPage</name>
+		<value>/WEB-INF/view/profiler-help.html</value>
      </init-param>   
     <portlet-name>ProfilerAdmin</portlet-name>
     <display-name>Profiler Admin</display-name>
@@ -151,7 +156,6 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>

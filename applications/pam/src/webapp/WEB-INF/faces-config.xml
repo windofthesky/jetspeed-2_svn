@@ -31,6 +31,22 @@ limitations under the License.
     </locale-config>
   </application>
 
+  <navigation-rule>
+    <from-view-id>/WEB-INF/view/profiler-admin.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>gotoCriterionForm</from-outcome>
+      <to-view-id>/WEB-INF/view/profiler-criterion.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
+    <from-view-id>/WEB-INF/view/profiler-criterion.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>returnFromCriterion</from-outcome>
+      <to-view-id>/WEB-INF/view/profiler-admin.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
   <managed-bean>
     <managed-bean-name>tableData</managed-bean-name>
     <managed-bean-class>org.apache.jetspeed.portlets.site.beans.TableData</managed-bean-class>
@@ -59,7 +75,13 @@ limitations under the License.
   <managed-bean>
     <managed-bean-name>rule</managed-bean-name>
     <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileRuleForm</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>criterion</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileCriterionForm</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
 
 </faces-config>
