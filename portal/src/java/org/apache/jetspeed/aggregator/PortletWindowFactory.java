@@ -75,34 +75,20 @@ public class PortletWindowFactory
 {
     public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
     {
-        InitablePortletEntity entity = PortletEntityAccess.getEntity(portletDefinition, portletName);
+        InitablePortletEntity portletEntity = PortletEntityAccess.getEntity(portletDefinition, portletName);
 
-        PortletEntityAccess.serviceRequest(entity, Jetspeed.getCurrentRequestContext());
+        PortletEntityAccess.serviceRequest(portletEntity, Jetspeed.getCurrentRequestContext());
+        // TODO: This needs to be changed to support multiple windows per entity
+        PortletWindow portletWindow = portletEntity.getPortletWindowList().get(portletEntity.getId());
 
-        Iterator prefs = entity.getPortletDefinition().getPreferenceSet().iterator();
+        if (portletWindow == null)
+        {
+            portletWindow = new PortletWindowImpl(portletEntity.getId());
+            ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
+            PortletWindowList windowList = portletEntity.getPortletWindowList();
+            ((PortletWindowListCtrl) windowList).add(portletWindow);
+        }
 
-        //        Debugging
-        //        System.out.println("Preference list for " + entity.getPortletDefinition().getName());
-        //        while (prefs.hasNext())
-        //        {
-        //
-        //            PreferenceComposite pref = (PreferenceComposite) prefs.next();
-        //            System.out.println("Value list for " + pref.getName());
-        //            if (pref != null)
-        //            {
-        //                Iterator itr = pref.getValues();
-        //                System.out.println("Values iterator "+itr);
-        //                while (itr.hasNext())
-        //                {
-        //                    System.out.println("Value: " + ((String) itr.next()));
-        //                }
-        //            }
-        //        }
-
-        PortletWindow portletWindow = new PortletWindowImpl(entity.getId());
-        ((PortletWindowCtrl) portletWindow).setPortletEntity(entity);
-        PortletWindowList windowList = entity.getPortletWindowList();
-        ((PortletWindowListCtrl) windowList).add(portletWindow);
         return portletWindow;
     }
 }
