@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.page.psml;
 
 import java.security.AccessController;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -201,9 +202,28 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             throw new SecurityException("AbstractBaseElement.checkConstraints(): No actions specified.");
         }
 
-        // get action names list
-        List actionsList = SecurityConstraintImpl.parseCSVList(actions);
-
+        // get action names lists; separate view and other
+        // actions to mimic file system permissions logic
+        List viewActionList = SecurityConstraintImpl.parseCSVList(actions);
+        List otherActionsList = null;
+        if (viewActionList.size() == 1)
+        {
+            if (!viewActionList.contains(SecuredResource.VIEW_ACTION))
+            {
+                otherActionsList = viewActionList;
+                viewActionList = null;
+            }
+        }
+        else
+        {
+            otherActionsList = viewActionList;
+            viewActionList = null;
+            if (otherActionsList.remove(SecuredResource.VIEW_ACTION))
+            {
+                viewActionList = new ArrayList(1);
+                viewActionList.add(SecuredResource.VIEW_ACTION);
+            }
+        }
 
         // get current request context subject
         Subject subject = Subject.getSubject(AccessController.getContext());
@@ -246,8 +266,15 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             }
         }
 
-        // check constraints using parsed and accessed lists
-        checkConstraints(actionsList, userPrincipals, rolePrincipals, groupPrincipals);
+        // check constraints using parsed action and access lists
+        if (viewActionList != null)
+        {
+            checkConstraints(viewActionList, userPrincipals, rolePrincipals, groupPrincipals, false, grantViewActionAccess());
+        }
+        if (otherActionsList != null)
+        {
+            checkConstraints(otherActionsList, userPrincipals, rolePrincipals, groupPrincipals, true, false);
+        }
     }
 
     /**
@@ -259,11 +286,13 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * @param userPrincipals
      * @param rolePrincipals
      * @param groupPrincipals
+     * @param checkNodeOnly
+     * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals) throws SecurityException
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
-        // check constraints if available
+        // check node constraints if available
         SecurityConstraints constraints = getSecurityConstraints();
         if (constraints != null)
         {
@@ -313,25 +342,65 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             return;
         }
 
-        // check page permissions and fallback to folder permissions
-        // if permission paths available for this element
+        // separate view and other actions to mimic file system permissions logic
+        boolean viewAction = false;
+        String otherActions = actions.trim();
+        int viewActionIndex = otherActions.indexOf(SecuredResource.VIEW_ACTION);
+        if (viewActionIndex != -1)
+        {
+            viewAction = true;
+            if (viewActionIndex == 0)
+            {
+                if (otherActions.length() > SecuredResource.VIEW_ACTION.length())
+                {
+                    // remove view action from other actions
+                    int nextDelimIndex = otherActions.indexOf(',', viewActionIndex + SecuredResource.VIEW_ACTION.length());
+                    otherActions = otherActions.substring(nextDelimIndex + 1);
+                }
+                else
+                {
+                    // no other actions
+                    otherActions = null;
+                }
+            }
+            else
+            {
+                // remove view action from other actions
+                int prevDelimIndex = otherActions.lastIndexOf(',', viewActionIndex);
+                otherActions = otherActions.substring(0, prevDelimIndex) + otherActions.substring(viewActionIndex + SecuredResource.VIEW_ACTION.length());
+            }
+        }
+
+        // check permissions using parsed actions
+        if (viewAction)
+        {
+            checkPermissions(SecuredResource.VIEW_ACTION, false, grantViewActionAccess());
+        }
+        if (otherActions != null)
+        {
+            checkPermissions(otherActions, true, false);
+        }
+    }
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @param actions
+     * @param checkNodeOnly
+     * @param checkParentsOnly
+     * @throws SecurityException
+     */
+    public void checkPermissions(String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check page and folder permissions
         String physicalPermissionPath = getPhysicalPermissionPath();
         if (physicalPermissionPath != null)
         {
-            // check permission using physical path
-            String permissionPath = physicalPermissionPath;
+            // check permissions using physical path
             try
             {
-                try
-                {
-                    PagePermission permission = new PagePermission(permissionPath, actions);
-                    AccessController.checkPermission(permission);
-                }
-                catch (SecurityException se)
-                {
-                    FolderPermission permission = new FolderPermission(permissionPath, actions);
-                    AccessController.checkPermission(permission);
-                }
+                checkPermissions(physicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
             }
             catch (SecurityException physicalSE)
             {
@@ -339,23 +408,40 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
                 String logicalPermissionPath = getLogicalPermissionPath();
                 if ((logicalPermissionPath != null) && !logicalPermissionPath.equals(physicalPermissionPath))
                 {
-                    permissionPath = logicalPermissionPath;
-                    try
-                    {
-                        PagePermission permission = new PagePermission(permissionPath, actions);
-                        AccessController.checkPermission(permission);
-                    }
-                    catch (SecurityException se)
-                    {
-                        FolderPermission permission = new FolderPermission(permissionPath, actions);
-                        AccessController.checkPermission(permission);
-                    }
+                    checkPermissions(logicalPermissionPath, actions, checkNodeOnly, checkParentsOnly);
                 }
                 else
                 {
                     throw physicalSE;
                 }
             }
+        }
+    }
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @param path
+     * @param actions
+     * @param checkNodeOnly
+     * @param checkParentsOnly
+     * @throws SecurityException
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check actions permissions
+        try
+        {
+            // check for granted page permissions
+            PagePermission permission = new PagePermission(path, actions);
+            AccessController.checkPermission(permission);
+        }
+        catch (SecurityException se)
+        {
+            // fallback check for granted folder permissions
+            FolderPermission permission = new FolderPermission(path, actions);
+            AccessController.checkPermission(permission);
         }
     }
 
@@ -405,6 +491,19 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         {
             checkConstraints(actions);
         }
+    }
+
+    /**
+     * <p>
+     * grantViewActionAccess
+     * </p>
+     *
+     * @return granted access for view action
+     */
+    public boolean grantViewActionAccess()
+    {
+        // by default, access must be checked
+        return false;
     }
 
     /**
@@ -500,7 +599,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      */
     public static NodeSet checkAccess(NodeSet nodes, String actions)
     {
-        if ((nodes != null) && (nodes.size() > 0))
+        if ((nodes != null) && !nodes.isEmpty())
         {
             // check permissions and constraints, filter nodes as required
             NodeSetImpl filteredNodes = null;

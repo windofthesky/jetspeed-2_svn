@@ -293,6 +293,19 @@ public class NodeSetImpl implements NodeSet
 
     /**
      * <p>
+     * isEmpty
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.NodeSet#isEmpty()
+     * @return
+     */
+    public boolean isEmpty()
+    {
+        return nodes.isEmpty();
+    }
+
+    /**
+     * <p>
      * remove
      * </p>
      * 

@@ -679,62 +679,27 @@ public class FolderImpl extends AbstractNode implements Folder
      * checkPermissions
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#checkPermissions(java.lang.String)
+     * @param path
      * @param actions
+     * @param checkNodeOnly
+     * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkPermissions(String actions) throws SecurityException
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
-        // skip checks if not enabled
-        if (!getPermissionsEnabled())
+        // check granted folder permissions unless the check is
+        // to be skipped due to explicity granted access
+        if (!checkParentsOnly)
         {
-            return;
+            FolderPermission permission = new FolderPermission(path, actions);
+            AccessController.checkPermission(permission);
         }
 
-        // check folder permission, (test requires appended wild character -
-        // i.e. "/some-folder/*"),  if permission paths available for this
-        // element
-        String physicalPermissionPath = getPhysicalPermissionPath();
-        if (physicalPermissionPath != null)
+        // if not checking node only, recursively check
+        // all parent permissions in hierarchy
+        if (!checkNodeOnly && (getParent() != null))
         {
-            // check permission using physical path
-            String permissionPath = physicalPermissionPath;
-            if (permissionPath.endsWith(PATH_SEPARATOR))
-            {
-                permissionPath += FOLDER_PERMISSION_WILD_CHAR;
-            }
-            else
-            {
-                permissionPath += PATH_SEPARATOR + FOLDER_PERMISSION_WILD_CHAR;
-            }
-            try
-            {
-                FolderPermission permission = new FolderPermission(permissionPath, actions);
-                AccessController.checkPermission(permission);
-            }
-            catch (SecurityException physicalSE)
-            {
-                // fallback check using logical path if available and different
-                String logicalPermissionPath = getLogicalPermissionPath();
-                if ((logicalPermissionPath != null) && !logicalPermissionPath.equals(physicalPermissionPath))
-                {
-                    permissionPath = logicalPermissionPath;
-                    if (permissionPath.endsWith(PATH_SEPARATOR))
-                    {
-                        permissionPath += FOLDER_PERMISSION_WILD_CHAR;
-                    }
-                    else
-                    {
-                        permissionPath += PATH_SEPARATOR + FOLDER_PERMISSION_WILD_CHAR;
-                    }
-                    FolderPermission permission = new FolderPermission(permissionPath, actions);
-                    AccessController.checkPermission(permission);
-                }
-                else
-                {
-                    throw physicalSE;
-                }
-            }
+            ((AbstractNode)getParent()).checkPermissions(actions, false, false);
         }
     }
 

@@ -100,9 +100,10 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         NodeSet documentSets = null;
         Map documentSetNames = null;
         Map documentSetNodeSets = null;
+        List allProfiledFolders = null;
 
         // populate profiled page context instance and return
-        CacheablePageContext cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets);
+        CacheablePageContext cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets, allProfiledFolders);
         populateProfiledPageContext(cachedPageContext, pageContext);
     }
 

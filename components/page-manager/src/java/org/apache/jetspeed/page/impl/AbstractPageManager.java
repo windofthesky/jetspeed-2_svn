@@ -24,23 +24,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecuredResource;
-import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.DocumentSet;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.AbstractNode;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.NodeSetImpl;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
 
 /**
  * AbstractPageManagerService
@@ -208,15 +209,17 @@ public abstract class AbstractPageManager
         public NodeSet documentSets;
         public Map documentSetNames;
         public Map documentSetNodeSets;
+        public List profiledFolders;
         public NodeSet nestedDocumentSets;
 
-        public CacheablePageContext(Page page, Folder folder, NodeSet siblingPages, Folder parentFolder, NodeSet siblingFolders, NodeSet rootLinks, NodeSet documentSets, Map documentSetNames, Map documentSetNodeSets)
+        public CacheablePageContext(Page page, Folder folder, NodeSet siblingPages, Folder parentFolder, NodeSet siblingFolders, NodeSet rootLinks, NodeSet documentSets, Map documentSetNames, Map documentSetNodeSets, List profiledFolders)
         {
             this.page = page;
             this.folder = folder;
             this.siblingPages = siblingPages;
             this.parentFolder = parentFolder;
             this.siblingFolders = siblingFolders;
+            this.profiledFolders = profiledFolders;
             this.rootLinks = rootLinks;
             this.documentSets = documentSets;
             this.documentSetNames = documentSetNames;
@@ -248,7 +251,7 @@ public abstract class AbstractPageManager
             {
                 log.debug("CacheablePageContext(), folder = " + this.folder + ", url = " + this.folder.getUrl());
                 log.debug("CacheablePageContext(), page = " + this.page + ", url = " + this.page.getUrl());
-                if ((this.siblingPages != null) && (this.siblingPages.size() > 0))
+                if ((this.siblingPages != null) && !this.siblingPages.isEmpty())
                 {
                     Iterator debugIter = this.siblingPages.iterator();
                     while (debugIter.hasNext())
@@ -260,7 +263,7 @@ public abstract class AbstractPageManager
                 else
                     log.debug("CacheablePageContext(), siblingPages = null/empty");
                 log.debug("CacheablePageContext(), parentFolder = " + this.parentFolder + ", url = " + ((this.parentFolder != null) ? this.parentFolder.getUrl() : "null"));
-                if ((this.siblingFolders != null) && (this.siblingFolders.size() > 0))
+                if ((this.siblingFolders != null) && !this.siblingFolders.isEmpty())
                 {
                     Iterator debugIter = this.siblingFolders.iterator();
                     while (debugIter.hasNext())
@@ -271,7 +274,7 @@ public abstract class AbstractPageManager
                 }
                 else
                     log.debug("CacheablePageContext(), siblingFolders = null/empty");
-                if ((this.rootLinks != null) && (this.rootLinks.size() > 0))
+                if ((this.rootLinks != null) && !this.rootLinks.isEmpty())
                 {
                     Iterator debugIter = this.rootLinks.iterator();
                     while (debugIter.hasNext())
@@ -282,16 +285,16 @@ public abstract class AbstractPageManager
                 }
                 else
                     log.debug("CacheablePageContext(), rootLinks = null/empty");
-                if ((this.documentSets != null) && (this.documentSets.size() > 0) &&
-                    (this.documentSetNames != null) && (this.documentSetNames.size() > 0) &&
-                    (this.documentSetNodeSets != null) && (this.documentSetNodeSets.size() > 0))
+                if ((this.documentSets != null) && !this.documentSets.isEmpty() &&
+                    (this.documentSetNames != null) && !this.documentSetNames.isEmpty() &&
+                    (this.documentSetNodeSets != null) && !this.documentSetNodeSets.isEmpty())
                 {
                     Iterator debugIter = this.documentSets.iterator();
                     while (debugIter.hasNext())
                     {
                         log.debug("CacheablePageContext(), " + debugDocumentSetMessage((DocumentSet)debugIter.next()));
                     }
-                    if ((this.nestedDocumentSets != null) && (this.nestedDocumentSets.size() > 0))
+                    if ((this.nestedDocumentSets != null) && !this.nestedDocumentSets.isEmpty())
                     {
                         debugIter = this.nestedDocumentSets.iterator();
                         while (debugIter.hasNext())
@@ -302,6 +305,17 @@ public abstract class AbstractPageManager
                 }
                 else
                     log.debug("CacheablePageContext(), documentSets/documentSetNames/documentSetNodeSets = null/empty");
+                if ((this.profiledFolders != null) && !this.profiledFolders.isEmpty())
+                {
+                    Iterator debugIter = this.profiledFolders.iterator();
+                    while (debugIter.hasNext())
+                    {
+                        Folder debug = (Folder) debugIter.next();
+                        log.debug("CacheablePageContext(), profiledFolder = " + debug + ", url = " + debug.getUrl());
+                    }
+                }
+                else
+                    log.debug("CacheablePageContext(), profiledFolders = null/empty");
             }
         }
 
@@ -327,67 +341,187 @@ public abstract class AbstractPageManager
     protected void populateProfiledPageContext(CacheablePageContext cachedPageContext, ProfiledPageContext pageContext)
     {
         // populate supplied page context object while checking
-        // page and folder access permissions and/or constraints
-        pageContext.setPage((Page)checkAccess((AbstractNode)cachedPageContext.page, SecuredResource.VIEW_ACTION, true));
-        pageContext.setFolder((Folder)checkAccess((AbstractNode)cachedPageContext.folder, SecuredResource.VIEW_ACTION, false));
-        pageContext.setSiblingPages(checkAccess(cachedPageContext.siblingPages, SecuredResource.VIEW_ACTION));
-        pageContext.setParentFolder((Folder)checkAccess((AbstractNode)cachedPageContext.parentFolder, SecuredResource.VIEW_ACTION, false));
-        pageContext.setSiblingFolders(checkAccess(cachedPageContext.siblingFolders, SecuredResource.VIEW_ACTION));
-        pageContext.setRootLinks(checkAccess(cachedPageContext.rootLinks, SecuredResource.VIEW_ACTION));
+        // page and folder visibility using access permissions
+        // and/or constraints; by definition, page visibility implies
+        // folder and parent folder visibility
+        pageContext.setPage((Page)checkVisibility((AbstractNode)cachedPageContext.page, cachedPageContext.profiledFolders));
+        pageContext.setFolder(cachedPageContext.folder);
+        pageContext.setSiblingPages(checkVisibility(cachedPageContext.siblingPages, cachedPageContext.profiledFolders));
+        pageContext.setParentFolder(cachedPageContext.parentFolder);
+        pageContext.setSiblingFolders(checkVisibility(cachedPageContext.siblingFolders, cachedPageContext.profiledFolders));
+        pageContext.setRootLinks(checkVisibility(cachedPageContext.rootLinks, cachedPageContext.profiledFolders));
         if (cachedPageContext.documentSets != null)
         {
-            Iterator documentSetIter = checkAccess(cachedPageContext.documentSets, SecuredResource.VIEW_ACTION).iterator();
+            Iterator documentSetIter = checkVisibility(cachedPageContext.documentSets, cachedPageContext.profiledFolders).iterator();
             while (documentSetIter.hasNext())
             {
                 // populate root document set
                 DocumentSet documentSet = (DocumentSet)documentSetIter.next();
                 String documentSetName = (String)cachedPageContext.documentSetNames.get(documentSet);
-                NodeSet documentSetNodes = checkAccess((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), SecuredResource.VIEW_ACTION);
+                NodeSet documentSetNodes = checkVisibility((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), cachedPageContext.profiledFolders);
                 pageContext.setDocumentSet(documentSetName, documentSet, documentSetNodes);
             }
             if (cachedPageContext.nestedDocumentSets != null)
             {
-                Iterator nestedDocumentSetIter = checkAccess(cachedPageContext.nestedDocumentSets, SecuredResource.VIEW_ACTION).iterator();
+                Iterator nestedDocumentSetIter = checkVisibility(cachedPageContext.nestedDocumentSets, cachedPageContext.profiledFolders).iterator();
                 while (nestedDocumentSetIter.hasNext())
                 {
                     // populate nested document set
                     DocumentSet documentSet = (DocumentSet)nestedDocumentSetIter.next();
                     String documentSetName = (String)cachedPageContext.documentSetNames.get(documentSet);
-                    NodeSet documentSetNodes = checkAccess((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), SecuredResource.VIEW_ACTION);
+                    NodeSet documentSetNodes = checkVisibility((NodeSet)cachedPageContext.documentSetNodeSets.get(documentSet), cachedPageContext.profiledFolders);
                     pageContext.setNestedDocumentSet(documentSetName, documentSet, documentSetNodes);
                 }
             }
         }
     }
 
-    protected AbstractNode checkAccess(AbstractNode node, String actions, boolean throwException)
+    protected AbstractNode checkVisibility(AbstractNode node, List profiledFolders) throws SecurityException
     {
+        // check access constraints/permissions of node
+        // to determine visibility, (hidden status already
+        // tested by profiler); throws SecurityExceptiond
+        // if view access not granted
         if (node != null)
         {
-            // propagate thrown SecurityExceptions
-            try
+            if (node instanceof Folder)
             {
-                // check access constraints/permissions of node
-                node.checkAccess(actions);
-            }
-            catch (SecurityException se)
-            {
-                if (!throwException)
+                // visibility of folder determined by visibility
+                // of pages in folder; accessible pages in subfolders
+                // are not checked since navigating into a folder
+                // with no visible pages is not permitted; finally,
+                // all equivalent profiled folders must be checked
+                // if available
+                boolean securityException = false;
+                try
                 {
-                    return null;
+                    Iterator pagesIter = ((FolderImpl) node).getPages(false).iterator();
+                    while (pagesIter.hasNext())
+                    {
+                        try
+                        {
+                            AbstractNode page = (AbstractNode)pagesIter.next();
+                            if (!page.isHidden())
+                            {
+                                checkVisibility(page, profiledFolders);
+                                return node;
+                            }
+                        }
+                        catch (SecurityException se)
+                        {
+                            securityException = true;
+                        }
+                    }
                 }
-                throw se;
+                catch (NodeException ne)
+                {
+                }
+                if (profiledFolders != null)
+                {
+                    String folderUrl = node.getUrl();
+                    Iterator foldersIter = profiledFolders.iterator();
+                    while (foldersIter.hasNext())
+                    {
+                        FolderImpl profiledFolder = (FolderImpl)foldersIter.next();
+                        if ((profiledFolder != node) && folderUrl.equals(profiledFolder.getUrl()))
+                        {
+                            try
+                            {
+                                Iterator pagesIter = profiledFolder.getPages(false).iterator();
+                                while (pagesIter.hasNext())
+                                {
+                                    try
+                                    {
+                                        AbstractNode page = (AbstractNode)pagesIter.next();
+                                        if (!page.isHidden())
+                                        {
+                                            checkVisibility(page, profiledFolders);
+                                            return node;
+                                        }
+                                    }
+                                    catch (SecurityException se)
+                                    {
+                                        securityException = true;
+                                    }
+                                }
+                            }
+                            catch (NodeException ne)
+                            {
+                            }
+                        }
+                    }
+                }
+
+                // no visible pages found in folder or equivalent
+                // folder: throw security or runtime exception
+                if (securityException)
+                {
+                    throw new SecurityException("AbstractPageManager.checkVisibility(): Access for " + SecuredResource.VIEW_ACTION + " not permitted to any folder page.");
+                }
+                throw new RuntimeException("AbstractPageManager.checkVisibility(): Empty folders not visible.");
+            }
+            else
+            {
+                // simple access test for document
+                node.checkAccess(SecuredResource.VIEW_ACTION);
             }
         }
         return node;
     }
 
-    protected NodeSet checkAccess(NodeSet nodes, String actions)
+    protected NodeSet checkVisibility(NodeSet nodes, List profiledFolders)
     {
-        if (nodes != null)
+        // check access constraints/permissions of nodes
+        // to determine visibility; filter nodes accordingly
+        if ((nodes != null) && !nodes.isEmpty())
         {
-            // check permissions and constraints, filter nodes as required
-            return AbstractBaseElement.checkAccess(nodes, actions);
+            NodeSetImpl filteredNodes = null;
+            Iterator checkAccessIter = nodes.iterator();
+            while (checkAccessIter.hasNext())
+            {
+                AbstractNode node = (AbstractNode)checkAccessIter.next();
+                try
+                {
+                    // check visibility
+                    checkVisibility(node, profiledFolders);
+
+                    // add to filteredNodes nodes if copying
+                    if (filteredNodes != null)
+                    {
+                        // permitted, add to filteredNodes nodes
+                        filteredNodes.add(node);
+                    }
+                }
+                catch (RuntimeException rte)
+                {
+                    // create filteredNodes nodes if not already copying
+                    if (filteredNodes == null)
+                    {
+                        // not permitted, copy previously permitted nodes
+                        // to new filteredNodes node set with same comparator
+                        filteredNodes = new NodeSetImpl(null, ((NodeSetImpl)nodes).getComparator());
+                        Iterator copyIter = nodes.iterator();
+                        while (copyIter.hasNext())
+                        {
+                            AbstractNode copyNode = (AbstractNode)copyIter.next();
+                            if (copyNode != node)
+                            {
+                                filteredNodes.add(copyNode);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // return filteredNodes nodes if generated
+            if (filteredNodes != null)
+            {
+                return filteredNodes;
+            }
         }
         return nodes;
     }

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.page.document;
 
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.util.ArgUtil;
 
 
@@ -359,20 +361,75 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * @param userPrincipals
      * @param rolePrincipals
      * @param groupPrincipals
+     * @param checkNodeOnly
+     * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals) throws SecurityException
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
-        // check constraints if available; otherwise,
-        // recursively check parent constraints
-        SecurityConstraints constraints = getSecurityConstraints();
-        if (constraints != null)
+String debug=""; Iterator i = actions.iterator(); while(i.hasNext())debug+=(String)i.next()+" ";
+        // check constraints in node hierarchy
+        if (checkNodeOnly)
         {
-            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+            // check node constraints if available; otherwise,
+            // recursively check parent constraints until
+            // default constraints for node are checked
+            SecurityConstraints constraints = getSecurityConstraints();
+            if (constraints != null)
+            {
+                ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+            }
+            else if (parent != null)
+            {
+                ((AbstractNode)parent).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, checkNodeOnly, false);
+            }
         }
-        else if (parent != null)
+        else
         {
-            ((AbstractNode)parent).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals);
+            // check node constraints if available and not
+            // to be skipped due to explicity granted access
+            if (!checkParentsOnly)
+            {
+                SecurityConstraints constraints = getSecurityConstraints();
+                if (constraints != null)
+                {
+                    ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+                }
+            }
+
+            // recursively check all parent constraints in hierarchy
+            if (parent != null)
+            {
+                ((AbstractNode)parent).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, false, false);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @param path
+     * @param actions
+     * @param checkNodeOnly
+     * @param checkParentsOnly
+     * @throws SecurityException
+     */
+    public void checkPermissions(String path, String actions, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    {
+        // check granted node permissions unless the check is
+        // to be skipped due to explicity granted access
+        if (!checkParentsOnly)
+        {
+            super.checkPermissions(path, actions, true, false);
+        }
+        
+        // if not checking node only, recursively check
+        // all parent permissions in hierarchy
+        if (!checkNodeOnly && (parent != null))
+        {
+            ((AbstractNode)parent).checkPermissions(actions, false, false);
         }
     }
 
