@@ -103,22 +103,7 @@
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/plugin"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Plugin jar"
-               postProcessing="false"
-               ignoreFailures="false"/>        
-  <!--
-    <maven:reactor
-               basedir="${basedir}"
-               includes="services/security/project.xml"
-               goals="jar:install,ojb.registry"
-               banner="Build and Install the services - security jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-  -->
+
      <!-- Build war files -->
      <maven:reactor
                basedir="${basedir}"
