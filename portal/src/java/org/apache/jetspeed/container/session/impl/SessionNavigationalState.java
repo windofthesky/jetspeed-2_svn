@@ -161,7 +161,10 @@ public class SessionNavigationalState
                     PortletWindow window = accessor.getPortletWindow(windowId);
                     
                     Page page = context.getPage();
-                    pages.put(page.getId(), window);
+                    if (null != page)
+                    {
+                        pages.put(page.getId(), window);
+                    }
                 }
                 else
                 {
