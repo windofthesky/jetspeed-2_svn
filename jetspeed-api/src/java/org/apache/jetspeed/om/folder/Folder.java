@@ -195,4 +195,16 @@ public interface Folder extends Node
      * @throws NodeException
      */    
     PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException;
+
+    /**
+     * 
+     * <p>
+     * getAllNodes
+     * </p>
+     *
+     * @return All Nodes immediatley under this Folder.
+     * @throws DocumentException
+     * @throws FolderNotFoundException
+     */
+    NodeSet getAllNodes() throws FolderNotFoundException, DocumentException;
 }
