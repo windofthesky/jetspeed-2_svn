@@ -33,10 +33,12 @@ import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>{@link PropertyManager} implementation relying on Jetspeed OJB
- * based persistence plugin for persistence.
- *
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * {@link PropertyManager}implementation relying on Jetspeed OJB based
+ * persistence plugin for persistence.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class PropertyManagerImpl implements PropertyManager
 {
@@ -48,13 +50,15 @@ public class PropertyManagerImpl implements PropertyManager
     /** System <tt>Preferences</tt> node type. */
     private static final int SYSTEM_NODE_TYPE = 1;
 
-      /** Common queries. **/
+    /** Common queries. * */
     private CommonQueries commonQueries;
 
     private PersistenceStore persistenceStore;
 
     /**
-     * <p>Constructor providing access to the persistence component.</p>
+     * <p>
+     * Constructor providing access to the persistence component.
+     * </p>
      */
     public PropertyManagerImpl(PersistenceStore persistenceStore)
     {
@@ -68,28 +72,24 @@ public class PropertyManagerImpl implements PropertyManager
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#addPropertyKeys(java.util.prefs.Preferences, java.util.Map)
+     * @see org.apache.jetspeed.prefs.PropertyManager#addPropertyKeys(java.util.prefs.Preferences,
+     *      java.util.Map)
      */
     public void addPropertyKeys(Preferences prefNode, Map propertyKeysMap) throws PropertyException
     {
-        ArgUtil.notNull(
-            new Object[] { prefNode, propertyKeysMap },
-            new String[] { "prefNode", "propertyKeysMap", },
-            "addPropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
+        ArgUtil.notNull(new Object[]{prefNode, propertyKeysMap}, new String[]{"prefNode", "propertyKeysMap",},
+                "addPropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-      
         Node nodeObj;
         if (prefNode.isUserNode())
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -103,7 +103,7 @@ public class PropertyManagerImpl implements PropertyManager
                 for (Iterator j = propertyKeys.iterator(); j.hasNext();)
                 {
                     PropertyKey existingPpk = (PropertyKey) j.next();
-                    if (existingPpk.getPropertyKeyName().equals((String) propertyKeysMap.get(currentPropertyKeyName)))
+                    if (propertyKeysMap.containsKey(existingPpk.getPropertyKeyName()))
                     {
                         if (log.isDebugEnabled())
                             log.debug("Existing Property: " + (String) propertyKeysMap.get(currentPropertyKeyName));
@@ -116,10 +116,8 @@ public class PropertyManagerImpl implements PropertyManager
                 {
                     if (log.isDebugEnabled())
                         log.debug("New Property: " + currentPropertyKeyName);
-                    PropertyKey ppk =
-                        new PropertyKeyImpl(
-                            currentPropertyKeyName,
-                            ((Integer) propertyKeysMap.get(currentPropertyKeyName)).intValue());
+                    PropertyKey ppk = new PropertyKeyImpl(currentPropertyKeyName, ((Integer) propertyKeysMap
+                            .get(currentPropertyKeyName)).intValue());
                     newPropertyKeys.add(ppk);
                 }
             }
@@ -149,27 +147,24 @@ public class PropertyManagerImpl implements PropertyManager
             throw new PropertyException(PropertyException.NODE_NOT_FOUND);
         }
     }
-
     /**
      * @see org.apache.jetspeed.prefs.PropertyManager#getPropertyKeys(java.util.prefs.Preferences)
      */
     public Map getPropertyKeys(Preferences prefNode)
     {
-        ArgUtil.notNull(new Object[] { prefNode }, new String[] { "prefNode" }, "getPropertyKeys(java.util.prefs.Preferences)");
-
+        ArgUtil.notNull(new Object[]{prefNode}, new String[]{"prefNode"},
+                "getPropertyKeys(java.util.prefs.Preferences)");
 
         Node nodeObj;
         if (prefNode.isUserNode())
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -189,27 +184,24 @@ public class PropertyManagerImpl implements PropertyManager
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)
+     * @see org.apache.jetspeed.prefs.PropertyManager#removePropertyKeys(java.util.prefs.Preferences,
+     *      java.util.Collection)
      */
     public void removePropertyKeys(Preferences prefNode, Collection propertyKeys) throws PropertyException
     {
-        ArgUtil.notNull(
-            new Object[] { prefNode, propertyKeys },
-            new String[] { "prefNode", "propertyKeys" },
-            "removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
+        ArgUtil.notNull(new Object[]{prefNode, propertyKeys}, new String[]{"prefNode", "propertyKeys"},
+                "removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
         Node nodeObj;
         if (prefNode.isUserNode())
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -258,28 +250,26 @@ public class PropertyManagerImpl implements PropertyManager
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)
+     * @see org.apache.jetspeed.prefs.PropertyManager#updatePropertyKey(java.lang.String,
+     *      java.util.prefs.Preferences, java.util.Map)
      */
-    public void updatePropertyKey(String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey) throws PropertyException
+    public void updatePropertyKey(String oldPropertyKeyName, Preferences prefNode, Map newPropertyKey)
+            throws PropertyException
     {
-        ArgUtil.notNull(
-            new Object[] { oldPropertyKeyName, prefNode, newPropertyKey },
-            new String[] { "oldPropertyKeyName", "prefNode", "newPropertyKey" },
-            "updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)");
+        ArgUtil.notNull(new Object[]{oldPropertyKeyName, prefNode, newPropertyKey}, new String[]{"oldPropertyKeyName",
+                "prefNode", "newPropertyKey"},
+                "updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)");
 
-        
         Node nodeObj;
         if (prefNode.isUserNode())
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
-            nodeObj =
-                (Node) persistenceStore.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
+            nodeObj = (Node) persistenceStore.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(prefNode
+                    .absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
