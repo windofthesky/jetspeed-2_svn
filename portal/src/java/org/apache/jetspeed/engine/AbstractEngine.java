@@ -17,6 +17,8 @@ package org.apache.jetspeed.engine;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.naming.NamingException;
@@ -63,7 +65,7 @@ public abstract class AbstractEngine implements Engine
     private PortalContext context;
     private ServletConfig config = null;
     private ComponentManager componentManager = null;
-        private static final Log log = LogFactory.getLog(AbstractEngine.class);
+    protected static final Log log = LogFactory.getLog(AbstractEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
     protected boolean useInternalJNDI;
@@ -84,6 +86,10 @@ public abstract class AbstractEngine implements Engine
      */
     public void init( Configuration configuration, String applicationRoot, ServletConfig config ) throws JetspeedException
     {
+        DateFormat format = DateFormat.getInstance();
+        Date startTime = new Date();
+        
+        
         try
         {
             this.context = new JetspeedPortalContext(this);
@@ -95,13 +101,10 @@ public abstract class AbstractEngine implements Engine
             defaultPipelineName = configuration.getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
             configuration.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             
-            
-            System.out.println("JNDI System Property flag "+System.getProperty(JNDI_SUPPORT_FLAG_KEY));
             if(System.getProperty(JNDI_SUPPORT_FLAG_KEY) ==  null)
             {
                  System.setProperty(JNDI_SUPPORT_FLAG_KEY, String
-                    .valueOf(useInternalJNDI));
-                 
+                    .valueOf(useInternalJNDI));                 
             }
             else
             {
@@ -122,6 +125,7 @@ public abstract class AbstractEngine implements Engine
             p.setProperty(APPLICATION_ROOT_KEY, context.getApplicationRoot());
             PropertyConfigurator.configure(p);
             log.info("Configured log4j from " + log4jFile);
+            log.info("Starting Jetspeed Engine ("+getClass().getName()+") at "+format.format(startTime));
     
             // patch up OJB
             ClassLoader ploader2 = this.getClass().getClassLoader();
@@ -134,24 +138,19 @@ public abstract class AbstractEngine implements Engine
             componentManager = initComponents(configuration, config);
             log.info("Components initialization complete");
                 
-            //
-            // create the pipelines
-            //
-            log.info("Creating Jetspeed piplines...");
-
-            log.info("Jetspeed piplines created sucessfully.");
-            // 
-            // Make sure JMX is init'd
-            //
-            // log.info("Jump starting JMX MBean services...");
-            // JMX.startJMX();
-            // log.info("JMX services sucessfully started.");
         }
         catch (Throwable e)
         {
             e.printStackTrace();
             log.error(e.toString());
             throw new JetspeedException("Jetspeed Initialization exception!", e);
+        }
+        finally
+        {            
+            Date endTime = new Date();
+            long elapsedTime = (endTime.getTime() - startTime.getTime()) / 1000;
+            log.info("Finished starting Jetspeed Engine ("+getClass().getName()+") at "+format.format(endTime) 
+                         +".  Elapsed time: "+elapsedTime+" seconds.");
         }
     }
 
