@@ -31,6 +31,10 @@ limitations under the License.
     else it will use the text height    
     **/
     height:8px;    
+}
+
+.portlet-tigris .PTitleContent
+{
     font-weight:bold;
 }
  
@@ -65,8 +69,24 @@ limitations under the License.
 {
 }
 
+/* font */
+.portlet-tigris .PTitleLeft,
+.portlet-tigris .PTitle,
+.portlet-tigris .PTitleContent,
+.portlet-tigris .PTitleRight,
+.portlet-tigris .PContentLeft,
+.portlet-tigris .PContent,
+.portlet-tigris .PContentRight,
+.portlet-tigris .PBottomLeft,
+.portlet-tigris .PBottom,
+.portlet-tigris .PBottomRight
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
 
-/* --------------------------------- */
 
 
 /* --------------------------------- */
@@ -83,6 +103,17 @@ limitations under the License.
     text-decoration: underline;
 }
 
+/* font */
+.portlet-tigris A:link,
+.portlet-tigris A:visited,
+.portlet-tigris A:hover,
+.portlet-tigris A:active
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
 
 
 /* --------------------------------- */
@@ -90,14 +121,21 @@ limitations under the License.
 /* --------------------------------- */
 
 .portlet-tigris .portlet-font {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
     color: black;
 }
 .portlet-tigris .portlet-font-dim {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
     color: gray;
 }
 
+/* font */
+.portlet-tigris .portlet-font,
+.portlet-tigris .portlet-font-dim
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
 
 
 
@@ -135,6 +173,20 @@ limitations under the License.
     min-height: 15px;
 }
 
+/* font */
+.portlet-tigris .portlet-msg-status,
+.portlet-tigris .portlet-msg-info,
+.portlet-tigris .portlet-msg-error,
+.portlet-tigris .portlet-msg-alert,
+.portlet-tigris .portlet-msg-success
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
 /* --------------------------------- */
 /* PLT.C.4 Sections                  */
 /* --------------------------------- */
@@ -143,9 +195,6 @@ limitations under the License.
     background-repeat: no-repeat;
     color: #fff;
     background-color: #036;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: small;*/
     padding: 5px;
     margin-right: 2px;
     margin-left: 2px;
@@ -155,7 +204,6 @@ limitations under the License.
 .portlet-tigris .portlet-section-body {
     background: #efefef;
     border: none;
-    font-family: Verdana, Helvetica, Arial, sans-serif;
     padding: 2px 3px;
     text-align: left;
     vertical-align: top;
@@ -165,7 +213,6 @@ limitations under the License.
 .portlet-tigris .portlet-section-alternate {
     background: #ddd;
     border: none;
-    font-family: Verdana, Helvetica, Arial, sans-serif;
     padding: 2px 3px;
     text-align: left;
     vertical-align: top;
@@ -176,7 +223,6 @@ limitations under the License.
     /* TODO : ex. change color */
     background: #ffe;
     border: none;
-    font-family: Verdana, Helvetica, Arial, sans-serif;
     padding: 2px 3px;
     text-align: left;
     vertical-align: top;
@@ -189,9 +235,6 @@ limitations under the License.
     background-repeat: no-repeat;
     color: #fff;
     background-color: #888;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: small;*/
     padding: 5px;
     margin-right: 2px;
     margin-left: 2px;
@@ -204,74 +247,70 @@ limitations under the License.
     background-color: #ddd;
     background-image: url(content/tigris/images/sw_med_rond.gif);
     color: #000;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     padding: 5px;
     margin: .67em 2px;
     margin-top: 0;
 }
 
 .portlet-tigris .portlet-section-text {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: small;*/
     padding: 1em;
     padding-bottom: .3em;
     padding-left: 1em;
 }
 
+/* font */
+.portlet-tigris .portlet-section-header,
+.portlet-tigris .portlet-section-body,
+.portlet-tigris .portlet-section-alternate,
+.portlet-tigris .portlet-section-selected,
+.portlet-tigris .portlet-section-subheader,
+.portlet-tigris .portlet-section-footer,
+.portlet-tigris .portlet-section-text,
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+
 /* --------------------------------- */
 /* PLT.C.5 Forms                     */
 /* --------------------------------- */
 .portlet-tigris .portlet-form-label {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-form-input-field {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-form-button {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-icon-label {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-dlg-icon-label {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-form-field-label {
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-form-field {
+}
+
+/* font */
+.portlet-tigris .portlet-section-header,
+.portlet-tigris .portlet-section-body,
+.portlet-tigris .portlet-section-alternate,
+.portlet-tigris .portlet-section-selected,
+.portlet-tigris .portlet-section-subheader,
+.portlet-tigris .portlet-section-footer,
+.portlet-tigris .portlet-section-text,
+{
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    /*font-size: x-small;*/
+    font-size: x-small;
 }
 
 
@@ -290,42 +329,27 @@ limitations under the License.
 
 .portlet-tigris .portlet-menu-item {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: blue;
 }
 
 .portlet-tigris .portlet-menu-item-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
 }
 
 .portlet-tigris .portlet-menu-item-hover {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #f30 !important;
 }
 
 .portlet-tigris .portlet-menu-item-hover-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
     font-weight: bold;
 }
 
 .portlet-tigris .portlet-menu-cascade-item {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     margin-top: .3em;
     padding-bottom: 0;
     color: blue;
@@ -333,17 +357,11 @@ limitations under the License.
 
 .portlet-tigris .portlet-menu-cascade-item-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
     font-weight: bold;
 }
 
 .portlet-tigris .portlet-menu-description {
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .portlet-menu-caption {
@@ -352,10 +370,25 @@ limitations under the License.
     background: #ddd;
     color: #555;
     padding: 4px;
+}
+
+/* font */
+.portlet-tigris .portlet-menu,
+.portlet-tigris .portlet-menu-item,
+.portlet-tigris .portlet-menu-item-selected,
+.portlet-tigris .portlet-menu-item-hover,
+.portlet-tigris .portlet-menu-item-hover-selected,
+.portlet-tigris .portlet-menu-cascade-item,
+.portlet-tigris .portlet-menu-cascade-item-selected,
+.portlet-tigris .portlet-menu-description,
+.portlet-tigris .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    /*font-size: x-small;*/
+    font-size: x-small;
 }
+
 
 /* --------------------------------- */
 /* PLT.C.6 Menus (arrowfolder style) */
@@ -372,9 +405,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-item {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: blue;
     padding-left: 34px;
     background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
@@ -384,9 +414,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-item-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
     padding-left: 34px;
     background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
@@ -395,9 +422,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-item-hover {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #f30 !important;
     padding-left: 34px;
     background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
@@ -406,9 +430,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-item-hover-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
     font-weight: bold;
     padding-left: 34px;
@@ -418,9 +439,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-cascade-item {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     margin-top: .3em;
     padding-bottom: 0;
     color: blue;
@@ -431,9 +449,6 @@ limitations under the License.
 
 .portlet-tigris .arrowfolder .portlet-menu-cascade-item-selected {
     text-decoration: none;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
     color: #555 !important;
     font-weight: bold;
     padding-left: 34px;
@@ -442,9 +457,6 @@ limitations under the License.
 }
 
 .portlet-tigris .arrowfolder .portlet-menu-description {
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
 .portlet-tigris .arrowfolder .portlet-menu-caption {
@@ -453,9 +465,21 @@ limitations under the License.
     background: #ddd;
     color: #555;
     padding: 4px;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    /*font-size: x-small;*/
 }
 
-
+/* font */
+.portlet-tigris .arrowfolder .portlet-menu,
+.portlet-tigris .arrowfolder .portlet-menu-item,
+.portlet-tigris .arrowfolder .portlet-menu-item-selected,
+.portlet-tigris .arrowfolder .portlet-menu-item-hover,
+.portlet-tigris .arrowfolder .portlet-menu-item-hover-selected,
+.portlet-tigris .arrowfolder .portlet-menu-cascade-item,
+.portlet-tigris .arrowfolder .portlet-menu-cascade-item-selected,
+.portlet-tigris .arrowfolder .portlet-menu-description,
+.portlet-tigris .arrowfolder .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
