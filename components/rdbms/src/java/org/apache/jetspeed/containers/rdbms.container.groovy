@@ -11,6 +11,7 @@ import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.ComponentAdapter
 import org.picocontainer.defaults.ConstructorComponentAdapter
+import java.io.File
 
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
@@ -23,7 +24,14 @@ import org.picocontainer.defaults.ConstructorComponentAdapter
 container = new DefaultPicoContainer()
 
 // This is the HSQL engine that holds the test registry
-container.registerComponentInstance(new HSQLServerComponent(9001, "sa","","../../portal/test/db/hsql/Registry",false, true))
+if(new File("../../portal/test/db/hsql").exists())
+{
+   container.registerComponentInstance(new HSQLServerComponent(9001, "sa","","../../portal/test/db/hsql/Registry",false, true))
+}
+else
+{
+   container.registerComponentInstance(new HSQLServerComponent(9001, "sa","","./portal/test/db/hsql/Registry",false, true))
+}
 
 // This JNDI component helps us publish the datasource
 Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
@@ -32,7 +40,7 @@ container.registerComponentImplementation(jndiClass, tyrexJndiClass)
 
 // Create a datasource based on the HSQL server we just created
 Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
-container.registerComponentInstance(dsClass, new DBCPDatasourceComponent("sa","", "org.hsqldb.jdbcDriver", "jdbc:hsqldb:hsql://127.0.0.1", 5, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+container.registerComponentInstance(dsClass, new DBCPDatasourceComponent("sa","", "org.hsqldb.jdbcDriver", "jdbc:hsqldb:hsql://127.0.0.1", 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
 
 
 
