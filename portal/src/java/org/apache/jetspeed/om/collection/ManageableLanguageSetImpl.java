@@ -51,77 +51,75 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.collection;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
-import javax.portlet.PreferencesValidator;
-
-import org.apache.jetspeed.util.HashCodeBuilder;
-import org.apache.pluto.om.common.ValidatorDefinition;
-
+import org.apache.jetspeed.om.common.LanguageSetImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.common.LanguageSet;
 
 /**
- * 
- * BaseValidatorDefinition
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * @author Sweaver
  *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class BaseValidatorDefinition implements MutableValidatorDefinition,  Serializable
+public class ManageableLanguageSetImpl extends LanguageSetImpl implements LanguageSet, ManageableCollection
 {
 
-    private String className;
-    private PreferencesValidator pv;
+    /** Contains all loaded langauges, keyed by <code>java.util.Locale</code> */
+    private HashMap languageMap = new HashMap();
 
     /**
-     * @see org.apache.pluto.om.common.ValidatorDefinition#getClassName()
+     * 
+     * @param wrappedSet
      */
-    public String getClassName()
+    public ManageableLanguageSetImpl(Set wrappedSet)
     {
-        return className;
+        super(wrappedSet);
+    }
+
+    public ManageableLanguageSetImpl()
+    {
+        super();
     }
 
     /**
-     * @see org.apache.pluto.om.common.ValidatorDefinition#getPreferencesValidator()
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
      */
-    public PreferencesValidator getPreferencesValidator()
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        return pv;
-    }
-
-    /**
-     * @see org.apache.pluto.om.common.ValidatorDefinitionCtrl#setClassName(java.lang.String)
-     */
-    public void setClassName(String className)
-    {
-        this.className = className;
+        // nothin'
 
     }
 
     /**
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    public boolean equals(Object obj)
+    public void ojbAdd(Object arg0)
     {
-        if (obj != null & obj instanceof ValidatorDefinition)
-        {
-            ValidatorDefinition vd = (ValidatorDefinition) obj;
-            return this.getClassName().equals(vd.getClassName());
-        }
-
-        return false;
+        add(arg0);
     }
 
     /**
-     * @see java.lang.Object#hashCode()
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
      */
-    public int hashCode()
+    public void ojbAddAll(ManageableCollection arg0)
     {
-        HashCodeBuilder hasher = new HashCodeBuilder(25, 85);
-        hasher.append(className);
-        return hasher.toHashCode();
+        addAll((LanguageSetImpl) arg0);
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
+     */
+    public Iterator ojbIterator()
+    {
+        return iterator();
     }
 
 }

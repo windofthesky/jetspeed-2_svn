@@ -51,79 +51,65 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common.portlet;
+package org.apache.jetspeed.om.collection;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.common.AbstractSupportSet;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionList;
+import org.apache.jetspeed.om.common.ParameterSetImpl;
+import org.apache.jetspeed.om.common.extended.ServletParameterSetImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
- * 
- * BasePortletDefinitionList
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * @author Sweaver
  *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class BasePortletDefinitionList extends AbstractSupportSet implements PortletDefinitionList, Serializable
+public class ManageableServletParameterSetImpl extends ServletParameterSetImpl
 {
-    /** Used to build a quick lookup reference */
-    private HashMap portletDefinitionlocator = new HashMap();
-    private HashMap portletByName = new HashMap();
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionList#iterator()
+     * 
      */
-    public Iterator iterator()
+    public ManageableServletParameterSetImpl()
     {
-        return super.iterator();
+        super();
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionList#get(org.apache.pluto.om.common.ObjectID)
-     */
-    public PortletDefinition get(ObjectID id)
+      * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
+      */
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        return (PortletDefinition) portletDefinitionlocator.get(id);
+        // Nothin'
+
     }
 
     /**
-     * Retrieves a <code>PortletDefinition</code> from this 
-     * collection by the PortletDefinitions proper name
-     * @param name Proper name of PortletDefinition to locate.
-     * @return PortletDefinition matching <code>name</code> or <code>null</code>
-     * if no PortletDefinition within this PortletApplication has that name.
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    public PortletDefinition get(String name)
+    public void ojbAdd(Object arg0)
     {
-        return (PortletDefinition) portletByName.get(name);
+        add(arg0);
+
     }
 
     /**
-     * @see java.util.Collection#add(java.lang.Object)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
      */
-    public boolean add(Object o)
+    public void ojbAddAll(ManageableCollection arg0)
     {
-        PortletDefinition pd = (PortletDefinition) o;
-        portletDefinitionlocator.put(pd.getId(), pd);
-        portletByName.put(pd.getName(), pd);
-        return super.add(pd);
+        addAll((ParameterSetImpl) arg0);
     }
 
     /**
-     * @see java.util.Collection#remove(java.lang.Object)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
      */
-    public boolean remove(Object o)
+    public Iterator ojbIterator()
     {
-        PortletDefinition pd = (PortletDefinition) o;
-        portletDefinitionlocator.remove(pd.getName());
-        portletByName.remove(pd.getName());
-        return super.remove(pd);
+        return iterator();
     }
 
 }

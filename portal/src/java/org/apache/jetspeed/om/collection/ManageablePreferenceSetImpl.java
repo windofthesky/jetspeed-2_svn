@@ -51,43 +51,72 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common.extended;
+package org.apache.jetspeed.om.collection;
 
-import org.apache.jetspeed.om.common.BaseParameterSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.jetspeed.om.common.PreferenceSetImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
+
+import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.common.PreferenceSetCtrl;
 
 /**
- * 
- * ServletParameterSet
- * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
  */
-public class ServletParameterSet extends BaseParameterSet
+public class ManageablePreferenceSetImpl extends PreferenceSetImpl implements PreferenceSet, PreferenceSetCtrl, ManageableCollection
 {
 
+    private HashMap prefMap = new HashMap();
+
     /**
-     * 
+     * @param wrappedSet
      */
-    public ServletParameterSet()
+    public ManageablePreferenceSetImpl(Set wrappedSet)
     {
-        super();
+        super(wrappedSet);
+    }
+
+    public ManageablePreferenceSetImpl()
+    {
+        prefMap = new HashMap();
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.BaseParameterSet#getParameterClass()
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    protected Class getParameterClass()
+    public void ojbAdd(Object arg0)
     {
-        return ServletInitParameter.class;
+        add(arg0);
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.BaseParameterSet#getLog()
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
      */
-//TODO:    protected Log getLog()
-//    {
-//        return LogFactory.getLog(ServletParameterSet.class);
-//    }
+    public void ojbAddAll(ManageableCollection arg0)
+    {
+        addAll((ManageablePreferenceSetImpl) arg0);
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
+     */
+    public Iterator ojbIterator()
+    {
+        return iterator();
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        // Nothin'
+
+    }
 
 }

@@ -51,46 +51,64 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.collection;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.jetspeed.om.common.SecurityRoleRefSetImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.common.SecurityRoleRefSetCtrl;
 
 /**
- * 
- * PreferenceValueObject
- * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
  */
-public class PreferenceValueObject implements Serializable
+public class ManageableSecurityRoleRefSetImpl
+    extends SecurityRoleRefSetImpl
+    implements SecurityRoleRefSet, SecurityRoleRefSetCtrl, ManageableCollection
 {
-    private long preferenceId;
-    private long id;
-    private String value;
 
-    /**
-     * @return
-     */
-    public String getValue()
+    private HashMap refMap = new HashMap();
+
+    public ManageableSecurityRoleRefSetImpl()
     {
-        return value;
+        refMap = new HashMap();
     }
 
     /**
-     * @param string
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
      */
-    public void setValue(String string)
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        value = string;
+        // nothin'
+
     }
 
     /**
-     * @return same as <code>getValue()</code>
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    public String toString()
+    public void ojbAdd(Object arg0)
     {
-        return getValue();
+        add(arg0);
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
+     */
+    public void ojbAddAll(ManageableCollection arg0)
+    {
+        addAll((ManageableSecurityRoleRefSetImpl) arg0);
+    }
+
+    /**
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
+     */
+    public Iterator ojbIterator()
+    {
+        return iterator();
     }
 
 }

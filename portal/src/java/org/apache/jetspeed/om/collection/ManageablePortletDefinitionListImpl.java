@@ -51,95 +51,63 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.collection;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
 
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionListImpl;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.portlet.PortletDefinitionList;
 
 /**
- * 
- * BaseLanguageSet
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * @author Sweaver
  *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class BaseLanguageSet extends AbstractSupportSet implements LanguageSet, Serializable
+public class ManageablePortletDefinitionListImpl
+    extends PortletDefinitionListImpl
+    implements ManageableCollection, PortletDefinitionList
 {
+    /** Used to build a quick lookup reference */
+    private HashMap portletDefinitionlocator = new HashMap();
+    private HashMap portletByName = new HashMap();
 
-    /** Contains all loaded langauges, keyed by <code>java.util.Locale</code> */
-    private HashMap languageMap = new HashMap();
+    // OJB support section
 
     /**
-     * 
-     * @param wrappedSet
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
      */
-    public BaseLanguageSet(Set wrappedSet)
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        super(wrappedSet);
-    }
-
-    public BaseLanguageSet()
-    {
-        super();
+        // I don't think we need to do anything here
     }
 
     /**
-     * @see org.apache.pluto.om.common.LanguageSet#iterator()
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    public Iterator iterator()
+    public void ojbAdd(Object arg0)
     {
-        return super.iterator();
+        add(arg0);
     }
 
     /**
-     * @see org.apache.pluto.om.common.LanguageSet#getLocales()
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
      */
-    public Iterator getLocales()
+    public void ojbAddAll(ManageableCollection arg0)
     {
-        return languageMap.keySet().iterator();
+        addAll((ManageablePortletDefinitionListImpl) arg0);
     }
 
     /**
-     * @see org.apache.pluto.om.common.LanguageSet#get(java.util.Locale)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
      */
-    public Language get(Locale locale)
+    public Iterator ojbIterator()
     {
-        return (Language) languageMap.get(locale);
-    }
-
-    /**
-     * @see org.apache.pluto.om.common.LanguageSet#getDefaultLocale()
-     */
-    public Locale getDefaultLocale()
-    {
-        return Locale.getDefault();
-    }
-
-    /**
-     * @see java.util.Collection#add(java.lang.Object)
-     */
-    public boolean add(Object o)
-    {
-        Language language = (Language) o;
-        languageMap.put(language.getLocale(), language);
-        return super.add(o);
-    }
-
-    /**
-     * @see java.util.Collection#remove(java.lang.Object)
-     */
-    public boolean remove(Object o)
-    {
-        Language language = (Language) o;
-        languageMap.remove(language.getLocale());
-        return super.remove(language);
+        return iterator();
     }
 
 }

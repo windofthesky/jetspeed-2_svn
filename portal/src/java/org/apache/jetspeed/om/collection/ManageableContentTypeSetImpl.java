@@ -51,101 +51,61 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.om.collection;
 
-package org.apache.jetspeed.om.common;
-
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
-import java.util.Set;
-
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
-
+import org.apache.jetspeed.om.common.portlet.ContentTypeSetImpl;
+import org.apache.jetspeed.om.common.portlet.ContentTypeSetComposite;
+import org.apache.ojb.broker.ManageableCollection;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerException;
 /**
- * 
- * BasePreferenceSet
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a> 
  */
-public class BasePreferenceSet extends AbstractSupportSet implements PreferenceSet, PreferenceSetCtrl, Serializable
+public class ManageableContentTypeSetImpl extends ContentTypeSetImpl implements ContentTypeSetComposite, ManageableCollection
 {
 
-    private HashMap prefMap = new HashMap();
+    private HashMap cTypeMap = new HashMap();
 
-    /**
-     * @param wrappedSet
-     */
-    public BasePreferenceSet(Set wrappedSet)
+    public ManageableContentTypeSetImpl()
     {
-        super(wrappedSet);
-    }
-
-    public BasePreferenceSet()
-    {
-        prefMap = new HashMap();
+        cTypeMap = new HashMap();
     }
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSet#get(java.lang.String)
+     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
      */
-    public Preference get(String name)
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        return (Preference) prefMap.get(name);
+        // Nothin'
+
     }
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#add(java.lang.String, java.util.Collection)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAdd(java.lang.Object)
      */
-    public Preference add(String name, Collection values)
+    public void ojbAdd(Object arg0)
     {
-        BasePreference pref = new BasePreference();
-        pref.setName(name);
-        pref.setValues(values);
-        add(pref);
-        return pref;
+        add(arg0);
     }
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(java.lang.String)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbAddAll(org.apache.ojb.broker.ManageableCollection)
      */
-    public Preference remove(String name)
+    public void ojbAddAll(ManageableCollection arg0)
     {
-        Preference pref = (Preference) prefMap.get(name);
-        remove(pref);
-        return pref;
+        addAll((ManageableContentTypeSetImpl) arg0);
+
     }
 
     /**
-     * @see org.apache.pluto.om.common.PreferenceSetCtrl#remove(org.apache.pluto.om.common.Preference)
+     * @see org.apache.ojb.broker.ManageableCollection#ojbIterator()
      */
-    public void remove(Preference preference)
+    public Iterator ojbIterator()
     {
-        remove((Object) preference);
-    }
-
-    /**
-     * @see java.util.Collection#add(java.lang.Object)
-     */
-    public boolean add(Object o)
-    {
-        Preference pref = (Preference) o;
-        prefMap.put(pref.getName(), pref);
-        return super.add(pref);
-    }
-
-    /**
-     * @see java.util.Collection#remove(java.lang.Object)
-     */
-    public boolean remove(Object o)
-    {
-        Preference pref = (Preference) o;
-        prefMap.remove(pref.getName());
-        return super.remove(o);
+        return iterator();
     }
 
 }

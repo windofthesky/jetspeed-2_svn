@@ -53,28 +53,49 @@
  */
 package org.apache.jetspeed.om.collection;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
-import org.apache.jetspeed.om.common.BaseValidatorDefinitionSet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.ParameterSetImpl;
+import org.apache.jetspeed.om.common.extended.PortletParameterSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.pluto.om.common.ValidatorDefinitionSet;
 
 /**
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author Sweaver
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class ManageableValidatorDefinitionSet
-    extends BaseValidatorDefinitionSet
-    implements ValidatorDefinitionSet, ManageableCollection
+public class ManageablePortletParameterSetImpl extends PortletParameterSetImpl implements ManageableCollection
 {
 
-    private HashMap validatorMap;
-
-    public ManageableValidatorDefinitionSet()
+    /**
+     * @param wrappedSet
+     */
+    public ManageablePortletParameterSetImpl(Set wrappedSet)
     {
-        validatorMap = new HashMap();
+        super(wrappedSet);
+    }
+
+    /**
+     * 
+     */
+    public ManageablePortletParameterSetImpl()
+    {
+        super();
+    }
+
+    /**
+      * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
+      */
+    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        // Nothin'
+
     }
 
     /**
@@ -91,8 +112,7 @@ public class ManageableValidatorDefinitionSet
      */
     public void ojbAddAll(ManageableCollection arg0)
     {
-        addAll((ManageableValidatorDefinitionSet) arg0);
-
+        addAll((ParameterSetImpl) arg0);
     }
 
     /**
@@ -104,12 +124,12 @@ public class ManageableValidatorDefinitionSet
     }
 
     /**
-     * @see org.apache.ojb.broker.ManageableCollection#afterStore(org.apache.ojb.broker.PersistenceBroker)
+     * @see org.apache.jetspeed.om.common.ParameterSetImpl#getLog()
      */
-    public void afterStore(PersistenceBroker arg0) throws PersistenceBrokerException
+    protected Log getLog()
     {
-        // nothin'
 
+        return LogFactory.getLog(PortletParameterSetImpl.class);
     }
 
 }
