@@ -18,6 +18,8 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.Constants;
 import org.apache.velocity.Template;
@@ -45,8 +47,9 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
 	
 	public static final String VELOCITY_WRITER_ATTR = "org.apache.velocity.io.VelocityWriter";
     /** Cache of writers */
-   private static SimplePool writerPool = new SimplePool(40);
+    private static SimplePool writerPool = new SimplePool(40);
 	
+    private static final Log log = LogFactory.getLog(JetspeedVelocityViewServlet.class);
 
     public static final String VELOCITY_CONTEXT_ATTR = "org.apache.velocity.Context";
     /**
@@ -111,6 +114,12 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
 			// Place the VelocityWriter into the Context
 			context.put(VELOCITY_WRITER_ATTR, vw);
             template.merge(context, vw);
+        }
+        catch (Exception e)
+        {
+            // log and rethrow exception
+            log.error("Exception occured during merge template: " + e.toString(), e);
+            throw e;
         }
         finally
         {

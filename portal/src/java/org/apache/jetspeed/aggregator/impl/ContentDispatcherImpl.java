@@ -86,6 +86,16 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
             {
                 log.debug("Synchronous rendering for OID "+ oid);
             }
+
+            // access servlet request to determine request context in order
+            // to render inner layout fragment with appropriate request attributes
+            if (fragment.getType().equals(Fragment.LAYOUT))
+            {
+                RequestContext context = (RequestContext) req.getAttribute("org.apache.jetspeed.request.RequestContext");
+                renderer.renderNow(fragment, context);
+                return;
+            }
+            // render synchronously
             renderer.renderNow(fragment,req,rsp);
             return;
         }
@@ -160,6 +170,15 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
                 log.debug("Content is null for OID "+oid);
             }
 
+            // access servlet request to determine request context in order
+            // to render inner layout fragment with appropriate request attributes
+            if (fragment.getType().equals(Fragment.LAYOUT))
+            {
+                RequestContext context = (RequestContext) req.getAttribute("org.apache.jetspeed.request.RequestContext");
+                renderer.renderNow(fragment, context);
+                return;
+            }
+            // render synchronously
             renderer.renderNow(fragment,req,rsp);
             return;
         }
@@ -251,7 +270,16 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
                 log.debug("Content is null for OID "+oid);
             }
 
-            //unwrap the RenderRequest and RenderResponse to avoid having to cascade several
+            // access servlet request to determine request context in order
+            // to render inner layout fragment with appropriate request attributes
+            if (fragment.getType().equals(Fragment.LAYOUT))
+            {
+                HttpServletRequest request = (HttpServletRequest)((HttpServletRequestWrapper)req).getRequest();
+                RequestContext context = (RequestContext) request.getAttribute("org.apache.jetspeed.request.RequestContext");
+                renderer.renderNow(fragment, context);
+                return;
+            }
+            // unwrap the RenderRequest and RenderResponse to avoid having to cascade several
             // portlet requests/responses
             HttpServletRequest request = (HttpServletRequest)((HttpServletRequestWrapper)req).getRequest();
             HttpServletResponse response = (HttpServletResponse)((HttpServletResponseWrapper)rsp).getResponse();

@@ -631,12 +631,80 @@ public class JetspeedPowerTool implements ViewTool
 
     /**
      * <p>
+     * Decorate and include fragment content.
+     * </p>
+     * 
+     * @param f Fragment to include and decorate
+     * @throws Exception
+     */
+    public void decorateAndInclude(Fragment f) throws Exception
+    {
+        // makes sure that any previous content has been written to
+        // preserve natural HTML rendering order
+        flush();
+
+        // Set current fragment and layout, making sure
+        // the last currentFragment goes on to the fragmentStack
+        if (getCurrentFragment() != null)
+        {
+            fragmentStack.push(getCurrentFragment());
+        }
+        setCurrentFragment(f);
+        setCurrentLayout();
+
+        // include decorated layout or portlet fragment
+        try
+        {
+            String fragmentType = f.getType();
+            if (fragmentType.equals(Fragment.PORTLET))
+            {
+                decorateAndIncludePortlet(f);
+            }
+            else if (fragmentType.equals(Fragment.LAYOUT))
+            {
+                decorateAndIncludeLayout(f);
+            }
+        }
+        catch (Exception e)
+        {
+            // include stack trace on exception
+            renderResponse.getWriter().write(e.toString());          
+        }
+        finally
+        {
+            // Now that were are done with this fragment reset to the last
+            // "current" fragment
+            Fragment lastFragment = (Fragment) fragmentStack.pop();
+            if (lastFragment != null)
+            {
+                setCurrentFragment(lastFragment);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Invoke nested layout portlet by including per the ContentDispatcher.
+     * </p>
+     * <p>
+     * 
+     * @param f Layout fragment to include
+     * @throws Exception
+     */
+    private void decorateAndIncludeLayout(Fragment f) throws Exception
+    {
+        // include current layout fragment which includes layout template 
+        include(f);
+    }
+
+    /**
+     * <p>
      * This does not actaully "include()" as per the ContentDispatcher, instead,
      * it locates the decorator for this Fragment or, if none has been defined
      * the default decorator for this Fragment type from the parent Page.
      * </p>
      * <p>
-     * The decorator template itself is responsible for inlcluding the content
+     * The decorator template itself is responsible for including the content
      * of the target Fragment which is easily acheived like so: <br />
      * in Velocity:
      * 
@@ -650,69 +718,42 @@ public class JetspeedPowerTool implements ViewTool
      * 
      * <pre>
      *   <code>
-     * 
-     *  
-     *   
-     *    
-     *     
-     *      
-     *       
-     *        
      *            &lt;% 
      *             JetspeedPowerTool jetspeed = new JetspeedPowerTool(renderRequest, renderResponse, portletConfig);
      *             jetspeed.include(jetspeed.getCurrentFragment());
      *            %&gt;
-     *          
-     *        
-     *       
-     *      
-     *     
-     *    
-     *   
-     *  
      * </code>
      * </pre>
      * 
      * 
-     * @param f
-     *            Fragment to "decorate"
-     * @throws IOException
-     * @throws TemplateLocatorException
+     * @param f Portlet fragment to "decorate"
+     * @throws Exception
      */
-    public void decorateAndInclude(Fragment f) throws Exception
+    private void decorateAndIncludePortlet(Fragment f) throws Exception
     {
-        // makes sure that any previous content has been written to
+        // make sure that any previous content has been written to
         // preserve natural HTML rendering order
         flush();
-        String decorator = f.getDecorator();
+
+        // get fragment decorator; fallback to the default decorator
+        // if the current fragment is not specifically decorated
         String fragmentType = f.getType();
-        // Fallback to the default decorator if the current fragment is not
-        // specifically decorated
+        String decorator = f.getDecorator();
         if (decorator == null)
         {
-            decorator = getPage().getDefaultDecorator(f.getType());
+            decorator = getPage().getDefaultDecorator(fragmentType);
         }
 
+        // get fragment properties for fragmentType or generic
         TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType, decorationLocator, decorationLocatorDescriptor);
-        // Not found specifcally for the fragmentType, then try the generic type
         if(propsTemp == null)
         {
             propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", GENERIC_TEMPLATE_TYPE, decorationLocator, decorationLocatorDescriptor);
         }
-        
 
+        // get decorator template
         Configuration decoConf = new PropertiesConfiguration(propsTemp.getAbsolutePath());
         String ext = decoConf.getString("template.extension");
-
-        // Set this fragment as the current fragment, making sure
-        // the last currentFragment goes on to the fragmentStack
-        if (getCurrentFragment() != null)
-        {
-            fragmentStack.push(getCurrentFragment());
-        }
-        setCurrentFragment(f);
-        setCurrentLayout();
-        
         String decoratorPath = decorator + "/" + DECORATOR_TYPE + ext;
         TemplateDescriptor template = null;
         try
@@ -727,31 +768,10 @@ public class JetspeedPowerTool implements ViewTool
                 template = getDecoration(parent + "/" + DECORATOR_TYPE + ext, fragmentType);
             }
         }
-        PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
-        try
-        {
-            
-            prd.include(renderRequest, renderResponse);
-            
-        }
-        catch (Exception e1)
-        {
-            renderResponse.getWriter().write(e1.toString());          
-            
-        }
-        finally
-        {
 
-            // Now that were are done with this fragment reset to the last
-            // "current" fragment
-            Fragment lastFragment = (Fragment) fragmentStack.pop();
-        	if (lastFragment != null)
-        	{
-        	    setCurrentFragment(lastFragment);
-        	}
-        	
-        	
-        }
+        // include decorator which includes current portlet fragment
+        PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
+        prd.include(renderRequest, renderResponse);
     }
 
     /**
@@ -970,8 +990,8 @@ public class JetspeedPowerTool implements ViewTool
 
     /**
      * Gets the list of decorator actions for a page.
-     * Each page has its own collection of actions associated with it.
-     * The creation of the decorator action list per page will only be called once per session.
+     * Each layout fragment on a page has its own collection of actions associated with it.
+     * The creation of the layout decorator action list per page will only be called once per session.
      * This optimization is to avoid the expensive operation of security checks and action object creation and logic
      * on a per request basis. 
      * 
@@ -981,7 +1001,7 @@ public class JetspeedPowerTool implements ViewTool
     public List getPageDecoratorActions() throws Exception
     {
         RequestContext context = Jetspeed.getCurrentRequestContext();
-        String key = getPage().getId();
+        String key = "PAGE" + getPage().getId() + ":" + this.getCurrentFragment().getId() ;
         Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
         if (null == sessionActions)
         {

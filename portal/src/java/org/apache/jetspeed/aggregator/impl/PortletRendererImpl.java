@@ -29,6 +29,7 @@ import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
@@ -85,6 +86,9 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         // create the portlet window and render the portlet
         //
         HttpServletRequest servletRequest = null;
+        Page outerPage = null;
+        Fragment outerFragment = null;
+        ContentDispatcher outerFragmentDispatcher = null;
         try
         {
             PortletContainerServices.prepare("jetspeed");
@@ -94,9 +98,14 @@ public class PortletRendererImpl implements PortletRenderer, Startable
             servletRequest = request.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
 
-            servletRequest.setAttribute("org.apache.jetspeed.ContentDispatcher",getDispatcher(request,true));
-            servletRequest.setAttribute("org.apache.jetspeed.Fragment",fragment);
+            // save and set servlet request attributes required
+            // for rendering layout portlets
+            outerPage = (Page) servletRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+            outerFragment = (Fragment) servletRequest.getAttribute("org.apache.jetspeed.Fragment");
+            outerFragmentDispatcher = (ContentDispatcher) servletRequest.getAttribute("org.apache.jetspeed.ContentDispatcher");
             servletRequest.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY,request.getPage());
+            servletRequest.setAttribute("org.apache.jetspeed.Fragment",fragment);
+            servletRequest.setAttribute("org.apache.jetspeed.ContentDispatcher",getDispatcher(request,true));
 
             // should we decorate here instead of rendering Portlet ?
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
@@ -109,9 +118,31 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         {
             if (servletRequest!=null)
             {
-                servletRequest.removeAttribute("org.apache.jetspeed.ContentDispatcher");
-                servletRequest.removeAttribute("org.apache.jetspeed.Fragment");
-                servletRequest.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+                // restore servlet request attributes
+                if (outerFragmentDispatcher == null)
+                {
+                    servletRequest.removeAttribute("org.apache.jetspeed.ContentDispatcher");
+                }
+                else
+                {
+                    servletRequest.setAttribute("org.apache.jetspeed.ContentDispatcher",outerFragmentDispatcher);
+                }
+                if (outerFragment == null)
+                {
+                    servletRequest.removeAttribute("org.apache.jetspeed.Fragment");
+                }
+                else
+                {
+                    servletRequest.setAttribute("org.apache.jetspeed.Fragment",outerFragment);
+                }
+                if (outerPage == null)
+                {
+                    servletRequest.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+                }
+                else
+                {
+                    servletRequest.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY,outerPage);
+                }
             }
         }
     }
