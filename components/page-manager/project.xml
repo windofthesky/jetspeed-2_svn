@@ -56,10 +56,31 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>jetspeed-components</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-id-generator</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-profiler</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
     <!-- Testing only -->
     <dependency>
-      <id>jetspeed-rdbms</id>
-      <groupId>jetspeed2</groupId>
+      <id>jetspeed2:jetspeed-rdbms</id>
       <version>2.0-a1-dev</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
