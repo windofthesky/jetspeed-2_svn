@@ -80,6 +80,8 @@ import org.apache.jetspeed.prefs.impl.PropertyManagerImpl
 import org.apache.jetspeed.prefs.PreferencesProvider
 import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
 
+import org.apache.jetspeed.om.preference.impl.PrefsPreference
+
 // Security
 import org.apache.jetspeed.security.SecurityProvider
 import org.apache.jetspeed.security.impl.SecurityProviderImpl
@@ -106,6 +108,9 @@ import org.apache.jetspeed.container.JetspeedPortletContainerWrapper
 
 import org.apache.jetspeed.services.PortletServices
 import org.apache.jetspeed.services.JetspeedPortletServices
+
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite
        
 /* **********************************************************
  *  U T I L L I T Y   C L O S U R E S                       *
@@ -274,11 +279,13 @@ container.registerComponentImplementation(
 	                      doParams([cmpParam(PersistenceStore)])
 )
 	
+openNodes = PrefsPreference.DEFAULT_OPEN_NODES
 container.registerComponentImplementation(
                        PreferencesProvider, 
                        PreferencesProviderImpl, 
                        doParams([cmpParam(PersistenceStore), 
-                                        cstParam("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl")]
+                                        cstParam("org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"),
+                                        cstParam(false)]
                                        )
 )	
 
