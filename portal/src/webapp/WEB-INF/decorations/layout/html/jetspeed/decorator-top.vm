@@ -43,13 +43,17 @@ limitations under the License.
 <p>
 	#set($folder = $request.getAttribute("org.apache.jetspeed.folder"))
 	
+	## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
+	#set($preferedLocal = $JS2RequestContext.locale)
+
 	#if($folder.parent)
-		<a href="${appRoot}/portal${folder.parent.name}">../</a> &nbsp;
+	 <p style="font-style:italic">	
+		<a href="${appRoot}/portal${folder.parent.name}">Back to $folder.parent.metaData.getTitle($preferedLocal)</a> &nbsp;
+	 </p>
 	#end
-	
-	
+		
 	#foreach($childFolder in $folder.folders.iterator())
-		<a href="${appRoot}/portal${childFolder.name}">$childFolder.name</a> &nbsp;		
+	  <a href="${appRoot}/portal${childFolder.name}">$childFolder.metaData.getTitle($preferedLocal)</a> &nbsp;		
 	#end
 	
 	#foreach($childPage in $folder.pages.iterator())		
