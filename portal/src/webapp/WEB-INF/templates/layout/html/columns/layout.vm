@@ -41,78 +41,67 @@ limitations under the License.
 
 #set($layoutType =$portletConfig.getInitParameter("layoutType"))
 #if($jetspeed.portletMode.toString() == "edit")
-  #set($editing = true)	
+  #set($editing = true)    
   #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
     #set($viewUrl = $renderResponse.createRenderURL())
-	$!viewUrl.setPortletMode($portletModeView)
+    $!viewUrl.setPortletMode($portletModeView)
     <a href="$viewUrl">Done</a>
 #else
-	#set($editUrl = $renderResponse.createRenderURL())
-	$!editUrl.setPortletMode($portletModeEdit)
-	<a href="$editUrl">Customize</a>
-#end	
+    #set($editUrl = $renderResponse.createRenderURL())
+    $!editUrl.setPortletMode($portletModeEdit)
+    <a href="$editUrl">Customize</a>
+#end    
 
 <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
 <table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
-
      #foreach($entry in $table)
     <td valign="top">
        <table width="100%" class="portal-layout-column">
        #foreach($f in $entry)       
         <tr>
-       	   	<td width="100%">
-		    #set($row = $f.getProperties($layoutType).get(0).intValue)
-			#set($col = $f.getProperties($layoutType).get(1).intValue)
-		#if($editing)<div id="_$f.id"> 
-				
-		
-		  <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
-			<div id="_$f.id_toolBox"  >
-			 
-			  <table cellpadding="0" cellspacing="0" >
-				 <tr>
-					<td >
-					
-					</td>
-					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-						#if($row > 0)
-			             #set($upUrl = $renderResponse.createRenderURL())	
-			             $!upUrl.setParameter("moveBy","0,-1")
-			             $!upUrl.setParameter("fragmentId","$f.id")
-						 <a href="$upUrl"><img src="content/images/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
-					   #end
-					</td>
-					<td>
-				      
-					</td>
-				 </tr>
-				 
-				 <tr>
-					<td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-						#if($col > 0)			
-			             #set($leftUrl = $renderResponse.createRenderURL())	
-			             $!leftUrl.setParameter("moveBy","-1,0")
-			             $!leftUrl.setParameter("fragmentId","$f.id")	
-						 <a href="$leftUrl"><img src="content/images/movePortletLeft.gif" border="0" title="Move Portlet Left"/></a>
-						#end
-					</td>
-					<td align="center" style="font-size:smaller; font-weight:bold" >
-			          &nbsp;  Position &nbsp;
-					</td>
-					<td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
-						#if($col < $lastColumn )
-						 #set($rightUrl = $renderResponse.createRenderURL())	
-			             $!rightUrl.setParameter("moveBy","1,0")
-			             $!rightUrl.setParameter("fragmentId","$f.id")
-						 <a href="$rightUrl"><img src="content/images/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
-					    #end
-					</td>
-				 </tr>
-				 
-				 
-				 
-				 
+         <td width="100%">
+            #set($row = $f.getProperties($layoutType).get(0).intValue)
+            #set($col = $f.getProperties($layoutType).get(1).intValue)
+            #if($editing)<div id="_$f.id">        
+            <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
+              <div id="_$f.id_toolBox"  >
+               <table cellpadding="0" cellspacing="0" >
+                 <tr>
+                   <td >
+                   </td>
+                   <td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
+                        #if($row > 0)
+                         #set($upUrl = $renderResponse.createRenderURL())    
+                         $!upUrl.setParameter("moveBy","0,-1")
+                         $!upUrl.setParameter("fragmentId","$f.id")
+                         <a href="$upUrl"><img src="content/images/movePortletUp.gif" border="0" title="Move Portlet Up"/></a>
+                       #end
+                   </td>
+                   <td>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td align="right" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
+                        #if($col > 0)            
+                         #set($leftUrl = $renderResponse.createRenderURL())    
+                         $!leftUrl.setParameter("moveBy","-1,0")
+                         $!leftUrl.setParameter("fragmentId","$f.id")    
+                         <a href="$leftUrl"><img src="content/images/movePortletLeft.gif" border="0" title="Move Portlet Left"/></a>
+                        #end
+                   </td>
+                   <td align="center" style="font-size:smaller; font-weight:bold" >
+                      &nbsp;  Position &nbsp;
+                   </td>
+                   <td align="left" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
+                        #if($col < $lastColumn )
+                         #set($rightUrl = $renderResponse.createRenderURL())    
+                         $!rightUrl.setParameter("moveBy","1,0")
+                         $!rightUrl.setParameter("fragmentId","$f.id")
+                         <a href="$rightUrl"><img src="content/images/movePortletRight.gif" border="0" title="Move Portlet Right"/></a>
+                        #end
+                    </td>
+                 </tr>
 				 <tr>
 					<td ></td>
 					<td align="center" onMouseover="this.style.backgroundColor='red'" onMouseout="this.style.backgroundColor=''">
@@ -128,19 +117,18 @@ limitations under the License.
 				 </tr>
 			  </table>
 			</div>
-		 #end	
-				
-                ## get the decorated Portlet content
-               $jetspeed.decorateAndInclude($f)
-		 #if($editing)
-		   </div>
-		  </div>
-		   
-		 #end			  
-         </td>
-	   </tr>
-      #end
-     </table></td>
+		 #end			
+           ## get the decorated Portlet content
+           $jetspeed.decorateAndInclude($f)
+		  #if($editing)
+		 </div>
+		</div>
+       #end			  
+      </td>
+	 </tr>
+    #end
+    </table>
+   </td>
    #end
   </tr>
 </table>
