@@ -33,16 +33,8 @@ limitations under the License.
 
   <dependencies>
     <dependency>
-      <id>commons-logging</id>
-      <version>1.0.3</version>
-    </dependency>
-    <dependency>
       <id>junit</id>
       <version>3.8.1</version>
-    </dependency>
-    <dependency>
-      <id>log4j</id>
-      <version>1.2.8</version>
     </dependency>
     <dependency>
       <id>pluto</id>
@@ -56,18 +48,6 @@ limitations under the License.
       <id>servletapi</id>
       <version>2.3</version>
     </dependency>  
-    <dependency>
-      <id>commons-betwixt</id>
-      <version>1.0-beta-1</version>
-    </dependency>
-     <dependency>
-      <id>commons-digester</id>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <id>commons-lang</id>
-      <version>2.0</version>
-    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

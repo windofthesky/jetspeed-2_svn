@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.components.persistence.store;
 
-import org.apache.commons.lang.exception.NestableException;
-
 /**
  * <p>
  * PersistenceStoreInitializationException
@@ -28,7 +26,7 @@ import org.apache.commons.lang.exception.NestableException;
  * @version $ $
  *
  */
-public class PersistenceStoreInitializationException extends NestableException
+public class PersistenceStoreInitializationException extends Exception
 {
 
     /**

@@ -33,13 +33,6 @@ limitations under the License.
 
   <dependencies>
     <dependency>
-      <id>commons-collections</id>
-      <version>3.0</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
       <id>pluto</id>
       <version>1.0.1-SNAPSHOT</version>
       <properties>
@@ -54,43 +47,13 @@ limitations under the License.
       </properties>
     </dependency>        
     <dependency>
-      <id>commons-lang</id>
-      <version>2.0</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>commons-logging</id>
-      <version>1.0.3</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>commons-beanutils</id>
-      <version>1.6.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
       <id>junit</id>
       <version>3.8.1</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
-    <dependency>
-      <!-- Why is this needed? -->
-      <id>log4j</id>
-      <version>1.2.8</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>   
 	 <dependency>
-      <!-- portlet-api.jar must be in %MAVEN_HOME%/portlet-api/jar -->
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>
       <version>1.0</version>
@@ -109,26 +72,7 @@ limitations under the License.
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
       <version>0.1</version>
-    </dependency>
-    
-    <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc6-PATCHED</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>
-    
-    <!-- we need ojb because of the ManageableCollection interface -->
-    <!--
-    <dependency>
-      <id>ojb</id>
-      <version>1.0.rc3-PATCHED</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>    
-    -->
+    </dependency>        
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

@@ -25,8 +25,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.PortletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.core.impl.RenderRequestImpl;
 import org.apache.pluto.core.impl.RenderResponseImpl;
 
@@ -39,7 +39,7 @@ import org.apache.pluto.core.impl.RenderResponseImpl;
 public class JetspeedRequestDispatcher implements PortletRequestDispatcher
 {
     private RequestDispatcher requestDispatcher;
-    private static final Log log = LogFactory.getLog(JetspeedRequestDispatcher.class);
+  //  private static final Log log = LogFactory.getLog(JetspeedRequestDispatcher.class);
 
     public JetspeedRequestDispatcher(RequestDispatcher requestDispatcher)
     {
@@ -75,13 +75,13 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
                 writeStackTrace(e.getStackTrace(), pw);
 
             }
-            log.error("JetspeedRequestDispatcher failed (details below)");
-            log.error(
-                "Begin: ******************************************* JetspeedRequestDispatcher Failure Report******************************************");
-            log.error("Cause: " + e.getMessage(), e);
+            //log.error("JetspeedRequestDispatcher failed (details below)");
+            //log.error(
+            //    "Begin: ******************************************* JetspeedRequestDispatcher Failure Report******************************************");
+            // log.error("Cause: " + e.getMessage(), e);
             if (e.getCause() != null)
             {
-                log.error("Root Cause: " + e.getCause().getMessage(), e.getCause());
+               // log.error("Root Cause: " + e.getCause().getMessage(), e.getCause());
                 if (pw != null)
                 {
                     pw.write("<p>Root Cause: </p>");
@@ -90,15 +90,15 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
                     writeStackTrace(e.getCause().getStackTrace(), pw);
                 }
 
-                log.error(
-                    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
+               // log.error(
+               //     "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
                 pw.flush();
                 throw new PortletException(e);
             }
             else
             {
-                log.error(
-                    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
+                //log.error(
+                //    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
 				pw.flush();
                 throw new PortletException(e);
             }
