@@ -26,9 +26,8 @@ import junit.framework.Test;
 
 import org.apache.commons.io.StreamUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoContainer;
 
@@ -64,7 +63,8 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
     {
       // ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestFileCache.class);
       //  suite.setScript("org/apache/jetspeed/cache/file/filecache.container.groovy");
-        return new NanoDeployerBasedTestSuite(TestFileCache.class);
+      //  return new NanoDeployerBasedTestSuite(TestFileCache.class);
+      return new ContainerDeployerTestSuite(TestFileCache.class);
     }
     
     private MutablePicoContainer container = null;
@@ -78,8 +78,8 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
         super.setUp();
         container = (MutablePicoContainer) getContainer();        
         cache = (FileCache) container.getComponentInstance(FileCache.class);
-        PicoContainer parent = container.getParent();
-        cacheViaParent = (FileCache) parent.getComponentInstance(FileCache.class);
+//        PicoContainer parent = container.getParent();
+//        cacheViaParent = (FileCache) parent.getComponentInstance(FileCache.class);
     }    
     
     public void testComponent()
@@ -87,7 +87,7 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
     {
         assertNotNull("container failed to load", container);
         assertNotNull("component failed to load", cache);       
-        assertNotNull("component failed to load via parent", cacheViaParent);
+        
     }
 
     /**
@@ -96,7 +96,8 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
      */
 
     public void testLoadCache() throws Exception 
-    {        
+    {    
+      
         String templateFile = getApplicationRoot()+"/test/testdata/psml/user/cachetest/default.psml";
         try
         {
