@@ -166,7 +166,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         // Check anyway.
         if (null == internalRole)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
         }
         internalRoles.add(internalRole);
         internalUser.setRolePrincipals(internalRoles);
@@ -196,7 +196,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             // Check anyway.
             if (null == internalRole)
             {
-                throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+                throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
             }
             internalRoles.remove(internalRole);
             // Remove dead mapping records. I.e. No mapping is associated with the specific record.
@@ -213,7 +213,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
     }
 
@@ -262,7 +262,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
                 .getFullPathFromPrincipalName(groupFullPathName));
         if (null == internalGroup)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
         }
         Collection internalRoles = internalGroup.getRolePrincipals();
         InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
@@ -282,7 +282,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
                 .getFullPathFromPrincipalName(groupFullPathName));
         if (null == internalGroup)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + internalGroup);
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(internalGroup));
         }
         Collection internalRoles = internalGroup.getRolePrincipals();
         InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
@@ -447,7 +447,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         // Check anyway.
         if (null == internalGroup)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
         }
         internalGroups.add(internalGroup);
         internalUser.setGroupPrincipals(internalGroups);
@@ -477,7 +477,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             // Check anyway.
             if (null == internalGroup)
             {
-                throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+                throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
             }
             internalGroups.remove(internalGroup);
             // Remove dead mapping records. I.e. No mapping is associated with the specific record.
@@ -494,7 +494,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
     }
     

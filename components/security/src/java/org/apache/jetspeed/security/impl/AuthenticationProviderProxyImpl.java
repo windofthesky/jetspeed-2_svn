@@ -164,7 +164,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -180,7 +180,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS);
+            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(userPrincipal.getName()));
         }
     }
 
@@ -197,7 +197,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -213,7 +213,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userPrincipal.getName()));
         }
     }
 
@@ -230,7 +230,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -274,7 +274,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -290,7 +290,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
 
@@ -322,7 +322,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -338,7 +338,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
 
@@ -355,7 +355,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -371,7 +371,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
 
@@ -387,7 +387,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER);
+            throw new SecurityException(SecurityException.INVALID_AUTHENTICATION_PROVIDER.create(authenticationProvider));
         }
     }
 
@@ -403,7 +403,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         }
         else
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
 }

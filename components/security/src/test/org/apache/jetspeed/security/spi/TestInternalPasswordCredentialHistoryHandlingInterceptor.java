@@ -71,7 +71,7 @@ public class TestInternalPasswordCredentialHistoryHandlingInterceptor extends Ab
         }
         catch (SecurityException sex)
         {
-            assertEquals(SecurityException.PASSWORD_ALREADY_USED, sex.getMessage());
+            assertTrue(SecurityException.PASSWORD_ALREADY_USED.equals(sex.getKeyedMessage()));
         }
         ums.setPassword("testcred","password2","password3");
         ums.setPassword("testcred","password3","password4");

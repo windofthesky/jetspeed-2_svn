@@ -24,9 +24,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalPermissionImpl;
@@ -192,7 +195,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         }
         catch (Exception e)
         {
-            String msg = "Unable to add permission.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.addPermission",
+                                                                   "store", e.getMessage());
             logger.error(msg, e);            
             throw new SecurityException(msg, e);
         }
@@ -216,8 +220,9 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             }
             catch (Exception e)
             {
-                String msg = "Unable to lock Permission for update.";
-                logger.error(msg, e);
+                KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.removePermission",
+                                                                       "delete", e.getMessage());
+                logger.error(msg, e);            
                 throw new SecurityException(msg, e);
             }
         }
@@ -250,7 +255,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             }
             catch (Exception e)
             {
-                String msg = "Unable to lock Principal for update.";
+                KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.removePermissions",
+                                                                       "store", e.getMessage());
                 logger.error(msg, e);                
                 throw new SecurityException(msg, e);
             }
@@ -273,12 +279,21 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
         if (null == internalPrincipal)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST + ": " + principal.getName());
+            if ( principal instanceof UserPrincipal )
+            {
+                throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(principal.getName()));
+            }
+            else if ( principal instanceof RolePrincipal )
+            {
+                throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(principal.getName()));
+            }
+            // must/should be GroupPrincipal
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(principal.getName()));
         }
         InternalPermission internalPermission = getInternalPermission(permission);
         if (null == internalPermission)
         {
-            throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST + ": " + permission.getName());
+            throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
         }
 
         if (null != internalPrincipal.getPermissions())
@@ -298,7 +313,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock Principal for update.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.grantPermission",
+                                                                   "store", e.getMessage());
             logger.error(msg, e);            
             throw new SecurityException(msg, e);
         }
@@ -363,7 +379,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                     }
                     catch (Exception e)
                     {
-                        String msg = "Unable to lock principal for update.";
+                        KeyedMessage msg = SecurityException.UNEXPECTED.create("PermissionManager.revokePermission",
+                                                                               "store", e.getMessage());
                         logger.error(msg, e);                      
                         throw new SecurityException(msg, e);
                     }

@@ -325,8 +325,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
         }
         else
         {
-            throw new SecurityException("User [" + uid
-                    + "] does not exist. You must first create him before attempting to add groups to him.");
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(uid));
         }
     }
 
@@ -344,8 +343,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
         }
         else
         {
-            throw new SecurityException("Group [" + uid
-                    + "] does not exist. You must first create it before attempting to add it to a user.");
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(uid));
         }
     }
 

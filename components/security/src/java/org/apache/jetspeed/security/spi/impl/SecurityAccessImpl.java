@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -154,7 +155,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock user for update.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.setInternalUserPrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
@@ -182,7 +185,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock User for update.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.removeInternalUserPrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
@@ -226,7 +231,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock role for update.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.setInternalRolePrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
@@ -255,7 +262,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock role for delete.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.removeInternalRolePrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);
             throw new SecurityException(msg, e);
         }
@@ -301,7 +310,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock group for update.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.setInternalGroupPrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);         
             throw new SecurityException(msg, e);
         }
@@ -330,7 +341,9 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock group for delete.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("SecurityAccess.removeInternalGroupPrincipal",
+                                                                   "store",
+                                                                   e.getMessage());
             logger.error(msg, e);
             throw new SecurityException(msg, e);
         }

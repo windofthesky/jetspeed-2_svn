@@ -167,12 +167,12 @@ public class LdapCredentialHandler implements CredentialHandler
     {
         if (StringUtils.isEmpty(password))
         {
-            throw new SecurityException("The password cannot be null or empty.");
+            throw new SecurityException(SecurityException.EMPTY_PARAMETER.create("password"));
         }
 
         if (StringUtils.isEmpty(uid))
         {
-            throw new SecurityException("The uid cannot be null or empty.");
+            throw new SecurityException(SecurityException.EMPTY_PARAMETER.create("uid"));
         }
     }
 }

@@ -29,6 +29,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.security.SecurityException;
@@ -210,11 +211,12 @@ public class UserManagerImpl implements UserManager
                         "addUser(java.lang.String, java.lang.String, java.lang.String)");
 
         if (getAnonymousUser().equals(username)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED); }
+                SecurityException.ANONYMOUS_USER_PROTECTED.create(username)); }
 
         // Check if user already exists.
-        if (userExists(username)) { throw new SecurityException(
-                SecurityException.USER_ALREADY_EXISTS + " " + username); }
+        if (userExists(username)) { 
+            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(username));
+        }
 
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
@@ -244,7 +246,9 @@ public class UserManagerImpl implements UserManager
             }
         } catch (SecurityException se)
         {
-            String msg = "Unable to create the user.";
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("UserManager.addUser",
+                                                                   "UserSecurityHandler",
+                                                                   se.getMessage());
             log.error(msg, se);
 
             // Remove the preferences node.
@@ -271,7 +275,7 @@ public class UserManagerImpl implements UserManager
         { "username"}, "removeUser(java.lang.String)");
 
         if (getAnonymousUser().equals(username)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED); }
+                SecurityException.ANONYMOUS_USER_PROTECTED.create(username)); }
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
         atnProviderProxy.removeUserPrincipal(userPrincipal);
@@ -311,8 +315,9 @@ public class UserManagerImpl implements UserManager
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
-        if (null == userPrincipal) { throw new SecurityException(
-                SecurityException.USER_DOES_NOT_EXIST + " " + username); }
+        if (null == userPrincipal) { 
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
+        }
 
         principals.add(userPrincipal);
         principals.addAll(securityMappingHandler.getRolePrincipals(username));
@@ -414,7 +419,7 @@ public class UserManagerImpl implements UserManager
                         "setPassword(java.lang.String, java.lang.String, java.lang.String)");
 
         if (getAnonymousUser().equals(username)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED); }
+                SecurityException.ANONYMOUS_USER_PROTECTED.create(username)); }
         atnProviderProxy.setPassword(username, oldPassword, newPassword);
     }
 
@@ -430,7 +435,7 @@ public class UserManagerImpl implements UserManager
         { "userName"}, "setPasswordEnabled(java.lang.String, boolean)");
 
         if (getAnonymousUser().equals(userName)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED); }
+                SecurityException.ANONYMOUS_USER_PROTECTED.create(userName)); }
         atnProviderProxy.setPasswordEnabled(userName, enabled);
     }
 
@@ -446,7 +451,7 @@ public class UserManagerImpl implements UserManager
         { "userName"}, "setPasswordUpdateRequired(java.lang.String, boolean)");
 
         if (getAnonymousUser().equals(userName)) { throw new SecurityException(
-                SecurityException.ANONYMOUS_USER_PROTECTED); }
+                SecurityException.ANONYMOUS_USER_PROTECTED.create(userName)); }
         atnProviderProxy.setPasswordUpdateRequired(userName, updateRequired);
     }
 }

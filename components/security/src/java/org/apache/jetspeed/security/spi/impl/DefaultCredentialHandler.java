@@ -139,7 +139,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
         if (null == internalUser)
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + userName);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
         
         Collection credentials = internalUser.getCredentials();
@@ -250,7 +250,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
   
@@ -284,7 +284,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
     }
     
@@ -333,7 +333,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         }
         else
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
         }
         return authenticated;
     }

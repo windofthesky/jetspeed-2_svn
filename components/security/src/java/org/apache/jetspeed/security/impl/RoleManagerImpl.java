@@ -26,6 +26,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
@@ -89,7 +90,7 @@ public class RoleManagerImpl implements RoleManager
         // Check if role already exists.
         if (roleExists(roleFullPathName))
         {
-            throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS + " " + roleFullPathName);
+            throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleFullPathName));
         }
 
         RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
@@ -114,7 +115,10 @@ public class RoleManagerImpl implements RoleManager
         }
         catch (SecurityException se)
         {
-            String msg = "Unable to create the role.";
+            KeyedMessage msg = 
+                SecurityException.UNEXPECTED.create("RoleManager.addRole",
+                                                    "RoleSecurityHandler.setRolePrincipal("+rolePrincipal.getName()+")",
+                                                    se.getMessage());
             log.error(msg, se);
 
             // Remove the preferences node.
@@ -151,8 +155,10 @@ public class RoleManagerImpl implements RoleManager
             }
             catch (Exception e)
             {
-                String msg = "Unable to remove role: "
-                        + RolePrincipalImpl.getPrincipalNameFromFullPath((String) roles[i]);
+                KeyedMessage msg = 
+                    SecurityException.UNEXPECTED.create("RoleManager.removeRole",
+                                                        "RoleSecurityHandler.removeRolePrincipal("+RolePrincipalImpl.getPrincipalNameFromFullPath((String) roles[i])+")",
+                                                        e.getMessage());
                 log.error(msg, e);
                 throw new SecurityException(msg, e);
             }
@@ -164,7 +170,10 @@ public class RoleManagerImpl implements RoleManager
             }
             catch (BackingStoreException bse)
             {
-                String msg = "Unable to remove role preferences: " + roles[i];
+                KeyedMessage msg = 
+                    SecurityException.UNEXPECTED.create("RoleManager.removeRole",
+                                                        "Preferences.removeNode("+roles[i]+")",
+                                                        bse.getMessage());
                 log.error(msg, bse);
                 throw new SecurityException(msg, bse);
             }
@@ -202,7 +211,7 @@ public class RoleManagerImpl implements RoleManager
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
         }
         Preferences preferences = Preferences.userRoot().node(fullPath);
         Role role = new RoleImpl(rolePrincipal, preferences);
@@ -265,13 +274,13 @@ public class RoleManagerImpl implements RoleManager
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
         }
         // Check that user exists.
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
         if (null == userPrincipal)
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
         // Get the user roles.
         Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
@@ -295,7 +304,7 @@ public class RoleManagerImpl implements RoleManager
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
         if (null == userPrincipal)
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
         // Get the role principal to remove.
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
@@ -338,7 +347,7 @@ public class RoleManagerImpl implements RoleManager
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
         }
         securityMappingHandler.setRolePrincipalInGroup(groupFullPathName, roleFullPathName);
     }

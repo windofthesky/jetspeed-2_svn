@@ -153,7 +153,7 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
         String uid = userPrincipal.getName();
         if (isUserPrincipal(uid))
         {
-            throw new SecurityException("The user:" + uid + " already exists.");
+            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(uid));
         }
         ldap.create(uid);
     }
