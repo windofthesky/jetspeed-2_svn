@@ -54,14 +54,18 @@
 package org.apache.jetspeed.cps;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.cps.template.Template;
+import org.apache.jetspeed.cps.template.TemplateImpl;
 import org.apache.jetspeed.cps.template.TemplateLocator;
 import org.apache.jetspeed.cps.template.TemplateLocatorComponent;
 import org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl;
+import org.apache.jetspeed.cps.template.TemplateLocatorImpl;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.defaults.ConstantParameter;
@@ -120,11 +124,14 @@ public class TestPico extends TestCase
         MutablePicoContainer pico = new DefaultPicoContainer();
             
         // pico.registerComponentImplementation(TemplateLocatorComponent.class, TemplateLocatorComponentImpl.class);
+        List roots = new ArrayList();
+        roots.add("test/WEB-INF/templates");
             
-        Parameter [] parameters =  {new ConstantParameter(configuration)};
+        Parameter [] parameters =  { new ConstantParameter(roots) }; 
                 
         System.out.println("parameters: " + parameters.length);
         
+
         pico.registerComponentImplementation(
             TemplateLocatorComponent.class,
             TemplateLocatorComponentImpl.class,

@@ -55,62 +55,72 @@ package org.apache.jetspeed.components;
 
 import java.io.File;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.picocontainer.defaults.ObjectReference;
 import org.picocontainer.defaults.SimpleReference;
 
+import junit.framework.TestCase;
+
 /**
- * TestComponentManager
+ * ComponentAssemblyTestCase
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestNanoComponentManager extends ComponentAssemblyTestCase
+public abstract class ComponentAssemblyTestCase extends TestCase
 {
-    public TestNanoComponentManager(String name) 
+    public ComponentAssemblyTestCase(String name) 
     {
         super( name );
     }
-
-    /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
-     */
-    public static void main(String args[]) 
+    
+    public String getAssemblyScriptType()
     {
-        junit.awtui.TestRunner.main( new String[] { TestNanoComponentManager.class.getName() } );
+        return ".groovy";
     }
-
+    
+    public String getTestName()
+    {
+        String className = this.getClass().getName();
+        int ix = className.lastIndexOf(".");
+        if (ix > -1)
+        {
+            className = className.substring(ix + 1);
+        }
+        return className;        
+    }
+    
+        
+    public static String getApplicationRoot(String baseProject, String relativePath)
+    {
+        String applicationRoot = relativePath;
+        File testPath = new File(applicationRoot);
+        if (!testPath.exists())
+        {
+            testPath = new File( baseProject + File.separator + applicationRoot);
+            if (testPath.exists())
+            {
+                applicationRoot = testPath.getAbsolutePath();
+            }
+        }
+        return applicationRoot;
+    }
+    
+    protected NanoComponentManager componentManager = null;
+    
     public void setUp()
-    throws Exception 
-    {
-        
-    }
-
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestNanoComponentManager.class);
-    }
-        
-    public void testLoadGroovy() throws Exception
+    throws Exception
     {
         String applicationRoot = getApplicationRoot("cps", "test");
-    	File containerAssembler = new File(applicationRoot + "/WEB-INF/conf/container.groovy");
-    	assertTrue(containerAssembler.exists());
-    	NanoComponentManager containerManager = new  NanoComponentManager(containerAssembler);
-    	ObjectReference rootContainerRef = new SimpleReference();    	
-        					
-    	containerManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-    	
-    	assertNotNull(rootContainerRef.get());
-    	
-    	assertNotNull(containerManager.getComponent("templateLocator"));		
-    	
+        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
+        assertTrue(containerAssembler.exists());
+        componentManager = new  NanoComponentManager(containerAssembler);
+        ObjectReference rootContainerRef = new SimpleReference();       
+                            
+        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
+        
+        assertNotNull(rootContainerRef.get());
+            
     }
+    
     
 }

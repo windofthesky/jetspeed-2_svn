@@ -55,18 +55,14 @@ package org.apache.jetspeed.cps.template;
 
 import java.util.Iterator;
 import java.io.File;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cps.CPSInitializationException;
-import org.apache.jetspeed.cps.CommonPortletServices;
+import org.picocontainer.Startable;
 
 /**
  * TemplateLocatorComponentImpl
@@ -74,54 +70,102 @@ import org.apache.jetspeed.cps.CommonPortletServices;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
+public class TemplateLocatorComponentImpl implements TemplateLocatorComponent, Startable
 {
     private final static Log log = LogFactory.getLog(TemplateLocatorServiceImpl.class);
-    private final static String MSG_MISSING_PARAMETER =
-        "TemplateLocatorService initialization failed. Missing parameter: ";
+
     private static final String PATH_SEPARATOR = "/";
 
     /** the template root directories, all application root relative */
-    private String[] templateRoots;
-    private final static String TEMPLATE_ROOTS = "roots";
+    private List roots;
+       
+    /** the Template class is factory created */     
+    private Class  templateClass = TemplateImpl.class;
+
+    /** the TemplateLocator class is factory created */     
+    private Class  locatorClass = TemplateLocatorImpl.class;
+    
+    /** the default locator type */
+    private String defaultLocatorType = "layout";
+
+    /** template name cache used to speed up searches for templates */
+    private Map templateMap = null;
 
     /** use the name cache when looking up a template */
     private boolean useNameCache = true;
-    
-    /** template name cache used to speed up searches for templates */
-    private Map templateMap = null;
-    
-    /** the TemplateLocator class is factory created */     
-    private static String locatorClassName = null;
-    private static Class  locatorClass = null;
-    private final static String TEMPLATE_LOCATOR_CLASS = "locator.class";
-    
-    /** the default locator type */
-    private String defaultLocatorType = "portlet";
-    private final static String DEFAULT_LOCATOR_TYPE = "locator.default.type";
 
-    /** the default template name */    
-    private String defaultTemplateName = "default.vm";
-    private final static String DEFAULT_TEMPLATE_NAME = "default.template.name";
-
-    /** the default template name */    
-    private String defaultExtension = "vm";
-    private final static String DEFAULT_EXTENSION = "default.extension";
+    private TemplateLocatorComponentImpl()
+    {
+        // need to know roots
+    }
     
-        
+    /**
+     * Minimal assembly with a list of resource directory roots.
+     * 
+     * @param roots A list of resource root directories where templates are located. 
+     */
+    public TemplateLocatorComponentImpl(List roots) 
+    {
+        this.roots = roots;        
+    }
+
+    /**
+     * Construct with a root list and a default locator type.
+     * 
+     * @param roots A list of resource root directories where templates are located.
+     * @param defaultLocatorType Under root directories, subdirectories represent locator types.
+     *                           A locator type represents a classification of templates.
+     *                           Any value is allowed. Use locator types to group templates together. 
+     */
+    public TemplateLocatorComponentImpl(List roots, 
+                                        String defaultLocatorType)
+    {
+        this.roots = roots;        
+        this.defaultLocatorType = defaultLocatorType;
+    }
+
+    /**
+     * Assemble with list resource directory roots and OM classes and a defaultLocatorType.
+     * 
+     * @param roots A list of resource root directories where templates are located.
+     * @param omClasses Template replacable object model implementations for Template and TemplateLocator.
+     *                  Required order, with second optional: [ <code>Template</code>, <code>TemplateLocator</code> implementations. 
+     * @param defaultLocatorType Under root directories, subdirectories represent locator types.
+     *                           A locator type represents a classification of templates.
+     *                           Any value is allowed. Use locator types to group templates together. 
+     */
+    public TemplateLocatorComponentImpl(List roots, 
+                                        List omClasses,
+                                        String defaultLocatorType)
+    {
+        System.out.println("Initializing template locator component: " + locatorClass.getName()); 
+        this.roots = roots;
+        this.defaultLocatorType = defaultLocatorType;
+        if (omClasses.size() > 0)
+        {
+            this.templateClass = (Class)omClasses.get(0);
+            if (omClasses.size() > 1)
+            {
+                this.locatorClass  = (Class)omClasses.get(1);
+            }
+        }        
+    }
+    
+
+            
     /* (non-Javadoc)
      * @see org.apache.jetspeed.cps.template.TemplateLocatorService#locateTemplate(org.apache.jetspeed.cps.template.TemplateLocator)
      */
     public Template locateTemplate(TemplateLocator locator)
     {
-        for (int ix = 0; ix < templateRoots.length; ix++)
+        for (int ix = 0; ix < roots.size(); ix++)
         {        
-            Template template = locateTemplate(locator, templateRoots[ix]);
+            Template template = locateTemplate(locator, (String)roots.get(ix));
             if (null == template)
             {
                 // Try to locate it directly on file system, perhaps it was recently added
                 useNameCache = false;
-                template = locateTemplate(locator, templateRoots[ix]);
+                template = locateTemplate(locator, (String)roots.get(ix));
                 if (null != template)
                 {
                     // add it to the map
@@ -169,7 +213,7 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
         do // fallback
         {
             workingPath = path + PATH_SEPARATOR + templateName;
-            // TODO: realPath = CommonPortletServices.getInstance().getRealPath(root + workingPath);
+            realPath = root + workingPath;
 
             // the current template exists, return the corresponding path
             if (templateExists(realPath))
@@ -269,7 +313,7 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
      */
     private Template createTemplateFromPath(String path, String name, String realPath, String relativePath)
     {    
-        TemplateImpl template = new TemplateImpl();
+        Template template = this.createTemplate();
         template.setAbsolutePath(realPath);
         if(relativePath.indexOf("/") != 0)
         {
@@ -309,21 +353,7 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
         throws TemplateLocatorException
     {
         TemplateLocator locator = null;
-        
-        if (null == locatorClass)
-        {
-            try
-            {                
-                locatorClassName = getConfiguration().getString(TEMPLATE_LOCATOR_CLASS);
-                locatorClass = Class.forName(locatorClassName);
-            }
-            catch(Exception e)
-            {
-                throw new TemplateLocatorException(
-                    "TemplateLocator Factory: Failed to create a Class object for TemplateLocator implementation: ", e);
-            }
-        }
-    
+            
         try
         {
             locator = (TemplateLocator)locatorClass.newInstance();
@@ -336,87 +366,42 @@ public class TemplateLocatorComponentImpl implements TemplateLocatorComponent
         return locator;    
     }
 
-/*        
-    public TemplateLocatorComponentImpl()
-    {  
-        System.out.println("--- DEFAULT constructing template locator impl");      
-    }
-*/
-    public TemplateLocatorComponentImpl(Configuration configuration)
-    {  
-        System.out.println("--- CONFIGURATION constructing template locator impl");
-        this.configuration = configuration;
-/*        
+    private Template createTemplate()
+    {
+        Template template= null;
+            
         try
         {
-            init();
-            System.out.println("-- TLC implemented ok");
+            template = (Template)templateClass.newInstance();
         }
-        catch (Throwable t)
-        {      
-            t.printStackTrace();
-            log.error(t);
-        }
-*/        
-    }
-    
-    
-    private Configuration configuration = null;
-    private boolean isInit = false;
-    
-    public Configuration getConfiguration()
-    {
-        return configuration;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.fulcrum.Service#init()
-     */
-    public void init() throws CPSInitializationException
-    {
-        if (isInit)
+        catch(Exception e)
         {
-            return;
+            log.error("Failed to create template", e);
+            template = new TemplateImpl();            
         }
-        
-        this.defaultLocatorType = getConfiguration().getString(DEFAULT_LOCATOR_TYPE, defaultLocatorType);
-        this.defaultTemplateName = getConfiguration().getString(DEFAULT_TEMPLATE_NAME, defaultTemplateName);        
-        this.defaultExtension = getConfiguration().getString(DEFAULT_EXTENSION, defaultExtension);        
+        return template;    
+    }
 
-        this.templateRoots = getConfiguration().getStringArray(TEMPLATE_ROOTS);
-
-        if ((this.templateRoots == null) || (this.templateRoots.length == 0))
-        {
-            throw new CPSInitializationException(MSG_MISSING_PARAMETER + TEMPLATE_ROOTS);
-        }
-
+    public void start()
+    {        
         this.templateMap = new HashMap();
 
-        for (int ix = 0; ix < this.templateRoots.length; ix++)
+        for (int ix = 0; ix < roots.size(); ix++)
         {
-            String templateRoot = this.templateRoots[ix];
+            String templateRoot = (String)roots.get(ix);
 
             if (!templateRoot.endsWith(PATH_SEPARATOR))
             {
                 templateRoot = templateRoot + PATH_SEPARATOR;
             }
 
-            if (log.isDebugEnabled())
-            {
-                log.debug("TemplateLocator: Adding templateRoot:" + templateRoot);
-            }
-
-            // traverse starting from the root template directory and add resources
-            String templateRootPath = CommonPortletServices.getInstance().getRealPath(templateRoot);
-            if (null != templateRootPath)
-            {
-                loadNameCache(templateRootPath, "");
-            }
+            loadNameCache(templateRoot, "");
         }
-        
-        isInit = true;
     }
 
+    public void stop()
+    {
+    }
   
     /* (non-Javadoc)
      * @see org.apache.jetspeed.cps.template.TemplateLocatorService#query(org.apache.jetspeed.cps.template.TemplateLocator)

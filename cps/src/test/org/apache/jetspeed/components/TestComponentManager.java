@@ -108,7 +108,10 @@ public class TestComponentManager extends TestCase
     public void testManager()
           throws Exception
     {
-        Configuration config = getConfiguration();
+    }
+    /**
+       SOON TO BE deprecated
+         Configuration config = getConfiguration();
         ComponentManager cm = new ComponentManager(config);
         
         cm.start();
@@ -142,8 +145,9 @@ public class TestComponentManager extends TestCase
 
         cm.stop();                
                 
-        System.out.println("Component Manager Test completed");                               
-    }
+        System.out.println("Component Manager Test completed");
+        **/                               
+   
 
     public Configuration getConfiguration()
     throws Exception

@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
+  <property name='testcase' value='org.apache.jetspeed.cps.template.TestTemplateLocatorComponent'/> 
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
