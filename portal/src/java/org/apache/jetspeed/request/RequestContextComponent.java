@@ -13,31 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.container.session;
+package org.apache.jetspeed.request;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * NavigationalStateContext
+ * RequestContextComponent
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface NavigationalStateContext 
+public interface RequestContextComponent 
 {
-    WindowState getState(PortletWindow window);
-    
-    void setState(PortletWindow window, WindowState state);
-    
-    PortletMode getMode(PortletWindow window);
-    
-    void setMode(PortletWindow window, PortletMode mode);
-    
-    PortletMode getPreviousMode(PortletWindow window);
-    
-    WindowState getPreviousState(PortletWindow window);
+    /**
+     * Creates a request context for the given servlet request.
+     * 
+     * @param req
+     * @param resp
+     * @param config
+     * @return
+     */
+    RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config);
+
+    /**
+     * Release a request context back to the context pool.
+     * 
+     * @param context
+     */
+    void release(RequestContext context);
     
 }

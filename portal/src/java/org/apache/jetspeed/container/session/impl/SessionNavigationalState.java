@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,82 +15,66 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.container.session.NavigationalStateContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.picocontainer.Startable;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * NavigationalStateComponent
+ * SessionNavigationalStateContext
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SessionNavigationalState implements NavigationalState, Startable
+public class SessionNavigationalState
+        implements
+            NavigationalState 
 {
-    static private final String ACTION = "ac";
-    static private final String MODE = "md";
-    static private final String PREFIX = "_";
-    static private final String PREV_MODE = "pm";
-    static private final String PREV_STATE = "ps";
-    static private final String RENDER_PARAM = "rp";
-    static private final String STATE = "st";
-    static private final String KEY_DELIMITER = ":";
-    static private final String PORTLET_ID = "pid";
-
-    public SessionNavigationalState()  
-    {
-    }
-
+    RequestContext context;
     
-    public void start()
+    public SessionNavigationalState(RequestContext context)
     {
+        init(context);        
     }
     
-    public void stop()
+    public void init(RequestContext context)
     {
-    }
-
-    public NavigationalStateContext createContext(RequestContext context)
-    {
-        // TODO: pool
-        return new SessionNavigationalStateContext(context);
+        this.context = context;
     }
     
-    public void storeContext(RequestContext context, NavigationalStateContext navContext)
+    public WindowState getState(PortletWindow window) 
     {
-        // TODO: implement
+        return null;
     }
     
-    public String getActionKey()
+    public void setState(PortletWindow window, WindowState state) 
     {
-        return ACTION;
-    }
-
-    public String getRenderParamKey()
-    {
-        return RENDER_PARAM;
     }
     
-    public String getModeKey()
+    public PortletMode getMode(PortletWindow window) 
     {
-        return MODE;
+        return null;
     }
     
-    public String getPreviousModeKey()
+    public void setMode(PortletWindow window, PortletMode mode) 
     {
-        return PREV_MODE;
     }
     
-    
-    public String getStateKey()
+    public PortletMode getPreviousMode(PortletWindow window) 
     {
-        return STATE;
+        return null;
     }
     
-    public String getPreviousStateKey()
+    public WindowState getPreviousState(PortletWindow window) 
     {
-        return PREV_STATE;
+        return null;
+    }
+    
+    public boolean isNavigationalParameter(String token)
+    {
+        return false;
     }
     
 }

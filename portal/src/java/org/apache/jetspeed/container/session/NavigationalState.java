@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,30 @@
  */
 package org.apache.jetspeed.container.session;
 
-import org.apache.jetspeed.request.RequestContext;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * NavigationalState
+ * NavigationalStateContext
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface NavigationalState
-{        
-    /**
-     * Creates a navigational state context for the given request context.
-     * Depending on the implementation, navigational state can be retrieved from 
-     * a persistence store to recover the state of a page such as portlet modes 
-     * and window states of portlets on a page.
-     *  
-     * @param context The request context for which this navigational state is valid.
-     * @return A new navigational state context for the given request.
-     */
-    NavigationalStateContext createContext(RequestContext context);
+public interface NavigationalState 
+{
+    WindowState getState(PortletWindow window);
     
-    /**
-     * Save the navigational state to persistence store for the given context.
-     *   
-     * @param context The request context for retrieving user and other information.
-     * @param navContext The current navigational state context for the given request.
-     */
-    void storeContext(RequestContext context, NavigationalStateContext navContext);
-     
-    /**
-     * Keys for URL encoding
-     * @return
-     */
-    String getActionKey();
-    String getRenderParamKey();    
-    String getModeKey();    
-    String getPreviousModeKey();        
-    String getStateKey();    
-    String getPreviousStateKey();
+    void setState(PortletWindow window, WindowState state);
     
+    PortletMode getMode(PortletWindow window);
+    
+    void setMode(PortletWindow window, PortletMode mode);
+    
+    PortletMode getPreviousMode(PortletWindow window);
+    
+    WindowState getPreviousState(PortletWindow window);
+    
+    boolean isNavigationalParameter(String token);
 }

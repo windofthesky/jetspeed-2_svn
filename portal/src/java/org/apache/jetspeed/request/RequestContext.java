@@ -23,10 +23,9 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
@@ -65,13 +64,6 @@ public interface RequestContext
      * @return ServletConfig
      */
     public ServletConfig getConfig();
-
-    /**
-     * Gets the Jetspeed Portal Context
-     *
-     * @return HttpServletRequest
-     */
-    public PortalContext getPortalContext();
 
     /**
      * Gets the profile locator for this request
@@ -154,20 +146,20 @@ public interface RequestContext
      */
     public String getMediaType();
 
+    
+    /**
+     * Gets the navigational state for this current request.
+     * 
+     * @return The navigational state context object for the current request.
+     */
+    public NavigationalState getNavigationalState();
+    
     /**
      * Get the requested Portlet URL for this request
      *
      * @return PortletURL the requested Portlet URL
      */
     public PortalURL getRequestedPortalURL();
-
-    /**
-     * Change the Portlet URL to a new portal URL
-     *
-     * @param url
-     * @param control
-     */
-    public void changeRequestedPortalURL(PortalURL url, PortalControlParameter control);
 
     /**
      * Get the target Action Window

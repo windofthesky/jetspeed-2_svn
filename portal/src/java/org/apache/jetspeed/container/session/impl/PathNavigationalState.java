@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,83 +15,75 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.jetspeed.container.session.NavigationalStateContext;
+import org.apache.jetspeed.engine.core.PortalControlParameter;
+import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.picocontainer.Startable;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * PathNavigationalState is based on Pluto navigational state.
+ * PathNavigationalStateContext is based on Pluto navigational state.
  * All nav state is stored as path parameters in the URL.
  * This implementation does not currently support persisting navigational state
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PathNavigationalState implements NavigationalState, Startable
+public class PathNavigationalState implements NavigationalState 
 {
-    static private final String ACTION = "ac";
-    static private final String MODE = "md";
-    static private final String PREFIX = "_";
-    static private final String PREV_MODE = "pm";
-    static private final String PREV_STATE = "ps";
-    static private final String RENDER_PARAM = "rp";
-    static private final String STATE = "st";
-    static private final String KEY_DELIMITER = ":";
-    static private final String PORTLET_ID = "pid";
-
-    public PathNavigationalState()
-    {   
-    }
-            
-    public void start()
+    RequestContext context;
+    PortalURL url;
+    PortalControlParameter pcp;
+    
+    public PathNavigationalState(RequestContext context)
     {
+        init(context);
     }
     
-    public void stop()
+    public void init(RequestContext context)
     {
+        this.context = context;
+        this.url = context.getRequestedPortalURL();
+        this.pcp = new PortalControlParameter(url);        
     }
     
-    public NavigationalStateContext createContext(RequestContext context)
+    public WindowState getState(PortletWindow window) 
     {
-        // TODO: pool
-        return new PathNavigationalStateContext(context);
+        return pcp.getState(window);
     }
     
-    public void storeContext(RequestContext context, NavigationalStateContext navContext)
+    public void setState(PortletWindow window, WindowState state) 
     {
-        // TODO: implement
-    }
-
-    public String getActionKey()
-    {
-        return ACTION;
-    }
-
-    public String getRenderParamKey()
-    {
-        return RENDER_PARAM;
+        pcp.setState(window, state);
     }
     
-    public String getModeKey()
+    public PortletMode getMode(PortletWindow window) 
     {
-        return MODE;
+        return pcp.getMode(window);
     }
     
-    public String getPreviousModeKey()
+    public void setMode(PortletWindow window, PortletMode mode) 
     {
-        return PREV_MODE;
+        pcp.setMode(window, mode);
     }
     
-    
-    public String getStateKey()
+    public PortletMode getPreviousMode(PortletWindow window) 
     {
-        return STATE;
+        return pcp.getPrevMode(window);
     }
     
-    public String getPreviousStateKey()
+    public WindowState getPreviousState(PortletWindow window) 
     {
-        return PREV_STATE;
+        return pcp.getPrevState(window);
     }
+    
+    public boolean isNavigationalParameter(String token)
+    {
+        return PortalControlParameter.isControlParameter(token);
+    }
+    
     
 }

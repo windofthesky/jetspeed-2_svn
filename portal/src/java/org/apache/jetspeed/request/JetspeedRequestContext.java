@@ -24,13 +24,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.engine.core.PortalControlParameter;
+import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.engine.core.PortalURLImpl;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
@@ -49,7 +49,6 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class JetspeedRequestContext implements RequestContext
 {
-    private PortalContext pc;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
@@ -63,6 +62,7 @@ public class JetspeedRequestContext implements RequestContext
     private CapabilityMap capabilityMap;
     private String mimeType;
     private String mediaType;
+    private NavigationalState navstate;
     private PortalURL requestedPortalURL;
     private PortletWindow actionWindow;
     private String encoding;
@@ -77,9 +77,12 @@ public class JetspeedRequestContext implements RequestContext
      * @param response
      * @param config
      */
-    public JetspeedRequestContext(PortalContext pc, HttpServletRequest request, HttpServletResponse response, ServletConfig config)
+    public JetspeedRequestContext( 
+                                  HttpServletRequest request, 
+                                  HttpServletResponse response, 
+                                  ServletConfig config,
+                                  NavigationalStateComponent navcomponent)
     {
-        this.pc = pc;
         this.request = request;
         this.response = response;
         this.config = config;
@@ -90,6 +93,12 @@ public class JetspeedRequestContext implements RequestContext
             this.request.setAttribute(REQUEST_PORTALENV, this);
         }
         requestedPortalURL = new PortalURLImpl(this);
+        
+        if (navcomponent != null)
+        {
+            navstate = navcomponent.create(this);
+        }
+        
     }
 
     private JetspeedRequestContext()
@@ -106,11 +115,6 @@ public class JetspeedRequestContext implements RequestContext
     public static RequestContext getRequestContext(HttpServletRequest request)
     {
         return (RequestContext) request.getAttribute(REQUEST_PORTALENV);
-    }
-
-    public PortalContext getPortalContext()
-    {
-        return pc;
     }
 
     public HttpServletRequest getRequest()
@@ -219,15 +223,14 @@ public class JetspeedRequestContext implements RequestContext
         return this.mediaType;
     }
 
+    public NavigationalState getNavigationalState()
+    {
+        return navstate;
+    }
+    
     public PortalURL getRequestedPortalURL()
     {
         return requestedPortalURL;
-    }
-
-    public void changeRequestedPortalURL(PortalURL url, PortalControlParameter control)
-    {
-        requestedPortalURL = url;
-        requestedPortalURL.analyzeControlInformation(control);
     }
 
     /**
@@ -410,7 +413,7 @@ public class JetspeedRequestContext implements RequestContext
         while (tokenizer.hasMoreTokens())
         {
             String token = tokenizer.nextToken();
-            if (PortalControlParameter.isControlParameter(token))
+            if (this.navstate.isNavigationalParameter(token))
             {
                 break;            
             }

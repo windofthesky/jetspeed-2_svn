@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletActionProvider;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 
@@ -51,15 +52,11 @@ public class PortletActionProviderImpl implements PortletActionProvider
     public void changePortletMode(PortletMode mode)
     {
         RequestContext context = JetspeedRequestContext.getRequestContext(request);
-
-        PortalURL url = context.getRequestedPortalURL();
-        PortalControlParameter controlURL = new PortalControlParameter(url);
-        if (!(controlURL.getMode(portletWindow).equals(mode)) && mode != null)
+        NavigationalState state = context.getNavigationalState();
+        if (!(state.getMode(portletWindow).equals(mode)) && mode != null)
         {
-            controlURL.setMode(portletWindow, mode);
-            context.changeRequestedPortalURL(url, controlURL);
+            state.setMode(portletWindow, mode);
         }
-
     }
 
     /* (non-Javadoc)
@@ -68,14 +65,10 @@ public class PortletActionProviderImpl implements PortletActionProvider
     public void changePortletWindowState(WindowState state)
     {
         RequestContext context = JetspeedRequestContext.getRequestContext(request);
-
-        PortalURL url = context.getRequestedPortalURL();
-        PortalControlParameter controlURL = new PortalControlParameter(url);
-
-        if (!(controlURL.getState(portletWindow).equals(state)) && state != null)
+        NavigationalState navstate = context.getNavigationalState();
+        if (!(navstate.getState(portletWindow).equals(state)) && state != null)
         {
-            controlURL.setState(portletWindow, state);
-            context.changeRequestedPortalURL(url, controlURL);
+            navstate.setState(portletWindow, state);            
         }
     }
 

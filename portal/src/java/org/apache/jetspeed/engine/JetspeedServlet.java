@@ -35,7 +35,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextFactory;
+import org.apache.jetspeed.request.RequestContextComponent;
 
 /**
  * Jetspeed Servlet entry point.
@@ -202,9 +202,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 init(req, res);
             }
 
-            RequestContext context = RequestContextFactory.getInstance(req, res, getServletConfig());
-
+            //RequestContext context = RequestContextFactory.getInstance(req, res, getServletConfig());
+            RequestContextComponent contextComponent = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+            RequestContext context = contextComponent.create(req, res, getServletConfig());
             engine.service(context);
+            contextComponent.release(context);
 
         }
         catch (Throwable t)
