@@ -14,7 +14,6 @@
  * limitations under the License.
  * ========================================================================
  */
-
 import org.apache.jetspeed.cps.template.TemplateLocatorComponentImpl
 import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.jetspeed.components.ComponentAssemblyTestCase
