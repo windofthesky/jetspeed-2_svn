@@ -34,7 +34,7 @@ A:hover
 TD
 {
   font-family: arial,verdana,sans-serif;
-  font-size: 8pt;
+  font-size: 10pt;
 }
 
 BODY.layout-Jetspeed  
@@ -53,7 +53,7 @@ BODY.layout-Jetspeed
 {
   background: url(content/images/folder.sm.png) no-repeat;
   padding-top: 3px;
-  font-size: .5em;
+  font-size: 10pt; 
   font-weight: bold;
   padding-right: 1em;
   padding-left: 19px;
