@@ -88,11 +88,12 @@ public abstract class JetspeedPortletFactory
         Portlet portlet = null;
         Class portletClass = null;
         String handle = null;
-        String className =  portletDefinition.getClassName();
+        String portletName =  portletDefinition.getName();
+        String className = portletDefinition.getClassName(); 
 
         try
         {                        
-            portlet = PortletCache.get(className);
+            portlet = PortletCache.get(portletName);
             if (null != portlet)
             {
                 return portlet;
@@ -106,7 +107,7 @@ public abstract class JetspeedPortletFactory
             PortletConfig portletConfig = PortalAccessor.createPortletConfig(servletConfig, portletContext, portletDefinition);
             
             portlet.init(portletConfig);            
-            PortletCache.add(portlet);
+            PortletCache.add(portletName, portlet);
             
         }
         catch (Throwable e)

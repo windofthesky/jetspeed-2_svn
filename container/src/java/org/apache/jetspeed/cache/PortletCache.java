@@ -59,7 +59,11 @@ import javax.portlet.Portlet;
 
 /**
  * Very Simple Portlet Cache to manage portlets in container
- * Keeps only one object instance of a portlet per class
+ * Keeps only one object instance of a portlet
+ * The uniqueness of the portlet is determined by the portlet name
+ * There can be multiple java instances of the same portlet class
+ * when the portlet name (from the deployment descriptor/registry)
+ * differs per portlet description 
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
@@ -73,23 +77,23 @@ public class PortletCache
      * 
      * @param portlet The portlet object to add to the cache
      */
-    static public void add(Portlet portlet)
+    static public void add(String name, Portlet portlet)
     {
         synchronized(portlets)
         {        
-            portlets.put(portlet.getClass().getName(), portlet);
+            portlets.put(name, portlet);
         }    
     }
 
     /*
      * Gets a portlet from the portlet cache. 
      * 
-     * @param portletClassName The full Java name of the portlet class
+     * @param portletName The name of the portlet from the registry
      * @return The found portlet from the cache or null if not found
      */    
-    static public Portlet get(String portletClassName)
+    static public Portlet get(String portletName)
     {
-        return (Portlet)portlets.get(portletClassName);
+        return (Portlet)portlets.get(portletName);
     }
 
     /*
@@ -97,11 +101,11 @@ public class PortletCache
      * 
      * @param portletClassName The full Java name of the portlet class
      */    
-    static public void remove(String portletClassName)
+    static public void remove(String portletName)
     {
         synchronized(portlets)
         {        
-            portlets.remove(portletClassName);
+            portlets.remove(portletName);
         }    
     }
     
