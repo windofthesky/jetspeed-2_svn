@@ -84,11 +84,14 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private boolean clearParameters = false;
     private Map parameters = null;
 
-    public PortletURLProviderImpl(DynamicInformationProviderImpl provider,
-                                  PortletWindow portletWindow)
+    private PortalURL portalUrl;
+    private PortalControlParameter controlURL;
+    public PortletURLProviderImpl(DynamicInformationProviderImpl provider, PortletWindow portletWindow)
     {
         this.provider = provider;
         this.portletWindow = portletWindow;
+        portalUrl = JetspeedRequestContext.getRequestContext(provider.request).getRequestedPortalURL();
+        controlURL = new PortalControlParameter(portalUrl);
     }
 
     public void setPortletMode(PortletMode mode)
@@ -113,7 +116,9 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void clearParameters()
     {
-        clearParameters = true;
+
+        controlURL.clearRenderParameters(portletWindow);
+
     }
 
     public void setParameters(Map parameters)
@@ -123,52 +128,54 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public String toString()
     {
-        PortalURL url = JetspeedRequestContext.getRequestContext(provider.request).getRequestedPortalURL();
-        
-        PortalControlParameter controlURL = new PortalControlParameter(url);
-        
-        if (mode!=null) 
+
+        if (mode != null)
         {
             controlURL.setMode(portletWindow, mode);
         }
-        
-        if (state!=null) 
+
+        if (state != null)
         {
             controlURL.setState(portletWindow, state);
         }
-        
-        if (clearParameters)
-        {
-            controlURL.clearRenderParameters(portletWindow);
-        }
+
+        // STW: Spec reference PLT:12:2
+        // Had to move logic directly up into the actual clear call
+        //        if (clearParameters)
+        //        {
+        //        	// clear any existing paramters per the spec
+        //            controlURL.clearRenderParameters(portletWindow);
+        //        }
 
         if (action)
         {
             controlURL.setAction(portletWindow);
         }
 
-        if (parameters!=null)
+        if (parameters != null)
         {
             Iterator names = parameters.keySet().iterator();
             while (names.hasNext())
             {
-                String name = (String)names.next();
+                String name = (String) names.next();
                 Object value = parameters.get(name);
-                String[] values = value instanceof String ? new String[] {(String)value} : (String[])value;
-                if(action)
+                String[] values = value instanceof String ? new String[] {(String) value }
+                : (String[]) value;
+                if (action)
                 {
                     controlURL.setRequestParam(
-                        NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),values);
+                        NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
+                        values);
 
-                } 
+                }
                 else
                 {
-                    controlURL.setRenderParam(portletWindow, name, values );
+                    controlURL.setRenderParam(portletWindow, name, values);
                 }
             }
         }
 
-        return url.toString(controlURL,new Boolean(secure));
+        return portalUrl.toString(controlURL, new Boolean(secure));
     }
-    
+
 }
