@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <pomVersion>3</pomVersion>
+    <id>jsdeploy</id>
+    <name>JSDeploy</name>
+    <currentVersion>1.0</currentVersion>
+
+    <dependencies>
+        <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>b10</version>
+        </dependency>
+		<dependency>
+		 <groupId>saxpath</groupId>		
+		  <artifactId>saxpath</artifactId>
+		  <version>1.0-FCS</version>
+		</dependency>
+		  <dependency>
+		  <id>jaxen</id>
+		  <version>1.0-FCS-full</version>
+		  <properties>
+			<war.bundle>true</war.bundle>
+		  </properties>
+		</dependency>
+		
+    </dependencies>
+
+    <build>
+        <nagEmailAddress>dev@geronimo.apache.org</nagEmailAddress>
+        <sourceDirectory>${basedir}/src/java</sourceDirectory>
+    </build>
+</project>
