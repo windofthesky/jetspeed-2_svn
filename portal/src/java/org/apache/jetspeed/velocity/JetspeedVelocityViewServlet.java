@@ -16,6 +16,7 @@
 package org.apache.jetspeed.velocity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -53,8 +54,10 @@ import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.log.LogSystem;
 
 /**
  * @version $Id$
@@ -247,6 +250,49 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         return super.getTemplate(name, encoding);
     }
 
+    /** velocity engine logging adapter */
+    private static class VelocityEngineLogger implements LogSystem
+    {
+        /** velocity log */
+        private static final Log velocityLog = LogFactory.getLog("velocity");
+
+        /**
+         * init
+         *
+         * @see org.apache.velocity.runtime.log.LogSystem.init(org.apache.velocity.runtime.RuntimeServices)
+         */
+        public void init(RuntimeServices rsvc)
+        {
+        }
+        
+        /**
+         * logVelocityMessage
+         *
+         * @see org.apache.velocity.runtime.log.LogSystem.logVelocityMessage(int, java.lang.String)
+         */
+        public void logVelocityMessage(int level, String message)
+        {
+            switch (level)
+            {
+                case LogSystem.DEBUG_ID :
+                    velocityLog.debug(message);
+                    break;
+                case LogSystem.INFO_ID :
+                    velocityLog.info(message);
+                    break;
+                case LogSystem.WARN_ID :
+                    velocityLog.warn(message);
+                    break;
+                case LogSystem.ERROR_ID :
+                    velocityLog.error(message);
+                    break;
+                default :
+                    velocityLog.trace(message);
+                    break;
+            }
+        }
+    }
+
     /**
      * Loads Velocity configuration information and returns that 
      * information as an ExtendedProperties, which will be used to 
@@ -258,19 +304,17 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
      * @return ExtendedProperties loaded with Velocity runtime configuration values.
      * @throws IOException I/O problem accessing the specified file, if specified.
      */
-    /* DST: FIX ME, sorry i had to pull this out, on Tomcat5/windows this is causing profusive errors in my catalina.out (stdout)
-    
     protected ExtendedProperties loadConfiguration(ServletConfig config)
         throws IOException
     {
-        // configure Velocity engines for Jetspeed Log4J logging
-        // delivered as "velocity" category
+        // configure Velocity engines for using logging adapter
         ExtendedProperties configuration = super.loadConfiguration(config);
-        configuration.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
-        configuration.setProperty("runtime.log.logsystem.log4j.category", "velocity");
+        configuration.clearProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS);
+        configuration.clearProperty("runtime.log.logsystem.log4j.category");
+        configuration.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM, new VelocityEngineLogger());
         return configuration;
     }
-*/
+
     /**
      * Get VelocityEngine for template access.
      *
