@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.tools.pamanager.rules.LocalizedFieldRule;
+import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 
 /**
  * This class helps load Jetspeed descriptors
@@ -68,6 +69,27 @@ public class JetspeedDescriptorUtilities
             digester.addRule("portlet-app/subject", new LocalizedFieldRule());
             digester.addRule("portlet-app/type", new LocalizedFieldRule());
             digester.addRule("portlet-app/metadata", new LocalizedFieldRule());
+            
+            //	digester.addSetNext("portlet-app", "setMetadata");
+            
+			//digester.addRule("portlet-app/portlet", new PortletRule(app));
+			digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
+			digester.addRule("portlet-app/portlet/title", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/contributor", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/creator", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/coverage", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/description", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/format", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/identifier", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/language", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/publisher", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/relation", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/right", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/source", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/subject", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/type", new LocalizedFieldRule());
+			digester.addRule("portlet-app/portlet/metadata", new LocalizedFieldRule());
+             
             
             digester.parse(reader);
             result = true;
