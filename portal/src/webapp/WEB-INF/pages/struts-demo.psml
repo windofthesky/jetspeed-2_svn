@@ -16,7 +16,7 @@ limitations under the License.
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
-  <title>Struts Portlet MailReader Demo</title>
+  <title>Struts MailReader Demo</title>
   <fragment id="sd-1" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="15" type="portlet" name="struts-demo::StrutsPortletDemo">
       <property layout="TwoColumns" name="row" value="0" />
