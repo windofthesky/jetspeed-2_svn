@@ -42,7 +42,6 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ObjectID;
@@ -123,25 +122,21 @@ public class JetspeedRequestContext implements RequestContext
 
     public HttpServletRequest getRequest()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getRequest()", "request");
         return request;
     }
 
     public HttpServletResponse getResponse()
     {
-        ArgUtil.assertPropertyNotNull(response, this, "getResponse()", "response");
         return response;
     }
 
     public ServletConfig getConfig()
     {
-        ArgUtil.assertPropertyNotNull(config, this, "getConfig()", "config");
         return config;
     }
 
     public ProfileLocator getProfileLocator()
     {
-        ArgUtil.assertPropertyNotNull(locator, this, "getProfileLocator()", "locator");
         return locator;
     }
 
@@ -152,7 +147,6 @@ public class JetspeedRequestContext implements RequestContext
 
     public Page getPage()
     {
-        ArgUtil.assertPropertyNotNull(page, this, "getPage()", "page");
         return this.page;
     }
 
@@ -163,7 +157,6 @@ public class JetspeedRequestContext implements RequestContext
 
     public PortletDefinition getPortletDefinition()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getPortletDefinition()", "portletDefinition");
         return portletDefinition;
     }
 
@@ -172,32 +165,8 @@ public class JetspeedRequestContext implements RequestContext
         this.portletDefinition = portletDefinition;
     }
 
-    /**
-     * <p>
-     * isContnetDispatcherSet
-     * </p>
-     *
-     * @see org.apache.jetspeed.request.RequestContext#isContentDispatcherSet()
-     * @return <code>true</code> if the ContentDispatcher for request has been set,
-     * otherwise, returns <code>false</code>
-     */
-    public boolean isContentDispatcherSet()
-    {
-        return dispatcher != null;
-    }
-    
-    /**
-     * 
-     * <p>
-     * getContentDispatcher
-     * </p>
-     *
-     * @see org.apache.jetspeed.request.RequestContext#getContentDispatcher()
-     * @return
-     */
     public ContentDispatcher getContentDispatcher()
     {
-        ArgUtil.assertPropertyNotNull(dispatcher, this, "getContentDispatcher()", "dispatcher");
         return dispatcher;
     }
 
@@ -222,7 +191,6 @@ public class JetspeedRequestContext implements RequestContext
      */
     public CapabilityMap getCapabilityMap()
     {
-        ArgUtil.assertPropertyNotNull(capabilityMap, this, "getCapabilityMap()", "capabilityMap");
         return this.capabilityMap;
     }
 
@@ -242,7 +210,6 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getMimeType()
     {
-        ArgUtil.assertPropertyNotNull(mimeType, this, "getMimeType()", "mimeType");
         return this.mimeType;
     }
 
@@ -262,7 +229,6 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getMediaType()
     {
-        ArgUtil.assertPropertyNotNull(mediaType, this, "getMediaType()", "mediaType");
         return this.mediaType;
     }
 
@@ -298,7 +264,6 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getCharacterEncoding()
     {
-        ArgUtil.assertPropertyNotNull(encoding, this, "getMediaType()", "mediaType"); 
         return this.encoding;
     }
 
@@ -325,9 +290,9 @@ public class JetspeedRequestContext implements RequestContext
     {
         ServletRequestFactory reqFac = (ServletRequestFactory) FactoryManager
                 .getFactory(javax.servlet.http.HttpServletRequest.class);
-        HttpServletRequest requestWrapper = reqFac.getServletRequest(getRequest(), window);
+        HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
         
-        if (this.encoding != null)
+        if (getCharacterEncoding() != null)
         {
             try
             {
@@ -353,7 +318,7 @@ public class JetspeedRequestContext implements RequestContext
     public HttpServletResponse getResponseForWindow( PortletWindow window )
     {
         ServletResponseFactory rspFac = (ServletResponseFactory) FactoryManager.getFactory(HttpServletResponse.class);
-        HttpServletResponse wrappedResponse = rspFac.getServletResponse(getResponse());
+        HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
         return wrappedResponse;
     }
 
@@ -378,7 +343,6 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Locale getLocale()
     {
-        ArgUtil.assertPropertyNotNull(locale, this, "getLocale()", "locale"); 
         return this.locale;
     }
 
@@ -403,7 +367,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getRequestParameter( String key )
     {
-        return getRequest().getParameter(key);
+        return request.getParameter(key);
     }
 
     /**
@@ -411,7 +375,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Map getParameterMap()
     {
-        return getRequest().getParameterMap();
+        return request.getParameterMap();
     }
 
     /**
@@ -419,7 +383,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Object getRequestAttribute( String key )
     {
-        return getRequest().getAttribute(key);
+        return request.getAttribute(key);
     }
 
     /**
@@ -427,7 +391,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Object getSessionAttribute( String key )
     {
-        return getRequest().getSession().getAttribute(key);
+        return request.getSession().getAttribute(key);
     }
 
     /**
@@ -436,7 +400,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setSessionAttribute( String key, Object value )
     {
-        getRequest().getSession().setAttribute(key, value);
+        request.getSession().setAttribute(key, value);
     }
 
     /**
@@ -445,7 +409,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setAttribute( String key, Object value )
     {
-        getRequest().setAttribute(key, value);
+        request.setAttribute(key, value);
     }
 
     /**
@@ -453,7 +417,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Object getAttribute( String key )
     {
-        return getRequest().getAttribute(key);
+        return request.getAttribute(key);
     }
 
     /**
@@ -465,7 +429,7 @@ public class JetspeedRequestContext implements RequestContext
         {
             return this.requestPath;
         }
-        String pathInfo = getRequest().getPathInfo();
+        String pathInfo = request.getPathInfo();
         if (pathInfo == null)
         {
             this.requestPath = null;
@@ -479,7 +443,7 @@ public class JetspeedRequestContext implements RequestContext
         while (tokenizer.hasMoreTokens())
         {
             String token = tokenizer.nextToken();
-            if (getPortalURL().isNavigationalParameter(token))
+            if (this.url.isNavigationalParameter(token))
             {
                 break;
             }
@@ -499,19 +463,9 @@ public class JetspeedRequestContext implements RequestContext
         this.requestPath = result;
         return this.requestPath;
     }
-    
-    /**
-     * 
-     * <p>
-     * getPortalURL
-     * </p>
-     *
-     * @see org.apache.jetspeed.request.RequestContext#getPortalURL()
-     * @return
-     */
+
     public PortalURL getPortalURL()
     {
-        ArgUtil.assertPropertyNotNull(url, this, "getPortalURL()", "url"); 
         return url;
     }
 
@@ -535,7 +489,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Language getPreferedLanguage( PortletDefinition portlet )
     {
-        HttpSession session = getRequest().getSession();
+        HttpSession session = request.getSession();
         Map languageMap = (Map) session.getAttribute(PREFERED_LANGUAGE_SESSION_KEY);
         Language language = (Language) languageMap.get(portlet);
         if(language != null)
