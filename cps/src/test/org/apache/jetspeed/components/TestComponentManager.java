@@ -121,7 +121,7 @@ public class TestComponentManager extends TestCase
             System.out.println("container = " + container);
             count++;                                        
         }
-        assertTrue("count = 2 " + count, count == 2);
+        assertTrue("count = 2" + count, count == 2);
 
         MutablePicoContainer container = cm.getContainer("default");
         assertNotNull("default container is null", container);
@@ -134,6 +134,11 @@ public class TestComponentManager extends TestCase
         
         TemplateLocatorComponent locator2 = (TemplateLocatorComponent)cm.getComponent("persistence", "locator2");
         assertNotNull("locator2 is null", locator2);
+        
+		Smart smart = (Smart) cm.getComponent(Smart.class.getName());
+				assertNotNull("Smart is null", smart);
+	   smart.test();
+
 
         cm.stop();                
                 
@@ -194,24 +199,5 @@ public class TestComponentManager extends TestCase
         System.out.println("dumb2 = " + dumb2);
                     
     }
-    
-    public static interface Dumb 
-    {
-        void test();
-    }
-    
-    public static class DumbImpl implements Dumb
-    {
-        public DumbImpl()
-        {
-            System.out.println("Constructing Dumb");
-        }
-        
-        public void test()
-        {
-            System.out.println("calling test");
-        }
-    }
-    
     
 }

@@ -1,0 +1,14 @@
+import org.apache.commons.configuration.Configuration;
+
+// We use a special ConfigurableBeasnShellComponentAdapter to pass
+// in soft coded configuration values
+Configuration conf = adapter.getConfiguration();
+
+// Extract the values
+String string = conf.getString("string");
+int integer = conf.getInt("integer");
+
+// and create a instance.  The adapter will search the BeanShell
+// for a vairable named instance and return it.
+instance = new SmartImpl(string, integer);
+

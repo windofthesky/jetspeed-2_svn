@@ -66,9 +66,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nanocontainer.script.bsh.BeanShellComponentAdapter;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
 import org.picocontainer.Startable;
+import org.picocontainer.defaults.BeanComponentAdapter;
 import org.picocontainer.defaults.ComponentAdapterFactory;
 import org.picocontainer.defaults.ConstantParameter;
 import org.picocontainer.defaults.DefaultPicoContainer;
@@ -214,9 +216,11 @@ public class ComponentManager implements Startable, ContainerManagement, Compone
     }
     
     private void loadComponent(URL url)
-    {        
+    {   
+    	//TODO We should be looking for a persistent configuration then use the one found in the CL to fill any dafults     
         PropertiesConfiguration configuration = new PropertiesConfiguration();
         configuration.setFileName(url.getFile().toString());
+        
         try
         {                 
             System.out.println("loading configuration: " + configuration);
@@ -241,8 +245,9 @@ public class ComponentManager implements Startable, ContainerManagement, Compone
             {            
                 Configuration componentConfig = configuration.subset(componentNames[ix]);
                 // debugConfig(componentConfig);
-                Class componentClass = Class.forName(className);
+                Class componentClass = Class.forName(className);                
                 Parameter [] parameters =  {new ConstantParameter(componentConfig)};
+              
                 
                 MutablePicoContainer container = this.getContainer(containerName);
                 if (null == container)
@@ -250,7 +255,15 @@ public class ComponentManager implements Startable, ContainerManagement, Compone
                     container = this.defaultContainer;                  
                 }
                 
-                container.registerComponentImplementation(componentNames[ix], componentClass, parameters);
+                if(hasBeanshellConfig(componentClass))
+                {
+                	container.registerComponent(new ConfigurableBeanShellComponentAdapter(componentNames[ix], componentClass, null, componentConfig));
+                }
+                else
+                {
+					container.registerComponentImplementation(componentNames[ix], componentClass, parameters);
+                }
+                
                 
                 System.out.println("Created component " + componentNames[ix] + " and class  " + className);
             }
@@ -270,5 +283,13 @@ public class ComponentManager implements Startable, ContainerManagement, Compone
             System.out.println("key = " + key + ", value = " + config.getProperty(key));
         }
         System.out.println("*** roots = " + config.getString("roots"));        
+    }
+    
+    private boolean hasBeanshellConfig(Class componentClass)
+    {    	
+    	String scriptName = componentClass.getName().replace('.','/')+".bsh";
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader() ;
+		URL scriptUrl = classLoader.getResource(scriptName);
+    	return scriptUrl != null;
     }
 }
