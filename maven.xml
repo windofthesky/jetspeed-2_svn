@@ -95,6 +95,9 @@
                banner="Build and Install the Demo application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+
+    <attainGoal name= "catalina:base-shared"/> 
+    <attainGoal name= "catalina:shared"/> 
   
   </goal>
   <goal name="catalina:shared"
