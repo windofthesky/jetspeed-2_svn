@@ -14,17 +14,75 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
-BODY.layout-Jetspeed  {
-
-}
-
-#rootLinks
+BODY  
 {
-	padding-right:2px; 
-	
+  font-family: arial,verdana,sans-serif;
+  font-size: 8pt; 
 }
 
+A:link,
+A:visited
+{
+  color: RoyalBlue;
+}
+
+A:hover
+{
+  color: Coral;
+}
+
+TD
+{
+  font-family: arial,verdana,sans-serif;
+  font-size: 8pt;
+}
+
+BODY.layout-Jetspeed  
+{
+  font-family: arial,verdana,sans-serif;
+  font-size: 1em; 
+}
+
+.PTitle
+{
+  font-size: 1.25em;
+}
+
+
+.FolderLink
+{
+  background: url(content/images/folder.sm.png) no-repeat;
+  padding-top: 3px;
+  font-size: .5em;
+  font-weight: bold;
+  padding-right: 1em;
+  padding-left: 19px;
+}
+
+
+
+
+
+.FolderList 
+{
+
+}
+
+
+.Link
+{
+  background: url(content/images/link.sm.png) no-repeat;
+  padding-top: 5px;
+  width: 100%;
+  /** Padding is just a wee bit larger than our icons with */     
+  padding-left: 19px;	
+  
+  /** Needed to offset the 19px padding on the left, 
+    * othewise we "bleed" into our neighboring element 
+    * on the right.
+    */
+  margin-right:19px;  
+}
 
 .layout-Jetspeed .LTabLeftLow
 {
@@ -44,6 +102,7 @@ BODY.layout-Jetspeed  {
 	Specify the height of the image used
 	else it will use the text height	
 	**/
+	font-size: .5em;
 	height:25px;	
 	color:black;
 	background:url(content/jetspeed/images/tabmiddle_low.gif);
@@ -72,6 +131,9 @@ BODY.layout-Jetspeed  {
 
 .layout-Jetspeed .LTab
 {
+    font-size: .5em;
+    font-weight: bold;
+    letter-spacing: 1;
 	height:25px;	
 	color:black;
 	background:url(content/jetspeed/images/tabmiddle.gif);

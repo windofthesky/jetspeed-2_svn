@@ -42,15 +42,15 @@ limitations under the License.
 	
 	#if($folder.parent)
 	 <p style="font-style:italic">	
-		<a href="${appRoot}/portal${folder.parent.url}">Back to $folder.parent.metaData.getTitle($preferedLocale)</a> &nbsp;
+		<a href="$jetspeed.getAbsoluteUrl($folder.parent.url)">Back to $folder.parent.metaData.getTitle($preferedLocale)</a> &nbsp;
 	 </p>
 	#end
-		
-	#foreach($childFolder in $folder.folders.iterator())
-	  <a href="${appRoot}/portal${childFolder.url}">$childFolder.metaData.getTitle($preferedLocale)</a> &nbsp;		
-	#end
-
-
+	
+	<div class="FolderList">
+	 #foreach($childFolder in $folder.folders.iterator())
+	  <span><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink">$childFolder.metaData.getTitle($preferedLocale)</a></span>		
+	 #end
+	</div>
 
 </p>
 
@@ -65,7 +65,7 @@ limitations under the License.
                 <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
                 #else
                 <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-                <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="${appRoot}/portal${childPage.id}">${tabName}</a></td>
+                <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.path)">${tabName}</a></td>
                 <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
                 #end
                 #end
@@ -86,7 +86,7 @@ limitations under the License.
      <div id="rootLinks">
      #foreach($link in $links.iterator()) 
 	 <p>
-      <a href="$link.url" target="$link.target">$link.getTitle($preferedLocale)</a>	
+      <a href="$link.url" target="$link.target" class="Link">$link.getTitle($preferedLocale)</a>	
 	 </p> 
 	 #end
 	 </div>
