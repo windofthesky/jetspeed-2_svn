@@ -14,11 +14,10 @@
  */
 package org.apache.jetspeed.prefs.impl;
 
-import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 
 /**
  * @author <a href="">David Le Strat</a>
@@ -32,40 +31,29 @@ public class PreferencesProviderImpl implements PreferencesProvider
     /** The {@link PreferencesProvider} instance. */
     static PreferencesProvider prefProvider;
 
-    /** The persistence store container. */
-    private PersistenceStoreContainer storeContainer;
 
-    /** The store name. */
-    private String storeKeyName;
+    private PersistenceStore persistenceStore;
 
     /**
-     * <p>Constructor providing the {@link PersistenceStoreContainer} 
+     * <p>Constructor providing the {@link PersistenceStore} 
      * and store key name and the {@link java.util.prefs.PreferencesFactory}.</p>
      */
-    public PreferencesProviderImpl(PersistenceStoreContainer storeContainer, String storeKeyName, String prefsFactoryImpl)
+    public PreferencesProviderImpl(PersistenceStore persistenceStore, String prefsFactoryImpl)
     {
         if (log.isDebugEnabled()) log.debug("Constructing PreferencesProviderImpl...");
-        this.storeContainer = storeContainer;
-        this.storeKeyName = storeKeyName;
+        this.persistenceStore = persistenceStore;
         System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
         PreferencesProviderImpl.prefProvider = this;
 
     }
 
-    /**
-     * @see org.apache.jetspeed.prefs.PreferencesProvider#getStoreContainer()
-     */
-    public PersistenceStoreContainer getStoreContainer()
-    {
-        return this.storeContainer;
-    }
+   
 
-    /**
-     * @see org.apache.jetspeed.prefs.PreferencesProvider#getStoreKeyName()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#getPersistenceStore()
      */
-    public String getStoreKeyName()
+    public PersistenceStore getPersistenceStore()
     {
-        return this.storeKeyName;
+        return persistenceStore;
     }
-
 }

@@ -16,17 +16,15 @@ package org.apache.jetspeed.prefs.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Collection;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.prefs.PropertyManager;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
@@ -50,28 +48,23 @@ public class PropertyManagerImpl implements PropertyManager
     /** System <tt>Preferences</tt> node type. */
     private static final int SYSTEM_NODE_TYPE = 1;
 
-    /** The persistence store container. */
-    private PersistenceStoreContainer storeContainer;
-
-    /** The store name. */
-    private String jetspeedStoreName;
-
-    /** Common queries. **/
+      /** Common queries. **/
     private CommonQueries commonQueries;
+
+    private PersistenceStore persistenceStore;
 
     /**
      * <p>Constructor providing access to the persistence component.</p>
      */
-    public PropertyManagerImpl(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public PropertyManagerImpl(PersistenceStore persistenceStore)
     {
-        if (storeContainer == null)
+        if (persistenceStore == null)
         {
-            throw new IllegalArgumentException("storeContainer cannot be null for PropertyManagerImpl");
+            throw new IllegalArgumentException("persistenceStore cannot be null for PropertyManagerImpl");
         }
 
-        this.storeContainer = storeContainer;
-        this.jetspeedStoreName = keyStoreName;
-        this.commonQueries = new CommonQueries(storeContainer, keyStoreName);
+        this.persistenceStore = persistenceStore;
+        this.commonQueries = new CommonQueries(persistenceStore);
     }
 
     /**
@@ -84,18 +77,18 @@ public class PropertyManagerImpl implements PropertyManager
             new String[] { "prefNode", "propertyKeysMap", },
             "addPropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-        PersistenceStore store = getPersistenceStore();
+      
         Node nodeObj;
         if (prefNode.isUserNode())
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
@@ -138,16 +131,16 @@ public class PropertyManagerImpl implements PropertyManager
                     log.debug("Node: " + nodeObj.toString());
                 if (log.isDebugEnabled())
                     log.debug("Node property keys: " + newPropertyKeys.toString());
-                store.lockForWrite(nodeObj);
+                persistenceStore.lockForWrite(nodeObj);
                 nodeObj.setNodeKeys(newPropertyKeys);
                 nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                store.getTransaction().checkpoint();
+                persistenceStore.getTransaction().checkpoint();
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Node for update.";
                 log.error(msg, e);
-                store.getTransaction().rollback();
+                persistenceStore.getTransaction().rollback();
                 throw new PropertyException(msg, e);
             }
         }
@@ -164,18 +157,18 @@ public class PropertyManagerImpl implements PropertyManager
     {
         ArgUtil.notNull(new Object[] { prefNode }, new String[] { "prefNode" }, "getPropertyKeys(java.util.prefs.Preferences)");
 
-        PersistenceStore store = getPersistenceStore();
+
         Node nodeObj;
         if (prefNode.isUserNode())
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
@@ -205,18 +198,17 @@ public class PropertyManagerImpl implements PropertyManager
             new String[] { "prefNode", "propertyKeys" },
             "removePropertyKeys(java.util.prefs.Preferences, java.util.Collection)");
 
-        PersistenceStore store = getPersistenceStore();
         Node nodeObj;
         if (prefNode.isUserNode())
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
@@ -245,17 +237,17 @@ public class PropertyManagerImpl implements PropertyManager
             // Remove the properties keys.
             try
             {
-                store.lockForWrite(nodeObj);
+                persistenceStore.lockForWrite(nodeObj);
                 nodeObj.setNodeKeys(newKeys);
                 nodeObj.setNodeProperties(newProperties);
                 nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                store.getTransaction().checkpoint();
+                persistenceStore.getTransaction().checkpoint();
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Node for update.";
                 log.error(msg, e);
-                store.getTransaction().rollback();
+                persistenceStore.getTransaction().rollback();
                 throw new PropertyException(msg, e);
             }
         }
@@ -275,18 +267,18 @@ public class PropertyManagerImpl implements PropertyManager
             new String[] { "oldPropertyKeyName", "prefNode", "newPropertyKey" },
             "updatePropertyKey(java.lang.String, java.util.prefs.Preferences, java.util.Map)");
 
-        PersistenceStore store = getPersistenceStore();
+        
         Node nodeObj;
         if (prefNode.isUserNode())
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
-                (Node) store.getObjectByQuery(
+                (Node) persistenceStore.getObjectByQuery(
                     commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
@@ -303,19 +295,19 @@ public class PropertyManagerImpl implements PropertyManager
                         // Update the property key.
                         try
                         {
-                            store.lockForWrite(curPropKey);
+                            persistenceStore.lockForWrite(curPropKey);
                             curPropKey.setPropertyKeyName(newKey);
                             curPropKey.setPropertyKeyType(((Integer) newPropertyKey.get(newKey)).intValue());
                             curPropKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                             if (log.isDebugEnabled())
                                 log.debug("Updated property key: " + curPropKey.toString());
-                            store.getTransaction().checkpoint();
+                            persistenceStore.getTransaction().checkpoint();
                         }
                         catch (Exception e)
                         {
                             String msg = "Unable to lock Node for update.";
                             log.error(msg, e);
-                            store.getTransaction().rollback();
+                            persistenceStore.getTransaction().rollback();
                             throw new PropertyException(msg, e);
                         }
                     }
@@ -326,21 +318,6 @@ public class PropertyManagerImpl implements PropertyManager
         {
             throw new PropertyException(PropertyException.NODE_NOT_FOUND);
         }
-    }
-
-    /**
-     * <p>Utility method to get the persistence store and initiate
-     * the transaction if not open.</p>
-     * @return The persistence store.
-     */
-    protected PersistenceStore getPersistenceStore()
-    {
-        PersistenceStore store = storeContainer.getStoreForThread(jetspeedStoreName);
-        if (!store.getTransaction().isOpen())
-        {
-            store.getTransaction().begin();
-        }
-        return store;
     }
 
 }

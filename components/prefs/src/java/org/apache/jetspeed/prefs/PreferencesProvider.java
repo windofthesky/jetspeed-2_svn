@@ -14,7 +14,9 @@
  */
 package org.apache.jetspeed.prefs;
 
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
+import java.util.prefs.Preferences;
+
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 
 /**
  * <p>Utility component used to pass the {@link PersistenceStoreContainer} and
@@ -24,17 +26,6 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
  */
 public interface PreferencesProvider
 {
-
-    /**
-     * <p>Getter for the {@link PersistenceStoreContainer}.</p>
-     * @return The PersistenceStoreContainer.
-     */
-    PersistenceStoreContainer getStoreContainer();
-
-    /**
-     * <p>Setter for the store key name.</p>
-     * @return The store key name.
-     */
-    String getStoreKeyName();
-
+      PersistenceStore getPersistenceStore();
+    
 }

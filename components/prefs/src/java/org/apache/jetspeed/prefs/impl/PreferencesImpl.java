@@ -24,10 +24,8 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
@@ -53,11 +51,6 @@ public class PreferencesImpl extends AbstractPreferences
     /** The component manager. */
     private ComponentManager cm;
 
-    /** The persistence store container. */
-    private PersistenceStoreContainer storeContainer;
-
-    /** The store name. */
-    private String jetspeedStoreName;
 
     /** Common queries. **/
     private CommonQueries commonQueries;
@@ -97,6 +90,8 @@ public class PreferencesImpl extends AbstractPreferences
     /** System root node. */
     static Preferences systemRoot = new PreferencesImpl(null, "", SYSTEM_NODE_TYPE);
 
+    protected PersistenceStore persistenceStore;
+
     /**
      * <p>Constructs a root node in the underlying
      * datastore if they have not yet been created.</p>
@@ -113,9 +108,8 @@ public class PreferencesImpl extends AbstractPreferences
         if (log.isDebugEnabled())
             log.debug("Constructing node: " + nodeName);
         PreferencesProvider prefProvider = PreferencesProviderImpl.prefProvider;
-        this.storeContainer = prefProvider.getStoreContainer();
-        this.jetspeedStoreName = prefProvider.getStoreKeyName();
-        this.commonQueries = new CommonQueries(storeContainer, jetspeedStoreName);
+        persistenceStore = prefProvider.getPersistenceStore();
+        this.commonQueries = new CommonQueries(persistenceStore);
 
         this.nodeType = nodeType;
         long[] result = createPrefNode(parent, nodeName, nodeType, this.absolutePath());
@@ -585,12 +579,8 @@ public class PreferencesImpl extends AbstractPreferences
      */
     protected PersistenceStore getPersistenceStore()
     {
-        PersistenceStore store = storeContainer.getStoreForThread(jetspeedStoreName);
-        if (!store.getTransaction().isOpen())
-        {
-            store.getTransaction().begin();
-        }
-        return store;
+        
+        return persistenceStore;
     }
 
 }

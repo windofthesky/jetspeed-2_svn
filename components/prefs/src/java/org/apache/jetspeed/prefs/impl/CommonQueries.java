@@ -14,12 +14,11 @@
  */
 package org.apache.jetspeed.prefs.impl;
 
+import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.Filter;
 
 /**
  * <p>Preferences implementation common queries.</p>
@@ -29,19 +28,14 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 public class CommonQueries
 {
 
-    /** The persistence store container. */
-    private PersistenceStoreContainer storeContainer;
-
-    /** The store name. */
-    private String jetspeedStoreName;
+    private PersistenceStore persistenceStore;
 
     /**
      * <p>Constructor providing access to the persistence component.</p>
      */
-    public CommonQueries(PersistenceStoreContainer storeContainer, String keyStoreName)
+    public CommonQueries(PersistenceStore persistenceStore)
     {
-        this.storeContainer = storeContainer;
-        this.jetspeedStoreName = keyStoreName;
+        this.persistenceStore = persistenceStore;
     }
 
     /**
@@ -52,10 +46,10 @@ public class CommonQueries
      */
     Object newPropertyKeyQueryById(Object propertyKeyIdObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("propertyKeyId", propertyKeyIdObject);
-        Object query = store.newQuery(PropertyKeyImpl.class, filter);
+        Object query = persistenceStore.newQuery(PropertyKeyImpl.class, filter);
         return query;
     }
 
@@ -67,10 +61,10 @@ public class CommonQueries
      */
     Object newPropertyKeyQueryByName(Object propertyKeyNameObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+      
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("propertyKeyName", propertyKeyNameObject);
-        Object query = store.newQuery(PropertyKeyImpl.class, filter);
+        Object query = persistenceStore.newQuery(PropertyKeyImpl.class, filter);
         return query;
     }
 
@@ -82,10 +76,9 @@ public class CommonQueries
      */
     Object newPropertyQueryById(Object propertyKeyIdObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("propertyKeyId", propertyKeyIdObject);
-        Object query = store.newQuery(PropertyImpl.class, filter);
+        Object query = persistenceStore.newQuery(PropertyImpl.class, filter);
         return query;
     }
 
@@ -98,11 +91,11 @@ public class CommonQueries
      */
     Object newPropertyQueryByNodeIdAndPropertyKeyId(Object nodeIdObject, Object propertyKeyIdObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("nodeId", nodeIdObject);
         filter.addEqualTo("propertyKeyId", propertyKeyIdObject);
-        Object query = store.newQuery(PropertyImpl.class, filter);
+        Object query = persistenceStore.newQuery(PropertyImpl.class, filter);
         return query;
     }
 
@@ -114,10 +107,9 @@ public class CommonQueries
      */
     Object newNodeQueryById(Object nodeIdObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("nodeId", nodeIdObject);
-        Object query = store.newQuery(NodeImpl.class, filter);
+        Object query = persistenceStore.newQuery(NodeImpl.class, filter);
         return query;
     }
 
@@ -131,12 +123,12 @@ public class CommonQueries
      */
     Object newNodeQueryByParentIdNameAndType(Object parentNodeIdObject, Object nodeName, Object nodeType)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+       
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("parentNodeId", parentNodeIdObject);
         filter.addEqualTo("nodeName", nodeName);
         filter.addEqualTo("nodeType", nodeType);
-        Object query = store.newQuery(NodeImpl.class, filter);
+        Object query = persistenceStore.newQuery(NodeImpl.class, filter);
         return query;
     }
 
@@ -148,10 +140,10 @@ public class CommonQueries
      */
     Object newNodeQueryByParentId(Object parentNodeIdObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("parentNodeId", parentNodeIdObject);
-        Object query = store.newQuery(NodeImpl.class, filter);
+        Object query = persistenceStore.newQuery(NodeImpl.class, filter);
         return query;
     }
 
@@ -164,27 +156,23 @@ public class CommonQueries
      */
     Object newNodeQueryByPathAndType(Object fullPath, Object nodeTypeObject)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
-        filter.addEqualTo("fullPath", fullPath);
-        filter.addEqualTo("nodeType", nodeTypeObject);
-        Object query = store.newQuery(NodeImpl.class, filter);
-        return query;
+       
+        try
+        {
+            Filter filter = persistenceStore.newFilter();
+            filter.addEqualTo("fullPath", fullPath);
+            filter.addEqualTo("nodeType", nodeTypeObject);
+            Object query = persistenceStore.newQuery(NodeImpl.class, filter);
+            return query;
+        }
+        catch (RuntimeException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    /**
-     * <p>Utility method to get the persistence store and initiate
-     * the transaction if not open.</p>
-     * @return The persistence store.
-     */
-    protected PersistenceStore getPersistenceStore()
-    {
-        PersistenceStore store = storeContainer.getStoreForThread(jetspeedStoreName);
-        if (!store.getTransaction().isOpen())
-        {
-            store.getTransaction().begin();
-        }
-        return store;
-    }
+  
 
 }
