@@ -65,11 +65,7 @@ A user named 'jetspeed2' should be granted access to both the 'j2' and 'j2test' 
 
 <subsection name ='Known Issues'>
 <p>
-The script 'populate-entities-for-default-psml.sql', fails to execute.
-It will fail out, since My SQL doesn't support the SQL syntax in the statements there.
-Until we get a solution for this, try running the populate-entities-for-default-psml-mysql.sql from My SQL directly.
-<b>NOTE:</b> this script may fail, check your foreign keys values referencing the portlet definition table.
-I hope to get this resolved soon.
+None
 </p>
 </subsection>
 
@@ -122,6 +118,64 @@ maven db.scripts.gen
 maven dropdrops
 
 ]]></source>
+</subsection>
+
+</section>
+
+<section name="Drivers">
+<p>
+JDBC drivers are configured to work with the Maven build by adding your specified JDBC driver jars to the 
+Maven class path. Specify the jars with the <b>org.apache.jetspeed.test.jdbc.drivers.path</b> and
+<b>org.apache.jetspeed.production.jdbc.drivers.path</b> properties in your $HOME/build.properties.
+</p>
+<p>
+NOTE: The Hypersonic JDBC driver is distributed with Jetspeed and require no configuration.
+</p>
+<source test=""><![CDATA[
+
+# My SQL Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/MySQL/mysql-connector-java-3.0.8-stable-bin.jar
+
+# Oracle 9i Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/oracle/ojdbc14.jar;/Portal/lib/oracle/nls_charset12.jar
+
+# Oracle 8i Driver Path Example, test and production
+org.apache.jetspeed.test.jdbc.drivers.path=/Portal/lib/oracle/classes12.jar;
+org.apache.jetspeed.production.jdbc.drivers.path=/Portal/lib/oracle/classes12.jar;
+
+]]></source>
+
+<subsection name ='Distributing Drivers'>
+<p>
+When Jetspeed is deployed to an application server using the maven deploy target, only the Hypersonic JDBC driver is copied into the web application.
+To distribute a specific driver (i.e. Oracle, MySQL), you will need to copy the driver into the application server's common class path for shared code.
+</p>
+<table>
+<tr>
+<th>Application Server</th>
+<th>Procedure</th>
+</tr>
+<tr>
+<td>
+Tomcat 4
+</td>
+<td>
+copy driver(s) to ${TOMCAT_HOME}/shared/lib
+</td>
+</tr>
+<tr>
+<td>
+Tomcat 5
+</td>
+<td>
+copy driver(s) to ${TOMCAT_HOME}/shared/lib
+</td>
+</tr>
+
+</table>
+
 </subsection>
 
 </section>
