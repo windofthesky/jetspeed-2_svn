@@ -23,9 +23,10 @@ package org.apache.jetspeed.portlets.pam;
  */
 public final class PortletApplicationResources
 {
-    final static String REQUEST_SELECT_NODE = "select_node";
-    final static String REQUEST_SELECT_PORTLET = "select_portlet";
-    final static String REQUEST_SELECT_TAB = "selected_tab";
-    final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
-    final static String CPS_REGISTRY_COMPONENT = "cps:PortletRegistryComponent";
+    public final static String REQUEST_SELECT_NODE = "select_node";
+    public final static String REQUEST_SELECT_PORTLET = "select_portlet";
+    public final static String REQUEST_SELECT_TAB = "selected_tab";
+    public final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
+    public final static String CPS_REGISTRY_COMPONENT = "cps:PortletRegistryComponent";
+    public final static String CPS_USERMANAGER_COMPONENT = "cps:UserManager";    
 }
