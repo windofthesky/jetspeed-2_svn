@@ -29,5 +29,6 @@ limitations under the License.
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="A_ID" required="true" type="INTEGER"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-    </table>    
+    </table>  
+          
 </database>

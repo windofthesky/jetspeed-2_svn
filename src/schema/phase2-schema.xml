@@ -147,4 +147,15 @@ limitations under the License.
         </unique>
     </table>
     
+    <table name="CLUBS">
+        <column name="NAME" primaryKey='true' required="true" size="80" type="VARCHAR"/>
+        <column name="COUNTRY" required="true" size="40" type="VARCHAR"/>
+        <column name="CITY" required="true" size="40" type="VARCHAR"/>
+        <column name="STADIUM" required="true" size="80" type="VARCHAR"/>
+        <column name="CAPACITY" type='INTEGER'/>
+        <column name="FOUNDED" type='INTEGER'/>        
+        <column name="PITCH" size="40" type="VARCHAR"/>
+        <column name="NICKNAME" size="40" type="VARCHAR"/>
+    </table>  
+    
 </database>

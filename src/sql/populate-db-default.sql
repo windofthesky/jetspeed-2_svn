@@ -322,3 +322,20 @@ insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'docset', 'role-group' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'page', 'j1' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'user', 'docset', 'role-group' );
 
+-- test data for db browser
+insert into CLUBS values ('AC Milan', 'Italy', 'Milan', 'San Siro', 85700, 1926, '105x68m', '');
+insert into CLUBS values ('Arsenal', 'England', 'London', 'Highbury', 38500, 1913, '101x65', 'Gunners');
+insert into CLUBS values ('Barcelona', 'Spain', 'Barcelona', 'Nou Camp', 110000, 1957, '', '');
+insert into CLUBS values ('Bayern Munich', 'Germany', 'Munich', 'Olympiastadion', 69000, 1971, '105x68m', '');
+insert into CLUBS values ('Benfica', 'Portugal', 'Benfica', 'Estadio Da Luz', 80000, 1954, '', '');
+insert into CLUBS values ('Boca Juniors', 'Argentina', 'Buenos Aires', 'La Bombonera', 60245, 1940, '', '');
+insert into CLUBS values ('Chelsea', 'England', 'London', 'Stamford Bridge', 42500, 1877, '103x68m', 'The Blues');
+insert into CLUBS values ('Cruz Azul', 'Mexico', 'Mexico City', 'Estadio Azteca', 114600, 1966, '', '');
+insert into CLUBS values ('Flamenco', 'Brazil', 'Rio de Janeiro', 'Maracana', 70000, 1950, '110x75m', '');
+insert into CLUBS values ('Inter Milan', 'Italy', 'Milan', 'San Siro', 85700, 1926, '105x68m', '');
+insert into CLUBS values ('Juventus', 'Italy', 'Turin', 'Stadio Delle Alpi', 69041, 1990, '105x68m', '');
+insert into CLUBS values ('Lazio', 'Italy', 'Rome', 'Stadio Olimpico', 82307, 1953, '105x67m', '');
+insert into CLUBS values ('Manchester United', 'England', 'Manchester', 'Old Trafford', 67603, 1910, '106x69m', 'Red Devils');
+insert into CLUBS values ('Paris Saint-Germain', 'France', 'Paris', 'Parc Des Princes', 48500, 1972, '', '');
+insert into CLUBS values ('Real Madrid', 'Spain', 'Madrid', 'Santiago Bernabeu', 90000, 1947, '105x68m', '');
+insert into CLUBS values ('River Plate', 'Argentina', 'Buenos Aires', 'El Monumental', 77000, 1942, '105x70m', 'Los Millionairos');
