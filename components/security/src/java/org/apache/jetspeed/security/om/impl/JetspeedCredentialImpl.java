@@ -40,7 +40,7 @@ public class JetspeedCredentialImpl implements JetspeedCredential
      * @param type The type.
      * @param classname The classname.
      */
-    public JetspeedCredentialImpl(int principalId, String value, short type, String classname)
+    public JetspeedCredentialImpl(long principalId, String value, int type, String classname)
     {
         this.principalId = principalId;
         this.value = value;
@@ -50,38 +50,38 @@ public class JetspeedCredentialImpl implements JetspeedCredential
         this.modifiedDate = this.creationDate;
     }
 
-    private int credentialId;
+    private long credentialId;
 
     /**
      * @see org.apache.jetspeed.security.om.JetspeedCredential#getCredentialId()
      */
-    public int getCredentialId()
+    public long getCredentialId()
     {
         return this.credentialId;
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setCredentialId(int)
+     * @see org.apache.jetspeed.security.om.JetspeedCredential#setCredentialId(long)
      */
-    public void setCredentialId(int credentialId)
+    public void setCredentialId(long credentialId)
     {
         this.credentialId = credentialId;
     }
 
-    private int principalId;
+    private long principalId;
 
     /**
      * @see org.apache.jetspeed.security.om.JetspeedCredential#getPrincipalId()
      */
-    public int getPrincipalId()
+    public long getPrincipalId()
     {
         return this.principalId;
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setPrincipalId(int)
+     * @see org.apache.jetspeed.security.om.JetspeedCredential#setPrincipalId(long)
      */
-    public void setPrincipalId(int principalId)
+    public void setPrincipalId(long principalId)
     {
         this.principalId = principalId;
     }
@@ -104,20 +104,20 @@ public class JetspeedCredentialImpl implements JetspeedCredential
         this.value = value;
     }
 
-    private short type;
+    private int type;
 
     /**
      * @see org.apache.jetspeed.security.om.JetspeedCredential#getType()
      */
-    public short getType()
+    public int getType()
     {
         return this.type;
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedCredential#setType(short)
+     * @see org.apache.jetspeed.security.om.JetspeedCredential#setType(int)
      */
-    public void setType(short type)
+    public void setType(int type)
     {
         this.type = type;
     }

@@ -49,20 +49,20 @@ public class JetspeedPermissionImpl implements JetspeedPermission
         this.modifiedDate = this.creationDate;
     }
 
-    private int permissionId;
+    private long permissionId;
 
     /**
      * @see org.apache.jetspeed.security.om.JetspeedPermission#getPermissionId()
      */
-    public int getPermissionId()
+    public long getPermissionId()
     {
         return this.permissionId;
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.JetspeedPermission#setPermissionId(int)
+     * @see org.apache.jetspeed.security.om.JetspeedPermission#setPermissionId(long)
      */
-    public void setPermissionId(int permissionId)
+    public void setPermissionId(long permissionId)
     {
         this.permissionId = permissionId;
     }

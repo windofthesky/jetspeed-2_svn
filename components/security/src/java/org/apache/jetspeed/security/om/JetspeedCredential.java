@@ -41,25 +41,25 @@ public interface JetspeedCredential extends Serializable, Cloneable
      * <p>Getter for the credential id.</p>
      * @return The credential id.
      */
-    int getCredentialId();
+    long getCredentialId();
 
     /**
      * <p>Setter for the credential id.</p>
      * @param credentialId The credential id.
      */
-    void setCredentialId(int credentialId);
+    void setCredentialId(long credentialId);
 
     /**
      * <p>Getter for the principal id.</p>
      * @return The principal id.
      */
-    int getPrincipalId();
+    long getPrincipalId();
 
     /**
      * <p>Setter for the principal id.</p>
      * @param principalId The principal id.
      */
-    void setPrincipalId(int principalId);
+    void setPrincipalId(long principalId);
 
     /**
      * <p>Getter for the credential value.</p>
@@ -81,7 +81,7 @@ public interface JetspeedCredential extends Serializable, Cloneable
      * </ul>
      * @return The credential type.
      */
-    short getType();
+    int getType();
 
     /**
      * <p>Setter for the credential type.</p>
@@ -91,7 +91,7 @@ public interface JetspeedCredential extends Serializable, Cloneable
      * </ul>
      * @param type The credential type.
      */
-    void setType(short type);
+    void setType(int type);
 
     /**
      * <p>Getter for the principal classname.</p>

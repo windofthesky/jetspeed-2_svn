@@ -42,13 +42,13 @@ public interface JetspeedPrincipal extends Serializable, Cloneable
      * <p>Getter for the principal id.</p>
      * @return The principal id.
      */
-    int getPrincipalId();
+    long getPrincipalId();
 
     /**
      * <p>Setter for the principal id.</p>
      * @param principalId The principal id.
      */
-    void setPrincipalId(int principalId);
+    void setPrincipalId(long principalId);
 
     /**
      * <p>Getter for the principal classname.</p>

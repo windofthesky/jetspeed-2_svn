@@ -26,7 +26,7 @@ limitations under the License.
     <field-descriptor
         name="principalId"
         column="principal_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"
@@ -127,7 +127,7 @@ limitations under the License.
     <field-descriptor
         name="credentialId"
         column="credential_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"
@@ -136,7 +136,7 @@ limitations under the License.
     <field-descriptor
         name="principalId"
         column="principal_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
     >
     </field-descriptor>
     <field-descriptor
@@ -190,7 +190,7 @@ limitations under the License.
 	<field-descriptor
         name="principalId"
         column="principal_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"
@@ -282,7 +282,7 @@ limitations under the License.
 	<field-descriptor
         name="principalId"
         column="principal_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"
@@ -374,7 +374,7 @@ limitations under the License.
     <field-descriptor
         name="principalId"
         column="principal_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"
@@ -438,7 +438,7 @@ limitations under the License.
     <field-descriptor
         name="permissionId"
         column="permission_id"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         indexed="true"
         autoincrement="true"

@@ -25,7 +25,7 @@ limitations under the License.
     <field-descriptor
         name="nodeId"
         column="NODE_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         autoincrement="true"
     >
@@ -33,7 +33,7 @@ limitations under the License.
     <field-descriptor
         name="parentNodeId"
         column="PARENT_NODE_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         nullable="true"
     >
     </field-descriptor>
@@ -108,7 +108,7 @@ limitations under the License.
     <field-descriptor
         name="propertyKeyId"
         column="PROPERTY_KEY_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         autoincrement="true"
     >
@@ -156,7 +156,7 @@ limitations under the License.
     <field-descriptor
         name="propertyValueId"
         column="PROPERTY_VALUE_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         primarykey="true"
         autoincrement="true"
     >
@@ -164,14 +164,14 @@ limitations under the License.
     <field-descriptor
         name="nodeId"
         column="NODE_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="propertyKeyId"
         column="PROPERTY_KEY_ID"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         nullable="false"
     >
     </field-descriptor>
@@ -192,7 +192,7 @@ limitations under the License.
     <field-descriptor
         name="longPropertyValue"
         column="LONG_VALUE"
-        jdbc-type="INTEGER"
+        jdbc-type="BIGINT"
         nullable="true"
     >
     </field-descriptor>

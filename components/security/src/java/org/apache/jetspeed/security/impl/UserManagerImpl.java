@@ -67,7 +67,7 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
         JetspeedUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         Collection credentials = omUser.getCredentials();
         // Create a new credential with the given password.
-        short credentialType = 0;
+        int credentialType = 0;
         JetspeedCredential omCredential = new JetspeedCredentialImpl(omUser.getPrincipalId(), password, credentialType, null);
         if (log.isDebugEnabled())
             log.debug("Credential: " + omCredential.toString());

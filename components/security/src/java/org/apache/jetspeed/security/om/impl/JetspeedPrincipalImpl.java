@@ -53,12 +53,12 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
         this.modifiedDate = this.creationDate;
     }
 
-    private int principalId;
+    private long principalId;
 
     /**
      * @see org.apache.jetspeed.security.om.JetspeedPrincipal#getPrincipalId()
      */
-    public int getPrincipalId()
+    public long getPrincipalId()
     {
         return this.principalId;
     }
@@ -66,7 +66,7 @@ public class JetspeedPrincipalImpl implements JetspeedPrincipal
     /**
      * @see org.apache.jetspeed.security.om.JetspeedPrincipal#setPrincipalId(int)
      */
-    public void setPrincipalId(int principalId)
+    public void setPrincipalId(long principalId)
     {
         this.principalId = principalId;
     }

@@ -42,13 +42,13 @@ public interface JetspeedPermission extends Serializable, Cloneable
      * <p>Getter for the permission id.</p>
      * @return The permission id.
      */
-    int getPermissionId();
+    long getPermissionId();
 
     /**
      * <p>Setter for the permission id.</p>
      * @param permissionId The permission id.
      */
-    void setPermissionId(int permissionId);
+    void setPermissionId(long permissionId);
 
     /**
      * <p>Getter for the permission classname.</p>
