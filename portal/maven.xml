@@ -138,7 +138,7 @@
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
-            <arg value="pam" />
+            <arg value="PAM" />
             <arg value="-warfilename" />
             <arg value="../applications/pam/target/pam.war" />
             <arg value="-webappDir" />

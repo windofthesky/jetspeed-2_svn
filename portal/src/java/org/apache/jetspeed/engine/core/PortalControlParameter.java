@@ -273,7 +273,7 @@ public class PortalControlParameter
                 String sequence = idTokenizer.nextToken();
                 String entityName = idTokenizer.nextToken();
 
-                PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(portletName);
+                PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(entityName + "::" + portletName);
                 if (portletDefinition == null)
                 {
                     throw new JetspeedException("Failed to load: " + portletName + " from registry");
