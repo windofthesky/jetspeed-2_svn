@@ -17,12 +17,14 @@ package org.apache.jetspeed.util.descriptor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,8 +35,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.VFSClassLoader;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
@@ -45,6 +49,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
@@ -61,8 +66,8 @@ public class PortletApplicationWar
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
     protected static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
     
-    public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet[servlet-name=\"JetspeedContainer\"";
-    public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping[servlet-name=\"JetspeedContainer\"]";
+    public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
+    public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
 
     protected static final Log log = LogFactory.getLog("deployment");
 
@@ -75,31 +80,12 @@ public class PortletApplicationWar
     private MutableWebApplication webApp;
     private MutablePortletApplication portletApp;
 
-    protected static final Element JETSPEED_SERVLET_ELEMENT = new Element("servlet");
-    protected static final Element JETSPEED_SERVLET_MAPPING_ELEMENT = new Element("servlet-mapping");
+    
+    
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
-            "distributable", "context-param", "filter", "filter-mapping", "listener"};
+            "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
     protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
-            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
-
-    static
-    {
-        Element servletName = new Element("servlet-name").addContent("JetspeedContainer");
-        Element servletDspName = new Element("display-name").addContent("Jetspeed Container");
-        Element servletDesc = new Element("description").addContent("MVC Servlet for Jetspeed Portlet Applications");
-        Element servletClass = new Element("servlet-class")
-                .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
-        JETSPEED_SERVLET_ELEMENT.addContent(servletName);
-        JETSPEED_SERVLET_ELEMENT.addContent(servletDspName);
-        JETSPEED_SERVLET_ELEMENT.addContent(servletDesc);
-        JETSPEED_SERVLET_ELEMENT.addContent(servletClass);
-
-        Element servletMapName = new Element("servlet-name").addContent("JetspeedContainer");
-        Element servletUrlPattern = new Element("url-pattern").addContent("/container/*");
-
-        JETSPEED_SERVLET_MAPPING_ELEMENT.addContent(servletMapName);
-        JETSPEED_SERVLET_MAPPING_ELEMENT.addContent(servletUrlPattern);
-    }
+            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet", "servlet-mapping"};
 
     /**
      * @param warPath
@@ -294,6 +280,8 @@ public class PortletApplicationWar
         }
 
         target.copyFrom(warStruct, new AllFileSelector());
+        target.close();        
+       
     }
 
     public void copyWarAndProcessWebXml( String targetAppRoot ) throws IOException, MetaDataException
@@ -304,8 +292,7 @@ public class PortletApplicationWar
         try
         {
             webXmlIn = getInputStream(WEB_XML_PATH);
-            webXmlOut = new FileOutputStream(targetAppRoot + WEB_XML_PATH);
-            processWebXML(webXmlIn, webXmlOut);
+            processWebXML(webXmlIn, targetAppRoot + WEB_XML_PATH);
         }
         finally
         {
@@ -333,23 +320,17 @@ public class PortletApplicationWar
     public void processWebXML( String targetWebXml ) throws MetaDataException, IOException
     {
         InputStream webXmlIn = null;
-        OutputStream webXmlOut = null;
+
         try
         {
-            webXmlIn = getInputStream(WEB_XML_PATH);
-            webXmlOut = new FileOutputStream(targetWebXml);
-            processWebXML(webXmlIn, webXmlOut);
+            webXmlIn = getInputStream(WEB_XML_PATH);            
+            processWebXML(webXmlIn, targetWebXml);
         }
         finally
         {
             if (webXmlIn != null)
             {
                 webXmlIn.close();
-            }
-
-            if (webXmlOut != null)
-            {
-                webXmlOut.close();
             }
         }
 
@@ -437,48 +418,94 @@ public class PortletApplicationWar
      * @param webXmlOut target for infused web.xml content
      * @throws MetaDataException if there is a problem infusing
      */
-    protected void processWebXML( InputStream webXmlIn, OutputStream webXmlOut ) throws MetaDataException
+    protected void processWebXML( InputStream webXmlIn, String targetWebXml ) throws MetaDataException
     {
         SAXBuilder builder = new SAXBuilder();
+        FileWriter webXmlWriter = null;
 
         try
         {
             Document doc = builder.build(webXmlIn);
 
             Element root = doc.getRootElement();
+            webXmlIn.close();
 
             boolean changed = false;
 
             Object jetspeedServlet = XPath.selectSingleNode(doc, JETSPEED_SERVLET_XPATH);
             Object jetspeedServletMapping = XPath.selectSingleNode(doc, JETSPEED_SERVLET_MAPPING_XPATH);
-
+            if(doc.getRootElement().getChildren().size() ==0)
+            {
+                throw new MetaDataException("Source web.xml has no content!!!");
+            }
+            
+            
             log.debug("web.xml already contains servlet for the JetspeedContainer servlet.");
             log.debug("web.xml already contains servlet-mapping for the JetspeedContainer servlet.");
 
             if (jetspeedServlet == null)
             {
-               insertElementCorrectly(root, JETSPEED_SERVLET_ELEMENT, ELEMENTS_BEFORE_SERVLET);
+                Element jetspeedServletElement = new Element("servlet");
+                Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletDspName =(Element)  new Element("display-name").addContent("Jetspeed Container");
+                Element servletDesc =(Element)  new Element("description").addContent("MVC Servlet for Jetspeed Portlet Applications");
+                Element servletClass = (Element)  new Element("servlet-class")
+                        .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
+                jetspeedServletElement.addContent(servletName);
+                jetspeedServletElement.addContent(servletDspName);
+                jetspeedServletElement.addContent(servletDesc);
+                jetspeedServletElement.addContent(servletClass);                
+                
+               insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
                 changed = true;
             }
 
             if (jetspeedServletMapping == null)
             {
-                insertElementCorrectly(root, JETSPEED_SERVLET_MAPPING_ELEMENT, ELEMENTS_BEFORE_SERVLET_MAPPING);
+                
+                Element jetspeedServletMappingElement = new Element("servlet-mapping");
+                
+                Element servletMapName = (Element)  new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
+
+                jetspeedServletMappingElement.addContent(servletMapName);
+                jetspeedServletMappingElement.addContent(servletUrlPattern);
+                
+                insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
                 changed = true;
             }
 
             if (changed)
             {
-                XMLOutputter output = new XMLOutputter();
-                output.setIndent("  ");
-                output.setNewlines(true);
-                output.setTrimAllWhite(true);
-                output.output(doc, webXmlOut);
+                System.out.println("Writing out infused web.xml for "+paName);
+                XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+//                output.setIndent("  ");
+//                output.setNewlines(true);
+//                output.setTrimAllWhite(true);
+                webXmlWriter = new FileWriter(targetWebXml);
+                output.output(doc, webXmlWriter);
+                webXmlWriter.flush();
+                
             }
+           
         }
         catch (Exception e)
         {
             throw new MetaDataException("Unable to process web.xml for infusion " + e.toString(), e);
+        }
+        finally
+        {
+            if(webXmlWriter != null)
+            {
+                try
+                {
+                    webXmlWriter.close();
+                }
+                catch (IOException e1)
+                {
+
+                }
+            }
         }
 
     }
@@ -499,7 +526,8 @@ public class PortletApplicationWar
     {
         List allChildren = root.getChildren();
         List elementsBeforeList = Arrays.asList(elementsBefore);
-        int insertAfter = 0;
+        toInsert.detach();
+        int insertAfter = 0;        
         for (int i = 0; i < allChildren.size(); i++)
         {
             Element element = (Element) allChildren.get(i);            
@@ -509,14 +537,16 @@ public class PortletApplicationWar
             }
         }
         
-        if(insertAfter == 0 || (insertAfter + 1) >= allChildren.size())
-        {
-        	root.addContent(toInsert);        	
-        }
-        else 
-        {
-        	allChildren.add((insertAfter+1), toInsert);
-        }
+      
+            try
+            {
+                root.addContent((insertAfter+2), toInsert);
+            }
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                root.addContent(toInsert);
+            }
+        
 
     }
 
@@ -532,6 +562,61 @@ public class PortletApplicationWar
     public void close() throws IOException
     {
         warStruct.close();
+    }
+    
+    /**
+     * 
+     * <p>
+     * createClassloader
+     * </p>
+     * 
+     * Use this method to create a classloader based on this wars structure. I.e.  
+     * it will create a ClassLoader containing the contents of WEB-INF/classes and
+     * WEB-INF/lib and the ClassLoader will be searched in that order.
+     * 
+     *
+     * @param parent Parent ClassLoader
+     * @return
+     * @throws IOException
+     */
+    public ClassLoader createClassloader(ClassLoader parent) throws IOException
+    {
+        ArrayList fileObjects = new ArrayList();       
+        FileObject webInfClasses = null;
+        try
+        {
+            webInfClasses = warStruct.resolveFile("WEB-INF/classes/");
+            log.info("Adding "+webInfClasses.getURL()+" to class path.");
+            fileObjects.add(webInfClasses);           
+        }
+        catch (FileSystemException e)
+        {
+            log.info("No class dependencies found");
+        }
+        
+        
+         try
+        {
+            FileObject webInfLib = warStruct.resolveFile("WEB-INF/lib");
+            FileObject[] jars = webInfLib.getChildren();
+            URL[] jarUrls = new URL[jars.length];
+            for(int i=0; i<jars.length; i++)
+            {
+                FileObject jar = jars[i];
+                log.info("Adding "+jar.getURL()+" to class path.");                
+                fileObjects.add( jar);                
+            }
+            
+            
+        }
+        catch (FileSystemException e)
+        {
+            log.info("No jar dependencies found");
+        }
+       
+   
+        return new VFSClassLoader((FileObject[])fileObjects.toArray(new FileObject[fileObjects.size()]), fsManager, parent);
+
     }
 
 }
