@@ -77,9 +77,9 @@ public class DescriptionImpl implements MutableDescription
     /**
      * Links this description to the object that it describes
      */
-    protected long objectId;
+  //  protected long objectId;
 
-    private long id;
+    // private long id;
 
     public DescriptionImpl()
     {

@@ -70,12 +70,10 @@ public class DisplayNameImpl implements MutableDisplayName
     /** Denotes the type of Description this: Portlet, Application, etc. **/
     protected String type;
 
-    private long id;
-
     /**
      * Links this DisplayName to the object that it describes
      */
-    protected long objectId;
+  //  protected long objectId;
 
     public DisplayNameImpl()
     {

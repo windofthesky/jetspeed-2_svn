@@ -635,14 +635,17 @@
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
+         access="anonymous"
+             
       />
       
       <field-descriptor
          name="objectId"
          column="OBJECT_ID"
          jdbc-type="INTEGER"
-
+         access="anonymous"
+  
           />
         
       
@@ -681,14 +684,15 @@
          column="ID"
          jdbc-type="INTEGER"
          primarykey="true"
-         autoincrement="true"         
+         autoincrement="true"
+         access="anonymous"              
       />
       
       <field-descriptor
          name="objectId"
          column="OBJECT_ID"
          jdbc-type="INTEGER"
-      
+         access="anonymous"      
       />
       
       <field-descriptor
