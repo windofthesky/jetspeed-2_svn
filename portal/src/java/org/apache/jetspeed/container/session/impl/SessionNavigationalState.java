@@ -131,7 +131,6 @@ public class SessionNavigationalState
         PortalURL url = context.getPortalURL();
         PortalControlParameter pcp = url.getControlParameters();
         
-        String pathInfo = context.getPath();
         /*
         Iterator stateful = pcp.getStateFullControlParameter().entrySet().iterator();
         while (stateful.hasNext())
