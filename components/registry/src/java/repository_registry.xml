@@ -1,32 +1,4 @@
 <!--
- 	- M E T A D A T A   F I E L D
--->
-
-<class-descriptor
-   	  class="org.apache.jetspeed.om.common.impl.GenericMetadataImpl"
-   	  table="PA_METADATA"
-   >
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"
- 
-      />
-
-      <collection-descriptor
-         name="fields"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-         auto-delete="true"
-     	 auto-update = "true"
-      	 auto-retrieve = "true"
-      >         
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
-</class-descriptor>
-
-<!--
  	- L O C A L I Z E D   F I E L D
 -->   
    <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
@@ -35,7 +7,7 @@
    
    <class-descriptor
    	  class="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-   	  table="PA_METADATA_FIELDS"
+   	  table="METADATA_FIELDS"
    >
       <field-descriptor
          name="id"
@@ -134,26 +106,20 @@
       />
 
       <field-descriptor
-         name="metadataId"
-         column="METADATA_ID"
-         jdbc-type="INTEGER"       
-      />
-
-      <field-descriptor
          name="applicationType"
          column="APP_TYPE"
          jdbc-type="INTEGER"       
       />
-
-      <reference-descriptor 
-      	  name="metadata" 
-      	  class-ref="org.apache.jetspeed.om.common.impl.GenericMetadataImpl" 
-		  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-      	  >
-         <foreignkey field-ref="metadataId"/>
-      </reference-descriptor>
+      
+      <collection-descriptor
+         name="metadataFields"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
      
       <reference-descriptor 
       	  name="webApplication" 

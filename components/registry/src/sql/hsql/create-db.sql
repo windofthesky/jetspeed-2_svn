@@ -1,15 +1,7 @@
 ----------------------------------------------------------------------------
--- Create Portlet Application Metadata Table
+-- Create Metadata Fields Table
 ----------------------------------------------------------------------------
-CREATE TABLE PA_METADATA
-( 
-    ID INTEGER NOT NULL PRIMARY KEY
-);
-
-----------------------------------------------------------------------------
--- Create Portlet Application Metadata Fields Table
-----------------------------------------------------------------------------
-CREATE TABLE PA_METADATA_FIELDS
+CREATE TABLE METADATA_FIELDS
 (
     ID INTEGER NOT NULL PRIMARY KEY,
     OBJECT_ID INTEGER NOT NULL,
@@ -29,8 +21,7 @@ CREATE TABLE PORTLET_APPLICATION
     VERSION VARCHAR(80),
     APP_TYPE INTEGER, 
     DESCRIPTION VARCHAR(80),
-    WEB_APP_ID INTEGER NOT NULL,
-    METADATA_ID INTEGER NOT NULL
+    WEB_APP_ID INTEGER NOT NULL
 );
 
 ALTER TABLE PORTLET_APPLICATION ADD CONSTRAINT UK_APPLICATION UNIQUE (APP_NAME);
