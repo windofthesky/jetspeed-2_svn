@@ -107,10 +107,13 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
                 fieldMap.put(ParsedObject.FIELDNAME_TITLE, lang.getShortTitle());
                 
                 Iterator keywordIter = lang.getKeywords();
-                while (keywordIter.hasNext())
+                if (keywordIter != null)
                 {
-                    String keyword = (String) keywordIter.next();
-                    keywordSet.add(keyword);
+                    while (keywordIter.hasNext())
+                    {
+                        String keyword = (String) keywordIter.next();
+                        keywordSet.add(keyword);
+                    }
                 }
             }
             
