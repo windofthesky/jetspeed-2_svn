@@ -271,7 +271,28 @@ limitations under the License.
 		</property>		  	   
   </bean>
   
+  
+  <!-- SSO Implementation -->
+   <bean id="PersistenceBrokerSSOProvider" 
+  	   class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider"
+  	   init-method="init"
+   >  	   
+  	   <constructor-arg index="0"><value>META-INF/sso_repository.xml</value></constructor-arg>  	    	     	   
+  </bean>
    
+  <bean id="org.apache.jetspeed.sso.SSOProvider" parent="baseTransactionProxy" 
+  	name="ssoProvider"
+  	>
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.sso.SSOProvider</value>
+		</property>
+
+		<property name="target"> 
+			<ref bean="PersistenceBrokerSSOProvider"/>
+		</property>
+		
+  </bean> 
+ 
  <!-- Preferences Implementation -->
    <bean id="PreferencesProviderImpl" 
   	   class="org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider"

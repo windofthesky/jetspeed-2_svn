@@ -467,7 +467,15 @@ limitations under the License.
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
-    </dependency>    
+    </dependency>  
+     <dependency>
+      <id>jetspeed-sso</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>  
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
