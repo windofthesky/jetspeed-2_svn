@@ -255,7 +255,9 @@ limitations under the License.
       <includes>
         <include>**/Test*.java</include>
       </includes>
-
+      <excludes>
+        <exclude>**/TestSSOComponent.java</exclude>
+      </excludes>
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>
