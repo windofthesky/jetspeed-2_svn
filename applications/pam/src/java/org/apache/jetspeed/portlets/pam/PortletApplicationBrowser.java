@@ -36,6 +36,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.jetspeed.search.SearchEngine;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
@@ -54,6 +55,7 @@ public class PortletApplicationBrowser extends ServletPortlet
     private String template;
     private PortletContext context;
     private PortletRegistryComponent registry;
+    private SearchEngine searchEngine;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -61,6 +63,7 @@ public class PortletApplicationBrowser extends ServletPortlet
         super.init(config);
         context = getPortletContext();                
         registry = (PortletRegistryComponent)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        searchEngine = (SearchEngine)context.getAttribute(PortletApplicationResources.CPS_SEARCH_COMPONENT);
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
@@ -80,6 +83,7 @@ public class PortletApplicationBrowser extends ServletPortlet
         	request.getPortletSession().setAttribute("j2_tree", control);
         }
         request.setAttribute("j2_tree", control);
+        request.setAttribute("search_results", request.getPortletSession().getAttribute("search_results"));
         
         super.doView(request, response);
         
@@ -92,6 +96,13 @@ public class PortletApplicationBrowser extends ServletPortlet
 		//assert control != null
 		if(control != null)
 		{
+		    String searchString = actionRequest.getParameter("query");
+		    if(searchString != null)
+		    {
+		        Iterator results = searchEngine.search(searchString);
+		        actionRequest.getPortletSession().setAttribute("search_results", results);
+		    }
+		    
 			String node = actionRequest.getParameter("node");
 			if(node != null)
 			{

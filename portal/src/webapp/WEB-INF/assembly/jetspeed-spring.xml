@@ -40,6 +40,9 @@ limitations under the License.
   	   	  <entry key="PortletRegistryComponent">
   	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" />
   	   	  </entry>
+  	   	  <entry key="SearchComponent">
+  	   	  	<ref bean="org.apache.jetspeed.search.SearchEngine"/>
+  	   	  </entry>
   	   	  <entry key="PAM">
   	   	  	<ref bean="PAM" />
   	   	  </entry>		  

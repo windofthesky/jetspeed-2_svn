@@ -17,6 +17,29 @@ limitations under the License.
 <portlet:defineObjects/>
 <h2>Portlet Application Manager</h2>
 <h3>Application Tree View</h3>
+
+<hr />
+
+<portlet:actionURL var="searchLink" />
+
+<form action="<c:out value="${searchLink}"/>" method="post">
+
+	<input type="text" name="query" value="" /> <input type="submit" value="Search"/>
+
+</form>
+
+<c:set var="results" value="${requestScope.search_results}" />
+
+<c:if test="${results != null}">
+	<c:forEach var="result" items="${search_results}">
+		<c:out value="${result.title}"/> | <c:out value="${result.description}"/> <br />
+	</c:forEach>
+</c:if>
+
+<hr />
+
+
+
 <portlet:actionURL var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>

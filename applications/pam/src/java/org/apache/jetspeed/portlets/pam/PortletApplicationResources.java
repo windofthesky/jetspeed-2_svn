@@ -32,6 +32,7 @@ public final class PortletApplicationResources
     public final static String REQUEST_SELECT_PORTLET = "select_portlet";
     public final static String REQUEST_SELECT_TAB = "selected_tab";
     public final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
+    public final static String CPS_SEARCH_COMPONENT = "cps:SearchComponent";
     public final static String CPS_REGISTRY_COMPONENT = "cps:PortletRegistryComponent";
     public final static String CPS_USER_MANAGER_COMPONENT = "cps:UserManager";
     public final static String CPS_PAGE_MANAGER_COMPONENT = "cps:PageManager";
@@ -44,5 +45,6 @@ public final class PortletApplicationResources
     public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";
     public final static String REQUEST_SELECT_USER = "select_user";    
     public final static String PORTLET_ACTION = "portlet_action";
-    public static final String REQUEST_SELECT_SITE_TAB = "selected_site_tab";
+    public final static String REQUEST_SELECT_SITE_TAB = "selected_site_tab";
+    
 }

@@ -30,6 +30,7 @@ limitations under the License.
     </portlet>
 
 	<js:services>
+	    <js:service name='SearchComponent'/>
 		<js:service name='PortletRegistryComponent'/>
 		<js:service name='UserManager'/>
 		<js:service name='PageManager'/>
