@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -803,105 +804,113 @@ public class JetspeedPowerTool implements ViewTool
      * @return A list of actions available to the current window, filtered by securty access and current state.
      * @throws Exception
      */
-    public List getDecoratorActions() throws Exception
+    public List getDecoratorActions() 
     {
-        RequestContext context = Jetspeed.getCurrentRequestContext();
-        String key = getPage().getId() + ":" + this.getCurrentFragment().getId();
-        Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
-        if (null == sessionActions)
+        try
         {
-            sessionActions = new HashMap();
-            context.setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
-        }        
-        PortletWindowActionState actionState = (PortletWindowActionState)sessionActions.get(key);
-        
-        String state = getWindowState().toString();        
-        String mode = getPortletMode().toString();
-
-        if (null == actionState)
-        {
-            actionState = new PortletWindowActionState(state, mode);   
-            sessionActions.put(key, actionState);
-        }
-        else
-        {
-            // check to see if state or mode has changed
-            if (actionState.getWindowState().equals(state))
+            RequestContext context = Jetspeed.getCurrentRequestContext();
+            String key = getPage().getId() + ":" + this.getCurrentFragment().getId();
+            Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
+            if (null == sessionActions)
             {
-                if (actionState.getPortletMode().equals(mode))
-                {
-                    // nothing has changed
-                    return actionState.getActions();
-                }                
-                else
-                {
-                    actionState.setPortletMode(mode);                    
-                }
+                sessionActions = new HashMap();
+                context.setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
+            }        
+            PortletWindowActionState actionState = (PortletWindowActionState)sessionActions.get(key);
+            
+            String state = getWindowState().toString();        
+            String mode = getPortletMode().toString();
+
+            if (null == actionState)
+            {
+                actionState = new PortletWindowActionState(state, mode);   
+                sessionActions.put(key, actionState);
             }
             else
             {
-                actionState.setWindowState(state);
+                // check to see if state or mode has changed
+                if (actionState.getWindowState().equals(state))
+                {
+                    if (actionState.getPortletMode().equals(mode))
+                    {
+                        // nothing has changed
+                        return actionState.getActions();
+                    }                
+                    else
+                    {
+                        actionState.setPortletMode(mode);                    
+                    }
+                }
+                else
+                {
+                    actionState.setWindowState(state);
+                }
+                // something has changed, rebuild the list
             }
-            // something has changed, rebuild the list
-        }
-        
-                        
-        List actions = actionState.getActions();
-        actions.clear();
-     
-        PortletDefinitionComposite portlet = 
-            (PortletDefinitionComposite) getCurrentPortletEntity().getPortletDefinition();
-        if (null == portlet)
-        {
-            return actions; // allow nothing
-        }        
-                
-        ContentTypeSet content = portlet.getContentTypeSet();
-        
-        if (state.equals(WindowState.NORMAL.toString()))
-        {
-            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
-            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
-        }
-        else if (state.equals(WindowState.MAXIMIZED.toString()))
-        {
-            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
-            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);            
-        }
-        else // minimized
-        {
-            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
-            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);                        
-        }
-        
-        if (mode.equals(PortletMode.VIEW.toString()))
-        {
-            if (content.supportsPortletMode(PortletMode.EDIT))
+            
+                            
+            List actions = actionState.getActions();
+            actions.clear();
+    
+            PortletDefinitionComposite portlet = 
+                (PortletDefinitionComposite) getCurrentPortletEntity().getPortletDefinition();
+            if (null == portlet)
             {
-                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+                return actions; // allow nothing
+            }        
+                    
+            ContentTypeSet content = portlet.getContentTypeSet();
+            
+            if (state.equals(WindowState.NORMAL.toString()))
+            {
+                createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
+                createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
             }
-            if (content.supportsPortletMode(PortletMode.HELP))
-            {            
-                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+            else if (state.equals(WindowState.MAXIMIZED.toString()))
+            {
+                createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet);
+                createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);            
             }
+            else // minimized
+            {
+                createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet);
+                createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);                        
+            }
+            
+            if (mode.equals(PortletMode.VIEW.toString()))
+            {
+                if (content.supportsPortletMode(PortletMode.EDIT))
+                {
+                    createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+                }
+                if (content.supportsPortletMode(PortletMode.HELP))
+                {            
+                    createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+                }
+            }
+            else if (mode.equals(PortletMode.EDIT.toString()))
+            {
+                createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+                if (content.supportsPortletMode(PortletMode.HELP))
+                {                        
+                    createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+                }
+            }
+            else // help
+            {
+                createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+                if (content.supportsPortletMode(PortletMode.EDIT))
+                {            
+                    createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+                }
+            }
+            return actions;
         }
-        else if (mode.equals(PortletMode.EDIT.toString()))
+        catch (Exception e)
         {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-            if (content.supportsPortletMode(PortletMode.HELP))
-            {                        
-                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
-            }
+           log.warn("Unable to generate decortator actions: "+e.toString());
+           return Collections.EMPTY_LIST;
         }
-        else // help
-        {
-            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
-            if (content.supportsPortletMode(PortletMode.EDIT))
-            {            
-                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
-            }
-        }
-        return actions;
     }
 
     /**
