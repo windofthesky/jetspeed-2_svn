@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.request.RequestContext;
 
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.common.SecurityRoleRef;
@@ -238,7 +239,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         Object value = super.getAttribute(name);        
         if (name.equals(PortletRequest.USER_INFO))
         {
-            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
+            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute(RequestContext.REQUEST_PORTALENV);
             if (null != context)
             {
                 String entityID = "--NULL--";
@@ -285,7 +286,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Locale getLocale()
     {
-        Locale preferedLocale = (Locale) getSession().getAttribute(JetspeedRequestContext.PREFERED_LOCALE_SESSION_KEY);
+        Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
         if (preferedLocale != null)
         {
             return preferedLocale;
@@ -299,7 +300,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Enumeration getLocales()
     {
-        Locale preferedLocale = (Locale) getSession().getAttribute(JetspeedRequestContext.PREFERED_LOCALE_SESSION_KEY);
+        Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
         if (preferedLocale != null)
         {
             ArrayList locales = new ArrayList();
@@ -336,4 +337,35 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         return super.getHeaders(name);
     }
 
+    /**
+     * <p>
+     * setAttribute
+     * </p>
+     *
+     * @see javax.servlet.ServletRequest#setAttribute(java.lang.String, java.lang.Object)
+     * @param arg0
+     * @param arg1
+     */
+    public void setAttribute( String name, Object value )
+    {
+        // This allows us to make jetpseed objects avaiable to portlets
+        // This makes the portlet non-portable but is a must admin portlets
+        if(name.startsWith("org.apache.jetspeed"))
+        {
+            if (name == null)
+            {
+                throw new IllegalArgumentException("Attribute name == null");
+            }
+
+            if ( value == null)
+            {
+                this.removeAttribute(name);
+            }
+            else
+            {
+                this._getHttpServletRequest().setAttribute(NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(),name), value);
+            }
+        }
+        super.setAttribute(name, value);
+    }
 }
