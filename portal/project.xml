@@ -329,9 +329,7 @@
         <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
         <!-- Excluded due to persistence plugin issues -->
-        <exclude>org/apache/jetspeed/deployment/TestSimpleDeployment.java</exclude>
-        <exclude>org/apache/jetspeed/services/registry/TestRegistry.java</exclude>
-        <exclude>org/apache/jetspeed/tools/pamanager/TestPortletDescriptor.java</exclude>
+        <exclude>org/apache/jetspeed/security/Test*.java</exclude>
         <!-- End Excluded due to persistence plugin issues -->
  
         <exclude>org/apache/jetspeed/spi/services/prefs/TestUtils.java</exclude>
