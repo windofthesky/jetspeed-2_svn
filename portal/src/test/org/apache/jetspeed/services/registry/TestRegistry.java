@@ -53,7 +53,6 @@
  */
 package org.apache.jetspeed.services.registry;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -62,7 +61,6 @@ import javax.portlet.PortletMode;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
-
 import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
@@ -244,7 +242,7 @@ public class TestRegistry extends JetspeedTest
         pdc.addContentType(wml);
 
         PreferenceComposite pref =
-            pdc.addPreference("preference 1", Arrays.asList(new String[] { "pref 1 values 1", "pref 1 value 2" }));
+            pdc.addPreference("preference 1", new String[] { "pref 1 values 1", "pref 1 value 2" });
 
         pref.addDescription(Jetspeed.getDefaultLocale(), "Preference 1 description");
 

@@ -55,8 +55,8 @@ package org.apache.jetspeed.tools.castor.om.common;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
+import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
+
 
 /**
  * Used to help Castor in mapping XML preferences to Java objects 
@@ -64,11 +64,11 @@ import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PreferenceDescriptor extends PreferenceImpl
+public class PreferenceDescriptor extends DefaultPreferenceImpl
 {
     public PreferenceDescriptor()
     {
-        setType(PreferenceComposite.TYPE_DEFAULT);
+     
     }
 
     public Collection getCastorValues()
