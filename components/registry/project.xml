@@ -219,6 +219,34 @@
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
     </dependency>
+     <dependency>
+      <id>groovy</id>
+     <version>1.0-beta-4-snapshot</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>asm</id>
+      <version>1.4.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
@@ -227,9 +255,7 @@
        <includes>
         <include>**/Test*.java</include>
       </includes>
-      <excludes>
-        <exclude>**/TestRegistry.java</exclude>
-       </excludes>
+
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>
@@ -237,6 +263,12 @@
            <exclude>**/*.java</exclude>
           </excludes>
         </resource>
+        <resource>
+        <directory>${basedir}/src/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
       </resources>
     </unitTest>
     
