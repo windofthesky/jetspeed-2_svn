@@ -185,7 +185,14 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
          return context.getPortalURL().getBaseURL();
     }
 
-    public Map getAllParameters(PortletWindow portletWindow)
+    /**
+     * this method is deprecated but Im going to keep it around for reference
+     * 
+     * @param portletWindow
+     * @deprecated
+     * @return
+     */
+    private Map getAllParameters(PortletWindow portletWindow)
     {
         Enumeration parameters = request.getParameterNames();
 
