@@ -35,6 +35,7 @@ import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -56,6 +57,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         super(servletRequest);
 
         this.portletWindow = window;
+        System.out.println("Constructing SRI: " + window.getId());
     }
 
     private HttpServletRequest _getHttpServletRequest()
@@ -200,16 +202,25 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 getAttribute("org.apache.jetspeed.request.RequestContext");
             if (null != context)
             { 
-                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
-                if (null != portletAppEntity)
+                String entityID = "--NULL--";
+                PortletEntity entity = portletWindow.getPortletEntity();
+                if (entity != null)
                 {
-                    PortletApplicationDefinition portletAppDef = portletAppEntity.getPortletApplicationDefinition();
+                    entityID = entity.getId().toString();
+                }
+                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
+                PortletApplicationDefinition portletAppDef = entity.getPortletDefinition().getPortletApplicationDefinition();
+                
+                // if (null != portletAppEntity)
+                if (null != portletAppDef)
+                {
+                    // PortletApplicationDefinition portletAppDef = portletAppEntity.getPortletApplicationDefinition();
                     value = context.getUserInfoMap(portletAppDef.getId()); 
                     System.out.println("_____________HERE0: " + ((Map) value).size());
                 }
                 else
-                {
-                    System.out.println("_____________HERE1: Entity is null!!!!");
+                {                    
+                    System.out.println("_____________HERE1: Entity is null!!!! " + entityID);
                 }
                   
             }
