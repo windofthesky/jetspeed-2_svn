@@ -30,6 +30,7 @@ public class DatasourceTestCase extends TestCase
 {
 
     protected BoundDBCPDatasourceComponent datasourceComponent;
+    protected JNDIComponent jndi;
     /**
      * 
      */
@@ -55,7 +56,7 @@ public class DatasourceTestCase extends TestCase
     protected void setUp() throws Exception
     {        
         super.setUp();
-        JNDIComponent jndi = new TyrexJNDIComponent();
+        jndi = new TyrexJNDIComponent();
         String url = System.getProperty("org.apache.jetspeed.database.url");
         String driver = System.getProperty("org.apache.jetspeed.database.driver");
         String user = System.getProperty("org.apache.jetspeed.database.user");
@@ -69,10 +70,8 @@ public class DatasourceTestCase extends TestCase
      */
     protected void tearDown() throws Exception
     {
-        if(datasourceComponent != null)
-        {
-            datasourceComponent.stop();
-        }
+        jndi.unbindFromCurrentThread();
         super.tearDown();
     }
+    
 }
