@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
@@ -100,5 +102,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet.jar"/>
 	<classpathentry sourcepath="MYFACES_API_SRC" kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-jsf-api-1.0.7.jar"/>
 	<classpathentry sourcepath="MYFACES_SRC" kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.7.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/lucene/jars/lucene-1.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

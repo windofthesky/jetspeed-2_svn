@@ -103,6 +103,14 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
+      <id>jetspeed-search</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
       <id>jetspeed-security</id>
       <groupId>jetspeed2</groupId>
       <version>2.0-a1-dev</version>
@@ -294,6 +302,13 @@ limitations under the License.
       <version>2.0-a1-dev</version>
       <properties>
         <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>lucene</id>
+      <version>1.4.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>

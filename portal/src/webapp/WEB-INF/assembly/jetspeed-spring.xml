@@ -456,6 +456,28 @@ limitations under the License.
          </list>
        </constructor-arg>
   </bean>
+  
+  <!--SEARCH COMPONENT-->
+  <bean id="org.apache.jetspeed.search.HandlerFactory"
+  	class="org.apache.jetspeed.search.handlers.HandlerFactoryImpl"
+  >
+  	<constructor-arg>
+  		<map>
+  			<entry key="java.net.URL"><value>org.apache.jetspeed.search.handlers.URLToDocHandler</value></entry>
+  		</map>
+	</constructor-arg>
+  </bean>
+  
+  
+  <bean id="org.apache.jetspeed.search.SearchEngine"
+  	class="org.apache.jetspeed.search.lucene.SearchEngineImpl"
+  >
+  	<constructor-arg index="0"><value>${applicationRoot}/WEB-INF/search_index</value></constructor-arg>
+  	<constructor-arg index="1"><null /></constructor-arg>
+  	<constructor-arg type="boolean"><value>true</value></constructor-arg>
+  	<constructor-arg><ref bean="org.apache.jetspeed.search.HandlerFactory"/></constructor-arg>
+  	
+  </bean>
 
   
   
