@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -57,10 +58,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     PortletWindow portletWindow = null;
     private NamespaceMapper nameSpaceMapper = null;
+    private ServletRequest currentRequest = null;
 
     private Map portletParameters;
 
-    public ServletRequestImpl( javax.servlet.http.HttpServletRequest servletRequest, PortletWindow window )
+    public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
         nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
@@ -97,11 +99,19 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     public Map getParameterMap()
     {
-        //get control params
-        if (portletParameters == null)
+        if (currentRequest == null || currentRequest != getRequest() )
         {
+            // Cache the parameters for as long as the wrapped request stays the same.
+            // According to Servlet 2.3 SRV.6.2.2 the passed on ServletRequest object
+            // to an dispatched Servlet must remain the same (this one).
+            // Tomcat solves this by injecting a new ServletRequest of its own above
+            // this one (the getRequest() object).
+            // So, when that one has changed since the last time the parameters have 
+            // been accessed, flush the cache and rebuild the map.
+            currentRequest = getRequest();            
             portletParameters = new HashMap();
 
+            // get portlet params
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
             if (context != null)
             {
@@ -116,11 +126,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 }
             }
 
-            //get request params
-            for (Enumeration parameters = super.getParameterNames(); parameters.hasMoreElements();)
+            //get servlet params
+            for (Enumeration parameters = getRequest().getParameterNames(); parameters.hasMoreElements();)
             {
                 String paramName = (String) parameters.nextElement();
-                String[] paramValues = (String[]) super.getParameterValues(paramName);
+                String[] paramValues = (String[]) getRequest().getParameterValues(paramName);
                 String[] values = (String[]) portletParameters.get(paramName);
 
                 if (getCharacterEncoding() != null)
@@ -149,7 +159,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
         }
         return Collections.unmodifiableMap(portletParameters);
-        // return Collections.unmodifiableMap(super.getParameterMap().keySet());
 
     }
 
@@ -342,4 +351,100 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     {
         return super.getHeaderNames();
     }
+    
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+  	public String getProtocol()
+  	{
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+  	public String getRemoteAddr()
+  	{
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+  	public String getRemoteHost()
+  	{
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+  	public String getRealPath()
+  	{
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxix
+     */
+  	public StringBuffer getRequestURL()
+  	{
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxx
+     */
+    public String getPathInfo()
+  	{
+  			String attr = (String)super.getAttribute("javax.servlet.include.path_info");
+  			return (attr != null) ? attr : super.getPathInfo();
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxx
+     */
+  	public String getPathTranslated()
+  	{
+  	    // TODO: Don't know yet how to implement this. 
+  	    //       A null value is a valid value. 
+  			return null;
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxx
+     */
+  	public String getQueryString()
+  	{
+  			String attr = (String)super.getAttribute("javax.servlet.include.query_string");
+  			return (attr != null) ? attr : super.getQueryString();
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxx
+     */
+  	public String getRequestURI()
+  	{
+  			String attr = (String)super.getAttribute("javax.servlet.include.request_uri");
+  			return (attr != null) ? attr : super.getRequestURI();
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxx
+     */
+  	public String getServletPath()
+  	{
+  			String attr = (String)super.getAttribute("javax.servlet.include.servlet_path");
+  			return (attr != null) ? attr : super.getServletPath();
+  	}
+
+    /*
+     * JST-168 PLT.16.3.3 cxxxi
+     */
+  	public String getContextPath() 
+  	{
+  			return portletWindow.getPortletEntity().getPortletDefinition()
+  					.getPortletApplicationDefinition()
+  					.getWebApplicationDefinition().getContextRoot();
+  	}
 }
