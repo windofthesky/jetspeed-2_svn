@@ -219,7 +219,7 @@ public class PortletApplicationWar
             }
             catch (IOException e)
             {
-                log.info("Did not load exteneded metadata as it most likely does not exist.  " + e.toString());
+                log.info("Did not load extended metadata as it most likely does not exist.  " + e.toString());
             }
             catch (MetaDataException e)
             {
