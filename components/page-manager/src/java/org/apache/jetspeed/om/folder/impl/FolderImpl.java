@@ -37,7 +37,8 @@ public class FolderImpl implements Folder
 
     private int id;
     private String name;
-    private String defaultPage;
+    //TODO: need to grab this from metadata...once we have metadata
+    private String defaultPage="default-page.psml";
     private String defaultTheme;
     private FolderSet folders;
     private PageSet pages;
@@ -69,15 +70,20 @@ public class FolderImpl implements Folder
      */
     public Folder getParent()
     {
-        if(parent == null)
+        if(name.equals("/"))
         {
-            int lastSlash = name.lastIndexOf('/');
-            if(lastSlash != -1)
-            {
-                parent = pageManager.getFolder(name.substring(0, lastSlash));
-            }            
+            return null;
         }
         
+        if (parent == null)
+        {
+            int lastSlash = name.lastIndexOf('/');
+            if (lastSlash != -1)
+            {
+                parent = pageManager.getFolder(name.substring(0, lastSlash));
+            }
+        }
+
         return parent;
     }
 
@@ -134,7 +140,23 @@ public class FolderImpl implements Folder
      */
     public String getDefaultPage()
     {
-        return defaultPage;
+        try
+        {
+            getPage(defaultPage);
+            return defaultPage;
+        }
+        catch (PageNotFoundException e)
+        {
+            try
+            {
+                return ((Page) getPages().iterator().next()).getId();
+            }
+            catch (PageNotFoundException e1)
+            {
+                return "page_not_found.psml";
+            }
+        }
+        
     }
 
     /*
@@ -180,9 +202,17 @@ public class FolderImpl implements Folder
             File[] children = getDirectory().listFiles();
             for (int i = 0; i < children.length; i++)
             {
+                String folderName = null;
                 if (children[i].isDirectory())
                 {
-                    String folderName = name + "/" + children[i].getName();
+                    if (name.equals("/"))
+                    {
+                        folderName = name + children[i].getName();
+                    }
+                    else
+                    {
+                        folderName = name + "/" + children[i].getName();
+                    }
 
                     folders.add(pageManager.getFolder(folderName));
                 }
@@ -217,7 +247,14 @@ public class FolderImpl implements Folder
             {
                 if (children[i].isFile())
                 {
-                    pages.add(pageManager.getPage(name + "/" + children[i].getName()));
+                    if (name.equals("/"))
+                    {
+                        pages.add(pageManager.getPage(name + children[i].getName()));
+                    }
+                    else
+                    {
+                        pages.add(pageManager.getPage(name + "/" + children[i].getName()));
+                    }
                 }
 
             }
@@ -225,13 +262,13 @@ public class FolderImpl implements Folder
 
         return pages;
     }
-    
-    public Page getPage(String name) throws PageNotFoundException
+
+    public Page getPage( String name ) throws PageNotFoundException
     {
-        Page page = pages.get(name);
-        if(page == null)
+        Page page = getPages().get(name);
+        if (page == null)
         {
-            throw new PageNotFoundException("Jetspeed PSML page not found: "+name);
+            throw new PageNotFoundException("Jetspeed PSML page not found: " + name);
         }
         return page;
     }
