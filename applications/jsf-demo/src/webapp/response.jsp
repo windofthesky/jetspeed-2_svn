@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 
-    <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
-    <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-    <f:view>
-    <h:form id="responseForm" >
-        <h:graphicImage id="waveImg" url="/wave.med.gif" />
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<f:view>
+<h:form id="responseForm" >
+    <h:graphicImage id="waveImg" url="/wave.med.gif" />
     <h2><h:outputText id="result" 
     			value="#{UserNumberBean.response}"/></h2>   
     <h:commandButton id="back" value="Back" action="success"/><p>
 
-    </h:form>
-    </f:view>
+</h:form>
+</f:view>

@@ -14,19 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 
-<HTML>
-    <HEAD> <title>Hello</title> </HEAD>
-    <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
-    <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-    <body bgcolor="white">
-    <f:view>
-    <h:form id="helloForm" >
-      <h2>Hi. My name is Duke.  I'm thinking of a number from
-      <h:outputText value="#{UserNumberBean.minimum}"/> to
-      <h:outputText value="#{UserNumberBean.maximum}"/>.  Can you guess
-      it?</h2>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<f:view>
+	<h:form id="helloForm" >
+    <h2>Hi. My name is Duke.  I'm thinking of a number from
+    <h:outputText value="#{UserNumberBean.minimum}"/> to
+    <h:outputText value="#{UserNumberBean.maximum}"/>.  Can you guess
+    it?</h2>
 
-        <h:graphicImage id="waveImg" url="/wave.med.gif" />
+    <h:graphicImage id="waveImg" url="/wave.med.gif" />
   	<h:inputText id="userNo" value="#{UserNumberBean.userNumber}"
                       validator="#{UserNumberBean.validate}"/>          
 	 <h:commandButton id="submit" action="success" value="Submit" />
@@ -34,5 +31,10 @@ limitations under the License.
 	 <h:message style="color: red; font-family: 'New Century Schoolbook', serif; font-style: oblique; text-decoration: overline" id="errors1" for="userNo"/>
 
     </h:form>
-    </f:view>
-</HTML>  
+    
+    <h2>Wanna see a tree?</h2>
+	<br>
+	<h:commandLink id="treeLink" action="treeView">
+		<h:outputText value="Click Here"/>
+	</h:commandLink>
+</f:view>  
