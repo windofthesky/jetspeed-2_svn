@@ -45,6 +45,7 @@ public class Forwarder
                      RenderResponse response)
     {
         this.model = model;
+        this.request = request;        
         this.response = response;
     }
     
