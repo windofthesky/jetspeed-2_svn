@@ -25,7 +25,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.container.url.impl.PortalControlParameter;
+import org.apache.jetspeed.container.url.impl.PortalControlParameterImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 

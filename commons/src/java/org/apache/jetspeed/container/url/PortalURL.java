@@ -11,7 +11,6 @@ import java.util.Iterator;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.container.url.impl.PortalControlParameter;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 

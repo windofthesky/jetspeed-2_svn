@@ -26,6 +26,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.*;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
@@ -63,7 +64,7 @@ public abstract class AbstractPortalURL implements PortalURL
         this.context = context;
         this.nsc = nsc;        
         init(context);
-        pcp = new PortalControlParameter(this, nsc);
+        pcp = new PortalControlParameterImpl(this, nsc);
         pcp.init();
     }
     
