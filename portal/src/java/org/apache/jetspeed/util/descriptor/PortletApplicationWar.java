@@ -96,6 +96,7 @@ public class PortletApplicationWar
     protected FileSystemHelper warStruct;
     private MutableWebApplication webApp;
     private MutablePortletApplication portletApp;
+    private long paChecksum;
     protected final List openedResources;
 
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
@@ -124,7 +125,16 @@ public class PortletApplicationWar
         this.webAppContextRoot = webAppContextRoot;
         this.openedResources = new ArrayList();
         this.warStruct = warStruct;
+        this.paChecksum = warStruct.getChecksum(PORTLET_XML_PATH);
+        if (paChecksum == 0)
+        {
+          throw new IOException("Cannot find required "+PORTLET_XML_PATH+" for Portlet Application "+paName);
+        }
+    }
 
+    public long getPortletApplicationChecksum()
+    {
+      return paChecksum;
     }
 
     /**
@@ -239,7 +249,7 @@ public class PortletApplicationWar
                     extMetaDataXml.close();
                 }
             }
-
+            portletApp.setChecksum(paChecksum);
             return portletApp;
         }
         finally
