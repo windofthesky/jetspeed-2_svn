@@ -71,6 +71,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.pluto.core.CoreUtils;
+import org.apache.pluto.core.InternalPortletRequest;
+import org.apache.pluto.core.InternalPortletResponse;
 import org.apache.pluto.om.portlet.PortletDefinition;
 // import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
@@ -80,9 +83,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedContainerServlet 
-    extends HttpServlet
-    implements ServletContainerConstants
+public class JetspeedContainerServlet extends HttpServlet implements ServletContainerConstants
 {
     private final static Log log = LogFactory.getLog(JetspeedContainerServlet.class);
     private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
@@ -116,14 +117,13 @@ public class JetspeedContainerServlet
     /**
      * Intialize Servlet.
      */
-    public final void init(ServletConfig config)
-        throws ServletException
+    public final void init(ServletConfig config) throws ServletException
     {
         synchronized (this.getClass())
         {
             log.info(INIT_START_MSG);
             super.init(config);
-            
+
             if (!firstInit)
             {
                 log.info("Double initialization of Jetspeed was attempted!");
@@ -136,30 +136,30 @@ public class JetspeedContainerServlet
             try
             {
                 ServletContext context = config.getServletContext();
-/*
-                String propertiesFilename =
-                    ServletHelper.findInitParameter(context, config,
-                                      JETSPEED_PROPERTIES_KEY,
-                                      JETSPEED_PROPERTIES_DEFAULT);
-                
-                String applicationRoot =
-                    ServletHelper.findInitParameter(context, config,
-                                  APPLICATION_ROOT_KEY,
-                                  APPLICATION_ROOT_DEFAULT);
-  */              
+                /*
+                                String propertiesFilename =
+                                    ServletHelper.findInitParameter(context, config,
+                                                      JETSPEED_PROPERTIES_KEY,
+                                                      JETSPEED_PROPERTIES_DEFAULT);
+                                
+                                String applicationRoot =
+                                    ServletHelper.findInitParameter(context, config,
+                                                  APPLICATION_ROOT_KEY,
+                                                  APPLICATION_ROOT_DEFAULT);
+                  */
                 webappRoot = config.getServletContext().getRealPath("/");
-/*                
-                if (applicationRoot == null || applicationRoot.equals(WEB_CONTEXT))
-                {
-                    applicationRoot = webappRoot;
-                }
-                    
-                Configuration properties = (Configuration) 
-                    new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
-                
-                properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
-                properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
-  */
+                /*                
+                                if (applicationRoot == null || applicationRoot.equals(WEB_CONTEXT))
+                                {
+                                    applicationRoot = webappRoot;
+                                }
+                                    
+                                Configuration properties = (Configuration) 
+                                    new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
+                                
+                                properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
+                                properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
+                  */
             }
             catch (Exception e)
             {
@@ -168,7 +168,7 @@ public class JetspeedContainerServlet
                 System.err.println(ExceptionUtils.getStackTrace(e));
                 throw new ServletException("Jetspeed: init() failed", e);
             }
-            
+
             console.info(INIT_DONE_MSG);
             log.info(INIT_DONE_MSG);
         }
@@ -191,22 +191,21 @@ public class JetspeedContainerServlet
             }
         }
     }
-    
+
     // -------------------------------------------------------------------
     // R E Q U E S T  P R O C E S S I N G
     // -------------------------------------------------------------------
     static private final String PHONEY_PORTLET_WINDOW = "<P>----------------------------------</P>";
-    
+
     /**
      * The primary method invoked when the Jetspeed servlet is executed.
      *
-     * @param req Servlet request.
-     * @param res Servlet response.
+     * @param request Servlet request.
+     * @param ressponse Servlet response.
      * @exception IOException a servlet exception.
      * @exception ServletException a servlet exception.
      */
-    public final void doGet(HttpServletRequest req, HttpServletResponse res)
-        throws IOException, ServletException
+    public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
         try
         {
@@ -219,41 +218,41 @@ public class JetspeedContainerServlet
             // If this is the first invocation, perform some late initialization.
             if (firstDoGet)
             {
-                init(req, res);
+                init(request, response);
             }
-            
-            PortletDefinition portletDefinition = 
-                    (PortletDefinition)req.getAttribute(ContainerConstants.PORTLET_ENTITY);            
+
+            PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
             Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
-            
-            Integer method = (Integer)req.getAttribute(ContainerConstants.METHOD_ID);
+
+            Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
-                return; 
+                return;
             }
-    
+
             //res.getWriter().print("Rendering: Portlet Class = " + entity.getPortletClass() + "<BR/>");
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
-                ActionRequest request = (ActionRequest)req.getAttribute(ContainerConstants.PORTLET_REQUEST);           
-                ActionResponse response = (ActionResponse)req.getAttribute(ContainerConstants.PORTLET_RESPONSE);                
-                portlet.processAction(request, response);                
+                ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+
+                portlet.processAction(actionRequest, actionResponse);
             }
-            else if (method == ContainerConstants.METHOD_RENDER)           
+            else if (method == ContainerConstants.METHOD_RENDER)
             {
-                RenderRequest request = (RenderRequest)req.getAttribute(ContainerConstants.PORTLET_REQUEST);           
-                RenderResponse response = (RenderResponse)req.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                
-                res.getWriter().print(PHONEY_PORTLET_WINDOW);            
-                res.getWriter().print(portletDefinition.getName());            
-                res.getWriter().print(PHONEY_PORTLET_WINDOW);            
-                                                
-                portlet.render(request, response);            
-    
-                res.getWriter().print(PHONEY_PORTLET_WINDOW);
+                RenderRequest renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                RenderResponse renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+
+                response.getWriter().print(PHONEY_PORTLET_WINDOW);
+                response.getWriter().print(portletDefinition.getName());
+                response.getWriter().print(PHONEY_PORTLET_WINDOW);
+
+                portlet.render(renderRequest, renderResponse);
+
+                response.getWriter().print(PHONEY_PORTLET_WINDOW);
             }
-            
+
         }
         catch (Throwable t)
         {
@@ -269,8 +268,7 @@ public class JetspeedContainerServlet
      * @exception IOException a servlet exception.
      * @exception ServletException a servlet exception.
      */
-    public final void doPost(HttpServletRequest req, HttpServletResponse res)
-        throws IOException, ServletException
+    public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
     {
         doGet(req, res);
     }
@@ -290,6 +288,7 @@ public class JetspeedContainerServlet
 
         log.info("Done shutting down!");
     }
-    
-}
 
+  
+
+}
