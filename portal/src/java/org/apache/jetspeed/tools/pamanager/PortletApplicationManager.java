@@ -33,11 +33,10 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.impl.FileNotDeployableException;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentObject;
 import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.engine.PicoEngine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.util.FileSystemHelper;
-import org.apache.jetspeed.util.JarHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 /**
@@ -215,7 +214,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             // Override the properties with PAM specifice settings
             overrideProperties(strAppRoot, properties);
 
-            engine = Jetspeed.createEngine(properties, strAppRoot, null);            
+            engine = Jetspeed.createEngine(properties, strAppRoot, null, PicoEngine.class);            
         }
         catch (Exception e)
         {

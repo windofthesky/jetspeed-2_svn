@@ -30,6 +30,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.engine.PicoEngine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.exception.JetspeedException;
 
@@ -101,7 +102,7 @@ public class JetspeedTestSuite extends TestSuite
             properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             //properties.setProperty(WEBAPP_ROOT_KEY, null);
             initializeConfiguration(properties, applicationRoot);
-            engine = Jetspeed.createEngine(properties, applicationRoot, null);
+            engine = Jetspeed.createEngine(properties, applicationRoot, null, PicoEngine.class);
 
         }
         catch (Exception e)
