@@ -358,7 +358,7 @@ public class JetspeedProfiler implements Profiler
     public String[] getLocatorNamesForPrincipal(Principal principal)
     {
         Filter filter = persistentStore.newFilter();        
-        filter.addEqualTo("principalName", principal);
+        filter.addEqualTo("principalName", principal.getName());
         Object query = persistentStore.newQuery(principalRuleClass, filter);
         Collection result = persistentStore.getCollectionByQuery(query);
         if (result.size() == 0)
