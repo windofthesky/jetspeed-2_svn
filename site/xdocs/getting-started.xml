@@ -32,11 +32,11 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
 <ul>
   <li><a href="http://ant.apache.org/bindownload.cgi">Ant 1.5</a> or higher</li>
   <li><a href="http://maven.apache.org/start/download.html">Maven 1.0</a> or higher</li>
-  <li>Java 1.4 or higher</li>
+  <li>Java 1.4.2_02 or higher</li>
   <li>Servlet 2.3:<br/>
     Tomcat 4.1.x<br/>
     <b>or</b> <br/>
-    Tomcat 5.x</li>
+    Tomcat 5.0.28 or higher</li>
 </ul>
 </section>
 <section name='1. Get Maven Ready'>
@@ -89,12 +89,9 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
   </tr>
 </table>
 <p>
-<i>If you are using Tomcat 5.x, the allBuild goal described below will install a 
-patched version of the JAASRealm class in ${org.apache.jetspeed.server.home}/server/classes to
-enable Jetspeed JAAS based security.
-For more information about this patch see: 
-<a href='http://issues.apache.org/jira/browse/JS2-55'>
-Issue 55: JAAS Authentication on Tomcat 5</a></i>.
+<i>If you are using Tomcat 5, make sure to use version 5.0.28 or higher, otherwise you won't be able to login because
+of an issue with its JAASRealm implementation
+</i>.
 </p>
 <p>
 To develop or deploy Jetspeed with another database (not the default HSQL), see the property configuration in the 
