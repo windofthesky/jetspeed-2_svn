@@ -36,6 +36,9 @@
 
   <goal name="allBuild"
         description="Build all jars and war">
+  	<attainGoal name="db.scripts.gen"/>
+  	<attainGoal name="db.create"/>
+
     <!-- Build jars -->
     <maven:reactor
                basedir="${basedir}/portlet-api"
@@ -97,7 +100,7 @@
     <maven:reactor
                basedir="${basedir}"
                includes="services/security/project.xml"
-               goals="db.recreate,jar:install,ojb.registry"
+               goals="jar:install,ojb.registry"
                banner="Build and Install the services - security jar"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -196,18 +199,7 @@
             <arg value="false" />
         </java>  
   </goal>
-  
-   <goal name="installProductionDb">
-  	<echo message="${basedir}" />
-  	 <maven:reactor
-               basedir="${basedir}"
-               includes="components/registry/project.xml,services/security/project.xml,portal/project.xml"
-               goals="db.recreate"
-               banner="Create production database"
-               postProcessing="false"
-               ignoreFailures="false"/>
-  </goal>
-    
+      
   <goal name="db.scripts.gen" prereqs="torque:init"
         description="Build SQL scripts using Torque generator">
 
@@ -262,6 +254,62 @@
       />
     </torque-sql>
                  
+  </goal>
+                
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE a DB SCRIPT                                              -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.execute">
+    <sql driver="${org.apache.jetspeed.database.driver}"
+         classpathref="maven.dependency.classpath"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
+         src="${database.arg.script}">
+    </sql>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE CREATE DB SQL SCRIPTS                                    -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.create">
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase3ojb-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase1-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase2-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/registry-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/prefs-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/security-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/sql/populate-db-default.sql" />
+    <attainGoal name="db.execute" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE DROP DB SQL SCRIPTS                                      -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.drop">
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/drop-db.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/registry-drop-db.sql" />
+    <attainGoal name="db.execute" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE RECREATE DB SQL SCRIPTS                                  -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.recreate">
+<!--    <attainGoal name="db.drop" /> -->
+    <attainGoal name="db.create" />
   </goal>
 
 </project>
