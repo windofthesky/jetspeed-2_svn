@@ -29,17 +29,20 @@ limitations under the License.
 
 <c:set var="user" value="${requestScope.user}" />
 
-user = <c:out value="${user}"/>
-
-<%--Beginning of User check -%>
+<%--Beginning of User check --%>
 <c:if test="${user != null}">
-
-userxxx = <c:out value="${user}"/>
 
 <c:set var="tabs" value="${requestScope.tabs}"/>
 <c:set var="selectedTab" value="${requestScope.selected_tab}"/>
 
-<fmt:message key="user.principal.name"/> = <c:out value="${user.Principal}"/><br />
+<br/>
+<div class='portlet-section-header'>
+<fmt:message key="user.principal.name"/> :
+<span style='font-size:11pt; text-transform:uppercase'>
+<c:out value="${user.principal}"/>
+</span>
+</div>
+<br/>
 
 <div id="tabs">
 	<c:set var="tab_items" value="${tabs}"/>
@@ -48,9 +51,10 @@ userxxx = <c:out value="${user}"/>
 	<%@ include file="tabs.jsp"%>
 </div>
 
+
 <%--Beginning of User Attributes tab data--%>
 <%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'user_attributes'}">
+<c:if test="${currentTab.id == 'user_attributes'}">
   <div id="attributes">	
   </div>
   <h3>USER ATTRIBUTES</h3>
@@ -66,10 +70,21 @@ userxxx = <c:out value="${user}"/>
   <h3>SECURITY ATTRIBUTES</h3>
   
 </c:if>
-<%--End of UserAttr tab data--%>
+<%--End of Security tab data--%>
 
+<%--Beginning Profile tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'user_profile'}">
+  <div id="Profile">
+  </div>
+  <h3>USER PROFILE</h3>
+  
 </c:if>
+<%--End of Profile tab data--%>
+
+
 <%--End of User check --%>
+</c:if>
 
 <br />
 <br />

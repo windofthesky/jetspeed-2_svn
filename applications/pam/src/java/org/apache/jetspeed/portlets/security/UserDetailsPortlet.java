@@ -28,7 +28,6 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
-import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.security.User;
@@ -44,12 +43,8 @@ import org.apache.jetspeed.security.UserManager;
  */
 public class UserDetailsPortlet extends ServletPortlet
 {
-    private static final String PORTLET_ACTION = "portlet_action";
     private final String VIEW_USER = "user"; 
     
-    private static final String PORTLET_APP_ACTION_PREFIX = "portlet_app.";
-    private static final String PORTLET_ACTION_PREFIX = "portlet.";
-
     private UserManager manager;
 
     private LinkedHashMap userTabMap = new LinkedHashMap();
@@ -66,10 +61,11 @@ public class UserDetailsPortlet extends ServletPortlet
         
         TabBean tb1 = new TabBean("user_attributes");
         TabBean tb2 = new TabBean("user_security");
+        TabBean tb3 = new TabBean("user_profile");
         
         userTabMap.put(tb1.getId(), tb1);
         userTabMap.put(tb2.getId(), tb2);
-        
+        userTabMap.put(tb3.getId(), tb3);        
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -94,7 +90,8 @@ public class UserDetailsPortlet extends ServletPortlet
             
             // Tabs
             request.setAttribute("tabs", userTabMap.values());        
-            TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, PortletSession.APPLICATION_SCOPE);
+            TabBean selectedTab = 
+                (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB);
             if(selectedTab == null)
             {
                 selectedTab = (TabBean) userTabMap.values().iterator().next();
@@ -110,7 +107,6 @@ public class UserDetailsPortlet extends ServletPortlet
         throws PortletException, IOException
     {                        
         String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
-        System.out.println("SELECTED TAB = " + selectedTab);
         if (selectedTab != null)
         {
             TabBean tab = (TabBean) userTabMap.get(selectedTab);
@@ -118,9 +114,8 @@ public class UserDetailsPortlet extends ServletPortlet
             {
                 actionRequest.getPortletSession().setAttribute(
                         PortletApplicationResources.REQUEST_SELECT_TAB, tab);
-            }
-        }
-                
+            }            
+        }                        
     }    
 
     private User lookupUser(String userName)

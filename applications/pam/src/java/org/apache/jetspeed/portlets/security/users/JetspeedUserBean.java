@@ -38,7 +38,6 @@ public class JetspeedUserBean
         Principal userPrincipal = createPrincipal(user.getSubject(), UserPrincipal.class);             
         
         this.principal = userPrincipal.getName();
-        System.out.println("principal = " + principal);
     }
     
     /**

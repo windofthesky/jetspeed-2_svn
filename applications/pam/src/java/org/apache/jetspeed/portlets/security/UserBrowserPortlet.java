@@ -120,7 +120,6 @@ public class UserBrowserPortlet extends ServletPortlet
                     String domain = child.getDomain();
                     if(domain.equals(USER_DETAIL_DOMAIN))
                     {
-                        System.out.println("SELECTED NODE = " + selectedNode);
                         if (selectedNode != null)
                         {
                             actionRequest.getPortletSession().setAttribute(
