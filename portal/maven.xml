@@ -144,6 +144,27 @@
             <arg value="${pam.deploy.dir}" />
             <arg value="-PortalName" />
             <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
+
+  <goal name="pam.tsundeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="undeploy" />
+            <arg value="-PortletAppName" />
+            <arg value="testsuite" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
         </java>
   </goal>
 
@@ -322,4 +343,26 @@
    </goal>
   
 
+ <goal name="pam.rssdeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="rss" />
+            <arg value="-warfilename" />
+            <arg value="../applications/rss.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
+
+ 
 </project>
