@@ -39,6 +39,7 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -120,6 +121,8 @@ public class JetspeedPowerTool implements ViewTool
     private PortletEntityAccessComponent entityAccess;
     private TemplateLocator decorationLocator;
     private LocatorDescriptor decorationLocatorDescriptor;
+    private ComponentManager cm;
+    private PortletWindowAccessor windowAccess;
     /**
      * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
      * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
@@ -127,6 +130,8 @@ public class JetspeedPowerTool implements ViewTool
     public JetspeedPowerTool()
     {
         super();
+        cm = Jetspeed.getComponentManager();
+        windowAccess = (PortletWindowAccessor) cm.getComponent(PortletWindowAccessor.class);
 
     }
 
@@ -261,10 +266,7 @@ public class JetspeedPowerTool implements ViewTool
      */
     public PortletEntity getCurrentPortletEntity()
     {
-        String fragmentId = getCurrentFragment().getId();
-        JetspeedObjectID peid = JetspeedObjectID.createFromString(fragmentId);
-        PortletEntity portletEntity = entityAccess.getPortletEntity(peid);
-        return portletEntity;
+        return windowAccess.getPortletWindow(getCurrentFragment()).getPortletEntity();        
     }
 
     /**
