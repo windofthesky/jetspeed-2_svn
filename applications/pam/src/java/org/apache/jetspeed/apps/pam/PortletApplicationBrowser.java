@@ -54,7 +54,10 @@
 package org.apache.jetspeed.apps.pam;
 
 import java.io.IOException;
-import java.io.InputStream;
+//import java.io.InputStream;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
@@ -65,7 +68,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.cps.util.Streams;
+//import org.apache.jetspeed.cps.util.Streams;
 
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -80,6 +83,7 @@ public class PortletApplicationBrowser extends GenericPortlet
     throws PortletException 
     {
         System.out.println("ApplicationBrowserPortlet: initializing portlet, config = " + config.getPortletName());
+        System.out.println("[MHL] Ready for action...");
         super.init(config);
     }
     
@@ -107,7 +111,7 @@ public class PortletApplicationBrowser extends GenericPortlet
     {
         PortletContext context = getPortletContext();
         response.setContentType("text/html");
-
+        
         PortletURL url = response.createRenderURL();
         // url.addParameter("test", "value");
         
@@ -118,12 +122,18 @@ public class PortletApplicationBrowser extends GenericPortlet
         PortletRequestDispatcher rd = context.getRequestDispatcher("/hello.jsp");
         rd.include(request, response);
         
-        InputStream is = context.getResourceAsStream("/snipet.html");
-        if (is != null)
-        {
-            Streams.drain(is, response.getWriter());
-        }
+//        InputStream is = context.getResourceAsStream("/snipet.html");
+//        if (is != null)
+//        {
+//            Streams.drain(is, response.getWriter());
+//        }
         
         response.getWriter().println("<br/><b>Done Request dispatching.</b>");
     }
+
+    
+	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
+	{
+		System.out.println("[MHL] Napindot ako!!!");
+	}
 }

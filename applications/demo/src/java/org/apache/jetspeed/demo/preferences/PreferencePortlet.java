@@ -62,6 +62,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -104,7 +105,8 @@ public class PreferencePortlet extends GenericPortlet
      */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-        Integer iCount = (Integer) request.getAttribute("org.apache.jetspeed.invocationCount");
+        // Integer iCount = (Integer) request.getAttribute("org.apache.jetspeed.invocationCount");
+        Integer iCount = (Integer) request.getPortletSession().getAttribute("org.apache.jetspeed.invocationCount");
         if (iCount == null)
         {
             iCount = new Integer(0);
@@ -116,6 +118,7 @@ public class PreferencePortlet extends GenericPortlet
         response.setRenderParameter("invocationCount", String.valueOf(count));
 
         response.setRenderParameter("invokeMessage", "processAction() I was invoked " + count + " times!");
+        request.getPortletSession().setAttribute("org.apache.jetspeed.invocationCount", new Integer(count), PortletSession.PORTLET_SCOPE);
         System.out.println("--------------------------- I was invoked!!!---------------------------------");
     }
 

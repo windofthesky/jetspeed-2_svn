@@ -107,7 +107,7 @@
             <arg value="-PortalName" />
             <arg value="jetspeed" />
             <arg value="-ApplicationType" />
-            <arg value="local" />
+            <arg value="webapp" />
         </java>
   </goal>
 
@@ -232,6 +232,7 @@
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
+  	 <attainGoal name="pam.padeploy" />
   </goal>
 
   <preGoal name="hotdeploy">
