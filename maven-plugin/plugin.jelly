@@ -20,13 +20,19 @@ limitations under the License.
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
 
+  <goal name="jetspeed2:deploy">
+  
+<!-- 	
+	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
+ 	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
+--> 	              
+ 	<attainGoal name="pam.template.deploy"/>
+  </goal>
 
 	<goal name="pam.template.deploy">
 		<echo>Deploying App ${pam.app.name}</echo>
-		<j:if test="$pam.app.war}">
-			<echo>Using war ${pam.app.war}</echo>
-		</j:if>
-		
+			
+		<echo>${pam.webapps.dir}</echo>
 		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
 		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
 			<classpath>
@@ -80,33 +86,38 @@ limitations under the License.
 				<pathelement path="${plugin.getDependencyPath('regexp')}"/>
 				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cps')}"/>
 				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cm')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:content-server')}"/>
-				
-				
+				<pathelement path="${plugin.getDependencyPath('jetspeed2:content-server')}"/>								
 				<pathelement path="${maven.build.dest}"/>
-				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
 			</classpath>
-			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
 			<sysproperty key="portal.use.internal.jndi" value="true"/>
+            <sysproperty key="pam.jetspeed.properties" value="${pam.jetspeed.properties}"/>
+            <sysproperty key="pam.deploy.dir" value="${org.apache.jetspeed.deploy.war.dir}"/>			
 			
-			<arg value="-action"/>
+			<arg value="-Action"/>
 			<arg value="deploy"/>
-			
+
+			<arg value="-PortalName"/>
+			<arg value="${pam.portal.name}"/>
+
 			<arg value="-PortletAppName"/>
 			<arg value="${pam.app.name}"/>
-			
-			<arg value="-PortalName"/>
-			<arg value="jetspeed"/>
-	
-			<arg value="-warfilename"/>
-			<arg value="${pam.app.war}"/>
-			
+
 			<arg value="-webappDir"/>
-			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
-		
+			<arg value="${pam.webapps.dir}/"/>
+						
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+																
+			<arg value="-WarFileName"/>
+			<arg value="${pam.app.war}"/>
+
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+					
 		</java>
 	</goal>
 	
@@ -175,8 +186,8 @@ limitations under the License.
 			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
 			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
 			<sysproperty key="portal.use.internal.jndi" value="true"/>
-			
-			<arg value="-action"/>
+
+			<arg value="-Action"/>
 			<arg value="${pam.action}"/>
 			
 			<arg value="-PortletAppName"/>
@@ -187,6 +198,9 @@ limitations under the License.
 	
 			<arg value="-warfilename"/>
 			<arg value="${pam.app.war}"/>
+
+			<arg value="-Impl"/>
+			arg value="${pam.impl}"/>
 			
 			<arg value="-webappDir"/>
 			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>			
@@ -258,23 +272,28 @@ limitations under the License.
 				<pathelement path="${maven.build.dest}"/>
 				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
 			</classpath>
-			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
 			<sysproperty key="portal.use.internal.jndi" value="true"/>
+            <sysproperty key="pam.jetspeed.properties" value="${pam.jetspeed.properties}"/>
 			
-			<arg value="-action"/>
+						
+			<arg value="-Action"/>
 			<arg value="undeploy"/>
-			
+                 
 			<arg value="-PortletAppName"/>
 			<arg value="${pam.app.name}"/>
 			
 			<arg value="-PortalName"/>
-			<arg value="jetspeed"/>
+			<arg value="${pam.portal.name}"/>
 			
 			<arg value="-ApplicationType"/>
 			<arg value="${pam.app.type}"/>
+			
+			<arg value="-Impl"/>
+			arg value="${pam.impl}"/>
 			
 			<arg value="-webappDir"/>
 			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
@@ -296,12 +315,6 @@ limitations under the License.
  	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
  	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
  	<attainGoal name="pam.template.register"/>
-  </goal>
-
-  <goal name="jetspeed2:deploy">
- 	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
- 	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
- 	<attainGoal name="pam.template.deploy"/>
   </goal>
 
 
@@ -410,52 +423,89 @@ limitations under the License.
      <attainGoal name="war:war" />
   </goal>
   
+  <goal name='jetspeed2:deploy.shared'>
+    <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
+    <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>-->
+    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
+    <copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portlet-api/jars/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>  	  
+    <copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-api-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>    
+  </goal>
+  
   <goal name="jetspeed2:deploy.portal">  	
   	
-  	  <echo>Copying from ${maven.repo.local} to ${catalina.shared.lib}...</echo>
-    <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>-->
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${catalina.shared.lib}"/>
-    
-    <copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/portlet-api/jars/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>  	
-  	
-  	<copy todir="${deploy.war.dir}" failonerror="true" overwrite="true">
+	<attainGoal name='jetspeed2:deploy.shared'/>  	
+	
+	<copy todir="${org.apache.jetspeed.deploy.war.dir}" failonerror="true" overwrite="true">
          <fileset dir="${maven.war.build.dir}" >  
              <include name="${maven.war.final.name}" />
          </fileset>	             	       	       
      </copy>	   
 
-     
-     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml" overwrite="true">
-        <filterset begintoken="@" endtoken="@">
-          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
-          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
-          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
-          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
-        </filterset>
-      </copy>
-     
-     
-      <delete dir="${deploy.war.dir}/${maven.war.web.app.name}"/>
-     <unwar src="${deploy.war.dir}/${maven.war.final.name}" dest="${deploy.war.dir}/${maven.war.web.app.name}"/>
+	<attainGoal name='jetspeed2:copy.context'/>
+	          
+     <delete dir="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
+     <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      
       <!--<attainGoal name="jetspeed2:unregister.core.pa" />-->
      <j:set var="pam.action" value="register"/>
  	 <j:set var="pam.app.name" value="jetspeed"/>
- 	 <j:set var="pam.app.war" value="${deploy.war.dir}/${maven.war.final.name}"/>
+ 	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
  	 <attainGoal name="pam.template.register"/>
   </goal>
   
   <goal name="jetspeed2:unregister.core.pa">
   	  <j:set var="pam.action" value="unregister"/>
  	 <j:set var="pam.app.name" value="jetspeed"/>
- 	 <j:set var="pam.app.war" value="${deploy.war.dir}/${maven.war.final.name}"/>
+ 	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
  	 <attainGoal name="pam.template.register"/>
   </goal>
+
+<goal name="jetspeed2:copy.context">    
+
+	<!-- version -->
+    <j:choose>
+	    <j:when test="${catVer == '5'}" >
+	        <j:set var="catDir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>	    
+	    </j:when>
+	    <j:otherwise>
+	        <j:set var="catDir" value="${org.apache.jetspeed.deploy.war.dir}"/>	    
+	    </j:otherwise>
+  	</j:choose>
+  		
+	<!-- careful there in jexl land, don't use dot notation as it don't evaluate in jexl test -->	
+	<j:set var="fileName" value="org.apache.jetspeed.context.file.name"/>	
+	<j:set var="fileSource" value="org.apache.jetspeed.context.file.source"/>	
+	
+	<!-- context file destination -->  	
+    <j:choose>	
+	    <j:when test="${fileName == null}" >
+			<j:set var="destinationFile" value="${catDir}/jetspeed.xml"/>
+	  	</j:when>
+	    <j:otherwise>	    
+	        <j:set var="destinationFile" value="${catDir}/${org.apache.jetspeed.context.file.name}"/>	    
+	    </j:otherwise>
+	</j:choose>
+	              
+    <j:if test="${fileSource == null}" >
+		<j:set var="org.apache.jetspeed.context.file.source" value="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed.xml"/>
+  	</j:if>
+	
+     <copy file="${org.apache.jetspeed.context.file.source}" tofile="${destinationFile}" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="USERNAME" value="${org.apache.jetspeed.database.user}"/>
+          <filter token="PASSWORD" value="${org.apache.jetspeed.database.password}"/>
+          <filter token="DRIVER" value="${org.apache.jetspeed.database.driver}"/>
+          <filter token="URL" value="${org.apache.jetspeed.database.url}"/>
+        </filterset>
+      </copy>    
+</goal>    
+
   
 </project>
+
