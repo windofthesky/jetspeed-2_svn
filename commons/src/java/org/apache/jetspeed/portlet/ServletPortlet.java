@@ -257,7 +257,10 @@ public class ServletPortlet extends GenericPortlet
         if (this.allowPreferences == true)
         {
             PortletPreferences prefs = request.getPreferences();
-            if (prefs != null)
+            // allow ViewPage override by the request
+            customPage = (String) request.getAttribute(PARAM_CUSTOM_PAGE);            
+            
+            if (prefs != null && customPage == null)
             {
                 customPage = prefs.getValue(PARAM_CUSTOM_PAGE, this.defaultCustomPage);
             }
@@ -341,13 +344,23 @@ public class ServletPortlet extends GenericPortlet
     throws PortletException, IOException
     {
         String viewPage = this.defaultViewPage;
+        
+         //	allow ViewPage override by the request
+		String reqViewPage = (String) request.getAttribute(PARAM_VIEW_PAGE);
+		if(reqViewPage != null)
+		{
+			viewPage = reqViewPage;
+		}
+		
         if (this.allowPreferences == true)
         {
             PortletPreferences prefs = request.getPreferences();
-            if (prefs != null)
+
+            
+            if (prefs != null && reqViewPage == null)
             {
                 viewPage = prefs.getValue(PARAM_VIEW_PAGE, this.defaultViewPage);
-            }
+            }          
         }
 
         if (viewPage != null)
