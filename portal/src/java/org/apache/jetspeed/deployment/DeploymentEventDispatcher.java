@@ -73,8 +73,10 @@ public class DeploymentEventDispatcher
 {
     private List deploymentListeners;
     private String deploymentRoot;
+
+    protected static final Log log = LogFactory.getLog("deployment");
     
-    private static final Log log = LogFactory.getLog(DeploymentEventDispatcher.class);
+    
     
 
     public DeploymentEventDispatcher(String deploymentRoot)
@@ -98,12 +100,12 @@ public class DeploymentEventDispatcher
     		try
             {
                 listener.invoke(event);
+				event.setStatus(DeploymentEvent.STATUS_OKAY);
             }
             catch (DeploymentException e)
             {   
-            	// log and continue
-            	             
-                
+            	log.error(e.toString());           	             
+                event.setStatus(DeploymentEvent.STATUS_FAILED);
             }
     	}
     }
