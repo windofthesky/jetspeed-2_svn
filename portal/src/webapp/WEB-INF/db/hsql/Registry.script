@@ -105,3 +105,96 @@ CREATE ALIAS RAND FOR "java.lang.Math.random"
 CREATE ALIAS LENGTH FOR "org.hsqldb.Library.length"
 CREATE ALIAS ROUND FOR "org.hsqldb.Library.round"
 CREATE ALIAS REPLACE FOR "org.hsqldb.Library.replace"
+/*C1*/CONNECT USER sa PASSWORD ""
+SET AUTOCOMMIT FALSE
+/*C2*/CONNECT USER sa PASSWORD ""
+/*C1*/INSERT INTO OJB_HL_SEQ VALUES('SEQ_WEB_APPLICATION','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_PORTLET_APPLICATION','APPLICATION_ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_LOCALIZED_DISPLAY_NAME','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_PORTLET_DEFINITION','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_LANGUAGE','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_PORTLET_CONTENT_TYPE','CONTENT_TYPE_ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_PARAMETER','PARAMETER_ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_LOCALIZED_DESCRITPION','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+INSERT INTO OJB_HL_SEQ VALUES('SEQ_PORTLET_PREFERENCE','ID',20,20,1)
+COMMIT
+SET AUTOCOMMIT TRUE
+/*C2*/SET AUTOCOMMIT FALSE
+INSERT INTO WEB_APPLICATION VALUES(1,'/HW_App')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(1,1,'web application','HW_App','en,US,')
+INSERT INTO PORTLET_APPLICATION VALUES(1,'HW_App','HW_App','1.0',NULL,1)
+INSERT INTO PORTLET_DEFINITION VALUES(1,'LoginPortlet','org.apache.jetspeed.portlet.ServletPortlet',1,'LoginPortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(1,1,'Login/Logout  Request Information','Portlet Request Information','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(1,1,'text/html','"view"')
+INSERT INTO PARAMETER VALUES(1,1,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','ViewPage','/WEB-INF/demo/simple/Login.jsp')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(2,1,'portlet','LoginRequest Portlet Wrapper','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(2,'AttributeScopePortlet','org.apache.jetspeed.demo.simple.AttributeScopeServlet',1,'AttributeScopePortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(2,2,'Attribute Scope Demo Portlet','','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(2,2,'text/html','"view","help"')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(3,2,'portlet','Attribute Scope Demo','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(3,'CustomerInfo','org.apache.jetspeed.demo.customerInfo.CustomerPortlet',1,'CustomerInfo','-1',NULL)
+INSERT INTO LANGUAGE VALUES(3,3,'Customer Information','Customer Info','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(3,3,'text/html','"view"')
+INSERT INTO PARAMETER VALUES(2,3,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','ViewPage','/WEB-INF/demo/customerInfo/Page2.jsp')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(4,3,'portlet','Customer Information','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(4,'JMXPortlet','org.apache.jetspeed.demo.jmx.JMXPortlet',1,'JMXPortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(4,4,'JMX Portal Console','JMX Portlet Console','en,,','"JMX"')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(4,4,'text/html','"view"')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(5,4,'portlet','JMX Registry Access portlet','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(5,'CustomerDetail','org.apache.jetspeed.demo.customerInfo.CustomerPortlet',1,'CustomerDetail','-1',NULL)
+INSERT INTO LANGUAGE VALUES(5,5,'Customer Detail','Customer Detail','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(5,5,'text/html','"view"')
+INSERT INTO PARAMETER VALUES(3,5,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','ViewPage','/WEB-INF/demo/customerInfo/Page3.jsp')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(6,5,'portlet','Customer Detail','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(6,'PickANumberPortlet','org.apache.jetspeed.demo.simple.PickANumberServlet',1,'PickANumberPortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(6,6,'Pick a Number','','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(6,6,'text/html','"view","help"')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(7,6,'portlet','Pick a number game','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(7,'CustomerList','org.apache.jetspeed.demo.customerInfo.CustomerPortlet',1,'CustomerList','-1',NULL)
+INSERT INTO LANGUAGE VALUES(7,7,'Customer List','Customer List','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(7,7,'text/html','"view"')
+INSERT INTO PARAMETER VALUES(4,7,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','ViewPage','/WEB-INF/demo/customerInfo/Page1.jsp')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(8,7,'portlet','Customer List','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(8,'DisplayRequestPortlet','org.apache.jetspeed.portlet.ServletPortlet',1,'DisplayRequestPortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(8,8,'Display the Portlet Request Information','Portlet Request Information','en,,','')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(8,8,'text/html','"view","help"')
+INSERT INTO PARAMETER VALUES(5,8,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','ViewPage','/WEB-INF/demo/simple/DisplayRequest.jsp')
+INSERT INTO PARAMETER VALUES(6,8,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','HelpPage','/WEB-INF/demo/simple/DisplayRequestHelp.jsp')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(9,8,'portlet','DisplayRequest Portlet Wrapper','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(9,'HelloPortlet','org.apache.jetspeed.portlet.helloworld.HelloWorld',1,'HelloPortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(9,9,'HelloWorldTitle','This is the short title','en,,','"Test"')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(9,9,'text/html','"view","help","edit"')
+INSERT INTO PARAMETER VALUES(7,9,'org.apache.jetspeed.om.impl.PortletInitParameterImpl','hello','Hello Portlet')
+INSERT INTO LOCALIZED_DESCRITPION VALUES(1,7,'parameter','test init param','en,US,')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(10,9,'portlet','HelloWorld Portlet Wrapper','en,US,')
+INSERT INTO PORTLET_DEFINITION VALUES(10,'PreferencePortlet','org.apache.jetspeed.demo.preferences.PreferencePortlet',1,'PreferencePortlet','-1',NULL)
+INSERT INTO LANGUAGE VALUES(10,10,'Preference Test','Preference Test','en,,','"Preferences"')
+INSERT INTO PORTLET_CONTENT_TYPE VALUES(10,10,'text/html','"view"')
+INSERT INTO PORTLET_PREFERENCE VALUES(1,10,'pref1','default preference','FALSE')
+INSERT INTO LOCALIZED_DISPLAY_NAME VALUES(11,10,'portlet','PreferencePortlet','en,US,')
+COMMIT
+SET AUTOCOMMIT TRUE

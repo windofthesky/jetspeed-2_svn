@@ -142,8 +142,8 @@
       <!-- <copy  file="./target/jetspeed-2.0-a1-dev.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>-->
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>      
+      <copy  file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml"/>
   </goal>
-
 
   <!-- ================================================================ -->
   <!-- Hot Deploy for mundane everyday development under Catalina       -->
