@@ -1,4 +1,77 @@
 <!--
+ 	- D U B L I N  C O R E
+-->
+
+    <class-descriptor class="org.apache.jetspeed.om.common.DublinCore">
+      <extent-class class-ref="org.apache.jetspeed.om.common.impl.DublinCoreImpl" />         
+    </class-descriptor>
+
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.impl.DublinCoreImpl"
+   	  table="PORTLET_APPLICATION_DUBLIN_CORE"
+   >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+
+      />
+
+      <collection-descriptor
+         name="titles"
+         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+     
+   </class-descriptor>
+   
+<!--
+ 	- L O C A L I Z E D   F I E L D
+-->
+
+   <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
+      <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />         
+    </class-descriptor>
+   
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+   	  table="PORTLET_APPLICATION_DUBLIN_CORE_FIELDS"
+   >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+      <field-descriptor
+         name="parentId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+   
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+    </class-descriptor>
+
+<!--
    - P O R T L E T    A P P L I C A T I O N
 -->	
 
@@ -59,12 +132,28 @@
          column="WEB_APP_ID"
          jdbc-type="INTEGER"       
       />
+      
+      <field-descriptor
+         name="dublinCoreId"
+         column="DUBLIN_CORE_ID"
+         jdbc-type="INTEGER"       
+      />
 
       <field-descriptor
          name="applicationType"
          column="APP_TYPE"
          jdbc-type="INTEGER"       
       />
+      
+      <reference-descriptor 
+      	  name="dublinCore" 
+      	  class-ref="org.apache.jetspeed.om.common.impl.DublinCoreImpl" 
+		  auto-delete="true"
+      	  auto-update = "true"
+      	  auto-retrieve = "true"
+      	  >
+         <foreignkey field-ref="dublinCoreId"/>
+      </reference-descriptor>
      
       <reference-descriptor 
       	  name="webApplication" 
