@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-import org.picocontainer.defaults.DefaultPicoContainer
+import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.jetspeed.cache.file.FileCache
 
-// create the root container
-container = new DefaultPicoContainer()
+container = new ChildAwareContainer(parent)
 
-Long scanRate = 10
-cacheSize = 20
-if(parent != null)
+scanRate =  Long.parseLong(System.getProperty("org.apache.jetspeed.file_cache.scan_rate","120"))
+cacheSize = Integer.parseInt(System.getProperty("org.apache.jetspeed.file_cache.cache_size","100"))
+
+initialCapacity =  Integer.parseInt(System.getProperty("org.apache.jetspeed.file_cache.initial_capacity","-1"))
+loadFactor = Integer.parseInt(System.getProperty("org.apache.jetspeed.file_cache.load_factor","-1"))
+
+if(initialCapacity != -1 && loadFactor != -1)
 {
-	parent.registerComponentInstance(FileCache, new FileCache(scanRate, cacheSize))
+	FileCache fileCache = new FileCache(initialCapacity, loadFactor, scanRate, cacheSize)
+}
+else
+{
+	FileCache fileCache = new FileCache(scanRate, cacheSize)
 }
 
-container.registerComponentInstance(FileCache, new FileCache(scanRate, cacheSize))
-
-
+container.registerComponentInstance(FileCache, fileCache)
 
 
 return container
