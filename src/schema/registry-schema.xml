@@ -194,9 +194,11 @@ limitations under the License.
         <column name="WEB_APPLICATION_ID" required="true" type="INTEGER"/>  
         <column name="ROLE_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="DESCRIPTION" size="150" type="VARCHAR"/>              
+        <!-- This is causing removing portlet application to fail with OJB RC4.
         <foreign-key foreignTable="WEB_APPLICATION">                        
             <reference foreign="ID" local="WEB_APPLICATION_ID"/>            
-        </foreign-key>                                                      
+        </foreign-key>
+        -->                                                   
     </table>                                                                
 
     <!--
