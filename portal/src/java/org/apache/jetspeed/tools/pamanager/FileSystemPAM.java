@@ -86,8 +86,9 @@ public class FileSystemPAM implements Deployment
 
     private static final String DEPLOYMENT_SYSTEM = "jetspeed-deploy";
 
-    private String deploymentDbAlias;
+    protected String deploymentDbAlias;
     private static final Log log = LogFactory.getLog("deployment");
+	protected boolean useDefaultPluginFordeploy = false;
 
     public FileSystemPAM()
     {
@@ -112,7 +113,7 @@ public class FileSystemPAM implements Deployment
      */
     public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
     {
-        deploy(webAppsDir, warFile, paName, null, 0);
+        sysDeploy(webAppsDir, warFile, paName, 0);
 
     }
 
@@ -131,7 +132,7 @@ public class FileSystemPAM implements Deployment
      */
     public void deploy(String webAppsDir, String warFile, String paName, int startState) throws PortletApplicationException
     {
-        deploy(webAppsDir, warFile, paName, null, startState);
+        sysDeploy(webAppsDir, warFile, paName, startState);
 
     }
 
@@ -150,123 +151,7 @@ public class FileSystemPAM implements Deployment
     {
         this.deploymentDbAlias = deploymentDbAlias;
 
-        // Call into DeplyUtilities class
-        DeployUtilities util = new DeployUtilities();
-
-        // State of deployment -- use integer to signal the state
-        // 0 Initial state
-        // 1 Archive deployed
-        // 2 WEB XML updated
-        // 3 Registry updated
-        //
-        int nState = 0; //Initialize
-        MutablePortletApplication app = null;
-
-        try
-        {
-            if (startState <= nState)
-            {
-                // prepend a slash if need be
-                if (paName.indexOf('/') != 0)
-                {
-                    paName = "/" + paName;
-                }
-                util.deployArchive(webAppsDir, warFile, paName);
-            }
-
-            nState = 1;
-
-            if (startState <= nState)
-            {
-                util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
-            }
-
-            nState = 2;
-
-            if (startState <= nState)
-            {
-                // Application is deployed -- populate the registry with the portlet.xml
-                String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
-
-                // load the portlet.xml
-                log.info("Loading " + portletXMLPath + " into memory....");
-                app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
-
-                if (app == null)
-                {
-                    log.error("Error loading: " + portletXMLPath);
-                    rollback(nState, webAppsDir, paName, app);
-                    return;
-                }
-
-                if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
-                {
-                    app.setApplicationType(MutablePortletApplication.LOCAL);
-                }
-                else
-                {
-                    app.setApplicationType(MutablePortletApplication.WEBAPP);
-                }
-                // create the web application
-                MutableWebApplication webapp = new WebApplicationDefinitionImpl();
-                if (paName.startsWith("/"))
-                {
-                    webapp.setContextRoot(paName);
-                }
-                else
-                {
-                    webapp.setContextRoot("/" + paName);
-                }
-                webapp.addDisplayName(Jetspeed.getDefaultLocale(), paName);
-                app.setWebApplicationDefinition(webapp);
-
-                // save it to the registry
-                log.info("Saving the portlet.xml in the registry...");
-                // locate the deployment home
-                identifyDeploymentSystem();
-
-                JetspeedPortletRegistry.registerPortletApplication(app, DEPLOYMENT_SYSTEM);
-            }
-
-            nState = 3;
-
-            // DONE
-            log.info("FileSystem deployment done.");
-
-        }
-        catch (PortletApplicationException pae)
-        {
-            log.error(
-                "PortletApplicationException encountered deploying portlet application: "
-                    + pae.toString()
-                    + " attempting rollback...",
-                pae);
-            rollback(nState, webAppsDir, paName, app);
-            throw pae;
-        }
-        catch (RegistryException re)
-        {
-            String msg =
-                "RegistryException encountered deploying portlet application: " + re.toString() + " attempting rollback...";
-            log.error(msg, re);
-            rollback(nState, webAppsDir, paName, app);
-            throw new PortletApplicationException(msg, re);
-        }
-        catch (IOException e)
-        {
-            String msg = "IOException encountered deploying portlet application: " + e.toString() + " attempting rollback...";
-            log.error(msg, e);
-            rollback(nState, webAppsDir, paName, app);
-            throw new PortletApplicationException(msg, e);
-        }
-        catch (Throwable t)
-        {
-            String msg = "Unexpected exception deploying portlet application: " + t.toString() + " attempting rollback...";
-            log.error(msg, t);
-            throw new PortletApplicationException(msg, t);
-
-        }
-
+        sysDeploy(webAppsDir, warFile, paName, startState);
     }
 
     // Interface not supported by FileSystemPAM
@@ -413,14 +298,25 @@ public class FileSystemPAM implements Deployment
      */
     protected void identifyDeploymentSystem() throws IOException
     {
-        String dbAliasOverride;
+ 
+        String dbAliasOverride = null;
         if (this.deploymentDbAlias == null)
         {
             String userBuildFile = System.getProperty("user.home") + File.separator + "build.properties";
-            Configuration buildProps = new PropertiesConfiguration(userBuildFile, "./build.properties");
 
-            // See if the user has overriden the deployment alias
-            dbAliasOverride = buildProps.getString("deployment.db.alias");
+            try
+            {
+                Configuration buildProps = new PropertiesConfiguration(userBuildFile, "./build.properties");
+
+                // See if the user has overriden the deployment alias
+                dbAliasOverride = buildProps.getString("deployment.db.alias");
+            }
+            catch (IOException e)
+            {
+                
+               log.warn("No user-defined build properties found.");
+            }
+
         }
         else
         {
@@ -446,25 +342,251 @@ public class FileSystemPAM implements Deployment
 
     }
 
-    private void rollback(int nState, String webAppsDir, String paName, MutablePortletApplication app)
+    //    private void rollback(int nState, String webAppsDir, String paName, MutablePortletApplication app)
+    //    {
+    //        log.info("Exception in deploy. Rollback of application deployment...");
+    //
+    //        try
+    //        {
+    //            if (nState >= 2 && app != null)
+    //            {
+    //                // remove entries from the registry
+    //                // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
+    //                log.info("Saving the portlet.xml in the registry...");
+    //                // locate the deployment home
+    //                identifyDeploymentSystem();
+    //                JetspeedPortletRegistry.beginTransaction();
+    //                JetspeedPortletRegistry.removeApplication(app);
+    //                JetspeedPortletRegistry.commitTransaction();
+    //            }
+    //
+    //        }
+    //        catch (Exception e1)
+    //        {
+    //            try
+    //            {
+    //                log.error("Error processing rollback.  Attempting to rollback registry transaction.", e1);
+    //                JetspeedPortletRegistry.rollbackTransaction();
+    //            }
+    //            catch (TransactionStateException e2)
+    //            {
+    //                log.error("Error processing tranasction: " + e2.toString(), e2);
+    //                e2.printStackTrace();
+    //            }
+    //
+    //        }
+    //
+    //        try
+    //        {
+    //
+    //            if (nState >= 1)
+    //            {
+    //                // Remove the webapps directory
+    //                log.info("Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
+    //
+    //                // Call into DeplyUtilities class
+    //                DeployUtilities util = new DeployUtilities();
+    //                if (DirectoryUtils.rmdir(new File(webAppsDir + paName)) == false)
+    //                {
+    //                    log.error(
+    //                        "Rollback: Failed to delete web app directory "
+    //                            + webAppsDir
+    //                            + " .Make sure the application is no longer running.");
+    //                }
+    //            }
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            log.error("Error removing file system deployment artifacts: " + e.toString(), e);
+    //        }
+    //    }
+
+    protected void sysDeploy(String webAppsDir, String warFile, String paName, int startState) throws PortletApplicationException
     {
-        log.info("Exception in deploy. Rollback of application deployment...");
+
+        // Call into DeplyUtilities class
+        DeployUtilities util = new DeployUtilities();
+
+        // State of deployment -- use integer to signal the state
+        // 0 Initial state
+        // 1 Archive deployed
+        // 2 WEB XML updated
+        // 3 Registry updated
+        //
+        int nState = 0; //Initialize
+        MutablePortletApplication app = null;
 
         try
         {
-            if (nState >= 2 && app != null)
+            if (startState <= nState)
             {
-                // remove entries from the registry
-                // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
-                log.info("Saving the portlet.xml in the registry...");
-                // locate the deployment home
-                identifyDeploymentSystem();
-                JetspeedPortletRegistry.beginTransaction();
-                JetspeedPortletRegistry.removeApplication(app);
-                JetspeedPortletRegistry.commitTransaction();
+                // prepend a slash if need be
+                if (paName.indexOf('/') != 0)
+                {
+                    paName = "/" + paName;
+                }
+                util.deployArchive(webAppsDir, warFile, paName);
             }
 
+            nState = 1;
+
+            if (startState <= nState)
+            {
+                util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
+            }
+
+            nState = 2;
+
+            if (startState <= nState)
+            {
+                registerApplication(webAppsDir, paName);
+            }
+
+            nState = 3;
+
+            // DONE
+            log.info("FileSystem deployment done.");
+
         }
+        catch (PortletApplicationException pae)
+        {
+            log.error(
+                "PortletApplicationException encountered deploying portlet application: "
+                    + pae.toString()
+                    + " attempting rollback...",
+                pae);
+            rollback(nState, webAppsDir, paName, app);
+            throw pae;
+        }
+        catch (Throwable t)
+        {
+            log.error("Unexpected exception deploying portlet application: " + t.toString() + " attempting rollback...", t);
+            rollback(nState, webAppsDir, paName, app);
+            throw new PortletApplicationException(t);
+        }
+
+    }
+
+    protected void registerApplication(String webAppsDir, String paName) throws PortletApplicationException, RegistryException
+    {
+        MutablePortletApplication app;
+        // Application is deployed -- populate the registry with the portlet.xml
+        String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
+
+        // load the portlet.xml
+        log.info("Loading " + portletXMLPath + " into memory....");
+        app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
+
+        if (app == null)
+        {
+            String msg = "Error loading: " + portletXMLPath;
+            log.error(msg);
+            throw new PortletApplicationException(msg);
+        }
+
+        if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
+        {
+            app.setApplicationType(MutablePortletApplication.LOCAL);
+        }
+        else
+        {
+            app.setApplicationType(MutablePortletApplication.WEBAPP);
+        }
+        //					// create the web application
+        MutableWebApplication webapp = new WebApplicationDefinitionImpl();
+        if (paName.startsWith("/"))
+        {
+            webapp.setContextRoot(paName);
+        }
+        else
+        {
+            webapp.setContextRoot("/" + paName);
+        }
+        webapp.addDisplayName(Jetspeed.getDefaultLocale(), paName);
+        app.setWebApplicationDefinition(webapp);
+
+        // save it to the registry
+        log.info("Saving the portlet.xml in the registry...");
+
+        try
+        {
+            // locate the deployment home
+            identifyDeploymentSystem();
+        }
+        catch (IOException e)
+        {
+            String msg = "Failed to identify the deployment system.";
+            log.error(msg, e);
+            throw new PortletApplicationException(msg, e);
+        }
+		
+		if( useDefaultPluginFordeploy)
+		{
+			JetspeedPortletRegistry.registerPortletApplication(app);
+		}
+		else
+		{
+			JetspeedPortletRegistry.registerPortletApplication(app, DEPLOYMENT_SYSTEM);
+		}
+        
+    }
+
+    protected void rollback(int nState, String webAppsDir, String paName, MutablePortletApplication app)
+    {
+        log.info("Exception in deploy. Rollback of application deployment...");
+        if (nState >= 2 && app != null)
+        {
+            rollbackRegistry(app);
+        }
+
+        if (nState >= 1)
+        {
+            rollbackFileSystem(webAppsDir, paName);
+        }
+    }
+
+    protected void rollbackFileSystem(String webAppsDir, String paName)
+    {
+        try
+        {
+
+            // Remove the webapps directory
+            log.info("Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
+
+            // Call into DeplyUtilities class
+            DeployUtilities util = new DeployUtilities();
+            if (DirectoryUtils.rmdir(new File(webAppsDir + paName)) == false)
+            {
+                log.error(
+                    "Rollback: Failed to delete web app directory "
+                        + webAppsDir
+                        + " .Make sure the application is no longer running.");
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Error removing file system deployment artifacts: " + e.toString(), e);
+        }
+    }
+
+    /**
+     * Roles back any registry changes that have been made
+     * @param app
+     */
+    protected void rollbackRegistry(MutablePortletApplication app)
+    {
+        try
+        {
+
+            // remove entries from the registry
+            // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
+            log.info("Saving the portlet.xml in the registry...");
+
+            JetspeedPortletRegistry.beginTransaction();
+            JetspeedPortletRegistry.removeApplication(app);
+            JetspeedPortletRegistry.commitTransaction();
+        }
+
         catch (Exception e1)
         {
             try
@@ -475,33 +597,8 @@ public class FileSystemPAM implements Deployment
             catch (TransactionStateException e2)
             {
                 log.error("Error processing tranasction: " + e2.toString(), e2);
-                e2.printStackTrace();
             }
 
-        }
-
-        try
-        {
-
-            if (nState >= 1)
-            {
-                // Remove the webapps directory
-                log.info("Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
-
-                // Call into DeplyUtilities class
-                DeployUtilities util = new DeployUtilities();
-                if (DirectoryUtils.rmdir(new File(webAppsDir + paName)) == false)
-                {
-                    log.error(
-                        "Rollback: Failed to delete web app directory "
-                            + webAppsDir
-                            + " .Make sure the application is no longer running.");
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("Error removing file system deployment artifacts: " + e.toString(), e);
         }
     }
 
