@@ -16,6 +16,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <beans>
+
+  <!-- Profiler DAO-->
+  <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
+  	   <constructor-arg index="0"><value>META-INF/profiler-ojb.xml</value></constructor-arg>
+  	   <constructor-arg index="1"><value>j1</value></constructor-arg>
+    </bean>
+  
+  <!-- Profiler -->  
+  <bean id="org.apache.jetspeed.profiler.Profiler" 
+        name="profiler"
+        parent="baseTransactionProxy"        
+  >  	   
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.profiler.Profiler</value>
+		</property>
+		<property name="target">
+			<ref bean="profilerImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="setRuleForPrincipal">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="store*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>		  	   
+  </bean>
 	
   <bean id="PsmlDocumentHandler"   	  
   	   class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >  	   
