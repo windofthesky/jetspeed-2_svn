@@ -15,32 +15,27 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @see org.apache.jetspeed.security.spi.UserSecurityHandler
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class DefaultUserSecurityHandler implements UserSecurityHandler
+public class LdapUserSecurityHandler implements UserSecurityHandler
 {
-    /** Common queries. */
-    private CommonQueries commonQueries = null;
-    
     /**
-     * <p>Constructor providing access to the common queries.</p>
+     * <p>
+     * Default Constructor.
+     * </p>
      */
-    public DefaultUserSecurityHandler(CommonQueries commonQueries)
+    public LdapUserSecurityHandler()
     {
-        this.commonQueries = commonQueries;
     }
     
     /**
@@ -49,10 +44,17 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public Principal getUserPrincipal(String username)
     {
         UserPrincipal userPrincipal = null;
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username, false);
-        if (null != internalUser)
+        if (username.equals("ldap1"))
         {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
+            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap1"));
+        }
+        else if (username.equals("ldap2"))
+        {
+            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap2"));
+        }
+        else if (username.equals("ldap3"))
+        {
+            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap3"));
         }
         return userPrincipal;
     }
@@ -63,17 +65,10 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public List getUserPrincipals(String filter)
     {
         List userPrincipals = new LinkedList();
-        Iterator result = commonQueries.getInternalUserPrincipals(filter);
-        while (result.hasNext())
-        {
-            InternalUserPrincipal internalUser = (InternalUserPrincipal) result.next();
-            String path = internalUser.getFullPath();
-            if (path == null || !path.startsWith(UserPrincipal.PREFS_USER_ROOT)) // TODO: FIXME: the extend shouldn't return roles!
-            {
-                continue;
-            }
-            userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath())));
-        }
+        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap1")));
+        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap2")));
+        userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath("/user/ldap3")));
+
         return userPrincipals;
     }
 
@@ -82,9 +77,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
      */
     public void setUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        String fullPath = userPrincipal.getFullPath();
-        InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
-        commonQueries.setInternalUserPrincipal(internalUser, false);        
+        // To implement.
     }
     
     /**
@@ -92,19 +85,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
      */
     public void removeUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(userPrincipal.getName(), false);
-        if (null != internalUser)
-        {
-            commonQueries.removeInternalUserPrincipal(internalUser);
-        }
-        else
-        {
-            internalUser = commonQueries.getInternalUserPrincipal(userPrincipal.getName(), true);
-            if (null != internalUser)
-            {
-                commonQueries.removeInternalUserPrincipal(internalUser);
-            }
-        }
+        // To implement        
     }
 
 }

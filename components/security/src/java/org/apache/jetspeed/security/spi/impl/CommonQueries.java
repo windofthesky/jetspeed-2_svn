@@ -60,7 +60,7 @@ public class CommonQueries
 
     /**
      * <p>
-     * Returns the {@link InternalUserPrincipal}from the user name.
+     * Returns the {@link InternalUserPrincipal} from the user name.
      * </p>
      * 
      * @param username The user name.
@@ -77,6 +77,28 @@ public class CommonQueries
         InternalUserPrincipal internalUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
         return internalUser;
     }
+    
+    /**
+     * <p>
+     * Returns the {@link InternalUserPrincipal} from the user name.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param isMappingOnly Whether a principal's purpose is for security mappping only.
+     * @return The {@link InternalUserPrincipal}.
+     */
+    public InternalUserPrincipal getInternalUserPrincipal(String username, boolean isMappingOnly)
+    {
+        UserPrincipal userPrincipal = new UserPrincipalImpl(username);
+        String fullPath = userPrincipal.getFullPath();
+        // Get user.
+        Filter filter = persistenceStore.newFilter();
+        filter.addEqualTo("fullPath", fullPath);
+        filter.addEqualTo("isMappingOnly", new Boolean(isMappingOnly));
+        Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, filter);
+        InternalUserPrincipal internalUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
+        return internalUser;
+    }
 
     /**
      * <p>
@@ -88,7 +110,10 @@ public class CommonQueries
      */
     public Iterator getInternalUserPrincipals(String filter)
     {
-        Iterator result = persistenceStore.getExtent(InternalUserPrincipalImpl.class).iterator();
+        Filter queryFilter = persistenceStore.newFilter();
+        queryFilter.addEqualTo("isMappingOnly", new Boolean(false));
+        Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, queryFilter);
+        Iterator result = persistenceStore.getIteratorByQuery(query);
         return result;
     }
 
@@ -98,15 +123,20 @@ public class CommonQueries
      * </p>
      * 
      * @param internalUser The {@link InternalUserPrincipal}.
+     * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    public void setInternalUserPrincipal(InternalUserPrincipal internalUser) throws SecurityException
+    public void setInternalUserPrincipal(InternalUserPrincipal internalUser, boolean isMappingOnly) throws SecurityException
     {
         try
         {
             Transaction tx = persistenceStore.getTransaction();
             tx.begin();
             persistenceStore.lockForWrite(internalUser);
+            if (isMappingOnly)
+            {
+                internalUser.setMappingOnly(isMappingOnly);
+            }
             tx.commit();
         }
         catch (Exception e)
@@ -173,15 +203,20 @@ public class CommonQueries
      * </p>
      * 
      * @param internalRole The {@link InternalRolePrincipal}.
+     * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    public void setInternalRolePrincipal(InternalRolePrincipal internalRole) throws SecurityException
+    public void setInternalRolePrincipal(InternalRolePrincipal internalRole, boolean isMappingOnly) throws SecurityException
     {
         try
         {
             Transaction tx = persistenceStore.getTransaction();
             tx.begin();
             persistenceStore.lockForWrite(internalRole);
+            if (isMappingOnly)
+            {
+                internalRole.setMappingOnly(isMappingOnly);
+            }
             tx.commit();
         }
         catch (Exception e)
@@ -249,15 +284,20 @@ public class CommonQueries
      * </p>
      * 
      * @param internalGroup The {@link internalGroupPrincipal}.
+     * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    public void setInternalGroupPrincipal(InternalGroupPrincipal internalGroup) throws SecurityException
+    public void setInternalGroupPrincipal(InternalGroupPrincipal internalGroup, boolean isMappingOnly) throws SecurityException
     {
         try
         {
             Transaction tx = persistenceStore.getTransaction();
             tx.begin();
             persistenceStore.lockForWrite(internalGroup);
+            if (isMappingOnly)
+            {
+                internalGroup.setMappingOnly(isMappingOnly);
+            }
             tx.commit();
         }
         catch (Exception e)

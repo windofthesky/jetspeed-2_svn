@@ -14,23 +14,72 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.List;
+import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * <p>
- * Configures the login modules.
+ * Configures an authentication provider.
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public interface AuthenticationProvider
 {
+    
     /**
      * <p>
-     * Getter for the login modules.
+     * Gets the authentication provider name.
      * </p>
      * 
-     * @return The UserManager.
+     * @return The authentication provider name.
      */
-    List getLoginModules();
+    String getProviderName();
+    
+    /**
+     * <p>
+     * Gets the authentication provider description.
+     * </p>
+     * 
+     * @return The authentication provider description.
+     */
+    String getProviderDescription();
+    
+    /**
+     * <p>
+     * Gets the {@link UserSecurityHandler}.
+     * </p>
+     * 
+     * @return The {@link UserSecurityHandler}.
+     */
+    UserSecurityHandler getUserSecurityHandler();
+    
+    
+    /**
+     * <p>
+     * Sets the {@link UserSecurityHandler}.
+     * </p>
+     * 
+     * @param userSecurityHandler The {@link UserSecurityHandler}.
+     */
+    void setUserSecurityHandler(UserSecurityHandler userSecurityHandler);
+    
+    /**
+     * <p>
+     * Gets the {@link CredentialHandler}.
+     * </p>
+     * 
+     * @return The {@link CredentialHandler}.
+     */
+    CredentialHandler getCredentialHandler();
+    
+    /**
+     * <p>
+     * Sets the {@link CredentialHandler}.
+     * </p>
+     * 
+     * @param credHandler The {@link CredentialHandler}.
+     */
+    void setCredentialHandler(CredentialHandler credHandler);
+
 }

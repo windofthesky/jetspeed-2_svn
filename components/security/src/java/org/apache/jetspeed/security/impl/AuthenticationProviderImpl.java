@@ -15,8 +15,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,10 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
 import org.apache.jetspeed.security.AuthenticationProvider;
+import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @see org.apache.jetspeed.security.AuthenticationProvider
- * @author <a href="mailto:LeStrat_David@emc.com">David Le Strat </a> 
+ * @author <a href="mailto:LeStrat_David@emc.com">David Le Strat </a>
  */
 public class AuthenticationProviderImpl implements AuthenticationProvider
 {
@@ -35,8 +35,42 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
     /** The logger. */
     private static final Log log = LogFactory.getLog(AuthenticationProviderImpl.class);
 
-    /** The list of login modules. */
-    private List loginModules = new ArrayList();
+    /** The provider name. */
+    private String providerName;
+
+    /** The provider description. */
+    private String providerDescription;
+
+    /** The {@link CredentialHandler}. */
+    private CredentialHandler credHandler;
+
+    /** The {@link UserSecurityHandler}. */
+    private UserSecurityHandler userSecurityHandler;
+
+    /**
+     * <p>
+     * Constructor to configure authenticatino user security and credential
+     * handlers.
+     * </p>
+     * 
+     * @param providerName The provider name.
+     * @param providerDescription The provider description.
+     * @param credHandler The credential handler.
+     * @param userSecurityHandler The user security handler.
+     */
+    public AuthenticationProviderImpl(String providerName, String providerDescription, CredentialHandler credHandler,
+            UserSecurityHandler userSecurityHandler)
+    {
+        // The provider name.
+        this.providerName = providerName;
+        // The provider description.
+        this.providerDescription = providerDescription;
+        
+        // The credential handler.
+        this.credHandler = credHandler;
+        // The user security handler.
+        this.userSecurityHandler = userSecurityHandler;
+    }
     
     /**
      * <p>
@@ -44,10 +78,17 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
      * <code>java.security.auth.login.config</code>.
      * </p>
      * 
+     * @param providerName The provider name.
+     * @param providerDescription The provider description.
      * @param loginConfig The login module config.
+     * @param credHandler The credential handler.
+     * @param userSecurityHandler The user security handler.
      */
-    public AuthenticationProviderImpl(String loginConfig)
+    public AuthenticationProviderImpl(String providerName, String providerDescription, String loginConfig,
+            CredentialHandler credHandler, UserSecurityHandler userSecurityHandler)
     {
+        this(providerName, providerDescription, credHandler, userSecurityHandler);
+        
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         SystemResourceUtil resourceUtil = new ClassLoaderSystemResourceUtilImpl(cl);
         URL loginConfigUrl = null;
@@ -65,16 +106,70 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
             if (log.isDebugEnabled())
                 log.debug("java.security.auth.login.config = " + loginConfigUrl.toString());
             System.setProperty("java.security.auth.login.config", loginConfigUrl.toString());
-            // TODO This is incorect but will do for now.
-            loginModules.add(loginConfigUrl.toString());
         }
     }
-   
+
     /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#getLoginModules()
+     * @return Returns the providerDescription.
      */
-    public List getLoginModules()
+    public String getProviderDescription()
     {
-        return this.loginModules;
+        return providerDescription;
+    }
+
+    /**
+     * @param providerDescription The providerDescription to set.
+     */
+    public void setProviderDescription(String providerDescription)
+    {
+        this.providerDescription = providerDescription;
+    }
+
+    /**
+     * @return Returns the providerName.
+     */
+    public String getProviderName()
+    {
+        return providerName;
+    }
+
+    /**
+     * @param providerName The providerName to set.
+     */
+    public void setProviderName(String providerName)
+    {
+        this.providerName = providerName;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProvider#getCredentialHandler()
+     */
+    public CredentialHandler getCredentialHandler()
+    {
+        return this.credHandler;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProvider#getUserSecurityHandler()
+     */
+    public UserSecurityHandler getUserSecurityHandler()
+    {
+        return this.userSecurityHandler;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProvider#setCredentialHandler()
+     */
+    public void setCredentialHandler(CredentialHandler credHandler)
+    {
+        this.credHandler = credHandler;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProvider#setUserSecurityHandler()
+     */
+    public void setUserSecurityHandler(UserSecurityHandler userSecurityHandler)
+    {
+        this.userSecurityHandler = userSecurityHandler;
     }
 }

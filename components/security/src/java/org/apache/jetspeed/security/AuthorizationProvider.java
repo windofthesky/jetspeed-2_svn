@@ -33,4 +33,5 @@ public interface AuthorizationProvider
      * @return The list of policies.
      */
     List getPolicies();
+    
 }

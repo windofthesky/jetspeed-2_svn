@@ -29,6 +29,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
@@ -36,8 +37,6 @@ import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.UserSecurityProvider;
-import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
 
@@ -53,23 +52,19 @@ public class UserManagerImpl implements UserManager
 {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
-    /** The user security provider. */
-    private UserSecurityProvider userSecurityProvider = null;
+    /** The authenticatino provider proxy. */
+    private AuthenticationProviderProxy atnProviderProxy = null;
 
     /** The security mapping handler. */
     private SecurityMappingHandler securityMappingHandler = null;
-
-    /** The credential handler. */
-    private CredentialHandler credentialHandler = null;
 
     /**
      * @param securityProvider The security provider.
      */
     public UserManagerImpl(SecurityProvider securityProvider)
     {
-        this.userSecurityProvider = securityProvider.getUserSecurityProvider();
+        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
-        this.credentialHandler = securityProvider.getCredentialHandler();
     }
 
     /**
@@ -82,9 +77,8 @@ public class UserManagerImpl implements UserManager
     {
         securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(roleHierarchyResolver);
         securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(groupHierarchyResolver);
-        this.userSecurityProvider = securityProvider.getUserSecurityProvider();
+        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
-        this.credentialHandler = securityProvider.getCredentialHandler();
     }
 
     /**
@@ -97,7 +91,7 @@ public class UserManagerImpl implements UserManager
                 "authenticate(java.lang.String, java.lang.String)");
 
         boolean authenticated = false;
-        Set privateCredentials = this.credentialHandler.getPrivateCredentials(username);
+        Set privateCredentials = atnProviderProxy.getPrivateCredentials(username);
 
         Iterator privateCredIter = privateCredentials.iterator();
         PasswordCredential authPwdCred = new PasswordCredential(username, password.toCharArray());
@@ -149,10 +143,10 @@ public class UserManagerImpl implements UserManager
             if ((null != preferences) && preferences.absolutePath().equals(fullPath))
             {
                 // Add user principal.
-                userSecurityProvider.setUserPrincipal(userPrincipal);
+                atnProviderProxy.setUserPrincipal(userPrincipal);
                 // Set security credentials
                 PasswordCredential pwdCredential = new PasswordCredential(username, password.toCharArray());
-                credentialHandler.setPrivatePasswordCredential(null, pwdCredential);
+                atnProviderProxy.setPrivatePasswordCredential(null, pwdCredential);
                 if (log.isDebugEnabled())
                 {
                     log.debug("Added user: " + fullPath);
@@ -188,7 +182,7 @@ public class UserManagerImpl implements UserManager
 
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
-        userSecurityProvider.removeUserPrincipal(userPrincipal);
+        atnProviderProxy.removeUserPrincipal(userPrincipal);
         if (!userExists(username))
         {
             // Remove preferences
@@ -217,7 +211,7 @@ public class UserManagerImpl implements UserManager
     {
         ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "userExists(java.lang.String)");
 
-        Principal principal = userSecurityProvider.getUserPrincipal(username);
+        Principal principal = atnProviderProxy.getUserPrincipal(username);
         boolean userExists = (null != principal);
         if (log.isDebugEnabled())
         {
@@ -237,7 +231,7 @@ public class UserManagerImpl implements UserManager
         Set principals = new HashSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
-        Principal userPrincipal = userSecurityProvider.getUserPrincipal(username);
+        Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
         if (null == userPrincipal)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
@@ -247,8 +241,8 @@ public class UserManagerImpl implements UserManager
         principals.addAll(securityMappingHandler.getRolePrincipals(username));
         principals.addAll(securityMappingHandler.getGroupPrincipals(username));
 
-        Subject subject = new Subject(true, principals, credentialHandler.getPublicCredentials(username),
-                credentialHandler.getPrivateCredentials(username));
+        Subject subject = new Subject(true, principals, atnProviderProxy.getPublicCredentials(username),
+                atnProviderProxy.getPrivateCredentials(username));
         Preferences preferences = Preferences.userRoot().node(fullPath);
         User user = new UserImpl(subject, preferences);
 
@@ -261,7 +255,7 @@ public class UserManagerImpl implements UserManager
     public Iterator getUsers(String filter) throws SecurityException
     {
         List users = new LinkedList();
-        Iterator userPrincipals = userSecurityProvider.getUserPrincipals(filter);
+        Iterator userPrincipals = atnProviderProxy.getUserPrincipals(filter).iterator();
         while (userPrincipals.hasNext())
         {
             String username = ((Principal) userPrincipals.next()).getName();
@@ -325,7 +319,7 @@ public class UserManagerImpl implements UserManager
         PasswordCredential oldPwdCredential = new PasswordCredential(username, oldPassword.toCharArray());
         PasswordCredential newPwdCredential = new PasswordCredential(username, newPassword.toCharArray());
 
-        credentialHandler.setPrivatePasswordCredential(oldPwdCredential, newPwdCredential);
+        atnProviderProxy.setPrivatePasswordCredential(oldPwdCredential, newPwdCredential);
     }
 
 }

@@ -14,7 +14,6 @@
  */
 package org.apache.jetspeed.security;
 
-import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
@@ -31,12 +30,12 @@ public interface SecurityProvider
 {
     /**
      * <p>
-     * Getter for the {@link UserSecurityProvider}
+     * Getter for the {@link AuthenticationProviderProxy}
      * </p>
      * 
-     * @return The {@link UserSecurityProvider}.
+     * @return The {@link AuthenticationProviderProxy}.
      */
-    UserSecurityProvider getUserSecurityProvider();
+    AuthenticationProviderProxy getAuthenticationProviderProxy();
 
     /**
      * <p>
@@ -65,12 +64,4 @@ public interface SecurityProvider
      */
     SecurityMappingHandler getSecurityMappingHandler();
 
-    /**
-     * <p>
-     * Getter for the {@link CredentialHandler}
-     * </p>
-     * 
-     * @return The CredentialHandler.
-     */
-    CredentialHandler getCredentialHandler();
 }

@@ -94,7 +94,7 @@ public class TestUserSecurityHandler extends AbstractSecurityTestcase
      */
     public void testGetUserPrincipals() throws Exception
     {
-        Iterator principals = ush.getUserPrincipals("");
+        Iterator principals = ush.getUserPrincipals("").iterator();
         int count = 0;
         while (principals.hasNext())
         {

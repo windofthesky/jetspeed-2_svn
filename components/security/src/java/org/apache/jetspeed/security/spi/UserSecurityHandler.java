@@ -15,7 +15,7 @@
 package org.apache.jetspeed.security.spi;
 
 import java.security.Principal;
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -55,9 +55,9 @@ public interface UserSecurityHandler
      * </p>
      * 
      * @param filter The filter.
-     * @return The Iterator of <code>Principal</p>
+     * @return The list of <code>Principal</p>
      */
-    Iterator getUserPrincipals(String filter);
+    List getUserPrincipals(String filter);
     
     /**
      * <p>

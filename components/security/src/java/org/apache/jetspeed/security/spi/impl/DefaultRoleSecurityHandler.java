@@ -65,7 +65,7 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     {
         String fullPath = rolePrincipal.getFullPath();
         InternalRolePrincipal internalRole = new InternalRolePrincipalImpl(fullPath);
-        commonQueries.setInternalRolePrincipal(internalRole);   
+        commonQueries.setInternalRolePrincipal(internalRole, false);   
     }
     
     /**
@@ -77,6 +77,6 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
         if (null != internalRole)
         {
             commonQueries.removeInternalRolePrincipal(internalRole);
-        }        
+        }
     }
 }

@@ -64,7 +64,7 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     {
         String fullPath = groupPrincipal.getFullPath();
         InternalGroupPrincipal internalGroup = new InternalGroupPrincipalImpl(fullPath);
-        commonQueries.setInternalGroupPrincipal(internalGroup);   
+        commonQueries.setInternalGroupPrincipal(internalGroup, false);   
     }
     
     /**

@@ -83,6 +83,9 @@ public interface SecurityMappingHandler
     /**
      * <p>
      * Sets the role principal on a given user.
+     * Existence of the role or the user must be checked prior to invoking this method.
+     * If a principal does not exist in the security mapping store, it will be created for the purpose of
+     * security mapping only.
      * </p>
      * 
      * @param username The user to add the role principal to.
@@ -95,6 +98,10 @@ public interface SecurityMappingHandler
     /**
      * <p>
      * Removes the role principal on a given user.
+     * </p>
+     * <p>
+     * If a mapping only record does not have any mapping, this method will
+     * remove the record as well.
      * </p>
      * 
      * @param username The user to remove the role principal from.
@@ -165,6 +172,7 @@ public interface SecurityMappingHandler
      * <p>
      * Gets the user principals for the given role according to the relevant hierarchy
      * resolution rules.
+     * </p>
      * 
      * @param roleFullPathName The role full path name.
      * @return A set of <code>Principal</p>
@@ -175,6 +183,7 @@ public interface SecurityMappingHandler
      * <p>
      * Gets the user principals for the given group according to the relevant hierarchy
      * resolution rules.
+     * </p>
      * 
      * @param groupFullPathName The group full path name.
      * @return A set of <code>Principal</p>
@@ -184,6 +193,11 @@ public interface SecurityMappingHandler
     /**
      * <p>
      * Sets the user principal in the given group.
+     * </p>
+     * <p>
+     * Existence of the group or the user must be checked prior to invoking this method.
+     * If a principal does not exist in the security mapping store, it will be created for the purpose of
+     * security mapping only.
      * </p>
      * 
      * @param username The user to add to the group principal.

@@ -24,6 +24,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
@@ -55,6 +56,9 @@ public class RoleManagerImpl implements RoleManager
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
 
+    /** The authentication provider proxy. */
+    private AuthenticationProviderProxy atnProviderProxy = null;
+    
     /** The role security handler. */
     private RoleSecurityHandler roleSecurityHandler = null;
 
@@ -66,6 +70,7 @@ public class RoleManagerImpl implements RoleManager
      */
     public RoleManagerImpl(SecurityProvider securityProvider)
     {
+        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
     }
@@ -259,6 +264,12 @@ public class RoleManagerImpl implements RoleManager
         {
             throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
         }
+        // Check that user exists.
+        Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
+        if (null == userPrincipal)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
         // Get the user roles.
         Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
         // Add role to user.
@@ -277,6 +288,12 @@ public class RoleManagerImpl implements RoleManager
         ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
                 "removeRoleFromUser(java.lang.String, java.lang.String)");
 
+        // Check that user exists.
+        Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
+        if (null == userPrincipal)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
         // Get the role principal to remove.
         Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
         if (null != rolePrincipal)

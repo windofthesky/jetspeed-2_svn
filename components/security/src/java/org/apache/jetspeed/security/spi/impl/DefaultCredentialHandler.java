@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.jetspeed.security.spi.impl;
 
 import java.sql.Timestamp;
@@ -104,7 +103,7 @@ public class DefaultCredentialHandler implements CredentialHandler
     {
         Set internalCredentials = new HashSet();
         Set credentials = new HashSet();
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username, false);
         if (null != internalUser)
         {
             internalCredentials.addAll(internalUser.getCredentials());
@@ -142,7 +141,7 @@ public class DefaultCredentialHandler implements CredentialHandler
     private void setCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential, int type)
             throws SecurityException
     {
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(newPwdCredential.getUserName());
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(newPwdCredential.getUserName(), false);
         if (null == internalUser)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + newPwdCredential.getUserName());
@@ -167,6 +166,6 @@ public class DefaultCredentialHandler implements CredentialHandler
         internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
         internalUser.setCredentials(credentials);
         // Set the user with the new credentials.
-        commonQueries.setInternalUserPrincipal(internalUser);
+        commonQueries.setInternalUserPrincipal(internalUser, false);
     }
 }

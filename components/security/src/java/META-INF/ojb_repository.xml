@@ -43,6 +43,13 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
+	        name="isMappingOnly"
+	        column="is_mapping_only"
+	        jdbc-type="BIT"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
 	        name="fullPath"
 	        column="full_path"
 	        jdbc-type="VARCHAR"
@@ -207,6 +214,13 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
+	        name="isMappingOnly"
+	        column="is_mapping_only"
+	        jdbc-type="BIT"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
 	        name="fullPath"
 	        column="full_path"
 	        jdbc-type="VARCHAR"
@@ -299,6 +313,13 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
+	        name="isMappingOnly"
+	        column="is_mapping_only"
+	        jdbc-type="BIT"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
 	        name="fullPath"
 	        column="full_path"
 	        jdbc-type="VARCHAR"
@@ -388,6 +409,13 @@ limitations under the License.
 	        jdbc-type="VARCHAR"
 	        nullable="false"
 	        length="254"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="isMappingOnly"
+	        column="is_mapping_only"
+	        jdbc-type="BIT"
+	        nullable="false"
 	    >
 	    </field-descriptor>
 	    <field-descriptor

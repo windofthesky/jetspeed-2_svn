@@ -229,23 +229,34 @@ limitations under the License.
   </bean>
   
   <!-- ************** Security Providers ************** -->
-  <!-- Security: User Security Provider -->
-  <bean id="org.apache.jetspeed.security.UserSecurityProvider" 
-  	   class="org.apache.jetspeed.security.impl.UserSecurityProviderImpl"
+  <!-- Security: Default Authentication Provider -->
+  <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
+  	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl"
+  >  	   
+  	   <constructor-arg><value>DefaultAuthenticator</value></constructor-arg>
+  	   <constructor-arg><value>The default authenticator</value></constructor-arg>
+  	   <constructor-arg><value>login.conf</value></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/></constructor-arg>
+  </bean>
+  
+  <!-- Security: Authentication Provider Proxy -->
+  <bean id="org.apache.jetspeed.security.AuthenticationProviderProxy" 
+  	   class="org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl"
   >  	   
   	   <constructor-arg >
   	   		<list>
-  	   			<ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/>
+  	   			<ref bean="org.apache.jetspeed.security.AuthenticationProvider"/>
   	   		</list>
   	   </constructor-arg>
+  	   <constructor-arg ><value>"DefaultAuthenticator"</value></constructor-arg>
   </bean>
   
   <!-- Security: Security Provider -->
   <bean id="org.apache.jetspeed.security.SecurityProvider" 
   	   class="org.apache.jetspeed.security.impl.SecurityProviderImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserSecurityProvider"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.AuthenticationProviderProxy"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.RoleSecurityHandler"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.GroupSecurityHandler"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityMappingHandler"/></constructor-arg>
@@ -272,20 +283,14 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
   </bean>
   
-  <!-- ************** Authentication ************** -->
+  <!-- ************** Login Module ************** -->
   <!-- Security: Login Module Proxy -->
   <bean id="org.apache.jetspeed.security.LoginModuleProxy" 
   	   class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl"
   >  	   
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
   </bean>
-  
-  <!-- Security: Authentication Provider -->
-  <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
-  	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl"
-  >  	   
-  	   <constructor-arg ><value>login.conf</value></constructor-arg> 	   
-  </bean>
+
   
   <!-- ************** Authorization ************** -->
   <!-- Security: Permission Manager -->

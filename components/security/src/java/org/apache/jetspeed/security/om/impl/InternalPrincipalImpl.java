@@ -15,32 +15,65 @@
 package org.apache.jetspeed.security.om.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.om.InternalPrincipal;
 
 /**
- * <p>{@link InternalPrincipal} interface implementation.</p>
- *
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * {@link InternalPrincipal}interface implementation.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class InternalPrincipalImpl implements InternalPrincipal
 {
-    /** 
-     * <p>The special attribute telling OJB the object's concrete type.</p>
-     * <p>NOTE: this attribute MUST be called ojbConcreteClass</p>
+    /** The principal id. */
+    private long principalId;
+
+    /** The class name. */
+    private String classname;
+
+    /** The is mapping only. */
+    private boolean isMappingOnly = false;
+
+    /** The full path. */
+    private String fullPath;
+
+    /** The collection of permissions. */
+    private Collection permissions;
+
+    /** The creation date. */
+    private Timestamp creationDate;
+
+    /** The modified date. */
+    private Timestamp modifiedDate;
+
+    /**
+     * <p>
+     * The special attribute telling OJB the object's concrete type.
+     * </p>
+     * <p>
+     * NOTE: this attribute MUST be called ojbConcreteClass
+     * </p>
      */
     protected String ojbConcreteClass;
 
     /**
-     * <p>InternalPrincipal implementation default constructor.</p>
+     * <p>
+     * InternalPrincipal implementation default constructor.
+     * </p>
      */
     public InternalPrincipalImpl()
     {
     }
 
     /**
-     * <p>InternalPrincipal constructor given a classname and name.</p>
+     * <p>
+     * InternalPrincipal constructor given a classname and name.
+     * </p>
+     * 
      * @param classname The classname.
      * @param fullPath The full path.
      */
@@ -49,11 +82,10 @@ public class InternalPrincipalImpl implements InternalPrincipal
         this.ojbConcreteClass = classname;
         this.classname = classname;
         this.fullPath = fullPath;
+        this.permissions = new ArrayList();
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
     }
-
-    private long principalId;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getPrincipalId()
@@ -70,8 +102,6 @@ public class InternalPrincipalImpl implements InternalPrincipal
     {
         this.principalId = principalId;
     }
-
-    private String classname;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getClassname()
@@ -90,7 +120,21 @@ public class InternalPrincipalImpl implements InternalPrincipal
         this.classname = classname;
     }
 
-    private String fullPath;
+    /**
+     * @return Returns the isMappingOnly.
+     */
+    public boolean isMappingOnly()
+    {
+        return isMappingOnly;
+    }
+
+    /**
+     * @param isMappingOnly The isMappingOnly to set.
+     */
+    public void setMappingOnly(boolean isMappingOnly)
+    {
+        this.isMappingOnly = isMappingOnly;
+    }
 
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getFullPath()
@@ -108,8 +152,6 @@ public class InternalPrincipalImpl implements InternalPrincipal
         this.fullPath = fullPath;
     }
 
-    private Collection permissions;
-
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getPermissions()
      */
@@ -126,8 +168,6 @@ public class InternalPrincipalImpl implements InternalPrincipal
         this.permissions = permissions;
     }
 
-    private Timestamp creationDate;
- 
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getCreationDate()
      */
@@ -143,8 +183,6 @@ public class InternalPrincipalImpl implements InternalPrincipal
     {
         this.creationDate = creationDate;
     }
-
-    private Timestamp modifiedDate;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getModifiedDate()

@@ -14,9 +14,8 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.SecurityProvider;
-import org.apache.jetspeed.security.UserSecurityProvider;
-import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
@@ -28,11 +27,8 @@ import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 public class SecurityProviderImpl implements SecurityProvider
 {
 
-    /** The {@link CredentialHandler}. */
-    private CredentialHandler credHandler;
-
-    /** The {@link UserSecurityProvider}. */
-    private UserSecurityProvider userSecurityProvider;
+    /** The {@link AuthenticationProviderProxy}. */
+    private AuthenticationProviderProxy atnProviderProxy;
 
     /** The {@link RoleSecurityHandler}. */
     private RoleSecurityHandler roleSecurityHandler;
@@ -49,20 +45,17 @@ public class SecurityProviderImpl implements SecurityProvider
      * handlers.
      * </p>
      * 
-     * @param credHandler The credential handler.
-     * @param userSecurityProvider The user security provider.
+     * @param atnProviderProxy The authentication provider.
      * @param roleSecurityHandler The role security handler.
      * @param groupSecurityHandler The group security handler.
      * @param securityMappingHandler The security mapping handler.
      */
-    public SecurityProviderImpl(CredentialHandler credHandler, UserSecurityProvider userSecurityProvider,
+    public SecurityProviderImpl(AuthenticationProviderProxy atnProviderProxy,
             RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler,
             SecurityMappingHandler securityMappingHandler)
     {
-        // The credential handler.
-        this.credHandler = credHandler;
-        // The user security handler.
-        this.userSecurityProvider = userSecurityProvider;
+        // The authentication provider proxy.
+        this.atnProviderProxy = atnProviderProxy;
         // The role security handler.
         this.roleSecurityHandler = roleSecurityHandler;
         // The group security handler.
@@ -72,19 +65,11 @@ public class SecurityProviderImpl implements SecurityProvider
     }
 
     /**
-     * @see org.apache.jetspeed.security.SecurityProvider#getCredentialHandler()
+     * @see org.apache.jetspeed.security.SecurityProvider#getAuthenticationProviderProxy()
      */
-    public CredentialHandler getCredentialHandler()
+    public AuthenticationProviderProxy getAuthenticationProviderProxy()
     {
-        return this.credHandler;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.SecurityProvider#getUserSecurityProvider()
-     */
-    public UserSecurityProvider getUserSecurityProvider()
-    {
-        return this.userSecurityProvider;
+        return this.atnProviderProxy;
     }
 
     /**

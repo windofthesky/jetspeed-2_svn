@@ -24,6 +24,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
@@ -54,6 +55,9 @@ public class GroupManagerImpl implements GroupManager
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(GroupManagerImpl.class);
+    
+    /** The authentication provider proxy. */
+    private AuthenticationProviderProxy atnProviderProxy = null;
 
     /** The group security handler. */
     private GroupSecurityHandler groupSecurityHandler = null;
@@ -66,6 +70,7 @@ public class GroupManagerImpl implements GroupManager
      */
     public GroupManagerImpl(SecurityProvider securityProvider)
     {
+        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
     }
@@ -259,6 +264,12 @@ public class GroupManagerImpl implements GroupManager
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
         }
+        // Check that user exists.
+        Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
+        if (null == userPrincipal)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
         // Get the user groups.
         Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
         // Add group to user.
@@ -277,6 +288,12 @@ public class GroupManagerImpl implements GroupManager
         ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
                 "removeUserFromGroup(java.lang.String, java.lang.String)");
 
+        // Check that user exists.
+        Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
+        if (null == userPrincipal)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
         // Get the group principal to remove.
         Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
         if (null != groupPrincipal)

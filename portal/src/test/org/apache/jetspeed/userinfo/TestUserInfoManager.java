@@ -35,18 +35,20 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.prefs.PropertyException;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.AuthenticationProvider;
+import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserSecurityProvider;
+import org.apache.jetspeed.security.impl.AuthenticationProviderImpl;
+import org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl;
 import org.apache.jetspeed.security.impl.GroupManagerImpl;
 import org.apache.jetspeed.security.impl.PermissionManagerImpl;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
-import org.apache.jetspeed.security.impl.UserSecurityProviderImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
@@ -113,11 +115,11 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         SecurityMappingHandler smh = new DefaultSecurityMappingHandler(cq);
         
         // Security Providers.
-        List userSecurityHandlers = new ArrayList();
-        userSecurityHandlers.add(ush);
-        UserSecurityProvider userSecurityProvider = new UserSecurityProviderImpl(userSecurityHandlers);
-        
-        SecurityProvider securityProvider = new SecurityProviderImpl(ch, userSecurityProvider, rsh, gsh, smh);
+        AuthenticationProvider atnProvider = new AuthenticationProviderImpl("DefaultAuthenticator", "The default authenticator", "login.conf", ch, ush);
+        List atnProviders = new ArrayList();
+        atnProviders.add(atnProvider);
+        AuthenticationProviderProxy atnProviderProxy = new AuthenticationProviderProxyImpl(atnProviders, "DefaultAuthenticator");
+        SecurityProvider securityProvider = new SecurityProviderImpl(atnProviderProxy, rsh, gsh, smh);
         
         ums = new UserManagerImpl(securityProvider);
         gms = new GroupManagerImpl(securityProvider);

@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security.om.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
@@ -27,6 +28,15 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
 {
     /** <p>User principal security class.</p> */
     static String USER_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalUserPrincipalImpl";
+    
+    /** The credentials. */
+    private Collection credentials;
+    
+    /** The role principals. */
+    private Collection rolePrincipals;
+    
+    /** The group principals. */
+    private Collection groupPrincipals;
 
     /**
      * <p>InternalUserPrincipal implementation default constructor.</p>
@@ -44,9 +54,9 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     public InternalUserPrincipalImpl(String username)
     {
         super(USER_PRINCIPAL_CLASSNAME, username);
+        this.rolePrincipals = new ArrayList();
+        this.groupPrincipals = new ArrayList();
     }
-
-    private Collection credentials;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getCredentials()
@@ -64,8 +74,6 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
         this.credentials = credentials;
     }
 
-    private Collection rolePrincipals;
-
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getRolePrincipals()
      */
@@ -81,8 +89,6 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     {
         this.rolePrincipals = rolePrincipals;
     }
-
-    private Collection groupPrincipals;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getGroupPrincipals()
