@@ -16,8 +16,9 @@
 package org.apache.jetspeed.engine;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
@@ -60,22 +61,47 @@ public class SpringEngine extends AbstractEngine
         
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         String relativeApplicationRoot = getRealPath("/");
-        String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();
-        // String absoluteApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();
-        System.setProperty("applicationRoot", absApplicationRoot);
-        ArrayList configs = new ArrayList();
-        if (useInternalJNDI)
-        {
-            configs.add("file:///"+absApplicationRoot + configuration.getString("jetspeed.spring.datasource.xml",
-                    "/WEB-INF/assembly/pooled-datasource-support.xml"));
-        }
-        configs.add("file:///"+absApplicationRoot + configuration.getString("jetspeed.spring.xml", "/WEB-INF/assembly/jetspeed-spring.xml"));
-        configs.add("file:///"+absApplicationRoot + configuration.getString("pluto-factories.xml", "/WEB-INF/assembly/pluto-factories.xml"));
-        configs.add("file:///"+absApplicationRoot + configuration.getString("pipelines.xml", "/WEB-INF/assembly/pipelines.xml"));
+        String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();        
+        System.setProperty("applicationRoot", absApplicationRoot);        
         
-        ComponentManager cm = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
+        final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
+        final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
+        
+        FileFilter extFilter = new FileFilter()
+        {
+            public boolean accept( File pathname )
+            {
+                boolean isConfig = pathname.getName().endsWith(assemblyFileExtension);
+                if(useInternalJNDI)
+                {
+                    return isConfig;
+                    
+                }
+                else
+                {
+                    return isConfig && pathname.getName().indexOf("pooled-datasource-support") < 0;
+                }
+            }
+            
+        };
+        
+        File assemblyDirFile = new File(getRealPath(assemblyDir));
+        if(!assemblyDirFile.exists())
+        {
+            throw new FileNotFoundException("The assembly path "+assemblyDirFile.getAbsolutePath()+" does not exist.");
+        }
+        
+        File[] configFiles = assemblyDirFile.listFiles(extFilter);
+        String[] configs = new String[configFiles.length];
+        for(int i=0; i<configFiles.length; i++)
+        {
+            configs[i] = configFiles[i].getCanonicalFile().toURL().toExternalForm();            
+        }
+        
+        ComponentManager cm = new SpringComponentManager(configs, null);
         
         return cm;
-    }
+    }    
+   
 
 }
