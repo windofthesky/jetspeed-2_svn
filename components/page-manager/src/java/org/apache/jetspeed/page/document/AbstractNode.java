@@ -48,6 +48,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     private Map localizedTitles;
     private Node parent;
     private String path;
+    private boolean hidden=false;
 
     public AbstractNode()
     {
@@ -177,16 +178,16 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      */
     public String getName()
     {
-        String id = getId();
+        String path = getPath();
         String parentName = getParent().getPath()+"/";
         
-        if(id.indexOf(parentName) > -1)
+        if(path.indexOf(parentName) > -1)
         {
-            return id.substring(parentName.length());
+            return path.substring(parentName.length());
         }
         else
         {
-            return id;
+            return path;
         }
     }
 
@@ -217,5 +218,24 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     public String getUrl()
     {
         return getPath();
+    }
+    /**
+     * <p>
+     * isHidden
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.Node#isHidden()
+     * @return
+     */
+    public boolean isHidden()
+    {
+        return hidden;
+    }
+    /**
+     * @param hidden The hidden to set.
+     */
+    public void setHidden( boolean hidden )
+    {
+        this.hidden = hidden;
     }
 }

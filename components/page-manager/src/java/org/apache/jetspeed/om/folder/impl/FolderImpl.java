@@ -363,4 +363,28 @@ public class FolderImpl extends AbstractNode implements Folder
     {
         return FOLDER_TYPE;
     }
+    /**
+     * <p>
+     * isHidden
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.Node#isHidden()
+     * @return
+     */
+    public boolean isHidden()
+    {
+        return metadata.isHidden();
+    }
+    /**
+     * <p>
+     * setHidden
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.AbstractNode#setHidden(boolean)
+     * @param hidden
+     */
+    public void setHidden( boolean hidden )
+    {        
+        ((AbstractNode)metadata).setHidden(hidden);
+    }
 }

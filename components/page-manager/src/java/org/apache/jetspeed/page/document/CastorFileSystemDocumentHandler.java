@@ -245,8 +245,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
             Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
             document = (Document) unmarshaller.unmarshal(reader);
             document.setId(path);
-            document.setPath(path);            
-
+            document.setPath(path);
         }
         catch (IOException e)
         {

@@ -367,7 +367,10 @@ protected void setUp() throws Exception
         assertNotNull(folder3.getPages().get("test001.psml"));
         assertEquals("test001.psml", folder3.getPages().get("folder1/folder3/test001.psml").getName());
         
-        //Test relative name
+        assertTrue(folder3.isHidden());
+        assertTrue(folder3.getPage("default-page.psml").isHidden());
+        assertTrue(folder3.getLinks().get("Jetspeed2.link").isHidden());
+        assertFalse(folder3.getLinks().get("apache.link").isHidden());
         
 
     }

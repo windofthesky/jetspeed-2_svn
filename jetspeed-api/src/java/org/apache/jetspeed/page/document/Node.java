@@ -129,5 +129,19 @@ public interface Node extends BaseElement
      * @return
      */
     String getUrl();
+    
+    /**
+     * 
+     * <p>
+     * isHidden
+     * </p>
+     * <p>
+     *  Whether or not this Node should be hidden in terms of the view.  This MUST NOT restrict
+     *  the presence of this node in terms of being returned in 
+     *  {@link NodeSets org.apache.jetspeed.page.document.NodeSet}. 
+     * </p>
+     * @return
+     */
+    boolean isHidden();
 
 }
