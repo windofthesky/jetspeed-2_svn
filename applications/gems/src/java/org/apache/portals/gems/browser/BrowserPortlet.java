@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.portals.gems.util.StatusMessage;
+import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
 /**
@@ -472,4 +473,23 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         return false;
     }
 
+    public void publishStatusMessage(PortletRequest request, String portlet, String topic, Throwable e, String message)
+    {
+        String msg = message + ": " + e.toString();
+        Throwable cause = e.getCause();
+        if (cause != null)
+        {
+            msg = msg + ", " + cause.getMessage();
+        }
+        StatusMessage sm = new StatusMessage(msg, StatusMessage.ERROR);
+        try
+        {
+            // TODO: fixme, bug in Pluto on portlet session
+            PortletMessaging.publish(request, portlet, topic, sm);
+        }
+        catch (Exception ee)
+        {
+            System.err.println("Failed to publish message: " + e);
+        }        
+    }
 }
