@@ -23,13 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.portlet.PortletException;
 
-import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.PortletContainerEnvironment;
+import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
+import org.picocontainer.Startable;
 
 /**
  * Portlet Container Wrapper to secure access to portlet container.
@@ -37,11 +38,30 @@ import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPortletContainerWrapper implements PortletContainer
+public class JetspeedPortletContainerWrapper implements PortletContainerWrapper, Startable
 {
-    private boolean initialiized = false;
-    private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);  
+    private boolean initialized = false;
+    private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);
+    private PortletContainer pluto;
 
+    public JetspeedPortletContainerWrapper(PortletContainer pluto)
+    {
+        this.pluto = pluto;
+        System.out.println("PLUTO = " + pluto);
+    }
+
+    public void start()
+    {
+        
+    }
+    
+    public void stop()
+    {
+        
+    }
+    /**
+     * initialization is still handled outside component architecture, since Pluto is not a component
+     */
     public synchronized void init(
         String uniqueContainerId,
         ServletConfig servletConfig,
@@ -50,17 +70,14 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
         throws PortletContainerException
     {
 
-        PortletContainerFactory.getPortletContainerOriginal().init(uniqueContainerId, servletConfig, environment, props);
-        initialiized = true;
+        pluto.init(uniqueContainerId, servletConfig, environment, props);
+        initialized = true;
     }
 
     public synchronized void shutdown() throws PortletContainerException
     {
-        //        PortletContainerFactory.
-        //            getPortletContainerOriginal().
-        //                destroy();
-        initialiized = false;
-        PortletContainerFactory.getPortletContainerOriginal().shutdown();
+        initialized = false;
+        pluto.shutdown();
     }
 
     public void renderPortlet(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
@@ -78,7 +95,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
     		log.warn("Could not render PortletWindow"+ portletWindow.getId() + " as it has no PortletDefintion defined.");
     		return;
     	}
-        PortletContainerFactory.getPortletContainerOriginal().renderPortlet(portletWindow, servletRequest, servletResponse);
+        pluto.renderPortlet(portletWindow, servletRequest, servletResponse);
         // TODO: figure out how to access pluto-services before container kicks in
         //                              ServletObjectAccess.getServletRequest(servletRequest),
         //                              ServletObjectAccess.getServletResponse(servletResponse));
@@ -90,7 +107,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
         HttpServletResponse servletResponse)
         throws PortletException, IOException, PortletContainerException
     {
-        PortletContainerFactory.getPortletContainerOriginal().processPortletAction(portletWindow, servletRequest, servletResponse);
+        pluto.processPortletAction(portletWindow, servletRequest, servletResponse);
         //                                     ServletObjectAccess.getServletRequest(servletRequest),
         //                                     ServletObjectAccess.getServletResponse(servletResponse));
     }
@@ -98,7 +115,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
     public void portletLoad(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
         throws PortletException, PortletContainerException
     {
-        PortletContainerFactory.getPortletContainerOriginal().portletLoad(
+        pluto.portletLoad(
             portletWindow,
             ServletObjectAccess.getServletRequest(servletRequest, portletWindow),
             ServletObjectAccess.getServletResponse(servletResponse, portletWindow));
@@ -114,7 +131,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
      */
     public boolean isInitialized()
     {
-        return initialiized;
+        return initialized;
     }
 
 }

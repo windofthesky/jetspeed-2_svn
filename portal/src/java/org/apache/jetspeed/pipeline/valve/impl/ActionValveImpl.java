@@ -21,7 +21,7 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.container.PortletContainerFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ActionValve;
@@ -58,7 +58,8 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         PortletContainer container;
         try
         {
-            container = PortletContainerFactory.getPortletContainer();
+            // TODO: deprecate this when valves are components
+            container = (PortletContainer)Jetspeed.getComponentManager().getComponent(PortletContainer.class);
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {

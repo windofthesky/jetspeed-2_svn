@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.container;
 
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.PortletContainer;
 
 /**
- * This service handles the generation of first step of agregation process
+ * Portlet Container Wrapper inteface
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface Aggregator 
+public interface PortletContainerWrapper extends PortletContainer
 {
-    public String SERVICE_NAME = "Aggregator";
-    public String PORTLET_SERVICE_NAME = "PortletAggregator";
-
-    /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
-     */
-    public void build(RequestContext context)
-        throws JetspeedException;
-
 }

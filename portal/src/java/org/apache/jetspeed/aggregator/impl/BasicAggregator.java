@@ -23,13 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.Aggregator;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -38,9 +34,9 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
+import org.picocontainer.Startable;
 
 /**
  * Basic Aggregator, nothing complicated. 
@@ -48,7 +44,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class BasicAggregator extends BaseCommonService implements Aggregator
+public class BasicAggregator implements Aggregator, Startable
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
     private final static String DEFAULT_STRATEGY = "strategy.default";
@@ -58,57 +54,42 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
     private final static String CONFIG_STRATEGY_SEQUENTIAL = "sequential";
     private final static String CONFIG_STRATEGY_PARALLEL = "parallel";
     private int strategy = STRATEGY_SEQUENTIAL;
+    
+    private Profiler profiler;
+    private PortletRegistryComponent registry;
+    private PortletWindowAccessor windowAccessor;
+    private PortletContainer portletContainer;
 
-    /**
-     * This is the early initialization method called by the
-     * Turbine <code>Service</code> framework
-     * @param conf The <code>ServletConfig</code>
-     * @exception throws a <code>InitializationException</code> if the service
-     * fails to initialize
-     */
-    public void init() throws CPSInitializationException
+    public BasicAggregator(Profiler profiler, 
+                           PortletRegistryComponent registry, 
+                           PortletWindowAccessor windowAccessor,
+                           PortletContainer portletContainer,
+                           int strategy)
     {
-        if (isInitialized())
-        {
-            return;
-        }
-
-        try
-        {
-            initConfiguration();
-        }
-        catch (Exception e)
-        {
-            log.error("Aggregator: Failed to load Service: " + e);
-            e.printStackTrace();
-        }
-
-        // initialization done
-        setInit(true);
-
+        this.profiler = profiler;
+        this.registry = registry;
+        this.windowAccessor = windowAccessor;
+        this.strategy = strategy;
+        this.portletContainer = portletContainer;
     }
-
-    private void initConfiguration() throws CPSInitializationException
+    
+    public BasicAggregator(Profiler profiler, 
+            PortletRegistryComponent registry, 
+            PortletWindowAccessor windowAccessor,
+            PortletContainer portletContainer)            
     {
-        String defaultStrategy = getConfiguration().getString(DEFAULT_STRATEGY, CONFIG_STRATEGY_SEQUENTIAL);
-        if (defaultStrategy.equals(CONFIG_STRATEGY_SEQUENTIAL))
-        {
-            strategy = STRATEGY_SEQUENTIAL;
-        }
-        else if (defaultStrategy.equals(CONFIG_STRATEGY_PARALLEL))
-        {
-            strategy = STRATEGY_PARALLEL;
-        }
+        this(profiler, registry, windowAccessor, portletContainer, STRATEGY_SEQUENTIAL);
     }
-
-    /**
-     * This is the shutdown method called by the
-     * Turbine <code>Service</code> framework
-     */
-    public void shutdown()
+    
+    public void start()
     {
     }
-
+    
+    public void stop()
+    {
+        
+    }
+    
     /**
      * Builds the portlet set defined in the context into a portlet tree.
      *
@@ -122,25 +103,14 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
         }
 
-        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);        
         Page page = profiler.getPage(locator);
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");
         }
 
-        PortletContainer container;
-        try
-        {
-            container = PortletContainerFactory.getPortletContainer();
-        }
-        catch (PortletContainerException e)
-        {
-            throw new JetspeedException("Failed to get PortletContainer: " + e);
-        }
-
         Fragment root = page.getRootFragment();
-        render(container, root, request);
+        render(portletContainer, root, request);
         
         for (Iterator fit = root.getFragments().iterator(); fit.hasNext();)
         {
@@ -151,7 +121,7 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
                 // skip layouts for now
                 // continue;
             }
-            render(container, fragment, request);
+            render(portletContainer, fragment, request);
         }
     }
 
@@ -174,17 +144,13 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             // Load Portlet from registry
             // 
             System.out.println("*** Getting portlet from registry: " + fragment.getName());
-			PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-            PortletDefinition portletDefinition = regsitry.getPortletDefinitionByUniqueName(fragment.getName());
+            PortletDefinition portletDefinition = registry.getPortletDefinitionByUniqueName(fragment.getName());
             if (portletDefinition == null)
             {
                 throw new JetspeedException("Failed to load: " + fragment.getName() + " from registry");
             }
-            
-            // TODO: make renderer a component, assemble window accessor in constructor
-            PortletWindowAccessor windowAccess = (PortletWindowAccessor)Jetspeed.getComponentManager().getComponent(PortletWindowAccessor.class);
-            
-            PortletWindow portletWindow = windowAccess.getPortletWindow(fragment);
+                        
+            PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
 
             HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
             HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);

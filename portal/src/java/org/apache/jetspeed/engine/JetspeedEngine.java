@@ -31,7 +31,6 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.services.JetspeedContainerServices;
 import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
 import org.apache.jetspeed.cps.CPSInitializationException;
@@ -119,14 +118,6 @@ public class JetspeedEngine implements Engine
             initServices();
             log.info("Service initialization complete");            
 
-            // 
-            // create the container
-            //
-            log.info("Creating portlet container...");
-            console.info("Creating portlet container...");
-            PortletContainer container = PortletContainerFactory.getPortletContainer();
-            log.info("Portlet container created sucessfully usin container class: " + container.getClass().getName());
-
             //
             // create the pipelines
             //
@@ -169,7 +160,7 @@ public class JetspeedEngine implements Engine
     {
         try
         {
-            PortletContainer container = PortletContainerFactory.getPortletContainer();
+            PortletContainer container = (PortletContainer)componentManager.getComponent(PortletContainer.class);
             JetspeedContainerServices environment = new JetspeedContainerServices();
             environment.addService(ContainerLogAdaptor.getService());
             environment.addService(FactoryManager.getService());
@@ -198,13 +189,16 @@ public class JetspeedEngine implements Engine
     public void shutdown() throws JetspeedException
     {
         CommonPortletServices.getInstance().shutdownServices();
-        componentManager.killContainer();
-        // TODO: DST: can I hook into Component Manager shutdown here?
 
         try
         {
-            PortletContainer container = PortletContainerFactory.getPortletContainer();
-            container.shutdown();            
+            PortletContainer container = (PortletContainer)componentManager.getComponent(PortletContainer.class);
+            if (container != null)
+            {
+                container.shutdown();
+            }
+            
+            componentManager.killContainer();            
         }
         catch (PortletContainerException e)
         {

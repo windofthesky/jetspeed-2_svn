@@ -26,14 +26,12 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
-import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
@@ -63,16 +61,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
         this.monitor = new WorkerMonitor();
         this.monitor.init();
 
-        try
-        {
-            this.container = PortletContainerFactory.getPortletContainer();
-        }
-        catch (PortletContainerException e)
-        {            
-            log.error("Failed to get PortletContainer: " + e.toString(), e);
-            return;
-        }
-
+        // TODO: deprecate this when converted to component
+        this.container = (PortletContainer)Jetspeed.getComponentManager().getComponent(PortletContainer.class);
         setInit(true);
     }
 
