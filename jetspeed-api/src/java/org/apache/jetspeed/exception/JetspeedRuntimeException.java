@@ -13,59 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components.persistence.store.impl;
+package org.apache.jetspeed.exception;
 
-import org.apache.commons.lang.exception.NestableException;
+import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
- * <p>
- * LockFailedException
- * </p>
- * 
- * 
- * @
+ * Base exception for all RuntimeExceptions defined within Jetspeed.
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $ $
- *
  */
-public class LockFailedException extends NestableException
+public class JetspeedRuntimeException extends NestableRuntimeException
 {
 
     /**
      * 
      */
-    public LockFailedException()
+    public JetspeedRuntimeException()
     {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * @param arg0
      */
-    public LockFailedException(String arg0)
+    public JetspeedRuntimeException(String arg0)
     {
         super(arg0);
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * @param arg0
      */
-    public LockFailedException(Throwable arg0)
+    public JetspeedRuntimeException(Throwable arg0)
     {
         super(arg0);
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * @param arg0
      * @param arg1
      */
-    public LockFailedException(String arg0, Throwable arg1)
+    public JetspeedRuntimeException(String arg0, Throwable arg1)
     {
         super(arg0, arg1);
-        // TODO Auto-generated constructor stub
     }
 
 }
