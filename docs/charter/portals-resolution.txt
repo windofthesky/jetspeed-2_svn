@@ -26,6 +26,7 @@ WHEREAS, the Board of Directors deems it to be in
   RESOLVED, that the persons listed immediately below be and hereby
   are appointed to serve as the initial members of the Portals PMC:
 
+  * Jeremy Ford
   * Santiago Gala
   * Stefan Hepper
   * David Sean Taylor
