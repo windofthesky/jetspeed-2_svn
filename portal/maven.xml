@@ -617,6 +617,7 @@ limitations under the License.
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/localeselector"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/security.xml"/>
   </goal>
 
 </project>
