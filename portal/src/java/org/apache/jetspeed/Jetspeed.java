@@ -107,6 +107,10 @@ public class Jetspeed
      */
     public static String getRealPath(String path)
     {
+        if (engine == null)
+        {
+            return null;
+        }
         return engine.getRealPath(path);
     }
 
