@@ -117,10 +117,10 @@ public class PickANumberServlet extends ServletPortlet
         PortletSession session = request.getPortletSession();
         
         // Get target value
-        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, session.PORTLET_SCOPE);
+        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.PORTLET_SCOPE);
 
         // Get target value
-        targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, session.PORTLET_SCOPE);
+        targetValue = (Long)session.getAttribute(TARGET_VALUE_NAME, PortletSession.PORTLET_SCOPE);
         if ((targetValue != null) && (lastGuess != null))
         {
             if (targetValue.equals(lastGuess))
@@ -130,13 +130,13 @@ public class PickANumberServlet extends ServletPortlet
         {
             targetValue = new Long(Math.round(Math.random() * 10.0));
             guessCount = new Long(0);
-            session.setAttribute( TARGET_VALUE_NAME, targetValue, session.PORTLET_SCOPE);
+            session.setAttribute( TARGET_VALUE_NAME, targetValue, PortletSession.PORTLET_SCOPE);
         }
 
         // Get the guessCount, if it has not already been set.
         if (guessCount == null)
         {
-            guessCount = (Long)session.getAttribute(GUESS_COUNT_NAME, session.PORTLET_SCOPE);
+            guessCount = (Long)session.getAttribute(GUESS_COUNT_NAME, PortletSession.PORTLET_SCOPE);
             if (guessCount == null)
             {
                 guessCount = new Long(0);
@@ -157,8 +157,8 @@ public class PickANumberServlet extends ServletPortlet
         }
 
         // Update the attribute values
-        session.setAttribute( GUESS_COUNT_NAME, guessCount, session.PORTLET_SCOPE);
-        session.setAttribute( LAST_GUESS_NAME, currentGuess, session.PORTLET_SCOPE);
+        session.setAttribute( GUESS_COUNT_NAME, guessCount, PortletSession.PORTLET_SCOPE);
+        session.setAttribute( LAST_GUESS_NAME, currentGuess, PortletSession.PORTLET_SCOPE);
         
         return;
     }
