@@ -72,7 +72,7 @@ public class BaseServiceManager extends BaseObject implements IServiceManager
 	public void init()
 	{
 		super.init();
-		_registry = (IRegistry) Cornerstone.getImplementation(IRegistry.class);
+		_registry = Cornerstone.getRegistry();
 		_serviceDomainName = getConfigProperty(CONFIG_SERVICE_REGISTRY_DOMAIN_NAME);
 		_serviceInterfaceName = getConfigProperty(CONFIG_SERVICE_REGISTRY_INTERFACE_NAME);
 		initServices();    

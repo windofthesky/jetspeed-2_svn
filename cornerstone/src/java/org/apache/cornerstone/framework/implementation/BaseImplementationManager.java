@@ -56,7 +56,7 @@ public class BaseImplementationManager extends BaseObject implements IImplementa
     {
         super.init();
         _implementationMap = new HashMap();
-        _registry = (IRegistry) Cornerstone.getImplementation(IRegistry.class);
+        _registry = Cornerstone.getRegistry();
     }
 
 	/* (non-Javadoc)
