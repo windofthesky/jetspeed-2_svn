@@ -104,7 +104,7 @@ public interface CapabilityService extends CommonService
      * TODO: Roger, why is this on the public interface. It seems to be impl specific 
      */
     void deleteCapabilityMapCache();
-    
+
     /**
      * Given a media type string, look up the corresponding media type object.
      * 
@@ -112,5 +112,12 @@ public interface CapabilityService extends CommonService
      * @return The found media type object or if not found, null.
      */
     MediaType getMediaType(String mediaType);
-            
+
+    /**
+     * Given a Mimetype string lookup the corresponding media type object
+     * @param mimeTypeName to use for lookup
+     * @return MediaTypeEntry that matches the lookup in the MEDIATYPE_TO_MIMETYPE table
+     */
+    public MediaType getMediaTypeForMimeType(String mimeTypeName);
+
 }

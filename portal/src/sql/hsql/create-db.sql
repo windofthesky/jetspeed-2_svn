@@ -171,7 +171,8 @@ CREATE TABLE CLIENT(
     USER_AGENT_PATTERN VARCHAR (128),
     MANUFACTURER VARCHAR (80),
     MODEL VARCHAR(80),
-    VERSION VARCHAR(40)
+    VERSION VARCHAR(40),
+    PREFERRED_MIMETYPE_ID INTEGER NOT NULL
 );
 
 ------------------------------------------------------------------------------

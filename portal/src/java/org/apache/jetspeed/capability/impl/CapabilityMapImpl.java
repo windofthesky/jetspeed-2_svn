@@ -79,6 +79,7 @@ class CapabilityMapImpl implements CapabilityMap
     // supported Capabilities for Agent
     private Map mediaTypeMap = new HashMap(); // supported MediaTypes for Agent
     private Client client; // client for Agent
+    private MediaType preferredMediaType; // Preferred MediaType for client.
 
     /**
         Sets the client for the CapabilityMap
@@ -125,15 +126,29 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public MimeType getPreferredType()
     {
-        // Return first entry
+        // Return the value that matches the preferredMimeType defined in the Client
+        int prefMimeTypeId = this.client.getPreferredMimeTypeId();
+        MimeType mt = null;
+
         Iterator e = this.mimeTypeMap.values().iterator();
-        if (e.hasNext())
+        while (e.hasNext())
         {
-            return (MimeType) e.next();
-        } else
-        {
-            return null; // TODO: NEVER return null
+            mt = (MimeType) e.next();
+            if (mt.getMimetypeId() == prefMimeTypeId)
+                return mt;
         }
+
+        // Should never reach this point. A preferred value needs to be set
+        return null; // TODO: NEVER RETURN NULL
+    }
+
+    /**
+          * Sets the preferred MediaType for this CapabilityMap
+          * @param MediaTypeEntry 
+        */
+    public void setPreferredMediaType(MediaType type)
+    {
+        this.preferredMediaType = type;
     }
 
     /**
@@ -141,13 +156,7 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public MediaType getPreferredMediaType()
     {
-        // Return first entry
-        Iterator e = this.mediaTypeMap.values().iterator();
-        if (e.hasNext())
-        {
-            return (MediaType) e.next();
-        } 
-        return null; // TODO: NEVER RETURN NULL
+        return this.preferredMediaType;
     }
 
     /**
@@ -211,9 +220,9 @@ class CapabilityMapImpl implements CapabilityMap
     /**
     Get the mime types that this CapabilityMap supports.
     */
-    public MimeType[] getMimeTypes()
+    public Iterator getMimeTypes()
     {
-        return null;
+        return mimeTypeMap.values().iterator();
     }
 
     /**

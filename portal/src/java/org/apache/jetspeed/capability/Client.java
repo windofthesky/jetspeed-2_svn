@@ -172,7 +172,19 @@ public interface Client
     /**
      * Assigns a list of capabilities
      * @param capabilities
-      */
+     */
     public void setCapabilities(Collection capabilities);
+
+    /**
+     * getPreferredMimeTypeId
+     * @return mimeTypeId
+     */
+    public int getPreferredMimeTypeId();
+
+    /**
+     * setPreferredMimeTypeId
+     * @param mimeTypeId to be set as preferred mimeType
+     */
+    public void setPreferredMimeTypeId(int mimeTypeId);
 
 }

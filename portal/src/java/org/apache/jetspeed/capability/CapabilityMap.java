@@ -112,6 +112,12 @@ public interface CapabilityMap
     public MediaType getPreferredMediaType();
 
     /**
+     * Sets the preferred MediaType for this CapabilityMap
+     * @param MediaTypeEntry 
+     */
+    public void setPreferredMediaType(MediaType type);
+
+    /**
      * Returns an ordered list of supported media-types, from most preferred
      * to least preferred
      */
@@ -143,9 +149,9 @@ public interface CapabilityMap
 
     /**
      * Get the mime types that this CapabilityMap supports.
-     * @return Array of Mimetypes
+     * @return Returns an Iterator over the MimeType map
      */
-    public MimeType[] getMimeTypes();
+    public Iterator getMimeTypes();
 
     /**
      * @param  MimeType

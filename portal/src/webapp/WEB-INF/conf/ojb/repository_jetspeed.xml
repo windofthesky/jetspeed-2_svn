@@ -905,6 +905,12 @@
          jdbc-type="VARCHAR"     
       />
       
+      <field-descriptor
+         name="preferredMimeTypeId"
+         column="PREFERRED_MIMETYPE_ID"
+         jdbc-type="INTEGER"     
+      />
+      
       <collection-descriptor
           name="capabilities"
           element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"

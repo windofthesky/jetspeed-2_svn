@@ -51,9 +51,10 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
- 
+
 package org.apache.jetspeed.capability;
 
+import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -67,9 +68,9 @@ import org.apache.jetspeed.test.JetspeedTest;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends JetspeedTest 
-{    
-    
+public class TestCapability extends JetspeedTest
+{
+
     /**
      * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
      */
@@ -77,7 +78,7 @@ public class TestCapability extends JetspeedTest
     {
         super.overrideProperties(properties);
     }
-    
+
     /**
      * Defines the testcase name for JUnit.
      *
@@ -87,7 +88,7 @@ public class TestCapability extends JetspeedTest
     {
         super(name);
     }
-    
+
     /**
      * Start the tests.
      *
@@ -95,9 +96,10 @@ public class TestCapability extends JetspeedTest
      */
     public static void main(String args[])
     {
-         junit.awtui.TestRunner.main(new String[] { TestCapability.class.getName()});
+        junit.awtui.TestRunner.main(
+            new String[] { TestCapability.class.getName()});
     }
-    
+
     public void setup()
     {
         System.out.println("Setup: Testing Capability Service");
@@ -113,44 +115,93 @@ public class TestCapability extends JetspeedTest
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestCapability.class);
     }
-    
+
     protected CapabilityService getService()
     {
-        return (CapabilityService) CommonPortletServices.getPortalService(CapabilityService.SERVICE_NAME);
+        return (CapabilityService) CommonPortletServices.getPortalService(
+            CapabilityService.SERVICE_NAME);
     }
-    
+
     /**
      * Tests categories
      * @throws Exception
      */
     public void testCapability() throws Exception
     {
-        CapabilityService service = getService();               
+        CapabilityService service = getService();
         assertNotNull("capability service is null", service);
 
         // Find specific client -- testing pattern matching
         String userAgent;
-        System.out.println("Test pattern matching...")  ;   
-        
-        userAgent = "Mozilla/4.0";
-        System.out.println("Find pattern: " + userAgent)  ;   
-        
+        System.out.println("Testing all supported Clients...");
+
+        userAgent = "Opera/7.0";
+        System.out.println("Find pattern: " + userAgent);
         CapabilityMap cm = service.getCapabilityMap(userAgent);
         assertNotNull("getCapabilityMap is null", cm);
-        
+        capabilityMapReport(cm);
+
+        userAgent = "Mozilla/4.0";
+        System.out.println("Find pattern: " + userAgent);
+        cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        capabilityMapReport(cm);
+
+        userAgent = "MSIE 5.0";
+        System.out.println("Find pattern: " + userAgent);
+        cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        capabilityMapReport(cm);
+
+        userAgent = "Mozilla/5.0";
+        System.out.println("Find pattern: " + userAgent);
+        cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        capabilityMapReport(cm);
+
+        userAgent = "Lynx";
+        System.out.println("Find pattern: " + userAgent);
+        cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        capabilityMapReport(cm);
+
+        userAgent = "Nokia";
+        System.out.println("Find pattern: " + userAgent);
+        cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        capabilityMapReport(cm);
+
+    }
+
+    private void capabilityMapReport(CapabilityMap cm)
+    {
         MediaType mediaType = cm.getPreferredMediaType();
-        assertNotNull("MediaType is null", mediaType); 
-        
-        MimeType mimeTypeObj =    cm.getPreferredType();
-        assertNotNull("MimeType is null", mimeTypeObj);         
+        assertNotNull("Preferred MediaType is null", mediaType);
+
+        MimeType mimeTypeObj = cm.getPreferredType();
+        assertNotNull("Preferred MimeType is null", mimeTypeObj);
         String mimeType = mimeTypeObj.getName();
-         
+
         String encoding = mediaType.getCharacterSet();
-        
-        System.out.println("MediaType = " + mediaType.getName());
-        System.out.println("Mimetype = " + mimeType);
+
+        System.out.println("Preferred MediaType = " + mediaType.getName());
+        System.out.println("Preferred Mimetype = " + mimeType);
         System.out.println("Encoding = " + encoding);
-                
+        System.out.println("Supported MediaTypes");
+        Iterator cmIterator = cm.listMediaTypes();
+
+        while (cmIterator.hasNext())
+        {
+            System.out.println(((MediaType) cmIterator.next()).getName());
+        }
+
+        System.out.println("Supported MimeTypes");
+        Iterator mtIterator = cm.getMimeTypes();
+
+        while (mtIterator.hasNext())
+        {
+            System.out.println(((MimeType) mtIterator.next()).getName());
+        }
     }
 
 }

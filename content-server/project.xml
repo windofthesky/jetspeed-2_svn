@@ -110,7 +110,7 @@
         <war.bundle.jar>false</war.bundle.jar>
       </properties> 
     </dependency>
-  <dependencies/>
+  </dependencies>
 
   <build>
     <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>

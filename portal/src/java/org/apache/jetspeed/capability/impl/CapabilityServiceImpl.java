@@ -250,6 +250,14 @@ public class CapabilityServiceImpl
                     map.addMediaType((MediaType) media.next());
                 }
 
+                //Set preferred Mimetype
+                MimeType mimeType = map.getPreferredType();
+
+                MediaType mtEntry =
+                    getMediaTypeForMimeType(map.getPreferredType().getName());
+
+                map.setPreferredMediaType(mtEntry);
+
                 // Add map to cache
                 capabilityMapCache.put(userAgent, map);
 
@@ -359,7 +367,7 @@ public class CapabilityServiceImpl
         while (mimetypes.hasNext())
         {
             MimeType mt = (MimeType) mimetypes.next();
-            
+
             // Add mimetype to query
             // Note: mimetypes is a member of MediaTypeImpl
             // criteria.addEqualTo("mimetypes.name", mt.getName());
@@ -368,12 +376,13 @@ public class CapabilityServiceImpl
         }
         criteria.addIn("mimetypes.name", temp);
 
-        Collection co = plugin.getCollectionByQuery(
-            mediaTypeClass,
-            plugin.generateQuery(mediaTypeClass, criteria));
-            
+        Collection co =
+            plugin.getCollectionByQuery(
+                mediaTypeClass,
+                plugin.generateQuery(mediaTypeClass, criteria));
+
         if (co.isEmpty())
-        {            
+        {
             System.out.println("collection is empty");
             MediaType mt = getMediaType("html");
             Vector v = new Vector();
@@ -381,8 +390,8 @@ public class CapabilityServiceImpl
             return v;
         }
         System.out.println("collection is NOT empty");
-                
-        return co;                   
+
+        return co;
     }
 
     /* 
@@ -401,7 +410,34 @@ public class CapabilityServiceImpl
     {
         LookupCriteria criteria = plugin.newLookupCriteria();
         criteria.addEqualTo("name", mediaType);
-        Object query = plugin.generateQuery(mediaTypeClass, criteria);        
+        Object query = plugin.generateQuery(mediaTypeClass, criteria);
         return (MediaType) plugin.getObjectByQuery(mediaTypeClass, query);
+    }
+
+    /**
+     * getMediaTypeForMimeType
+     * @param mimeType to use for lookup
+     * @return MediaTypeEntry that matches the lookup in the MEDIATYPE_TO_MIMETYPE table
+     */
+    public MediaType getMediaTypeForMimeType(String mimeTypeName)
+    {
+        //Find the MediaType by matching the Mimetype
+
+        LookupCriteria criteria = plugin.newLookupCriteria();
+        criteria.addEqualTo("mimetypes.name", mimeTypeName);
+
+        Collection mediaTypeCollection =
+            plugin.getCollectionByQuery(
+                mediaTypeClass,
+                plugin.generateQuery(mediaTypeClass, criteria));
+
+        Iterator mtIterator = mediaTypeCollection.iterator();
+        if (mtIterator.hasNext())
+        {
+            return (MediaType) mtIterator.next();
+        } else
+        {
+            return null;
+        }
     }
 }
