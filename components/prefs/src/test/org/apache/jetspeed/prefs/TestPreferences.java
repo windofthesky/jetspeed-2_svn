@@ -132,9 +132,9 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     }
 
     /**
-     * <p>Test children names.</p>
+     * <p>Test node and whether children exist under a given node.</p>
      */
-    public void testChildrenNames()
+    public void testNodeAndChildrenNames()
     {
         Preferences prefs = Preferences.userRoot();
         // Test without children.
@@ -151,14 +151,6 @@ public class TestPreferences extends AbstractComponentAwareTestCase
             assertTrue("backing store exception: " + bse, false);
         }
 
-        // TODO Test with children.
-    }
-
-    /**
-     * <p>Test node.</p>
-     */
-    public void testNode()
-    {
         // Absolute path.
         // 1. The node does not exist. Create it.
         Preferences prefs0 = Preferences.userRoot().node("/an1/san1");
@@ -176,6 +168,16 @@ public class TestPreferences extends AbstractComponentAwareTestCase
         assertNotNull("should not be null", prefs4);
         assertTrue("expected node == /an1/rn1/srn1, " + prefs4.absolutePath(), prefs4.absolutePath().equals("/an1/rn1/srn1"));
 
+        try
+        {
+            String[] childrenNames = prefs3.childrenNames();
+            assertEquals("should have 2 children", 2, childrenNames.length);
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
+
         // Remove all nodes.
         try
         {
@@ -188,13 +190,29 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     }
 
     /**
-     * <p>Test adding properties to a property set node.</p>
+     * <p>Test adding properties to a property set node and get property keys
+     * for a given node.</p>
      */
-    public void testProperty()
+    public void testPropertyAndPropertyKeys()
     {
 
         // 1. Current node does not have any property associated to it.
+        // No property has been defined nor added to the node.  There should be
+        // no property and adding a child should return null.
         Preferences pref0 = Preferences.userRoot();
+        try
+        {
+            String[] propertyKeys = pref0.keys();
+            if (propertyKeys.length > 0)
+            {
+                assertTrue("expected no children, " + propertyKeys.length + ", " + propertyKeys[0], propertyKeys.length == 0);
+            }
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
+
         pref0.put("propertyName0", "true");
         String prop = pref0.get("propertyName0", null);
         assertNull("should be null.", prop);
@@ -205,6 +223,17 @@ public class TestPreferences extends AbstractComponentAwareTestCase
         pref1.put("propertyName0", "true");
         String prop1 = pref1.get("propertyName0", null);
         assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
+
+        // There should be 1 property under pref1.
+        try
+        {
+            String[] propertyKeys = pref1.keys();
+            assertEquals("expected 1 child, ", 1, propertyKeys.length);
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
 
         // Test remove property.
         pref1.remove("propertyName0");
