@@ -10,7 +10,6 @@
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/test"/>
     <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry exported="true" kind="var" path="MAVEN_REPO/ojb/jars/ojb-1.0.rc3.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.jar"/>
@@ -31,11 +30,10 @@
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-pool/jars/commons-pool-1.0.1.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.1-dev.20021231.055112.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-collections/jars/commons-collections-2.1.jar"/>
-    <classpathentry exported="true" kind="var" path="MAVEN_REPO/pluto-container/jars/pluto-0.41.jar"/>
-    <classpathentry exported="true" kind="src" path="/pluto"/>
-    <classpathentry kind="var" path="MAVEN_REPO"/>
     <classpathentry kind="var" path="MAVEN_REPO/mx4j/jars/mx4j-jmx-1.1.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/mx4j/jars/mx4j-tools-1.1.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/commons-modeler/jars/commons-modeler-1.1M1.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/ojb/jars/ojb-1.0.rc3-PATCHED.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/pluto-container/jars/pluto-0.46.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
