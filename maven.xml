@@ -299,6 +299,7 @@ limitations under the License.
   <goal name="db.execute">
     <sql driver="${org.apache.jetspeed.database.driver}"
          classpathref="maven.dependency.classpath"
+         classpath="${jdbc.drivers.path}"
          url="${org.apache.jetspeed.database.url}"
          userid="${org.apache.jetspeed.database.user}"
          password="${org.apache.jetspeed.database.password}"
