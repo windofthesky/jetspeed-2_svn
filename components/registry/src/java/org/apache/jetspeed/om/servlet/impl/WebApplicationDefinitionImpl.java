@@ -40,6 +40,8 @@ import org.apache.pluto.om.common.DisplayNameSet;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.servlet.ServletDefinitionList;
+import org.apache.pluto.om.common.SecurityRole;
+import org.apache.pluto.om.common.SecurityRoleSet;
 
 /**
  * 
@@ -58,6 +60,8 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
 
     private Collection descriptions = new ArrayList();
     private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_WEB_APP);
+    private Collection securityRoles = new ArrayList();
+    private SecurityRoleSetImpl secRolesListWrapper = new SecurityRoleSetImpl();
 
     private String contextRoot;
     private ParameterSet initParameters;
@@ -245,4 +249,21 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
         addDescription(Locale.getDefault(), desc);
     }
 
+    /**
+     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getSecurityRoles()
+     */
+    public SecurityRoleSet getSecurityRoles()
+    {
+        secRolesListWrapper.setInnerCollection(securityRoles);
+        return secRolesListWrapper;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.servlet.MutableWebApplication#addSecurityRole(org.apache.pluto.om.common.SecurityRole)
+     */
+    public void addSecurityRole(SecurityRole securityRole) 
+    {
+        secRolesListWrapper.setInnerCollection(securityRoles);
+        secRolesListWrapper.add(securityRole);
+    }    
 }

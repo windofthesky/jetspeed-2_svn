@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayNameSet;
+import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
 
 /**
@@ -46,4 +47,7 @@ public interface MutableWebApplication extends WebApplicationDefinition, Seriali
     void addDisplayName(Locale locale, String name);
 
     void addDescription(Locale locale, String description);
+    
+    void addSecurityRole(SecurityRole securityRole);
+    
 }

@@ -366,17 +366,21 @@ public class FileSystemPAM implements Deployment
         {
             app.setApplicationType(MutablePortletApplication.WEBAPP);
         }
-        //					// create the web application
-        MutableWebApplication webapp = new WebApplicationDefinitionImpl();
-        if (paName.startsWith("/"))
-        {
-            webapp.setContextRoot(paName);
+
+        String contextRoot;
+        String webXMLPath = portletAppDir + "/WEB-INF/web.xml";
+
+        if (paName.startsWith("/")) {
+            contextRoot = paName;
+        } else {
+            contextRoot = "/" + paName;
         }
-        else
-        {
-            webapp.setContextRoot("/" + paName);
-        }
-        webapp.addDisplayName(Jetspeed.getDefaultLocale(), paName);
+
+        // load the web.xml
+        log.info("Loading "+webXMLPath + " into memory....");
+        MutableWebApplication webapp = (MutableWebApplication) WebDescriptorUtilities.loadDescriptor(webXMLPath, contextRoot, Jetspeed
+                .getDefaultLocale(), paName);
+
         app.setWebApplicationDefinition(webapp);
         
         try
