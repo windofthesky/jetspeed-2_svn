@@ -32,12 +32,14 @@ limitations under the License.
         <column name="TEXT_VALUE" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
+        <!-- Issue with OJB RC6 when deleting M-N. Foreign Key Violation.
         <foreign-key foreignTable="PREFS_PROPERTY_KEY">
             <reference foreign="PROPERTY_KEY_ID" local="PROPERTY_KEY_ID"/>
         </foreign-key>
         <foreign-key foreignTable="PREFS_NODE">
             <reference foreign="NODE_ID" local="NODE_ID"/>
         </foreign-key>
+        -->
     </table>
 
     <!--
@@ -46,12 +48,14 @@ limitations under the License.
     <table name="PREFS_NODE_PROPERTY_KEY">
         <column name="NODE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PROPERTY_KEY_ID" primaryKey="true" required="true" type="INTEGER"/>
+    	<!-- Issue with OJB RC6 when deleting M-N. Foreign Key Violation.
     	<foreign-key foreignTable="PREFS_PROPERTY_KEY">
             <reference foreign="PROPERTY_KEY_ID" local="PROPERTY_KEY_ID"/>
         </foreign-key>
         <foreign-key foreignTable="PREFS_NODE">
             <reference foreign="NODE_ID" local="NODE_ID"/>
         </foreign-key>
+        -->
     </table>
     
    <!--
