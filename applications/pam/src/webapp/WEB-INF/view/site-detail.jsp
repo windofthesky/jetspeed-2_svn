@@ -17,6 +17,8 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 
+<%@ page import="org.apache.jetspeed.portlets.pam.beans.TabBean" %>
+
 <fmt:setBundle basename="org.apache.jetspeed.portlets.site.resources.SiteResources" />
 
 <!--
@@ -37,39 +39,50 @@ limitations under the License.
  */
 //-->
 
-<c:choose>
-	<c:when test="${folder != null}">
-		Name (Node): <c:out value="${folder.name}"/> <br />
-		Path (Node): <c:out value="${folder.path}"/> <br />
-		Title (BaseElement): <c:out value="${folder.title}"/> <br />
-		Parent (Node): <c:out value="${folder.parent.title}"/> <br />
-		ID (BaseElement): <c:out value="${folder.id}"/> <br />
-		Type (Node): <c:out value="${folder.type}"/> <br />
-		URL (Node): <c:out value="${folder.url}"/> <br />
-		ACL (SecuredResource): <c:out value="${folder.acl}"/> <br />
-		Hidden (Node): <c:out value="${folder.hidden}"/> <br />
-		Default Page (Folder): <c:out value="${folder.defaultPage}"/> <br />
-		Default Theme (Folder): <c:out value="${folder.defaultTheme}"/> <br />
-		
-		
-		<c:forEach var="field" items="${folder.metadataFields}">
-			<c:out value="${field.name}"/> | <c:out value="${field.value}"/> | <c:out value="${field.locale}"/> <br />
-		</c:forEach>
-		
-		
-	</c:when>
+<c:set var="selectedTab" value="${requestScope.selected_tab}"/>
 
-	<c:when test="${page != null}">
-	
-		Name: <c:out value="${page.name}"/> <br />
-		Title: <c:out value="${page.title}"/> <br />
-		Parent: <c:out value="${page.parent.title}"/> <br />
+<div id="tabs">
+	<c:set var="tab_items" value="${requestScope.tabs}"/>
+	<c:set var="currentTab" value="${selectedTab}"/>
+	<c:set var="url_param_name" value="selected_tab"/>
+	<%@ include file="tabs.jsp"%>
+</div>
+
+<c:if test="${currentTab.id == 'site_details'}">
+	<c:choose>
+		<c:when test="${folder != null}">
+			Name (Node): <c:out value="${folder.name}"/> <br />
+			Path (Node): <c:out value="${folder.path}"/> <br />
+			Title (BaseElement): <c:out value="${folder.title}"/> <br />
+			Parent (Node): <c:out value="${folder.parent.title}"/> <br />
+			ID (BaseElement): <c:out value="${folder.id}"/> <br />
+			Type (Node): <c:out value="${folder.type}"/> <br />
+			URL (Node): <c:out value="${folder.url}"/> <br />
+			ACL (SecuredResource): <c:out value="${folder.acl}"/> <br />
+			Hidden (Node): <c:out value="${folder.hidden}"/> <br />
+			Default Page (Folder): <c:out value="${folder.defaultPage}"/> <br />
+			Default Theme (Folder): <c:out value="${folder.defaultTheme}"/> <br />
+			
+			
+			<c:forEach var="field" items="${folder.metadataFields}">
+				<c:out value="${field.name}"/> | <c:out value="${field.value}"/> | <c:out value="${field.locale}"/> <br />
+			</c:forEach>
+			
+			
+		</c:when>
+
+		<c:when test="${page != null}">
 		
-	</c:when>
-	
-	<c:otherwise>
-		<fmt:message key="site.details.choose_folder_or_page"/>
+			Name: <c:out value="${page.name}"/> <br />
+			Title: <c:out value="${page.title}"/> <br />
+			Parent: <c:out value="${page.parent.title}"/> <br />
+			
+		</c:when>
 		
-		
-	</c:otherwise>
-</c:choose>
+		<c:otherwise>
+			<fmt:message key="site.details.choose_folder_or_page"/>
+			
+			
+		</c:otherwise>
+	</c:choose>
+</c:if>

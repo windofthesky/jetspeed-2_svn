@@ -16,7 +16,10 @@
 package org.apache.jetspeed.portlets.site;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -33,6 +36,7 @@ import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.portlets.pam.beans.TabBean;
 
 /**
  * This portlet is a tabbed editor user interface for editing site resoures: pages and folders.
@@ -44,6 +48,8 @@ public class SiteDetailPortlet extends ServletPortlet
 {
     private PortletContext context;
     private PageManager pageManager;
+    
+    private LinkedHashMap tabMap = new LinkedHashMap();
 
     public void init(PortletConfig config)
     throws PortletException 
@@ -55,6 +61,12 @@ public class SiteDetailPortlet extends ServletPortlet
         {
             throw new PortletException("Failed to find the Page Manager on portlet initialization");
         }
+        
+        TabBean tb1 = new TabBean("site_details");
+        TabBean tb2 = new TabBean("site_security");
+        
+        tabMap.put(tb1.getId(), tb1);
+        tabMap.put(tb2.getId(), tb2);
     }
 
     public void doView(RenderRequest request, RenderResponse response)
@@ -104,6 +116,63 @@ public class SiteDetailPortlet extends ServletPortlet
             
         }
         
+        request.setAttribute("tabs", tabMap.values());
+        
+        TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, PortletSession.APPLICATION_SCOPE);
+        if(selectedTab == null)
+        {
+            selectedTab = (TabBean) tabMap.values().iterator().next();
+        }
+        
+        request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
+        
         super.doView(request, response);
     }
+    
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
+	{
+        
+        String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
+        if(selectedTab != null)
+        {
+            TabBean tab = (TabBean) tabMap.get(selectedTab);
+            actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, tab, PortletSession.APPLICATION_SCOPE);
+        }
+        
+        String actionType = actionRequest.getParameter("action_type");
+        if(actionType == null)
+        {
+            actionType = "folder";
+        }
+        
+        if(actionType.equals("folder"))
+        {
+            String folderName = actionRequest.getParameter("folder_name");
+            if(folderName != null)
+            {
+                try
+                {
+                    Folder folder = pageManager.getFolder(folderName);
+                    String acl = actionRequest.getParameter("acl");
+                    folder.setAcl(acl);
+                    
+                    //how to store ??
+                } catch (FolderNotFoundException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (InvalidFolderException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (NodeException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                String acl = actionRequest.getParameter("acl");
+            }
+            
+        }
+	}
 }
