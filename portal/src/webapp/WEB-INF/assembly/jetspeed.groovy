@@ -45,6 +45,10 @@ import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl
 import org.apache.jetspeed.aggregator.PortletRenderer
 import org.apache.jetspeed.aggregator.impl.PortletRendererImpl
 import org.apache.pluto.PortletContainer
+import org.apache.jetspeed.request.RequestContextComponent
+import org.apache.jetspeed.request.JetspeedRequestContextComponent
+import org.apache.jetspeed.container.session.NavigationalStateComponent
+import org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent
 
 import org.apache.jetspeed.components.util.NanoQuickAssembler
        
@@ -117,6 +121,21 @@ container.registerComponentImplementation(Profiler, JetspeedProfiler, new Parame
 container.registerComponentImplementation(Capabilities, JetspeedCapabilities, new Parameter[] {new ComponentParameter(PersistenceStoreContainer)} )
 
 //
+// Navigational State component
+//
+navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
+container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
+               new Parameter[] {new ConstantParameter(navStateClass)} )
+
+//
+// Request Context component
+//
+requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
+container.registerComponentImplementation(RequestContextComponent, JetspeedRequestContextComponent, 
+    new Parameter[] {new ComponentParameter(NavigationalStateComponent),
+                     new ConstantParameter(requestContextClass)} )
+
+//
 // Portlet Window component
 //
 container.registerComponentImplementation(PortletWindowAccessor, PortletWindowAccessorImpl, 
@@ -140,7 +159,7 @@ strategy = 1
 container.registerComponentImplementation(PageAggregator, 
                                            PageAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer), 
-                                               new ConstantParameter(strategy)} )                           	    
+                                               new ConstantParameter(strategy)} ) 
 container.registerComponentImplementation(PortletAggregator, 
                                            PortletAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer)})
