@@ -52,6 +52,9 @@ import org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateCompo
 import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
 import org.apache.jetspeed.security.impl.SecurityProviderImpl
 
+import org.apache.jetspeed.userinfo.UserInfoManager
+import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl
+
 import org.apache.jetspeed.components.util.NanoQuickAssembler
        
 // WARNING!!!!!!
