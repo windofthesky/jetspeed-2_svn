@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a sample metadata repository for the ObJectBridge System.
+     Use this file as a template for building your own mappings-->
+
+<!-- defining entities for include-files -->
+<!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
+<!ENTITY database SYSTEM "repository_database.xml">
+<!ENTITY internal SYSTEM "repository_internal.xml">
+<!ENTITY commons SYSTEM "com/rippe/essential/commons/om/repository_common.xml">
+<!ENTITY contact SYSTEM "com/rippe/essential/commons/contact/om/repository_contact.xml">
+<!ENTITY audit_fields SYSTEM "com/rippe/essential/commons/om/audit_fields.xml">
+<!ENTITY security SYSTEM "com/rippe/essential/commons/security/role/repository_security.xml">
+
+]>
+
+
+<descriptor-repository version="1.0" isolation-level="read-uncommitted">
+
+    <!-- include all used database connections -->
+    &database;
+
+    <!-- include ojb internal mappings here -->
+    &internal;
+
+    <!-- include essential commons defined mappings here -->
+    &commons; 
+    
+    &contact; 
+
+   &security;
+
+</descriptor-repository>
