@@ -45,6 +45,13 @@ public class ContentTypeSetImpl implements ContentTypeSetComposite, Serializable
 
     public boolean supportsPortletMode(PortletMode mode)
     {
+        // Always support "VIEW".  Some portlet vendors do not indicate view
+        // in the deployment descriptor.
+        if(mode.equals(PortletMode.VIEW))
+        {
+            return true;
+        }
+        
         Iterator itr = innerCollection.iterator();
         while (itr.hasNext())
         {
