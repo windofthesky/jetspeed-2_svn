@@ -72,6 +72,7 @@ import org.apache.jetspeed.container.services.JetspeedContainerServices;
 import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.cps.jndi.JNDIService;
 import org.apache.jetspeed.descriptor.PipelineDescriptor;
 import org.apache.jetspeed.descriptor.XmlReader;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -99,13 +100,14 @@ public class JetspeedEngine implements Engine
     private Pipeline defaultPipeline = null;
     private Class pipelineClass = null;
     private HashMap pipelines = new HashMap();
-    
+
     private static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
     private ThreadLocal tlRequestContext = new ThreadLocal();
     // private final HashMap requestContextPerThread = new HashMap();
 
+    private boolean useInternalJNDI;
     /**
      * Initializes the engine with a commons configuration, starting all early initable services.
      *
@@ -123,6 +125,8 @@ public class JetspeedEngine implements Engine
 
             context.setApplicationRoot(applicationRoot);
             context.setConfiguration(configuration);
+
+            useInternalJNDI = configuration.getBoolean("portal.use.internal.jndi", true);
 
             //
             // Configure Log4J
@@ -247,26 +251,35 @@ public class JetspeedEngine implements Engine
 
     public void service(RequestContext context) throws JetspeedException
     {
-       // requestContextPerThread.put(Thread.currentThread(), context);
-       try
-       {
-           String targetPipeline = context.getRequestParameter(PortalReservedParameters.PIPELINE); 
-           tlRequestContext.set(context);
-           Pipeline pipeline = defaultPipeline;
-           if (targetPipeline != null)
-           {
-                Pipeline specificPipeline = (Pipeline)pipelines.get(targetPipeline);
+        // requestContextPerThread.put(Thread.currentThread(), context);
+        try
+        {
+        	if(useInternalJNDI)
+        	{
+        		// bind the current JNDI context to this service thread.
+				JNDIService jndiServ = (JNDIService) CommonPortletServices.getPortalService(JNDIService.SERVICE_NAME);
+				jndiServ.bindToCurrentThread();
+        	}
+        	
+            String targetPipeline = context.getRequestParameter(PortalReservedParameters.PIPELINE);
+            tlRequestContext.set(context);
+            Pipeline pipeline = defaultPipeline;
+            if (targetPipeline != null)
+            {
+                Pipeline specificPipeline = (Pipeline) pipelines.get(targetPipeline);
                 if (specificPipeline != null)
                 {
-                    pipeline = specificPipeline;               
+                    pipeline = specificPipeline;
                 }
-           }
-           pipeline.invoke(context);               
-       }
-       catch (Throwable t)
-       {
-           t.printStackTrace();
-       }
+            }
+            pipeline.invoke(context);
+        }
+        catch (Throwable t)
+        {
+            String msg = "JetspeedEngine unable to service request: " + t.toString();
+            log.error(msg, t);
+            // throw new JetspeedException(msg, t);
+        }
     }
 
     /**
@@ -341,7 +354,7 @@ public class JetspeedEngine implements Engine
     {
         String className = this.getContext().getConfiguration().getString(PIPELINE_CLASS, null);
         String defaultPipelineName = this.getContext().getConfiguration().getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
-        
+
         if (null == className)
         {
             throw new CPSInitializationException("Failed to initialize pipeline, missing configuration entry: " + PIPELINE_CLASS);
@@ -355,23 +368,23 @@ public class JetspeedEngine implements Engine
             throw new CPSInitializationException("Failed to initialize pipeline, couldnt create pipeline class");
         }
 
-        String pipelinesDir = this.getContext().getConfiguration().getString(PIPELINE_DIRECTORY, "/WEB-INF/conf/pipelines/");        
+        String pipelinesDir = this.getContext().getConfiguration().getString(PIPELINE_DIRECTORY, "/WEB-INF/conf/pipelines/");
         File directory = new File(getRealPath(pipelinesDir));
         if (directory == null || !directory.exists())
         {
             throw new CPSInitializationException("Failed to initialize pipeline, could not find pipeline directory");
         }
-        
-        File[] pipelineDescriptors = directory.listFiles();        
+
+        File[] pipelineDescriptors = directory.listFiles();
         for (int ix = 0; ix < pipelineDescriptors.length; ix++)
         {
             if (pipelineDescriptors[ix].isDirectory())
             {
                 continue;
             }
-            Pipeline pipeline = createPipeline(pipelineDescriptors[ix]);            
+            Pipeline pipeline = createPipeline(pipelineDescriptors[ix]);
             String name = pipelineDescriptors[ix].getName();
-            
+
             int index = name.lastIndexOf(".");
             if (index > 0)
             {
@@ -380,11 +393,11 @@ public class JetspeedEngine implements Engine
             if (name.equalsIgnoreCase(defaultPipelineName))
             {
                 defaultPipeline = pipeline;
-            }        
-            pipelines.put(name, pipeline);            
+            }
+            pipelines.put(name, pipeline);
         }
     }
-    
+
     /**
      * Creates a pipeline from a pipeline descriptor file.
      * 
@@ -399,15 +412,15 @@ public class JetspeedEngine implements Engine
 
         try
         {
-            pipeline = (Pipeline)pipelineClass.newInstance();
-            XmlReader reader = new XmlReader(PipelineDescriptor.class);            
+            pipeline = (Pipeline) pipelineClass.newInstance();
+            XmlReader reader = new XmlReader(PipelineDescriptor.class);
             descriptor = (PipelineDescriptor) reader.parse(new FileInputStream(file));
         }
         catch (Exception e)
         {
             throw new CPSInitializationException("Failed to read pipeline descriptor from deployment");
         }
-        
+
         try
         {
             pipeline.setDescriptor(descriptor);
@@ -417,16 +430,16 @@ public class JetspeedEngine implements Engine
         {
             throw new CPSInitializationException("Failed to initialize pipeline: ", e);
         }
-        
+
         return pipeline;
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.engine.Engine#getPipeline(java.lang.String)
      */
     public Pipeline getPipeline(String pipelineName)
     {
-        return (Pipeline)this.pipelines.get(pipelineName);
+        return (Pipeline) this.pipelines.get(pipelineName);
     }
 
     /* (non-Javadoc)
