@@ -22,8 +22,6 @@ limitations under the License.
 <!DOCTYPE descriptor-repository SYSTEM "repository.dtd" [
 <!ENTITY database SYSTEM "repository_database.xml">
 <!ENTITY internal SYSTEM "repository_internal.xml">
-<!ENTITY registry SYSTEM "repository_registry.xml">
-
 
 ]>
 
@@ -34,10 +32,5 @@ limitations under the License.
     &database;
 
     <!-- include ojb internal mappings here -->
-    &internal;
-    
-    <!-- include jetspeed registry mapping here -->
-    &registry;
-
-
+    &internal;    
 </descriptor-repository>
