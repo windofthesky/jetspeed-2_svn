@@ -432,7 +432,7 @@ limitations under the License.
         </description>
 		<init-param>
 		<name>EditPage</name>
-		  <value>/WEB-INF/view/edit-prefs.vm</value>
+		  <value>/WEB-INF/view/sso-edit-prefs.vm</value>
 		</init-param>
 		<init-param>
 		<name>HelpPage</name>

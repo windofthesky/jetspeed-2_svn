@@ -1,0 +1,16 @@
+
+<h2 class="portlet-section-header">Edit Preferences</h2>
+
+<form action="$renderResponse.createActionURL()" method="post">
+<table>
+#foreach ($pref in $prefs)
+#prefField($pref.Key $pref.Value "40")
+#end
+<hr/>
+#form4ColumnCell("SSO Username" $ssoUserName 30 "ssoUserName")
+#form4ColumnCell("SSO Credential" $ssoCredential 30 "ssoCredential")
+</table>
+<input type="submit" name="Save" value="Save" />
+</form>
+
+
