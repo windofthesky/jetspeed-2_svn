@@ -64,7 +64,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
     {
     }
 
-    public PortletWindow createPortetWindow(PortletEntity entity, String windowId)
+    public PortletWindow createPortletWindow(PortletEntity entity, String windowId)
     {
         PortletWindow found = getWindowFromCache(windowId);
         if (found != null)
@@ -78,7 +78,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
         return window;        
     }
 
-    public PortletWindow createPortetWindow(String windowId)
+    public PortletWindow createPortletWindow(String windowId)
     {
         PortletWindow found = getWindowFromCache(windowId);
         if (found != null)
