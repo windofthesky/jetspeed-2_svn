@@ -45,11 +45,15 @@ public class ServletRequestFactoryImpl
     {
     }
 
+    protected HttpServletRequest createRequest(HttpServletRequest request, PortletWindow window)
+    {
+        return new ServletRequestImpl(request, window);        
+    }
+    
     public HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
     {
-        // TODO: use pool here
-        HttpServletRequest servletRequest = new ServletRequestImpl(request, window);
-
+        HttpServletRequest servletRequest = createRequest(request, window);
+        
         // Set page encoding in order to parse the form data correctly        
         String preferedEnc = (String) request.getAttribute(JetspeedRequestContext.PREFERED_CHARACTERENCODING_KEY);
         if (preferedEnc != null)
