@@ -74,18 +74,18 @@ public abstract class BaseHttpMap implements Map {
 
   public Set keySet() {
     Set keySet = new HashSet();
-    Enumeration enum = getNames();
-    while (enum.hasMoreElements()) {
-      keySet.add(enum.nextElement());
+    Enumeration names = getNames();
+    while (names.hasMoreElements()) {
+      keySet.add(names.nextElement());
     }
     return keySet;
   }
 
   public Collection values() {
     List list = new ArrayList();
-    Enumeration enum = getNames();
-    while (enum.hasMoreElements()) {
-      list.add(getValue(enum.nextElement()));
+    Enumeration names = getNames();
+    while (names.hasMoreElements()) {
+      list.add(getValue(names.nextElement()));
     }
     return list;
   }
