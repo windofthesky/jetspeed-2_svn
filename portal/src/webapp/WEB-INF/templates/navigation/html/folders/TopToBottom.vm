@@ -1,5 +1,5 @@
 <div class="FolderList">
   #foreach($childFolder in $_nodeSet.iterator())
-  <div><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink">$childFolder.metaData.getTitle($preferedLocale)</a></div>
+  <div><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink" title="$childFolder.getTitle($preferedLocale)">$childFolder.getShortTitle($preferedLocale)</a></div>
   #end
 </div>

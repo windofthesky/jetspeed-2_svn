@@ -71,4 +71,70 @@ public class LinkImpl extends AbstractNode implements Link
     {
         return true;
     }
+
+    /**
+     * <p>
+     * checkConstraints
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#checkConstraints(java.lang.String)
+     * @param actions
+     * @throws SecurityException
+     */
+    public void checkConstraints(String actions) throws SecurityException
+    {
+        // always allow links that reference absolute urls since
+        // these are probably not a security related concern but
+        // rather should always be viewable
+        String hrefUrl = getUrl();
+        if ((actions == null) || !actions.trim().equals(VIEW_ACTION) ||
+            ((hrefUrl != null) && !hrefUrl.startsWith("http://") && !hrefUrl.startsWith("https://")))
+        {
+            super.checkConstraints(actions);
+        }
+    }
+
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#checkPermissions(java.lang.String)
+     * @param actions
+     * @throws SecurityException
+     */
+    public void checkPermissions(String actions) throws SecurityException
+    {
+        // always allow links that reference absolute urls since
+        // these are probably not a security related concern but
+        // rather should always be viewable
+        String hrefUrl = getUrl();
+        if ((actions == null) || !actions.trim().equals(VIEW_ACTION) ||
+            ((hrefUrl != null) && !hrefUrl.startsWith("http://") && !hrefUrl.startsWith("https://")))
+        {
+            super.checkPermissions(actions);
+        }
+    }
+
+    /**
+     * <p>
+     * checkAccess
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#checkAccess(java.lang.String)
+     * @param actions
+     * @throws SecurityException
+     */
+    public void checkAccess(String actions) throws SecurityException
+    {
+        // always allow links that reference absolute urls since
+        // these are probably not a security related concern but
+        // rather should always be viewable
+        String hrefUrl = getUrl();
+        if ((actions == null) || !actions.trim().equals(VIEW_ACTION) ||
+            ((hrefUrl != null) && !hrefUrl.startsWith("http://") && !hrefUrl.startsWith("https://")))
+        {
+            super.checkAccess(actions);
+        }
+    }
 }

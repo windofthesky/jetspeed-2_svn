@@ -3,4 +3,9 @@
   <title >Jetspeed Administrative Portlets</title>  
   <metadata name="title" xml:lang="fr">Jetspeed Portlets Administratif</metadata>
   <metadata name="title" xml:lang="ja">Jetspeed 管理ポートレット</metadata>
+
+  <!-- allow only manager role -->
+  <security-constraints>
+    <security-constraints-ref>manager</security-constraints-ref>
+  </security-constraints>
 </folder>

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,43 +58,59 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
      */
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
-        Subject subject = null;
         try
-        {        
-            Principal principal = request.getRequest().getUserPrincipal();
-            subject = (Subject) 
-                request.getRequest().getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
-            if (null == principal)
+        {
+            // initialize/validate security subject
+
+            // access request user principal if defined or default
+            // to profiler anonymous user
+            Principal userPrincipal = request.getRequest().getUserPrincipal();
+            if (userPrincipal == null)
             {
-                principal = new UserPrincipalImpl(profiler.getAnonymousUser());
+                userPrincipal = new UserPrincipalImpl(profiler.getAnonymousUser());
             }
-            if (null == subject)
+
+            // check for previously established session subject and
+            // invalidate if subject and current user principals do
+            // not match
+            HttpSession session = request.getRequest().getSession();
+            Subject subject = (Subject) session.getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
+            if (subject != null)
             {
-                Set principals = new HashSet();
-                principals.add(principal);
-                subject = new Subject(true, principals, new HashSet(), new HashSet());
-                request.getRequest().getSession().setAttribute(
-                        PortalReservedParameters.SESSION_KEY_SUBJECT,
-                        subject);
-            }
-            else
-            {
-                Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-                if ((userPrincipal.getName()).equals(profiler.getAnonymousUser())
-                    && (!(principal.getName()).equals(profiler.getAnonymousUser())))
+                Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+                if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userPrincipal.getName()))
                 {
-                    subject = userMgr.getUser(principal.getName()).getSubject();
-                    request.getRequest().getSession().setAttribute(
-                            PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+                    subject = null;
                 }
             }
+
+            // create new session subject for user principal if required
+            if (subject == null)
+            {
+                // attempt to get complete subject for user principal
+                // from user manager
+                subject = userMgr.getUser(userPrincipal.getName()).getSubject();
+
+                // if subject not available, generate default subject using
+                // request or default profiler anonymous user principal
+                if (subject == null)
+                {
+                    Set principals = new HashSet();
+                    principals.add(userPrincipal);
+                    subject = new Subject(true, principals, new HashSet(), new HashSet());
+                }
+
+                // establish session subject
+                session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+            }
+
+            // set request context subject
             request.setSubject(subject);
             
-            final ValveContext vc = context;
-            final RequestContext rc = request;
-            
             // Pass control to the next Valve in the Pipeline and execute under the current subject
-            Subject.doAs(subject, new PrivilegedAction()
+            final ValveContext vc = context;
+            final RequestContext rc = request;            
+            Subject.doAsPrivileged(subject, new PrivilegedAction()
             {
                 public Object run()
                 {
@@ -106,7 +123,7 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
                     }
                     return null;                    
                 }
-            });
+            }, null);
             
         }
         catch (Throwable t)

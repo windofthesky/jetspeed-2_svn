@@ -63,7 +63,7 @@ limitations under the License.
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)">Back to $parentFolder.metaData.getTitle($preferedLocale)</a>
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">Back to $parentFolder.getShortTitle($preferedLocale)</a>
 #end
         &nbsp;
       </div>
@@ -86,8 +86,8 @@ limitations under the License.
 #foreach($docSetName in $profiledPageContext.documentSetNames)
   #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
   #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
-          <div class="pagetitle">
-          ${docSet.getTitle($preferedLocale)}
+          <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
+          ${docSet.getShortTitle($preferedLocale)}
           </div>
 #includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
 #end

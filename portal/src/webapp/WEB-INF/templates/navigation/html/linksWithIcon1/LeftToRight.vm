@@ -1,13 +1,13 @@
 <div >
   #foreach($node in $_nodeSet.iterator()) 
     #if($node.type == ".psml")
-      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage">$node.getTitle($preferedLocale)</a>	
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
     #elseif($node.type == ".link")
-      <a href="$node.url" target="$node.target" class="Link">$node.getTitle($preferedLocale)</a>	
+      <a href="$node.url" target="$node.target" class="Link" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
     #elseif($node.type == "folder")
-      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder">$node.metaData.getTitle($preferedLocale)</a>	
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
     #else
-      <a href="$node.url">$node.title</a>	
+      <a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a>	
     #end
   #end
 </div>

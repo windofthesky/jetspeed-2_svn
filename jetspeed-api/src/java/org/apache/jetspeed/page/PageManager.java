@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -42,6 +43,24 @@ public interface PageManager
     /** The name of the service */
     public String SERVICE_NAME = "PageManager";
     
+    /**
+     * <p>
+     * getConstraintsEnabled
+     * </p>
+     *
+     * @return enabled indicator
+     */
+    public boolean getConstraintsEnabled();
+
+    /**
+     * <p>
+     * getPermissionsEnabled
+     * </p>
+     *
+     * @return enabled indicator
+     */
+    public boolean getPermissionsEnabled();
+
     /**
      * Creates a new empty Page instance
      *
@@ -104,6 +123,19 @@ public interface PageManager
     * @throws NodeException
     */
     public DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
+    
+   /**
+    * 
+    * <p>
+    * getPageSecurity
+    * </p>
+    *
+    * Returns the PageSecurity document
+    *
+    * @throws PageNotFoundException if the page cannot be found
+    * @throws NodeException
+    */
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
     
     /**
      * 

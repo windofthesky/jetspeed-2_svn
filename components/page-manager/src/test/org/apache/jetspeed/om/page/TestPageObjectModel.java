@@ -118,7 +118,6 @@ public class TestPageObjectModel extends TestCase
         frag2.setType(Fragment.LAYOUT);
         frag2.setName("TwoColumns");
         frag2.setDecorator("test");
-        frag2.setAcl("private");
 
         Fragment frag3 = new FragmentImpl();
         frag3.setId("F3");
@@ -138,7 +137,6 @@ public class TestPageObjectModel extends TestCase
         assertTrue(f.getType().equals(Fragment.PORTLET));
         assertTrue(f.getId().equals("F1"));
         assertNull(f.getTitle());
-        assertNull(f.getAcl());
         assertNull(f.getDecorator());
         assertNull(f.getState());
         assertTrue(f.getFragments().size()==0);
@@ -148,7 +146,6 @@ public class TestPageObjectModel extends TestCase
         assertTrue(f.getType().equals(Fragment.LAYOUT));
         assertTrue(f.getFragments().size()==1);
         assertTrue(f.getDecorator().equals("test"));
-        assertTrue(f.getAcl().equals("private"));
         assertTrue(f.getFragments().size()==1);
         i = f.getFragments().iterator();
         frag1 = (Fragment)i.next();

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page-security>
+
+  <!-- define global admin constraints -->
+  <security-constraints-def name="admin">
+    <security-constraint>
+      <roles>admin</roles>
+      <permissions>view, edit</permissions>
+    </security-constraint>
+  </security-constraints-def>
+  <global-security-constraints-ref>admin</global-security-constraints-ref>
+
+  <!-- define manager constraints -->
+  <security-constraints-def name="manager">
+    <security-constraint>
+      <roles>manager</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints-def>
+
+</page-security>

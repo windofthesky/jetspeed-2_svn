@@ -45,7 +45,7 @@ limitations under the License.
 	
 	#if($parentFolder)
 	 <p style="font-style:italic">	
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)">Back to $parentFolder.metaData.getTitle($preferedLocale)</a> &nbsp;
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">Back to $parentFolder.getShortTitle($preferedLocale)</a> &nbsp;
 	 </p>
 	#end
 	
@@ -73,7 +73,7 @@ limitations under the License.
       #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
       <tr>
         <td nowrap>    
-          <br>${docSet.getTitle($preferedLocale)}:
+          <br><span title="$docSet.getTitle($preferedLocale)">${docSet.getShortTitle($preferedLocale)}</span>:
           #includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
         </td>
       </tr>

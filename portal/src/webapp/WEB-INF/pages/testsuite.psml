@@ -34,4 +34,15 @@ limitations under the License.
   <metadata name="title" xml:lang="ja">
         テストスイートページ
   </metadata>
+
+  <!-- allow engineering to view, but disable all access for accounting and marketing groups -->
+  <security-constraints>
+    <security-constraint>
+      <groups>accounting, marketing</groups>
+    </security-constraint>
+    <security-constraint>
+      <groups>engineering</groups>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints>
 </page>

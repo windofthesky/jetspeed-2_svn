@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -115,16 +116,28 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             // continue
             context.invokeNext(request);
         }
-        catch (NodeNotFoundException e)
+        catch (SecurityException se)
         {
-            log.error(e.getMessage(), e);
+            log.error(se.getMessage(), se);
             try
             {
-                request.getResponse().sendError(404, e.getMessage());
+                request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, se.getMessage());
             }
-            catch (IOException e1)
+            catch (IOException ioe)
             {
-                log.error("Failed to invoke HttpServletReponse.sendError: " + e1.getMessage(), e1);
+                log.error("Failed to invoke HttpServletReponse.sendError: " + ioe.getMessage(), ioe);
+            }
+        }
+        catch (NodeNotFoundException nnfe)
+        {
+            log.error(nnfe.getMessage(), nnfe);
+            try
+            {
+                request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, nnfe.getMessage());
+            }
+            catch (IOException ioe)
+            {
+                log.error("Failed to invoke HttpServletReponse.sendError: " + ioe.getMessage(), ioe);
             }
         }
         catch (Exception e)

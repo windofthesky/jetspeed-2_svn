@@ -16,6 +16,7 @@
 package org.apache.jetspeed.page.document;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.jetspeed.page.document.DocumentHandler;
@@ -39,9 +40,14 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
 {
-
     private Map handlers;
+
     private FolderHandler folderHanlder;
+
+    private boolean permissionsEnabled;
+
+    private boolean constraintsEnabled;
+
 
     /**
      *  
@@ -53,6 +59,13 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
         ArgUtil.assertNotNull(Map.class, handlers, this);        
         
         this.handlers = handlers;        
+
+        // register this with handlers
+        Iterator handlersIter = handlers.values().iterator();
+        while (handlersIter.hasNext())
+        {
+            ((DocumentHandler)handlersIter.next()).setHandlerFactory(this);
+        }
     }
     
     public DocumentHandlerFactoryImpl()
@@ -82,10 +95,9 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
         }
     }
 
-
     /**
      * <p>
-     * addDocumentHandler
+     * registerDocumentHandler
      * </p>
      *
      * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#registerDocumentHandler(org.apache.jetspeed.page.documenthandler.DocumentHandler)
@@ -98,9 +110,12 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
         {
             throw new DocumentTypeAlreadyRegisteredException(documentHandler.getType()+" has already been registered.");
         }
-        
+
+        // register handler and this with handlers
+        documentHandler.setHandlerFactory(this);
         handlers.put(documentHandler.getType(), documentHandler);
     }
+
     /**
      * <p>
      * getDocumentHandlerForPath
@@ -134,5 +149,57 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
         {
             throw new UnsupportedDocumentTypeException("The path provided has no extension and may be a folder.");
         }
+    }
+
+    /**
+     * <p>
+     * getPermissionsEnabled
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#getPermissionsEnabled()
+     * @return
+     */
+    public boolean getPermissionsEnabled()
+    {
+        return permissionsEnabled;
+    }
+
+    /**
+     * <p>
+     * setPermissionsEnabled
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#setPermissionsEnabled(boolean)
+     * @return
+     */
+    public void setPermissionsEnabled(boolean enabled)
+    {
+        permissionsEnabled = enabled;
+    }
+
+    /**
+     * <p>
+     * getConstraintsEnabled
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#getConstraintsEnabled()
+     * @return
+     */
+    public boolean getConstraintsEnabled()
+    {
+        return constraintsEnabled;
+    }
+
+    /**
+     * <p>
+     * setConstraintsEnabled
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#setConstraintsEnabled(boolean)
+     * @return
+     */
+    public void setConstraintsEnabled(boolean enabled)
+    {
+        constraintsEnabled = enabled;
     }
 }

@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
@@ -69,7 +70,7 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      */
     public DatabasePageManager( PersistenceStore persistenceStore, IdGenerator generator )
     {
-        super(generator);
+        super(generator, false, false);
         this.persistenceStore = persistenceStore;
 
     }
@@ -97,10 +98,12 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
             rootFolder = (Folder) rootFolder.getParent();
         NodeSet rootLinks = rootFolder.getLinks();
         NodeSet documentSets = null;
+        Map documentSetNames = null;
         Map documentSetNodeSets = null;
 
-        // populate ProfiledPageContext instance
-        populateProfiledPageContext(pageContext, folder, page, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNodeSets);
+        // populate profiled page context instance and return
+        CacheablePageContext cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets);
+        populateProfiledPageContext(cachedPageContext, pageContext);
     }
 
     /*
@@ -253,6 +256,20 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      *         DocumentNotFoundException
      */
     public DocumentSet getDocumentSet( String name ) throws DocumentNotFoundException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * getPageSecurity
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
+     * @return @throws
+     *         DocumentNotFoundException
+     */
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException
     {
         throw new UnsupportedOperationException("Not supported by DB impl yet");
     }

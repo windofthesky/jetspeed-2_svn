@@ -31,12 +31,14 @@ import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandler;
@@ -85,15 +87,19 @@ protected void setUp() throws Exception
         DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
         DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
         DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
+        DocumentHandler documentSetHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", DocumentSet.DOCUMENT_TYPE, DocumentSet.class, "target/testdata/pages", cache);
+        DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", PageSecurity.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/pages", cache);
         
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
         handlerFactory.registerDocumentHandler(psmlHandler);
         handlerFactory.registerDocumentHandler(linkHandler);
         handlerFactory.registerDocumentHandler(folderMetaDataHandler);        
+        handlerFactory.registerDocumentHandler(documentSetHandler);        
+        handlerFactory.registerDocumentHandler(pageSecurityHandler);        
         
         FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
         
-        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, -1, false);
+        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, -1, false, false, false);
         
         
     }
@@ -172,7 +178,6 @@ protected void setUp() throws Exception
         assertNotNull(testpage);
         assertTrue(testpage.getId().equals("test001"));
         assertTrue(testpage.getTitle().equals("Test Page"));
-        assertTrue(testpage.getAcl().equals("owner-only"));
         assertTrue(testpage.getDefaultSkin().equals("test-skin"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));

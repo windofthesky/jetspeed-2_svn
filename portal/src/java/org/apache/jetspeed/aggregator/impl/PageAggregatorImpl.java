@@ -81,13 +81,6 @@ public class PageAggregatorImpl implements PageAggregator
             throw new JetspeedException("Failed to find PSML Pin PageAggregator.build");
         }
     
-        //Set default acl
-        String acl = page.getAcl();
-        if (acl == null)
-        {
-            //TBD get system default acl;
-        }
-    
         // Initialize fragment
         Stack stack = new Stack();
         Fragment currentFragment = page.getRootFragment();
@@ -149,138 +142,115 @@ public class PageAggregatorImpl implements PageAggregator
                       
         ///////////////////////////////////////////////////////////////////////////////////////////////
     
-        if (checkAccess(context, (currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl, "render"))
+        // handle maximized state
+        NavigationalState nav = context.getPortalURL().getNavigationalState();
+        PortletWindow window = nav.getMaximizedWindow();
+        if (null != window)
         {
-            // handle maximized state
-            NavigationalState nav = context.getPortalURL().getNavigationalState();
-            PortletWindow window = nav.getMaximizedWindow();
-            if (null != window)
+            Fragment fragment = page.getFragmentById(window.getId().toString());
+            if (fragment != null)
             {
-                Fragment fragment = page.getFragmentById(window.getId().toString());
-                if (fragment != null && checkAccess(context, (fragment.getAcl() != null) ? fragment.getAcl() : acl, "render"))
+                context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
+                context.getRequest().setAttribute("org.apache.jetspeed.maximized.Layout", page.getRootFragment());
+                
+                if(fragment.getDecorator() != null)
                 {
-                    context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
-                    context.getRequest().setAttribute("org.apache.jetspeed.maximized.Layout", page.getRootFragment());
+                    log.debug("decorator=" + currentFragment.getDecorator());
+                    addStyle(context, fragment.getDecorator(), Fragment.PORTLET);
+                } 
+                else 
+                {
+                    log.debug("no decorator for defined for portlet fragement," + currentFragment.getId()+".  So using page default, "+defaultPortletDecorator);
+                    addStyle(context, defaultPortletDecorator, Fragment.PORTLET);
+                }
+                renderer.renderNow(page.getRootFragment(), context);
+                
+                context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Fragment");
+                context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Layout");
+            }
+            return;
+        }
+        
+        // initializes the rendering stack with root children
+        // root fragement is always treated synchronously
+        for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
+        {
+            Fragment f = (Fragment) i.next();
+            
+            if (!"hidden".equals(f.getState()))
+            {
+                stack.push(f);
+            }
+        }
+        
+        // Walk through the Fragment tree, and start rendering "portlet" type
+        // fragment
+        while (!stack.isEmpty())
+        {
+            currentFragment = (Fragment) stack.pop();
+            
+            if (currentFragment.getType().equals("portlet"))
+            {
+                // make the page aggreator less fragile
+                // by preventing failed rendering from screwing up the
+                // whole process
+                try
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug(
+                                  "Rendering portlet fragment: [[name, "
+                                  + currentFragment.getName()
+                                  + "], [id, "
+                                  + currentFragment.getId()
+                                  + "]]");
+                    }
+                    renderer.render(currentFragment, context);
+                    if (strategy == STRATEGY_SEQUENTIAL)
+                    {
+                        ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
+                        dispatcher.sync(currentFragment);
+                    }
                     
-                    if(fragment.getDecorator() != null)
+                    if(currentFragment.getDecorator() != null)
                     {
                         log.debug("decorator=" + currentFragment.getDecorator());
-            	        addStyle(context, fragment.getDecorator(), Fragment.PORTLET);
+                        addStyle(context, currentFragment.getDecorator(), Fragment.PORTLET);
                     } 
                     else 
                     {
                         log.debug("no decorator for defined for portlet fragement," + currentFragment.getId()+".  So using page default, "+defaultPortletDecorator);
                         addStyle(context, defaultPortletDecorator, Fragment.PORTLET);
                     }
-                    renderer.renderNow(page.getRootFragment(), context);
                     
-                    context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Fragment");
-                    context.getRequest().removeAttribute("org.apache.jetspeed.maximized.Layout");
                 }
-                return;
+                catch (Exception e)
+                {
+                    log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
+                }
             }
             
-            // initializes the rendering stack with root children
-            // root fragement is always treated synchronously
+            // push the children frgaments on the rendering stack
             for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
             {
                 Fragment f = (Fragment) i.next();
-    
+                
                 if (!"hidden".equals(f.getState()))
                 {
                     stack.push(f);
                 }
             }
-    
-            // Walk through the Fragment tree, and start rendering "portlet" type
-            // fragment
-            while (!stack.isEmpty())
-            {
-                currentFragment = (Fragment) stack.pop();
-    
-                if (checkAccess(context, ((currentFragment.getAcl() != null) ? currentFragment.getAcl() : acl), "render"))
-                {
-                    if (currentFragment.getType().equals("portlet"))
-                    {
-                        // make the page aggreator less fragile
-                        // by preventing failed rendering from screwing up the
-                        // whole process
-                        try
-                        {
-                            if (log.isDebugEnabled())
-                            {
-                                log.debug(
-                                    "Rendering portlet fragment: [[name, "
-                                        + currentFragment.getName()
-                                        + "], [id, "
-                                        + currentFragment.getId()
-                                        + "]]");
-                            }
-                            renderer.render(currentFragment, context);
-                            if (strategy == STRATEGY_SEQUENTIAL)
-                            {
-                                ContentDispatcher dispatcher = renderer.getDispatcher(context, false);
-                                dispatcher.sync(currentFragment);
-                            }
-                            
-                            if(currentFragment.getDecorator() != null)
-                            {
-                                log.debug("decorator=" + currentFragment.getDecorator());
-                    	        addStyle(context, currentFragment.getDecorator(), Fragment.PORTLET);
-                            } 
-                            else 
-                            {
-                                log.debug("no decorator for defined for portlet fragement," + currentFragment.getId()+".  So using page default, "+defaultPortletDecorator);
-                                addStyle(context, defaultPortletDecorator, Fragment.PORTLET);
-                            }
-                            
-                        }
-                        catch (Exception e)
-                        {
-                            log.error("Failed to render portlet \"" + currentFragment + "\": " + e.toString());
-                        }
-                    }
-    
-                    // push the children frgaments on the rendering stack
-                    for (Iterator i = currentFragment.getFragments().iterator(); i.hasNext();)
-                    {
-                        Fragment f = (Fragment) i.next();
-    
-                        if (!"hidden".equals(f.getState()))
-                        {
-                            stack.push(f);
-                        }
-                    }
-                }
-                else
-                {
-                    log.warn("Access denied RENDER fragment " + currentFragment);
-                }
-            }
-            
-            // Retrieves the content dispatcher appropriate for sequential
-            // or parallel rendering
-    
-            ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
-    
-            // Now synchronously trigger the rendering of the whole page
-            renderer.renderNow(page.getRootFragment(), context);
         }
-        else
-        {
-            log.warn("Access denied RENDER page " + page);
-        }
-    
+        
+        // Retrieves the content dispatcher appropriate for sequential
+        // or parallel rendering
+        
+        ContentDispatcher dispatcher = renderer.getDispatcher(context, (strategy == STRATEGY_PARALLEL));
+        
+        // Now synchronously trigger the rendering of the whole page
+        renderer.renderNow(page.getRootFragment(), context);
     }
 
-    public boolean checkAccess(RequestContext context, String acl, String action)
-    {
-        // This methid needs to be moved a secuity module.
-        // Does nothing right now
-        return true;
-    }
-    
-    
     private void addStyle(RequestContext context, String decoratorName, String decoratorType) 
     {
         Set cssUrls = (Set) context.getAttribute("cssUrls");

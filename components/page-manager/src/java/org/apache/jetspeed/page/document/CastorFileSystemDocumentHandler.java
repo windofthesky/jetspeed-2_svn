@@ -32,6 +32,7 @@ import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Document;
+import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
@@ -72,6 +73,8 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
     protected Mapping mapping = null;
 
     private OutputFormat format;
+
+    private DocumentHandlerFactory handlerFactory;
 
     /**
      * 
@@ -135,20 +138,33 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
      */
     public void updateDocument( Document document ) throws FailedToUpdateDocumentException
     {
-        //  sanity checks
+        // sanity checks
         if (document == null)
         {
             log.warn("Recieved null Document to update");
             return;
         }
-
-        String id = document.getId();
-
-        // marshal page to disk
-        String fileName = id;        
-        if (id != null && !id.endsWith(this.documentType))
+        String path = document.getPath();
+        if (path == null)
         {
-            fileName = id + this.documentType;
+            path = document.getId();
+            if (path == null)
+            {
+                log.warn("Recieved Document with null path/id to update");
+                return;
+            }
+            document.setPath(path);
+        }
+        AbstractBaseElement documentImpl = (AbstractBaseElement)document;
+        documentImpl.setHandlerFactory(handlerFactory);
+        documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        
+        // marshal page to disk
+        String fileName = path;        
+        if (!fileName.endsWith(this.documentType))
+        {
+            fileName = path + this.documentType;
         }
         File f = new File(this.documentRootDir, fileName);
         FileWriter writer = null;
@@ -258,6 +274,10 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
             document = (Document) unmarshaller.unmarshal((org.w3c.dom.Node) d);
             document.setId(path);
             document.setPath(path);
+            AbstractBaseElement documentImpl = (AbstractBaseElement)document;
+            documentImpl.setHandlerFactory(handlerFactory);
+            documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+            documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
         }
         catch (IOException e)
         {
@@ -325,18 +345,31 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
      */
     public void removeDocument( Document document ) throws DocumentNotFoundException, FailedToDeleteDocumentException
     {
-        String id = document.getId();
-
-        if (id == null)
+        // sanity checks
+        if (document == null)
         {
-            log.warn("Unable to remove page with null Id from disk");
+            log.warn("Recieved null Document to remove");
             return;
         }
+        String path = document.getPath();
+        if (path == null)
+        {
+            path = document.getId();
+            if (path == null)
+            {
+                log.warn("Recieved Document with null path/id to remove");
+                return;
+            }
+        }
 
-        File file = new File(this.documentRootDir, id + this.documentType);
-
+        // remove page from disk
+        String fileName = path;        
+        if (!fileName.endsWith(this.documentType))
+        {
+            fileName = path + this.documentType;
+        }
+        File file = new File(this.documentRootDir, fileName);
         file.delete();
-
     }
 
     /**
@@ -378,10 +411,10 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
      * addToCache
      * </p>
      * 
-     * @param id
+     * @param path
      * @param objectToCache
      */
-    protected void addToCache( String id, Object objectToCache )
+    protected void addToCache( String path, Object objectToCache )
     {
         synchronized (fileCache)
         {
@@ -389,7 +422,7 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
             // watcher
             try
             {
-                fileCache.put(id, objectToCache, this.documentRootDir);
+                fileCache.put(path, objectToCache, this.documentRootDir);
 
             }
             catch (java.io.IOException e)
@@ -415,10 +448,10 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
     {
         log.debug("Entry is refreshing: " + entry.getFile().getName());
 
-        if (entry.getDocument() instanceof Document && ((Document) entry.getDocument()).getId().endsWith(documentType))
+        if (entry.getDocument() instanceof Document && ((Document) entry.getDocument()).getPath().endsWith(documentType))
         {
             Document document = (Document) entry.getDocument();
-            Document freshDoc = getDocument(document.getId(), false);
+            Document freshDoc = getDocument(document.getPath(), false);
             Node parent = document.getParent();
  
             freshDoc.setParent(parent);
@@ -461,4 +494,31 @@ public class CastorFileSystemDocumentHandler implements DocumentHandler, FileCac
     {
         return documentType;
     }
+
+    /**
+     * <p>
+     * getHandlerFactory
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandler#getHandlerFactory()
+     * @return
+     */
+    public DocumentHandlerFactory getHandlerFactory()
+    {
+        return handlerFactory;
+    }
+
+    /**
+     * <p>
+     * setHandlerFactory
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.DocumentHandler#setHandlerFactory(org.apache.jetspeed.page.document.DocumentHandlerFactory)
+     * @param factory
+     */
+    public void setHandlerFactory(DocumentHandlerFactory factory)
+    {
+        this.handlerFactory = factory;
+    }
+
 }

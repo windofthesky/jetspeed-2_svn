@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
+import java.security.AccessController;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
@@ -39,6 +41,7 @@ import org.apache.jetspeed.page.document.NodeOrderCompartaor;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
+import org.apache.jetspeed.security.FolderPermission;
 
 /**
  * FolderImpl
@@ -50,27 +53,29 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
  */
 public class FolderImpl extends AbstractNode implements Folder
 {
-    
     public static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
 
     private static final String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
+    private final static String FOLDER_PERMISSION_WILD_CHAR = new String(new char[]{FolderPermission.WILD_CHAR});
+    
     private String defaultTheme;
     private NodeSet allNodes;
     private File directory;
-    private DocumentHandlerFactory handlerFactory;
     private FolderMetaData metadata;
     private FolderHandler folderHandler;
     
     private static final Log log = LogFactory.getLog(FolderImpl.class);
 
     public FolderImpl( String path, FolderMetaData metadata, DocumentHandlerFactory handlerFactory,
-            FolderHandler folderHandler )
+                       FolderHandler folderHandler )
     {
         this.metadata = metadata;
         this.metadata.setParent(this);
-        this.handlerFactory = handlerFactory;
         this.folderHandler = folderHandler;
         setId(path);
+        setHandlerFactory(handlerFactory);
+        setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
         setPath(path);
     }
 
@@ -79,9 +84,11 @@ public class FolderImpl extends AbstractNode implements Folder
         this.metadata = new FolderMetaDataImpl();
         this.metadata.setTitle(path);
         this.metadata.setParent(this);
-        this.handlerFactory = handlerFactory;
         this.folderHandler = folderHandler;
         setId(path);
+        setHandlerFactory(handlerFactory);
+        setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+        setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
         setPath(path);
     }
 
@@ -257,7 +264,7 @@ public class FolderImpl extends AbstractNode implements Folder
                 allNodes = new NodeSetImpl(getPath());
             }
             
-            //DocumentHandler docHandler = handlerFactory.getDocumentHandler(documentType);
+            //DocumentHandler docHandler = getHandlerFactory().getDocumentHandler(documentType);
 
             String[] nodeNames = folderHandler.listAll(getPath());
             for (int i = 0; i < nodeNames.length; i++)
@@ -269,7 +276,7 @@ public class FolderImpl extends AbstractNode implements Folder
                     {
                         if(nodeNames[i].indexOf(".") > -1)
                         {    
-                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                            node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
                         }
                         else
                         {
@@ -281,7 +288,7 @@ public class FolderImpl extends AbstractNode implements Folder
                         
                         if(nodeNames[i].indexOf(".") > -1)
                         {    
-                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
+                            node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
                         }
                         else
                         {
@@ -318,14 +325,101 @@ public class FolderImpl extends AbstractNode implements Folder
     {        
         return metadata.getMetadata();
     }
-    
-    
+
+    /**
+     * <p>
+     * getSecurityConstraints
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#getSecurityConstraints()
+     * @return
+     */
+    public SecurityConstraints getSecurityConstraints()
+    {
+        return metadata.getSecurityConstraints();
+    }
+    /**
+     * <p>
+     * setSecurityConstraints
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     * @param constraints
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        metadata.setSecurityConstraints(constraints);
+    }
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecureResource#checkPermissions(java.lang.String)
+     * @param actions
+     * @throws SecurityException
+     */
+    public void checkPermissions(String actions) throws SecurityException
+    {
+        // skip checks if not enabled
+        if (!getPermissionsEnabled())
+        {
+            return;
+        }
+
+        // check folder permission, (test requires appended wild character -
+        // i.e. "/some-folder/*"),  if permission paths available for this
+        // element
+        String physicalPermissionPath = getPhysicalPermissionPath();
+        if (physicalPermissionPath != null)
+        {
+            // check permission using physical path
+            String permissionPath = physicalPermissionPath;
+            if (permissionPath.endsWith(PATH_SEPARATOR))
+            {
+                permissionPath += FOLDER_PERMISSION_WILD_CHAR;
+            }
+            else
+            {
+                permissionPath += PATH_SEPARATOR + FOLDER_PERMISSION_WILD_CHAR;
+            }
+            try
+            {
+                FolderPermission permission = new FolderPermission(permissionPath, actions);
+                AccessController.checkPermission(permission);
+            }
+            catch (SecurityException physicalSE)
+            {
+                // fallback check using logical path if available and different
+                String logicalPermissionPath = getLogicalPermissionPath();
+                if ((logicalPermissionPath != null) && !logicalPermissionPath.equals(physicalPermissionPath))
+                {
+                    permissionPath = logicalPermissionPath;
+                    if (permissionPath.endsWith(PATH_SEPARATOR))
+                    {
+                        permissionPath += FOLDER_PERMISSION_WILD_CHAR;
+                    }
+                    else
+                    {
+                        permissionPath += PATH_SEPARATOR + FOLDER_PERMISSION_WILD_CHAR;
+                    }
+                    FolderPermission permission = new FolderPermission(permissionPath, actions);
+                    AccessController.checkPermission(permission);
+                }
+                else
+                {
+                    throw physicalSE;
+                }
+            }
+        }
+    }
+
     /**
      * <p>
      * getTitle
      * </p>
      *
-     * @see org.apache.jetspeed.page.document.AbstractNode#getTitle(java.util.Locale)
+     * @see org.apache.jetspeed.page.document.Node#getTitle(java.util.Locale)
      * @param locale
      * @return
      */
@@ -333,26 +427,12 @@ public class FolderImpl extends AbstractNode implements Folder
     {
         return metadata.getTitle(locale);
     }
-    
-    
-    /**
-     * <p>
-     * getAcl
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecuredResource#getAcl()
-     * @return
-     */
-    public String getAcl()
-    {
-        return metadata.getAcl();
-    }
     /**
      * <p>
      * getTitle
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getTitle()
+     * @see org.apache.jetspeed.om.page.BaseElement#getTitle()
      * @return
      */
     public String getTitle()
@@ -361,27 +441,52 @@ public class FolderImpl extends AbstractNode implements Folder
     }
     /**
      * <p>
-     * setAcl
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.common.SecuredResource#setAcl(java.lang.String)
-     * @param aclName
-     */
-    public void setAcl( String aclName )
-    {
-       metadata.setAcl(aclName);
-    }
-    /**
-     * <p>
      * setTitle
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#setTitle(java.lang.String)
+     * @see org.apache.jetspeed.om.page.BaseElement#setTitle(java.lang.String)
      * @param title
      */
     public void setTitle( String title )
     {
         metadata.setTitle(title);
+    }
+    /**
+     * <p>
+     * getShortTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.Node#getShortTitle(java.util.Locale)
+     * @param locale
+     * @return
+     */
+    public String getShortTitle( Locale locale )
+    {
+        return metadata.getShortTitle(locale);
+    }
+    /**
+     * <p>
+     * getShortTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.BaseElement#getShortTitle()
+     * @return
+     */
+    public String getShortTitle()
+    {
+        return metadata.getShortTitle();
+    }
+    /**
+     * <p>
+     * setShortTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.BaseElement#setShortTitle(java.lang.String)
+     * @param title
+     */
+    public void setShortTitle( String title )
+    {
+        metadata.setShortTitle(title);
     }
     /**
      * <p>

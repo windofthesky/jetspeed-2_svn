@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<documentSet>
+<document-set>
   <title>Profiled Pages</title>
-  <profileLocator>page</profileLocator>
-  <documentPath regexp="true">/p[0-9][0-9][0-9].psml</documentPath>
-</documentSet>
+  <profile-locator>page</profile-locator>
+  <document-path regexp="true">/p[0-9][0-9][0-9].psml</document-path>
+</document-set>

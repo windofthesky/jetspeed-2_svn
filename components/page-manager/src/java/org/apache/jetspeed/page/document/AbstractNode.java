@@ -19,19 +19,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
+import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.util.ArgUtil;
 
+
 /**
  * <p>
- * AbstractBaseElementWithMetaData
+ * AbstractNode
  * </p>
  * <p>
  * 
@@ -43,9 +47,9 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public abstract class AbstractNode extends AbstractBaseElement implements Node
 {
-
     private Collection metadataFields = null;
     private Map localizedTitles;
+    private Map localizedShortTitles;
     private Node parent;
     private String path;
     private String url;
@@ -98,7 +102,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * getTitle
      * </p>
      * 
-     * @see org.apache.jetspeed.om.page.Page#getTitle(java.util.Locale)
+     * @see org.apache.jetspeed.page.document.Node#getTitle(java.util.Locale)
      * @param locale
      * @return
      */
@@ -118,11 +122,11 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
                 }
             }
         }
-
+        
         Locale languageOnly = new Locale(locale.getLanguage());
         if (localizedTitles != null
-                && (localizedTitles.containsKey(locale) 
-                    || localizedTitles.containsKey(languageOnly)))
+            && (localizedTitles.containsKey(locale) 
+                || localizedTitles.containsKey(languageOnly)))
         {
             if(localizedTitles.containsKey(locale) )
             {
@@ -132,15 +136,60 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             {
                 return ((LocalizedField) localizedTitles.get(languageOnly)).getValue().trim();
             }
-            else
+        }
+
+        return getTitle();
+    }
+
+    /**
+     * <p>
+     * getShortTitle
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.Node#getShortTitle(java.util.Locale)
+     * @param locale
+     * @return
+     */
+    public String getShortTitle( Locale locale )
+    {
+        ArgUtil.assertNotNull(Locale.class, locale, this, "getShortTitle(Locale)");
+        if (localizedShortTitles == null && metadataFields != null)
+        {
+            this.localizedShortTitles = new HashMap(metadataFields.size());
+            Iterator fieldsItr = metadataFields.iterator();
+            while (fieldsItr.hasNext())
             {
-                return getTitle();
+                LocalizedField field = (LocalizedField) fieldsItr.next();
+                if (field.getName().equals("short-title"))
+                {
+                    localizedShortTitles.put(field.getLocale(), field);
+                }
             }
         }
-        else
+
+        Locale languageOnly = new Locale(locale.getLanguage());
+        if (localizedShortTitles != null
+            && (localizedShortTitles.containsKey(locale) 
+                || localizedShortTitles.containsKey(languageOnly)))
         {
-            return getTitle();
+            if(localizedShortTitles.containsKey(locale) )
+            {
+                return ((LocalizedField) localizedShortTitles.get(locale)).getValue().trim();
+            }
+            else if(localizedShortTitles.containsKey(languageOnly))
+            {
+                return ((LocalizedField) localizedShortTitles.get(languageOnly)).getValue().trim();
+            }
         }
+
+        // default to localized title, default short title, or default
+        // title if not specified
+        String title = getTitle(locale);
+        if (title == getTitle())
+        {
+            title = getShortTitle();
+        }
+        return title;
     }
 
     /**
@@ -277,5 +326,55 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     public void setProfiledPath( String profiledPath )
     {
         this.profiledPath = profiledPath;
+    }
+
+    /**
+     * <p>
+     * checkConstraints
+     * </p>
+     *
+     * @param actions
+     * @param userPrincipals
+     * @param rolePrincipals
+     * @param groupPrincipals
+     * @throws SecurityException
+     */
+    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals) throws SecurityException
+    {
+        // check constraints if available; otherwise,
+        // recursively check parent constraints
+        SecurityConstraints constraints = getSecurityConstraints();
+        if (constraints != null)
+        {
+            ((SecurityConstraintsImpl)constraints).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals, getHandlerFactory());
+        }
+        else if (parent != null)
+        {
+            ((AbstractNode)parent).checkConstraints(actions, userPrincipals, rolePrincipals, groupPrincipals);
+        }
+    }
+
+    /**
+     * <p>
+     * getLogicalPermissionPath
+     * </p>
+     *
+     * @return path used for permissions checks
+     */
+    public String getLogicalPermissionPath()
+    {
+        return profiledPath;
+    }
+
+    /**
+     * <p>
+     * getPhysicalPermissionPath
+     * </p>
+     *
+     * @return path used for permissions checks
+     */
+    public String getPhysicalPermissionPath()
+    {
+        return path;
     }
 }

@@ -46,6 +46,7 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.AbstractNode;
@@ -90,12 +91,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     // default configuration values
 
-    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
+    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
                                  FolderHandler folderHandler, FileCache fileCache, int cacheSize,
-                                 boolean profilingEnabled ) throws FileNotFoundException
+                                 boolean profilingEnabled, boolean permissionsEnabled,
+                                 boolean constraintsEnabled ) throws FileNotFoundException
     {
-        super(generator);
-        this.handlerFactory = hanlderFactory;
+        super(generator, permissionsEnabled, constraintsEnabled);
+        handlerFactory.setPermissionsEnabled(permissionsEnabled);
+        handlerFactory.setConstraintsEnabled(constraintsEnabled);
+        this.handlerFactory = handlerFactory;
         this.folderHandler = folderHandler;
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
@@ -103,12 +107,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         initCaches(cacheSize);
     }
 
-    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
+    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory handlerFactory,
                                  FolderHandler folderHandler, FileCache fileCache, int cacheSize,
-                                 boolean profilingEnabled, List modelClasses ) throws FileNotFoundException
+                                 boolean profilingEnabled, boolean permissionsEnabled,
+                                 boolean constraintsEnabled, List modelClasses ) throws FileNotFoundException
     {
-        super(generator, modelClasses);
-        this.handlerFactory = hanlderFactory;
+        super(generator, permissionsEnabled, constraintsEnabled, modelClasses);
+        handlerFactory.setPermissionsEnabled(permissionsEnabled);
+        handlerFactory.setConstraintsEnabled(constraintsEnabled);
+        this.handlerFactory = handlerFactory;
         this.folderHandler = folderHandler;
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
@@ -135,11 +142,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // construct key and test for page context cache hit
         String pageContextCacheKey = pageContextCacheKey(pageContext);
         log.debug("computeProfiledPageContext() invoked, cache key = " + pageContextCacheKey + ", (profilingEnabled = " + profilingEnabled + ")");
-        ProfiledPageContext cachedPageContext = lookupProfiledPageContext(pageContextCacheKey);
+        CacheablePageContext cachedPageContext = lookupPageContext(pageContextCacheKey);
         if (cachedPageContext != null)
         {
-            // copy profiled page context from cached page context and return
-            copyProfiledPageContext(cachedPageContext, pageContext);
+            // populate returned profiled page context
+            populateProfiledPageContext(cachedPageContext, pageContext);
             return;
         }
 
@@ -158,6 +165,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         NodeSet siblingFolders = null;
         NodeSet rootLinks = null;
         NodeSet documentSets = null;
+        Map documentSetNames = null;
         Map documentSetNodeSets = null;
         if (profilingEnabled)
         {
@@ -306,6 +314,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 {
                     // profiled document sets to be returned
                     documentSets = new NodeSetImpl(null, documentComparator);
+                    documentSetNames = new HashMap(aggregateDocumentSets.size() * 2);
                     documentSetNodeSets = new HashMap(aggregateDocumentSets.size() * 2);
                     
                     // profile each aggregated document set
@@ -319,6 +328,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         if (documentSetNodes != null)
                         {
                             documentSets.add(documentSet);
+                            documentSetNames.put(documentSet, documentSet.getUrl());
                             documentSetNodeSets.put(documentSet, documentSetNodes);
                         }
                     }
@@ -446,8 +456,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
                     // aggregate and expand document sets from page to root folder;
                     documentSets = new NodeSetImpl(null, documentComparator);
+                    documentSetNames = new HashMap(8);
                     documentSetNodeSets = new HashMap(8);
-                    Set documentSetNames = new HashSet(8);
+                    Set uniqueDocumentSetPaths = new HashSet(8);
                     Folder aggregateFolder = folder;
                     do
                     {
@@ -459,9 +470,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             String documentSetPath = documentSet.getPath();
 
                             // aggregate document sets
-                            if (! documentSetNames.contains(documentSetPath))
+                            if (! uniqueDocumentSetPaths.contains(documentSetPath))
                             {
-                                documentSetNames.add(documentSetPath);
+                                uniqueDocumentSetPaths.add(documentSetPath);
 
                                 // expand document set using default document set order
                                 NodeSetImpl documentSetNodes = new NodeSetImpl(null, documentComparator);
@@ -469,6 +480,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                 if (documentSetNodes != null)
                                 {
                                     documentSets.add(documentSet);
+                                    documentSetNames.put(documentSet, documentSetPath);
                                     documentSetNodeSets.put(documentSet, documentSetNodes);
                                 }
                             }
@@ -490,11 +502,12 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
         }
 
-        // populate ProfiledPageContext instance
-        populateProfiledPageContext(pageContext, folder, page, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNodeSets);
+        // cache profiled page context result
+        cachedPageContext = new CacheablePageContext(page, folder, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNames, documentSetNodeSets);
+        cachePageContext(pageContextCacheKey, cachedPageContext);
 
-        // cache ProfiledPageContext instance
-        cacheProfiledPageContext(pageContextCacheKey, pageContext);
+        // populate returned profiled page context
+        populateProfiledPageContext(cachedPageContext, pageContext);
     }
 
     private NodeSetImpl expandAndProfileDocumentSet(Map profileLocators, DocumentSet documentSet, NodeSetImpl expandedNodes)
@@ -1374,15 +1387,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
-     * @param id
+     * @param path
      * @return @throws
      *         PageNotFoundException
      * @throws IllegalStateException
      *             if the page could be inserted into the FileCache.
      */
-    public Page getPage( String id ) throws PageNotFoundException, NodeException
+    public Page getPage( String path ) throws PageNotFoundException, NodeException
     {
-        return (Page) addParent(handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).getDocument(id), id);
+        return (Page) addParent(handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).getDocument(path), path);
     }
 
     /**
@@ -1390,22 +1403,23 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void registerPage( Page page ) throws JetspeedException
     {
-        // sanity checks
-        if (page == null)
+        // make sure path and related members are set
+        if (page.getPath() == null)
         {
-            log.warn("Recieved null page to register");
-            return;
+            page.setPath(page.getId());
+        }
+        if (page.getPath() != null)
+        {
+            if (!page.getPath().equals(page.getId()))
+            {
+                log.error("Page paths and ids must match!");
+                return;
+            }
+            setProfiledNodePathAndUrl((AbstractNode)page);
+            addParent(page, page.getPath());
         }
 
-        String id = page.getId();
-
-        if (id == null)
-        {
-            page.setId(generator.getNextPeid());
-            id = page.getId();
-            log.warn("Page with no Id, created new Id : " + id);
-        }
-
+        // register page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
     }
 
@@ -1422,16 +1436,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void removePage( Page page ) throws JetspeedException
     {
-        String id = page.getId();
-
-        if (id == null)
-        {
-            log.warn("Unable to remove page with null Id from disk");
-            return;
-        }
-
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).removeDocument(page);
-
     }
 
     /**
@@ -1440,7 +1445,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
-     * @param name
+     * @param path
      * @return @throws
      *         DocumentNotFoundException
      * @throws DocumentNotFoundException
@@ -1449,9 +1454,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * @throws NodeException
      * @throws FolderNotFoundException
      */
-    public Link getLink( String name ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public Link getLink( String path ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        return (Link) addParent(handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).getDocument(name), name);
+        return (Link) addParent(handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).getDocument(path), path);
     }
 
     /**
@@ -1460,18 +1465,35 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getDocumentSet(java.lang.String)
-     * @param name
+     * @param path
      * @return @throws
      *         DocumentNotFoundException
      * @throws DocumentNotFoundException
      * @throws UnsupportedDocumentTypeException
-     * @throws 
      * @throws NodeException
      * @throws FolderNotFoundException
      */
-    public DocumentSet getDocumentSet( String name ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public DocumentSet getDocumentSet( String path ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        return (DocumentSet) addParent(handlerFactory.getDocumentHandler(DocumentSet.DOCUMENT_TYPE).getDocument(name), name);
+        return (DocumentSet) addParent(handlerFactory.getDocumentHandler(DocumentSet.DOCUMENT_TYPE).getDocument(path), path);
+    }
+
+    /**
+     * <p>
+     * getPageSecurity
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getPageSecurity()
+     * @return
+     * @throws DocumentNotFoundException
+     * @throws UnsupportedDocumentTypeException
+     * @throws NodeException
+     * @throws FolderNotFoundException
+     */
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    {
+        String pageSecurityPath = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
+        return (PageSecurity) addParent(handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).getDocument(pageSecurityPath), pageSecurityPath);
     }
 
     /**
@@ -1504,9 +1526,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         {
             childNode.setParent(folderHandler.getFolder(Folder.PATH_SEPARATOR));
         }
-
         return childNode;
-
     }
 
     /**
@@ -1586,7 +1606,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
     }
 
-    private void cacheProfiledPageContext(String pageContextCacheKey, ProfiledPageContext pageContext)
+    private void cachePageContext(String pageContextCacheKey, CacheablePageContext pageContext)
     {
         // lock and cache page context using entry object to track create timestamp
         synchronized ( pageContextCache )
@@ -1596,13 +1616,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         log.debug("cacheProfiledPageContext() cached, cache key = " + pageContextCacheKey);
     }
 
-    private ProfiledPageContext lookupProfiledPageContext(String pageContextCacheKey)
+    private CacheablePageContext lookupPageContext(String pageContextCacheKey)
     {
         // lock and lookup entry object and return page context
-        ProfiledPageContext pageContext = null;
+        CacheablePageContext pageContext = null;
         synchronized ( pageContextCache )
         {
-            pageContext = (ProfiledPageContext) pageContextCache.get(pageContextCacheKey); 
+            pageContext = (CacheablePageContext) pageContextCache.get(pageContextCacheKey); 
         }
         if (pageContext != null)
         {

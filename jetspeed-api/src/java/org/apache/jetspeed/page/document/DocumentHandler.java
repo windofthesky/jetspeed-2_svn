@@ -39,4 +39,8 @@ public interface DocumentHandler
     void removeDocument(Document document)  throws DocumentNotFoundException, FailedToDeleteDocumentException;
     
     String getType();
+
+    DocumentHandlerFactory getHandlerFactory();
+
+    void setHandlerFactory(DocumentHandlerFactory factory);
 }

@@ -15,12 +15,13 @@
  */
 package org.apache.jetspeed.om.common;
 
+
 /**
  * <p>
  * SecuredResource
  * </p>
  * <p>
- * Implemented by those resources that have an Acl defined for
+ * Implemented by those resources that have a security constraint defined for
  * security purposes.
  *
  * </p>
@@ -30,24 +31,72 @@ package org.apache.jetspeed.om.common;
  */
 public interface SecuredResource
 {   
+    String VIEW_ACTION = "view";
+    String EDIT_ACTION = "edit";
+
     /**
-     * 
      * <p>
-     * getAcl
+     * getConstraintsEnabled
      * </p>
      *
-     * @return
+     * @return enabled indicator
      */
-    String getAcl();
+    boolean getConstraintsEnabled();
     
     /**
-     * 
      * <p>
-     * setAcl
+     * getSecurityConstraints
      * </p>
      *
-     * @param acl 
+     * @return security constraints for resource
      */
-    void setAcl(String acl);
+    SecurityConstraints getSecurityConstraints();
+    
+    /**
+     * <p>
+     * setSecurityConstraints
+     * </p>
+     *
+     * @param constraints security constraints for resource
+     */
+    void setSecurityConstraints(SecurityConstraints constraints);
 
+    /**
+     * <p>
+     * checkConstraints
+     * </p>
+     *
+     * @param actions list to be checked against in CSV string form
+     * @throws SecurityException
+     */
+    void checkConstraints(String actions) throws SecurityException;
+
+    /**
+     * <p>
+     * getPermissionsEnabled
+     * </p>
+     *
+     * @return enabled indicator
+     */
+    boolean getPermissionsEnabled();
+    
+    /**
+     * <p>
+     * checkPermissions
+     * </p>
+     *
+     * @param actions list to be checked against in CSV string form
+     * @throws SecurityException
+     */
+    void checkPermissions(String actions) throws SecurityException;
+
+    /**
+     * <p>
+     * checkAccess
+     * </p>
+     *
+     * @param actions list to be checked against in CSV string form
+     * @throws SecurityException
+     */
+    void checkAccess(String actions) throws SecurityException;
 }

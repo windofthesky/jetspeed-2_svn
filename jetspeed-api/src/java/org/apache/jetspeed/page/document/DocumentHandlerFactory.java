@@ -63,5 +63,39 @@ public interface DocumentHandlerFactory
      */
     void registerDocumentHandler(DocumentHandler documentHandler) throws DocumentTypeAlreadyRegisteredException;
     
-    
+    /**
+     * <p>
+     * getConstraintsEnabled
+     * </p>
+     *
+     * @return enabled indicator
+     */
+    boolean getConstraintsEnabled();
+
+    /**
+     * <p>
+     * setConstraintsEnabled
+     * </p>
+     *
+     * @param enabled indicator
+     */
+    void setConstraintsEnabled(boolean enabled);
+
+    /**
+     * <p>
+     * getPermissionsEnabled
+     * </p>
+     *
+     * @return enabled indicator
+     */
+    boolean getPermissionsEnabled();
+
+    /**
+     * <p>
+     * setPermissionsEnabled
+     * </p>
+     *
+     * @param enabled indicator
+     */
+    void setPermissionsEnabled(boolean enabled);
 }

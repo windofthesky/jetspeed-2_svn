@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <folder>
-  <title >Root Folder</title>  
+  <title>Root Folder</title>  
   <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
   <metadata name="title" xml:lang="ja">ルートフォルダ</metadata>
-  <documentOrder>Jetspeed2.link</documentOrder>
-  <documentOrder>Jetspeed2Wiki.link</documentOrder>
-  <documentOrder>apache_portals.link</documentOrder>
-  <documentOrder>apache.link</documentOrder>
+
+  <document-order>Jetspeed2.link</document-order>
+  <document-order>Jetspeed2Wiki.link</document-order>
+  <document-order>apache_portals.link</document-order>
+  <document-order>apache.link</document-order>
+
+  <!-- allow user role to view and allow manager role by default -->
+  <security-constraints>
+    <security-constraint>
+      <roles>user</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+    <security-constraints-ref>manager</security-constraints-ref>
+  </security-constraints>
 </folder>

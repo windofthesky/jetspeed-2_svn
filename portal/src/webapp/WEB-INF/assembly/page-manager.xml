@@ -53,6 +53,15 @@ limitations under the License.
   	   <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
+  <bean id="PageSecurityDocumentHandler"   	   
+  	   class="org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler" >  	   
+  	   <constructor-arg index="0"><value>/META-INF/page-mapping.xml</value></constructor-arg>
+  	   <constructor-arg index="1"><value>page.security</value></constructor-arg>
+  	   <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.PageSecurity</value></constructor-arg>  	   
+  	   <constructor-arg index="3" ><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>
+  	   <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+  
   <bean id="DocumentHandlerFactory"   	   
   	   class="org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl" >  	   
         <constructor-arg>
@@ -68,6 +77,9 @@ limitations under the License.
   	   	  </entry>	
   	   	  <entry key="folder.metadata">
   	   	  	<ref bean="FolderMetaDataDocumentHandler" />
+  	   	  </entry>		  
+  	   	  <entry key="page.security">
+  	   	  	<ref bean="PageSecurityDocumentHandler" />
   	   	  </entry>		  
   	   	</map>
   	   </constructor-arg>
@@ -89,8 +101,14 @@ limitations under the License.
   	   <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
   	   <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>
   	   <constructor-arg index="3"><ref bean="PageFileCache"/></constructor-arg>  	   
+       <!-- size of profiled page context LRU cache, default=100 -->
   	   <constructor-arg index="4"><value>100</value></constructor-arg>
+       <!-- profiling enabled flag, default=true -->
   	   <constructor-arg index="5"><value>true</value></constructor-arg>
+       <!-- permissions security enabled flag, default=true -->
+  	   <constructor-arg index="6"><value>false</value></constructor-arg>
+       <!-- constraints security enabled flag, default=true -->
+  	   <constructor-arg index="7"><value>true</value></constructor-arg>
   </bean>
 
 </beans>

@@ -995,8 +995,23 @@ public class JetspeedPowerTool implements ViewTool
      */
     public List getPageDecoratorActions() throws Exception
     {
+        // check page access
+        boolean readOnlyPageAccess = true;
+        try
+        {
+            getPage().checkAccess(Page.EDIT_ACTION);
+            readOnlyPageAccess = false;
+        }
+        catch (SecurityException se)
+        {
+        }
+        
+        // determine cached actions state key
+        String key = "PAGE " + getPage().getId() + ":" + this.getCurrentFragment().getId() +
+            ":" + (readOnlyPageAccess ? Page.VIEW_ACTION : Page.EDIT_ACTION );
+        
+        // get cached actions state 
         RequestContext context = Jetspeed.getCurrentRequestContext();
-        String key = "PAGE" + getPage().getId() + ":" + this.getCurrentFragment().getId() ;
         Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
         if (null == sessionActions)
         {
@@ -1024,19 +1039,26 @@ public class JetspeedPowerTool implements ViewTool
             actionState.setPortletMode(mode);
         }
         
-                        
         List actions = actionState.getActions();
         actions.clear();
      
+        // if there is no root fragment, return no actions
         PortletDefinitionComposite portlet = 
             (PortletDefinitionComposite) getCurrentPortletEntity().getPortletDefinition();
         if (null == portlet)
         {
-            return actions; // allow nothing
+            return actions;
         }        
-                
+
+        // if the page is being read only accessed, return no actions
+        if (readOnlyPageAccess)
+        {
+            return actions;
+        }
+
+        // generate standard page actions depending on
+        // portlet capabilities
         ContentTypeSet content = portlet.getContentTypeSet();
-                
         if (mode.equals(PortletMode.VIEW.toString()))
         {
             if (content.supportsPortletMode(PortletMode.EDIT))

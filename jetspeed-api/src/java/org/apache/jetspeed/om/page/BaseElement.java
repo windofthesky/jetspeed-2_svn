@@ -55,5 +55,18 @@ public interface BaseElement extends SecuredResource
      */
     public void setTitle(String title);
 
+    /**
+     * Returns the short title in the default Locale
+     *
+     * @return the page short title
+     */
+    public String getShortTitle();
+
+    /**
+     * Sets the short title for the default Locale
+     *
+     * @param title the new title
+     */
+    public void setShortTitle(String title);
         
 }

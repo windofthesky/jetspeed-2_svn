@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<documentSet>
+<document-set>
   <title>Users Admin Pages</title>
-  <documentPath>/Administrative/user-mgt.psml</documentPath>
-  <documentPath>/Administrative/users-jsf.psml</documentPath>
-</documentSet>
+  <document-path>/Administrative/user-mgt.psml</document-path>
+  <document-path>/Administrative/users-jsf.psml</document-path>
+</document-set>

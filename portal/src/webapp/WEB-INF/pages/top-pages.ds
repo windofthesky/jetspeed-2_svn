@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<documentSet>
+<document-set>
   <title>Top Pages</title>
   <metadata name="title" xml:lang="fr">Page haut</metadata>
-  <profileLocator>docset</profileLocator>
-  <documentPath>/Administrative</documentPath>
-</documentSet>
+  <profile-locator>docset</profile-locator>
+  <document-path>/Administrative</document-path>
+</document-set>

@@ -116,6 +116,18 @@ public interface Node extends BaseElement
     /**
      * 
      * <p>
+     * getShortTitle
+     * </p>
+     * Returns the short title for the specified locale.
+     *
+     * @param locale
+     * @return localized title of this Node.
+     */
+    String getShortTitle(Locale locale);
+
+    /**
+     * 
+     * <p>
      * getType
      * </p>
      * 

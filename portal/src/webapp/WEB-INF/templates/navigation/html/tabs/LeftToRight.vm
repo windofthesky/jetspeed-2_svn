@@ -2,14 +2,15 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
         #foreach($childPage in $_nodeSet.iterator())
-        #set($tabName = $childPage.getTitle($preferedLocale))
+        #set($tabTitle = $childPage.getTitle($preferedLocale))
+        #set($tabName = $childPage.getShortTitle($preferedLocale))
         #if($jetspeed.page.id == $childPage.id)
         <td class="LTabLeft" nowrap="true">&nbsp;</td>
-        <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
+        <td class="LTab" align="center" valign="middle" nowrap="true" title="$tabTitle">${tabName}</td>
         <td class="LTabRight"  nowrap="true">&nbsp;</td>
         #else
         <td class="LTabLeftLow"  nowrap="true">&nbsp;</td>
-        <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.url)">${tabName}</a></td>
+        <td class="LTabLow" align="center" valign="middle" nowrap="true" title="$tabTitle"><a href="$jetspeed.getAbsoluteUrl($childPage.url)">${tabName}</a></td>
         <td class="LTabRightLow"  nowrap="true">&nbsp;</td>
         #end
         #end
