@@ -201,11 +201,11 @@ limitations under the License.
     <copy file="${portal_project.getDependencyPath('commons-logging')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
     <copy file="${portal_project.getDependencyPath('commons-configuration')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
     <copy file="${portal_project.getDependencyPath('log4j')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
-    <!-- <copy file="${portal_project.getDependencyPath('struts-portlet')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>    -->
-    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
     <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-commons')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true" />
     <copy file="${portal_project.getDependencyPath('portlet-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>  	  
     <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>    
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
   </goal>
   
   <goal name="jetspeed2:deploy.portal">  	

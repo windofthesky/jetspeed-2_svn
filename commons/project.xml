@@ -106,8 +106,8 @@ limitations under the License.
       </properties> 
     </dependency>
     <dependency>
-      <groupId>struts-portlet</groupId>
-      <artifactId>struts-portlet-spi</artifactId>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-common</artifactId>
       <version>0.1</version>
     </dependency>
     

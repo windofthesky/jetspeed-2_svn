@@ -286,11 +286,11 @@ limitations under the License.
   <goal name="pam.strutsdeploy">
   	<!--
  	<j:set var="pam.app.name" value="struts-demo"/>
- 	<j:set var="pam.app.war" value="../struts-portlet/demo/target/struts-demo.war"/>
+ 	<j:set var="pam.app.war" value="../applications/struts-demo/target/struts-demo.war"/>
  	<attainGoal name="pam.template.deploy"/>
  	-->
  	
- 	<j:set var="maven.build.dir" value="../struts-portlet/demo/target" /> 	
+ 	<j:set var="maven.build.dir" value="../applications/struts-demo/target" /> 	
  	<j:set var="maven.war.final.name" value="struts-demo.war" />
  	<attainGoal name="jetspeed2:deploy" />
   </goal>
@@ -350,8 +350,8 @@ limitations under the License.
   </goal>
 
   <goal name="pam.strutsundeploy">
- 	<j:set var="pam.app.name" value="testsuite"/>
- 	<j:set var="pam.app.type" value="struts-demo"/>
+ 	<j:set var="pam.app.name" value="struts-demo"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
  	<attainGoal name="pam.template.undeploy"/>
   </goal>
 
@@ -459,7 +459,7 @@ limitations under the License.
     <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
   <goal name="catalina:shared"

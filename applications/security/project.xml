@@ -142,8 +142,8 @@
       </properties>
     </dependency>
     <dependency>
-      <groupId>jetspeed2</groupId>
-      <artifactId>struts-portlet</artifactId>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-struts</artifactId>
       <version>0.1</version>
       <properties>
         <war.bundle>true</war.bundle>

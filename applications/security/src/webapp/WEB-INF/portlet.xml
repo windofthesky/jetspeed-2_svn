@@ -36,7 +36,7 @@ limitations under the License.
   	<portlet id="AddUserPortlet">
   	    <init-param>
             <name>ServletContextProvider</name>
-            <value>org.apache.jetspeed.portlet.StrutsServletContextProviderImpl</value>
+            <value>org.apache.jetspeed.portlet.ServletContextProviderImpl</value>
         </init-param>
     	<init-param>
       		<name>ViewPage</name>
@@ -44,7 +44,7 @@ limitations under the License.
 		</init-param>
     	<portlet-name>AddUserPortlet</portlet-name>
     	<display-name>Add User Portlet</display-name>
-    	<portlet-class>org.apache.struts.portlet.StrutsPortlet</portlet-class>
+    	<portlet-class>org.apache.portals.bridges.struts.StrutsPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
     	<supports>
 	      <mime-type>text/html</mime-type>

@@ -95,7 +95,7 @@ limitations under the License.
         
     <maven:reactor
        basedir="${basedir}"
-       includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml"
+       includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,portals-bridges/*/project.xml"
        excludes="applications/project.xml,cornerstone-demo/project.xml,taglibs/project.xml"
        goals="clean"
        banner="Cleaning"
@@ -136,17 +136,17 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/struts-portlet/spi"
+               basedir="${basedir}/portals-bridges/common"
                includes="project.xml"
                goals="jar:install"
-               banner="Build and Install the Struts Portlet SPI jar"
+               banner="Build and Install the Portals Bridges common jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/struts-portlet/framework"
+               basedir="${basedir}/portals-bridges/struts"
                includes="project.xml"
                goals="jar:install"
-               banner="Build and Install the Struts Portlet jar"
+               banner="Build and Install the Portals Bridges Struts jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
@@ -282,10 +282,10 @@ limitations under the License.
                ignoreFailures="false"/>
 
      <maven:reactor
-               basedir="${basedir}/struts-portlet/demo"
+               basedir="${basedir}/applications/struts-demo"
                includes="project.xml"
                goals="war:install"
-               banner="Build and Install the Demo application WAR"
+               banner="Build and Install the Struts Demo application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
      

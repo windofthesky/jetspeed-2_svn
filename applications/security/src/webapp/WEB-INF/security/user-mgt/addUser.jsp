@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
-<%@ taglib uri="http://struts.apache.org/tags-portlet" prefix="sp" %>
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet" prefix="sp" %>
 
 <sp:form action="/addUser" focus="username">
 <table>
