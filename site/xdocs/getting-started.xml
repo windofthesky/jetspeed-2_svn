@@ -31,7 +31,7 @@ It is expected that the user is familiar with both the <a href="http://maven.apa
 </p>
 <ul>
   <li><a href="http://ant.apache.org/bindownload.cgi">Ant 1.5</a> or higher</li>
-  <li><a href="http://maven.apache.org/start/download.html">Maven 1.0-rc3</a> or higher</li>
+  <li><a href="http://maven.apache.org/start/download.html">Maven 1.0</a> or higher</li>
   <li>Java 1.4 or higher</li>
   <li>Servlet 2.3:<br/>
     Tomcat 4.1.x<br/>
