@@ -87,28 +87,30 @@ public class PortletApplicationBrowser extends ServletPortlet
 	{
 		TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute("j2_tree");
 		//assert control != null
-		
-		String node = actionRequest.getParameter("node");
-		if(node != null)
+		if(control != null)
 		{
-		    TreeControlNode controlNode = control.findNode(node);
-		    if(controlNode != null)
-		    {
-		        controlNode.setExpanded(!controlNode.isExpanded());
-		    }
+			String node = actionRequest.getParameter("node");
+			if(node != null)
+			{
+			    TreeControlNode controlNode = control.findNode(node);
+			    if(controlNode != null)
+			    {
+			        controlNode.setExpanded(!controlNode.isExpanded());
+			    }
+			}
+			
+			String selectedNode = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_NODE);
+			if(selectedNode != null)
+			{
+			    control.selectNode(selectedNode);
+	            MutablePortletApplication pa = registry.getPortletApplicationByIdentifier(selectedNode);
+	            if (null != pa)
+	            {
+	                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa, PortletSession.APPLICATION_SCOPE);
+	                actionRequest.getPortletSession().removeAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+	            }
+			}
 		}
-		
-		String selectedNode = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_NODE);
-		if(selectedNode != null)
-		{
-		    control.selectNode(selectedNode);
-            MutablePortletApplication pa = registry.getPortletApplicationByIdentifier(selectedNode);
-            if (null != pa)
-            {
-                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa, PortletSession.APPLICATION_SCOPE);
-                actionRequest.getPortletSession().removeAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
-            }
-		}	
 	}
 	
 	private TreeControl buildTree(List apps) {
