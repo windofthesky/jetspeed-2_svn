@@ -198,7 +198,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
      */
     public Collection getContainers()
     {        
-        Iterator itr = rootContainer.getComponentInstances().iterator();
+        Iterator itr = getRootContainer().getComponentInstances().iterator();
         ArrayList list = new ArrayList();
         while(itr.hasNext())
         {
