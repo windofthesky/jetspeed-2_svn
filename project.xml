@@ -2,7 +2,7 @@
     <pomVersion>3</pomVersion>
     <name>Jetspeed 2 Enterprise Portal</name>
     <groupId>jetspeed2</groupId>
-    <currentVersion>2.0-M1</currentVersion>
+    <currentVersion>2.0-M2-dev</currentVersion>
     <organization>
         <name>Apache Software Foundation</name>
         <url>http://portals.apache.org/</url>
@@ -76,7 +76,7 @@
         <developer>
             <name>Roger Ruttimann</name>
             <id>roger</id>
-            <email>roger.ruttimann@earthlink.net</email>
+            <email>rogerrut@apache.org</email>
             <roles>
                 <role>Java Developer</role>
             </roles>

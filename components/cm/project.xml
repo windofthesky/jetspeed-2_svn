@@ -22,8 +22,7 @@ limitations under the License.
   <pomVersion>3</pomVersion>
   <id>jetspeed-cm</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed-2 Component Manager</name>
-  <currentVersion>2.0-M1</currentVersion>
+  <name>Jetspeed-2 Component Manager</name>  
   <package>org.apache.jetspeed</package>
   <description>
 	  Component Manager
@@ -40,7 +39,7 @@ limitations under the License.
   	&db-ojb-deps; 
   	<dependency>
       <id>jetspeed2:jetspeed-api</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

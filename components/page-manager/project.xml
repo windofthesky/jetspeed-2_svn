@@ -23,7 +23,7 @@ limitations under the License.
   <id>jetspeed-page-manager</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Page Manager</name>
-  <currentVersion>2.0-M1</currentVersion>
+  
   <package>org.apache.jetspeed</package>
   <description>
 	  Page management implementations.
@@ -45,44 +45,44 @@ limitations under the License.
   	
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-api</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-persistence</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-registry</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>      
     <dependency>
       <id>jetspeed2:jetspeed-file-cache</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-id-generator</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>       
     <dependency>
       <id>jetspeed2:jetspeed-security</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-locator</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-profiler</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
     <!-- Testing only -->
     <dependency>
       <id>jetspeed2:jetspeed-rdbms</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>    	
   	 <dependency>
       <id>commons-lang</id>

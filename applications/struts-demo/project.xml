@@ -21,7 +21,7 @@ limitations under the License.
   <pomVersion>3</pomVersion>
   <id>struts-demo</id>
   <name>Struts Portlet Demo</name>
-  <currentVersion>2.0-M1</currentVersion>
+  
   <package>org.apache.struts.webapp.example</package>
   <description>Struts Portlet Demo</description>
   <shortDescription>Struts Portlet Demo</shortDescription>

@@ -5,7 +5,6 @@
 <project>
   <extend>${basedir}/./../project.xml</extend>
   <id>php</id>
-  <currentVersion>2.0-M1</currentVersion>
   <name>Jetspeed-2 PHP Portlet Application</name>
   <description>PHP Portlet</description>
   <shortDescription>PHP Portlets</shortDescription>

@@ -23,7 +23,6 @@ limitations under the License.
   <id>jetspeed-persistence</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Persistence Components</name>
-  <currentVersion>2.0-M1</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
 	  Persistence Components
@@ -43,11 +42,11 @@ limitations under the License.
     <dependency>
       <id>jetspeed-commons</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-api</id>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -57,7 +56,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-rdbms</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M1</version>
+      <version>2.0-M2-dev</version>
     </dependency>
   	 <dependency>
       <id>commons-lang</id>
