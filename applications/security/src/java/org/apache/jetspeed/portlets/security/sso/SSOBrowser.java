@@ -150,28 +150,25 @@ public class SSOBrowser extends BrowserPortlet
                 PortletMessaging.cancel(request, "site", "selected");
                 PortletMessaging.cancel(request, "site", "selectedUrl");                                
             }
-            else if (delete != null)
+            else if (delete != null && (!(isEmpty(delete))))
             {
-                if (!(isEmpty(delete)))
+                try
                 {
-                    try
+                    SSOSite site = null;
+                    site = sso.getSite(delete);
+                    if (site != null)
                     {
-                        SSOSite site = null;
-                        site = sso.getSite(delete);
-                        if (site != null)
-                        {
-                            sso.removeSite(site);
-                            this.clearBrowserIterator(request);
-                            PortletMessaging.cancel(request, "site", "selected");
-                            PortletMessaging.cancel(request, "site", "selectedUrl");                                
-                        }
+                        sso.removeSite(site);
+                        this.clearBrowserIterator(request);
+                        PortletMessaging.cancel(request, "site", "selected");
+                        PortletMessaging.cancel(request, "site", "selectedUrl");                                
                     }
-                    catch (SSOException e)
-                    {
-                        // TODO: exception handling
-                        System.err.println("Exception storing site: " + e);
-                    }
-                }                
+                }
+                catch (SSOException e)
+                {
+                    // TODO: exception handling
+                    System.err.println("Exception storing site: " + e);
+                }
             }
             else if (save != null)
             {
