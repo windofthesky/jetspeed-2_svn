@@ -111,7 +111,9 @@ public class DeployUtilities
 
         log.info("deploying WAR file'" + warFileName + ".war' to WEB-INF/...");
 
-        String destination = webAppsDir + appName;
+        
+
+        String destination = formatWebApplicationPath(webAppsDir,  appName);
         if (new File(destination).exists())
         {
             throw new IOException(
@@ -180,7 +182,7 @@ public class DeployUtilities
             webModule = webModule.substring(0, webModule.lastIndexOf("."));
 
         // Load web.xml
-        String webXml = webAppsDir + paName + "/WEB-INF/web.xml";
+        String webXml = formatWebApplicationPath(webAppsDir, paName)+"/WEB-INF/web.xml";
 
         return webXml;
     }
@@ -349,6 +351,25 @@ public class DeployUtilities
             throw new PortletApplicationException(msg);
         }
 
+    }
+	
+	/**
+	 * Builds a well-formed relative path to the web application directory
+	 * that contains the web application defined by the <code>appName</code>
+	 * @param webAppsDir location of the servlet container's web application directory
+	 * @param appName name of the web application.
+	 * @return well-formed relative path to the web application's directory
+	 */
+    public String formatWebApplicationPath(String webAppsDir, String appName)
+    {
+        if (!appName.startsWith("/") && !webAppsDir.endsWith("/") && !webAppsDir.endsWith("\\"))
+        {
+           return webAppsDir + "/" + appName;
+        }
+        else
+        {
+           return webAppsDir + appName;
+        }
     }
 
 }
