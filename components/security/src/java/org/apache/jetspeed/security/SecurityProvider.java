@@ -17,36 +17,60 @@ package org.apache.jetspeed.security;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
- * <p>Utility component used to configure the security component and
- * provide access to the various security handlers.</p>
+ * <p>
+ * Utility component used to configure the security component and provide access
+ * to the various security handlers.
+ * </p>
  * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public interface SecurityProvider
 {
     /**
-     * <p>Getter for the {@link UserSecurityHandler}
+     * <p>
+     * Getter for the {@link UserSecurityHandler}
+     * </p>
+     * 
      * @return The UserSecurityHandler.
      */
     UserSecurityHandler getUserSecurityHandler();
-    
+
     /**
-     * <p>Getter for the {@link RoleSecurityHandler}
+     * <p>
+     * Getter for the {@link RoleSecurityHandler}
+     * </p>
+     * 
      * @return The RoleSecurityHandler.
      */
     RoleSecurityHandler getRoleSecurityHandler();
-    
+
     /**
-     * <p>Getter for the {@link GroupSecurityHandler}
+     * <p>
+     * Getter for the {@link GroupSecurityHandler}
+     * </p>
+     * 
      * @return The GroupSecurityHandler.
      */
     GroupSecurityHandler getGroupSecurityHandler();
-    
+
     /**
-     * <p>Getter for the {@link CredentialHandler}
+     * <p>
+     * Gettter for the {@link SecurityMappingHandler}
+     * </p>
+     * 
+     * @return The SecurityMappingHandler.
+     */
+    SecurityMappingHandler getSecurityMappingHandler();
+
+    /**
+     * <p>
+     * Getter for the {@link CredentialHandler}
+     * </p>
+     * 
      * @return The CredentialHandler.
      */
     CredentialHandler getCredentialHandler();

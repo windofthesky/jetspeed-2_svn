@@ -15,6 +15,8 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,8 +37,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.GroupSecurityHandler;
-import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.util.ArgUtil;
 
@@ -54,12 +55,9 @@ public class UserManagerImpl implements UserManager
 
     /** The user security handler. */
     private UserSecurityHandler userSecurityHandler = null;
-    
-    /** The role security handler. */
-    private RoleSecurityHandler roleSecurityHandler = null;
-    
-    /** The group security handler. */
-    private GroupSecurityHandler groupSecurityHandler = null;
+
+    /** The security mapping handler. */
+    private SecurityMappingHandler securityMappingHandler = null;
 
     /** The credential handler. */
     private CredentialHandler credentialHandler = null;
@@ -70,8 +68,7 @@ public class UserManagerImpl implements UserManager
     public UserManagerImpl(SecurityProvider securityProvider)
     {
         this.userSecurityHandler = securityProvider.getUserSecurityHandler();
-        this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
-        this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
+        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
         this.credentialHandler = securityProvider.getCredentialHandler();
     }
 
@@ -80,14 +77,13 @@ public class UserManagerImpl implements UserManager
      * @param roleHierarchyResolver The role hierachy resolver.
      * @param groupHierarchyResolver The group hierarchy resolver.
      */
-    public UserManagerImpl(SecurityProvider securityProvider,
-            HierarchyResolver roleHierarchyResolver, HierarchyResolver groupHierarchyResolver)
+    public UserManagerImpl(SecurityProvider securityProvider, HierarchyResolver roleHierarchyResolver,
+            HierarchyResolver groupHierarchyResolver)
     {
-        securityProvider.getRoleSecurityHandler().setRoleHierarchyResolver(roleHierarchyResolver);
-        securityProvider.getGroupSecurityHandler().setGroupHierarchyResolver(groupHierarchyResolver);
+        securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(roleHierarchyResolver);
+        securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(groupHierarchyResolver);
         this.userSecurityHandler = securityProvider.getUserSecurityHandler();
-        this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
-        this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
+        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
         this.credentialHandler = securityProvider.getCredentialHandler();
     }
 
@@ -241,21 +237,22 @@ public class UserManagerImpl implements UserManager
 
         Set principals = new HashSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
-        
+
         Principal userPrincipal = userSecurityHandler.getUserPrincipal(username);
         if (null == userPrincipal)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
         }
-        
+
         principals.add(userPrincipal);
-        principals.addAll(roleSecurityHandler.getRolePrincipals(username));
-        principals.addAll(groupSecurityHandler.getGroupPrincipals(username));
-        
-        Subject subject = new Subject(true, principals, credentialHandler.getPublicCredentials(username), credentialHandler.getPrivateCredentials(username));
+        principals.addAll(securityMappingHandler.getRolePrincipals(username));
+        principals.addAll(securityMappingHandler.getGroupPrincipals(username));
+
+        Subject subject = new Subject(true, principals, credentialHandler.getPublicCredentials(username),
+                credentialHandler.getPrivateCredentials(username));
         Preferences preferences = Preferences.userRoot().node(fullPath);
         User user = new UserImpl(subject, preferences);
-        
+
         return user;
     }
 
@@ -273,6 +270,46 @@ public class UserManagerImpl implements UserManager
             users.add(user);
         }
         return users.iterator();
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#getUsersInRole(java.lang.String)
+     */
+    public Collection getUsersInRole(String roleFullPathName) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "getUsersInRole(java.lang.String)");
+
+        Collection users = new ArrayList();
+
+        Set userPrincipals = securityMappingHandler.getUserPrincipalsInRole(roleFullPathName);
+        Iterator userPrincipalsIter = userPrincipals.iterator();
+        while (userPrincipalsIter.hasNext())
+        {
+            Principal userPrincipal = (Principal) userPrincipalsIter.next();
+            users.add(getUser(userPrincipal.getName()));
+        }
+        return users;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#getUsersInGroup(java.lang.String)
+     */
+    public Collection getUsersInGroup(String groupFullPathName) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "getUsersInGroup(java.lang.String)");
+
+        Collection users = new ArrayList();
+
+        Set userPrincipals = securityMappingHandler.getUserPrincipalsInGroup(groupFullPathName);
+        Iterator userPrincipalsIter = userPrincipals.iterator();
+        while (userPrincipalsIter.hasNext())
+        {
+            Principal userPrincipal = (Principal) userPrincipalsIter.next();
+            users.add(getUser(userPrincipal.getName()));
+        }
+        return users;
     }
 
     /**

@@ -82,16 +82,6 @@ public interface RoleManager
     Collection getRolesForUser(String username) throws SecurityException;
 
     /**
-     * <p>A collection of {@link User} for all the users
-     * in a specific role.</p>
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleNameChild).
-     * @return A Collection of {@link User}.
-     * @throws Throws a security exception if the role does not exist.
-     */
-    Collection getUsersInRole(String roleFullPathName) throws SecurityException;
-
-    /**
      * <p>A collection of {@link Role} for all the roles
      * associated to a specific group.</p>
      * @param groupFullPathName The group full path
@@ -99,18 +89,8 @@ public interface RoleManager
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
-    Collection getRolesForGroup(String groupFullPathName) throws SecurityException;
-
-    /**
-     * <p>A collection of {@link Group} for all the groups
-     * in a specific role.</p>
-     * @param roleFullPathName The role full path
-     *                         (e.g. theRoleName.theRoleChildName)..
-     * @return A Collection of {@link Group}.
-     * @throws Throws a security exception if the role does not exist.
-     */
-    Collection getGroupsInRole(String roleFullPathName) throws SecurityException;
-
+    Collection getRolesInGroup(String groupFullPathName) throws SecurityException;
+    
     /**
      * <p>Add a role to a user.</p>
      * @param username The user name.

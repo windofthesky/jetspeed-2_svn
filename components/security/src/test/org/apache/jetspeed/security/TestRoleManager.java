@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.prefs.Preferences;
 
@@ -261,8 +262,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
             assertTrue("role exists. should not have thrown an exception.", false);
         }
         assertNotNull("role is null", role);
-        // Test the RolePrincipal.
-        RolePrincipal rolePrincipal = role.getPrincipal();
+        // Test the Principal.
+        Principal rolePrincipal = role.getPrincipal();
         assertNotNull("role principal is null", rolePrincipal);
         assertEquals("expected role principal full path name == testgetrole", "testgetrole", rolePrincipal.getName());
 
@@ -295,10 +296,10 @@ public class TestRoleManager extends AbstractSecurityTestcase
                 ums.addUser("anonuser3", "password");
                 rms.addRole("testuserrolemapping");
                 rms.addRole("testuserrolemapping.role1");
-                rms.addRole("testuserrolemapping.role2");
+                rms.addRole("testuserrolemapping2.role2");
                 rms.addRoleToUser("anonuser3", "testuserrolemapping");
                 rms.addRoleToUser("anonuser3", "testuserrolemapping.role1");
-                rms.addRoleToUser("anonuser3", "testuserrolemapping.role2");
+                rms.addRoleToUser("anonuser3", "testuserrolemapping2.role2");
             }
             catch (SecurityException sex)
             {
@@ -308,7 +309,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             try
             {
                 Collection roles = rms.getRolesForUser("anonuser3");
-                assertEquals("roles size should be == 3", 3, roles.size());
+                assertEquals("roles size should be == 4", 4, roles.size());
             }
             catch (SecurityException sex)
             {
@@ -320,6 +321,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             {
                 ums.removeUser("anonuser3");
                 rms.removeRole("testuserrolemapping");
+                rms.removeRole("testuserrolemapping2");
             }
             catch (SecurityException sex)
             {
@@ -328,55 +330,9 @@ public class TestRoleManager extends AbstractSecurityTestcase
         }
     
         /**
-         * <p>Test get users in role.</p>
+         * <p>Test get roles in group.</p>
          */
-        public void testGetUsersInRole()
-        {
-            // Init test.
-            try
-            {
-                ums.addUser("anonuser3", "password");
-                ums.addUser("anonuser4", "password");
-                rms.addRole("testuserrolemapping");
-                rms.addRole("testuserrolemapping.role1");
-                rms.addRole("testuserrolemapping.role2");
-                rms.addRoleToUser("anonuser3", "testuserrolemapping");
-                rms.addRoleToUser("anonuser3", "testuserrolemapping.role1");
-                rms.addRoleToUser("anonuser3", "testuserrolemapping.role2");
-                rms.addRoleToUser("anonuser4", "testuserrolemapping");
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("failed to init testGetUsersInRole(), " + sex, false);
-            }
-    
-            try
-            {
-                Collection users = rms.getUsersInRole("testuserrolemapping");
-                assertEquals("users size should be == 2", 2, users.size());
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("role exists. should not have thrown an exception: " + sex, false);
-            }
-    
-            // Cleanup test.
-            try
-            {
-                ums.removeUser("anonuser3");
-                ums.removeUser("anonuser4");
-                rms.removeRole("testuserrolemapping");
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("could not remove user and role. exception caught: " + sex, false);
-            }
-        }
-    
-        /**
-         * <p>Test get roles for group.</p>
-         */
-        public void testGetRolesForGroup()
+        public void testGetRolesInGroup()
         {
             // Init test.
             try
@@ -396,55 +352,12 @@ public class TestRoleManager extends AbstractSecurityTestcase
     
             try
             {
-                Collection roles = rms.getRolesForGroup("testrolegroupmapping");
+                Collection roles = rms.getRolesInGroup("testrolegroupmapping");
                 assertEquals("roles size should be == 3", 3, roles.size());
             }
             catch (SecurityException sex)
             {
                 assertTrue("group exists. should not have thrown an exception: " + sex, false);
-            }
-    
-            // Cleanup test.
-            try
-            {
-                rms.removeRole("testuserrolemapping");
-                gms.removeGroup("testrolegroupmapping");
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("could not remove role and group. exception caught: " + sex, false);
-            }
-        }
-    
-        /**
-         * <p>Test get groups in role.</p>
-         */
-        public void testGetGroupsInRole()
-        {
-            // Init test.
-            try
-            {
-                rms.addRole("testuserrolemapping");
-                gms.addGroup("testrolegroupmapping");
-                gms.addGroup("testrolegroupmapping.group1");
-                gms.addGroup("testrolegroupmapping.group2");
-                rms.addRoleToGroup("testuserrolemapping", "testrolegroupmapping");
-                rms.addRoleToGroup("testuserrolemapping", "testrolegroupmapping.group1");
-                rms.addRoleToGroup("testuserrolemapping", "testrolegroupmapping.group2");
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("failed to init testGetRolesForGroup(), " + sex, false);
-            }
-    
-            try
-            {
-                Collection groups = rms.getGroupsInRole("testuserrolemapping");
-                assertEquals("groups size should be == 3", 3, groups.size());
-            }
-            catch (SecurityException sex)
-            {
-                assertTrue("role exists. should not have thrown an exception: " + sex, false);
             }
     
             // Cleanup test.
@@ -562,7 +475,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             try
             {
                 rms.removeRoleFromGroup("testuserrolemapping.role3", "testrolegroupmapping");
-                Collection roles = rms.getRolesForGroup("testrolegroupmapping");
+                Collection roles = rms.getRolesInGroup("testrolegroupmapping");
                 assertEquals("roles size should be == 2", 2, roles.size());
             }
             catch (SecurityException sex)

@@ -23,6 +23,7 @@ import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
@@ -45,6 +46,9 @@ public class SecurityProviderImpl implements SecurityProvider
 
     /** The {@link GroupSecurityHandler}. */
     private GroupSecurityHandler groupSecurityHandler;
+    
+    /** The {@link SecurityMappingHandler}. */
+    private SecurityMappingHandler securityMappingHandler;
 
     /**
      * <p>
@@ -56,9 +60,10 @@ public class SecurityProviderImpl implements SecurityProvider
      * @param userSecurityHandler The user security handler.
      * @param roleSecurityHandler The role security handler.
      * @param groupSecurityHandler The group security handler.
+     * @param securityMappingHandler The security mapping handler.
      */
     public SecurityProviderImpl(CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
-            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler)
+            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler, SecurityMappingHandler securityMappingHandler)
     {
         // The credential handler.
         this.credHandler = credHandler;
@@ -68,6 +73,8 @@ public class SecurityProviderImpl implements SecurityProvider
         this.roleSecurityHandler = roleSecurityHandler;
         // The group security handler.
         this.groupSecurityHandler = groupSecurityHandler;
+        // The security mapping handler.
+        this.securityMappingHandler = securityMappingHandler;
     }
     
     /**
@@ -81,9 +88,10 @@ public class SecurityProviderImpl implements SecurityProvider
      * @param userSecurityHandler The user security handler.
      * @param roleSecurityHandler The role security handler.
      * @param groupSecurityHandler The group security handler.
+     * @param securityMappingHandler The security mapping handler.
      */
     public SecurityProviderImpl(Policy policy, CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
-            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler)
+            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler, SecurityMappingHandler securityMappingHandler)
     {
         // The policy.
         Policy.setPolicy(policy);
@@ -96,6 +104,8 @@ public class SecurityProviderImpl implements SecurityProvider
         this.roleSecurityHandler = roleSecurityHandler;
         // The group security handler.
         this.groupSecurityHandler = groupSecurityHandler;
+        // The security mapping handler.
+        this.securityMappingHandler = securityMappingHandler;
     }
 
     /**
@@ -128,5 +138,13 @@ public class SecurityProviderImpl implements SecurityProvider
     public GroupSecurityHandler getGroupSecurityHandler()
     {
         return this.groupSecurityHandler;
+    }
+     
+    /**
+     * @see org.apache.jetspeed.security.SecurityProvider#getSecurityMappingHandler()
+     */
+    public SecurityMappingHandler getSecurityMappingHandler()
+    {
+        return this.securityMappingHandler;
     }
 }

@@ -53,6 +53,14 @@ public class BasePrincipalImpl implements BasePrincipal
     }
 
     /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        return this.name.hashCode();
+    }
+    
+    /**
      * <p>Returns a string representation of this principal.</p>
      * @return A string representation of this principal.
      */

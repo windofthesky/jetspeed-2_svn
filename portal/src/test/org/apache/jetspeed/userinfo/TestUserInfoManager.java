@@ -46,11 +46,13 @@ import org.apache.jetspeed.security.impl.UserManagerImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.CommonQueries;
 import org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler;
 import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
@@ -103,7 +105,8 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         UserSecurityHandler ush = new DefaultUserSecurityHandler(cq);
         RoleSecurityHandler rsh = new DefaultRoleSecurityHandler(cq);
         GroupSecurityHandler gsh = new DefaultGroupSecurityHandler(cq);
-        SecurityProvider securityProvider = new SecurityProviderImpl(ch, ush, rsh, gsh);
+        SecurityMappingHandler smh = new DefaultSecurityMappingHandler(cq);
+        SecurityProvider securityProvider = new SecurityProviderImpl(ch, ush, rsh, gsh, smh);
         
         ums = new UserManagerImpl(securityProvider);
         gms = new GroupManagerImpl(persistenceStore);

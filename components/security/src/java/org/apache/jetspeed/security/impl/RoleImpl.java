@@ -14,13 +14,13 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.RolePrincipal;
 
 /**
- * <p>A role made of a {@link RolePrincipal} and the user {@link Preferences}.</p>
+ * <p>A role made of a {@link Principal} and the user {@link Preferences}.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class RoleImpl implements Role
@@ -38,25 +38,26 @@ public class RoleImpl implements Role
      * @param subject The role principal.
      * @param preferences The preferences.
      */
-    public RoleImpl(RolePrincipal rolePrincipal, Preferences preferences)
+    public RoleImpl(Principal rolePrincipal, Preferences preferences)
     {
         this.rolePrincipal = rolePrincipal;
         this.preferences = preferences;
     }
 
-    private RolePrincipal rolePrincipal;
+    private Principal rolePrincipal;
+    
     /**
      * @see org.apache.jetspeed.security.Role#getPrincipal()
      */
-    public RolePrincipal getPrincipal()
+    public Principal getPrincipal()
     {
         return this.rolePrincipal;
     }
 
     /**
-     * @see org.apache.jetspeed.security.Role#setPrincipal(org.apache.jetspeed.security.RolePrincipal)
+     * @see org.apache.jetspeed.security.Role#setPrincipal(java.security.Principal)
      */
-    public void setPrincipal(RolePrincipal rolePrincipal)
+    public void setPrincipal(Principal rolePrincipal)
     {
         this.rolePrincipal = rolePrincipal;
     }

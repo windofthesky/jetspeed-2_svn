@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
@@ -28,22 +29,27 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 
 /**
- * <p>Unit testing for {@link UserManager}.</p>
- *
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * Unit testing for {@link UserManager}.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class TestUserManager extends AbstractSecurityTestcase
 {
 
     /**
-     * <p>Defines the test case name for junit.</p>
+     * <p>
+     * Defines the test case name for junit.
+     * </p>
+     * 
      * @param testName The test case name.
      */
     public TestUserManager(String testName)
     {
         super(testName);
     }
-    
+
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -51,25 +57,25 @@ public class TestUserManager extends AbstractSecurityTestcase
     {
         super.setUp();
     }
-   
+
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
-    {       
+    {
         destroyUserObject();
         super.tearDown();
     }
 
-  
-    
     public static Test suite()
     {
-           return new TestSuite(TestUserManager.class);
+        return new TestSuite(TestUserManager.class);
     }
 
     /**
-     * <p>Test add/remove user.</p>
+     * <p>
+     * Test add/remove user.
+     * </p>
      */
     public void testAddRemoveUser()
     {
@@ -106,7 +112,9 @@ public class TestUserManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Test get user.</p>
+     * <p>
+     * Test get user.
+     * </p>
      */
     public void testGetUser()
     {
@@ -137,10 +145,8 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Asset user principal.
         Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         assertNotNull("user principal is null", userPrincipal);
-        assertEquals(
-            "expected user principal full path == /user/test",
-            "/user/test",
-            SecurityHelper.getPreferencesFullPath(userPrincipal));
+        assertEquals("expected user principal full path == /user/test", "/user/test", SecurityHelper
+                .getPreferencesFullPath(userPrincipal));
         assertEquals("expected user principal name == test", "test", userPrincipal.getName());
 
         // Test the User Preferences.
@@ -149,7 +155,105 @@ public class TestUserManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Test set password.</p>
+     * <p>
+     * Test get users in role.
+     * </p>
+     */
+    public void testGetUsersInRole()
+    {
+        // Init test.
+        try
+        {
+            ums.addUser("anonuser3", "password");
+            ums.addUser("anonuser4", "password");
+            rms.addRole("testuserrolemapping");
+            rms.addRole("testuserrolemapping.role1");
+            rms.addRole("testuserrolemapping.role2");
+            rms.addRoleToUser("anonuser3", "testuserrolemapping");
+            rms.addRoleToUser("anonuser3", "testuserrolemapping.role1");
+            rms.addRoleToUser("anonuser3", "testuserrolemapping.role2");
+            rms.addRoleToUser("anonuser4", "testuserrolemapping");
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to init testGetUsersInRole(), " + sex, false);
+        }
+
+        try
+        {
+            Collection users = ums.getUsersInRole("testuserrolemapping");
+            assertEquals("users size should be == 2", 2, users.size());
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("role exists. should not have thrown an exception: " + sex, false);
+        }
+
+        // Cleanup test.
+        try
+        {
+            ums.removeUser("anonuser3");
+            ums.removeUser("anonuser4");
+            rms.removeRole("testuserrolemapping");
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("could not remove user and role. exception caught: " + sex, false);
+        }
+    }
+
+    /**
+     * <p>
+     * Test get users in group.
+     * </p>
+     */
+    public void testGetUsersInGroup()
+    {
+        // Init test.
+        try
+        {
+            ums.addUser("anonuser2", "password");
+            ums.addUser("anonuser3", "password");
+            ums.addUser("anonuser4", "password");
+            gms.addGroup("testgroup1");
+            gms.addGroup("testgroup1.group1");
+            gms.addUserToGroup("anonuser2", "testgroup1.group1");
+            gms.addUserToGroup("anonuser3", "testgroup1.group1");
+            gms.addUserToGroup("anonuser4", "testgroup1.group1");
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to init testGetUsersInGroup(), " + sex, false);
+        }
+
+        try
+        {
+            Collection users = ums.getUsersInGroup("testgroup1.group1");
+            assertEquals("users size should be == 3", 3, users.size());
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("group exists. should not have thrown an exception: " + sex, false);
+        }
+
+        // Cleanup test.
+        try
+        {
+            ums.removeUser("anonuser2");
+            ums.removeUser("anonuser3");
+            ums.removeUser("anonuser4");
+            gms.removeGroup("testgroup1");
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("could not remove user and group. exception caught: " + sex, false);
+        }
+    }
+
+    /**
+     * <p>
+     * Test set password.
+     * </p>
      */
     public void testSetPassword()
     {
@@ -178,10 +282,13 @@ public class TestUserManager extends AbstractSecurityTestcase
         }
     }
 
-	/**
-	 * <p>Test get users.</p>
-	 * @throws Exception Throws an exception.
-	 */
+    /**
+     * <p>
+     * Test get users.
+     * </p>
+     * 
+     * @throws Exception Throws an exception.
+     */
     public void testGetUsers() throws Exception
     {
         ums.addUser("one", "one-pw");
@@ -190,12 +297,12 @@ public class TestUserManager extends AbstractSecurityTestcase
         int count = 0;
         Iterator it = ums.getUsers("");
         while (it.hasNext())
-        {            
-            User user = (User)it.next();
+        {
+            User user = (User) it.next();
             Iterator principals = user.getSubject().getPrincipals().iterator();
             while (principals.hasNext())
             {
-                Principal principal = (Principal)principals.next();
+                Principal principal = (Principal) principals.next();
                 System.out.println("principal = " + principal.getName());
                 if (principal.getName().equals("one"))
                 {
@@ -208,7 +315,7 @@ public class TestUserManager extends AbstractSecurityTestcase
                 else if (principal.getName().equals("three"))
                 {
                     count++;
-                }                                
+                }
             }
         }
         assertTrue("user count should be 3", count == 3);
@@ -218,14 +325,18 @@ public class TestUserManager extends AbstractSecurityTestcase
     }
 
     /**
-     * <p>Destroy user test object.</p>
+     * <p>
+     * Destroy user test object.
+     * </p>
      */
     protected void destroyUserObject()
     {
         try
         {
-            if (ums.userExists("anon")) ums.removeUser("anon");
-            if (ums.userExists("test")) ums.removeUser("test");
+            if (ums.userExists("anon"))
+                ums.removeUser("anon");
+            if (ums.userExists("test"))
+                ums.removeUser("test");
         }
         catch (SecurityException sex)
         {

@@ -25,56 +25,68 @@ import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>Implementation for "part of" hierarchy. For Example:
- * There're roles: 
+ * <p>
+ * Implementation for "part of" hierarchy. For Example: There're roles:
  * <ul>
  * <li>roleA</li>
  * <li>roleA.roleB</li>
  * <li>roleA.roleB.roleC</li>
  * </ul>
- * if a user has the role [roleA] than</p>
- * <code>user.getSubject().getPrincipals()</code>
- * returns:
+ * if a user has the role [roleA] than
+ * </p>
+ * <code>user.getSubject().getPrincipals()</code> returns:
  * <ul>
  * <li>/role/roleA</li>
  * <li>/role/roleA/roleB</li>
  * <li>/role/roleA/roleB/roleC</li>
- * </ul> 
- * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
- * @version $Id$
+ * </ul>
+ * 
+ * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
+ * @version $Id: AggregationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
+ *          dlestrat Exp $
  */
-public class AggregationHierarchyResolver implements HierarchyResolver  
+public class AggregationHierarchyResolver implements HierarchyResolver
 {
     private static final Log log = LogFactory.getLog(AggregationHierarchyResolver.class);
-    
+
     /**
      * @see org.apache.jetspeed.security.HierarchyResolver#resolve()
      */
-    public String[] resolve( Preferences prefs ) {
-        ArgUtil.notNull(
-                new Object[] { prefs },
-                new String[] { "preferences" },
-                "resolve(java.util.prefs.Preferences)");
-        
-        List list=new ArrayList();
-        processPreferences(prefs,list);     
-        return  (String [])list.toArray(new String[0]) ;
+    public String[] resolve(Preferences prefs)
+    {
+        ArgUtil.notNull(new Object[] { prefs }, new String[] { "preferences" }, "resolve(java.util.prefs.Preferences)");
+
+        List list = new ArrayList();
+        processPreferences(prefs, list);
+        return (String[]) list.toArray(new String[0]);
     }
-    
-    
-    protected void processPreferences(Preferences prefs,List list) {
-        list.add(prefs.absolutePath());
-        try 
+
+    /**
+     * <p>
+     * Recursively processes the preferences.
+     * </p>
+     * 
+     * @param prefs The preferences.
+     * @param list The list to add the preferences to.
+     */
+    protected void processPreferences(Preferences prefs, List list)
+    {
+        if (!list.contains(prefs.absolutePath()))
         {
-            String [] names=prefs.childrenNames();
+            list.add(prefs.absolutePath());
+        }
+        try
+        {
+            String[] names = prefs.childrenNames();
             for (int i = 0; i < names.length; i++)
             {
-                processPreferences(prefs.node(names[i]),list);
+                processPreferences(prefs.node(names[i]), list);
             }
-        }catch(BackingStoreException bse) {
-            log.warn("can't find children of "+prefs.absolutePath(),bse);
         }
-        
+        catch (BackingStoreException bse)
+        {
+            log.warn("can't find children of " + prefs.absolutePath(), bse);
+        }
     }
-        
+
 }

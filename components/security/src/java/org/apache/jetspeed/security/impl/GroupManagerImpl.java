@@ -14,10 +14,12 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -29,39 +31,67 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>Describes the service interface for managing groups.</p>
- * <p>Group hierarchy elements are being returned as a {@link Group}
- * collection.  The backing implementation must appropriately map 
- * the group hierarchy to a preferences sub-tree.</p>
- * <p>The convention {principal}.{subprincipal} has been chosen to name
- * groups hierachies.  Implementation follow the conventions enforced
- * by the {@link Preferences} API.</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * Describes the service interface for managing groups.
+ * </p>
+ * <p>
+ * Group hierarchy elements are being returned as a {@link Group}collection.
+ * The backing implementation must appropriately map the group hierarchy to a
+ * preferences sub-tree.
+ * </p>
+ * <p>
+ * The convention {principal}.{subprincipal} has been chosen to name groups
+ * hierachies. Implementation follow the conventions enforced by the
+ * {@link Preferences}API.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
 {
+    /** The logger. */
     private static final Log log = LogFactory.getLog(GroupManagerImpl.class);
 
-    
+    /** The group security handler. */
+    private GroupSecurityHandler groupSecurityHandler = null;
+
+    /** The security mapping handler. */
+    private SecurityMappingHandler securityMappingHandler = null;
+
     /**
      * @param persistenceStore
      */
-    public GroupManagerImpl( PersistenceStore persistenceStore )
+    public GroupManagerImpl(PersistenceStore persistenceStore)
     {
         super(persistenceStore);
-   }
+    }
+
+    /**
+     * @param securityProvider The security provider.
+     */
+    public GroupManagerImpl(PersistenceStore persistenceStore, SecurityProvider securityProvider)
+    {
+        super(persistenceStore);
+        this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
+        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+    }
+
     /**
      * @see org.apache.jetspeed.security.GroupManager#addGroup(java.lang.String)
      */
     public void addGroup(String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "addGroup(java.lang.String)");
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "addGroup(java.lang.String)");
 
         GroupPrincipal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);
         String fullPath = groupPrincipal.getFullPath();
@@ -97,7 +127,8 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
      */
     public void removeGroup(String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "removeGroup(java.lang.String)");
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "removeGroup(java.lang.String)");
 
         InternalGroupPrincipal omParentGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null != omParentGroup)
@@ -173,10 +204,16 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
      */
     public boolean groupExists(String groupFullPathName)
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "groupExists(java.lang.String)");
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "groupExists(java.lang.String)");
 
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        boolean groupExists = (null != omGroup);
+        Principal principal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        boolean groupExists = (null != principal);
+        if (log.isDebugEnabled())
+        {
+            log.debug("Role exists: " + groupExists);
+            log.debug("Role: " + groupFullPathName);
+        }
         return groupExists;
     }
 
@@ -185,14 +222,19 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
      */
     public Group getGroup(String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" }, "getGroup(java.lang.String)");
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "getGroup(java.lang.String)");
 
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
+        String fullPath = GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName);
+
+        Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        if (null == groupPrincipal)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
         }
-        return super.getGroup(omGroup);
+        Preferences preferences = Preferences.userRoot().node(fullPath);
+        Group group = new GroupImpl(groupPrincipal, preferences);
+        return group;
     }
 
     /**
@@ -212,34 +254,35 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.GroupManager#getUsersInGroup(java.lang.String)
+     * @see org.apache.jetspeed.security.GroupManager#getGroupsInRole(java.lang.String)
      */
-    public Collection getUsersInGroup(String groupFullPathName) throws SecurityException
+    public Collection getGroupsInRole(String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { groupFullPathName },
-            new String[] { "groupFullPathName" },
-            "getUsersInGroup(java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "getGroupsInRole(java.lang.String)");
 
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
+        Collection groups = new ArrayList();
+
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipalsInRole(roleFullPathName);
+        Iterator groupPrincipalsIter = groupPrincipals.iterator();
+        while (groupPrincipalsIter.hasNext())
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+            Principal groupPrincipal = (Principal) groupPrincipalsIter.next();
+            Preferences preferences = Preferences.userRoot().node(
+                    GroupPrincipalImpl.getFullPathFromPrincipalName(groupPrincipal.getName()));
+            groups.add(new GroupImpl(groupPrincipal, preferences));
         }
-        Collection users = new ArrayList();
-        Collection omGroupUsers = omGroup.getUserPrincipals();
-        return super.getUsers(omGroupUsers);
+        return groups;
     }
 
     /**
-     * @see org.apache.jetspeed.security.GroupManager#addUserToGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.GroupManager#addUserToGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void addUserToGroup(String username, String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, groupFullPathName },
-            new String[] { "username", "groupFullPathName" },
-            "addUserToGroup(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
+                "addUserToGroup(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
@@ -280,14 +323,13 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.GroupManager#removeUserFromGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.GroupManager#removeUserFromGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void removeUserFromGroup(String username, String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, groupFullPathName },
-            new String[] { "username", "groupFullPathName" },
-            "removeUserFromGroup(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
+                "removeUserFromGroup(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         // TODO This should be managed in a transaction.
@@ -320,14 +362,13 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.GroupManager#isUserInGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.GroupManager#isUserInGroup(java.lang.String,
+     *      java.lang.String)
      */
     public boolean isUserInGroup(String username, String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, groupFullPathName },
-            new String[] { "username", "groupFullPathName" },
-            "isUserInGroup(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
+                "isUserInGroup(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)

@@ -23,7 +23,11 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
+import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 
 /**
@@ -69,13 +73,13 @@ public class CommonQueries
         Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("fullPath", fullPath);
         Object query = persistenceStore.newQuery(InternalUserPrincipalImpl.class, filter);
-        InternalUserPrincipal omUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
-        return omUser;
+        InternalUserPrincipal internalUser = (InternalUserPrincipal) persistenceStore.getObjectByQuery(query);
+        return internalUser;
     }
-    
+
     /**
      * <p>
-     * Returns a collection of {@link Principal} given the filter.
+     * Returns a collection of {@link Principal}given the filter.
      * </p>
      * 
      * @param filter The filter.
@@ -110,7 +114,7 @@ public class CommonQueries
             throw new SecurityException(msg, e);
         }
     }
-    
+
     /**
      * <p>
      * Remove the given {@link InternalUserPrincipal}.
@@ -140,4 +144,39 @@ public class CommonQueries
             throw new SecurityException(msg, e);
         }
     }
+
+    /**
+     * <p>
+     * Returns the {@link InternalRolePrincipal}from the role full path name.
+     * </p>
+     * 
+     * @param username The role full path name.
+     * @return The {@link InternalRolePrincipal}.
+     */
+    public InternalRolePrincipal getInternalRolePrincipal(String roleFullPathName)
+    {
+        Filter filter = persistenceStore.newFilter();
+        filter.addEqualTo("fullPath", roleFullPathName);
+        Object query = persistenceStore.newQuery(InternalRolePrincipalImpl.class, filter);
+        InternalRolePrincipal internalRole = (InternalRolePrincipal) persistenceStore.getObjectByQuery(query);
+        return internalRole;
+    }
+
+    /**
+     * <p>
+     * Returns the {@link InternalGroupPrincipal}from the group full path name.
+     * </p>
+     * 
+     * @param username The group full path name.
+     * @return The {@link InternalGroupPrincipal}.
+     */
+    public InternalGroupPrincipal getInternalGroupPrincipal(String groupFullPathName)
+    {
+        Filter filter = persistenceStore.newFilter();
+        filter.addEqualTo("fullPath", groupFullPathName);
+        Object query = persistenceStore.newQuery(InternalGroupPrincipalImpl.class, filter);
+        InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) persistenceStore.getObjectByQuery(query);
+        return internalGroup;
+    }
+
 }

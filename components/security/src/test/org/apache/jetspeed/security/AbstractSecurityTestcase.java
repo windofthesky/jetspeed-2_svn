@@ -23,10 +23,16 @@ import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
+import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.CommonQueries;
 import org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler;
+import org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler;
 
 /**
@@ -43,16 +49,19 @@ public class AbstractSecurityTestcase extends PersistenceSupportedTestCase
     protected CommonQueries cq;
     
     /** SPI Default Credential Handler. */
-    protected DefaultCredentialHandler ch;
+    protected CredentialHandler ch;
     
     /** SPI Default User Security Handler. */
-    protected DefaultUserSecurityHandler ush;
+    protected UserSecurityHandler ush;
     
     /** SPI Default Role Security Handler. */
-    protected DefaultRoleSecurityHandler rsh;
+    protected RoleSecurityHandler rsh;
     
     /** SPI Default Group Security Handler. */
-    protected DefaultGroupSecurityHandler gsh;
+    protected GroupSecurityHandler gsh;
+    
+    /** SPI Default Security Mapping Handler. */
+    protected SecurityMappingHandler smh;
     
     /** The security provider. */
     protected SecurityProvider securityProvider;
@@ -85,12 +94,13 @@ public class AbstractSecurityTestcase extends PersistenceSupportedTestCase
         ush = new DefaultUserSecurityHandler(cq);
         rsh = new DefaultRoleSecurityHandler(cq);
         gsh = new DefaultGroupSecurityHandler(cq);
+        smh = new DefaultSecurityMappingHandler(cq);
         pms = new PermissionManagerImpl(persistenceStore);
         Policy policy = new RdbmsPolicy(pms);
-        securityProvider = new SecurityProviderImpl(policy, ch, ush, rsh, gsh);
+        securityProvider = new SecurityProviderImpl(policy, ch, ush, rsh, gsh, smh);
         ums = new UserManagerImpl(securityProvider);
-        gms = new GroupManagerImpl(persistenceStore);
-        rms = new RoleManagerImpl(persistenceStore);
+        gms = new GroupManagerImpl(persistenceStore, securityProvider);
+        rms = new RoleManagerImpl(persistenceStore, securityProvider);
         
         new AuthenticationProviderImpl("login.conf", ums);
     }

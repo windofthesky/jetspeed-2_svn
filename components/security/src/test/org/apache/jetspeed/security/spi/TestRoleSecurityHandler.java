@@ -14,7 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.Set;
+import java.security.Principal;
 
 import org.apache.jetspeed.security.AbstractSecurityTestcase;
 
@@ -73,43 +73,36 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
 
     /**
      * <p>
-     * Test <code>getUserPrincipal</code>.
+     * Test <code>getRolePrincipal</code>.
      * </p>
      */
-    public void testGetRolePrincipals() throws Exception
+    public void testGetRolePrincipal() throws Exception
     {
-        initUser();
-        Set principals = rsh.getRolePrincipals("testuser");
-        assertNotNull(principals);
-        // Hierarchy by generalization should return 3 roles.
-        assertEquals(3, principals.size());
-        destroyUser();
+        initRole();
+        Principal principal = rsh.getRolePrincipal("testusertorole1");
+        assertNotNull(principal);
+        assertEquals("testusertorole1", principal.getName());
+        destroyRole();
     }
-
+    
     /**
      * <p>
-     * Initialize user test object.
+     * Initialize role test object.
      * </p>
      */
-    protected void initUser() throws Exception
+    protected void initRole() throws Exception
     {
-        ums.addUser("testuser", "password");
         rms.addRole("testusertorole1");
-        rms.addRole("testusertorole2.role1");
-        rms.addRoleToUser("testuser", "testusertorole1");
-        rms.addRoleToUser("testuser", "testusertorole2.role1");
     }
 
     /**
      * <p>
-     * Destroy user test object.
+     * Destroy role test object.
      * </p>
      */
-    protected void destroyUser() throws Exception
+    protected void destroyRole() throws Exception
     {
-        ums.removeUser("testuser");
         rms.removeRole("testusertorole1");
-        rms.removeRole("testusertorole2");
     }
 
 }

@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
 import java.util.prefs.Preferences;
 
 /**
@@ -23,16 +24,16 @@ import java.util.prefs.Preferences;
 public interface Role
 {
     /**
-     * <p>Getter for the role {@link RolePrincipal}.</p>
-     * @return The {@link RolePrincipal}.
+     * <p>Getter for the role {@link Principal}.</p>
+     * @return The {@link Principal}.
      */
-    RolePrincipal getPrincipal();
+    Principal getPrincipal();
 
     /**
      * <p>Setter for the role {@link RolePrincipal}.</p>
-     * @param rolePrincipal The {@link RolePrincipal}.
+     * @param rolePrincipal The {@link Principal}.
      */
-    void setPrincipal(RolePrincipal rolePrincipal);
+    void setPrincipal(Principal rolePrincipal);
 
     /**
      * <p>Getter for the role {@link Preferences} node, providing access to the

@@ -14,9 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.Set;
-
-import org.apache.jetspeed.security.HierarchyResolver;
+import java.security.Principal;
 
 /**
  * <p>
@@ -36,24 +34,14 @@ import org.apache.jetspeed.security.HierarchyResolver;
  */
 public interface GroupSecurityHandler
 {
-    
     /**
      * <p>
-     * Sets the {@link HierarchyResolver} used for resolving group hierarchy.
+     * Gets the group principal for the group full path name {principal}.{subprincipal}.
      * </p>
      * 
-     * @param groupHierarchyResolver The group {@link HierarchyResolver}.
+     * @param groupFullPathName The group full path name.
+     * @return The <code>Principal</p>
      */
-    void setGroupHierarchyResolver(HierarchyResolver groupHierarchyResolver);
-    
-    /**
-     * <p>
-     * Gets the group principals for the given user.
-     * </p>
-     * 
-     * @param username The user name.
-     * @return A set of <code>GroupPrincipal</p>
-     */
-    Set getGroupPrincipals(String username);
+    Principal getGroupPrincipal(String groupFullPathName);
 
 }

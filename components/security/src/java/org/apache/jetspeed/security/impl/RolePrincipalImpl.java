@@ -44,7 +44,9 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
     public boolean equals(Object another)
     {
         if (!(another instanceof RolePrincipalImpl))
+        {
             return false;
+        }
         RolePrincipalImpl principal = (RolePrincipalImpl) another;
         return this.getName().equals(principal.getName());
     }

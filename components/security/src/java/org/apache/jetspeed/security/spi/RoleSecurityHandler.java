@@ -14,9 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.Set;
-
-import org.apache.jetspeed.security.HierarchyResolver;
+import java.security.Principal;
 
 /**
  * <p>
@@ -39,21 +37,12 @@ public interface RoleSecurityHandler
     
     /**
      * <p>
-     * Sets the {@link HierarchyResolver} to be used for resolving role hierachy.
+     * Gets the role principal for the role full path name {principal}.{subprincipal}.
      * </p>
      * 
-     * @param roleHierarchyResolver The role {@link HierarchyResolver}.
+     * @param roleFullPathName The role full path name.
+     * @return The <code>Principal</p>
      */
-    void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver);
-    
-    /**
-     * <p>
-     * Gets the role principals for the given user.
-     * </p>
-     * 
-     * @param username The user name.
-     * @return A set of <code>RolePrincipal</p>
-     */
-    Set getRolePrincipals(String username);
+    Principal getRolePrincipal(String roleFullPathName);
 
 }

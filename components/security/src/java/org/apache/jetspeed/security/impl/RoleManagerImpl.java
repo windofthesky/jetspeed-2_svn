@@ -14,10 +14,12 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -29,42 +31,68 @@ import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
+import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>Implementation for managing roles.</p>
- * <p>Role hierarchy elements are being returned as a {@link Role}
- * collection.  The backing implementation must appropriately map 
- * the role hierarchy to a preferences sub-tree.</p> 
- * <p>The convention {principal}.{subprincipal} has been chosen to name
- * roles hierachies in order to support declarative security.  Implementation
- * follow the conventions enforced by the {@link Preferences} API.</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * Implementation for managing roles.
+ * </p>
+ * <p>
+ * Role hierarchy elements are being returned as a {@link Role}collection. The
+ * backing implementation must appropriately map the role hierarchy to a
+ * preferences sub-tree.
+ * </p>
+ * <p>
+ * The convention {principal}.{subprincipal} has been chosen to name roles
+ * hierachies in order to support declarative security. Implementation follow
+ * the conventions enforced by the {@link Preferences}API.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
 {
+    /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
 
-  
+    /** The role security handler. */
+    private RoleSecurityHandler roleSecurityHandler = null;
+
+    /** The security mapping handler. */
+    private SecurityMappingHandler securityMappingHandler = null;
 
     /**
      * @param persistenceStore
      */
-    public RoleManagerImpl( PersistenceStore persistenceStore )
+    public RoleManagerImpl(PersistenceStore persistenceStore)
     {
         super(persistenceStore);
     }
-    
+
+    /**
+     * @param securityProvider The security provider.
+     */
+    public RoleManagerImpl(PersistenceStore persistenceStore, SecurityProvider securityProvider)
+    {
+        super(persistenceStore);
+        this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
+        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+    }
+
     /**
      * @see org.apache.jetspeed.security.RoleManager#addRole(java.lang.String)
      */
     public void addRole(String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" }, "addRole(java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "addRole(java.lang.String)");
 
         RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
         String fullPath = rolePrincipal.getFullPath();
@@ -108,7 +136,8 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
      */
     public void removeRole(String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" }, "removeRole(java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "removeRole(java.lang.String)");
 
         InternalRolePrincipal omParentRole = super.getJetspeedRolePrincipal(roleFullPathName);
         if (null != omParentRole)
@@ -186,10 +215,16 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
      */
     public boolean roleExists(String roleFullPathName)
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" }, "roleExists(java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "roleExists(java.lang.String)");
 
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        boolean roleExists = (null != omRole);
+        Principal principal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        boolean roleExists = (null != principal);
+        if (log.isDebugEnabled())
+        {
+            log.debug("Role exists: " + roleExists);
+            log.debug("Role: " + roleFullPathName);
+        }
         return roleExists;
     }
 
@@ -198,14 +233,19 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
      */
     public Role getRole(String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" }, "getRole(java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
+                "getRole(java.lang.String)");
 
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
+        String fullPath = RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName);
+
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null == rolePrincipal)
         {
             throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
         }
-        return super.getRole(omRole);
+        Preferences preferences = Preferences.userRoot().node(fullPath);
+        Role role = new RoleImpl(rolePrincipal, preferences);
+        return role;
     }
 
     /**
@@ -215,79 +255,50 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     {
         ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "getRolesForUser(java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
+        Collection roles = new ArrayList();
 
-        Collection omUserRoles = omUser.getRolePrincipals();
-        return super.getRoles(omUserRoles);
+        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
+        Iterator rolePrincipalsIter = rolePrincipals.iterator();
+        while (rolePrincipalsIter.hasNext())
+        {
+            Principal rolePrincipal = (Principal) rolePrincipalsIter.next();
+            Preferences preferences = Preferences.userRoot().node(
+                    RolePrincipalImpl.getFullPathFromPrincipalName(rolePrincipal.getName()));
+            roles.add(new RoleImpl(rolePrincipal, preferences));
+        }
+        return roles;
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#getUsersInRole(java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#getRolesInGroup(java.lang.String)
      */
-    public Collection getUsersInRole(String roleFullPathName) throws SecurityException
+    public Collection getRolesInGroup(String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" }, "getUsersInRole(java.lang.String)");
+        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
+                "getRolesInGroup(java.lang.String)");
 
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
+        Collection roles = new ArrayList();
+
+        Set rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupFullPathName);
+        Iterator rolePrincipalsIter = rolePrincipals.iterator();
+        while (rolePrincipalsIter.hasNext())
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
+            Principal rolePrincipal = (Principal) rolePrincipalsIter.next();
+            Preferences preferences = Preferences.userRoot().node(
+                    RolePrincipalImpl.getFullPathFromPrincipalName(rolePrincipal.getName()));
+            roles.add(new RoleImpl(rolePrincipal, preferences));
         }
-        Collection omRoleUsers = omRole.getUserPrincipals();
-        return super.getUsers(omRoleUsers);
+        return roles;
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#getRolesForGroup(java.lang.String)
-     */
-    public Collection getRolesForGroup(String groupFullPathName) throws SecurityException
-    {
-        ArgUtil.notNull(
-            new Object[] { groupFullPathName },
-            new String[] { "groupFullPathName" },
-            "getRolesForGroup(java.lang.String)");
-
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
-        {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
-        }
-        Collection omGroupRoles = omGroup.getRolePrincipals();
-        return super.getRoles(omGroupRoles);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.RoleManager#getGroupsInRole(java.lang.String)
-     */
-    public Collection getGroupsInRole(String roleFullPathName) throws SecurityException
-    {
-        ArgUtil.notNull(
-            new Object[] { roleFullPathName },
-            new String[] { "roleFullPathName" },
-            "getGroupsInRole(java.lang.String)");
-
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
-        {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
-        }
-        Collection omRoleGroups = omRole.getGroupPrincipals();
-        return super.getGroups(omRoleGroups);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.RoleManager#addRoleToUser(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#addRoleToUser(java.lang.String,
+     *      java.lang.String)
      */
     public void addRoleToUser(String username, String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, roleFullPathName },
-            new String[] { "username", "roleFullPathName" },
-            "addUserToRole(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
+                "addUserToRole(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
@@ -327,14 +338,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#removeRoleFromUser(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#removeRoleFromUser(java.lang.String,
+     *      java.lang.String)
      */
     public void removeRoleFromUser(String username, String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, roleFullPathName },
-            new String[] { "username", "roleFullPathName" },
-            "removeRoleFromUser(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
+                "removeRoleFromUser(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         // TODO This should be managed in a transaction.
@@ -367,14 +377,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     }
 
     /**
-    * @see org.apache.jetspeed.security.RoleManager#isUserInRole(java.lang.String, java.lang.String)
-    */
+     * @see org.apache.jetspeed.security.RoleManager#isUserInRole(java.lang.String,
+     *      java.lang.String)
+     */
     public boolean isUserInRole(String username, String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { username, roleFullPathName },
-            new String[] { "username", "roleFullPathName" },
-            "isUserInRole(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
+                "isUserInRole(java.lang.String, java.lang.String)");
 
         InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
         if (null == omUser)
@@ -396,14 +405,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#addRoleToGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#addRoleToGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void addRoleToGroup(String roleFullPathName, String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { roleFullPathName, groupFullPathName },
-            new String[] { "roleFullPathName", "groupFullPathName" },
-            "addRoleToGroup(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
+                "groupFullPathName" }, "addRoleToGroup(java.lang.String, java.lang.String)");
 
         InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
         if (null == omRole)
@@ -444,14 +452,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#removeRoleFromGroup(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#removeRoleFromGroup(java.lang.String,
+     *      java.lang.String)
      */
     public void removeRoleFromGroup(String roleFullPathName, String groupFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { roleFullPathName, groupFullPathName },
-            new String[] { "roleFullPathName", "groupFullPathName" },
-            "removeRoleFromGroup(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
+                "groupFullPathName" }, "removeRoleFromGroup(java.lang.String, java.lang.String)");
 
         InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         // TODO This should be managed in a transaction.
@@ -484,14 +491,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     }
 
     /**
-     * @see org.apache.jetspeed.security.RoleManager#isGroupInRole(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.RoleManager#isGroupInRole(java.lang.String,
+     *      java.lang.String)
      */
     public boolean isGroupInRole(String groupFullPathName, String roleFullPathName) throws SecurityException
     {
-        ArgUtil.notNull(
-            new Object[] { roleFullPathName, groupFullPathName },
-            new String[] { "roleFullPathName", "groupFullPathName" },
-            "isGroupInRole(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
+                "groupFullPathName" }, "isGroupInRole(java.lang.String, java.lang.String)");
 
         InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)

@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
 import java.util.prefs.Preferences;
 
 /**
@@ -23,16 +24,16 @@ import java.util.prefs.Preferences;
 public interface Group
 {
     /**
-     * <p>Getter for the group {@link GroupPrincipal}.</p>
+     * <p>Getter for the group {@link Principal}.</p>
      * @return The {@link GroupPrincipal}.
      */
-    GroupPrincipal getPrincipal();
+    Principal getPrincipal();
 
     /**
-     * <p>Setter for the group {@link GroupPrincipal}.</p>
-     * @param groupPrincipal The {@link GroupPrincipal}.
+     * <p>Setter for the group {@link Principal}.</p>
+     * @param groupPrincipal The {@link Principal}.
      */
-    void setPrincipal(GroupPrincipal groupPrincipal);
+    void setPrincipal(Principal groupPrincipal);
 
     /**
      * <p>Getter for the group {@link Preferences} node, providing access to the

@@ -14,10 +14,10 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.GroupPrincipal;
 
 /**
  * <p>A group made of a {@link GroupPrincipal} and the user {@link Preferences}.</p>
@@ -37,26 +37,26 @@ public class GroupImpl implements Group
      * @param groupPrincipal The group principal.
      * @param preferences The preferences.
      */
-    public GroupImpl(GroupPrincipal groupPrincipal, Preferences preferences)
+    public GroupImpl(Principal groupPrincipal, Preferences preferences)
     {
         this.groupPrincipal = groupPrincipal;
         this.preferences = preferences;
     }
 
-    private GroupPrincipal groupPrincipal;
+    private Principal groupPrincipal;
 
     /**
      * @see org.apache.jetspeed.security.Group#getPrincipal()
      */
-    public GroupPrincipal getPrincipal()
+    public Principal getPrincipal()
     {
         return this.groupPrincipal;
     }
 
     /**
-     * @see org.apache.jetspeed.security.Group#setPrincipal(org.apache.jetspeed.security.GroupPrincipal)
+     * @see org.apache.jetspeed.security.Group#setPrincipal(java.security.Principal)
      */
-    public void setPrincipal(GroupPrincipal groupPrincipal)
+    public void setPrincipal(Principal groupPrincipal)
     {
         this.groupPrincipal = groupPrincipal;
     }

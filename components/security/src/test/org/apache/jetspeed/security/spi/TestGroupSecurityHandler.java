@@ -14,7 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.Set;
+import java.security.Principal;
 
 import org.apache.jetspeed.security.AbstractSecurityTestcase;
 
@@ -73,43 +73,36 @@ public class TestGroupSecurityHandler extends AbstractSecurityTestcase
 
     /**
      * <p>
-     * Test <code>getUserPrincipal</code>.
+     * Test <code>getGroupPrincipal</code>.
      * </p>
      */
-    public void testGetGroupPrincipals() throws Exception
+    public void testGetGroupPrincipal() throws Exception
     {
-        initUser();
-        Set principals = gsh.getGroupPrincipals("testuser");
-        assertNotNull(principals);
-        // Hierarchy by generalization should return 3 roles.
-        assertEquals(3, principals.size());
-        destroyUser();
+        initGroup();
+        Principal principal = gsh.getGroupPrincipal("testusertogroup1");
+        assertNotNull(principal);
+        assertEquals("testusertogroup1", principal.getName());
+        destroyGroup();
     }
-
+    
     /**
      * <p>
-     * Initialize user test object.
+     * Initialize group test object.
      * </p>
      */
-    protected void initUser() throws Exception
+    protected void initGroup() throws Exception
     {
-        ums.addUser("testuser", "password");
         gms.addGroup("testusertogroup1");
-        gms.addGroup("testusertogroup2.group1");
-        gms.addUserToGroup("testuser", "testusertogroup1");
-        gms.addUserToGroup("testuser", "testusertogroup2.group1");
     }
 
     /**
      * <p>
-     * Destroy user test object.
+     * Destroy group test object.
      * </p>
      */
-    protected void destroyUser() throws Exception
+    protected void destroyGroup() throws Exception
     {
-        ums.removeUser("testuser");
         gms.removeGroup("testusertogroup1");
-        gms.removeGroup("testusertogroup2");
     }
 
 }

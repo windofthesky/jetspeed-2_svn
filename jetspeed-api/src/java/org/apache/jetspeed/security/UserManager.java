@@ -14,18 +14,25 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * <p>Describes the interface for managing users and provides access
- * to the {@link User}.</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * Describes the interface for managing users and provides access to the
+ * {@link User}.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public interface UserManager
 {
 
     /**
-     * <p>Authenticate a user.</p>
+     * <p>
+     * Authenticate a user.
+     * </p>
+     * 
      * @param username The user name.
      * @param password The user password.
      * @return Whether or not a user is authenticated.
@@ -33,7 +40,10 @@ public interface UserManager
     boolean authenticate(String username, String password);
 
     /**
-     * <p>Add a new user provided a username and password.</p>
+     * <p>
+     * Add a new user provided a username and password.
+     * </p>
+     * 
      * @param username The user name.
      * @param password The password.
      * @throws Throws a security exception.
@@ -41,23 +51,34 @@ public interface UserManager
     void addUser(String username, String password) throws SecurityException;
 
     /**
-     * <p>Remove a user. If there is a {@link java.util.prefs.Preferences} node
-     * for profile properties associated to this user, it will be removed as well.</p>
-     * <p>{@link java.security.Permission} for this user will be removed as well.</p>
+     * <p>
+     * Remove a user. If there is a {@link java.util.prefs.Preferences}node for
+     * profile properties associated to this user, it will be removed as well.
+     * </p>
+     * <p>
+     * {@link java.security.Permission}for this user will be removed as well.
+     * </p>
+     * 
      * @param username The user name.
      * @throws Throws a security exception.
      */
     void removeUser(String username) throws SecurityException;
 
     /**
-     * <p>Whether or not a user exists.</p>
+     * <p>
+     * Whether or not a user exists.
+     * </p>
+     * 
      * @param username The user name.
      * @return Whether or not a user exists.
      */
     boolean userExists(String username);
 
     /**
-     * <p>Get a {@link User} for a given username.</p>
+     * <p>
+     * Get a {@link User}for a given username.
+     * </p>
+     * 
      * @param username The username.
      * @return The {@link User}.
      * @throws Throws a security exception if the user cannot be found.
@@ -65,10 +86,14 @@ public interface UserManager
     User getUser(String username) throws SecurityException;
 
     /**
-     * <p>An iterator of {@link User} finding users matching the
-     * corresponding filter criteria.</p>
-     * <p>Current implementation only allows for getting back all users with
-     * "" as a fitler.</p>
+     * <p>
+     * An iterator of {@link User}finding users matching the corresponding
+     * filter criteria.
+     * </p>
+     * <p>
+     * Current implementation only allows for getting back all users with "" as
+     * a fitler.
+     * </p>
      * TODO Complete filter implementation.
      * 
      * @param filter The filter used to retrieve matching users.
@@ -77,7 +102,31 @@ public interface UserManager
     Iterator getUsers(String filter) throws SecurityException;
 
     /**
-     * <p>Set the user password.</p>
+     * <p>
+     * A collection of {@link User}for all the users in a specific role.
+     * </p>
+     * 
+     * @param roleFullPathName The role name full path (e.g.
+     *            theRoleName.theRoleNameChild).
+     * @return A Collection of {@link User}.
+     * @throws Throws a security exception if the role does not exist.
+     */
+    Collection getUsersInRole(String roleFullPathName) throws SecurityException;
+    
+    /**
+     * <p>A collection of {@link User} for a specific group.</p>
+     * @param groupFullPathName The group name full path
+     *                          (e.g. theGroupName.theGroupChildName).
+     * @return A collection of {@link User}.
+     * @throws Throws security exception if the group does not exist.
+     */
+    Collection getUsersInGroup(String groupFullPathName) throws SecurityException;
+    
+    /**
+     * <p>
+     * Set the user password.
+     * </p>
+     * 
      * @param username The user name.
      * @param oldPassword The old password.
      * @param newPassword The new password.

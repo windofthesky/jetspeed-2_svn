@@ -22,37 +22,39 @@ import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>Implementation for "is a" hierarchy. For Example:
- * if a user has the role [roleA.roleB.roleC] than</p>
- * <code>user.getSubject().getPrincipals()</code>
- * returns:
+ * <p>
+ * Implementation for "is a" hierarchy. For Example: if a user has the role
+ * [roleA.roleB.roleC] than
+ * </p>
+ * <code>user.getSubject().getPrincipals()</code> returns:
  * <ul>
  * <li>/role/roleA</li>
  * <li>/role/roleA/roleB</li>
  * <li>/role/roleA/roleB/roleC</li>
- * </ul> 
- * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
- * @version $Id$
+ * </ul>
+ * 
+ * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
+ * @version $Id: GeneralizationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
+ *          dlestrat Exp $
  */
-public class GeneralizationHierarchyResolver implements HierarchyResolver  
+public class GeneralizationHierarchyResolver implements HierarchyResolver
 {
-    
+
     /**
      * @see org.apache.jetspeed.security.HierarchyResolver#resolve()
      */
-    public String[] resolve( Preferences prefs ) {
-        ArgUtil.notNull(
-                new Object[] { prefs },
-                new String[] { "preferences" },
-                "resolve(java.util.prefs.Preferences)");
-        
-        List list=new ArrayList();
-        Preferences preferences=prefs;
-        while( (preferences.parent()!=null) && (preferences.parent().parent()!=null) ) {
+    public String[] resolve(Preferences prefs)
+    {
+        ArgUtil.notNull(new Object[] { prefs }, new String[] { "preferences" }, "resolve(java.util.prefs.Preferences)");
+
+        List list = new ArrayList();
+        Preferences preferences = prefs;
+        while ((preferences.parent() != null) && (preferences.parent().parent() != null))
+        {
             list.add(preferences.absolutePath());
-            preferences=preferences.parent();
+            preferences = preferences.parent();
         }
-        return  (String [])list.toArray(new String[0]) ;
+        return (String[]) list.toArray(new String[0]);
     }
-        
+
 }
