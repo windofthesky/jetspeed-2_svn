@@ -445,7 +445,6 @@ public class FacesPortlet extends GenericServletPortlet
                 ActionResponse actionResponse = (ActionResponse)response;
                                 
                 // actionResponse.setRenderParameter(viewId, context.getViewRoot().getViewId()); // get the navigation change
-                request.getPortletSession().setAttribute(viewId, context.getViewRoot().getViewId(), PortletSession.PORTLET_SCOPE);
             }
             else if (renderRequest)
             {
@@ -462,7 +461,9 @@ public class FacesPortlet extends GenericServletPortlet
             else
             {
                 throw new PortletException("Request must be of type ActionRequest or RenderRequest");
-            }
+            }            
+            request.getPortletSession().setAttribute(viewId, context.getViewRoot().getViewId(), PortletSession.PORTLET_SCOPE);            
+            
         }
         catch (FacesException e)
         {
