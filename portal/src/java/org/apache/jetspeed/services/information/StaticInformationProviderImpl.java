@@ -55,8 +55,11 @@ package org.apache.jetspeed.services.information;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 
 /**
@@ -89,4 +92,43 @@ public class StaticInformationProviderImpl
         return JetspeedPortletRegistry.getPortletDefinitionByIndetifier(uniqueId); 
     }
     
+    /** 
+     * <p>
+     * getPortalContextProvider
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.StaticInformationProvider#getPortalContextProvider()
+     * @return
+     */
+        public PortalContextProvider getPortalContextProvider()
+        {
+            javax.servlet.ServletContext context = config.getServletContext();
+
+            PortalContextProvider provider =
+                (PortalContextProvider) context.getAttribute("org.apache.engine.core.PortalContextProvider");
+
+            if (provider == null)
+            {
+                provider = new PortalContextProviderImpl();
+                context.setAttribute("org.apache.engine.core.PortalContextProvider", provider);
+            }
+
+            return provider;
+        }
+
+    /** 
+     * <p>
+     * getPortletDefinition
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.StaticInformationProvider#getPortletDefinition(org.apache.pluto.om.common.ObjectID)
+     * @param arg0
+     * @return
+     */
+    public PortletDefinition getPortletDefinition(ObjectID arg0)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

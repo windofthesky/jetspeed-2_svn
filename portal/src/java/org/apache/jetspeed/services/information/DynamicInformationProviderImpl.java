@@ -65,11 +65,14 @@ import javax.portlet.WindowState;
 import javax.portlet.PortletMode;
 
 import org.apache.pluto.services.information.DynamicInformationProvider;
+import org.apache.pluto.services.information.PortletActionProvider;
+import org.apache.pluto.services.information.ResourceURLProvider;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.NamespaceMapperAccess;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.Jetspeed;
@@ -112,25 +115,25 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
         control = new PortalControlParameter(currentURL);
     }
 
-    public PortletURLProvider getPortletURL(PortletWindow portletWindow)
+    public PortletURLProvider getPortletURLProvider(PortletWindow portletWindow)
     {
         return new PortletURLProviderImpl(this,
                                           portletWindow);
     }
 
-     public String getRequestMimeType()
+     public String getRequestContentType()
      {
          RequestContext context = JetspeedRequestContext.getRequestContext(this.request);
          return context.getMimeType().toString();
      }
 
-     public String getResponseMimeType()
+     public String getResponseContentType()
      {
          RequestContext context = JetspeedRequestContext.getRequestContext(this.request);
          return context.getMimeType().toString();
      }
 
-     public Iterator getResponseMimeTypes()
+     public Iterator getResponseContentTypes()
      {
         HashSet responseMimeTypes = new HashSet(NumberOfKnownMimetypes);
         // TODO: need to integrate with capability code       
@@ -254,4 +257,33 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
     private final static int NumberOfKnownMimetypes = 15;
 
     
+    /** 
+     * <p>
+     * getPortletActionProvider
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.DynamicInformationProvider#getPortletActionProvider(org.apache.pluto.om.window.PortletWindow)
+     * @param arg0
+     * @return
+     */
+    public PortletActionProvider getPortletActionProvider(PortletWindow window)
+    {        
+        return new PortletActionProviderImpl(request, config, window);
+    }
+
+    /** 
+     * <p>
+     * getResourceURLProvider
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.DynamicInformationProvider#getResourceURLProvider(org.apache.pluto.om.window.PortletWindow)
+     * @param arg0
+     * @return
+     */
+    public ResourceURLProvider getResourceURLProvider(PortletWindow window)
+    {
+        
+        return new ResourceURLProviderImpl(this, window);
+    }
+
 }

@@ -58,6 +58,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
+import org.apache.jetspeed.engine.core.PortalURL;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
@@ -127,35 +128,36 @@ public class InformationProviderServiceImpl extends BaseService implements Facto
         return provider;
     }
 
-    public PortalContextProvider getPortalContextProvider()
-    {
-        javax.servlet.ServletContext context = servletConfig.getServletContext();
-
-        PortalContextProvider provider =
-            (PortalContextProvider) context.getAttribute("org.apache.engine.core.PortalContextProvider");
-
-        if (provider == null)
-        {
-            provider = new PortalContextProviderImpl();
-            context.setAttribute("org.apache.engine.core.PortalContextProvider", provider);
-        }
-
-        return provider;
-    }
-
-    public PortletActionProvider getPortletActionProvider(javax.servlet.http.HttpServletRequest request)
-    {
-        PortletActionProvider provider =
-            (PortletActionProvider) request.getAttribute("org.apache.engine.core.PortletActionProvider");
-
-        if (provider == null)
-        {
-            provider = new PortletActionProviderImpl(request, servletConfig);
-            request.setAttribute("org.apache.engine.core.PortletActionProvider", provider);
-        }
-
-        return provider;
-    }
+    //    public PortalContextProvider getPortalContextProvider()
+    //    {
+    //        javax.servlet.ServletContext context = servletConfig.getServletContext();
+    //
+    //        PortalContextProvider provider =
+    //            (PortalContextProvider) context.getAttribute("org.apache.engine.core.PortalContextProvider");
+    //
+    //        if (provider == null)
+    //        {
+    //            provider = new PortalContextProviderImpl();
+    //            context.setAttribute("org.apache.engine.core.PortalContextProvider", provider);
+    //        }
+    //
+    //        return provider;
+    //    }
+    //	
+    //    public PortletActionProvider getPortletActionProvider(javax.servlet.http.HttpServletRequest request)
+    //    {
+    //        PortletActionProvider provider =
+    //            (PortletActionProvider) request.getAttribute("org.apache.engine.core.PortletActionProvider");
+    //
+    //        if (provider == null)
+    //        {
+    //        	        	
+    //            provider = new PortletActionProviderImpl(request, servletConfig);
+    //            request.setAttribute("org.apache.engine.core.PortletActionProvider", provider);
+    //        }
+    //
+    //        return provider;
+    //    }
 
     /**
      * @see org.apache.fulcrum.Service#init()
