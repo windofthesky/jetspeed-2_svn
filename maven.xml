@@ -506,6 +506,23 @@ limitations under the License.
         excludes="${torque.schema.sql.excludes}"
       />
     </torque-sql>
+    
+    <echo message="Generating SQL schema creation scripts for MS SQL"/>
+    <torque-sql
+      basePathToDbProps="sql/base/"
+      contextProperties="${torque.contextProperties}"
+      controlTemplate="${torque.template.sql}"
+      idTableXMLFile="${torque.idTableXMLFile}"
+      outputDirectory="${maven.build.src}/sql/mssql"
+      outputFile="report.${torque.project}.sql.generation"
+      sqldbmap="${maven.build.src}/sql/mssql/sqldb.map"
+      targetDatabase="mssql"
+      useClasspath="true">
+      <fileset dir="${torque.schema.dir}"
+        includes="${torque.schema.sql.includes}"
+        excludes="${torque.schema.sql.excludes}"
+      />
+    </torque-sql>
 
   </goal>
 
