@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * LogoutServlet
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma </a>
- * @version $id: $
+ * @version $Id$
  */
 public class LogoutServlet extends HttpServlet
 {

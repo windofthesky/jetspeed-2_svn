@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
  * LoginProxyServlet
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma </a>
- * @version $id: $
+ * @version $Id$
  */
 public class LoginProxyServlet extends HttpServlet
 {

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
  * LoginErrorServlet
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma </a>
- * @version $id: $
+ * @version $Id$
  */
 public class LoginErrorServlet extends HttpServlet
 {
