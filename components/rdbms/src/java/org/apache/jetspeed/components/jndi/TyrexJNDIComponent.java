@@ -9,6 +9,7 @@ package org.apache.jetspeed.components.jndi;
 import java.util.Hashtable;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
@@ -45,15 +46,20 @@ public class TyrexJNDIComponent implements JNDIComponent
         // Construct a non-shared memory context
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory");
+        env.put("java.naming.factory.url.pkgs", "tyrex.naming");
         rootJNDIContext = new MemoryContext(null);
+        // rootJNDIContext = new MemoryContext(env);
         ctx = rootJNDIContext.createSubcontext("comp");
         ctx = ctx.createSubcontext("env");
         ctx = ctx.createSubcontext("jdbc");
 
+        new InitialContext(env);
+        
         //	Associate the memory context with a new
         //	runtime context and associate the runtime context
         //	with the current thread
         bindToCurrentThread();
+        
         log.info("JNDI successfully initiallized");
 
     }
