@@ -27,6 +27,27 @@ limitations under the License.
     <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
   </servlet>
 
+  	<!-- Define Velocity Servlet -->
+	<servlet>
+		<servlet-name>velocity</servlet-name>
+		<servlet-class>org.apache.portals.bridges.velocity.BridgesVelocityViewServlet</servlet-class>
+		<init-param>
+			<param-name>org.apache.velocity.toolbox</param-name>
+			<param-value>/WEB-INF/velocity/toolbox.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.apache.velocity.properties</param-name>
+			<param-value>/WEB-INF/velocity/velocity.properties</param-value>
+		</init-param>
+		<load-on-startup>10</load-on-startup>
+	</servlet>
+	
+    <!-- Map *.vm files to Velocity  -->
+	<servlet-mapping>
+		<servlet-name>velocity</servlet-name>
+		<url-pattern>*.vm</url-pattern>
+	</servlet-mapping>	
+
   <servlet-mapping>
      <servlet-name>
         JetspeedContainer

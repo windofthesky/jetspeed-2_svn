@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<classpath>
+  <classpathentry excluding="" kind="src" path="src\java">
+  </classpathentry>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-api-2.0-a1-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-registry-2.0-a1-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portlet-api/jars/portlet-api-1.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jstl/jars/jstl-1.0.2.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/standard-1.0.2.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/request-1.0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.3.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed2-taglib-treecontrol-2.0-a1-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.3.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-jsf-api-1.0.7-SNAPSHOT.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.7-SNAPSHOT.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-components-1.0.7-SNAPSHOT.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-el/jars/commons-el-1.0.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jspapi/jars/jsp-api-2.0-20040521.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-digester/jars/commons-digester-1.5.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-codec/jars/commons-codec-1.2.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/velocity/jars/velocity-1.4.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/velocity-tools/jars/velocity-tools-view-1.1-beta1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-velocity-0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/portals-bridges/jars/portals-bridges-frameworks-0.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jetspeed2/jars/jetspeed-web-content-2.0-a1-dev.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/hsqldb/jars/hsqldb-1.7.1.jar">
+  </classpathentry>
+  <classpathentry kind="output" path="target\classes">
+  </classpathentry>
+</classpath>

@@ -320,42 +320,16 @@ limitations under the License.
         <description>
             Prototype of the IFRAME portlet
         </description>
-        <init-param>
-            <name>viewSource</name>
-            <value>http://portals.apache.org/jetspeed-2/</value>
-            <description>
-                Source URL in view mode.
-            </description>
-        </init-param>
-        <init-param>
-            <name>maximizedViewSource</name>
-            <value>http://portals.apache.org/</value>
-            <description>
-                Source URL in maximized view mode.
-            </description>
-        </init-param>
-        <init-param>
-            <name>editSource</name>
-            <value>http://wiki.apache.org/portals/Jetspeed2</value>
-            <description>
-                Source URL in edit mode.
-            </description>
-        </init-param>
-        <init-param>
-            <name>helpSource</name>
-            <value>http://www.apache.org/</value>
-            <description>
-                Source URL in help mode.
-            </description>
-        </init-param>
-        <init-param>
-            <name>enableSourcePreferences</name>
-            <value>true</value>
-            <description>
-                Enble preferences for all source URL parameters.
-            </description>
-        </init-param>
-        <portlet-class>org.apache.jetspeed.portlet.IFramePortlet</portlet-class>
+		<init-param>
+		<name>EditPage</name>
+		  <value>/WEB-INF/view/edit-prefs.vm</value>
+		</init-param>
+		<init-param>
+		<name>HelpPage</name>
+		  <value>/WEB-INF/view/iframe-help.html</value>
+		</init-param>
+		
+        <portlet-class>org.apache.jetspeed.portlet.IFrameGenericPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -365,29 +339,31 @@ limitations under the License.
         </supports>
         <portlet-preferences>
             <preference>
-                <name>editSource</name>
+                <name>SRC</name>
+				<value>http://portals.apache.org</value>
             </preference>
-            <preference>
-                <name>maximizedEditSource</name>
-            </preference>
-            <preference>
-                <name>viewSource</name>
-            </preference>
-            <preference>
-                <name>maximizedViewSource</name>
-            </preference>
-            <preference>
-                <name>helpSource</name>
-            </preference>
-            <preference>
-                <name>maximizedHelpSource</name>
-            </preference>
+			<preference>
+				<name>HEIGHT</name>
+				<value>100%</value>
+			</preference>
+			<preference>
+				<name>WIDTH</name>
+				<value>100%</value>
+			</preference>
+			<preference>
+				<name>MAX-HEIGHT</name>
+				<value>800</value>
+			</preference>
+			<preference>
+				<name>MAX-WIDTH</name>
+				<value>100%</value>
+			</preference>			
         </portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
             <title>IFrame Prototype Portlet</title>
             <short-title>IFrame</short-title>
-            <keywords>test</keywords>
+            <keywords>iframe,frame</keywords>
         </portlet-info>
     </portlet>
 

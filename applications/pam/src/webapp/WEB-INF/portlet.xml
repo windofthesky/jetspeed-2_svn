@@ -115,27 +115,35 @@ limitations under the License.
 </portlet>
 
 <portlet id="PortalSiteDetail">
+	<init-param>
+		<name>spring-configuration</name>
+		<value>/WEB-INF/model/spring-portlet-configuration.xml</value>
+	</init-param>
+	<init-param>
+		<name>validator-configuration</name>
+		<value>/WEB-INF/model/validator-configuration.xml</value>
+	</init-param>	
     <init-param>
     	<description>This parameter sets the template used in view mode.</description>
 		<name>ViewPage</name>
-			<value>/WEB-INF/view/site-detail.jsp</value>
+			<value>folder-view</value>
      </init-param>   
     <portlet-name>PortalSiteDetail</portlet-name>
     <display-name>Portal Site Detail</display-name>
     <description>The Portal Site Detail portlet displays the details of a selected folder/page.  From here you can add, edit, and delete folders and pages.</description>
-    <portlet-class>org.apache.jetspeed.portlets.site.SiteDetailPortlet</portlet-class>
+    <portlet-class>org.apache.jetspeed.portlets.site.SiteDetailsPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
       <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
     </supports>
+     <resource-bundle>org.apache.jetspeed.portlets.site.resources.SiteResources</resource-bundle>            	
     <portlet-info>
       <title>Portal Site Detail</title>
       <short-title>Site</short-title>
       <keywords>admin,site</keywords>
     </portlet-info>
+	
 </portlet>
 
 <portlet id="ProfilerAdmin">
