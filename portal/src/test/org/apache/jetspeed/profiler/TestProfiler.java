@@ -27,8 +27,6 @@ import javax.security.auth.Subject;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.JetspeedPortalContext;
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
@@ -243,8 +241,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
     {
         assertNotNull("profiler service is null", profiler);
 
-        PortalContext pc = new JetspeedPortalContext(null); // Jetspeed.getContext();
-        RequestContext request = new MockRequestContext(pc, "default-other");
+        RequestContext request = new MockRequestContext("default-other");
         
         request.setSubject(createSubject("anon"));
         request.setLocale(new Locale("en", "US"));        
@@ -336,8 +333,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
     {
         assertNotNull("profiler service is null", profiler);
 
-        PortalContext pc = new JetspeedPortalContext(null); // Jetspeed.getContext();
-        RequestContext request = new MockRequestContext(pc);
+        RequestContext request = new MockRequestContext();
     
         request.setSubject(createSubject("anon"));
         request.setLocale(new Locale("en", "US"));        
@@ -358,8 +354,7 @@ public class TestProfiler extends AbstractComponentAwareTestCase
     {
         assertNotNull("profiler service is null", profiler);
 
-        PortalContext pc = new JetspeedPortalContext(null); // Jetspeed.getContext();
-        RequestContext request = new MockRequestContext(pc, "/football/nfl/chiefs");
+        RequestContext request = new MockRequestContext("/football/nfl/chiefs");
         ProfilingRule rule = profiler.getRule("path");            
         ProfileLocator locator = profiler.getProfile(request, rule);
         assertNotNull("rule test on getProfile returned null", locator);

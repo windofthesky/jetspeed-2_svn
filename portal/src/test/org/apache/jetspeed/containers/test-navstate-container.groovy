@@ -20,8 +20,11 @@ import org.picocontainer.defaults.ComponentParameter
 import org.picocontainer.Parameter
 import org.apache.jetspeed.components.util.NanoQuickAssembler
  
-import org.apache.jetspeed.container.session.NavigationalState
-import org.apache.jetspeed.container.session.impl.PathNavigationalState
+import org.apache.jetspeed.request.RequestContextComponent
+import org.apache.jetspeed.request.JetspeedRequestContextComponent
+import org.apache.jetspeed.container.session.NavigationalStateComponent
+import org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent
+
 
 
 // def register(container) 
@@ -31,8 +34,20 @@ ClassLoader cl = Thread.currentThread().getContextClassLoader()
 container = new DefaultPicoContainer()
 
 
-container.registerComponentImplementation(NavigationalState, 
-                                          PathNavigationalState)
+//
+// Navigational State component
+//
+navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
+container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
+               new Parameter[] {new ConstantParameter(navStateClass)} )
+
+//
+// Request Context component
+//
+requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
+container.registerComponentImplementation(RequestContextComponent, JetspeedRequestContextComponent, 
+    new Parameter[] {new ComponentParameter(NavigationalStateComponent),
+                     new ConstantParameter(requestContextClass)} )
 
 return container
 

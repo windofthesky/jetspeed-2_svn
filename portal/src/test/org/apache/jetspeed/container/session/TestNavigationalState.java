@@ -23,12 +23,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.pluto.om.window.PortletWindow;
 import org.picocontainer.MutablePicoContainer;
 
@@ -46,7 +45,8 @@ import com.mockrunner.mock.web.MockServletConfig;
 public class TestNavigationalState extends AbstractComponentAwareTestCase 
 {
     private MutablePicoContainer container;
-    private NavigationalState navState;
+    private NavigationalStateComponent navState;
+    private RequestContextComponent rcc;
     
     /**
      * Defines the testcase name for JUnit.
@@ -73,7 +73,8 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         assertNotNull("container is null", container);
-        navState = (NavigationalState) container.getComponentInstance(NavigationalState.class);        
+        navState = (NavigationalStateComponent) container.getComponentInstance(NavigationalStateComponent.class);        
+        rcc = (RequestContextComponent) container.getComponentInstance(RequestContextComponent.class);        
     }
 
     /**
@@ -91,21 +92,24 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
 
     public void testBasic()
     {
+        assertNotNull("nav state component is null", navState);
+        assertNotNull("request context component is null", rcc);
+
         MockHttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
         ServletConfig config = new MockServletConfig();
         request.setPathInfo("/stuff/");
-        RequestContext context = new JetspeedRequestContext(new JetspeedPortalContext(null), 
-                                                        (HttpServletRequest)request, 
-                                                        response, 
-                                                        config);
+        RequestContext context = rcc.create(
+                                                (HttpServletRequest)request, 
+                                                response, 
+                                                config);
         
+System.out.println("$$$ context = " + context);
         
-        assertNotNull("portlet container is null", navState);
         PortletWindow window = new PortletWindowImpl("33");
         PortletWindow window2 = new PortletWindowImpl("222");
         
-        NavigationalStateContext nav = navState.createContext(context);
+        NavigationalState nav = navState.create(context);
         nav.setState(window, WindowState.MAXIMIZED);
         nav.setMode(window, PortletMode.HELP);
         

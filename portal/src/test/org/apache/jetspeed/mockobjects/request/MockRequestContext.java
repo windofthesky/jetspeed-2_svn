@@ -18,7 +18,6 @@ package org.apache.jetspeed.mockobjects.request;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -35,14 +34,14 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
     private Map sessionAttributes = new HashMap();
     private String path;
         
-    public MockRequestContext(PortalContext pc)
+    public MockRequestContext()
     {
-        super(pc, null, null, null);
+        super(null, null, null, null);
     }
 
-    public MockRequestContext(PortalContext pc, String path)
+    public MockRequestContext(String path)
     {
-        super(pc, null, null, null);
+        super(null, null, null, null);
         this.path = path;
     }
         
