@@ -30,7 +30,6 @@ import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -75,11 +74,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             // request.setPage(profiler.getPage(locator));
             context.invokeNext(request);
 
-        }
-        catch (ProfilerException e)
-        {
-            throw new PipelineException(e.toString(), e);
-        }
+        }       
         catch (PageNotFoundException e)
         {
             log.error(e.getMessage(), e);
@@ -92,10 +87,14 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 log.error("Failed to invoke HttpServletReponse.sendError: " + e1.getMessage(), e1);
             }
         }
+        catch (Exception e)
+        {
+            throw new PipelineException(e.toString(), e);
+        }
     }
 
 
-    protected Folder getFolder( RequestContext request )
+    protected Folder getFolder( RequestContext request ) throws IOException
     {
         HttpServletRequest httpRequest = request.getRequest();
         String folderInRequest = getFolderPath(request);
