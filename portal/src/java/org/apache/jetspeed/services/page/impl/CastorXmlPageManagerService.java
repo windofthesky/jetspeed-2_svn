@@ -72,6 +72,7 @@ import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
 import org.apache.xml.serialize.OutputFormat;
@@ -206,6 +207,14 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
         pages.stopFileScanner();
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public Page getPage(ProfileLocator locator)
+    {
+        return getPage(locator.getValue("page"));
+    }
+    
     /**
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
      */

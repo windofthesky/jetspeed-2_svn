@@ -65,7 +65,7 @@ import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
-import org.apache.jetspeed.om.profile.Profile;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.pluto.om.window.PortletWindow;
 /**
  * Portal Request Context is associated with each request 
@@ -109,18 +109,18 @@ public interface RequestContext
     public PortalContext getPortalContext();
 
     /**
-     * Gets the target page profile for this request 
+     * Gets the profile locator for this request 
      * 
      * @return Profile
      */
-    public Profile getProfile();
+    public ProfileLocator getProfileLocator();
 
     /**
      * Sets the target page profile for this request 
      * 
      * @param profile The target profile
      */
-    public void setProfile(Profile profile);
+    public void setProfileLocator(ProfileLocator locator);
     
     /** 
      * Set the capabilityMap. Used by the CapabilityValve
@@ -291,5 +291,6 @@ public interface RequestContext
      * @return
      */
     Map getParameterMap();
-        
+
+    Object getRequestAttribute(String key);        
 }

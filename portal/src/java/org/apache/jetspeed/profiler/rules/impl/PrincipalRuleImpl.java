@@ -100,4 +100,5 @@ public class PrincipalRuleImpl implements PrincipalRule
     {
         this.profilingRule = rule;    
     }
+    
 }

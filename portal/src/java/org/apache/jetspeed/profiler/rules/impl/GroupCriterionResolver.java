@@ -51,47 +51,61 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.rules.impl;
+
+import java.security.Principal;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
+import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * Standard Jetspeed-1 Group resolver.
+ * It first looks at the value in the criterion record.
+ * If it is null, it then falls back to a request parameter.
+ * If it is null it gives up and returns null allowing subclasses
+ * to continue processing.
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public class GroupCriterionResolver
+    extends StandardResolver
+    implements RuleCriterionResolver
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
-    {
-        try
-        {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-    }
-
-    public String toString()
-    {
-        return "ProfilerValve";
-    }
+    protected final static Log log = LogFactory.getLog(UserCriterionResolver.class);
+    
+     /* (non-Javadoc)
+      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
+      */    
+     public String resolve(RequestContext context, RuleCriterion criterion)
+     {
+         String value = super.resolve(context, criterion);
+         if (value != null)
+         {
+             return value;
+         }
+            
+         Subject subject = context.getSubject();
+         if (subject == null)
+         {
+             String msg = "Invalid (null) Subject in request pipeline";
+             log.error(msg);
+             return null;
+         }
+            
+         Principal principal = SecurityHelper.getPrincipal(subject, GroupPrincipal.class);
+         if (principal != null)
+         {
+             return principal.getName();              
+         }
+         return null;
+      }
+     
 }

@@ -61,6 +61,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
  * This service is responsible for loading and saving Pages into
@@ -95,11 +96,18 @@ public interface PageManagerService extends CommonService
     public Property newProperty();
 
     /**
-     * Returns a PSML document for the given locator
+     * Returns a PSML document for the given key
      *
      * @param locator The locator descriptor of the document to be retrieved.
      */
     public Page getPage(String id);
+
+    /**
+     * Returns a PSML document for the given locator
+     *
+     * @param locator The locator descriptor of the document to be retrieved.
+     */
+    public Page getPage(ProfileLocator locator);
 
     /** Query for a collection of profiles given a profile locator criteria.
      *

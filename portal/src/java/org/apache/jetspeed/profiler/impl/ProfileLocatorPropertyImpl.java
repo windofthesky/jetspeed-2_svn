@@ -51,47 +51,104 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.profiler.ProfileLocatorProperty;
+import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * ProfileLocatorElement
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public class ProfileLocatorPropertyImpl implements ProfileLocatorProperty
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
+    private String name;
+    private String value;
+    private String type;
+    private int fallbackType;
         
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
+    public ProfileLocatorPropertyImpl(RuleCriterion criterion, String value)
     {
-        try
-        {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
+        this.name = criterion.getName();
+        this.value = value;
+        this.type = criterion.getType();
+        this.fallbackType = criterion.getFallbackType();
+    }
+    
+    public ProfileLocatorPropertyImpl(String name, String value)
+    {
+        this.name = name;
+        this.value = value;
+        this.type = ProfilingRule.STANDARD;
+        this.fallbackType = RuleCriterion.FALLBACK_CONTINUE;
     }
 
-    public String toString()
+    /**
+     * @return
+     */
+    public String getValue()
     {
-        return "ProfilerValve";
+        return value;
     }
+
+    /**
+     * @param string
+     */
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
+
+
+    /**
+     * @return
+     */
+    public int getFallbackType()
+    {
+        return fallbackType;
+    }
+
+    /**
+     * @return
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @return
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param i
+     */
+    public void setFallbackType(int i)
+    {
+        fallbackType = i;
+    }
+
+    /**
+     * @param string
+     */
+    public void setName(String string)
+    {
+        name = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setType(String string)
+    {
+        type = string;
+    }
+
 }

@@ -61,8 +61,12 @@ package org.apache.jetspeed.profiler.rules;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface RuleCriterion
+public interface RuleCriterion 
 {
+    public static final int FALLBACK_CONTINUE = 1;
+    public static final int FALLBACK_STOP = 0;
+    public static final int FALLBACK_LOOP = 2;
+    
     /**
      * Gets the rule request type for this specific criterion.
      * Rule types determine which type of request property, parameter or attribute
@@ -81,9 +85,54 @@ public interface RuleCriterion
      */    
     void setType(String type);
 
+    /**
+     * Sets the fallback order for this criterion.
+     * Lower numbers are returned first during iteration.
+     * Higher numbers should be put on the locator stack first.
+     * 
+     * @return The fallback order for this criterion.
+     */
     int getFallbackOrder();
     
+    
+    /**
+     * Gets the fallback order for this criterion.
+     * Lower numbers are returned first during iteration.
+     * Higher numbers should be put on the locator stack first.
+     * 
+     * @param order The fallback order for this criterion.
+     */
     void setFallbackOrder(int order);
+
+    /**
+     * Gets the fallback type for this criterion. 
+     * Fallback types are used when locating a profiled resource.
+     * The type tells the Profiling rule what to do next on failed criterion matching.
+     * 
+     * Known values:
+     * 
+     *   FALLBACK_CONTINUE - evaluate this criterion and if it fails continue to the next criterion
+     *   FALLBACK_STOP - evaluate this criterion and if it fails stop evaluation criteria for this rule
+     *   FALLBACK_LOOP - evaluate this criterion and if it fails continue evaluating
+     * 
+     * @return The fallback type for this criterion, should be a valid value as shown above.
+     */
+    int getFallbackType();
+
+    /**
+     * Sets the fallback type for this criterion. 
+     * Fallback types are used when locating a profiled resource.
+     * The type tells the Profiling rule what to do next on failed criterion matching.
+     * 
+     * Known values:
+     * 
+     *   FALLBACK_CONTINUE - evaluate this criterion and if it fails continue to the next criterion
+     *   FALLBACK_STOP - evaluate this criterion and if it fails stop evaluation criteria for this rule
+     *   FALLBACK_LOOP - evaluate this criterion and if it fails continue evaluating
+     * 
+     * @param The fallback type for this criterion, should be a valid value as shown above.
+     */    
+    void setFallbackType(int order);
     
     /**
      * Gets the name of the parameter, attribute or property in the portal request.
@@ -103,6 +152,8 @@ public interface RuleCriterion
      */        
     void setName(String name);
 
+    String getResolverName();
+    
     /**
      * Gets the value of the parameter, attribute or property in the portal request.
      *  

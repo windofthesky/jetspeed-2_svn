@@ -61,6 +61,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
  * Convenience static wrapper around <code>PageManagerService</code>
@@ -104,6 +105,11 @@ public class PageManager
     public static Page getPage(String id)
     {
         return getService().getPage(id);
+    }
+
+    public static Page getPage(ProfileLocator locator)
+    {
+        return getService().getPage(locator);        
     }
 
     /**

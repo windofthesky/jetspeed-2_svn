@@ -66,10 +66,11 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.persistence.TransactionStateException;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
-import org.apache.jetspeed.services.page.*;
 import org.apache.jetspeed.services.page.PageManagerService;
+import org.apache.jetspeed.services.page.PageNotRemovedException;
+import org.apache.jetspeed.services.page.PageNotUpdatedException;
 
 /**
  * DatabasePageManagerService
@@ -107,6 +108,14 @@ public class DatabasePageManagerService extends AbstractPageManagerService imple
             setInit(true);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public Page getPage(ProfileLocator locator)
+    {
+        return getPage(locator.getValue("page"));
+    }    
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)

@@ -65,6 +65,12 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * ProfilerService
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
+ */
+/**
+ * ProfilerService
  * Jetspeed-2 Profiler service. 
  * Locates portal resources given a set of request parameters, properties, and attributes
  * The Profiler is invoked during the request processing pipeline.
@@ -114,13 +120,13 @@ public interface ProfilerService extends CommonService
     Fragment getFragment(ProfileLocator locator);
       
     /**
-      * Creates a new ProfileLocator object that can be successfully managed by
+      * Creates a new ProfileLocator object that can be managed by
       * the current Profiler implementation
       *
       * @return A new ProfileLocator object
       */
     ProfileLocator createLocator();
-    
+        
     /**
      * For a given principal, lookup the associated profiling rule to that principal name.
      * 
@@ -140,5 +146,10 @@ public interface ProfilerService extends CommonService
      * @return
      */
     Collection getRules();
-                  
+
+    /**
+     * @return
+     */
+    String getAnonymousUser();
+                      
 }

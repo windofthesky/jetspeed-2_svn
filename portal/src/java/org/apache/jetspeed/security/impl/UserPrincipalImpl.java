@@ -53,8 +53,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
-
 import org.apache.jetspeed.security.UserPrincipal;
 
 /**

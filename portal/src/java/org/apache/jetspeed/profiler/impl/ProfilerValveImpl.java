@@ -51,15 +51,48 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.profiler.rules;
+package org.apache.jetspeed.profiler.impl;
+
+import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.pipeline.valve.AbstractValve;
+import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
+import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.ProfilerException;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * RuleTypeHandler
+ * ProfilerValveImpl
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface RuleTypeHandler
+public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+     */
+    public void invoke(RequestContext request, ValveContext context)
+        throws PipelineException
+    {
+        try
+        {            
+            ProfileLocator locator = Profiler.getProfile(request);
+            request.setProfileLocator(locator);
+        }
+        catch (ProfilerException e)
+        {
+            throw new PipelineException(e);
+        }
+
+        // Pass control to the next Valve in the Pipeline
+        context.invokeNext( request );
+    }
+
+    public String toString()
+    {
+        return "ProfilerValve";
+    }
     
 }

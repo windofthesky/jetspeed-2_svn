@@ -55,6 +55,9 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Iterator;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,6 +76,9 @@ import org.apache.jetspeed.profiler.ProfilerService;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.services.page.PageManager;
 
 /**
  * JetspeedProfilerService
@@ -96,6 +102,8 @@ public class JetspeedProfilerService
     private Class principalRuleClass = null;
     /** The configured default rule for this portal */
     private String defaultRule = null;
+    /** anonymous user */
+    private String anonymousUser = null;
     
     /* (non-Javadoc)
      * @see org.apache.fulcrum.Service#init()
@@ -105,13 +113,15 @@ public class JetspeedProfilerService
         if (!isInitialized())
         {
             this.defaultRule = getConfiguration().getString("default.rule");
+            this.anonymousUser = getConfiguration().getString("anonymous.user", "anon");
             locatorClass = this.loadModelClass("locator.impl");
             principalRuleClass = this.loadModelClass("principalRule.impl");
             profilingRuleClass = this.loadModelClass("profilingRule.impl");
             
             PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
-            plugin = ps.getPersistencePlugin(pluginName);                        
+            plugin = ps.getPersistencePlugin(pluginName);
+                                               
             setInit(true);
         }        
     }
@@ -123,19 +133,36 @@ public class JetspeedProfilerService
         throws ProfilerException
     {
         // get the principal representing the currently logged on user 
-        Principal principal = context.getRequest().getUserPrincipal();
+        Subject subject = context.getSubject();
+        if (subject == null)
+        {
+            String msg = "Invalid (null) Subject in request pipeline";
+            log.error(msg);
+            throw new ProfilerException(msg);
+        }
+        // get the UserPrincipal, finding the first UserPrincipal, or
+        // find the first principal if no UserPrincipal isn't available
+        Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);      
+        if (principal == null)
+        {
+            String msg = "Could not find a principle for subject in request pipeline";
+            log.error(msg);
+            throw new ProfilerException(msg);            
+        }
         
         // find a profiling rule for this principal
         ProfilingRule rule = getRuleForPrincipal(principal);
         if (null == rule)
         {
+            log.warn("Could not find profiling rule for principal: " + principal);
             rule = this.getDefaultRule();
         }
     
         if (null == rule)
         {
-            log.error("Couldn't find any profiling rules!");
-            return null; // can't find it!    
+            String msg = "Couldn't find any profiling rules including default rule for principal " + principal;
+            log.error(msg);
+            throw new ProfilerException(msg);                
         }
         // create a profile locator for given rule
         return rule.apply(context, this);
@@ -204,8 +231,17 @@ public class JetspeedProfilerService
      */
     public Desktop getDesktop(ProfileLocator locator)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Desktop desktop = null;
+        Iterator fallback = locator.iterator();
+        while (fallback.hasNext())
+        {
+            // desktop = PageManager.getDesktop((String)locator.next());
+            if (desktop != null)
+            {
+                break;
+            }            
+        }        
+        return desktop;
     }
     
     /* (non-Javadoc)
@@ -213,37 +249,64 @@ public class JetspeedProfilerService
      */
     public Page getPage(ProfileLocator locator)
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        // TODO: under construction, for now use the name
+        return PageManager.getPage(locator);
+        
+        /*
+        Page page = null;
+        Iterator fallback = locator.iterator();
+        while (fallback.hasNext())
+        {
+            page = PageManager.getPage((String)fallback.next());
+            if (page != null)
+            {
+                break;
+            }            
+        }               
+        return page;
+        */
+    }   
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getFragment(org.apache.jetspeed.profiler.ProfileLocator)
      */
     public Fragment getFragment(ProfileLocator locator)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Fragment fragment = null;
+        Iterator fallback = locator.iterator();        
+        while (fallback.hasNext())
+        {
+            // fragment = PageManager.getFragment((String)fallback.next());
+            if (fragment != null)
+            {
+                break;
+            }
+        }
+        return fragment;
     }
     
-    /**
-      * Creates a new ProfileLocator object that can be successfully managed by
-      * the current Profiler implementation
-      *
-      * @return A new ProfileLocator object
-      */
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#createLocator()
+     */
      public ProfileLocator createLocator()
      {
          return (ProfileLocator)this.createObject(locatorClass);
      }
 
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getRules()
      */
-    public  Collection getRules()
+    public Collection getRules()
     {
         return plugin.getExtent(profilingRuleClass);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getAnonymousUser()
+     */
+    public String getAnonymousUser()
+    {
+         return this.anonymousUser;
     }
     
 }

@@ -73,7 +73,8 @@ public class RoleFallbackProfilingRule
      */
     public ProfileLocator apply(RequestContext context, ProfilerService service)
     {
-        // TODO Auto-generated method stub        
-        return service.createLocator();
+        // TODO Auto-generated method stub  - implement this      
+        ProfileLocator locator = service.createLocator();
+        return locator; // need to implement this one still
     }
 }

@@ -51,73 +51,107 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.security.impl;
+package org.apache.jetspeed.profiler;
 
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
-import javax.security.auth.Subject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.om.desktop.Desktop;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * SecurityValve
+ * Profiler
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SecurityValveImpl
-    extends AbstractValve
-    implements org.apache.jetspeed.pipeline.valve.SecurityValve
+public abstract class Profiler
 {
-    private static final Log log = LogFactory.getLog( SecurityValveImpl.class );
-     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+    /** 
+     * Commodity method for getting a reference to the service
+     * singleton
      */
-    public void invoke(RequestContext request, ValveContext context)
-        throws PipelineException
+    public static ProfilerService getService()
     {
-        try
-        {        
-            // simple place holder, waiting on security service impl       
-            Principal principal = request.getRequest().getUserPrincipal();
-            Subject subject = (Subject)
-                request.getRequest().getSession().getAttribute(this.getClass().toString() + ".subject");
-            if (null == subject)
-            {
-                Set principals = new HashSet();
-                if (principal == null)
-                {
-                    principal = new UserPrincipalImpl(Profiler.getAnonymousUser());
-                }                
-                principals.add(principal);
-                subject = new Subject(true, principals, new HashSet(), new HashSet());
-                request.getRequest().getSession().setAttribute(this.getClass().toString() + ".subject", subject);
-            }
-            request.setSubject(subject);
-        }
-        catch (Throwable t)
-        {
-            // TODO: valve exception handling formalized
-            t.printStackTrace();            
-        }
-            
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-        
+        return (ProfilerService)CommonPortletServices
+            .getInstance().getService(ProfilerService.SERVICE_NAME);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getProfile(org.apache.jetspeed.request.RequestContext)
+     */
+    public static ProfileLocator getProfile(RequestContext context)
+        throws ProfilerException
+    {
+        return getService().getProfile(context);
+    }    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getDefaultRule()
+     */
+    public static ProfilingRule getDefaultRule()
+    {
+        return getService().getDefaultRule();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getRuleForPrincipal(java.security.Principal)
+     */
+    public static ProfilingRule getRuleForPrincipal(Principal principal)
+    {
+        return getService().getRuleForPrincipal(principal);
+    }    
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getDesktop(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public static Desktop getDesktop(ProfileLocator locator)
+    {
+        return getService().getDesktop(locator);    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public static Page getPage(ProfileLocator locator)
+    {
+        return getService().getPage(locator);
+    }    
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getFragment(org.apache.jetspeed.profiler.ProfileLocator)
+     */
+    public static Fragment getFragment(ProfileLocator locator)
+    {
+        return getService().getFragment(locator);        
+    }    
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#createLocator()
+     */
+     public static ProfileLocator createLocator()
+     {
+         return getService().createLocator();
+     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getRules()
+     */
+    public static Collection getRules()
+    {
+        return getService().getRules();
     }
 
-    public String toString()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getAnonymousUser()
+     */
+    public static String getAnonymousUser()
     {
-        return "SecurityValve";
+        return getService().getAnonymousUser();
     }
     
 }

@@ -82,6 +82,7 @@ public interface PrincipalRule
      */        
     void setPrincipalName(String name);
     
+        
     /**
      * Gets the profiling rule associated with the principal name 
      * 

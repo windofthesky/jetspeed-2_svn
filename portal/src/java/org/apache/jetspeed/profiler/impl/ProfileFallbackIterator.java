@@ -51,47 +51,101 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.request.RequestContext;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * ProfileFallbackIterator
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public class ProfileFallbackIterator implements Iterator
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
+    private ProfileLocatorControl locator;
+    private int last = 0;
+    private int state = RuleCriterion.FALLBACK_CONTINUE;     
+    private ProfileFallbackIterator()
     {
-        try
-        {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
     }
-
-    public String toString()
+    
+    public ProfileFallbackIterator(ProfileLocatorControl locator)
     {
-        return "ProfilerValve";
+        this.locator = locator;
+        last = locator.getElements().size() - 1;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.Iterator#remove()
+     */
+    public void remove()
+    {
+        // TODO Auto-generated method stub
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.Iterator#hasNext()
+     */
+    public boolean hasNext()
+    {
+        boolean hasNext = false;
+        
+        List elements = locator.getElements();
+        
+        if (last < 0 || last >= elements.size())
+        {
+            state = RuleCriterion.FALLBACK_STOP;
+            return false;
+        }
+        
+        if (state == RuleCriterion.FALLBACK_STOP)
+        {
+            hasNext = false;
+        }        
+        else if (state == RuleCriterion.FALLBACK_CONTINUE ||
+                 state == RuleCriterion.FALLBACK_LOOP)
+        {
+            hasNext = true;
+        }
+        
+        ProfileLocatorPropertyImpl element = (ProfileLocatorPropertyImpl)elements.get(last);
+        state = element.getFallbackType();
+                
+        return hasNext;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.Iterator#next()
+     */
+    public Object next()
+    {
+        List elements = locator.getElements();
+                
+        StringBuffer key = new StringBuffer();
+        Iterator it = elements.listIterator();
+        int count = 0;
+        while (it.hasNext())
+        {
+            if (count > 0)
+            {
+                key.append(ProfileLocator.PATH_SEPARATOR);
+            }
+            ProfileLocatorPropertyImpl element = (ProfileLocatorPropertyImpl)it.next();
+            key.append(element.getName());
+            key.append(ProfileLocator.PATH_SEPARATOR);
+            key.append(element.getValue());
+            if (count >= last)
+            {
+                break;
+            }
+            count++;            
+        }
+        last--;
+        return key.toString();
     }
 }

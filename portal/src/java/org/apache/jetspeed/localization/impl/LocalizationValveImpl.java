@@ -51,47 +51,59 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.localization.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.fulcrum.localization.LocaleTokenizer;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
+import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * LocalizationValveImpl
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public class LocalizationValveImpl
+    extends AbstractValve
+    implements LocalizationValve
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
+    public static final String ACCEPT_LANGUAGE = "Accept-Language";
+    
+    private static final Locale defaultLocate = new Locale("en", "US");
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+     */
+    public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
     {
-        try
+        Locale locale = defaultLocate;
+        String header = request.getRequest().getHeader(ACCEPT_LANGUAGE);
+        if (!StringUtils.isEmpty(header))
         {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
+            LocaleTokenizer tok = new LocaleTokenizer(header);
+            if (tok.hasNext())
+            {
+                locale = (Locale) tok.next();
+            }
         }
 
+        request.setLocale(locale);
+        
         // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
+        context.invokeNext(request);
+        
     }
-
+    
     public String toString()
     {
-        return "ProfilerValve";
+        return "LocalizationValve";
     }
+    
 }

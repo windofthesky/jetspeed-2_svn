@@ -236,8 +236,15 @@ public class JetspeedEngine implements Engine
     public void service(RequestContext context) throws JetspeedException
     {
        // requestContextPerThread.put(Thread.currentThread(), context);
-       tlRequestContext.set(context);
-       pipeline.invoke(context);
+       try
+       {
+           tlRequestContext.set(context);
+           pipeline.invoke(context);
+       }
+       catch (Throwable t)
+       {
+           t.printStackTrace();
+       }
     }
 
     /**

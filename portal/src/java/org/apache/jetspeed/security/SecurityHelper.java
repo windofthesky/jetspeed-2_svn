@@ -51,47 +51,77 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.security;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.request.RequestContext;
+import java.security.Principal;
+import java.util.Iterator;
+
+import javax.security.auth.Subject;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * SecurityHelper
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public abstract class SecurityHelper
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
+    /**
+     * Given a subject, finds the first principal of the given classe for that subject.
+     * If a principal of the given classe is not found, null is returned.
+     *  
+     * @param subject The subject supplying the principals.
+     * @param classe A class or interface derived from java.security.Principal.
+     * @return The first principal matching a principal classe parameter.
+     */
+    public static Principal getPrincipal(Subject subject, Class classe)
+    {
         
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
-    {
-        try
+        Principal principal = null; 
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
         {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
+            Principal p = (Principal)principals.next();
+            if (classe.isInstance(p))
+            {
+                principal = p;
+                break;
+            }
+        }                         
+        return principal;            
     }
 
-    public String toString()
+    /**
+     * Given a subject, finds the first principal of the given classe for that subject.
+     * If a principal of the given classe is not found, then the first
+     * other principal is returned. If the list is empty, null is returned.
+     *  
+     * @param subject The subject supplying the principals.
+     * @param classe A class or interface derived from java.security.Principal.
+     * @return The first principal matching a principal classe parameter.
+     */
+    public static Principal getBestPrincipal(Subject subject, Class classe)
     {
-        return "ProfilerValve";
+        
+        Principal principal = null; 
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = (Principal)principals.next();
+            if (classe.isInstance(p))
+            {
+                principal = p;
+                break;
+            }
+            else
+            {
+               if (principal == null)
+                {
+                    principal = p;
+                }
+            }
+        }                         
+        return principal;            
     }
+    
 }

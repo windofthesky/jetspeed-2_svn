@@ -51,47 +51,35 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.rules.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
+import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * MediatypeCriterionResolver
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public class MediatypeCriterionResolver
+    extends StandardResolver
+    implements RuleCriterionResolver
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
+     */    
+    public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        try
+        // look for override
+        String value = super.resolve(context, criterion);
+        if (value != null)
         {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
+            return value;
         }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-    }
-
-    public String toString()
-    {
-        return "ProfilerValve";
-    }
+     
+        return context.getMediaType();   
+    }    
+    
 }

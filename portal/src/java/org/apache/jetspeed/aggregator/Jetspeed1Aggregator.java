@@ -66,10 +66,10 @@ import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.om.profile.Entry;
+import org.apache.jetspeed.om.profile.PSMLDocument;
+import org.apache.jetspeed.om.profile.Portlets;
+import org.apache.jetspeed.om.profile.Profile;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.pluto.PortletContainer;
@@ -78,12 +78,12 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * Basic Aggregator, nothing complicated. 
+ * Jetspeed1Aggregator
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class BasicAggregator extends BaseCommonService implements Aggregator
+public class Jetspeed1Aggregator extends BaseCommonService
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
     private final static String DEFAULT_STRATEGY = "strategy.default";
@@ -151,15 +151,20 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
      */
     public void build(RequestContext request) throws JetspeedException
     {
-        ProfileLocator locator = request.getProfileLocator();
-        if (null == locator)
+        Profile profile = (Profile)request.getRequestAttribute("j1-profile");
+        if (null == profile)
         {
-            throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
+            throw new JetspeedException("Failed to find Profile in BasicAggregator.build");
         }
-        Page page = Profiler.getPage(locator);
-        if (null == page)
+        PSMLDocument document = profile.getDocument();
+        if (null == document)
         {
-            throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");
+            throw new JetspeedException("Failed to find PSML Document in BasicAggregator.build");
+        }
+        Portlets portlets = document.getPortlets();
+        if (null == portlets)
+        {
+            throw new JetspeedException("Failed to find Root Portlets Collection in BasicAggregator.build");
         }
 
         PortletContainer container;
@@ -172,25 +177,18 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             throw new JetspeedException("Failed to get PortletContainer: " + e);
         }
 
-        Fragment root = page.getRootFragment();
-        for (Iterator fit = root.getFragments().iterator(); fit.hasNext();)
+        for (Iterator eit = portlets.getEntriesIterator(); eit.hasNext();)
         {
-            Fragment fragment = (Fragment)fit.next();
-            
-            if (fragment.getType().equals(Fragment.LAYOUT))
-            {
-                // skip layouts for now
-                continue;
-            }
+            Entry psmlEntry = (Entry) eit.next();
 
             // 
             // Load Portlet from registry
             // 
-            System.out.println("*** Getting portlet from registry: " + fragment.getName());
-            PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(fragment.getName());
+            System.out.println("*** Getting portlet from registry: " + psmlEntry.getName());
+            PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(psmlEntry.getParent());
             if (portletDefinition == null)
             {
-                throw new JetspeedException("Failed to load: " + fragment.getName() + " from registry");
+                throw new JetspeedException("Failed to load: " + psmlEntry.getName() + " from registry");
             }
 
             //
@@ -198,7 +196,7 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             //
             try
             {
-                PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
+                PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, psmlEntry.getName());
 
                 HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
                 HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
@@ -216,5 +214,4 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             }
         }
     }
-
 }

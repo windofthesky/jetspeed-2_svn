@@ -51,47 +51,60 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.request.RequestContext;
+package org.apache.jetspeed.profiler;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * ProfileLocatorElement
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
-{
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
-    {
-        try
-        {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
+public interface ProfileLocatorProperty
+{    
+    /**
+     * Gets the value of the locator property.
+     * 
+     * @return The value of the property.
+     */
+    String getValue();
+    
+    /**
+     * Sets the value of the locator property.
+     * @param value The value of the property.
+     */
+    void setValue(String value);
 
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-    }
 
-    public String toString()
-    {
-        return "ProfilerValve";
-    }
+    /**
+     * Returns the fallback type of the property.
+     * see 
+     * 
+     * @return
+     */
+    int getFallbackType();
+
+    /**
+     * @return
+     */
+    String getName();
+
+    /**
+     * @return
+     */
+    String getType();
+
+    /**
+     * @param i
+     */
+    void setFallbackType(int type);
+
+    /**
+     * @param string
+     */
+    void setName(String string);
+    
+    /**
+     * @param string
+     */
+    public void setType(String type);    
 }

@@ -54,7 +54,6 @@
 package org.apache.jetspeed.profiler.rules;
 
 import java.util.Collection;
-import java.util.SortedMap;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfilerService;
@@ -76,13 +75,14 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface ProfilingRule
 {
+    
     /**
      * Define the basic supported rule types in the default Jetspeed implementation.
      * Other rule types can be added. 
      * Rule types define a grouping of rule parameters.
      * For example,  request parameters refer to parameters on the request
      */ 
-    
+       
     /** Standard rule criteria used by Jetspeed traditionally such as media type, language, username, role */
     public final static String STANDARD = "standard";
     /** Request parameters as defined in the Portlet spec 1.0 PLT.11.1.1 */ 
@@ -99,14 +99,26 @@ public interface ProfilingRule
     /**
      * Standard properties used traditionally in Jetspeed
      */
-    public final static String STANDARD_NAME = "name";     
+    public final static String STANDARD_PAGE = "page";
+    public final static String STANDARD_GROUP_ROLE_USER = "group.role.user";         
     public final static String STANDARD_USER = "user";
     public final static String STANDARD_GROUP = "group";
     public final static String STANDARD_ROLE = "role";
     public final static String STANDARD_MEDIATYPE = "mediatype";
     public final static String STANDARD_COUNTRY = "country";
     public final static String STANDARD_LANGUAGE = "language";
+    public final static String STANDARD_ROLE_FALLBACK = "roles";
+    // additional desktop concept
+    public final static String STANDARD_DESKTOP = "desktop";    
 
+    /**
+     * Given a criterion name, look up a value resolver
+     * 
+     * @param name The name of the criterion
+     * @return
+     */
+    RuleCriterionResolver getResolver(String name);    
+    
     /**
      * Applying the profiling rule generates a generic profile locator.
      * With this locator we can then locate a profiling resource.

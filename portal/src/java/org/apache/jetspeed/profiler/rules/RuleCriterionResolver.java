@@ -51,47 +51,27 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.rules;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Invokes the Profiler service in the request pipeline
- *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * Resolves rule criterion based on a single criterion and 
+ * runtime request context state. 
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
+public interface RuleCriterionResolver
 {
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
-    {
-        try
-        {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
-        }
-        catch (ProfileException e)
-        {
-            throw new PipelineException(e);
-        }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-    }
-
-    public String toString()
-    {
-        return "ProfilerValve";
-    }
+    /**
+     * Resolver the value for a criterion.
+     * 
+     * @param context The request context.
+     * @param criterion The criterion being evaluated.
+     * @return The value of the criterion or null if not found.
+     *         Returns null to indicate to subclasses to continue processing.
+     */        
+    String resolve(RequestContext context, RuleCriterion criterion);
+    
 }

@@ -54,13 +54,14 @@
 package org.apache.jetspeed.profiler.rules.impl;
 
 import java.util.Collection;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfilerService;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -75,6 +76,53 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     protected String id;
     protected String title;
     protected String ojbConcreteClass;
+
+    protected static final String DEFAULT_RESOLVER = "AbstractProfilingRule.default";
+    
+    /** Map of profile locators kept around for reuse TODO: evict entries after max size reached */    
+    static Map locators = new HashMap();
+    
+    /** Map of resolver rules for criteria. The map goes from criterion name to resolver class */
+    static Map resolvers = new HashMap();
+    
+    static 
+    {
+        RuleCriterionResolver standardResolver = new StandardResolver();
+        resolvers.put(DEFAULT_RESOLVER, standardResolver);
+        resolvers.put(ProfilingRule.STANDARD_DESKTOP, standardResolver);        
+        resolvers.put(ProfilingRule.STANDARD_PAGE, standardResolver);
+        resolvers.put(ProfilingRule.STANDARD_USER, new UserCriterionResolver());
+        resolvers.put(ProfilingRule.STANDARD_ROLE, new RoleCriterionResolver()); 
+        resolvers.put(ProfilingRule.STANDARD_GROUP, new GroupCriterionResolver());          
+        resolvers.put(ProfilingRule.STANDARD_MEDIATYPE, new MediatypeCriterionResolver());
+        resolvers.put(ProfilingRule.STANDARD_LANGUAGE, new LanguageCriterionResolver());
+        resolvers.put(ProfilingRule.STANDARD_COUNTRY, new CountryCriterionResolver());
+        resolvers.put(ProfilingRule.STANDARD_GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());                         
+    }
+    
+    protected ProfileLocator getLocatorFromCache(String key)
+    {
+        return (ProfileLocator)locators.get(key);
+    }
+    
+    
+    protected void addLocatorToCache(String key, ProfileLocator locator)
+    {
+        locators.put(key, locator);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.ProfilingRule#getResolver(java.lang.String)
+     */
+    public RuleCriterionResolver getResolver(String name)
+    {
+        return (RuleCriterionResolver)resolvers.get(name);
+    }
+
+    public RuleCriterionResolver getDefaultResolver()
+    {
+        return (RuleCriterionResolver)resolvers.get(DEFAULT_RESOLVER);
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.ProfilerService)
@@ -135,6 +183,19 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     public void setClassname(String classname)
     {
         this.ojbConcreteClass = classname;
+    }
+    
+    public String toString()
+    {
+        if (id != null)
+        {
+            return id;
+        }
+        else if (title != null)
+        {
+            return title;
+        }
+        return this.getClass().toString();
     }
     
 }

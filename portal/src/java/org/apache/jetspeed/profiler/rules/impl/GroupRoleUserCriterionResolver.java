@@ -51,47 +51,54 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.profiler;
+package org.apache.jetspeed.profiler.rules.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.profile.Profile;
-import org.apache.jetspeed.om.profile.ProfileException;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
+import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Invokes the Profiler service in the request pipeline
+ * Standard Jetspeed-1 Group/Role/User resolver.
+ * First looking for a group request parameter, then a role request parameter,
+ * then a user request parameter. If none are found, then it uses the 
+ * current user's principal.
+ * 
+ * If it is null, it then falls back to a request parameter.
+ * If it is null it gives up and returns null allowing subclasses
+ * to continue processing.
+ * 
+ * Since there is no 1:1 value for a combination rule of group, the criterion's
+ * value is ignored.
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfilerValve
-       extends AbstractValve
-{
-    private static final Log log = LogFactory.getLog( ProfilerValve.class );
-        
-    public void invoke( RequestContext request, ValveContext context )
-        throws PipelineException
+public class GroupRoleUserCriterionResolver
+    extends UserCriterionResolver
+    implements RuleCriterionResolver
+{    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
+     */    
+    public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        try
+        String value = context.getRequestParameter(ProfilingRule.STANDARD_GROUP);
+        if (value != null)
         {
-            Profile profile = Profiler.getProfile(request);
-            // DEPRECATED request.setProfile(profile);
+            criterion.setName(ProfilingRule.STANDARD_GROUP);
+            return value;
         }
-        catch (ProfileException e)
+        value = context.getRequestParameter(ProfilingRule.STANDARD_ROLE);
+        if (value != null)
         {
-            throw new PipelineException(e);
+            criterion.setName(ProfilingRule.STANDARD_ROLE);            
+            return value;
         }
 
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-    }
-
-    public String toString()
-    {
-        return "ProfilerValve";
-    }
+        // use the User Criterion to resolve it        
+        criterion.setName(ProfilingRule.STANDARD_USER);
+        return super.resolve(context, criterion);
+     }
+    
 }

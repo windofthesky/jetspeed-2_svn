@@ -55,15 +55,19 @@ package org.apache.jetspeed.profiler.rules.impl;
 
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfilerService;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
+import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
  * StandardProfilingRule applies the standard Jetspeed-1 profiling rules.
- *
+ * The result is an ordered list of Profile Locator name/value pairs.
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
@@ -71,20 +75,82 @@ public class StandardProfilingRule
     extends AbstractProfilingRule
     implements ProfilingRule
 {
-    
+    protected final static Log log = LogFactory.getLog(StandardProfilingRule.class);
+        
+            
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.ProfilerService)
      */    
     public ProfileLocator apply(RequestContext context, ProfilerService service)
     {
+        StringBuffer key = new StringBuffer();
+        int count = 0;
+        
+        // first pass, build the key
         Iterator criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
-            
+            if (criterion.getResolverName() == null || criterion.getType() == null)
+            {
+                log.warn("Invalid criterion provided - name or type null on rule " + this);
+            }
+            if (criterion.getType().equals(ProfilingRule.STANDARD))
+            {
+                RuleCriterionResolver resolver = getResolver(criterion.getResolverName());
+                if (resolver == null)
+                {
+                    resolver = getDefaultResolver();
+                }
+                String value = resolver.resolve(context, criterion);
+                key.append(criterion.getName());
+                key.append(ProfileLocator.PATH_SEPARATOR);
+                key.append(value);
+                if (criteria.hasNext())
+                {
+                    key.append(ProfileLocator.PATH_SEPARATOR);
+                }
+                count++;                                                                                                    
+            }
+            else
+            {
+                // ignore: only handles standard criteria
+            }
         }
-        // TODO Auto-generated method stub        
-        return service.createLocator();
+        
+        // try to get the profile locator from the cache        
+        String locatorKey = key.toString();
+        ProfileLocator locator = getLocatorFromCache(locatorKey); 
+        if (locator != null)
+        {
+            return locator;
+        }
+        
+        // second pass, build the locator object         
+        locator = service.createLocator();
+        criteria = this.getRuleCriteria().iterator();
+        while (criteria.hasNext())
+        {
+            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            if (criterion.getResolverName() == null || criterion.getType() == null)
+            {
+                log.warn("Invalid criterion provided - name or type null on rule " + this);
+            }
+            if (criterion.getType().equals(ProfilingRule.STANDARD))
+            {
+                RuleCriterionResolver resolver = getResolver(criterion.getResolverName());
+                if (resolver != null)
+                {
+                    String value = resolver.resolve(context, criterion);
+                    locator.add(criterion, value);
+                }                
+            }
+        }               
+             
+        addLocatorToCache(locatorKey, locator);
+        return locator; 
     }
-    
+        
 }
+
+

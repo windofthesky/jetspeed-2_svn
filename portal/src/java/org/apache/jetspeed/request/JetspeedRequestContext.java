@@ -62,7 +62,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.om.profile.Profile;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
@@ -88,7 +88,7 @@ public class JetspeedRequestContext implements RequestContext
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
-    private Profile profile;
+    private ProfileLocator locator;
     private PortletDefinition portletDefinition;
     private Subject subject;
     private Locale locale;
@@ -161,14 +161,14 @@ public class JetspeedRequestContext implements RequestContext
         return config;
     }
 
-    public Profile getProfile()
+    public ProfileLocator getProfileLocator()
     {
-        return profile;
+        return locator;
     }
 
-    public void setProfile(Profile profile)
+    public void setProfileLocator(ProfileLocator locator)
     {
-        this.profile = profile;
+        this.locator = locator;
     }
 
     public PortletDefinition getPortletDefinition()
@@ -362,6 +362,14 @@ public class JetspeedRequestContext implements RequestContext
     public Map getParameterMap()
     {
         return request.getParameterMap();    
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getRequestAttribute(java.lang.String)
+     */
+    public Object getRequestAttribute(String key)
+    {
+        return request.getAttribute(key);        
     }
     
 }

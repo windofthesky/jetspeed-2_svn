@@ -246,7 +246,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
 
         }
         catch (Throwable t)
-        {
+        {            
             t.printStackTrace();
             //handleException(data, req, res, t);
         }
