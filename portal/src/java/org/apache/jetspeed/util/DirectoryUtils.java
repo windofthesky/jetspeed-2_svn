@@ -74,41 +74,36 @@ public class DirectoryUtils
             
     public static void main(String[] args)
     {
-        DirectoryUtils.rmdir(args[0]);
+        DirectoryUtils.rmdir(new File(args[0]));
     }
 
-    /*
+    /**
      *  Removes a directory and all subdirectories and files beneath it.
      *
      * @param directory The name of the root directory to be deleted.
      * @return boolean If all went successful, returns true, otherwise false.
      * 
      */
-    public static final boolean rmdir(String directory)
+    public static final boolean rmdir(File dir)
     {    
-        try
-        {
-            File dir = new File(directory);
-            if (!dir.isDirectory())            
-            {
-                dir.delete();
-                return true;
-            }
+		if (dir.isDirectory())
+		{
+			String[] children = dir.list();
+			for (int i = 0; i < children.length; i++)
+			{
+				boolean success = rmdir(new File(dir, children[i]));
+				if (!success)
+				{
+					return false;
+				}
+			}
+		}
 
-            deleteTraversal(directory);
-
-            dir.delete();
-            return true;
-
-        }
-        catch (Exception e)
-        {
-            log.error("Error in rmdir utility:" , e);
-            return false;
-        }
+		// The directory is now empty so delete it OR it is a plain file
+		return dir.delete();
     }
 
-    /*
+    /**
      *  Recursive deletion engine, traverses through all subdirectories, 
      *  attempting to delete every file and directory it comes across.
      *  NOTE: this version doesn't do any security checks, nor does it 
@@ -117,45 +112,45 @@ public class DirectoryUtils
      * @param path The directory path to be traversed.
      * 
      */            
-    private static void deleteTraversal(String path)
-    {
-        File file = new File(path);
-        if (file.isFile()) 
-        {
-            try 
-            {
-                file.delete();
-            }
-            catch (Exception e)
-            {
-                log.error("Failed to Delete file: " + path + " : " , e);
-                file.deleteOnExit(); // try to get it later...
-            }
-        } 
-        else if (file.isDirectory()) 
-        {
-            if (!path.endsWith(File.separator))
-                path += File.separator;
-
-            String list[] = file.list();
-
-            // Process all files recursivly
-            for(int ix = 0; list != null && ix < list.length; ix++)
-                deleteTraversal(path + list[ix]);
-
-            // now try to delete the directory
-            try 
-            {
-                file.delete();
-            }
-            catch (Exception e)
-            {
-                log.error("Failed to Delete directory: " + path + " : " , e);
-                file.deleteOnExit(); // try to get it later...
-            }
-            
-        }
-    }            
+//    private static void deleteTraversal(String path)
+//    {
+//        File file = new File(path);
+//        if (file.isFile()) 
+//        {
+//            try 
+//            {
+//                file.delete();
+//            }
+//            catch (Exception e)
+//            {
+//                log.error("Failed to Delete file: " + path + " : " , e);
+//                file.deleteOnExit(); // try to get it later...
+//            }
+//        } 
+//        else if (file.isDirectory()) 
+//        {
+//            if (!path.endsWith(File.separator))
+//                path += File.separator;
+//
+//            String list[] = file.list();
+//
+//            // Process all files recursivly
+//            for(int ix = 0; list != null && ix < list.length; ix++)
+//                deleteTraversal(path + list[ix]);
+//
+//            // now try to delete the directory
+//            try 
+//            {
+//                file.delete();
+//            }
+//            catch (Exception e)
+//            {
+//                log.error("Failed to Delete directory: " + path + " : " , e);
+//                file.deleteOnExit(); // try to get it later...
+//            }
+//            
+//        }
+//    }            
 }
 
 
