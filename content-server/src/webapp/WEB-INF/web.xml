@@ -10,9 +10,9 @@
     <filter-name>ContentServer</filter-name>
     <filter-class>org.apache.jetspeed.contentserver.ContentFilter</filter-class>
      <init-param>
-        <param-name>default.theme</param-name>
+        <param-name>default.content.path</param-name>
         <param-value>
-           blue
+           themes/blue
         </param-value>
     </init-param>
      <init-param>

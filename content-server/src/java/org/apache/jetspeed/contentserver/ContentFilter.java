@@ -1,11 +1,14 @@
 package org.apache.jetspeed.contentserver;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -22,7 +25,6 @@ import org.apache.commons.io.StreamUtils;
 
 /**
  * Created on Dec 30, 2003
- *
  * 
  * @author
  */
@@ -32,18 +34,24 @@ import org.apache.commons.io.StreamUtils;
  * ContentFilter
  * </p>
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
 public class ContentFilter implements Filter
 {
-    public static final String SESSION_THEME_ATTR = "org.apache.jetspeed.theme";
+
+    public static final String SESSION_THEME_ATTR = "org.apache.jetspeed.content.pathes";
+
     private FilterConfig config;
-    private String defaultTheme;
+
+    private String defaultContentPath;
+
     private String contentDir;
-    private String themesDir;
+
+    // private String themesDir;
     private File contentDirFile;
+
     private Map fileCache;
 
     /**
@@ -52,23 +60,25 @@ public class ContentFilter implements Filter
     public void init(FilterConfig config) throws ServletException
     {
         this.config = config;
-        this.defaultTheme = config.getInitParameter("default.theme");
+        this.defaultContentPath = config
+                .getInitParameter("default.content.path");
         String dir = config.getInitParameter("content.directory");
         this.contentDir = config.getServletContext().getRealPath(dir);
-        this.themesDir = this.contentDir + "/themes";
+        // this.themesDir = this.contentDir + "/themes";
         this.contentDirFile = new File(this.contentDir);
         this.fileCache = new HashMap();
-        if (!contentDirFile.exists())
-        {
-            throw new ServletException("The specified content directory " + contentDirFile.getAbsolutePath() + " does not exist!");
-        }
+        if (!contentDirFile.exists()) { throw new ServletException(
+                "The specified content directory "
+                        + contentDirFile.getAbsolutePath() + " does not exist!"); }
 
     }
 
     /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+     *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException
     {
         try
         {
@@ -78,26 +88,24 @@ public class ContentFilter implements Filter
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
                 String requestURI = httpRequest.getRequestURI();
-                String mimeType = config.getServletContext().getMimeType(requestURI);
+                String mimeType = config.getServletContext().getMimeType(
+                        requestURI);
 
-                if (mimeType == null)
-                {
-                    throw new NullPointerException(
+                if (mimeType == null) { throw new NullPointerException(
                         "MIME-TYPE for "
-                            + requestURI
-                            + " could not be located.  Make sure your container is properly configured to detect MIME types.");
-                }
+                                + requestURI
+                                + " could not be located.  Make sure your container is properly configured to detect MIME types."); }
 
                 System.out.println(mimeType + " detected: " + requestURI);
 
-                boolean found = setThemeContent(requestURI, httpRequest, httpResponse, mimeType);
+                boolean found = setThemeContent(requestURI, httpRequest,
+                        httpResponse, mimeType);
 
                 if (found)
                 {
                     System.out.println("Setting status to OK");
                     httpResponse.setStatus(HttpServletResponse.SC_OK);
-                }
-                else
+                } else
                 {
                     chain.doFilter(request, response);
                 }
@@ -105,8 +113,7 @@ public class ContentFilter implements Filter
                 return;
 
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
 
             System.out.println("Error filtering image, " + e.toString());
@@ -124,64 +131,77 @@ public class ContentFilter implements Filter
 
     }
 
-    protected boolean setThemeContent(String URI, HttpServletRequest request, HttpServletResponse response, String mimeType)
+    protected boolean setThemeContent(String URI, HttpServletRequest request,
+            HttpServletResponse response, String mimeType)
     {
-        int rootLen = 13;
-        int rootStart = URI.indexOf("content/theme");
+        int rootLen = 7;
+        int rootStart = URI.lastIndexOf("content");
         if (rootStart != -1)
         {
             String dir = URI.substring(rootStart + rootLen);
-            String themeName = getCurrentTheme(request);
-            File fqFile = null;
-            if (fileCache.containsKey(themeName + ":" + URI))
-            {
-                fqFile = (File) fileCache.get(themeName + ":" + URI);
-                System.out.println("Found cached theme file for URI: " + URI);
-            }
-            else
-            {
-                String fqPath = themesDir + "/" + themeName + "/html" + dir;
-                fqFile = new File(fqPath);
-                System.out.println("Actual theme content located at: " + fqPath);
-                System.out.println("Theme content exists? " + fqFile.exists());
-                fileCache.put(themeName + ":" + URI, fqFile);
-            }
+            List pathes = getContentSearchPathes(request);
 
-            BufferedInputStream bis = null;
-            try
+            for (int i = 0; i < pathes.size(); i++)
             {
-
-                bis = new BufferedInputStream(new FileInputStream(fqFile));
-                response.setContentType(mimeType);
-                response.setContentLength((int) fqFile.length());
-                ServletOutputStream sos = response.getOutputStream();
-                for (int i = bis.read(); i != -1; i = bis.read())
+                File fqFile = null;
+                if (fileCache.containsKey(pathes.get(i) + ":" + URI))
                 {
-                    sos.write((byte) i);
+                    fqFile = (File) fileCache.get(pathes.get(i) + ":" + URI);
+                    System.out.println("Found cached file for URI: "
+                            + URI);
+                } 
+                else
+                {
+                    // String fqPath = pathes.get(i) + "/html" + dir;
+                    String fqPath = contentDir + "/" + pathes.get(i) + dir;
+                    
+                    fqFile = new File(fqPath);
+                    System.out.println("Actual content located at: "
+                            + fqPath);
+                    System.out.println("Content exists? "
+                            + fqFile.exists());
+                    if(!fqFile.exists())
+                    {
+                        continue;
+                    }
+                    fileCache.put(pathes.get(i) + ":" + URI, fqFile);
                 }
-                System.out.println("Wrote " + fqFile.length() + " to the response output stream.");
 
-                return true;
-
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            finally
-            {
+                BufferedInputStream bis = null;
                 try
                 {
-                    if (bis != null)
-                    {
-                        bis.close();
-                    }
-                }
-                catch (IOException e1)
-                {
-                    // ignore
 
+                    bis = new BufferedInputStream(new FileInputStream(fqFile));
+                    response.setContentType(mimeType);
+                    response.setContentLength((int) fqFile.length());
+                    ServletOutputStream sos = response.getOutputStream();
+                    for (int j = bis.read(); j != -1; j = bis.read())
+                    {
+                        sos.write((byte) j);
+                    }
+                    System.out.println("Wrote " + fqFile.length()
+                            + " to the response output stream.");
+
+                    return true;
+
+                } catch (Exception e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } 
+                finally
+                {
+                    try
+                    {
+                        if (bis != null)
+                        {
+                            bis.close();
+                        }
+                    } catch (IOException e1)
+                    {
+                        // ignore
+
+                    }
                 }
             }
         }
@@ -189,15 +209,20 @@ public class ContentFilter implements Filter
 
     }
 
-    protected String getCurrentTheme(HttpServletRequest request)
+    protected List getContentSearchPathes(HttpServletRequest request)
     {
-        String themeName = (String) request.getSession().getAttribute(SESSION_THEME_ATTR);
-        if (themeName == null)
+        List contentPathes = (List) request.getSession().getAttribute(
+                SESSION_THEME_ATTR);
+        if (contentPathes == null || contentPathes.size() == 0)
         {
-            themeName = defaultTheme;
+            contentPathes = new ArrayList(2);
+            contentPathes.add(defaultContentPath);
+            request.getSession()
+                    .setAttribute(SESSION_THEME_ATTR, contentPathes);
+            contentPathes.add("");
         }
 
-        return themeName;
+        return contentPathes;
     }
 
 }
