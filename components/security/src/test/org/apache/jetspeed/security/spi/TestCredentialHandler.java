@@ -49,7 +49,9 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
      */
     protected void setUp() throws Exception
     {
-        super.setUp();
+        super.setUp(); 
+        // cleanup for previously failed test
+        destroyUser();
     }
 
     /**
@@ -124,12 +126,12 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
         assertEquals("newpassword", new String(pwdCreds[0].getPassword()));
         // Add password credential.
         oldPwdCred = null;
-        newPwdCred = new PasswordCredential("testcred", ("anotherpassword").toCharArray());
-        ch.setPrivatePasswordCredential(oldPwdCred, newPwdCred);
+        PasswordCredential anotherPwdCred = new PasswordCredential("testcred", ("anotherpassword").toCharArray());
+        ch.setPrivatePasswordCredential(newPwdCred, anotherPwdCred);
         // Test that the credential was properly set.
         privateCredentials = ch.getPrivateCredentials("testcred");
         assertNotNull(privateCredentials);
-        assertEquals(2, privateCredentials.size());
+        assertEquals(1, privateCredentials.size());
         destroyUser();
     }
     
