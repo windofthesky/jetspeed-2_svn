@@ -48,8 +48,8 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     /**
      * <p>Defines property set types.</p>
      */
-    private final static short USER_PROPERTY_SET_TYPE = 0;
-    private final static short SYSTEM_PROPERTY_SET_TYPE = 1;
+    private final static int USER_PROPERTY_SET_TYPE = 0;
+    private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -138,12 +138,12 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
         {
             // New key
             HashMap newKey = new HashMap(1);
-            newKey.put("newPropertyName0", new Short("0"));
+            newKey.put("newPropertyName0", new Integer("0"));
             pms.updatePropertyKey("propertyName0", pref, newKey);
             Map propKeys = pms.getPropertyKeys(pref);
             assertTrue("should contain newPropertyName0", propKeys.containsKey("newPropertyName0"));
             HashMap oldKey = new HashMap(1);
-            oldKey.put("propertyName0", new Short("0"));
+            oldKey.put("propertyName0", new Integer("0"));
             pms.updatePropertyKey("NewPropertyName0", pref, oldKey);
         }
         catch (PropertyException pex)
@@ -179,10 +179,10 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     {
         // Build a few property keys.
         Map propertyKeys = new HashMap();
-        propertyKeys.put("propertyName0", new Short("0"));
-        propertyKeys.put("propertyName1", new Short("1"));
-        propertyKeys.put("propertyName2", new Short("2"));
-        propertyKeys.put("propertyName3", new Short("3"));
+        propertyKeys.put("propertyName0", new Integer("0"));
+        propertyKeys.put("propertyName1", new Integer("1"));
+        propertyKeys.put("propertyName2", new Integer("2"));
+        propertyKeys.put("propertyName3", new Integer("3"));
 
         return propertyKeys;
     }

@@ -31,13 +31,13 @@ public interface Node extends Serializable, Cloneable
      * <p>Getter for the node id.</p>
      * @return The node id.
      */
-    int getNodeId();
+    long getNodeId();
 
     /**
      * <p>Setter for the node id.</p>
      * @param nodeId The node id.
      */
-    void setNodeId(int nodeId);
+    void setNodeId(long nodeId);
 
     /**
      * <p>Getter for the parent node id.</p>
@@ -45,13 +45,13 @@ public interface Node extends Serializable, Cloneable
      * is associated to a node.</p>
      * @return The parent node id.
      */
-    Integer getParentNodeId();
+    Long getParentNodeId();
 
     /**
      * <p>Setter for the parent node id.</p>
      * @param parentNodeId The parent node id.
      */
-    void setParentNodeId(Integer parentNodeId);
+    void setParentNodeId(Long parentNodeId);
 
     /**
      * <p>Getter for the node properties.</p>
@@ -97,7 +97,7 @@ public interface Node extends Serializable, Cloneable
      * </ul>
      * @return The node type.
      */
-    short getNodeType();
+    int getNodeType();
 
     /**
      * <p>Setter for the node type.</p>
@@ -107,7 +107,7 @@ public interface Node extends Serializable, Cloneable
      * </ul>
      * @param nodeType The node type.
      */
-    void setNodeType(short nodeType);
+    void setNodeType(int nodeType);
 
     /**
      * <p>Getter for the full path.</p>

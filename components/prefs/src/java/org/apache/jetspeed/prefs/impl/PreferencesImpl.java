@@ -45,10 +45,10 @@ public class PreferencesImpl extends AbstractPreferences
 {
 
     /** User <tt>Preferences<tt> node type. */
-    private static final short USER_NODE_TYPE = 0;
+    private static final int USER_NODE_TYPE = 0;
 
     /** System <tt>Preferences</tt> node type. */
-    private static final short SYSTEM_NODE_TYPE = 1;
+    private static final int SYSTEM_NODE_TYPE = 1;
 
     /** The component manager. */
     private ComponentManager cm;
@@ -66,13 +66,13 @@ public class PreferencesImpl extends AbstractPreferences
     private boolean isBackingStoreAvailable = true;
 
     /** The current node id. */
-    private int nodeId = -1;
+    private long nodeId = -1;
 
     /** The current <code>Node</code> object. */
     private Node node = null;
 
     /** The current node type. */
-    private short nodeType = -1;
+    private int nodeType = -1;
 
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
@@ -106,7 +106,7 @@ public class PreferencesImpl extends AbstractPreferences
      * @param nodeName The node name.
      * @param nodeType The node type.
      */
-    public PreferencesImpl(PreferencesImpl parent, String nodeName, short nodeType)
+    public PreferencesImpl(PreferencesImpl parent, String nodeName, int nodeType)
     {
         super(parent, nodeName);
 
@@ -118,7 +118,7 @@ public class PreferencesImpl extends AbstractPreferences
         this.commonQueries = new CommonQueries(storeContainer, jetspeedStoreName);
 
         this.nodeType = nodeType;
-        int[] result = createPrefNode(parent, nodeName, nodeType, this.absolutePath());
+        long[] result = createPrefNode(parent, nodeName, nodeType, this.absolutePath());
         if (result[ERROR_CODE] != ERROR_SUCCESS)
         {
             String warning =
@@ -144,35 +144,35 @@ public class PreferencesImpl extends AbstractPreferences
      * @param fullPath The node full path.
      * @return The operation status code.
      */
-    private int[] createPrefNode(PreferencesImpl parent, String nodeName, short nodeType, String fullPath)
+    private long[] createPrefNode(PreferencesImpl parent, String nodeName, int nodeType, String fullPath)
     {
-        int[] result = new int[ARRAY_SIZE];
-        Integer parentNodeId = null;
+        long[] result = new long[ARRAY_SIZE];
+        Long parentNodeId = null;
 
         if (null != parent)
         {
             if (log.isDebugEnabled())
                 log.debug("Current node parent: " + parent.nodeId);
             // Get child node
-            Object[] nodeFromParentRetrievalResult = getChildNode(new Integer(parent.nodeId), nodeName, new Short(nodeType));
-            if (((Integer) nodeFromParentRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
+            Object[] nodeFromParentRetrievalResult = getChildNode(new Long(parent.nodeId), nodeName, new Integer(nodeType));
+            if (((Long) nodeFromParentRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
             {
-                result[NODE_ID] = ((Integer) nodeFromParentRetrievalResult[NODE_ID]).intValue();
+                result[NODE_ID] = ((Long) nodeFromParentRetrievalResult[NODE_ID]).intValue();
                 result[ERROR_CODE] = ERROR_SUCCESS;
                 result[DISPOSITION] = DISPOSITION_EXISTING_NODE;
                 return result;
             }
             else
             {
-                parentNodeId = new Integer(parent.nodeId);
+                parentNodeId = new Long(parent.nodeId);
             }
 
         }
         // Check if node exists.
         Object[] nodeRetrievalResult = getNode(fullPath, nodeType);
-        if (((Integer) nodeRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
+        if (((Long) nodeRetrievalResult[ERROR_CODE]).intValue() == ERROR_SUCCESS)
         {
-            result[NODE_ID] = ((Integer) nodeRetrievalResult[NODE_ID]).intValue();
+            result[NODE_ID] = ((Long) nodeRetrievalResult[NODE_ID]).intValue();
             result[ERROR_CODE] = ERROR_SUCCESS;
             result[DISPOSITION] = DISPOSITION_EXISTING_NODE;
             return result;
@@ -218,7 +218,7 @@ public class PreferencesImpl extends AbstractPreferences
      *          <li>At index ERROR_CODE: The error code.</li>
      *         </ul>
      */
-    private Object[] getNode(String fullPath, short nodeType)
+    private Object[] getNode(String fullPath, int nodeType)
     {
         Object[] result = new Object[ARRAY_SIZE];
         if (log.isDebugEnabled())
@@ -226,19 +226,19 @@ public class PreferencesImpl extends AbstractPreferences
 
         if (this.nodeId != -1 && (null != this.node))
         {
-            result[NODE_ID] = new Integer(this.nodeId);
+            result[NODE_ID] = new Long(this.nodeId);
             result[NODE] = this.node;
-            result[ERROR_CODE] = new Integer(ERROR_SUCCESS);
+            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
             return result;
         }
 
         PersistenceStore store = getPersistenceStore();
-        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(fullPath, new Short(nodeType)));
+        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryByPathAndType(fullPath, new Integer(nodeType)));
         if (null != nodeObj)
         {
-            result[NODE_ID] = new Integer(nodeObj.getNodeId());
+            result[NODE_ID] = new Long(nodeObj.getNodeId());
             result[NODE] = nodeObj;
-            result[ERROR_CODE] = new Integer(ERROR_SUCCESS);
+            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
             if (log.isDebugEnabled())
                 log.debug("Found node: " + nodeObj.getFullPath());
             this.node = nodeObj;
@@ -247,7 +247,7 @@ public class PreferencesImpl extends AbstractPreferences
         }
         else
         {
-            result[ERROR_CODE] = new Integer(ERROR_NODE_NOT_FOUND);
+            result[ERROR_CODE] = new Long(ERROR_NODE_NOT_FOUND);
             return result;
         }
     }
@@ -262,7 +262,7 @@ public class PreferencesImpl extends AbstractPreferences
      *          <li>At index ERROR_CODE: The error code.</li>
      *         </ul>
      */
-    private Object[] getChildNode(Integer parentIdObject, String nodeName, Short nodeType)
+    private Object[] getChildNode(Long parentIdObject, String nodeName, Integer nodeType)
     {
         Object[] result = new Object[ARRAY_SIZE];
         PersistenceStore store = getPersistenceStore();
@@ -270,9 +270,9 @@ public class PreferencesImpl extends AbstractPreferences
             (Node) store.getObjectByQuery(commonQueries.newNodeQueryByParentIdNameAndType(parentIdObject, nodeName, nodeType));
         if (null != nodeObj)
         {
-            result[NODE_ID] = new Integer(nodeObj.getNodeId());
+            result[NODE_ID] = new Long(nodeObj.getNodeId());
             result[NODE] = nodeObj;
-            result[ERROR_CODE] = new Integer(ERROR_SUCCESS);
+            result[ERROR_CODE] = new Long(ERROR_SUCCESS);
             if (log.isDebugEnabled())
                 log.debug("Found child node: " + nodeObj.getFullPath());
             this.nodeId = nodeObj.getNodeId();
@@ -281,7 +281,7 @@ public class PreferencesImpl extends AbstractPreferences
         }
         else
         {
-            result[ERROR_CODE] = new Integer(ERROR_NODE_NOT_FOUND);
+            result[ERROR_CODE] = new Long(ERROR_NODE_NOT_FOUND);
             return result;
         }
     }
@@ -293,7 +293,7 @@ public class PreferencesImpl extends AbstractPreferences
     {
         Object[] parentResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Integer) parentResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
+        if (((Long) parentResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
         {
             String warning = "Could not get node id. Returned error code " + parentResult[ERROR_CODE];
             if (log.isWarnEnabled())
@@ -346,7 +346,7 @@ public class PreferencesImpl extends AbstractPreferences
         String value = null;
         Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Integer) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
+        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
         {
             log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
             return value;
@@ -376,7 +376,7 @@ public class PreferencesImpl extends AbstractPreferences
         ArrayList propertyNames = new ArrayList();
 
         PersistenceStore store = getPersistenceStore();
-        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryById(new Integer(this.nodeId)));
+        Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryById(new Long(this.nodeId)));
         if (log.isDebugEnabled())
             log.debug("Fetching keys for node: " + nodeObj.toString());
         if (null != nodeObj)
@@ -409,7 +409,7 @@ public class PreferencesImpl extends AbstractPreferences
     {
         Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Integer) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
+        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
         {
             log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
             return;
@@ -497,7 +497,7 @@ public class PreferencesImpl extends AbstractPreferences
             log.debug("Attempting to remove node: " + this.absolutePath());
         Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Integer) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
+        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
         {
             String warning = "Could not get node id. Returned error code " + nodeResult[ERROR_CODE];
             if (log.isWarnEnabled())
@@ -530,7 +530,7 @@ public class PreferencesImpl extends AbstractPreferences
     {
         Object[] nodeResult = getNode(this.absolutePath(), this.nodeType);
 
-        if (((Integer) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
+        if (((Long) nodeResult[ERROR_CODE]).intValue() != ERROR_SUCCESS)
         {
             log.error("Could not get node id. Returned error code " + nodeResult[ERROR_CODE]);
             return;

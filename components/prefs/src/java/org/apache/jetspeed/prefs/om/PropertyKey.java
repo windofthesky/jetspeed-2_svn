@@ -29,13 +29,13 @@ public interface PropertyKey extends Serializable, Cloneable
      * <p>Getter for the property key id.</p>
      * @return The property key id.
      */
-    int getPropertyKeyId();
+    long getPropertyKeyId();
 
     /**
      * <p>Setter for the property key id.</p>
      * @param propertyKeyId The property key id.
      */
-    void setPropertyKeyId(int propertyKeyId);
+    void setPropertyKeyId(long propertyKeyId);
 
     /**
      * <p>Getter for the property key name.</p>
@@ -60,7 +60,7 @@ public interface PropertyKey extends Serializable, Cloneable
      * </ul>
      * @return The property key type.
      */
-    short getPropertyKeyType();
+    int getPropertyKeyType();
 
     /**
      * <p>Setter for the property key type.</p>
@@ -73,7 +73,7 @@ public interface PropertyKey extends Serializable, Cloneable
      * </ul>
      * @param propertyKeyType The property key type.
      */
-    void setPropertyKeyType(short propertyKeyType);
+    void setPropertyKeyType(int propertyKeyType);
 
     /**
      * <p>Getter for creation date.</p>

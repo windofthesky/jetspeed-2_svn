@@ -45,10 +45,10 @@ public class PropertyManagerImpl implements PropertyManager
     private static final Log log = LogFactory.getLog(PropertyManagerImpl.class);
 
     /** User <tt>Preferences<tt> node type. */
-    private static final short USER_NODE_TYPE = 0;
+    private static final int USER_NODE_TYPE = 0;
 
     /** System <tt>Preferences</tt> node type. */
-    private static final short SYSTEM_NODE_TYPE = 1;
+    private static final int SYSTEM_NODE_TYPE = 1;
 
     /** The persistence store container. */
     private PersistenceStoreContainer storeContainer;
@@ -90,13 +90,13 @@ public class PropertyManagerImpl implements PropertyManager
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -126,7 +126,7 @@ public class PropertyManagerImpl implements PropertyManager
                     PropertyKey ppk =
                         new PropertyKeyImpl(
                             currentPropertyKeyName,
-                            ((Short) propertyKeysMap.get(currentPropertyKeyName)).shortValue());
+                            ((Integer) propertyKeysMap.get(currentPropertyKeyName)).intValue());
                     newPropertyKeys.add(ppk);
                 }
             }
@@ -170,13 +170,13 @@ public class PropertyManagerImpl implements PropertyManager
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -185,7 +185,7 @@ public class PropertyManagerImpl implements PropertyManager
             for (Iterator i = keys.iterator(); i.hasNext();)
             {
                 PropertyKey curpk = (PropertyKey) i.next();
-                propertyKeysMap.put(curpk.getPropertyKeyName(), new Short(curpk.getPropertyKeyType()));
+                propertyKeysMap.put(curpk.getPropertyKeyName(), new Integer(curpk.getPropertyKeyType()));
             }
             return propertyKeysMap;
         }
@@ -211,13 +211,13 @@ public class PropertyManagerImpl implements PropertyManager
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -281,13 +281,13 @@ public class PropertyManagerImpl implements PropertyManager
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(USER_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(USER_NODE_TYPE)));
         }
         else
         {
             nodeObj =
                 (Node) store.getObjectByQuery(
-                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Short(SYSTEM_NODE_TYPE)));
+                    commonQueries.newNodeQueryByPathAndType(prefNode.absolutePath(), new Integer(SYSTEM_NODE_TYPE)));
         }
         if (null != nodeObj)
         {
@@ -305,7 +305,7 @@ public class PropertyManagerImpl implements PropertyManager
                         {
                             store.lockForWrite(curPropKey);
                             curPropKey.setPropertyKeyName(newKey);
-                            curPropKey.setPropertyKeyType(((Short) newPropertyKey.get(newKey)).shortValue());
+                            curPropKey.setPropertyKeyType(((Integer) newPropertyKey.get(newKey)).intValue());
                             curPropKey.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                             if (log.isDebugEnabled())
                                 log.debug("Updated property key: " + curPropKey.toString());

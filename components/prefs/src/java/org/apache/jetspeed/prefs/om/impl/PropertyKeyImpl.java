@@ -26,6 +26,8 @@ import org.apache.jetspeed.prefs.om.PropertyKey;
  */
 public class PropertyKeyImpl implements PropertyKey
 {
+    private long propertyKeyId;
+    private int propertyKeyType;
 
     /**
      * <p>Property key implementation default constructor.</p>
@@ -41,7 +43,7 @@ public class PropertyKeyImpl implements PropertyKey
      * @param propertyKeyType The property key type.
      */
     public PropertyKeyImpl(String propertyKeyName,
-                           short propertyKeyType)
+                           int propertyKeyType)
     {
         this.propertyKeyName = propertyKeyName;
         this.propertyKeyType = propertyKeyType;
@@ -49,12 +51,11 @@ public class PropertyKeyImpl implements PropertyKey
         this.modifiedDate = this.creationDate;
     }
 
-    private int propertyKeyId;
 
     /**
      * @see org.apache.jetspeed.prefs.om.PropertyKey#getPropertyKeyId()
      */
-    public int getPropertyKeyId()
+    public long getPropertyKeyId()
     {
         return this.propertyKeyId;
     }
@@ -62,7 +63,7 @@ public class PropertyKeyImpl implements PropertyKey
     /**
      * @see org.apache.jetspeed.prefs.om.PropertyKey#setPropertyKeyId(int)
      */
-    public void setPropertyKeyId(int propertyKeyId)
+    public void setPropertyKeyId(long propertyKeyId)
     {
         this.propertyKeyId = propertyKeyId;
     }
@@ -85,20 +86,18 @@ public class PropertyKeyImpl implements PropertyKey
         this.propertyKeyName = propertyKeyName;
     }
 
-    private short propertyKeyType;
-
     /**
      * @see org.apache.jetspeed.prefs.om.PropertyKey#getPropertyKeyType()
      */
-    public short getPropertyKeyType()
+    public int getPropertyKeyType()
     {
         return this.propertyKeyType;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.PropertyKey#setPropertyKeyType(short)
+     * @see org.apache.jetspeed.prefs.om.PropertyKey#setPropertyKeyType(int)
      */
-    public void setPropertyKeyType(short propertyKeyType)
+    public void setPropertyKeyType(int propertyKeyType)
     {
         this.propertyKeyType = propertyKeyType;
     }

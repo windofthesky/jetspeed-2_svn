@@ -27,6 +27,9 @@ import org.apache.jetspeed.prefs.om.PropertyKey;
  */
 public class PropertyImpl implements Property
 {
+    private long nodeId;
+    private long propertyValueId;
+    private long propertyKeyId;
     
     /**
      * <p>Property implementation default constructor.</p>
@@ -51,7 +54,7 @@ public class PropertyImpl implements Property
      * @param valueObjectType The value object type.
      * @param valueObject The value object.
      */
-    public PropertyImpl(int nodeId, int propertyKeyId, PropertyKey propertyKey, short valueObjectType, Object valueObject)
+    public PropertyImpl(long nodeId, long propertyKeyId, PropertyKey propertyKey, int valueObjectType, Object valueObject)
     {
         this.nodeId = nodeId;
         this.propertyKeyId = propertyKeyId;
@@ -63,9 +66,9 @@ public class PropertyImpl implements Property
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#getPropertyValue(short)
+     * @see org.apache.jetspeed.prefs.om.Property#getPropertyValue(int)
      */
-    public final String getPropertyValue(short valueObjectType)
+    public final String getPropertyValue(int valueObjectType)
     {
         String stringValue = null;
 
@@ -93,9 +96,9 @@ public class PropertyImpl implements Property
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#setPropertyValue(short, java.lang.String)
+     * @see org.apache.jetspeed.prefs.om.Property#setPropertyValue(int, java.lang.String)
      */
-    public final void setPropertyValue(short valueObjectType, String valueObject)
+    public final void setPropertyValue(int valueObjectType, String valueObject)
     {
         if (null != valueObject)
         {
@@ -122,12 +125,10 @@ public class PropertyImpl implements Property
         }
     }
 
-    private int propertyValueId;
-
     /**
      * @see org.apache.jetspeed.prefs.om.Property#getPropertyValueId()
      */
-    public int getPropertyValueId()
+    public long getPropertyValueId()
     {
         return this.propertyValueId;
     }
@@ -135,43 +136,39 @@ public class PropertyImpl implements Property
     /**
      * @see org.apache.jetspeed.prefs.om.Property#setPropertyValueId(int)
      */
-    public void setPropertyValueId(int propertyValueId)
+    public void setPropertyValueId(long propertyValueId)
     {
         this.propertyValueId = propertyValueId;
     }
 
-    private int nodeId;
-
     /**
      * @see org.apache.jetspeed.prefs.om.Property#getNodeId()
      */
-    public int getNodeId()
+    public long getNodeId()
     {
         return this.nodeId;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#setNodeId(int)
+     * @see org.apache.jetspeed.prefs.om.Property#setNodeId(long)
      */
-    public void setNodeId(int nodeId)
+    public void setNodeId(long nodeId)
     {
         this.nodeId = nodeId;
     }
 
-    private int propertyKeyId;
-
     /**
      * @see org.apache.jetspeed.prefs.om.Property#getPropertyKeyId()
      */
-    public int getPropertyKeyId()
+    public long getPropertyKeyId()
     {
         return this.propertyKeyId;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Property#setPropertyKeyId(int)
+     * @see org.apache.jetspeed.prefs.om.Property#setPropertyKeyId(long)
      */
-    public void setPropertyKeyId(int propertyKeyId)
+    public void setPropertyKeyId(long propertyKeyId)
     {
         this.propertyKeyId = propertyKeyId;
     }

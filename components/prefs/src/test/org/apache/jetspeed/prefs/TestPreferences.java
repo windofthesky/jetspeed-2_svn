@@ -48,8 +48,8 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     /**
      * <p>Defines property set types.</p>
      */
-    private final static short USER_PROPERTY_SET_TYPE = 0;
-    private final static short SYSTEM_PROPERTY_SET_TYPE = 1;
+    private final static int USER_PROPERTY_SET_TYPE = 0;
+    private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -234,10 +234,10 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     {
         // Build a few property keys.
         Map propertyKeys = new HashMap();
-        propertyKeys.put("propertyName0", new Short("0"));
-        propertyKeys.put("propertyName1", new Short("1"));
-        propertyKeys.put("propertyName2", new Short("2"));
-        propertyKeys.put("propertyName3", new Short("3"));
+        propertyKeys.put("propertyName0", new Integer("0"));
+        propertyKeys.put("propertyName1", new Integer("1"));
+        propertyKeys.put("propertyName2", new Integer("2"));
+        propertyKeys.put("propertyName3", new Integer("3"));
 
         return propertyKeys;
     }

@@ -26,55 +26,55 @@ public interface Property extends Serializable, Cloneable
 {
 
     /** <p>Constant for <code>boolean</code> property value object type.</p> */
-    short BOOLEAN_TYPE = 0;
+    int BOOLEAN_TYPE = 0;
 
     /** <p>Constant for <code>long</code> property value object type.</p> */
-    short LONG_TYPE = 1;
+    int LONG_TYPE = 1;
 
     /** <p>Constant for <code>double</code> property value object type.</p> */
-    short DOUBLE_TYPE = 2;
+    int DOUBLE_TYPE = 2;
 
     /** <p>Constant for <code>String</code> property value object type.</p> */
-    short STRING_TYPE = 3;
+    int STRING_TYPE = 3;
 
     /** <p>Constant for <code>Timestamp</code> property value object type.</p> */
-    short TIMESTAMP_TYPE = 3;
+    int TIMESTAMP_TYPE = 3;
 
     /**
      * <p>Getter for the property value id.</p>
      * @return The property value id.
      */
-    int getPropertyValueId();
+    long getPropertyValueId();
 
     /**
      * <p>Setter for the property value id.</p>
      * @param propertyValueId The property value id.
      */
-    void setPropertyValueId(int propertyValueId);
+    void setPropertyValueId(long propertyValueId);
 
     /**
      * <p>Getter for the node id.</p>
      * @return The node id.
      */
-    int getNodeId();
+    long getNodeId();
 
     /**
      * <p>Setter for the node id.</p>
      * @param nodeId The node id.
      */
-    void setNodeId(int nodeId);
+    void setNodeId(long nodeId);
 
     /**
      * <p>Getter for the node id.</p>
      * @return The property key id.
      */
-    int getPropertyKeyId();
+    long getPropertyKeyId();
 
     /**
      * <p>Setter for the property key id.</p>
      * @param propertyKeyId The property key id.
      */
-    void setPropertyKeyId(int propertyKeyId);
+    void setPropertyKeyId(long propertyKeyId);
 
     /**
      * <p>Getter for the property key object.</p>
@@ -94,7 +94,7 @@ public interface Property extends Serializable, Cloneable
      * @param valueObjectType The value object type.
      * @return The property value as a String.
      */
-    String getPropertyValue(short valueObjectType);
+    String getPropertyValue(int valueObjectType);
 
     /**
      * <p>Utility method used to identify with property value to set
@@ -102,7 +102,7 @@ public interface Property extends Serializable, Cloneable
      * @param valueObjectType The value object type.
      * @param valueObject The value object.
      */
-    void setPropertyValue(short valueObjectType, String valueObject);
+    void setPropertyValue(int valueObjectType, String valueObject);
 
     /**
      * <p>Getter for the boolean property value.</p>
