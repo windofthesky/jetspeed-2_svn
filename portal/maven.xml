@@ -104,7 +104,7 @@
             <arg value="-PortletAppName" />
             <arg value="testsuite" />
             <arg value="-warfilename" />
-            <arg value="../../jakarta-pluto/testsuite/target/testsuite.war" />
+            <arg value="../../SAVE-jakarta-pluto/testsuite/target/testsuite.war" />
             <arg value="-webappDir" />
             <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
@@ -252,6 +252,7 @@
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
       <copy  file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml"/>
+      <copy  file="./src/resources/jetspeed.xml" tofile="${tomcat.root}/conf/Catalina/localhost/jetspeed.xml"/>
       <attainGoal name="catalina:base-shared" />
       <attainGoal name="catalina:shared" />
   </goal>
