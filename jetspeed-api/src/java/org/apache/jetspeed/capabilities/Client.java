@@ -25,7 +25,7 @@ import java.util.Collection;
  * </P>
  *
  * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
- * @author <a href="raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="raphael@apache.org">Rapha\u00ebl Luta</a>
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  */
 public interface Client

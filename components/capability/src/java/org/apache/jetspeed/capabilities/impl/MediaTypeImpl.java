@@ -23,7 +23,7 @@ import java.util.Collection;
  * Default bean like implementation of MediaTypeEntry interface
  * suitable for serializing with Castor
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @version $Id$
  */
 public class MediaTypeImpl 

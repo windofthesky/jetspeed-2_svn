@@ -32,7 +32,7 @@ import org.apache.jetspeed.util.FIFOQueue;
  * If jobs come in faster that processing, they are stored in a queue
  * which is flushed periodically by a QueueMonitor.
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @version $Id$
  */
 public class WorkerMonitor

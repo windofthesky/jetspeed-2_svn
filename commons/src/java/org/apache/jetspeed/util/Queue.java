@@ -19,7 +19,7 @@ package org.apache.jetspeed.util;
 /**
  * Queue interface similar to the java.util.Stack interface
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @version $Id$
  */
 public interface Queue extends java.util.List

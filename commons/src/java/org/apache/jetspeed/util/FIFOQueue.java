@@ -20,7 +20,7 @@ package org.apache.jetspeed.util;
  * Simple FIFO implementation of Queue interface extending Vector
  * as storage backend.
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @version $Id$
  */
 public class FIFOQueue extends java.util.Vector implements Queue

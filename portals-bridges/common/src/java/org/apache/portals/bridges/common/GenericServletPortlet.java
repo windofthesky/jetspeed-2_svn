@@ -39,7 +39,7 @@ import org.apache.portals.bridges.util.PreferencesHelper;
  * the JSR 168 for more information
  *
  * <pre>
- *  <!—- Portlet Preferences -->
+ *  <!-- Portlet Preferences -->
  *  <portlet-preferences>
  *    <preference>
  *      <description>Action Servlet</description>

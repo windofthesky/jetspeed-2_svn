@@ -23,7 +23,7 @@ package org.apache.jetspeed.util;
  * utility manipulation methods.</p>
  * <p>Added Content-Encoding capability, with defaults
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @author <a href="mailto:sgala@apache.org">Santiago Gala</a>
  * @version $Id$
  */

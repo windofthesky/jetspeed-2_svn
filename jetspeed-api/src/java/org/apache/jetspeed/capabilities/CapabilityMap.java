@@ -21,7 +21,7 @@ import java.util.Iterator;
  * This interface provides lookup features on the capabilities supported
  * by a client user agent.
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @author <a href="mailto:burton@apache.org">Kevin A. Burton</a>
  * @version $Id$
  */

@@ -52,7 +52,7 @@ import org.apache.jetspeed.util.DirectoryHelper;
 /**
  * TestPageXmlPersistence
  * 
- * @author <a href="raphael@apache.org">Raphaël Luta </a>
+ * @author <a href="raphael@apache.org">Rapha\u00ebl Luta </a>
  * @version $Id: TestCastorXmlPageManager.java,v 1.9 2004/08/24 21:33:05 weaver
  *          Exp $
  */

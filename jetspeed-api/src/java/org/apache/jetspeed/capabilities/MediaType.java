@@ -25,7 +25,7 @@ import java.util.Collection;
  * FIXME: we should add some additionnal attrbutes for separating 2 versions
  * of the same mime type
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
  * @version $Id$
  */
 public interface MediaType
