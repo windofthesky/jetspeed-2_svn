@@ -449,13 +449,9 @@ public class JetspeedRequestContext implements RequestContext
             path.append(token);
             count++;
         }
-        String result = path.toString();
-        if (result.equals("/") || result.trim().length() == 0)
-        {
-            this.requestPath = null;
-            return null;
-        }
-        this.requestPath = result;
+        
+        this.requestPath = "/" + path.toString();
+        
         return this.requestPath;
     }
 
