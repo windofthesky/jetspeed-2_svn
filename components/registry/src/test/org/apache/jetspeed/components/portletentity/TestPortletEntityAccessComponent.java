@@ -74,7 +74,7 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         
         PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
         PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
-
+        provider.start();
         setupTestData();                   
     }
 

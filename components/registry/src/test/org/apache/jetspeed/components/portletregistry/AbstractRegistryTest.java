@@ -79,6 +79,7 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
         PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
         PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore,
                 "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
+        provider.start();
         testPasses++;
     }
 
