@@ -48,8 +48,9 @@ public class LoginServlet extends HttpServlet
             response.sendRedirect(response.encodeURL(destination));
         }
 
+        response.setContentType("text/html");
+        
         PrintWriter out = response.getWriter();
-
         out.print("<html>");
         out.print("<body onLoad='document.forms[\"login\"].submit();'>");
         out.print("<form id='login' method='POST' action='"
