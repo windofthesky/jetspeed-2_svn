@@ -43,17 +43,17 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * This request wrappers the servlet request and is used
- * within the container to communicate to the invoked servlet.
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * This request wrappers the servlet request and is used within the container to
+ * communicate to the invoked servlet.
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class ServletRequestImpl extends HttpServletRequestWrapper
 {
     /** Logger */
     private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
-    
+
     PortletWindow portletWindow = null;
 
     private Map portletParameters;
@@ -73,7 +73,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     //  ServletRequestWrapper overlay
 
     public String getParameter(String name)
-    {       
+    {
         Object value = this.getParameterMap().get(name);
         if (value == null)
         {
@@ -93,45 +93,39 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         }
     }
 
-    public Map getParameterMap() 
+    public Map getParameterMap()
     {
         //get control params
-        if (portletParameters == null) 
+        if (portletParameters == null)
         {
             portletParameters = new HashMap();
 
-            JetspeedRequestContext context = (JetspeedRequestContext)
-                  getAttribute("org.apache.jetspeed.request.RequestContext");
-            if (context != null) 
+            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
+            if (context != null)
             {
                 PortalURL url = context.getPortalURL();
                 Iterator iter = url.getRenderParamNames(portletWindow);
-                while (iter.hasNext()) 
+                while (iter.hasNext())
                 {
                     String name = (String) iter.next();
-                    String[] values = url.getRenderParamValues(
-                            portletWindow, name);
+                    String[] values = url.getRenderParamValues(portletWindow, name);
                     portletParameters.put(name, values);
 
                 }
             }
 
             //get request params
-            for (Enumeration parameters = super.getParameterNames();  parameters.hasMoreElements(); ) 
+            for (Enumeration parameters = super.getParameterNames(); parameters.hasMoreElements();)
             {
                 String paramName = (String) parameters.nextElement();
-                String[] paramValues = (String[]) super
-                        .getParameterValues(paramName);
+                String[] paramValues = (String[]) super.getParameterValues(paramName);
                 String[] values = (String[]) portletParameters.get(paramName);
 
-                if (values != null) 
+                if (values != null)
                 {
-                    String[] temp = new String[paramValues.length
-                            + values.length];
-                    System.arraycopy(paramValues, 0, temp, 0,
-                            paramValues.length);
-                    System.arraycopy(values, 0, temp, paramValues.length,
-                            values.length);
+                    String[] temp = new String[paramValues.length + values.length];
+                    System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
+                    System.arraycopy(values, 0, temp, paramValues.length, values.length);
                     paramValues = temp;
                 }
                 portletParameters.put(paramName, paramValues);
@@ -139,9 +133,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         }
         return Collections.unmodifiableMap(portletParameters);
         // return Collections.unmodifiableMap(super.getParameterMap().keySet());
-        
+
     }
-        
+
     public Enumeration getParameterNames()
     {
         return Collections.enumeration(this.getParameterMap().keySet());
@@ -161,13 +155,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         // just as well I guess.
         if (roleName.length() > 0)
         {
-            PortletDefinition portletDefinition = portletWindow
-                    .getPortletEntity().getPortletDefinition();
-            SecurityRoleRefSet roleRefSet = portletDefinition
-                    .getInitSecurityRoleRefSet();
-            SecurityRoleSet roleSet = portletDefinition
-                    .getPortletApplicationDefinition()
-                    .getWebApplicationDefinition().getSecurityRoles();
+            PortletDefinition portletDefinition = portletWindow.getPortletEntity().getPortletDefinition();
+            SecurityRoleRefSet roleRefSet = portletDefinition.getInitSecurityRoleRefSet();
+            SecurityRoleSet roleSet = portletDefinition.getPortletApplicationDefinition().getWebApplicationDefinition()
+                    .getSecurityRoles();
 
             Iterator roleRefIter = roleRefSet.iterator();
             while (roleRefIter.hasNext())
@@ -185,7 +176,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                     {
                         SecurityRole role = (SecurityRole) roleIter.next();
                         if (roleLinkName.equals(role.getRoleName()))
-                                return super.isUserInRole(roleLinkName);
+                            return super.isUserInRole(roleLinkName);
                     }
                     return false;
                 }
@@ -194,7 +185,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         }
         return false;
     }
-    
+
     /**
      * @see javax.servlet.http.HttpServletRequest#getAttribute(java.lang.String)
      */
@@ -203,10 +194,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         Object value = super.getAttribute(name);
         if (name.equals(PortletRequest.USER_INFO))
         {
-            JetspeedRequestContext context = (JetspeedRequestContext)
-                getAttribute("org.apache.jetspeed.request.RequestContext");
+            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
             if (null != context)
-            { 
+            {
                 String entityID = "--NULL--";
                 PortletEntity entity = portletWindow.getPortletEntity();
                 if (entity != null)
@@ -215,16 +205,18 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 }
                 PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
                 PortletApplicationDefinition portletAppDef = entity.getPortletDefinition().getPortletApplicationDefinition();
-                
+
                 if (null != portletAppDef)
                 {
                     value = context.getUserInfoMap(portletAppDef.getId());
+                    if (log.isDebugEnabled() && (null != value))
+                        log.debug(PortletRequest.USER_INFO + " map size: " + ((Map) value).size());
                 }
                 else
-                {                    
+                {
                     log.error("Entity is null:" + entityID);
                 }
-                  
+
             }
         }
         return value;
