@@ -54,6 +54,7 @@
 package org.apache.jetspeed.capability;
 
 import java.util.Iterator;
+import java.util.Collection;
 
 import org.apache.jetspeed.cps.CommonService;
 
@@ -67,15 +68,49 @@ public interface CapabilityService extends CommonService
 {
     /** The name of this service */
     public String SERVICE_NAME = "capability";
-    
+
     /**
-     * @param userAgent
-     * @return
+     * Creates a Capability Map with Capabilities, Mimetypes and mediaTypes for the given UserAgentPattern
+     * @param userAgent Agent from the request
+     * @return CapabilityMap populated with Capabilities, Mimetypes and Mediatype
+     * that match the userAgent
      */
     CapabilityMap getCapabilityMap(String userAgent);
-    
+
     /**
-     * @return
+     * Obtain an iterator of all existing clients.
+     * @return Returns an iterator for all existing Clients
      */
     Iterator getClients();
+
+    /**
+     * Finds a client for a given userAgentPattern
+     * @param userAgent
+     * @return Client that matches agent or null if no match is found
+     *
+     */
+    Client findClient(String userAgent);
+
+    /**
+     * Returns a collection of MediaTypes that matches the MimeTypes defined in the mimetype parameter
+     * @param Mimetype
+     *
+     * @return Collection of Mediatypes that matches the mimetypes
+     */
+    Collection getMediaTypesForMimeTypes(Iterator mimetypes);
+
+    /**
+     * Clears CapabilityMap cache
+     * TODO: Roger, why is this on the public interface. It seems to be impl specific 
+     */
+    void deleteCapabilityMapCache();
+    
+    /**
+     * Given a media type string, look up the corresponding media type object.
+     * 
+     * @param mediaType The string representation of a media type.
+     * @return The found media type object or if not found, null.
+     */
+    MediaType getMediaType(String mediaType);
+            
 }

@@ -55,7 +55,7 @@
 package org.apache.jetspeed.capability.impl;
 
 import org.apache.jetspeed.capability.Client;
-import java.util.Vector;
+import java.util.Collection;
 
 /**
  * Simple implementation of the ClientRegistry interface.
@@ -73,8 +73,8 @@ public class ClientImpl
     private String model = "";
     private String version = "";
     private String name;
-    private Vector mimetypes;
-    private Vector capabilities;
+    private Collection mimetypes;
+    private Collection capabilities;
     
     private int clientId;
 
@@ -210,22 +210,22 @@ public class ClientImpl
     }
 
 
-    public Vector getMimetypes()
+    public Collection getMimetypes()
     {
         return mimetypes;
     }
 
-    public void setMimetypes(Vector mimetypes)
+    public void setMimetypes(Collection mimetypes)
     {
         this.mimetypes = mimetypes;
     }
 
-    public Vector getCapabilities()
+    public Collection getCapabilities()
     {
         return capabilities;
     }
 
-    public void setCapabilities(Vector capabilities)
+    public void setCapabilities(Collection capabilities)
     {
         this.capabilities = capabilities;
     }

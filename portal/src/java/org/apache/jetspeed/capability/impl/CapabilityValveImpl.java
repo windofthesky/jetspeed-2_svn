@@ -59,8 +59,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-
+import org.apache.jetspeed.capability.CapabilityService;
+import org.apache.jetspeed.capability.CapabilityMap;
+import org.apache.jetspeed.capability.MediaType;
+import org.apache.jetspeed.capability.MimeType;
+import org.apache.jetspeed.cps.CommonPortletServices;
 
 /**
  * Invokes the capability mapper in the request pipeline
@@ -80,6 +85,11 @@ public class CapabilityValveImpl implements CapabilityValve
     {
 
     }
+    
+    protected CapabilityService getService()
+    {
+        return (CapabilityService) CommonPortletServices.getPortalService(CapabilityService.SERVICE_NAME);
+    }
 
     public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
@@ -88,50 +98,57 @@ public class CapabilityValveImpl implements CapabilityValve
 
         try
         {
-            // TODO: support request based selection of media type instead of using User-Agent header
-            //       mediaType = request.getRequest().getQueryString(Profiler.PARAM_MEDIA_TYPE);
-      /*      
-            String agent = request.getRequest().getHeader("User-Agent");                              
-            CapabilityMap cm = CapabilityMapFactory.getCapabilityMap(agent);
-                    
-            String mediaType = cm.getPreferredMediaType();
-                    
-            String mimeType = cm.getPreferredType().getCode();
-      */      
-            String encoding = request.getRequest().getCharacterEncoding();
-    /*            
-            if (encoding == null)
-            {           
-                Configuration configuration = Jetspeed.getContext().getConfiguration();
-                encoding = configuration.getString(CapabilityMapFactory.CONTENT_ENCODING_KEY, 
-                                                   CapabilityMapFactory.DEFAULT_CONTENT_ENCODING_KEY);
-                if (mimeType != null)
-                {
-                
-                    MediaTypeEntry media = (MediaTypeEntry) JetspeedRegistry.getEntry(
-                            RegistryService.MEDIA_TYPE,
-                            mimeType);
-                    if (media != null && media.getCharacterSet() != null)
-                    {
-                        encoding = media.getCharacterSet();
-                    }
-
-                }                                                      
+            String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);
+            String agent = request.getRequest().getHeader("User-Agent"); 
+            
+            // Connect to CapabilityService
+            CapabilityService service = getService();  
+            
+            // Get capability map
+            CapabilityMap cm = service.getCapabilityMap(agent);
+            
+            if ( cm == null)
+            {
+                log.debug("Couldn't create capability map for agent: " + agent);
             }
-        */    
+            else
+            {
+                log.debug("Created Capability map for agent: " + agent);
+            }
+            
+            MediaType mediaType = cm.getPreferredMediaType();                          
+            MimeType mimeType = cm.getPreferredType();  
+            
+            String encoding = request.getRequest().getCharacterEncoding();
+            
+            
+            if (encoding == null)
+            {
+                if (mediaType != null && mediaType.getCharacterSet() != null)
+                {
+                    encoding = mediaType.getCharacterSet();
+                }
+            }
+            
+            if (log.isDebugEnabled())
+            {
+                log.debug("MediaType: " + mediaType.getName());
+                log.debug("Encoding: "  + encoding);
+                log.debug("Mimetype: "  + mimeType.getName());
+            }
                                                                             
             // Put the encoding in the request
             request.setCharacterEncoding(encoding);
     
             // Put the CapabilityMap into the request
-            // request.setCapabilityMap(cm);
+            request.setCapabilityMap(cm);
             
             // Put the Media Type into the request
-            request.setMediaType("HTML");
+            request.setMediaType(mediaType.getName());
             
             // Put the Mime Type into the request
-            request.setMimeType("text/html");
-            request.getResponse().setContentType("text/html");
+            request.setMimeType(mimeType.getName());
+            request.getResponse().setContentType(mimeType.getName());
 
         } 
         catch (Exception e)

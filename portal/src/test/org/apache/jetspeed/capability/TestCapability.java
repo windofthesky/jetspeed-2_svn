@@ -54,7 +54,6 @@
  
 package org.apache.jetspeed.capability;
 
-import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -129,13 +128,29 @@ public class TestCapability extends JetspeedTest
         CapabilityService service = getService();               
         assertNotNull("capability service is null", service);
 
-        Iterator clients = service.getClients();
-        assertNotNull("getClients is null", clients);
-        while (clients.hasNext())
-        {
-            Client client = (Client)clients.next();
-            System.out.println("Client = " + client.getName());        
-        }
+        // Find specific client -- testing pattern matching
+        String userAgent;
+        System.out.println("Test pattern matching...")  ;   
+        
+        userAgent = "Mozilla/4.0";
+        System.out.println("Find pattern: " + userAgent)  ;   
+        
+        CapabilityMap cm = service.getCapabilityMap(userAgent);
+        assertNotNull("getCapabilityMap is null", cm);
+        
+        MediaType mediaType = cm.getPreferredMediaType();
+        assertNotNull("MediaType is null", mediaType); 
+        
+        MimeType mimeTypeObj =    cm.getPreferredType();
+        assertNotNull("MimeType is null", mimeTypeObj);         
+        String mimeType = mimeTypeObj.getName();
+         
+        String encoding = mediaType.getCharacterSet();
+        
+        System.out.println("MediaType = " + mediaType.getName());
+        System.out.println("Mimetype = " + mimeType);
+        System.out.println("Encoding = " + encoding);
+                
     }
 
 }

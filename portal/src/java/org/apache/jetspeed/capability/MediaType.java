@@ -54,7 +54,7 @@
 package org.apache.jetspeed.capability;
 
 import java.util.Vector;
-
+import java.util.Collection;
 
 /**
  * This entry describes all the properties that should be present in
@@ -66,7 +66,7 @@ import java.util.Vector;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface MediaTypeEntry 
+public interface MediaType
 {
     /**
      * Set MediaType ID -- Assigns ID
@@ -79,12 +79,12 @@ public interface MediaTypeEntry
      * @return MediaTypeID
      */
     public int getMediatypeId();
-    
+
     /** @return the character set associated with this MediaType */
     public String getCharacterSet();
 
     /** Sets the character set associated with this MediaType */
-    public void setCharacterSet( String charSet);
+    public void setCharacterSet(String charSet);
 
     /**
      * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
@@ -92,44 +92,77 @@ public interface MediaTypeEntry
      * order.
      *
      * @return a vector of capabilities
-     * 
      */
     public Vector getCapabilities();
-    
+
     /**
      * Set the capabilities
      * @param vector of capabilities
      */
     public void setCapabilities(Vector capabilities);
-    
-   /**
-   * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
-   * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
-   * order of importance.
-   *
-   * @return the MimeTypeMap
-   * @see MimeTypeMap
-   */
-  public Vector getMimetypes();
-  
-  /**
-   * Set mime types
-   * @param mimetypes
-   */
-  public void setMimetypes(Vector mimetypes);
-  
-  /**
-   *    removes the MimeType to the MimeType map 
-   * @param name
-   */
-  
-  public void removeMimetype(String name);
-  
-  /**
-   * removes the MimeType to the MimeType map 
-   * @param name
-   */
-  public void addMimetype(String name);
 
-    
+    /**
+    * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
+    * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
+    * order of importance.
+    *
+    * @return the MimeTypeMap
+    * @see MimeTypeMap
+    */
+    public Collection getMimetypes();
+
+    /**
+     * Set mime types
+     * @param mimetypes
+     */
+    public void setMimetypes(Collection mimetypes);
+
+    /**
+     * Removes the MimeType to the MimeType map 
+     * @param name of MimeType to remove
+     */
+
+    public void removeMimetype(String name);
+
+    /**
+     * Add MimeType to the MimeType map 
+     * @param name
+     */
+    public void addMimetype(String name);
+
+    /**
+     * Set Name of MediaType
+     * @param name Name of MediaType
+     */
+    public void setName(String name);
+
+    /**
+     * Get Name of MediaType
+     * @return Name of MediaType
+     */
+    public String getName();
+
+    /**
+     * Get Title of MediaType
+     * @return Title of MediaType
+     */
+    public String getTitle();
+
+    /**
+     * Set MediaType title
+     * @param title
+     */
+    public void setTitle(String title);
+
+    /**
+     * Get MediaType description
+     * @return Returns description of MediaType
+     */
+    public String getDescription();
+
+    /**
+     * Set description of MediaType
+     * @param desc Description string
+     */
+    public void setDescription(String desc);
 }

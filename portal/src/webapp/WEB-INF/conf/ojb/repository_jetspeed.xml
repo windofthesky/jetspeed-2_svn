@@ -802,7 +802,7 @@
    - M E D I A T Y P E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.capability.impl.MediaTypeEntryImpl"
+   	  class="org.apache.jetspeed.capability.impl.MediaTypeImpl"
    	  table="MEDIA_TYPE"
    >
       
@@ -842,9 +842,9 @@
           name="capabilities"
           element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
  
-          indirection-table="MEDIATYPE_TO_CAPABILITY"
+          indirection-table="CLIENT_TO_CAPABILITY"
        >
-          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-this-class column="CLIENT_ID"/>
           <fk-pointing-to-element-class column="CAPABILITY_ID"/>
        </collection-descriptor>
        
@@ -909,9 +909,9 @@
           name="capabilities"
           element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
  
-          indirection-table="MEDIATYPE_TO_CAPABILITY"
+          indirection-table="CLIENT_TO_CAPABILITY"
        >
-          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-this-class column="CLIENT_ID"/>
           <fk-pointing-to-element-class column="CAPABILITY_ID"/>
        </collection-descriptor>
        
@@ -919,9 +919,9 @@
           name="mimetypes"
           element-class-ref="org.apache.jetspeed.capability.impl.MimeTypeImpl"
  
-          indirection-table="MEDIATYPE_TO_MIMETYPE"
+          indirection-table="CLIENT_TO_MIMETYPE"
        >
-          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-this-class column="CLIENT_ID"/>
           <fk-pointing-to-element-class column="MIMETYPE_ID"/>
        </collection-descriptor>
       

@@ -53,7 +53,7 @@
  */
 package org.apache.jetspeed.capability;
 
-import java.util.Vector;
+import java.util.Collection;
 
 /**
  * <P>
@@ -66,21 +66,20 @@ import java.util.Vector;
  * @author <a href="raphael@apache.org">Raphaël Luta</a>
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  */
-public interface Client 
+public interface Client
 {
     /**
-    * Set Client ID -- Assigns the Client ID
-    * @param id
-    */
+     * Set Client ID -- Assigns the Client ID
+     * @param id
+     */
     public void setClientId(int id);
- 
-    
-       /**
-    * Get Client ID
-    * @return Client ID
-    */
+
+    /**
+     * Get Client ID
+     * @return Client ID
+     */
     public int getClientId();
-       
+
     /**
      * Returns the pattern parameter of this client. The pattern is used
      * to match a client to the user agent used to access the portal. If
@@ -149,17 +148,17 @@ public interface Client
      * @return the MimeTypeMap
      * @see MimeTypeMap
      */
-    public Vector getMimetypes();
-    
+    public Collection getMimetypes();
+
     /**
      * Set MimeTypes
      * @param mimetypes
      */
-    public void setMimetypes(Vector mimetypes);
+    public void setMimetypes(Collection mimetypes);
 
     String getName();
     void setName(String name);
-    
+
     /**
      * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
      * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
@@ -168,7 +167,12 @@ public interface Client
      * @return the CapabilityMap
      * @see CapabilityMap
      */
-    public Vector getCapabilities();
-    public void setCapabilities(Vector capabilities);
+    public Collection getCapabilities();
+
+    /**
+     * Assigns a list of capabilities
+     * @param capabilities
+      */
+    public void setCapabilities(Collection capabilities);
 
 }

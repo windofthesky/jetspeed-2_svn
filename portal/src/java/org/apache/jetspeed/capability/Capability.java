@@ -52,7 +52,6 @@
  * <http://www.apache.org/>.
  */
 
-
 package org.apache.jetspeed.capability;
 
 /**
@@ -69,21 +68,21 @@ public interface Capability
      * @param id
      */
     public void setCapabilityId(int id);
-    
+
     /**
      * Get CapabilityId
      * 
      * @return capabilityId
      */
     public int getCapabilityId();
-    
+
     /**
      * Set Capability name
      * 
      * @param name
      */
     public void setName(String name);
-    
+
     /**
      * Get CapabilityId
      * 

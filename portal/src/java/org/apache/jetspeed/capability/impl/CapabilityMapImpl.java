@@ -55,15 +55,17 @@ package org.apache.jetspeed.capability.impl;
 
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.capability.Client;
+import org.apache.jetspeed.capability.Capability;
+import org.apache.jetspeed.capability.MediaType;
 
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.jetspeed.capability.MimeType;
 
 /**
- * IMplementation for capabilityMap interface
+ * Implementation for capabilityMap interface
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
@@ -71,29 +73,81 @@ import org.apache.jetspeed.capability.MimeType;
 class CapabilityMapImpl implements CapabilityMap
 {
     // Members
-    private String      useragent;        // User agent for request
-    private Hashtable    mimeTypeMap;    // supported Mimetypes for Agent
-    private Hashtable    capabiltyMap;    // supported Capabilities for Agent
-    private Hashtable    mediaTypeMap;    // supported MediaTypes for Agent
-    private Client    client;            // client for Agent
+    private String useragent; // User agent for request
+    private Map mimeTypeMap = new HashMap(); // supported Mimetypes for Agent
+    private Map capabilityMap = new HashMap();
+    // supported Capabilities for Agent
+    private Map mediaTypeMap = new HashMap(); // supported MediaTypes for Agent
+    private Client client; // client for Agent
 
-    
+    /**
+        Sets the client for the CapabilityMap
+    */
+    public void setClient(Client client)
+    {
+        this.client = client;
+    }
+
+    /**
+        Returns the Client for the CapabilityMap
+    */
+    public Client getClient()
+    {
+        return this.client;
+    }
+
+    /**
+        Add capability to the CapabilityMap
+    */
+    public void addCapability(Capability capability)
+    {
+        this.capabilityMap.put(capability.getName(), capability);
+    }
+
+    /**
+        Add Mimetype to the MimetypeMap
+    */
+    public void addMimetype(MimeType mimetype)
+    {
+        this.mimeTypeMap.put(mimetype.getName(), mimetype);
+    }
+
+    /**
+        Add MediaType to the MediaTypeMap
+    */
+    public void addMediaType(MediaType mediatype)
+    {
+        this.mediaTypeMap.put(mediatype.getName(), mediatype);
+    }
+
     /**
     Returns the preferred MIME type for the current user-agent
     */
     public MimeType getPreferredType()
     {
         // Return first entry
-        Enumeration e = this.mimeTypeMap.elements();
-        return (MimeType)e.nextElement();
+        Iterator e = this.mimeTypeMap.values().iterator();
+        if (e.hasNext())
+        {
+            return (MimeType) e.next();
+        } else
+        {
+            return null; // TODO: NEVER return null
+        }
     }
 
     /**
     Returns the preferred media type for the current user-agent
     */
-    public String getPreferredMediaType()
+    public MediaType getPreferredMediaType()
     {
-        return null;
+        // Return first entry
+        Iterator e = this.mediaTypeMap.values().iterator();
+        if (e.hasNext())
+        {
+            return (MediaType) e.next();
+        } 
+        return null; // TODO: NEVER RETURN NULL
     }
 
     /**
@@ -102,7 +156,7 @@ class CapabilityMapImpl implements CapabilityMap
      */
     public Iterator listMediaTypes()
     {
-        return null;        
+        return mediaTypeMap.values().iterator();
     }
 
     /**
@@ -114,18 +168,43 @@ class CapabilityMapImpl implements CapabilityMap
     }
 
     /**
-    Checks to see if the current agent has the specified capability
-    */
+     * set userAgent
+     */
+    public void setAgent(String userAgent)
+    {
+        this.useragent = userAgent;
+    }
+
+    /**
+     * Checks to see if the current agent has the specified capability
+     */
     public boolean hasCapability(int capability)
-    {    
+    {
+        Iterator capabilities = capabilityMap.values().iterator();
+        while (capabilities.hasNext())
+        {
+            if (((Capability) capabilities.next()).getCapabilityId()
+                == capability)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
     /**
-    Checks to see if the current agent has the specified capability
-    */
+     *  Checks to see if the current agent has the specified capability
+     */
     public boolean hasCapability(String capability)
     {
+        Iterator capabilities = capabilityMap.values().iterator();
+        while (capabilities.hasNext())
+        {
+            if (((Capability) capabilities.next()).getName() == capability)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -134,7 +213,7 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public MimeType[] getMimeTypes()
     {
-        return null;        
+        return null;
     }
 
     /**
@@ -142,6 +221,14 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public boolean supportsMimeType(MimeType mimeType)
     {
+        Iterator mimetypes = mimeTypeMap.values().iterator();
+        while (mimetypes.hasNext())
+        {
+            if (((MimeType) mimetypes.next()).getName() == mimeType.getName())
+            {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -156,14 +243,22 @@ class CapabilityMapImpl implements CapabilityMap
      */
     public boolean supportsMediaType(String media)
     {
+        Iterator mediatypes = mediaTypeMap.values().iterator();
+        while (mediatypes.hasNext())
+        {
+            if (((MediaType) mediatypes.next()).getName() == media)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
     /**
-    Create a map -> string representation
-    */
+     * Create a map -> string representation
+     */
     public String toString()
-    {    
+    {
         return "";
     }
 

@@ -53,8 +53,9 @@
  */
 package org.apache.jetspeed.capability.impl;
 
-import org.apache.jetspeed.capability.MediaTypeEntry;
+import org.apache.jetspeed.capability.MediaType;
 import java.util.Vector;
+import java.util.Collection;
 
 /**
  * Default bean like implementation of MediaTypeEntry interface
@@ -63,18 +64,22 @@ import java.util.Vector;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class MediaTypeEntryImpl 
-    implements MediaTypeEntry
+public class MediaTypeImpl 
+    implements MediaType
 {
     protected String characterSet;
     private Vector capabilities;
-    private Vector mimetypes;
+    private Collection mimetypes;
     private int mediatypeId;
+    private String title;
+    private String description;
+    
+    private String name;    // MediaTypeEntry name
 
-    public MediaTypeEntryImpl()
+    public MediaTypeImpl()
     {}
 
-    public MediaTypeEntryImpl(long id,
+    public MediaTypeImpl(long id,
                               String name,
                               int _hidden,
                               String mimeType,
@@ -97,11 +102,11 @@ public class MediaTypeEntryImpl
             return false;
         }
 
-        MediaTypeEntryImpl obj = (MediaTypeEntryImpl)object;
+        MediaTypeImpl obj = (MediaTypeImpl)object;
 
         if (mimetypes.isEmpty()!= true)
         {
-            if ( !mimetypes.contains(obj.getMimetypes().firstElement()) )
+            if ( !mimetypes.contains(obj.getMimetypes().iterator().next()) )
             {
                 return false;
             }
@@ -161,12 +166,12 @@ public class MediaTypeEntryImpl
         this.capabilities = capabilities;
     }
     
-    public Vector getMimetypes()
+    public Collection getMimetypes()
     {
         return this.mimetypes;
     }
     
-    public void setMimetypes(Vector mimetypes)
+    public void setMimetypes(Collection mimetypes)
     {
         this.mimetypes = mimetypes;
     }
@@ -201,5 +206,42 @@ public class MediaTypeEntryImpl
     {
         return this.mediatypeId;
     }
+    
+    /**
+      * Set name ob MediaTypeEntry
+      */
+     public void setName(String name)
+     {
+         this.name = name;
+     }
+  
+     /**
+      * Get name ob MediaTypeEntry
+      */
+ 
+     public String getName()
+     {
+         return this.name;
+     }
+     
+     public String getTitle()
+     {
+         return this.title;
+     }
 
+     public void setTitle(String title)
+     {
+         this.title = title;
+     }
+     
+     public String getDescription()
+     {
+         return this.description;
+     }
+
+
+    public void setDescription(String desc)
+    {
+        this.description = desc;
+    }
 }

@@ -56,7 +56,6 @@ package org.apache.jetspeed.capability.impl;
 
 import org.apache.jetspeed.capability.MimeType;
 
-
 /**
  * Mimetype implementation class.
  *
@@ -74,7 +73,7 @@ public class MimeTypeImpl implements MimeType
      */
     public void setMimetypeId(int id)
     {
-      this.mimeTypeId = id;
+        this.mimeTypeId = id;
     }
 
     /* (non-Javadoc)
