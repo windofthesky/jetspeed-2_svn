@@ -41,12 +41,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
@@ -284,12 +286,21 @@ public class JetspeedPowerTool implements ViewTool
      * Gets the portlet mode for a current portlet window (fragment)
      * 
      * @return The portlet mode of the current window
+     * @throws Exception
      */
-    public PortletMode getPortletMode()
+    public PortletMode getPortletMode() throws Exception
     {
         RequestContext context = Jetspeed.getCurrentRequestContext();
         NavigationalState nav = context.getNavigationalState();
-        return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));        
+        try
+        {
+            return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));
+        }
+        catch (FailedToRetrievePortletWindow e)
+        {
+            handleError(e, e.toString(), getCurrentFragment());
+            return null;
+        }        
     }
     
     /**
@@ -499,7 +510,14 @@ public class JetspeedPowerTool implements ViewTool
 
         // We need to flush so that content gets render in the correct place
         flush();
-        getContentDispatcher().include(f, renderRequest, renderResponse);
+        try
+        {
+            getContentDispatcher().include(f, renderRequest, renderResponse);
+        }
+        catch (FailedToRenderFragmentException e)
+        {
+            handleError(e, e.getMessage(), f);
+        }
         
         Set exceptions = (Set) renderRequest.getAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX+f.getId());
     	if(exceptions != null)
@@ -760,7 +778,7 @@ public class JetspeedPowerTool implements ViewTool
      * @param e
      * @param msg
      */
-    protected void handleError( Exception e, String msg, Fragment fragment ) throws Exception
+    protected void handleError( Exception e, String msg, Fragment fragment ) 
     {
         log.error(msg, e);
         
@@ -860,6 +878,37 @@ public class JetspeedPowerTool implements ViewTool
         return action;
         
     }
+    /**
+     * 
+     * <p>
+     * getTitle
+     * </p>
+     * Returns the appropriate for the title based on locale prferences
+     * 
+     * @param entity
+     * @return
+     */
+    public String getTitle(PortletEntity entity, Fragment f)
+    {
+        String title=null;
+        
+        if(f != null)
+        {
+            title = f.getTitle();
+        }
+        
+        if(entity != null && title == null)
+        {
+            title = Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+        }
+        else if(title == null)
+        {
+            title = "Portlet Unavailable";
+        }
+        
+        return title;
+    }
+    
     /**
      * 
      * <p>
