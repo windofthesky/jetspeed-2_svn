@@ -45,13 +45,9 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  */
 public interface MutablePortletApplication extends PortletApplicationDefinition, Serializable
 {
-    GenericMetadata getMetadata();
+    public GenericMetadata getMetadata();
     
-    void setMetadata(GenericMetadata metadata);
-    
-    Collection getMetadataFields();
-    
-    void setMetadataFields(Collection metadataFields);
+    public void setMetadata(GenericMetadata metadata);
     
     void setWebApplicationDefinition(WebApplicationDefinition wad);
 

@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
@@ -50,10 +49,6 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     GenericMetadata getMetadata();
     
     void setMetadata(GenericMetadata metadata);
-    
-    Collection getMetadataFields();
-    
-    void setMetadataFields(Collection metadataFields);
     
     void addLanguage(Language lang);
 

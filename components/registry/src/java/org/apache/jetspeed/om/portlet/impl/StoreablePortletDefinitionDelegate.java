@@ -16,7 +16,6 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
@@ -737,21 +736,5 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
      */
     public void setMetadata(GenericMetadata metadata) {
         portlet.setMetadata(metadata);  
-    }
-
-    /**
-     * @return
-     */
-    public Collection getMetadataFields()
-    {
-        return portlet.getMetadataFields();
-    }
-
-    /**
-     * @param collection
-     */
-    public void setMetadataFields(Collection metadataFields)
-    {
-        portlet.setMetadataFields(metadataFields);
     }
 }
