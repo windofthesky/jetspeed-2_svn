@@ -19,13 +19,22 @@ limitations under the License.
 <html>
 <head>
     <title>Welcome to Jetspeed 2</title>
-    <link href="content/css/styles.css" type="text/css" rel="stylesheet">
+	<style type="text/css" media="all">
+    #set($cssUrls = $renderRequest.getPortletSession().getAttribute("cssUrls"))
+	#foreach($cssUrl in $cssUrls)
+		#parse("$cssUrl")
+	#end
+    </style>
 </head>
+<body class="layout-Jetspeed">
 
-<body>
-
-
-
+#*
+<ol>
+#foreach($cssUrl in $cssUrls)
+	<li>$cssUrl</li>
+#end
+</ol>
+*#
 
 
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
@@ -37,3 +46,9 @@ limitations under the License.
 ## $jetspeed.include($jetspeed.currentFragment)
 
 <!--  END: layout/html/jetspeed/decorator.vm -->
+
+
+
+
+
+

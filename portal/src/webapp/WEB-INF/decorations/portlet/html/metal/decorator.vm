@@ -24,7 +24,7 @@ limitations under the License.
 
 <!-- Begin portlet/html/jetspeed/decorator.vm  -->
 
-<div class="Metal" >
+<div class="portlet-Metal" >
 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
 ##
 ## Portlet Title Bar
