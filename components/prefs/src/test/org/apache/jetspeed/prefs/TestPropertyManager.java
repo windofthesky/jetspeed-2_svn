@@ -20,28 +20,21 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
 import org.apache.jetspeed.prefs.impl.PropertyException;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.prefs.om.Property;
-
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * <p>Unit testing for {@link PropertyManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestPropertyManager extends AbstractComponentAwareTestCase
+public class TestPropertyManager extends PersistenceSupportedTestCase
 {
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The persistence store. */
-    private static PersistenceStore store;
 
     /** The property manager. */
     private static PropertyManager pms;
@@ -52,13 +45,15 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     private final static int USER_PROPERTY_SET_TYPE = 0;
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
+    private PreferencesProvider provider;
+
     /**
      * <p>Defines the test case name for junit.</p>
      * @param testName The test case name.
      */
     public TestPropertyManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -67,8 +62,9 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
+        pms =new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        // Class.forName("org.apache.jetspeed.prefs.impl.PreferencesImpl");
     }
 
     /**
@@ -76,30 +72,17 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         clean();
+        // super.tearDown();        
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPropertyManager.class);
-        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPropertyManager.class);
     }
 
-    /**
-     * <p>Test the container.</p>
-     */
-    public void testContainer()
-    {
-        assertNotNull(container);
-    }
-
+ 
     /**
      * <p>Test add property keys to a {@link Preferences} node.</p>
      */
