@@ -6,8 +6,6 @@ import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
 import org.hsqldb.jdbcDriver
-import org.apache.jetspeed.components.hsql.HSQLServerComponent
-import org.apache.jetspeed.components.hsql.HSQLServerComponent
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
@@ -43,14 +41,16 @@ Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDICompone
 Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
 container.registerComponentImplementation(jndiClass, tyrexJndiClass)
 
-// Create a datasource based on the HSQL server we just created
 Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
 String url = System.getProperty("org.apache.jetspeed.database.url")
 String driver = System.getProperty("org.apache.jetspeed.database.driver")
 String user = System.getProperty("org.apache.jetspeed.database.user")
 String password = System.getProperty("org.apache.jetspeed.database.password")
 
-container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+if(url != null)
+{
+	container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+}
 
 //
 // Persistence

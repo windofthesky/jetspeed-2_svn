@@ -1,6 +1,5 @@
 import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.commons.configuration.PropertiesConfiguration
-import org.apache.jetspeed.components.hsql.HSQLServerComponent
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
