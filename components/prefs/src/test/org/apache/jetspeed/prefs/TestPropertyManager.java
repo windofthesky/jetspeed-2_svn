@@ -26,12 +26,7 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.components.datasource.DatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.prefs.impl.PropertyException;
 import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 
