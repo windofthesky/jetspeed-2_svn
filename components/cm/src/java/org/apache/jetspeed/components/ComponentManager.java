@@ -63,7 +63,7 @@ public class ComponentManager implements ComponentManagement, ContainerManagemen
             parentRef.set(parent);            
         }
         containerBuilder = nano.getContainerBuilder();
-        containerBuilder.buildContainer(rootContainerRef, parentRef, scope, true); 
+        containerBuilder.buildContainer(rootContainerRef, parentRef, scope); 
         this.rootContainer = (MutablePicoContainer) rootContainerRef.get();
     }
 
