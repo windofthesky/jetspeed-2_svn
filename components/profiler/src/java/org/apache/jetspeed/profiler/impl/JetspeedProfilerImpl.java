@@ -73,7 +73,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
 
     private Map principalRules = new HashMap();
 
-    public JetspeedProfilerImpl( String repositoryPath )
+    public JetspeedProfilerImpl(String repositoryPath)
     {
         super(repositoryPath);
     }
@@ -94,14 +94,22 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      *                    if any the implementation classes defined within the
      *                    <code>properties</code> argument could not be found.
      */
-    public JetspeedProfilerImpl( String repositoryPath, Properties properties ) throws ClassNotFoundException
+    public JetspeedProfilerImpl(String repositoryPath, String defaultRule) 
+    throws ClassNotFoundException
     {
         this(repositoryPath);
-        this.defaultRule = properties.getProperty("defaultRule", "j1");
-        initModelClasses(properties); // TODO: move this to
+        this.defaultRule = defaultRule; 
         // start()
     }
 
+    public JetspeedProfilerImpl( String repositoryPath, String defaultRule, Properties properties) 
+    throws ClassNotFoundException
+    {
+        this(repositoryPath, defaultRule);
+        initModelClasses(properties); // TODO: move this to
+        // start()
+    }
+    
     private void initModelClasses( Properties properties ) throws ClassNotFoundException
     {
         String modelName = "";
