@@ -1,0 +1,164 @@
+.Jetspeed .PTitleLeft
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	
+	/** Always use relative path ! **/
+	background:  url(content/jetspeed/images/titleleft.gif);
+}
+
+.Jetspeed .PTitle
+{
+	/**
+	Specify the height of the image used
+	else it will use the text height	
+	**/
+	height:21px;
+	color:#FFFFFF;
+	font-weight:bold;
+	background:  url(content/jetspeed/images/title.gif);
+}
+ 
+.Jetspeed .PTitleRight
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	background:  url(content/jetspeed/images/titleright.gif);
+}
+
+.Jetspeed .PContentLeft
+{
+	width:10px;
+	background: url(content/jetspeed/images/contentleft.gif);
+	height : 100%;
+
+}
+
+.Jetspeed .PContent
+{
+	overflow : scroll;
+
+}
+
+.Jetspeed .PContentRight
+{
+	width:10px;
+	background:  url(content/jetspeed/images/contentright.gif);
+	height : 100%;
+
+}
+
+.Jetspeed .PBottomLeft
+{
+	width:10px;
+	background:  url(content/jetspeed/images/bottomleft.gif);
+}
+
+.Jetspeed .PBottom
+{
+	/**
+	Specify the height of the image used
+	else it won't appear
+	**/
+	height:13px;
+	background:  url(content/jetspeed/images/bottom.gif);
+}
+
+.Jetspeed .PBottomRight
+{
+	width:10px;
+	background:  url(content/jetspeed/images/bottomright.gif);
+}
+
+.Jetspeed .TabLeft
+{
+	width:12px;
+	height:25px;
+	background:  url(content/jetspeed/images/tableft.gif);
+}
+
+.Jetspeed .TabMiddle
+{
+	font-weight:bold;
+	font-size: 9pt;
+	background:  url(content/jetspeed/images/tabmiddle.gif);	
+}
+
+.Jetspeed .TabRight
+{
+	width:12px;
+	background:  url(content/jetspeed/images/tabright.gif);
+}
+
+
+.Jetspeed .TabLeftLow
+{
+	width:12px;
+	background:  url(content/jetspeed/images/tableft_low.gif);
+}
+
+.Jetspeed .TabMiddleLow
+{
+	font-weight:bold;
+	background:  url(content/jetspeed/images/tabmiddle_low.gif);	
+}
+
+.Jetspeed .TabRightLow
+{
+	width:12px;
+	background:  url(content/jetspeed/images/tabright_low.gif);
+}
+ 
+.Jetspeed .TabLink
+{
+	text-decoration:none;
+	font-size:6pt;
+}
+
+a:link.TabLink { color:black;font-size:9pt;font-weight:normal; }
+a:visited.TabLink { color:black;font-size:9pt;font-weight:normal; }
+a:hover.TabLink { color:#6F6F6F;font-size:9pt;font-weight:normal; }
+
+
+.Jetspeed .MenuLeft
+{
+	width:12px;
+	background:  url(content/jetspeed/images/tabmiddle.gif);
+}
+
+
+.Jetspeed .MenuMiddle
+{
+	font-size:9pt;
+	font-weight:bold;
+	background:  url(content/jetspeed/images/tabmiddle.gif);
+}
+
+.Jetspeed .MenuRight
+{
+	background:  url(content/jetspeed/images/tabmiddle.gif);
+}
+
+.Jetspeed .MenuLeftLow
+{
+	width:12px;
+	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+}
+
+
+.Jetspeed .MenuMiddleLow
+{
+	font-size:8pt;
+	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+}
+
+.Jetspeed .MenuRightLow
+{
+	background:  url(content/jetspeed/images/tabmiddle_low.gif);
+}

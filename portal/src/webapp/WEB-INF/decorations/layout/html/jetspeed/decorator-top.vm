@@ -1,0 +1,9 @@
+<!--  BEGIN: layout/html/jetspeed/decorator.vm -->
+
+<p>
+<img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
+</p>
+
+## $jetspeed.include($jetspeed.currentFragment)
+
+<!--  END: layout/html/jetspeed/decorator.vm -->

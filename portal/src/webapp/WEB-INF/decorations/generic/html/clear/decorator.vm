@@ -1,0 +1,5 @@
+<!--  BEGIN: clear/decorator.vm -->
+
+$jetspeed.include($jetspeed.currentFragment)
+
+<!--  END: clear/decorator.vm -->

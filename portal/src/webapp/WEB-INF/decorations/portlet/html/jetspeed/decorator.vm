@@ -1,0 +1,64 @@
+#set($myPage = $jetspeed.page)
+
+#set($myF = $jetspeed.currentFragment)
+
+#set($myPE = $jetspeed.currentPortletEntity)
+
+
+<!-- Begin portlet/html/jetspeed/decorator.vm  -->
+
+<div class="Jetspeed" >
+<table border="0" cellpadding="0" cellspacing="0" width="100%" >
+##
+## Portlet Title Bar
+##
+#set ($cspan = 2)
+
+  <tr>
+    <td class="PTitleLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+
+    <td align="left" valign="middle" class="PTitle" >
+       ${myPE.portletDefinition.name}
+    </td>
+    
+    <td class="PTitleRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+  </tr>
+
+
+##
+## Portlet Content
+##
+#if (!$jetspeed.isHidden($myF))
+  <tr>
+    <td  nowrap="nowrap"><div class="PContentLeft" >&nbsp;</div></td>
+    
+    <td class="PContent" >
+       $jetspeed.include($myF)
+    </td>   
+    
+    <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>
+   
+  </tr>
+#end
+
+
+##
+## Portlet Bottom
+##
+  <tr>
+    <td class="PBottomLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="PBottom" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+    <td class="PBottomRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+  </tr>
+</table>
+</div>
+
+<!--  portlet/html/jetspeed/decorator.vm -->
+
+
+
+
+
+
+
+
