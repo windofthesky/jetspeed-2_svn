@@ -70,20 +70,7 @@
                banner="Build and Install the container jar"
                postProcessing="false"
                ignoreFailures="false"/>
-   <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="jar:install"
-               banner="Make Jetspeed core available in repo"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="mockobjects/project.xml"
-               goals="jar:install"
-               banner="Build and Install the MockObjects jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
+
     
      <!-- Build war files -->
      <maven:reactor
@@ -93,6 +80,7 @@
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+        
 
      <maven:reactor
                basedir="${basedir}"
