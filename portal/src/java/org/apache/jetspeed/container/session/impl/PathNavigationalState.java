@@ -15,63 +15,83 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.session.NavigationalStateContext;
+import org.apache.jetspeed.request.RequestContext;
 import org.picocontainer.Startable;
 
 /**
- * PathNavigationalState
+ * PathNavigationalState is based on Pluto navigational state.
+ * All nav state is stored as path parameters in the URL.
+ * This implementation does not currently support persisting navigational state
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public class PathNavigationalState implements NavigationalState, Startable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.session.NavigationalState#getState(org.apache.pluto.om.window.PortletWindow)
-     */
-    public WindowState getState(PortletWindow window)
-    {
-        // TODO Auto-generated method stub
-        return null;
+    static private final String ACTION = "ac";
+    static private final String MODE = "md";
+    static private final String PREFIX = "_";
+    static private final String PREV_MODE = "pm";
+    static private final String PREV_STATE = "ps";
+    static private final String RENDER_PARAM = "rp";
+    static private final String STATE = "st";
+    static private final String KEY_DELIMITER = ":";
+    static private final String PORTLET_ID = "pid";
+
+    public PathNavigationalState()
+    {   
     }
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.session.NavigationalState#setState(org.apache.pluto.om.window.PortletWindow, javax.portlet.WindowState)
-     */
-    public void setState(PortletWindow window, WindowState state)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.session.NavigationalState#getMode(org.apache.pluto.om.window.PortletWindow)
-     */
-    public PortletMode getMode(PortletWindow window)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.session.NavigationalState#setMode(org.apache.pluto.om.window.PortletWindow, javax.portlet.PortletMode)
-     */
-    public void setMode(PortletWindow window, PortletMode mode)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see org.picocontainer.Startable#start()
-     */
+            
     public void start()
     {
-        // TODO Auto-generated method stub
     }
-    /* (non-Javadoc)
-     * @see org.picocontainer.Startable#stop()
-     */
+    
     public void stop()
     {
-        // TODO Auto-generated method stub
     }
+    
+    public NavigationalStateContext createContext(RequestContext context)
+    {
+        // TODO: pool
+        return new PathNavigationalStateContext(context);
+    }
+    
+    public void storeContext(RequestContext context, NavigationalStateContext navContext)
+    {
+        // TODO: implement
+    }
+
+    public String getActionKey()
+    {
+        return ACTION;
+    }
+
+    public String getRenderParamKey()
+    {
+        return RENDER_PARAM;
+    }
+    
+    public String getModeKey()
+    {
+        return MODE;
+    }
+    
+    public String getPreviousModeKey()
+    {
+        return PREV_MODE;
+    }
+    
+    
+    public String getStateKey()
+    {
+        return STATE;
+    }
+    
+    public String getPreviousStateKey()
+    {
+        return PREV_STATE;
+    }
+    
 }

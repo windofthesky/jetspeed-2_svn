@@ -15,14 +15,9 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
-import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-import javax.servlet.http.HttpSession;
-
 import org.apache.jetspeed.container.session.NavigationalState;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.session.NavigationalStateContext;
+import org.apache.jetspeed.request.RequestContext;
 import org.picocontainer.Startable;
 
 /**
@@ -33,14 +28,17 @@ import org.picocontainer.Startable;
  */
 public class SessionNavigationalState implements NavigationalState, Startable
 {
-    HttpSession session;
-    
-    public SessionNavigationalState(HttpSession session)
-    {
-        this.session = session;
-    }
+    static private final String ACTION = "ac";
+    static private final String MODE = "md";
+    static private final String PREFIX = "_";
+    static private final String PREV_MODE = "pm";
+    static private final String PREV_STATE = "ps";
+    static private final String RENDER_PARAM = "rp";
+    static private final String STATE = "st";
+    static private final String KEY_DELIMITER = ":";
+    static private final String PORTLET_ID = "pid";
 
-    public SessionNavigationalState(Map session) // we need mock objects for HTTP stuff! 
+    public SessionNavigationalState()  
     {
     }
 
@@ -52,23 +50,47 @@ public class SessionNavigationalState implements NavigationalState, Startable
     public void stop()
     {
     }
-    
-    public WindowState getState(PortletWindow window)
+
+    public NavigationalStateContext createContext(RequestContext context)
     {
-        return null;
+        // TODO: pool
+        return new SessionNavigationalStateContext(context);
     }
     
-    public void setState(PortletWindow window, WindowState state)
+    public void storeContext(RequestContext context, NavigationalStateContext navContext)
     {
+        // TODO: implement
     }
     
-    public PortletMode getMode(PortletWindow window)
+    public String getActionKey()
     {
-        return null;
+        return ACTION;
+    }
+
+    public String getRenderParamKey()
+    {
+        return RENDER_PARAM;
     }
     
-    public void setMode(PortletWindow window, PortletMode mode)
+    public String getModeKey()
     {
+        return MODE;
+    }
+    
+    public String getPreviousModeKey()
+    {
+        return PREV_MODE;
+    }
+    
+    
+    public String getStateKey()
+    {
+        return STATE;
+    }
+    
+    public String getPreviousStateKey()
+    {
+        return PREV_STATE;
     }
     
 }
