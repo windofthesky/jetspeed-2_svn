@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
  * 
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
  * @author <a href="mailto:mavery@einnovation.com">Matt Avery </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: WebDescriptorUtilities.java,v 1.2 2004/05/12 22:25:04 taylor
  *                Exp $
  */
