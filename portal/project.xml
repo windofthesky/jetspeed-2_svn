@@ -13,6 +13,14 @@
   <shortDescription>Portal Aggregation Engine</shortDescription>
   <dependencies>
     <dependency>
+      <id>jetspeed-cps</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties> 
+    </dependency>
+    <dependency>
       <id>pluto</id>
       <groupId>pluto-container</groupId>
       <version>0.46</version>
