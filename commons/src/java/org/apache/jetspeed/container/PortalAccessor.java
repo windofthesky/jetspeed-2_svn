@@ -16,7 +16,6 @@
 package org.apache.jetspeed.container;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletConfig;
 
@@ -33,11 +32,10 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public class PortalAccessor
 {
 
-    public static PortletConfig createPortletConfig(ServletConfig servletConfig,
-                                                 PortletContext portletContext,
+    public static PortletConfig createPortletConfig(PortletContext portletContext,
                                                  PortletDefinition portletDefinition)
     {
-        return PortletConfigFactory.createPortletConfig(servletConfig, portletContext, portletDefinition);         
+        return PortletConfigFactory.createPortletConfig(portletContext, portletDefinition);         
     }
 
     public static PortletContext createPortletContext(ServletContext servletContext,

@@ -232,6 +232,9 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         {
             return "/";
         }
+        return path;
+        // TODO: local PA with own/extra resource paths support
+/*        
         if (app.getApplicationType() == MutablePortletApplication.WEBAPP)
         {
             return path;
@@ -246,5 +249,6 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         pathBuffer.append(path);
         String result = pathBuffer.toString();
         return result;
+*/        
     }
 }

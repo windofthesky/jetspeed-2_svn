@@ -30,23 +30,9 @@ package org.apache.jetspeed.deployment;
  */
 public interface DeploymentEvent 
 {
-    /** Standard deployment event */
-    String EVENT_TYPE_DEPLOY = "deploy";
-    /** Standard re-deployment event */
-    String EVENT_TYPE_REDEPLOY = "redeploy";
-    /** Standard un-deployment event */
-    String EVENT_TYPE_UNDEPLOY = "undeploy";
-    
-    int STATUS_OKAY = 0;
-	int STATUS_FAILED = 1;
-    
-	
-	/**
-	 * Returns the type of event this is.  You can use one of the three pre-defined types
-	 * or use a custom one as event types are freeform.
-	 * @return String this event's type.
-	 */
-	String getEventType();
+    int STATUS_OKAY = 1;
+    int STATUS_EVAL = 0;
+	int STATUS_FAILED = -1;
 	
 	/**
 	 * 
@@ -85,6 +71,4 @@ public interface DeploymentEvent
 	String getName();
 	
 	String getPath();
-	
-	
 }

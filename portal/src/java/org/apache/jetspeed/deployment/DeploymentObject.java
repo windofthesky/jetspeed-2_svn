@@ -15,10 +15,9 @@
  */
 package org.apache.jetspeed.deployment;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.jetspeed.util.FileSystemHelper;
 
 /**
  * <p>
@@ -75,14 +74,7 @@ public interface DeploymentObject
 	
 	/**
 	 * 
-	 * <p>
-	 * getFileObject
-	 * </p>
-	 *
-	 * @return A <code>org.apache.commons.vfs.FileObject</code> that represents the file structure of the
-	 * object to deploy.  This is usually a LocalFileSystem object or a JarFileSystem object.
+   * @return the underlying File object
 	 */
-	FileSystemHelper getFileObject();
-		
-
+	File getFile();
 }

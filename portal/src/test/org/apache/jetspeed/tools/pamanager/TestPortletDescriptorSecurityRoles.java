@@ -21,10 +21,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
@@ -75,8 +72,6 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
     {
         super.setUp();
         
-        PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
     }
     
     public void testSecurityRoles() throws Exception

@@ -56,7 +56,7 @@ public class TestSpringEngine extends AbstractEngineTest
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
                                      UserInfoManager.class, NavigationalStateComponent.class, RequestContextComponent.class, PortletWindowAccessor.class,
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
-                                     "deploymentManager", "portletCache", "portletFactory", "portletFactoryProxy", ServletConfig.class, 
+                                     "deploymentManager", "portletFactory", ServletConfig.class, 
                                      StaticInformationProvider.class};
     }
     

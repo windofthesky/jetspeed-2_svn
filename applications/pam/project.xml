@@ -155,6 +155,15 @@ limitations under the License.
             </properties>
         </dependency>
         <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.0</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
             <version>1.5</version>

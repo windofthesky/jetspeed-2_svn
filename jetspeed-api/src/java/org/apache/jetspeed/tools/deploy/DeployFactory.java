@@ -28,8 +28,7 @@ public interface DeployFactory
      *
      * @param inputWarPath
      * @param outputWarPath
-     * @param registerAtInit
      * @return Deploy instance
      */
-    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean registerAtInit) throws Exception;
+    public Deploy getInstance(String inputWarPath, String outputWarPath) throws Exception;
 }

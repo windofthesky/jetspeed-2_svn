@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Role Management</title>
-  <fragment id="rolemgt-1" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="rolemgt-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="rolemgt-2" type="portlet" name="security::RoleMgtPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
@@ -38,42 +36,30 @@ import org.apache.jetspeed.deployment.DeploymentObject;
 
 /**
  * <p>
- * AutoDeploymentManager
+ * StandardDeploymentManager
  * </p>
  * Implementation of {@link org.apache.jetspeed.deployment.DeploymentManager}
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
- * @version $Id: StandardDeploymentManager.java,v 1.2 2004/07/21 00:46:21 taylor
- *          Exp $
- *  
+ * @version $Id$
  */
 public class StandardDeploymentManager implements DeploymentManager
 {
-    protected Log log = LogFactory.getLog("deployment");
-
+    protected Log               log = LogFactory.getLog("deployment");
     protected FileSystemScanner scanner;
-
-    protected PortletRegistry registry;
-
-    protected Collection deploymentListeners;
-
-    protected long scanningDelay;
-
-    protected String stagingDirectories;
-
-    protected File[] stagingDirectoriesAsFiles;
-
-    protected Map fileDates;
-
-    protected List deployedFiles;
+    protected PortletRegistry   registry;
+    protected Collection        deploymentListeners;
+    protected long              scanningDelay;
+    protected String            stagingDirectories;
+    protected File[]            stagingDirectoriesAsFiles;
+    protected HashMap           ignoredFiles;
 
     /**
-     * 
      * @param stagingDirectories
      * @param scanningDelay
      * @param deploymentListeners
      */
-    public StandardDeploymentManager( String stagingDirectories, long scanningDelay, Collection deploymentListeners )
+    public StandardDeploymentManager(String stagingDirectories, long scanningDelay, Collection deploymentListeners)
     {
         this.scanningDelay = scanningDelay;
         this.stagingDirectories = stagingDirectories;
@@ -87,18 +73,15 @@ public class StandardDeploymentManager implements DeploymentManager
         }
 
         this.deploymentListeners = deploymentListeners;
-        this.deployedFiles = new ArrayList();
-        this.fileDates = new HashMap();
+        this.ignoredFiles = new HashMap();
     }
 
     /**
-     * 
      * <p>
      * start
      * </p>
      * 
      * @see org.picocontainer.Startable#start()
-     *  
      */
     public void start()
     {
@@ -114,11 +97,18 @@ public class StandardDeploymentManager implements DeploymentManager
             if (!stagingDirectoriesAsFiles[i].exists())
             {
                 log
-                        .error(stagingDirectoriesAsFiles[i].getAbsolutePath()
-                                + " does not exist, auto deployment disabled.");
+                                .error(stagingDirectoriesAsFiles[i].getAbsolutePath()
+                                       + " does not exist, auto deployment disabled.");
                 stop();
                 return;
             }
+        }
+
+        // initialize listeners (where needed)
+        Iterator itr = deploymentListeners.iterator();
+        while (itr.hasNext())
+        {
+            ((DeploymentEventListener) itr.next()).initialize();
         }
 
         if (scanningDelay > -1)
@@ -126,7 +116,7 @@ public class StandardDeploymentManager implements DeploymentManager
             try
             {
                 scanner = new FileSystemScanner(Thread.currentThread().getThreadGroup(),
-                        "Autodeployment File Scanner Thread");
+                                                "Autodeployment File Scanner Thread");
 
                 scanner.setDaemon(true);
                 // scanner.setContextClassLoader(Thread.currentThread().getContextClassLoader());
@@ -137,8 +127,8 @@ public class StandardDeploymentManager implements DeploymentManager
             catch (Exception e)
             {
                 log.warn(
-                        "Unable to intialize Catalina Portlet Application Manager.  Auto deployment will be disabled: "
-                                + e.toString(), e);
+                         "Unable to intialize Catalina Portlet Application Manager.  Auto deployment will be disabled: "
+                                                                                                    + e.toString(), e);
 
                 stop();
                 return;
@@ -147,19 +137,17 @@ public class StandardDeploymentManager implements DeploymentManager
         else
         {
             log.info("Scanning delay set to " + scanningDelay
-                    + " has disabled automatic scanning of staging directory.");
+                     + " has disabled automatic scanning of staging directory.");
         }
 
     }
 
     /**
-     * 
      * <p>
      * stop
      * </p>
      * 
      * @see org.picocontainer.Startable#stop()
-     *  
      */
     public void stop()
     {
@@ -176,8 +164,11 @@ public class StandardDeploymentManager implements DeploymentManager
         {
             // check for new deployment
             File aFile = stagedFiles[i];
-            if (!isDeployed(aFile.getAbsolutePath()))
+            if (!ignoreFile(aFile))
             {
+                boolean failed = false;
+                boolean unknown = false;
+
                 DeploymentObject deploymentObject = null;
                 try
                 {
@@ -187,29 +178,53 @@ public class StandardDeploymentManager implements DeploymentManager
                     }
                     catch (FileNotDeployableException e)
                     {
-                        // log.info(e.getMessage());
-                        continue;
+                        unknown = true;
                     }
 
-                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, deploymentObject);
-                    dispatch(event);
-                    if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
+                    if (deploymentObject != null)
                     {
-                        deployedFiles.add(aFile.getAbsolutePath());
-                        // record the lastModified so we can watch for
-                        // re-deployment
-                        long lastModified = aFile.lastModified();
-                        fileDates.put(aFile.getAbsolutePath(), new Long(lastModified));
+                        DeploymentEvent event = new DeploymentEventImpl(deploymentObject);
+                        dispatch(event);
+                        deploymentObject.close();
+                        if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
+                        {
+                            if (aFile.exists())
+                            {
+                                System.err.println("File: " + aFile.getAbsolutePath() + " deployed");
+                                boolean result = aFile.delete();
+                                if (!result)
+                                {
+                                    System.err.println("Failed to remove: " + aFile);
+                                }
+                            }
+                        }
+                        else if (event.getStatus() == DeploymentEvent.STATUS_EVAL)
+                        {
+                            unknown = true;
+                        }
+                        else
+                        {
+                            failed = true;
+                        }
                     }
-                    else
+                    if (failed || unknown)
                     {
-                        log.error("Error deploying " + aFile.getAbsolutePath());
+                        if (unknown)
+                        {
+                            log.warn("Unrecognized file " + aFile.getAbsolutePath());
+                        }
+                        else
+                        {
+                            log.error("Failure deploying " + aFile.getAbsolutePath());
+                        }
+                        ignoredFiles.put(aFile.getAbsolutePath(), new Long(aFile.lastModified()));
                     }
 
                 }
                 catch (Exception e1)
                 {
-                    log.error("Error deploying " + aFile.getAbsolutePath(), e1);
+                    log.error("Failure deploying " + aFile.getAbsolutePath(), e1);
+                    ignoredFiles.put(aFile.getAbsolutePath(), new Long(aFile.lastModified()));
                 }
                 finally
                 {
@@ -231,59 +246,6 @@ public class StandardDeploymentManager implements DeploymentManager
     }
 
     /**
-     * 
-     * <p>
-     * fireUndeploymentEvent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.deployment.DeploymentManager#fireUndeploymentEvent()
-     *  
-     */
-    public void fireUndeploymentEvent()
-    {
-        List stagedFileList= Arrays.asList(getAllStagedFiles());
-
-        for (int i = 0; i < deployedFiles.size(); i++)
-        {
-            // get a current list of all the files in the deploy directory
-            String fileName = (String) deployedFiles.get(i);
-            File aFile = new File(fileName);
-
-            // File is still on the file system, so skip it
-            if (stagedFileList.contains(aFile))
-            {
-                continue;
-            }
-
-            try
-            {
-
-                DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, aFile.getName(),
-                        aFile.getAbsolutePath());
-                dispatch(event);
-
-                if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
-                {
-                    deployedFiles.remove(i);
-                    fileDates.remove(fileName);
-                }
-                else
-                {
-                    log.error("Error undeploying " + aFile.getAbsolutePath());
-                }
-
-            }
-            catch (Exception e1)
-            {
-                log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
-            }
-
-        }
-
-    }
-
-    /**
-     * 
      * <p>
      * dispatch
      * </p>
@@ -291,137 +253,58 @@ public class StandardDeploymentManager implements DeploymentManager
      * @see org.apache.jetspeed.deployment.DeploymentManager#dispatch(org.apache.jetspeed.deployment.DeploymentEvent)
      * @param event
      */
-    public void dispatch( DeploymentEvent event )
+    public void dispatch(DeploymentEvent event)
     {
-        Iterator itr = deploymentListeners.iterator();
-        while (itr.hasNext())
+        try
         {
-            DeploymentEventListener listener = (DeploymentEventListener) itr.next();
-            try
+            Iterator itr = deploymentListeners.iterator();
+            while (itr.hasNext())
             {
-                if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+                DeploymentEventListener listener = (DeploymentEventListener) itr.next();
+                listener.invokeDeploy(event);
+                if (event.getStatus() != DeploymentEvent.STATUS_EVAL)
                 {
-                    listener.invokeDeploy(event);
-                }
-                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_UNDEPLOY))
-                {
-                    listener.invokeUndeploy(event);
-                }
-                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
-                {
-                    listener.invokeRedeploy(event);
-                }
-
-                if (event.getStatus() < 0)
-                {
-                    event.setStatus(DeploymentEvent.STATUS_OKAY);
+                    break;
                 }
             }
-            catch (DeploymentException e)
-            {
-                log.error(e.toString(), e);
-                event.setStatus(DeploymentEvent.STATUS_FAILED);
-            }
+        }
+        catch (DeploymentException e)
+        {
+            log.error(e.getMessage(), e);
+            event.setStatus(DeploymentEvent.STATUS_FAILED);
         }
     }
 
     /**
-     * 
      * <p>
-     * fireReDeploymentEvent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.deployment.DeploymentManager#fireRedeploymentEvent()
-     *  
-     */
-    public void fireRedeploymentEvent()
-    {
-                
-        for (int i = 0; i < deployedFiles.size(); i++)
-        {
-            // get a current list of all the files in the deploy directory
-            String fileName = (String) deployedFiles.get(i);
-            File aFile = new File(fileName);
-
-            // File is not on the file system, so skip it
-            Long longDateObj = ((Long) fileDates.get(fileName));
-            if (longDateObj == null)
-            {
-                continue;
-            }
-
-            long lastModifiedDate = longDateObj.longValue();
-            long currentModifiedDate = aFile.lastModified();
-
-            if (currentModifiedDate > lastModifiedDate)
-            {
-
-                DeploymentObject deploymentObject = null;
-                try
-                {
-                    deploymentObject = new StandardDeploymentObject(aFile);
-                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_REDEPLOY,
-                            deploymentObject);
-                    log.info("Re-deploying " + aFile.getAbsolutePath());
-                    dispatch(event);
-
-                    if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
-                    {
-                        fileDates.put(fileName, new Long(currentModifiedDate));
-                    }
-                    else
-                    {
-                        log.error("Error redeploying " + aFile.getAbsolutePath());
-                    }
-
-                }
-                catch (Exception e1)
-                {
-                    log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
-                }
-                finally
-                {
-                    if (deploymentObject != null)
-                    {
-                        try
-                        {
-                            // we are responsible for reclaiming the FSObject's
-                            // resource
-                            deploymentObject.close();
-                        }
-                        catch (IOException e)
-                        {
-
-                        }
-                    }
-
-                }
-
-            }
-        }
-
-    }
-
-    /**
-     * 
-     * <p>
-     * isDeployed
+     * ignoreFile
      * </p>
      * 
      * @param fileName
      * @return
      */
-    protected boolean isDeployed( String fileName )
+    protected boolean ignoreFile(File aFile)
     {
-        return deployedFiles.contains(fileName);
+        Long previousModified = (Long) ignoredFiles.get(aFile.getAbsolutePath());
+        if (previousModified != null)
+        {
+            if (previousModified.longValue() != aFile.lastModified())
+            {
+                ignoredFiles.remove(aFile.getAbsolutePath());
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
     }
-    
+
     /**
-     * 
      * <p>
      * getAllStagedFiles
      * </p>
-     *
+     * 
      * @return
      */
     protected File[] getAllStagedFiles()
@@ -429,9 +312,9 @@ public class StandardDeploymentManager implements DeploymentManager
         ArrayList fileList = new ArrayList();
         for (int i = 0; i < stagingDirectoriesAsFiles.length; i++)
         {
-           fileList.addAll(Arrays.asList(stagingDirectoriesAsFiles[i].listFiles()));
+            fileList.addAll(Arrays.asList(stagingDirectoriesAsFiles[i].listFiles()));
         }
-        
+
         return (File[]) fileList.toArray(new File[fileList.size()]);
     }
 
@@ -440,7 +323,7 @@ public class StandardDeploymentManager implements DeploymentManager
 
         private boolean started = true;
 
-        public FileSystemScanner( ThreadGroup threadGroup, String name ) throws FileNotFoundException, IOException
+        public FileSystemScanner(ThreadGroup threadGroup, String name) throws FileNotFoundException, IOException
         {
             super(threadGroup, name);
             setPriority(MIN_PRIORITY);
@@ -453,8 +336,6 @@ public class StandardDeploymentManager implements DeploymentManager
         {
             while (started)
             {
-                fireUndeploymentEvent();
-                fireRedeploymentEvent();
                 fireDeploymentEvent();
 
                 try
@@ -469,9 +350,7 @@ public class StandardDeploymentManager implements DeploymentManager
         }
 
         /**
-         * notifies a switch variable that exits the watcher's montior loop
-         * started in the <code>run()</code> method.
-         *  
+         * notifies a switch variable that exits the watcher's montior loop started in the <code>run()</code> method.
          */
         public void safeStop()
         {
@@ -479,6 +358,5 @@ public class StandardDeploymentManager implements DeploymentManager
         }
 
     }
-    
 
 }

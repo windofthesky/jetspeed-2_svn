@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.factory;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -23,16 +22,14 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.servlet.ServletConfig;
+import javax.portlet.UnavailableException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.container.PortalAccessor;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
 
 /**
  * <p>
@@ -48,173 +45,160 @@ import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
 public class JetspeedPortletFactory implements PortletFactory
 {
 
-    private PortletCache portletCache;
+    private HashMap portletCache;
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
     private final HashMap classLoaderMap;
 
     /**
      * 
      */
-    public JetspeedPortletFactory(PortletCache portletCache)
+    public JetspeedPortletFactory()
     {
-        super();
-        this.portletCache = portletCache;
+        this.portletCache = new HashMap();
         classLoaderMap = new HashMap();
     }
 
-    /**
-     * 
-     * <p>
-     * addClassLoader
-     * </p>
-     * 
-     * Adds a ClassLoader to the search path, <code>classLoaders</code>, of the JetspeedPortletFactory.
-     *
-     * @param cl
-     */
-    public void addClassLoader(String paId, ClassLoader cl)
-    {
-        if (paId != null && !paId.equals(""))
+    public void registerPortletApplication(PortletApplication pa, ClassLoader cl)
         {
             synchronized (classLoaderMap)
             {
-                if (classLoaderMap.get(paId) == null)
-                {
-                    classLoaderMap.put(paId, cl);
-                }
-            }
+        unregisterPortletApplication(pa);
+        classLoaderMap.put(pa.getId().toString(), cl);
         }
     }
 
-    /**
-     * <p>
-     * loadPortletClass
-     * </p>
-     * Loads a Portlet class by first checking Thread.currentThread().getContextClassLoader()
-     * then by checking all of the ClassLoaders in <code>classLoaders</code> until the
-     * class is located or returns <code>null</code> if the Portlet class could not be found.
-     *
-     * @param className
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    public Portlet loadPortletClass( String className ) throws InstantiationException, IllegalAccessException
+    public void unregisterPortletApplication(PortletApplication pa)
     {
-        Portlet portlet = null;
-        try
+      synchronized (classLoaderMap)
         {
-            portlet = (Portlet)Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
-        }
-        catch (ClassCastException cce)
+        synchronized (portletCache)
         {
-            cce.printStackTrace();
-        }
-        catch (ClassNotFoundException e)
+          ClassLoader cl = (ClassLoader)classLoaderMap.remove(pa.getId().toString());
+          if ( cl != null )
         {
-            synchronized (classLoaderMap)
+            ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
+
+            Iterator portletDefinitions = pa.getPortletDefinitions().iterator();
+            while (portletDefinitions.hasNext())
             {                
-                Iterator itr = classLoaderMap.values().iterator();
-                while (itr.hasNext() && portlet == null)
+              PortletDefinition pd = (PortletDefinition)portletDefinitions.next();
+              Portlet portlet = (Portlet)portletCache.remove(pd.getId().toString());
+              if ( portlet != null )
                 {
-                    ClassLoader cl = (ClassLoader) itr.next();
                     try
                     {                        
-                        portlet = (Portlet) cl.loadClass(className).newInstance();
-                        if(portlet != null)
+                  Thread.currentThread().setContextClassLoader(cl);
+                  portlet.destroy();
+                }
+                finally
                         {
-                           log.warn("Portlet class "+className+" successfuly located in classloader "+cl+".  "+
-                                     "You can safely ignore any prior messages classloading messages for this class."); 
+                  Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                         }
                     }
-                    catch (Exception e1)
-                    {
-                        // move along
-                        log.warn("The PortletFactory did not locate class "+className+" in classloader "+cl+".  "+
-                                   "This message can be ignored if "+className+" can be located in subsequent classloaders.  "+
-                                   "This message triggered by: "+e.toString());
                     }
-                    
                 }
             }
         }
-        return portlet;
     }
 
     /**
      * Gets a portlet by either creating it or returning a handle to it from the portlet 'cache'
      * 
      * @param portletDefinition The definition of the portlet
-     * @return Portlet 
+     * @return PortletInstance 
      * @throws PortletException
      */
-    public Portlet getPortlet( ServletConfig servletConfig, PortletDefinition portletDefinition ) throws PortletException
+    public PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException
     {
-        Portlet portlet = null;
-        Class portletClass = null;
-        String handle = null;
-        String portletName = portletDefinition.getId().toString();
-        //String portletName = portletDefinition.getName();
-        String className = portletDefinition.getClassName(); 
-        String paId = portletDefinition.getPortletApplicationDefinition().getWebApplicationDefinition().getId().toString();
+        PortletInstance portlet = null;
+        String portletName = pd.getId().toString();
+        PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
 
         try
         {                        
-            portlet = portletCache.get(portletName);
+          synchronized (portletCache)
+          {
+            portlet = (PortletInstance)portletCache.get(portletName);
             if (null != portlet)
             {
-               // ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
                 return portlet;
             }
             
-            portlet = loadPortletClass(className);
-            
-            if(portlet == null)
+            ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId().toString());
+            if ( paCl == null )
             {
-                throw new FileNotFoundException("Could not located portlet "+className+" in any classloader.");
+                throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
             }
             
-            ClassLoader cl = (ClassLoader) classLoaderMap.get(paId);
-            if (cl != null)
+            ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
+ 
+            try
             {
-                ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(cl);
+              Class clazz = paCl.loadClass(pd.getClassName());
+              try
+            {
+                Thread.currentThread().setContextClassLoader(paCl);
+                // wrap new Portlet inside PortletInstance which ensures the destroy
+                // method will wait for all its invocation threads to complete
+                // and thereby releasing all its ClassLoader locks as needed for local portlets.
+                portlet = new JetspeedPortletInstance((Portlet)clazz.newInstance());
             }
-            else
+              finally
             {
-            ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
+                Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+              }
+            }
+            catch (Exception e)
+            {
+                String msg = "Cannot create Portlet instance "+pd.getClassName()+" for Portlet Application "+pa.getName();
+                log.error(msg,e);
+                throw new UnavailableException(msg);
             }
       
-            ServletContext servletContext = servletConfig.getServletContext();
-            PortletContext portletContext = 
-                        PortalAccessor.createPortletContext(servletContext, 
-                                                            portletDefinition.getPortletApplicationDefinition());            
-            PortletConfig portletConfig = PortalAccessor.createPortletConfig(servletConfig, portletContext, portletDefinition);
+            PortletContext portletContext = PortalAccessor.createPortletContext(servletContext, pa);            
+            PortletConfig portletConfig = PortalAccessor.createPortletConfig(portletContext, pd);
             
+            try
+            {
+              try
+              {
+                Thread.currentThread().setContextClassLoader(paCl);
             portlet.init(portletConfig);            
-            portletCache.add(portletName, portlet);
-            
+              }
+              finally
+              {
+                Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+              }
+            }
+            catch (PortletException e1)
+            {
+                log.error("Failed to initialize Portlet "+pd.getClassName()+" for Portlet Application "+pa.getName(), e1);
+                throw e1;
+            }            
+            portletCache.put(portletName, portlet);
+          }
+        }
+        catch (PortletException pe)
+        {
+            throw pe;
         }
         catch (Throwable e)
         {
-            log.error("PortletFactory: Failed to load portlet "+className, e);
-            e.printStackTrace();
-            throw new PortletException( "PortletFactory: Failed to load portlet " + className +":"+e.toString(), e);
+            log.error("PortletFactory: Failed to load portlet "+pd.getClassName(), e);
+            throw new UnavailableException( "Failed to load portlet " + pd.getClassName() +": "+e.toString());
         }
-
         return portlet;
     }
     
-    public ClassLoader getPortletClassLoader(PortletDefinition portletDef)
+    public ClassLoader getPortletApplicationClassLoader(PortletApplication pa)
     {
-        String appId = portletDef.getPortletApplicationDefinition().getId().toString();
-        if(classLoaderMap.containsKey(appId))
+        synchronized (classLoaderMap)
         {
-            return (ClassLoader) classLoaderMap.get(appId);
+          if ( pa != null )
+        {
+              return (ClassLoader)classLoaderMap.get(pa.getId().toString());
         }
-        else
-        {
-            throw new IllegalStateException("No classloader has been defined for portlet application "+appId);
+          return null;
         }
     }
-
 }

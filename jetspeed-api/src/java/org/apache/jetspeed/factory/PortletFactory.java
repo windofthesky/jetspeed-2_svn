@@ -15,10 +15,10 @@
  */
 package org.apache.jetspeed.factory;
 
-import javax.portlet.Portlet;
 import javax.portlet.PortletException;
-import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -35,12 +35,9 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public interface PortletFactory
 {
-    void addClassLoader(String paId, ClassLoader cl);
+    void registerPortletApplication(PortletApplication pa, ClassLoader paClassLoader);
+    void unregisterPortletApplication(PortletApplication pa);
 
-    Portlet loadPortletClass( String className ) throws InstantiationException, IllegalAccessException;
-
-    Portlet getPortlet( ServletConfig servletConfig, PortletDefinition portletDefinition ) throws PortletException;
-    
-    ClassLoader getPortletClassLoader(PortletDefinition portletDef);
-
+    ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
+    PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
 }

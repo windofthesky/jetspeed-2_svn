@@ -20,10 +20,7 @@ import java.util.Iterator;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
@@ -46,15 +43,6 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
     protected void setUp() throws Exception
     {
         super.setUp();
-        PortletCache portletCache = new PortletCache();
-        try
-        {
-            new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
-        }
-        catch (IllegalStateException e)
-        {
-            
-        }
     }
 
     /*

@@ -37,16 +37,6 @@ public interface DeploymentManager
     /**
      * 
      * <p>
-     * fireUndeploymentEvent
-     * </p>
-     * Fires all undeployment events registered to this DeploymentManager.
-     *
-     */
-    void fireUndeploymentEvent();
-
-    /**
-     * 
-     * <p>
      * dispatch
      * </p>
      * 
@@ -55,14 +45,4 @@ public interface DeploymentManager
      * @param event {@link DeploymentEvent} to dispatch.
      */
     void dispatch( DeploymentEvent event );
-
-    /**
-     * 
-     * <p>
-     * redeployChangedArtifacts
-     * </p>
-     * Fires all redeployment events registered to this DeploymentManager.
-     *
-     */
-    void fireRedeploymentEvent();
 }

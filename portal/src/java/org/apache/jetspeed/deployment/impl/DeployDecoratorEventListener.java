@@ -1,8 +1,17 @@
-/**
- * Created on Jan 13, 2004
- *
+/*
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
- * @author
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.jetspeed.deployment.impl;
 
@@ -21,10 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
-import org.apache.jetspeed.deployment.simpleregistry.Entry;
-import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.util.FileSystemHelper;
 
 /**
  * <p>
@@ -32,34 +38,34 @@ import org.apache.jetspeed.util.FileSystemHelper;
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
- * @version $Id: DeployDecoratorEventListener.java,v 1.3 2004/03/25 21:39:22
- *          jford Exp $
- *  
+ * @version $Id$
  */
 public class DeployDecoratorEventListener implements DeploymentEventListener
 {
     protected static final Log log = LogFactory.getLog("deployment");
+    protected String           deployToDir;
 
-    protected static final String DEPLOYMENT_OBJECT_PATH_ATTR = "DEPLOYMENT_OBJECT_PATH";
-    protected static final String DEPLOYMENT_CONFIGURATION_ATTR = "DEPLOYMENT_CONFIGURATION";
-
-    protected SimpleRegistry registry;
-    protected String deployToDir;
-
-    public DeployDecoratorEventListener(SimpleRegistry registry, String deployToDir) throws IOException
+    public DeployDecoratorEventListener(String deployToDir) throws FileNotFoundException
     {
-        this.registry = registry;
-
         File checkFile = new File(deployToDir);
         if (checkFile.exists())
         {
-            this.deployToDir = deployToDir;
+            try
+            {
+                this.deployToDir = checkFile.getCanonicalPath();
+            }
+            catch (IOException e) {}
         }
         else
         {
             throw new FileNotFoundException("The deployment directory, " + checkFile.getAbsolutePath()
-                    + ", does not exist");
+                                            + ", does not exist");
         }
+    }
+
+    public void initialize()
+    {
+    // nothing to do
     }
 
     /**
@@ -73,6 +79,12 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
      */
     public void invokeDeploy(DeploymentEvent event) throws DeploymentException
     {
+        String fileName = event.getName();
+        if (!fileName.endsWith(".jar") && !fileName.endsWith(".zip"))
+        {
+            return;
+        }
+
         // get decorator configuration if available
         PropertiesConfiguration conf = getDecoratorConfiguration(event);
         // silently return if configuration not available, (assumes
@@ -84,128 +96,91 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
 
         // process decorator by id
         String id = conf.getString("id");
-        if (id != null)
+        if (id == null)
         {
-            log.info("Found decorator deployment archive " + id);
-            Entry entry = new Entry();
-            entry.setId(id);
-            entry.setAttribute(DEPLOYMENT_OBJECT_PATH_ATTR, event.getDeploymentObject().getPath());
-            entry.setAttribute(DEPLOYMENT_CONFIGURATION_ATTR, conf);
+            throw new DeploymentException("Unable to deploy decorator, \"id\" attribute not defined in configuration");
+        }
+        
+        log.info("Found decorator deployment archive " + id);
 
-            FileSystemHelper sourceObject = null;
-            FileSystemHelper deployObject = null;
-            try
+        try
+        {
+            // construct decorator deploy path
+            String baseDeployPath = getBaseDeployPath(conf);
+            String deployPath = baseDeployPath + File.separator + id;
+            File deployPathFile = new File(deployPath);
+
+            // undeploy decorator if it already exists and is a redeploy or
+            // skip deployment if initial deployment
+            if (deployPathFile.exists())
             {
-                // construct decorator deploy path
-                String baseDeployPath = getBaseDeployPath(conf);
-                String deployPath = baseDeployPath + File.separator + id;
-                File deployPathFile = new File(deployPath);
-                
-                // undeploy decorator if it already exists and is a redeploy or
-                // skip deployment if initial deployment
-                if (deployPathFile.exists())
+                invokeUndeploy(deployPathFile);
+            }
+
+            // redeploy/deploy decorator w/o META_INF jar metadata
+            log.info("Deploying decorator " + id + " to " + deployPath);
+            JarExpander.expand(event.getDeploymentObject().getFile(), deployPathFile);
+            File metaInf = new File(deployPathFile, "META-INF");
+            if (metaInf.exists())
+            {
+                DirectoryHelper cleanup = new DirectoryHelper(metaInf);
+                cleanup.remove();
+                cleanup.close();
+            }
+
+            // detect language/country localized decorator components
+            final List localeSpecificDeployPathsList = getLocaleSpecificDeployPaths(deployPathFile);
+
+            // deploy individual locale specific decorator components
+            Iterator deployPathsIter = localeSpecificDeployPathsList.iterator();
+            while (deployPathsIter.hasNext())
+            {
+                File localeDeployPathFile = (File) deployPathsIter.next();
+
+                // deploy to locale specific location
+                File deployToPathFile = new File(baseDeployPath
+                                                 + localeDeployPathFile.getPath().substring(deployPath.length())
+                                                 + File.separator + id);
+                log.info("Deploying locale specific decorator component to " + deployToPathFile.getPath());
+                deployToPathFile.mkdirs();
+
+                // deploy decorator components by moving from deployed decorator
+                File[] filesToDeploy = localeDeployPathFile.listFiles(new FileFilter()
                 {
-                    if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+                    public boolean accept(File pathname)
                     {
-                        invokeUndeploy(event);
+                        return !localeSpecificDeployPathsList.contains(pathname);
                     }
-                    else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
-                    {
-                        log.info("Skipping initial deployment of decorator " + id + " to " + deployPath);
-                        
-                        // register deployed decorator
-                        registry.register(entry);
-                        log.info("Registering decorator " + id);
-                        return;
-                    }
+                });
+                for (int i = 0; (i < filesToDeploy.length); i++)
+                {
+                    filesToDeploy[i].renameTo(new File(deployToPathFile, filesToDeploy[i].getName()));
                 }
-                
-                // redeploy/deploy decorator w/o META_INF jar metadata
-                log.info("Deploying decorator " + id + " to " + deployPath);
-                deployPathFile.mkdirs();
-                deployObject = new DirectoryHelper(deployPathFile);
-                sourceObject = event.getDeploymentObject().getFileObject();
-                deployObject.copyFrom(sourceObject.getRootDirectory());
-                File metaInf = new File(deployPathFile, "META-INF");
-                if (metaInf.exists())
+            }
+
+            // cleanup locale specific deployment directories
+            Iterator cleanupDeployPathsIter = localeSpecificDeployPathsList.iterator();
+            while (cleanupDeployPathsIter.hasNext())
+            {
+                File cleanupLocaleDeployPathFile = (File) cleanupDeployPathsIter.next();
+                if (cleanupLocaleDeployPathFile.exists())
                 {
-                    DirectoryHelper cleanup = new DirectoryHelper(metaInf);
+                    DirectoryHelper cleanup = new DirectoryHelper(cleanupLocaleDeployPathFile);
                     cleanup.remove();
                     cleanup.close();
                 }
-                
-                // detect language/country localized decorator components
-                final List localeSpecificDeployPathsList = getLocaleSpecificDeployPaths(deployPathFile);
-                
-                // deploy individual locale specific decorator components
-                Iterator deployPathsIter = localeSpecificDeployPathsList.iterator();
-                while (deployPathsIter.hasNext())
-                {
-                    File localeDeployPathFile = (File) deployPathsIter.next();
-                    
-                    // deploy to locale specific location
-                    File deployToPathFile = new File(baseDeployPath + localeDeployPathFile.getPath().substring(deployPath.length()) + File.separator + id);
-                    log.info("Deploying decorator " + id + " to " + deployToPathFile.getPath());
-                    deployToPathFile.mkdirs();
-                    
-                    // deploy decorator components by moving from deployed decorator
-                    File [] filesToDeploy = localeDeployPathFile.listFiles(new FileFilter()
-                        {
-                            public boolean accept(File pathname)
-                            {
-                                return !localeSpecificDeployPathsList.contains(pathname);
-                            }
-                        });
-                    for (int i = 0; (i < filesToDeploy.length); i++)
-                    {
-                        filesToDeploy[i].renameTo(new File(deployToPathFile, filesToDeploy[i].getName()));
-                    }
-                }
-                
-                // cleanup locale specific deployment directories
-                Iterator cleanupDeployPathsIter = localeSpecificDeployPathsList.iterator();
-                while (cleanupDeployPathsIter.hasNext())
-                {
-                    File cleanupLocaleDeployPathFile = (File) cleanupDeployPathsIter.next();
-                    if (cleanupLocaleDeployPathFile.exists())
-                    {
-                        DirectoryHelper cleanup = new DirectoryHelper(cleanupLocaleDeployPathFile);
-                        cleanup.remove();
-                        cleanup.close();
-                    }
-                }
-                
-                // register
-                registry.register(entry);
-                log.info("Registering decorator " + id);
-                
-                log.info("Decorator " + id + " deployed and registered successfuly.");
             }
-            catch (Exception e)
-            {
-                log.error("Error deploying or registering decorator " + id + ": " + e.toString(), e);
-            }
-            finally
-            {
-                try
-                {
-                    if (sourceObject != null)
-                    {
-                        sourceObject.close();
-                    }
-                    if (deployObject != null)
-                    {
-                        deployObject.close();
-                    }
-                }
-                catch (IOException e2)
-                {
-                }
-            }
+
+            log.info("Decorator " + id + " deployed successfuly.");
+            event.setStatus(DeploymentEvent.STATUS_OKAY);
         }
-        else
+        catch (DeploymentException de)
         {
-            log.error("Unable to register directory, \"id\" attribute not defined in configuration");
+            throw de;
+        }
+        catch (Exception e)
+        {
+            throw new DeploymentException("Error deploying decorator " + id, e);
         }
     }
 
@@ -214,106 +189,53 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
      * invokeUndeploy
      * </p>
      * 
-     * @see org.apache.jetspeed.deployment.DeploymentEventListener#invokeUndeploy(org.apache.jetspeed.deployment.DeploymentEvent)
-     * @param event
      * @throws DeploymentException
      */
-    public void invokeUndeploy(DeploymentEvent event) throws DeploymentException
+    public void invokeUndeploy(File deployPathFile) throws DeploymentException
     {
-        // get deployment configuration from decorator configuration
-        // if available or lookup based on registered attributes
-        PropertiesConfiguration conf = getDecoratorConfiguration(event);
-        if ((conf == null) && (event.getPath() != null))
+
+        if (deployPathFile == null || !deployPathFile.exists() || !deployPathFile.isDirectory()
+            || deployPathFile.getParentFile() == null || deployPathFile.getParentFile().getParentFile() == null
+            || !deployToDir.equals(deployPathFile.getParentFile().getParentFile().getParent()))
         {
-            Iterator registrationsIter = registry.getRegistry().iterator();
-            while ((conf == null) && registrationsIter.hasNext())
-            {
-                Entry entry = (Entry)registrationsIter.next();
-                String deploymentObjectPath = (String) entry.getAttribute(DEPLOYMENT_OBJECT_PATH_ATTR);
-                if (event.getPath().equals(deploymentObjectPath))
-                {
-                    conf = (PropertiesConfiguration) entry.getAttribute(DEPLOYMENT_CONFIGURATION_ATTR);
-                }
-            }
-        }
-        // silently return if configuration not available, (assumes
-        // probably not a decorator)
-        if (conf == null)
-        {
-            return;
+            throw new DeploymentException("Cannot undeploy decorator at " + deployPathFile + ": invalid decorator path");
         }
 
-        // process decorator by id
-        String id = conf.getString("id");
-        if (id != null)
-        {
-            log.info("Found decorator deployment configuration " + id);
+        String id = deployPathFile.getName();
 
-            try
+        try
+        {
+            // undeploy decorator
+            log.info("Undeploying decorator " + id + " at " + deployPathFile.getAbsolutePath());
+
+            // detect language/country localized decorator components
+            final List localeSpecificDeployPathsList = getLocaleSpecificDeployPaths(deployPathFile.getParentFile());
+
+            // undeploy individual locale specific decorator components depth first
+            for (int i = localeSpecificDeployPathsList.size() - 1; i > -1; i--)
             {
-                // find and construct decorator deploy path
-                String baseDeployPath = getBaseDeployPath(conf);
-                String deployPath = baseDeployPath + File.separator + id;
-                
-                // undeploy decorator
-                File deployPathFile = new File(deployPath);
-                if (deployPathFile.exists())
+                File localeDeployPathFile = new File((File) localeSpecificDeployPathsList.get(i), id);
+                if (localeDeployPathFile.exists())
                 {
-                    log.info("Undeploying decorator " + id + " at " + deployPath);
-                    DirectoryHelper cleanup = new DirectoryHelper(deployPathFile);
+                    log.info("Undeploying locale specific decorator component at " + localeDeployPathFile.getPath());
+                    DirectoryHelper cleanup = new DirectoryHelper(localeDeployPathFile);
                     cleanup.remove();
                     cleanup.close();
+                    localeDeployPathFile.getParentFile().delete();
                 }
-                
-                // detect language/country localized decorator components
-                final List localeSpecificDeployPathsList = getLocaleSpecificDeployPaths(new File(baseDeployPath));
-                
-                // undeploy individual locale specific decorator components
-                Iterator deployPathsIter = localeSpecificDeployPathsList.iterator();
-                while (deployPathsIter.hasNext())
-                {
-                    File localeDeployPathFile = new File((File) deployPathsIter.next(), id);
-                    if (localeDeployPathFile.exists())
-                    {
-                        log.info("Undeploying decorator " + id + " at " + localeDeployPathFile.getPath());
-                        DirectoryHelper cleanup = new DirectoryHelper(localeDeployPathFile);
-                        cleanup.remove();
-                        cleanup.close();
-                        localeDeployPathFile.getParentFile().delete();
-                    }
-                }
-                
-                // deregister
-                Entry entry = new Entry();
-                entry.setId(id);
-                registry.deRegister(entry);
-                log.info("Deregistering decorator " + id);
+            }
 
-                log.info("Decorator " + id + " undeployed and deregistered successfuly.");
-            }
-            catch (Exception e)
-            {
-                log.error("Error undeploying or deregistering decorator " + id + ": " + e.toString(), e);
-            }
+            // now undeploy the decorator root itself
+            DirectoryHelper cleanup = new DirectoryHelper(deployPathFile);
+            cleanup.remove();
+            cleanup.close();
+
+            log.info("Decorator " + id + " undeployed successfuly.");
         }
-        else
+        catch (Exception e)
         {
-            log.error("Unable to deregister directory, \"id\" attribute not defined in configuration or configuration not available");
+            throw new DeploymentException("Error undeploying decorator " + id, e);
         }
-    }
-
-    /**
-     * <p>
-     * invokeRedeploy
-     * </p>
-     * 
-     * @see org.apache.jetspeed.deployment.DeploymentEventListener#invokeRedeploy(org.apache.jetspeed.deployment.DeploymentEvent)
-     * @param event
-     * @throws DeploymentException
-     */
-    public void invokeRedeploy(DeploymentEvent event) throws DeploymentException
-    {
-        invokeDeploy(event);
     }
 
     /**
@@ -321,8 +243,8 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
      * getDecorationConfiguration
      * </p>
      * 
-     * @param event
-     @ @return configuration 
+     * @param event @
+     * @return configuration
      * @throws DeploymentException
      */
     private PropertiesConfiguration getDecoratorConfiguration(DeploymentEvent event) throws DeploymentException
@@ -348,7 +270,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
         }
         catch (Exception e1)
         {
-            throw new DeploymentException("Error reading configuration from jar: " + e1.toString(), e1);
+            throw new DeploymentException("Error reading decorator.properties from " + event.getPath(), e1);
         }
         finally
         {
@@ -377,8 +299,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
     private String getBaseDeployPath(PropertiesConfiguration configuration)
     {
         // construct decorator deploy base path
-        String decorates = configuration.getString("decorates", "generic");
-        String layoutType = decorates;
+        String layoutType = configuration.getString("decorates", "generic");
         if (layoutType.equalsIgnoreCase("any"))
         {
             layoutType = "generic";
@@ -399,25 +320,25 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
     {
         // detect language/country localized deploy paths
         List localeSpecificDeployPathsList = new ArrayList();
-        File [] localeLanguageSpecificRoots = rootPath.listFiles(new FileFilter()
+        File[] localeLanguageSpecificRoots = rootPath.listFiles(new FileFilter()
+        {
+            public boolean accept(File pathname)
             {
-                public boolean accept(File pathname)
-                {
-                    // filter language code dirs, (assume length test is accurate enough)
-                    return (pathname.isDirectory() && (pathname.getName().length() == 2));
-                }
-            });
+                // filter language code dirs, (assume length test is accurate enough)
+                return (pathname.isDirectory() && (pathname.getName().length() == 2));
+            }
+        });
         for (int i = 0; (i < localeLanguageSpecificRoots.length); i++)
         {
             localeSpecificDeployPathsList.add(localeLanguageSpecificRoots[i]);
-            File [] localeCountrySpecificPaths = localeLanguageSpecificRoots[i].listFiles(new FileFilter()
+            File[] localeCountrySpecificPaths = localeLanguageSpecificRoots[i].listFiles(new FileFilter()
+            {
+                public boolean accept(File pathname)
                 {
-                    public boolean accept(File pathname)
-                    {
-                        // filter country code dirs, (assume length test is accurate enough)
-                        return (pathname.isDirectory() && (pathname.getName().length() == 2));
-                    }
-                });
+                    // filter country code dirs, (assume length test is accurate enough)
+                    return (pathname.isDirectory() && (pathname.getName().length() == 2));
+                }
+            });
             for (int j = 0; (j < localeCountrySpecificPaths.length); j++)
             {
                 localeSpecificDeployPathsList.add(localeCountrySpecificPaths[j]);

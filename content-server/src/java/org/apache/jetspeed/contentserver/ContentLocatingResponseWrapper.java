@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import org.apache.pluto.util.PrintWriterServletOutputStream;
 
 /**
  * <p>
@@ -35,6 +36,8 @@ public class ContentLocatingResponseWrapper extends HttpServletResponseWrapper
     private boolean locationAttempted = false;
     protected boolean outputStreamCalled;
     protected boolean writerCalled;
+    protected PrintWriter writer;
+    protected ServletOutputStream outputStream;
 
     /**
      * @param arg0
@@ -138,7 +141,18 @@ public class ContentLocatingResponseWrapper extends HttpServletResponseWrapper
     public ServletOutputStream getOutputStream() throws IOException
     {
         outputStreamCalled = true;
-        return super.getOutputStream();
+        if ( outputStream == null )
+        {
+          if ( writerCalled )
+          {
+            outputStream = new PrintWriterServletOutputStream(writer);
+          }
+          else
+          {
+            outputStream = super.getOutputStream();
+          }
+        }
+        return outputStream;
     }
     /**
      * <p>
@@ -152,6 +166,17 @@ public class ContentLocatingResponseWrapper extends HttpServletResponseWrapper
     public PrintWriter getWriter() throws IOException
     {
         writerCalled = true;
-        return super.getWriter();
+        if ( writer == null )
+        {
+          if ( outputStreamCalled )
+          {
+            writer = new PrintWriter(outputStream);
+          }
+          else
+          {
+            writer = super.getWriter();
+          }
+        }
+        return writer;
     }
 }

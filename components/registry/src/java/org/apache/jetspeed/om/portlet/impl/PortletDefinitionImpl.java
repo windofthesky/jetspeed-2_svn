@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
@@ -93,6 +94,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      * 
      */
     protected static PortletRegistry registry;
+    protected static PortletFactory  portletFactory;
     
     private long id;
     private String className;
@@ -124,7 +126,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private MutablePortletApplication app;
 
     protected long appId;
-    private ClassLoader portletClassLoader;
     private String expirationCache;
 
     /** Metadata property */
@@ -288,7 +289,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public ClassLoader getPortletClassLoader()
     {
-        return portletClassLoader;
+        if ( portletFactory != null )
+        {
+            return portletFactory.getPortletApplicationClassLoader(app);
+        }
+        return null;
     }
 
     /**
@@ -320,7 +325,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void setPortletClassLoader( ClassLoader loader )
     {
-        this.portletClassLoader = loader;
+      // no-op: ClassLoader is only stored in the PortletFactory
+      ;
     }
 
     /**
@@ -911,4 +917,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         PortletDefinitionImpl.registry = registry;
     }
 
+    public static void setPortletFactory(PortletFactory portletFactory)
+    {
+        PortletDefinitionImpl.portletFactory = portletFactory;
+    }
 }

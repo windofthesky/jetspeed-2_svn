@@ -35,11 +35,10 @@ public class JetspeedDeployFactory implements DeployFactory
      *
      * @param inputWarPath
      * @param outputWarPath
-     * @param registerAtInit
      * @return JetspeedDeploy instance
      */
-    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean registerAtInit) throws Exception
+    public Deploy getInstance(String inputWarPath, String outputWarPath) throws Exception
     {
-        return new JetspeedDeploy(inputWarPath, outputWarPath, registerAtInit);
+        return new JetspeedDeploy(inputWarPath, outputWarPath);
     }
 }

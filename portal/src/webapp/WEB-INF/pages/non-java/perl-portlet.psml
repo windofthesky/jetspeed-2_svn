@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>PERL demo</title>
-  <fragment id="perl-2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="perl-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="perldemo-1" type="portlet" name="perl::perl-demo">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

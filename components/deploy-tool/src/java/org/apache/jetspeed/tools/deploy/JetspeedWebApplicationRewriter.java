@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.tools.deploy;
 
-import java.io.InputStream;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,10 +34,8 @@ import org.jdom.xpath.XPath;
  */
 public class JetspeedWebApplicationRewriter
 {
-    public static final String REGISTER_AT_INIT = "registerAtInit";
     public static final String JETSPEED_CONTAINER = "JetspeedContainer";
     public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
-    public static final String REGISTER_AT_INIT_XPATH = "/init-param/param-name[contains(child::text(), \"registerAtInit\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String PORTLET_TAGLIB_XPATH = "/web-app/taglib/taglib-uri[contains(child::text(), \"http://java.sun.com/portlet\")]";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
@@ -57,14 +53,12 @@ public class JetspeedWebApplicationRewriter
     private Document document;
     private String portletApplication;
     private boolean changed = false;
-    private boolean registerAtInit = false;
     private boolean portletTaglibAdded = false;
     
-    public JetspeedWebApplicationRewriter(Document doc, String portletApplication, boolean registerAtInit)
+    public JetspeedWebApplicationRewriter(Document doc, String portletApplication)
     {
             this.document = doc;
             this.portletApplication = portletApplication;
-            this.registerAtInit = registerAtInit;
     }
 
     public JetspeedWebApplicationRewriter(Document doc)
@@ -116,22 +110,24 @@ public class JetspeedWebApplicationRewriter
                 jetspeedServletElement.addContent(servletDspName);
                 jetspeedServletElement.addContent(servletDesc);
                 jetspeedServletElement.addContent(servletClass);
-                if (this.registerAtInit)
-                {
-                    insertRegisterAtInit(jetspeedServletElement);
-                }
+                insertContextNameParam(jetspeedServletElement);
+                insertLoadOnStartup(jetspeedServletElement);
                 insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
                 changed = true;
             }
             else
             {
                 // double check for register at Init
-                if (this.registerAtInit && jetspeedServlet instanceof Element)
+                if (jetspeedServlet instanceof Element)
                 {
                     Parent jetspeedServletElement =((Element)jetspeedServlet).getParent();
-                    if (null == XPath.selectSingleNode(jetspeedServletElement, REGISTER_AT_INIT_XPATH))
+                    if (null == XPath.selectSingleNode(jetspeedServletElement, "init-param/param-name[contains(child::text(), \"contextName\")]"))
                     {
-                        insertRegisterAtInit((Element) jetspeedServletElement);
+                      insertContextNameParam((Element)jetspeedServletElement);
+                    }
+                    if (null == XPath.selectSingleNode(jetspeedServletElement, "load-on-startup"))
+                    {
+                        insertLoadOnStartup((Element) jetspeedServletElement);
                     }
                 }
             }
@@ -172,23 +168,20 @@ public class JetspeedWebApplicationRewriter
     
     }
     
-    private void insertRegisterAtInit(Element jetspeedServletElement)
+    private void insertContextNameParam(Element jetspeedServletElement)
     {
-        Element paramName = (Element) new Element("param-name").addContent(REGISTER_AT_INIT);
-        Element paramValue = (Element) new Element("param-value").addContent("1"); 
-        Element initParam = new Element("init-param");
-        initParam.addContent(paramName);
-        initParam.addContent(paramValue);
-        jetspeedServletElement.addContent(initParam);
-        
-        Element param2Name = (Element) new Element("param-name").addContent("portletApplication");
+      Element param2Name = (Element) new Element("param-name").addContent("contextName");
         Element param2Value = (Element) new Element("param-value").addContent(portletApplication); 
         Element init2Param = new Element("init-param");
         init2Param.addContent(param2Name);
         init2Param.addContent(param2Value);
         jetspeedServletElement.addContent(init2Param);                    
         
-        Element loadOnStartup = (Element) new Element("load-on-startup").addContent("100");
+    }
+    
+    private void insertLoadOnStartup(Element jetspeedServletElement)
+    {
+        Element loadOnStartup = (Element) new Element("load-on-startup").addContent("0");
         jetspeedServletElement.addContent(loadOnStartup);        
     }
     

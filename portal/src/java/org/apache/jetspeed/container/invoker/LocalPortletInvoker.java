@@ -16,10 +16,6 @@
 package org.apache.jetspeed.container.invoker;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -36,10 +32,12 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
-import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -61,23 +59,18 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
 {
     private final static Log log = LogFactory.getLog(LocalPortletInvoker.class);
 
+    protected PortletFactory portletFactory;
     protected ServletContext jetspeedContext;
     protected ServletConfig jetspeedConfig;
     protected PortletDefinition portletDefinition;
     protected boolean activated = false;
-    /**
-     * One class loader per local portlet application
-     */
-    protected static Map classLoaders = new HashMap();
-
-    public static final String LOCAL_CLASSES = "/WEB-INF/classes/";    
-    public static final String LOCAL_JARS = "/WEB-INF/lib/";    
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
      */
-    public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig)
+    public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
+        this.portletFactory = portletFactory;
         this.jetspeedConfig = servletConfig;
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
@@ -135,7 +128,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         }
         catch (IOException e)
         {
-            log.error("PortletInvokerImpl.load() - Error while dispatching portlet.", e);
+            log.error("LocalPortletInvokerImpl.load() - Error while dispatching portlet.", e);
             throw new PortletException(e);
         }
     }
@@ -155,63 +148,36 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
     protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method)
         throws PortletException, IOException
     {
-        PortletApplicationDefinition app = portletDefinition.getPortletApplicationDefinition();
-        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
-
-        String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
-
-        // gather all required data from request and response
-        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
-
-        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse).getResponse();
-
-        ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
-        if (null == appContext)
-        {
-            String message = "Failed to find Servlet context for Portlet Application: " + portletApplicationName;
-            log.error(message);
-            throw new PortletException();
-        }
-
-        
-        Portlet portlet = null;
-        
-        try
-        {
-            ClassLoader loader = (ClassLoader)classLoaders.get(portletApplicationName);            
-            if (null == loader)
-            {
-                StringBuffer localPath = new StringBuffer("file:");
-                localPath.append(jetspeedContext.getRealPath(JetspeedPortletContext.LOCAL_PA_ROOT));
-                localPath.append(portletApplicationName);
-                String localAppPath = localPath.toString(); 
-                URL[] urls = {new URL(localAppPath + LOCAL_CLASSES),
-                              new URL(localAppPath + LOCAL_JARS)};
-                loader = new URLClassLoader(urls, oldLoader);
-                classLoaders.put(portletApplicationName, loader);
-            }
-            Thread.currentThread().setContextClassLoader(loader);                 
-            portlet = JetspeedPortletFactoryProxy.getPortlet(jetspeedConfig, portletDefinition);            
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return;
-        }
+        ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader((PortletApplication)portletDefinition.getPortletApplicationDefinition());
+        PortletInstance portletInstance = portletFactory.getPortletInstance(jetspeedContext,portletDefinition);
 
         if (method == ContainerConstants.METHOD_NOOP)
         {
             return;
         }
 
-        //res.getWriter().print("Rendering: Portlet Class = " + entity.getPortletClass() + "<BR/>");
+        // gather all required data from request and response
+        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
+
+        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse).getResponse();
+
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();            
+        try
+        {
+            servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
+            servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
+            servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
+            RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
+
+            Thread.currentThread().setContextClassLoader(paClassLoader);
 
         if (method == ContainerConstants.METHOD_ACTION)
         {
             ActionRequest actionRequest = (ActionRequest)portletRequest;            
             ActionResponse actionResponse = (ActionResponse)portletResponse;
 
-            portlet.processAction(actionRequest, actionResponse);
+                portletInstance.processAction(actionRequest, actionResponse);
         }
         else if (method == ContainerConstants.METHOD_RENDER)
         {
@@ -219,21 +185,28 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
             RenderResponse renderResponse = (RenderResponse)portletResponse;
             
             renderResponse.setContentType("text/html");            
-            renderResponse.getWriter().print(portletDefinition.getName());
+// TODO: ???    renderResponse.getWriter().print(portletDefinition.getName());
 
-            portlet.render(renderRequest, renderResponse);
+                portletInstance.render(renderRequest, renderResponse);
         }
+        }
+        finally
+        {
+            servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
+            servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
+            servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
+            servletRequest.removeAttribute(ContainerConstants.PORTAL_CONTEXT);
 
         Thread.currentThread().setContextClassLoader(oldLoader);                 
-
+        }
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
      */
-    public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
+    public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
     {
-        activate(portletDefinition, servletConfig);
+        activate(portletFactory, portletDefinition, servletConfig);
     }
     
 }

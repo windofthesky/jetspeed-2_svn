@@ -27,10 +27,7 @@ import javax.portlet.PortletRequest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.prefs.PropertyException;
@@ -63,9 +60,6 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     public void setUp() throws Exception
     {
         super.setUp();
-        
-        PortletCache portletCache = new PortletCache();
-        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));        
         
         uim = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager"); 
         portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");

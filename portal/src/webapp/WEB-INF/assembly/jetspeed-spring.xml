@@ -377,7 +377,6 @@ limitations under the License.
   >  	   
   	   <constructor-arg ><value>org.apache.jetspeed.request.JetspeedRequestContext</value></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
-  	   <constructor-arg ><ref bean="portletFactory" /></constructor-arg>  	      
   </bean>
   
   <!-- Portlet Window Component -->
@@ -405,26 +404,10 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   </bean>
   
-  <!-- Portlet Cache -->
-  <bean id="portletCache" 
-  	   class="org.apache.jetspeed.cache.PortletCache"  
-  >  	   
-
-  </bean>
-  
   <!-- Portlet Factory -->
   <bean id="portletFactory" 
   	   class="org.apache.jetspeed.factory.JetspeedPortletFactory"  
   >  	   
-  	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  	   
-  </bean>
-  
-  <!-- Portlet Factory Proxy Accessor-->
-  <bean id="portletFactoryProxy" 
-  	   class="org.apache.jetspeed.factory.JetspeedPortletFactoryProxy"
-  	   destroy-method="reset"  
-  >  	   
-  	   <constructor-arg ><ref bean="portletFactory" /></constructor-arg>  	   
   </bean>
   	   
   <!-- Aggregation: Page -->
@@ -455,7 +438,7 @@ limitations under the License.
   
   <!-- Application Server Manager for Tomcat
   	   Provides hooks into the application server to help us deploy portlet applications
-  	   as web application into that server.  This manager is for Tomcat 4/5
+  	   as web application into that server.  This manager is for Tomcat 5
   	-->
   <!--
   <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" 
@@ -498,26 +481,18 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
-  	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  
   	   <constructor-arg ><ref bean="portletFactory" /></constructor-arg>  	      
   	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
   </bean>
   -->
   <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory"/>
   <bean id="PAM" 
-  	   class="org.apache.jetspeed.tools.pamanager.WarInfusionPAM"
+  	   class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager"
   >  	   
-  	   <constructor-arg><value>${autodeployment.target.dir}</value></constructor-arg>
+  	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>
-  	   <constructor-arg><ref bean="portletCache"/></constructor-arg>  
-  	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
-  	   <constructor-arg><ref bean="deployFactory"/></constructor-arg>
-       <!-- force deployment to use expanded wars, (i.e. Tomcat 4.X), default = not specified - inspect webapps to determine -->
-  	   <!-- <constructor-arg type="boolean"><value>true</value></constructor-arg> -->
-       <!-- force deployment to use war files, (i.e. Tomcat 5.X), default = not specified - inspect webapps to determine -->
-  	   <!-- <constructor-arg type="boolean"><value>false</value></constructor-arg> -->
   	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
   </bean>
 
@@ -525,9 +500,10 @@ limitations under the License.
   <bean id="portletAppDeploymentListener" 
   	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"   	   
   > 	
-       <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
-  	   <constructor-arg ><ref bean="PAM" /></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
+  	   <constructor-arg index="0"><ref bean="PAM"/></constructor-arg>
+  	   <constructor-arg index="1"><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
+       <constructor-arg index="2"><value>${autodeployment.target.dir}</value></constructor-arg>
+       <constructor-arg index="3"><value>${applicationRoot}/WEB-INF/apps</value></constructor-arg>
   </bean>
   <bean id="decoratorDeploymentRegistry" 
   	   class="org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl"
@@ -536,7 +512,6 @@ limitations under the License.
   <bean id="decoratorDeploymentListener" 
   	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener"   	   
   > 	
-  	   <constructor-arg ><ref bean="decoratorDeploymentRegistry"/></constructor-arg>
        <constructor-arg ><value>${applicationRoot}/WEB-INF/decorations</value></constructor-arg>
   </bean>
 
