@@ -117,11 +117,17 @@ public class CapabilityValveImpl implements CapabilityValve
             
             // Put the Media Type into the request
             request.setMediaType(mediaType.getName());
-            
+                       
             // Put the Mime Type into the request
             request.setMimeType(mimeType.getName());
-            request.getResponse().setContentType(mimeType.getName());
-
+            
+            // Put the Mime Type and Charset into the response
+            StringBuffer contentType = new StringBuffer(mimeType.getName());
+            if (encoding != null)
+            {
+                contentType.append("; charset=" + encoding);
+            }
+            request.getResponse().setContentType(contentType.toString());            
         } 
         catch (Exception e)
         {
