@@ -126,6 +126,16 @@ public interface PortletEntityAccessComponent
 	 * @throws PortletEntityNotDeletedException
 	 */
 	void removePortletEntity(PortletEntity portletEntity) throws PortletEntityNotDeletedException;
+	
+	/**
+	 * 
+	 * <p>
+	 * removeFromCache
+	 * </p>
+	 * Removes a PortletEntity from the cache.
+	 * @param entity
+	 */
+	void removeFromCache(PortletEntity entity);
 
     /**
      * 
