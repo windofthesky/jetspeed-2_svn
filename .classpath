@@ -62,8 +62,7 @@
 	<classpathentry kind="src" path="applications/security/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b10.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.7.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/castor/jars/castor-0.9.4.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-digester/jars/commons-digester-1.5.jar"/>

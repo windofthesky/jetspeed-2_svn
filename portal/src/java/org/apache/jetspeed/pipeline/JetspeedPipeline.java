@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -66,11 +65,6 @@ implements Pipeline, ValveContext
      *
      */
     protected ThreadLocal state = new ThreadLocal();
-    
-    /**
-     * Descriptor for this pipeline
-     */
-    protected PipelineDescriptor descriptor;
     
     /**
      * Constructor that provides the descriptor for building
