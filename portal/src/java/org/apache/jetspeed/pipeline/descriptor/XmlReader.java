@@ -20,6 +20,7 @@ import org.apache.commons.betwixt.io.BeanReader;
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.strategy.DecapitalizeNameMapper;
 import org.apache.commons.betwixt.strategy.DefaultPluralStemmer;
+import org.apache.commons.betwixt.strategy.NameMapper;
 
 /**
  * @author <a href="mailto:jason@zenplex.com">Jason van Zyl</a>
@@ -83,7 +84,10 @@ public class XmlReader
         XMLIntrospector introspector = new XMLIntrospector();
 
         introspector.setAttributesForPrimitives(false);
-        introspector.setNameMapper(new DecapitalizeNameMapper());
+        NameMapper mapper = new DecapitalizeNameMapper();        
+        introspector.setElementNameMapper(mapper);
+        introspector.setAttributeNameMapper(mapper);
+        
         introspector.setPluralStemmer(new DefaultPluralStemmer());
 
         return introspector;
