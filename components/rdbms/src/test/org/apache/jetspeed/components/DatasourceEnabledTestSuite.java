@@ -17,6 +17,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
+import org.apache.jetspeed.components.hsql.HSQLServerComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.picocontainer.MutablePicoContainer;
 
@@ -36,6 +37,7 @@ import org.picocontainer.MutablePicoContainer;
  */
 public class DatasourceEnabledTestSuite extends TestSuite
 {
+    
     
     public static final String DEFAULT_CONTAINER = "org/apache/jetspeed/containers/rdbms.container.groovy";
     
@@ -95,6 +97,13 @@ public class DatasourceEnabledTestSuite extends TestSuite
 
     protected void initDatasource()throws Exception
     {
+        // Set the db script to be used, if not already set
+        String scriptPath = System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH);
+        if(scriptPath == null)
+        {
+            System.setProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH, "../../portal/test/db/hsql/Registry");
+        }
+        
         System.out.println("========================= DatasourceEnabledTestSuite start RDBMS container ");
         Reader composition = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
         script));
