@@ -73,7 +73,6 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-        container.getComponentInstance(PreferencesProvider.class);
     }
 
     /**
