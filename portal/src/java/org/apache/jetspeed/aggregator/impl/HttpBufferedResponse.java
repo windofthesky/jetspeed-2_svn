@@ -52,8 +52,8 @@ public class HttpBufferedResponse extends javax.servlet.http.HttpServletResponse
 
         if (wrappedStream == null)
         {
-            wrappedStream = new PrintWriterServletOutputStream(getResponse().getWriter(),
-                                                               getResponse().getCharacterEncoding());
+            wrappedStream = new PrintWriterServletOutputStream(getResponse().getWriter());
+                                                               
         }
 
         usingStream = true;
