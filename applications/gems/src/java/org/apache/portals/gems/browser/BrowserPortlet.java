@@ -40,12 +40,12 @@ import org.apache.velocity.context.Context;
  * AbstractBrowserPortlet
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
- * @version $Id$
+ * @version $Id: AbstractBrowserPortlet.java,v 1.2 2005/01/01 00:01:29 taylor
+ *          Exp $
  */
-public abstract class AbstractBrowserPortlet 
-    extends GenericVelocityPortlet
-    implements Browser    
+public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 {
+
     protected static final String SQL = "sql";
 
     protected static final String POOLNAME = "poolname";
@@ -106,21 +106,25 @@ public abstract class AbstractBrowserPortlet
     /**
      * Static initialization of the logger for this class
      */
-    protected Log log = LogFactory.getLog(AbstractBrowserPortlet.class);
+    protected Log log = LogFactory.getLog(BrowserPortlet.class);
 
-    public void init(PortletConfig config)
-    throws PortletException 
+    public void init(PortletConfig config) throws PortletException
     {
-        super.init(config);       
+        super.init(config);
     }
-    
+
+    public void getRows(RenderRequest request, String sql, int windowSize)
+            throws Exception
+    {
+    }
+
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
         int resultSetSize, next, prev, windowSize;
 
         response.setContentType("text/html");
-        
+
         BrowserIterator iterator = getBrowserIterator(request);
         Context context = this.getContext(request);
 
@@ -137,18 +141,12 @@ public abstract class AbstractBrowserPortlet
             if (iterator == null)
             {
                 String sql = getQueryString(request, context);
-                //System.out.println("buildNormalContext SQL: "+sql);
-                if (sql != null)
-                {
-                    readUserParameters(request, context);
-                    getRows(request, sql, windowSize);
-                    iterator = getBrowserIterator(request);
-                } else
-                {
-                    log
-                            .info("The sql query is null, hence not generating the result set.");
-                }
-            } else
+                // System.out.println("buildNormalContext SQL: "+sql);
+                readUserParameters(request, context);
+                getRows(request, sql, windowSize);
+                iterator = getBrowserIterator(request);
+            } 
+            else
             {
                 if (sortColName != null)
                 {
@@ -212,22 +210,21 @@ public abstract class AbstractBrowserPortlet
         response.setContentType("text/html");
         doPreferencesEdit(request, response);
     }
-    
-    public void processAction(ActionRequest request, ActionResponse response) 
-    throws PortletException, IOException
+
+    public void processAction(ActionRequest request, ActionResponse response)
+            throws PortletException, IOException
     {
         if (request.getPortletMode() == PortletMode.EDIT)
         {
             processPreferencesAction(request, response);
-        }
-        else
+        } else
         {
             String browserAction = request.getParameter("db.browser.action");
             if (browserAction != null)
             {
                 if (browserAction.equals("refresh"))
                 {
-                    clearBrowserIterator(request);                    
+                    clearBrowserIterator(request);
                 }
                 String start = request.getParameter("start");
                 if (start != null)
@@ -235,16 +232,15 @@ public abstract class AbstractBrowserPortlet
                     response.setRenderParameter("start", start);
                 }
             }
-        }        
+        }
     }
-    
+
     /**
-     * Centralizes the calls to session - to retrieve the
-     * BrowserIterator.
+     * Centralizes the calls to session - to retrieve the BrowserIterator.
      * 
      * @param data
      *            The turbine rundata context for this request.
-     *  
+     * 
      */
     protected BrowserIterator getBrowserIterator(PortletRequest request)
     {
@@ -255,31 +251,32 @@ public abstract class AbstractBrowserPortlet
     }
 
     /**
-     * Centralizes the calls to session - to set
-     * the BrowserIterator.
-     *
-     * @param data The turbine rundata context for this request.
+     * Centralizes the calls to session - to set the BrowserIterator.
+     * 
+     * @param data
+     *            The turbine rundata context for this request.
      * @param iterator.
-     *
+     * 
      */
     protected void setBrowserIterator(RenderRequest request,
-                                              BrowserIterator iterator)
+            BrowserIterator iterator)
     {
         request.getPortletSession().setAttribute(BROWSER_ACTION_KEY, iterator);
     }
-    
+
     /**
-     * Centralizes the calls to session - to clear
-     * the BrowserIterator from the temp storage.
-     *
-     * @param data The turbine rundata context for this request.
-     *
+     * Centralizes the calls to session - to clear the BrowserIterator from the
+     * temp storage.
+     * 
+     * @param data
+     *            The turbine rundata context for this request.
+     * 
      */
     protected void clearBrowserIterator(PortletRequest request)
     {
         request.getPortletSession().removeAttribute(BROWSER_ACTION_KEY);
     }
-    
+
     protected int getStartVariable(RenderRequest request, String attrName,
             String sortColName, BrowserIterator iterator)
     {
@@ -290,7 +287,7 @@ public abstract class AbstractBrowserPortlet
 
         if (start < 0)
         {
-            //fallback routine for start
+            // fallback routine for start
             String startStr = request.getParameter(attrName);
             if (startStr != null && startStr.length() > 0)
             {
@@ -312,13 +309,13 @@ public abstract class AbstractBrowserPortlet
     {
         return 0;
     }
- 
+
     /**
      * This method returns the sql from the getQuery method which can be
      * overwritten according to the needs of the application. If the getQuery()
      * returns null, then it gets the value from the psml file. If the psml
      * value is null then it returns the value from the xreg file.
-     *  
+     * 
      */
     protected String getQueryString(RenderRequest request, Context context)
     {
@@ -329,15 +326,15 @@ public abstract class AbstractBrowserPortlet
         }
         return sql;
     }
-    
+
     public String getQueryString(RenderRequest request)
     {
         return null;
     }
 
-    protected String getPreference(RenderRequest request,
-            String attrName, String attrDefValue)
-    {        
+    protected String getPreference(RenderRequest request, String attrName,
+            String attrDefValue)
+    {
         return request.getPreferences().getValue(attrName, attrDefValue);
     }
 
@@ -349,7 +346,7 @@ public abstract class AbstractBrowserPortlet
         if (userObjRead != null)
         {
             context.put(USER_OBJECTS, (List) userObjRead);
-            //System.out.println("userObjectListSize: "+
+            // System.out.println("userObjectListSize: "+
             // ((List)userObjRead).size());
         } else
         {
@@ -388,8 +385,7 @@ public abstract class AbstractBrowserPortlet
             if (param == null)
             {
                 break;
-            }
-            else
+            } else
             {
                 if (sqlParamList == null)
                 {
@@ -410,7 +406,7 @@ public abstract class AbstractBrowserPortlet
     {
         this.sqlParameters = parameters;
     }
-    
+
     protected void readLinkParameters(RenderRequest request, Context context)
     {
         // TODO: implement me
@@ -418,21 +414,24 @@ public abstract class AbstractBrowserPortlet
 
     /**
      * This method should be overwritten every time the user object needs to be
-     * populated with some user specific constraints. As an example if the user wanted
-     * to track the parent of an object based on some calculation per row, it could be
-     * done here.
-     *
+     * populated with some user specific constraints. As an example if the user
+     * wanted to track the parent of an object based on some calculation per
+     * row, it could be done here.
+     * 
      */
     public void populate(int rowIndex, int columnIndex, List row)
     {
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.modules.actions.portlets.browser.BrowserQuery#filter(java.util.List, RunData)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.modules.actions.portlets.browser.BrowserQuery#filter(java.util.List,
+     *      RunData)
      */
     public boolean filter(List row, RenderRequest request)
     {
         return false;
     }
-    
+
 }

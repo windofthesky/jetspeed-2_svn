@@ -293,6 +293,11 @@ limitations under the License.
 		<property name="target"> 
 			<ref bean="PersistenceBrokerSSOProvider"/>
 		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
 		
   </bean> 
  

@@ -58,15 +58,20 @@ BODY.layout-MintyBlue  {
 
 .jetdbOdd
 {
-  background-color:#66FFFF;
-  layer-background-color:#66FFFF;
+  background-color:#CCCCCC;
   FONT-SIZE:7pt;
   FONT-WEIGHT:normal;
 }
 .jetdbEven
 {
-  background-color:#99FF33;
-  layer-background-color:#99FF33;
+  background-color:#999999;
+  FONT-SIZE:7pt;
+  FONT-WEIGHT:normal;
+}
+
+.jetdbLight
+{
+  background-color:#cc99ff;
   FONT-SIZE:7pt;
   FONT-WEIGHT:normal;
 }

@@ -26,8 +26,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import javax.sql.DataSource;
 
 /**
  * DatabaseBrowserPortlet
@@ -36,7 +41,7 @@ import javax.portlet.RenderRequest;
  * @version $Id$
  */
 public class DatabaseBrowserPortlet 
-    extends AbstractBrowserPortlet
+    extends BrowserPortlet
     implements Browser
 {    
     /**
@@ -209,6 +214,7 @@ public class DatabaseBrowserPortlet
     
     public Connection getConnection()
     {
+        
         Connection con = null;
         try 
         {
@@ -223,6 +229,16 @@ public class DatabaseBrowserPortlet
             //con = DriverManager.getConnection("jdbc:mysql://192.168.2.55/GWLogDB", "david", "david");
             //con = DriverManager.getConnection("jdbc:hsqldb:hsql://127.0.0.1:9001", "sa", "");
             con = DriverManager.getConnection("jdbc:mysql://j2-server/j2", "j2", "digital");
+            
+            Context ctx = new InitialContext();
+            DataSource ds = (DataSource)ctx.lookup("java:/jdbc/jetspeed");            
+            System.out.println("Got DataSource: " + ds);
+            
+        }
+        catch (NamingException ne)
+        {
+            System.err.println("error getting datas source " + ne);
+            log.error("Cant get jetspeed data source", ne);                                   
         }
         catch (ClassNotFoundException cnfe) 
         {

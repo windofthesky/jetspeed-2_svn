@@ -595,9 +595,9 @@ limitations under the License.
     </portlet>
 
   <portlet>
-    <description>Database Portlet</description>
-    <portlet-name>DatabasePortlet</portlet-name>
-    <display-name>Database Portlet</display-name>
+    <description>Database Browser Example Portlet</description>
+    <portlet-name>DbBrowserExample</portlet-name>
+    <display-name>DB Browser</display-name>
     <portlet-class>org.apache.portals.gems.browser.DatabaseBrowserPortlet</portlet-class>
     <init-param>
 		<name>ViewPage</name>

@@ -15,6 +15,7 @@
 package org.apache.jetspeed.portlets.security.sso;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,12 +40,12 @@ import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
 /**
- * SSOBrowser
+ * SSODetails
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SSOBrowser extends BrowserPortlet
+public class SSODetails extends BrowserPortlet
 {
     private SSOProvider sso;
     
@@ -67,26 +68,27 @@ public class SSOBrowser extends BrowserPortlet
         List resultSetTypeList = new ArrayList();
         try
         {
-            Iterator sites = sso.getSites("");
-            
-            // List userObjectList = (List)getParameterFromTemp(portlet, rundata, USER_OBJECTS);
-
-            //
-            // Add MetaData headers, types
-            //
-            
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add("Site");
-
-            //subPopulate(rundata, qResult, repo, folder, null);
-
-            // TODO: need to try to normalize List/Collection/Iterators
+            SSOSite site = null;
+            Iterator principals = null;
             List list = new ArrayList();
-            while (sites.hasNext())
+            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+            resultSetTitleList.add("Principal");
+            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+            resultSetTitleList.add("Remote");
+            
+            String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
+            if (selectedSite != null)
             {
-                SSOSite site = (SSOSite)sites.next();
-                list.add(site.getName());
-            }            
+                site = sso.getSite(selectedSite);
+                principals = site.getPrincipals().iterator();
+                        
+                // TODO: need to try to normalize List/Collection/Iterators
+                while (principals.hasNext())
+                {
+                    Principal p = (Principal)principals.next();
+                    list.add(p.getName());
+                }
+            }
             BrowserIterator iterator = new DatabaseBrowserIterator(
                     list, resultSetTitleList, resultSetTypeList,
                     windowSize);

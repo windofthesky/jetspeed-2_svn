@@ -162,7 +162,59 @@ limitations under the License.
       <short-title>User</short-title>
       <keywords>admin,security,users</keywords>
     </portlet-info>
-  </portlet>
+</portlet>
+
+<portlet id="SSOBrowserPortlet">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/sso/sites-view.vm</value>
+     </init-param>   
+    <portlet-name>SSOBrowserPortlet</portlet-name>
+    <display-name>SSO Sites Browser</display-name>
+    <description>SSO Sites Browser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.sso.SSOBrowser</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSOResources</resource-bundle>            
+    <portlet-info>
+      <title>SSO Sites</title>
+      <short-title>Sites</short-title>
+      <keywords>admin,security,site,SSO</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="SSODetailsPortlet">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/sso/sites-details.vm</value>
+     </init-param>   
+    <portlet-name>SSODetailsPortlet</portlet-name>
+    <display-name>SSO Details</display-name>
+    <description>SSO Site Details Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.sso.SSODetails</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SSOResources</resource-bundle>            
+    <portlet-info>
+      <title>SSO Details</title>
+      <short-title>SSO Details</short-title>
+      <keywords>admin,security,site,SSO</keywords>
+    </portlet-info>
+</portlet>
 
 </portlet-app>
 
