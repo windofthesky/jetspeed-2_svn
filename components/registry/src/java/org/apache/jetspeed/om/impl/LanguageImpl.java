@@ -85,7 +85,7 @@ import org.apache.pluto.om.common.Language;
 public class LanguageImpl implements MutableLanguage, Serializable
 {
 
-    private Locale locale;
+    private Locale locale = new Locale("en");
     private String title;
     private String shortTitle;
     private Collection keywords;
