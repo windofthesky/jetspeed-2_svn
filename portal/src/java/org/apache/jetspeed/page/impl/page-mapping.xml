@@ -23,7 +23,26 @@
     <field name="rootFragment"
            type="org.apache.jetspeed.om.page.psml.FragmentImpl">
       <bind-xml name="fragment"/>
-    </field>             
+    </field>
+
+	<field name="metadataFields"
+           type="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl" 
+           collection="collection">
+      <bind-xml name="metadata"/>
+    </field>
+  </class>
+  
+  <class name="org.apache.jetspeed.om.page.psml.PageLocalizedFieldImpl">
+    <map-to xml="metadata"/>
+	<field name="name" type="java.lang.String">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+    <field name="locale" type="java.lang.String" set-method="setLanguage">
+      <bind-xml name="xml:lang" node="attribute"/>
+    </field>
+    <field name="value" type="java.lang.String">
+      <bind-xml node="text"/>
+    </field>
   </class>
 
   <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
