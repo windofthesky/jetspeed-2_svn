@@ -99,6 +99,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/nekohtml/jars/nekohtml-0.9.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-dao-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-orm-1.1.1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-codec/jars/commons-codec-1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
