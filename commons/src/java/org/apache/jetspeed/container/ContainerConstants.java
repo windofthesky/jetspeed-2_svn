@@ -53,7 +53,6 @@
  */
 package org.apache.jetspeed.container;
 
-
 /**
  * Container Constants
  * 
@@ -65,6 +64,7 @@ public class ContainerConstants
     public final static String PORTLET_ACTION = "javax.portlet.action";
     public final static String PORTLET_REQUEST = "javax.portlet.request";
     public final static String PORTLET_RESPONSE = "javax.portlet.response";
+    public final static String PORTLET_CONFIG = "javax.portlet.config";
 
     public final static String METHOD_ID = "org.apache.jetspeed.method";
     public final static Integer METHOD_RENDER = new Integer(1);
@@ -74,4 +74,3 @@ public class ContainerConstants
     public final static String PORTLET_ENTITY = "org.apache.jetspeed.portlet";
 
 }
-
