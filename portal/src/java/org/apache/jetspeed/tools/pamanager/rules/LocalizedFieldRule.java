@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.impl.LocalizedFieldImpl;
 import org.xml.sax.Attributes;
 
 /**
@@ -48,45 +47,57 @@ public class LocalizedFieldRule extends Rule
             digester.getLogger().debug("Setting localized field " + name);
         
         GenericMetadata metadata = (GenericMetadata)digester.peek();
-        
-        LocalizedField child = metadata.createLocalizedField(); 
-
-        if(name.equals("metadata"))
-        {
-            String nameAttr = attributes.getValue("name");
-            child.setName(nameAttr);
+        if(metadata != null)
+        {        
+	        LocalizedField child = metadata.createLocalizedField(); 
+	
+	        if(name.equals("metadata"))
+	        {
+	            String nameAttr = attributes.getValue("name");
+	            child.setName(nameAttr);
+	        }
+	        else
+	        {
+	            child.setName(name);
+	        }
+	        String language = attributes.getValue("xml:lang");
+	        Locale locale = null;
+	        if(language == null)
+	        {
+	            locale = new Locale("en");
+	        }
+	        else
+	        {
+	            locale = new Locale(language);
+	        }
+	
+	        child.setLocale(locale);
+	        digester.push(child);
         }
         else
         {
-            child.setName(name);
+            digester.push(null);
         }
-        String language = attributes.getValue("xml:lang");
-        Locale locale = null;
-        if(language == null)
-        {
-            locale = new Locale("en");
-        }
-        else
-        {
-            locale = new Locale(language);
-        }
-
-        child.setLocale(locale);
-        digester.push(child);
     }
 
     public void body(String namespace, String name, String text)
     throws Exception
     {
         LocalizedField child = (LocalizedField) digester.peek(0);
-        child.setValue(text);
+        if(child != null)
+        {    
+            child.setValue(text);
+        }
     }
 
     public void end(String namespace, String name)
     throws Exception
     {
         LocalizedField child = (LocalizedField) digester.pop();
-        GenericMetadata metadata = (GenericMetadata)digester.peek();
-        metadata.addField(child);
+        if(child != null)
+        {    
+            GenericMetadata metadata = (GenericMetadata)digester.peek();
+            metadata.addField(child);
+        }
     }
 }
