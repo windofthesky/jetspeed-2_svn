@@ -176,7 +176,7 @@ public class JetspeedWebApplicationRewriter
                 insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
                 changed = true;
             }
-            
+            /* remove this for now .. it seems to broken
             if(portletTaglib == null)
             {
                 Element taglib = new Element ("taglib");
@@ -190,6 +190,7 @@ public class JetspeedWebApplicationRewriter
                 changed = true;
                 portletTaglibAdded = true;
             }
+            */
         }
         catch (Exception e)
         {
