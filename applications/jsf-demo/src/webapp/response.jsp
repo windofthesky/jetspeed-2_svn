@@ -14,11 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 
-<HTML>
-    <HEAD> <title>Guess The Number</title> </HEAD>
     <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
     <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-    <body bgcolor="white">
     <f:view>
     <h:form id="responseForm" >
         <h:graphicImage id="waveImg" url="/wave.med.gif" />
@@ -28,4 +25,3 @@ limitations under the License.
 
     </h:form>
     </f:view>
- </HTML>
