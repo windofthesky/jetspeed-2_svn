@@ -429,8 +429,6 @@ limitations under the License.
 
       </collection-descriptor>
 
-
-   <!--      
       <collection-descriptor
          name="portletEntities"
          element-class-ref="org.apache.jetspeed.components.portletentity.PortletEntityImpl"
@@ -438,10 +436,9 @@ limitations under the License.
       	  auto-update = "true"
       	  auto-retrieve = "true"
       >
-    
            <inverse-foreignkey field-ref="portletId"/>
      </collection-descriptor>
-       -->
+
    </class-descriptor>
    
 
