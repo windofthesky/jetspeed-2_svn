@@ -23,6 +23,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -58,7 +59,8 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
         try
         {            
             Principal principal = request.getRequest().getUserPrincipal();
-            Subject subject = (Subject) request.getRequest().getSession().getAttribute(this.getClass().toString() + ".subject");
+            Subject subject = (Subject) 
+                request.getRequest().getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
             if (null == principal)
             {
                 principal = new UserPrincipalImpl(profiler.getAnonymousUser());
@@ -68,7 +70,9 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
                 Set principals = new HashSet();
                 principals.add(principal);
                 subject = new Subject(true, principals, new HashSet(), new HashSet());
-                request.getRequest().getSession().setAttribute(this.getClass().toString() + ".subject", subject);
+                request.getRequest().getSession().setAttribute(
+                        PortalReservedParameters.SESSION_KEY_SUBJECT,
+                        subject);
             }
             else
             {
@@ -77,7 +81,8 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
                     && (!(principal.getName()).equals(profiler.getAnonymousUser())))
                 {
                     subject = userMgr.getUser(principal.getName()).getSubject();
-                    request.getRequest().getSession().setAttribute(this.getClass().toString() + ".subject", subject);
+                    request.getRequest().getSession().setAttribute(
+                            PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
                 }
             }
             request.setSubject(subject);

@@ -34,4 +34,5 @@ public final class PortalReservedParameters
     
     // Session and Request attribute keys
     public static final String PAGE_ATTRIBUTE_KEY = "org.apache.jetspeed.Page";
+    public static final String SESSION_KEY_SUBJECT = "org.apache.jetspeed.security.subject";
 }
