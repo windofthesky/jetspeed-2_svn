@@ -146,7 +146,7 @@ public class FileSystemPAM implements Deployment
      * 0 deploy war - 1 Update Web XML - 2 Update Regsitry
      * @throws PortletApplicationException
      */
-    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState)
+    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState) 
         throws PortletApplicationException
     {
         this.deploymentDbAlias = deploymentDbAlias;

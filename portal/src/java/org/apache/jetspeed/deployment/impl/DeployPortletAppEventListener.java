@@ -16,6 +16,7 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentHandler;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
+import org.apache.jetspeed.tools.pamanager.Deployment;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.jdom.Document;
@@ -39,13 +40,21 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     protected static final Log log = LogFactory.getLog("deployment");
     private String webAppDir;
     private String dbAalias;
+    private Deployment pam;
     
     
 
-	public DeployPortletAppEventListener(String webAppDir, String dbAlias)
+	public DeployPortletAppEventListener(String webAppDir, String dbAlias, Deployment pam)
 	{
 		this.webAppDir = webAppDir;
 		this.dbAalias = dbAlias;
+		this.pam = pam;
+	}
+	
+	public DeployPortletAppEventListener(String webAppDir,  Deployment pam)
+	{
+		this.webAppDir = webAppDir;		
+		this.pam = pam;
 	}
 
     /**
@@ -76,8 +85,15 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 						throw new PortletApplicationException("<portlet-app> requires a unique \"id\" attribute.");
                     }             
                     log.info("Preparing to deploy portlet app \""+id+"\"");
-                    FileSystemPAM pam = new FileSystemPAM();
-                    pam.deploy(webAppDir, handler.getPath(), id, dbAalias, 0);
+                    if(dbAalias != null)
+                    {
+						pam.deploy(webAppDir, handler.getPath(), id, dbAalias, 0);
+                    }
+                    else
+                    {
+						pam.deploy(webAppDir, handler.getPath(), id);
+                    }
+                    
 					log.info("Portlet app \""+id+"\" "+"successfuly deployed.");
                 }
             }

@@ -94,14 +94,14 @@ public class TomcatManager
 
         // perform a test, we can use this to close a
         GetMethod test = new GetMethod(serverInfoPath);
-        try
-        {
-            client.executeMethod(test);
-        }
-        finally
-        {
-            test.releaseConnection();
-        }
+//        try
+//        {
+//            client.executeMethod(test);
+//        }
+//        finally
+//        {
+//            test.releaseConnection();
+//        }
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
         remove = new GetMethod(removePath);
