@@ -1,0 +1,32 @@
+<project default="run-demo"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+         
+         
+ <goal name="run-demo">
+
+     <attainGoal name="jar:jar" />
+     <!-- Merge standard runtime and demo into same directory -->
+     <copy todir="${maven.build.dir}/runtime">
+			<fileset dir="${CORNERSTONE_RUNTIME_HOME}"/>
+	  </copy>	  
+	  <copy todir="${maven.build.dir}/runtime/registry">
+			<fileset dir="${basedir}/registry"/>
+	  </copy>
+
+
+     <java classname="org.apache.cornerstone.framework.demo.main.DemoMain" fork="yes">
+      <sysproperty key="log4j.configuration" value="log4j.properties"/> 
+      <sysproperty key="CORNERSTONE_RUNTIME_HOME" value="${basedir}/target/runtime"/>
+       <classpath>
+         <path refid="maven.dependency.classpath"/>
+         <pathelement path="${maven.build.dir}/${jar.name}"/>
+        </classpath>
+      </java>
+
+  </goal>
+
+
+  
+</project>

@@ -1,0 +1,4 @@
+How to Build and Run:
+
+1.  Make sure the cornerstone project has been successfuly built.
+2.  from the cornerstone-demo directory just invoke "maven" which defaults to the "run-demo" goal.

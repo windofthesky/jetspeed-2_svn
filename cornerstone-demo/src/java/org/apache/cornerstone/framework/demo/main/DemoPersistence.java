@@ -1,0 +1,55 @@
+package org.apache.cornerstone.framework.demo.main;
+
+import java.util.List;
+
+import org.apache.cornerstone.framework.api.factory.CreationException;
+import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.ImplementationException;
+import org.apache.cornerstone.framework.bean.visitor.BeanPrinter;
+import org.apache.cornerstone.framework.demo.bo.api.IGroup;
+import org.apache.cornerstone.framework.demo.bo.api.IUser;
+import org.apache.cornerstone.framework.init.Cornerstone;
+import org.apache.cornerstone.framework.init.InitException;
+import org.apache.log4j.PropertyConfigurator;
+
+public class DemoPersistence
+{
+    public static final String REVISION = "$Revision$";
+
+    public static void main(String[] args) throws InitException, ImplementationException, CreationException
+    {
+        // init log4j
+        String log4jConfigFilePath = System.getProperty("log4j.configuration", "log4j.properties");
+        PropertyConfigurator.configure(log4jConfigFilePath);
+
+        Cornerstone.init();
+
+        IFactory groupFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+        	IFactory.class,
+        	"cornerstone.demo.groupFactory"
+        );
+        IGroup group = (IGroup) groupFactory.createInstance(new Integer(100));
+        System.out.println("group=" + BeanPrinter.getPrintString(group));
+
+		IFactory userFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+			IFactory.class,
+			"cornerstone.demo.userFactory"
+		);
+		IUser user = (IUser) userFactory.createInstance(new Integer(101));
+		System.out.println("user=" + BeanPrinter.getPrintString(user));
+
+		IFactory userListFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+			IFactory.class,
+			"cornerstone.demo.userListFactory"
+		);
+		List userList = (List) userListFactory.createInstance();
+		System.out.println("userList=" + BeanPrinter.getPrintString(userList));
+
+        // TODO: auto-population of associations not implemented yet
+//        IContext context = new BaseContext();
+//        context.setValue(IPersistenceFactory.CTX_QUERY_NAME, "byGroup");
+//        context.setValue("groupId", new Integer(100));
+//        List group100UserList = (List) userListFactory.createInstance(context);
+//        System.out.println("group100UserList=" + BeanPrinter.getPrintString(userList));
+    }
+}
