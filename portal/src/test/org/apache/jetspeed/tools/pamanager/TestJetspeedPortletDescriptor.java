@@ -1,8 +1,17 @@
 /*
- * Created on Mar 2, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.jetspeed.tools.pamanager;
 
@@ -14,6 +23,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
@@ -21,10 +31,11 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
 
 /**
- * @author jford
+ * Tests jetspeed-portlet.xml XML-Java mappings
  *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
 public class TestJetspeedPortletDescriptor
     extends RegistrySupportedTestCase {
@@ -88,8 +99,8 @@ public class TestJetspeedPortletDescriptor
                 "PA Identifier invalid: " + app.getApplicationIdentifier(),
                 app.getApplicationIdentifier().equals("TestRegistry"));
        
-       ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader("./test/testdata/deploy/jetspeed-portlet.xml"), app); 
-       md.load();
+        ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader("./test/testdata/deploy/jetspeed-portlet.xml"), app); 
+        md.load();
        
         PortletDefinitionComposite def1 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_01);
         PortletDefinitionComposite def2 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_02);
@@ -109,6 +120,16 @@ public class TestJetspeedPortletDescriptor
         assertEquals(def3Creators.size(), 4);
         assertEquals(def4Field1.size(), 3);
         assertEquals(def4Fiels2.size(), 2);
+        
+        Collection servicesCollection = app.getJetspeedServices();
+        assertNotNull("Metadata services is null", servicesCollection);
+        assertEquals("Expected 2 service definitions", servicesCollection.size(), 2);
+        Object[] services = servicesCollection.toArray();
+        JetspeedServiceReference service = (JetspeedServiceReference)services[0];
+        System.out.println("**** service = " + service.getName());
+        
+        assertEquals( ((JetspeedServiceReference)services[0]).getName(), "PortletRegistryComponent");
+        assertEquals( ((JetspeedServiceReference)services[1]).getName(), "PortletEntityAccessComponent");
     }
 
 }

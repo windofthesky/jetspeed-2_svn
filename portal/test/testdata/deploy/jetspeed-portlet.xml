@@ -36,11 +36,7 @@ limitations under the License.
     <dc:source>Default Source</dc:source>
     <dc:type>Default Type</dc:type>
     <js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
-    
-    <services>
-    	<service name='PortletRegistryComponent'/>
-    </services>
-    
+        
     <portlet>
         <portlet-name>HelloWorld Portlet</portlet-name>
         <dc:title>HelloWorldTitle</dc:title>
@@ -92,5 +88,10 @@ limitations under the License.
 		<js:name>user-name-family</js:name>
 		<js:name-link>user.name.family</js:name-link>
   	</js:user-attribute-ref>
+
+    <js:services>
+    	<js:service name='PortletRegistryComponent' />
+    	<js:service name='PortletEntityAccessComponent'/>		
+    </js:services>
 
 </portlet-app>

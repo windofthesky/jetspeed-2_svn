@@ -21,6 +21,10 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
+import org.apache.jetspeed.tools.pamanager.rules.JetspeedServiceRule;
+
+import org.apache.jetspeed.tools.pamanager.rules.JetspeedServicesRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 import org.apache.jetspeed.tools.pamanager.rules.UserAttributeRefRuleSet;
@@ -67,11 +71,13 @@ public class ExtendedPortletMetadata
             digester.push(portletApp);
 
             digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
+            digester.addRuleSet(new JetspeedServicesRuleSet(portletApp));
+            
             digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(portletApp));
             digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
 
             digester.addRuleSet(new UserAttributeRefRuleSet(portletApp));
-
+            
             digester.parse(extendedMetaData);
 
             result = true;

@@ -466,9 +466,10 @@ limitations under the License.
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
       <excludes>
-        <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
-        <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
-        <exclude>org/apache/jetspeed/services/jmx/TestJMX</exclude>
+        <exclude>org/apache/jetspeed/test/JetspeedTest.java</exclude>
+        <exclude>org/apache/jetspeed/test/JetspeedTestSuite.java</exclude>
+        <exclude>org/apache/jetspeed/services/jmx/TestJMX.java</exclude>
+		<exclude>org/apache/jetspeed/deployment/TestSimpleDeployment.java</exclude>
       </excludes>
       <includes>
         <include>**/Test*.java</include>
