@@ -20,20 +20,5 @@ limitations under the License.
   <display-name>Security Portlets</display-name>
   <description>Security Portlets</description>
 
-  <servlet>
-    <servlet-name>JetspeedContainer</servlet-name>
-    <display-name>Jetspeed Container</display-name>
-    <description>MVC Servlet for Jetspeed Portlet Applications</description>
-    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-     <servlet-name>
-        JetspeedContainer
-     </servlet-name>
-     <url-pattern>
-       /container/*
-     </url-pattern>
-  </servlet-mapping>
 
 </web-app>
