@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2001,2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * JetspeedNavigationalStateComponent
- * 
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
@@ -63,7 +63,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
 
     private static final String SESSION_BASED_FIELD = "SESSION_BASED";
-    private static final String NAVSTATE_SESSION_KEY = "org.apache.jetspeed.navstate";
+    public static final String NAVSTATE_SESSION_KEY = "org.apache.jetspeed.navstate";
 
     /**
      * @param navClassName
@@ -97,11 +97,11 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     }
 
     /**
-     * 
+     *
      * <p>
      * create
      * </p>
-     * 
+     *
      * @see org.apache.jetspeed.container.session.NavigationalStateComponent#create(org.apache.jetspeed.request.RequestContext)
      * @param context
      * @return @throws
@@ -157,7 +157,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     }
 
    /**
-    * 
+    *
     * <p>
     * createURL
     * </p>
@@ -183,8 +183,8 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         {
            throw new FailedToCreatePortalUrlException("Error invoking createURL() method.  "
                     + "There is more than likely a problem invoking urlClass " + urlClassName);
-        
-        }       
+
+        }
     }
 
     public void store( RequestContext context, NavigationalState navContext )
@@ -209,7 +209,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     /**
      * Given a navigational key, such as s_14 (state_windowid), return the
      * window id
-     * 
+     *
      * @param key
      * @return The window id from the key
      */
