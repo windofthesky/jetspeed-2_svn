@@ -83,11 +83,17 @@ public class MultiColumnPortlet extends LayoutPortlet
             {
                 pm.updatePage(page);
             }
+            catch (SecurityException se)
+            {
+                // ignore page security constraint violations, only
+                // permitted users can edit managed pages; page
+                // update will remain transient
+                log.info("Unable to update page " + page.getId() + " layout due to security permission/constraint.", se);
+            }
             catch (Exception e)
             {
-                throw new PortletException(e.toString(), e);
+                log.error("Unable to update page " + page.getId() + " layout: "+e.toString(), e);
             }
-
         }
 
         // if (targetState != null && targetState.isMaximized())
@@ -210,13 +216,21 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         if (unconstrainedFound)
         {
+            Page page = getRequestContext(request).getPage();
             try
             {
-                pm.updatePage(getRequestContext(request).getPage());
+                pm.updatePage(page);
+            }
+            catch (SecurityException se)
+            {
+                // ignore page security constraint violations, only
+                // permitted users can edit managed pages; page
+                // update will remain transient
+                log.info("Unable to update page " + page.getId() + " layout due to security permission/constraint.");
             }
             catch (Exception e)
             {
-                log.warn("Unable to update Page information: "+e.toString(), e);
+                log.error("Unable to update page " + page.getId() + " layout: "+e.toString(), e);
             }           
         }
 
