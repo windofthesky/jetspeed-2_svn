@@ -92,6 +92,14 @@ limitations under the License.
 </portlet>
 
 <portlet id="RomeRSS">
+	<init-param>
+		<name>AllowPreferences</name>
+		<value>true</value>
+	</init-param>
+	<init-param>
+		<name>ViewPage</name>
+		<value>/WEB-INF/view/view.vm</value>
+	</init-param>	
     <init-param>
       <name>HelpPage</name>
       <value>/WEB-INF/view/rss-help.html</value>
@@ -100,11 +108,7 @@ limitations under the License.
       <name>EditPage</name>
       <value>/WEB-INF/view/edit-prefs.vm</value>
     </init-param>			
-	<init-param>
-      <name>stylesheet</name>
-      <value>/WEB-INF/xsl/rss.xsl</value>
-      <description>Default RSS Transform XSLT</description>
-	</init-param>	
+
     <portlet-name>RomeRSS</portlet-name>
     <display-name>Rome RSS Portlet</display-name>
     <description>Rome RSS Portlet</description>
@@ -151,7 +155,7 @@ limitations under the License.
 		</preference>
 		<preference>
 			<name>showtextinput</name>
-			<value>true</value>		
+			<value>false</value>		
 		</preference>		
 	</portlet-preferences>		
 </portlet>
