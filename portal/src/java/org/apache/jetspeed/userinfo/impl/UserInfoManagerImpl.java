@@ -41,6 +41,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
+import org.apache.pluto.om.common.ObjectID;
+
 
 /**
  * <p>Implements the {@link org.apache.jetspeed.userinfo.UserInfoManager} interface.</p>
@@ -66,8 +68,8 @@ public class UserInfoManagerImpl implements UserInfoManager
     UserManager userMgr;
     /** The portlet registry. */
     PortletRegistryComponent registry;
-    /** The portlet application being processed. */
-    String paName;
+    /** The object id of the portlet application being processed. */
+    String oid;
 
     /**
      * <p>Constructor providing access to the {@link UserManager}.</p>
@@ -101,39 +103,34 @@ public class UserInfoManagerImpl implements UserInfoManager
     /**
      * @see org.apache.jetspeed.userinfo.UserInfoManager#setUserInfoMap(org.apache.jetspeed.om.page.Fragment, org.apache.jetspeed.request.RequestContext)
      */
-    public RequestContext setUserInfoMap(MutablePortletApplication pa, RequestContext context)
+    public Map getUserInfoMap(ObjectID oid, RequestContext context)
     {
+        if (log.isDebugEnabled()) log.debug("Getting user info for portlet application: " + oid.toString());
+        
         // Check if user info map is in cache.
-        if (userInfoMapCache.containsKey(paName))
+        if (userInfoMapCache.containsKey(oid))
         {
-            context.setAttribute(PortletRequest.USER_INFO, userInfoMapCache.get(paName));
-            return context;
+            return (Map) userInfoMapCache.get(oid);
         }
         // Not in cache, map user info.
         Preferences userPrefs = getUserPreferences(context);
         if (null == userPrefs)
         {
-            context.setAttribute(PortletRequest.USER_INFO, null);
             log.debug(PortletRequest.USER_INFO + " is set to null");
-            return context;
+            return null;
         }
+        
+        MutablePortletApplication pa = registry.getPortletApplication(oid);
         if (null == pa)
         {
-            context.setAttribute(PortletRequest.USER_INFO, null);
             log.debug(PortletRequest.USER_INFO + " is set to null");
-            return context;
+            return null;
         }
         Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
         Collection portletUserAttributes = pa.getUserAttributes();
         Map userInfoMap = mapUserInfo(userInfoPrefs, portletUserAttributes);
-        if (null == userInfoMap)
-        {
-            context.setAttribute(PortletRequest.USER_INFO, null);
-            log.debug(PortletRequest.USER_INFO + " is set to null");
-            return context;
-        }
-        context.setAttribute(PortletRequest.USER_INFO, userInfoMapCache.get(paName));
-        return context;
+        
+        return userInfoMap;
     }
 
     /**
@@ -183,7 +180,7 @@ public class UserInfoManagerImpl implements UserInfoManager
             }
         }
 
-        userInfoMapCache.put(paName, userInfoMap);
+        userInfoMapCache.put(oid, userInfoMap);
 
         return userInfoMap;
     }
@@ -219,17 +216,6 @@ public class UserInfoManagerImpl implements UserInfoManager
             }
         }
         return userPrefs;
-    }
-
-    /**
-     * <p>Gets the portlet application from the provided portlet fragment.</p>
-     * @param portletFragment The portlet fragment.
-     * @return The portlet application.
-     */
-    private MutablePortletApplication getPortletApplication(Fragment portletFragment)
-    {
-        paName = PortletRegistryHelper.parseAppName(portletFragment.getName());
-        return registry.getPortletApplication(paName);
     }
 
     private void initUserInfoMapCache()

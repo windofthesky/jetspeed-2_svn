@@ -14,8 +14,11 @@
  */
 package org.apache.jetspeed.userinfo;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import java.util.Map;
+
 import org.apache.jetspeed.request.RequestContext;
+
+import org.apache.pluto.om.common.ObjectID;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 
@@ -51,10 +54,9 @@ public interface UserInfoManager
      * <p>Provide the user info map of user attributes for a given portlet application.</p>
      * <p>The MutablePortletApplication can be retrieved from a Fragment through:</p>
      * <p><code>MutablePortletApplication pa = getPortletApplication(portletFragment);</code></p>
-     * @param pa The portlet application.
+     * @param oid The portlet application object id.
      * @param context The request context.
-     * @return The portlet request context updated with the
-     *         {@link PortletRequest.USER_INFO} map.
+     * @return The {@link PortletRequest.USER_INFO} map.
      */
-    RequestContext setUserInfoMap(MutablePortletApplication pa, RequestContext context);
+    Map getUserInfoMap(ObjectID oid, RequestContext context);
 }
