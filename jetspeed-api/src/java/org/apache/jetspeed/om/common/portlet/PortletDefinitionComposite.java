@@ -54,6 +54,8 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     void setMetadata(GenericMetadata metadata);
     
     void addLanguage(Language lang);
+    
+    void addLanguage(String title, String shortTitle, String keywords, Locale locale);
 
     void addContentType(ContentType cType);
 

@@ -47,7 +47,6 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
@@ -526,12 +525,7 @@ public class PortletApplicationDetail extends ServletPortlet
              String keywords = actionRequest.getParameter("keyword");
              String locale = actionRequest.getParameter("locale");
 
-             LanguageImpl language = new LanguageImpl();
-             language.setTitle(title);
-             language.setShortTitle(shortTitle);
-             language.setKeywords(keywords);
-             language.setLocale(new Locale(locale));
-             portlet.addLanguage(language);
+             portlet.addLanguage(title, shortTitle, keywords, new Locale(locale));
 
              registry.getPersistenceStore().getTransaction().commit();
          }

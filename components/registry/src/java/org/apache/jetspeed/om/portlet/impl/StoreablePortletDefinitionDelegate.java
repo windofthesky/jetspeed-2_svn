@@ -78,6 +78,14 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
         portlet.addLanguage(lang);
 
     }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addLanguage(java.lang.String, java.lang.String, java.lang.String, java.util.Locale)
+     */
+    public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
+    {
+        portlet.addLanguage(title, shortTitle, keywords, locale);
+    }
 
     /** 
      * <p>

@@ -41,6 +41,7 @@ import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
 import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
+import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.LanguageSetImpl;
 import org.apache.jetspeed.om.impl.ParameterSetImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
@@ -321,6 +322,20 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         }
         langListWrapper.setInnerCollection(languageSet);
         langListWrapper.add(lang);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addLanguage(java.lang.String, java.lang.String, java.lang.String, java.util.Locale)
+     */
+    public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
+    {
+        LanguageImpl lang = new LanguageImpl();
+        lang.setTitle(title);
+        lang.setShortTitle(shortTitle);
+        lang.setKeywords(keywords);
+        lang.setLocale(locale);
+        
+        addLanguage(lang);
     }
 
     /**
