@@ -3,13 +3,17 @@
 
 
 <%
+    java.util.List contentPathes = new java.util.ArrayList(2);
 	if(request.getParameter("setTheme") != null)
 	{
-		java.util.List contentPathes = new java.util.ArrayList(2);
-        contentPathes.add(request.getParameter("setTheme"));
-        request.getSession().setAttribute("org.apache.jetspeed.content.pathes", contentPathes);
-        contentPathes.add("");
+        contentPathes.add(request.getParameter("setTheme"));               
 	}
+	else
+	{
+		contentPathes.add("themes/blue");               
+	}
+	contentPathes.add("skins");
+	request.getSession().setAttribute("org.apache.jetspeed.content.pathes", contentPathes);
 %>
 <html>
   <head>
@@ -32,6 +36,16 @@
      <br />
       <a href="index.jsp?setTheme=themes/blue">Set theme to Blue</a>
    </p>
-   <iframe src="content/page.html" width="300" height="300" />
+  <iframe src="content/page.html" width="300" height="300" ></iframe>
+   <br>
+
+   <br>
+    <iframe src="content/skin1/skin_page.html" width="300" height="300" ></iframe>
+    
+
+    <br>
+    
+    <iframe src="content/skin2/skin_page.html" width="300" height="300" ></iframe>
+   
   </body>
  </html>  
