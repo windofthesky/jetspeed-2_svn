@@ -20,8 +20,8 @@ import java.util.StringTokenizer;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.security.PortalResourcePermission;
 import org.apache.jetspeed.security.PortalResourcePermissionCollection;
@@ -52,18 +52,17 @@ import org.apache.jetspeed.security.PortalResourcePermissionCollection;
  */
 public class FolderPermission extends PortalResourcePermission
 {
+   public static final char RECURSIVE_CHAR = '-';
+   public static final char WILD_CHAR = '*';
+   public static final char FOLDER_SEPARATOR = '/';
 
-   private final static Log log = LogFactory.getLog(FolderPermission.class);
+   //private final static Log log = LogFactory.getLog(FolderPermission.class);
 
    // does path indicate a folder? (wildcard or recursive)
    private transient boolean folder;
 
    // is it a recursive directory specification?
    private transient boolean recursive;
-
-   private static final char RECURSIVE_CHAR = '-';
-   private static final char WILD_CHAR = '*';
-   private static final char FOLDER_SEPARATOR = '/';
 
    private transient String cpath;
 
@@ -163,7 +162,6 @@ public class FolderPermission extends PortalResourcePermission
            //recursive = false;
            cpath = cpath.substring(0, --len);
        }
-
    }
 
    /**
