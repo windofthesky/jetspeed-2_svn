@@ -15,38 +15,25 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.om.page.Fragment;
 
 /**
  * <p>The ContentDispatcher allows customer classes to retrieved
  *    rendered content for a specific fragment</p>
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta</a>
  * @version $Id$
  */
 public interface ContentDispatcher
 {
     /**
-     * Include in the provided PortletResponse output stream the rendered content
-     * of the request fragment.
+     * Writes a portlets rendered content to the fragment.
      * If the fragment rendered content is not yet available, the method will
      * hold until it's completely rendered.
-     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
+     * @throws UnrenderedContentException
      */
-    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp) throws FailedToRenderFragmentException;
-    
-    /**
-     * Include in the provided PortletResponse output stream the rendered content
-     * of the request fragment.
-     * If the fragment rendered content is not yet available, the method will
-     * hold until it's completely rendered.
-     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
-     */
-    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp) throws FailedToRenderFragmentException;
-    
+    public void include(Fragment fragment) throws UnrenderedContentException;
+        
     /**
      * Sequentially wait on content generation for the given fragment.
      * 

@@ -43,6 +43,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private List properties = new Vector();
     
     private String name;
+    
+    private String renderedContent;
 
     public FragmentImpl()
     {}
@@ -302,5 +304,40 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     {
        this.name = name;
 
+    }
+    
+    /**
+     * 
+     * <p>
+     * getRenderedContent
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Fragment#getRenderedContent()
+     * @return
+     */
+    public String getRenderedContent()
+    {
+        if(renderedContent != null)
+        {
+            return renderedContent;
+        }
+        else
+        {
+            throw new IllegalStateException("You cannot invoke getRenderedContent() until the content has been set.");
+        }
+    }
+    
+    /**
+     * 
+     * <p>
+     * setRenderedContent
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Fragment#setRenderedContent(java.lang.String)
+     * @param renderedContent
+     */
+    public void setRenderedContent( String renderedContent )
+    {
+        this.renderedContent = renderedContent;
     }
 }

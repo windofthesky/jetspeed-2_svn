@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -27,7 +28,7 @@ import org.apache.jetspeed.request.RequestContext;
  * <p>This service process all portlet rendering requests and interfaces with the portlet
  * container to generate the resulting markup</p>
  *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta</a>
  * @version $Id$
  */
 public interface PortletRenderer 
@@ -36,15 +37,17 @@ public interface PortletRenderer
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
+     * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException;
+    public void renderNow(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow;
 
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
+     * @throws FailedToRetrievePortletWindow
      */
-    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) throws FailedToRenderFragmentException;
+    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) throws FailedToRenderFragmentException, FailedToRetrievePortletWindow;
 
     /** 
      * 
@@ -52,8 +55,9 @@ public interface PortletRenderer
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
      * @throws FailedToRenderFragmentException if the Fragment could not be rendered.
+     * @throws FailedToRetrievePortletWindow
      */
-    public void render(Fragment fragment, RequestContext request) throws  FailedToRenderFragmentException;
+    public void render(Fragment fragment, RequestContext request) throws  FailedToRenderFragmentException, FailedToRetrievePortletWindow;
 
     /**
      * Retrieve the ContentDispatcher for the specified request

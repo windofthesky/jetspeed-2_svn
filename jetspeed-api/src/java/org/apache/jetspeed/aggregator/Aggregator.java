@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.io.IOException;
+
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -32,6 +34,6 @@ public interface Aggregator
      * @return Unique Portlet Entity ID
      */
     public void build(RequestContext context)
-        throws JetspeedException;
+        throws JetspeedException, IOException;
 
 }
