@@ -43,8 +43,7 @@ public class PropertySetDefImpl implements PropertySetDef
      */
     public PropertySetDefImpl(String propertySetName, short propertySetType)
     {
-        this.propertySetName =
-            ((propertySetName != null) ? propertySetName.toLowerCase() : propertySetName);      
+        this.propertySetName = propertySetName;      
         this.propertySetType = propertySetType;
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
