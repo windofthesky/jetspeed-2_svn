@@ -66,7 +66,7 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
-import org.apache.jetspeed.om.common.ObjectIDImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -86,7 +86,7 @@ import org.apache.pluto.om.servlet.ServletDefinitionList;
 public class WebApplicationDefinitionImpl implements MutableWebApplication, Serializable
 {
 
-    private long id;
+    private int id;
     private MutableDisplayNameSet displayNames;
     private MutableDescriptionSet descriptions;
     private String contextRoot;
@@ -97,9 +97,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public ObjectID getId()
     {
-        ObjectIDImpl oid = new ObjectIDImpl();
-        oid.setValue(id);
-        return oid;
+        return new JetspeedObjectID(id);
     }
 
     /**
@@ -168,7 +166,7 @@ public class WebApplicationDefinitionImpl implements MutableWebApplication, Seri
      */
     public void setId(String oid)
     {
-        id = new Long(oid).longValue();
+        id = JetspeedObjectID.createFromString(oid).intValue();
     }
 
     /**

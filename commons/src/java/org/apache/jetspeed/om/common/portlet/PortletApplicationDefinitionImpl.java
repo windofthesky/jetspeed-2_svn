@@ -56,7 +56,7 @@ package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
 import java.util.Collection;
-import org.apache.jetspeed.om.common.ObjectIDImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -76,7 +76,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      * and in any caching of this object.
      */
     // private ObjectID id;
-    private long id;
+    private int id;
 
     /** Holds value of property name. */
     private String name;
@@ -111,9 +111,8 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public ObjectID getId()
     {
-        ObjectIDImpl oid = new ObjectIDImpl();
-        oid.setValue(id);
-        return oid;
+        
+        return new JetspeedObjectID(id);
     }
 
     /**
@@ -186,7 +185,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public void setId(String objectID)
     {
         //((ObjectIDImpl) id).setValue(objectID);
-        id = new Long(objectID).longValue();
+        id = JetspeedObjectID.createFromString(objectID).intValue();
     }
 
     /**

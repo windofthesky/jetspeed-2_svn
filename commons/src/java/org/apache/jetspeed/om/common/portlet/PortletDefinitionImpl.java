@@ -58,8 +58,10 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.jetspeed.om.common.LanguageSetImpl;
 import org.apache.jetspeed.om.common.ParameterSetImpl;
+import org.apache.jetspeed.om.common.AbstractPreferenceImpl;
 import org.apache.jetspeed.om.common.PreferenceImpl;
 import org.apache.jetspeed.om.common.PreferenceSetImpl;
 import org.apache.jetspeed.om.common.SecurityRoleRefSetImpl;
@@ -71,7 +73,7 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
-import org.apache.jetspeed.om.common.ObjectIDImpl;
+
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.PreferenceComposite;
 import org.apache.jetspeed.om.common.extended.PortletParameterSetImpl;
@@ -101,7 +103,7 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
-    private long id;
+    private int id;
     private String className;
     private String name;
     private String portletIdentifier;
@@ -148,10 +150,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      * @see org.apache.pluto.om.portlet.PortletDefinition#getId()
      */
     public ObjectID getId()
-    {
-        ObjectIDImpl oid = new ObjectIDImpl();
-        oid.setValue(id);
-        return oid;
+    {   
+        return new JetspeedObjectID(id);
     }
 
     /**
@@ -264,7 +264,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void setId(String oid)
     {
-        id = new Long(oid).longValue();
+        id = JetspeedObjectID.createFromString(oid).intValue();
     }
 
     /**
