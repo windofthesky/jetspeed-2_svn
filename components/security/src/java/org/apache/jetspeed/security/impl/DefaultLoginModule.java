@@ -24,7 +24,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.jetspeed.security.AuthenticationProvider;
+import org.apache.jetspeed.security.LoginModuleProxy;
 import org.apache.jetspeed.security.UserManager;
 
 /**
@@ -36,12 +36,12 @@ import org.apache.jetspeed.security.UserManager;
  * <p>Configuration files should provide:</p>
  * <pre><code>
  * Jetspeed {
- *   org.apache.jetspeed.security.impl.RdbmsLoginModule required debug=true;
+ *   org.apache.jetspeed.security.impl.DefaultLoginModule required debug=true;
  * };
  * </code></pre>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class RdbmsLoginModule implements LoginModule
+public class DefaultLoginModule implements LoginModule
 {
 
     /** <p>LoginModule debug mode is turned off by default.</p> */
@@ -74,10 +74,10 @@ public class RdbmsLoginModule implements LoginModule
     /**
      * <p>The default login module constructor.</p>
      */
-    public RdbmsLoginModule()
+    public DefaultLoginModule()
     {
-        AuthenticationProvider authenticationProvider = AuthenticationProviderImpl.authenticationProvider;
-        this.ums = authenticationProvider.getUserManager();
+        LoginModuleProxy loginModuleProxy = LoginModuleProxyImpl.loginModuleProxy;
+        this.ums = loginModuleProxy.getUserManager();
         debug = false;
         success = false;
         commitSuccess = false;

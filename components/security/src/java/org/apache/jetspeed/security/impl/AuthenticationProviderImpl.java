@@ -15,6 +15,8 @@
 package org.apache.jetspeed.security.impl;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,36 +24,29 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
 import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.SecurityProvider;
-import org.apache.jetspeed.security.UserManager;
 
 /**
- * @author <a href="">David Le Strat </a>
- *  
+ * @see org.apache.jetspeed.security.AuthenticationProvider
+ * @author <a href="mailto:LeStrat_David@emc.com">David Le Strat </a> 
  */
 public class AuthenticationProviderImpl implements AuthenticationProvider
 {
 
+    /** The logger. */
     private static final Log log = LogFactory.getLog(AuthenticationProviderImpl.class);
 
-    /** The {@link SecurityProvider}instance. */
-    static AuthenticationProvider authenticationProvider;
-
-    /** The {@link UserManager}. */
-    private UserManager userMgr;
-
+    /** The list of login modules. */
+    private List loginModules = new ArrayList();
+    
     /**
      * <p>
      * Constructor configuring the security service with the correct
-     * <code>java.security.auth.login.config</code> and providing a bridge
-     * between the login module and the security components.
+     * <code>java.security.auth.login.config</code>.
      * </p>
      * 
      * @param loginConfig The login module config.
-     * @param userMgr The user manager.
-
      */
-    public AuthenticationProviderImpl(String loginConfig, UserManager userMgr)
+    public AuthenticationProviderImpl(String loginConfig)
     {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         SystemResourceUtil resourceUtil = new ClassLoaderSystemResourceUtilImpl(cl);
@@ -70,21 +65,16 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
             if (log.isDebugEnabled())
                 log.debug("java.security.auth.login.config = " + loginConfigUrl.toString());
             System.setProperty("java.security.auth.login.config", loginConfigUrl.toString());
+            // TODO This is incorect but will do for now.
+            loginModules.add(loginConfigUrl.toString());
         }
-        // The user manager.
-        this.userMgr = userMgr;
-        
-        // Hack providing access to the UserManager in the LoginModule.
-        // TODO Can we fix this?
-        AuthenticationProviderImpl.authenticationProvider = this;
     }
-
+   
     /**
-     * @see org.apache.jetspeed.security.SecurityProvider#getUserManager()
+     * @see org.apache.jetspeed.security.AuthenticationProvider#getLoginModules()
      */
-    public UserManager getUserManager()
+    public List getLoginModules()
     {
-        return this.userMgr;
+        return this.loginModules;
     }
-
 }

@@ -14,16 +14,23 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.List;
+
 /**
- * <p>Utility component used as a bridge between the login module and the security component.</p>
+ * <p>
+ * Configures the login modules.
+ * </p>
  * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public interface AuthenticationProvider
 {
     /**
-     * <p>Getter for the {@link UserManager}.</p>
+     * <p>
+     * Getter for the login modules.
+     * </p>
+     * 
      * @return The UserManager.
      */
-    UserManager getUserManager();
+    List getLoginModules();
 }

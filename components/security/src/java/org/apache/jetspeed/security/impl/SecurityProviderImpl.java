@@ -14,17 +14,12 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Policy;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.UserSecurityProvider;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @author <a href="">David Le Strat </a>
@@ -33,73 +28,41 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
 public class SecurityProviderImpl implements SecurityProvider
 {
 
-    private static final Log log = LogFactory.getLog(SecurityProviderImpl.class);
-
     /** The {@link CredentialHandler}. */
     private CredentialHandler credHandler;
 
-    /** The {@link UserSecurityHandler}. */
-    private UserSecurityHandler userSecurityHandler;
+    /** The {@link UserSecurityProvider}. */
+    private UserSecurityProvider userSecurityProvider;
 
     /** The {@link RoleSecurityHandler}. */
     private RoleSecurityHandler roleSecurityHandler;
 
     /** The {@link GroupSecurityHandler}. */
     private GroupSecurityHandler groupSecurityHandler;
-    
+
     /** The {@link SecurityMappingHandler}. */
     private SecurityMappingHandler securityMappingHandler;
 
     /**
      * <p>
-     * Constructor configuring the security services with the correct
-     * security handlers.
+     * Constructor configuring the security services with the correct security
+     * handlers.
      * </p>
      * 
      * @param credHandler The credential handler.
-     * @param userSecurityHandler The user security handler.
+     * @param userSecurityProvider The user security provider.
      * @param roleSecurityHandler The role security handler.
      * @param groupSecurityHandler The group security handler.
      * @param securityMappingHandler The security mapping handler.
      */
-    public SecurityProviderImpl(CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
-            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler, SecurityMappingHandler securityMappingHandler)
+    public SecurityProviderImpl(CredentialHandler credHandler, UserSecurityProvider userSecurityProvider,
+            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler,
+            SecurityMappingHandler securityMappingHandler)
     {
         // The credential handler.
         this.credHandler = credHandler;
         // The user security handler.
-        this.userSecurityHandler = userSecurityHandler;
-        // The role security handler.
-        this.roleSecurityHandler = roleSecurityHandler;
-        // The group security handler.
-        this.groupSecurityHandler = groupSecurityHandler;
-        // The security mapping handler.
-        this.securityMappingHandler = securityMappingHandler;
-    }
-    
-    /**
-     * <p>
-     * Constructor configuring the security services with the correct
-     * {@link Policy}and security handlers.
-     * </p>
-     * 
-     * @param policy The policy.
-     * @param credHandler The credential handler.
-     * @param userSecurityHandler The user security handler.
-     * @param roleSecurityHandler The role security handler.
-     * @param groupSecurityHandler The group security handler.
-     * @param securityMappingHandler The security mapping handler.
-     */
-    public SecurityProviderImpl(Policy policy, CredentialHandler credHandler, UserSecurityHandler userSecurityHandler,
-            RoleSecurityHandler roleSecurityHandler, GroupSecurityHandler groupSecurityHandler, SecurityMappingHandler securityMappingHandler)
-    {
-        // The policy.
-        Policy.setPolicy(policy);
-        Policy.getPolicy().refresh();
-        // The credential handler.
-        this.credHandler = credHandler;
-        // The user security handler.
-        this.userSecurityHandler = userSecurityHandler;
+        this.userSecurityProvider = userSecurityProvider;
         // The role security handler.
         this.roleSecurityHandler = roleSecurityHandler;
         // The group security handler.
@@ -117,11 +80,11 @@ public class SecurityProviderImpl implements SecurityProvider
     }
 
     /**
-     * @see org.apache.jetspeed.security.SecurityProvider#getUserSecurityHandler()
+     * @see org.apache.jetspeed.security.SecurityProvider#getUserSecurityProvider()
      */
-    public UserSecurityHandler getUserSecurityHandler()
+    public UserSecurityProvider getUserSecurityProvider()
     {
-        return this.userSecurityHandler;
+        return this.userSecurityProvider;
     }
 
     /**
@@ -139,7 +102,7 @@ public class SecurityProviderImpl implements SecurityProvider
     {
         return this.groupSecurityHandler;
     }
-     
+
     /**
      * @see org.apache.jetspeed.security.SecurityProvider#getSecurityMappingHandler()
      */

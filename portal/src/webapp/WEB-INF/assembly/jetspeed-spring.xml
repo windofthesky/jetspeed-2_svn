@@ -180,6 +180,7 @@ limitations under the License.
   	   <constructor-arg type="boolean"><value>false</value></constructor-arg>  	     	   
   </bean>
   
+  <!-- ************** Security SPI Handlers ************** -->
   <!-- Security SPI: CommonQueries -->
   <bean id="org.apache.jetspeed.security.spi.impl.CommonQueries" 
   	   class="org.apache.jetspeed.security.spi.impl.CommonQueries"
@@ -224,27 +225,24 @@ limitations under the License.
   	   <!-- Default group hierarchy strategy is by generalization.  Add contructor-arg to change the strategy. -->
   </bean>
   
-  <!-- Security: Permission Manager -->
-  <bean id="org.apache.jetspeed.security.PermissionManager" 
-  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"
+  <!-- ************** Security Providers ************** -->
+  <!-- Security: User Security Provider -->
+  <bean id="org.apache.jetspeed.security.UserSecurityProvider" 
+  	   class="org.apache.jetspeed.security.impl.UserSecurityProviderImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
-  </bean>
-  
-  <!-- Security: RDBMS Policy implementation for JAAS -->
-  <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" 
-  	   class="org.apache.jetspeed.security.impl.RdbmsPolicy"
-  >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>  	   
+  	   <constructor-arg >
+  	   		<list>
+  	   			<ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/>
+  	   		</list>
+  	   </constructor-arg>
   </bean>
   
   <!-- Security: Security Provider -->
   <bean id="org.apache.jetspeed.security.SecurityProvider" 
   	   class="org.apache.jetspeed.security.impl.SecurityProviderImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserSecurityProvider"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.RoleSecurityHandler"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.GroupSecurityHandler"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.spi.SecurityMappingHandler"/></constructor-arg>
@@ -271,12 +269,41 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
   </bean>
   
+  <!-- ************** Authentication ************** -->
+  <!-- Security: Login Module Proxy -->
+  <bean id="org.apache.jetspeed.security.LoginModuleProxy" 
+  	   class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  </bean>
+  
   <!-- Security: Authentication Provider -->
   <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
   	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl"
   >  	   
-  	   <constructor-arg ><value>login.conf</value></constructor-arg>
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  	   <constructor-arg ><value>login.conf</value></constructor-arg> 	   
+  </bean>
+  
+  <!-- ************** Authorization ************** -->
+  <!-- Security: Permission Manager -->
+  <bean id="org.apache.jetspeed.security.PermissionManager" 
+  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: RDBMS Policy implementation for JAAS -->
+  <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" 
+  	   class="org.apache.jetspeed.security.impl.RdbmsPolicy"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: Authorization Provider -->
+  <bean id="org.apache.jetspeed.security.AuthorizationProvider" 
+  	   class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>   
   </bean>
   
   <!-- User Info -->

@@ -15,7 +15,9 @@
 package org.apache.jetspeed.userinfo;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -38,11 +40,13 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserSecurityProvider;
 import org.apache.jetspeed.security.impl.GroupManagerImpl;
 import org.apache.jetspeed.security.impl.PermissionManagerImpl;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.security.impl.UserSecurityProviderImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
@@ -100,13 +104,20 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         PortletCache portletCache = new PortletCache();
         new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
         
+        // SPI Security handlers.
         CommonQueries cq = new CommonQueries(persistenceStore);
         CredentialHandler ch = new DefaultCredentialHandler(cq);
         UserSecurityHandler ush = new DefaultUserSecurityHandler(cq);
         RoleSecurityHandler rsh = new DefaultRoleSecurityHandler(cq);
         GroupSecurityHandler gsh = new DefaultGroupSecurityHandler(cq);
         SecurityMappingHandler smh = new DefaultSecurityMappingHandler(cq);
-        SecurityProvider securityProvider = new SecurityProviderImpl(ch, ush, rsh, gsh, smh);
+        
+        // Security Providers.
+        List userSecurityHandlers = new ArrayList();
+        userSecurityHandlers.add(ush);
+        UserSecurityProvider userSecurityProvider = new UserSecurityProviderImpl(userSecurityHandlers);
+        
+        SecurityProvider securityProvider = new SecurityProviderImpl(ch, userSecurityProvider, rsh, gsh, smh);
         
         ums = new UserManagerImpl(securityProvider);
         gms = new GroupManagerImpl(securityProvider);

@@ -18,7 +18,6 @@ import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * <p>
@@ -32,12 +31,12 @@ public interface SecurityProvider
 {
     /**
      * <p>
-     * Getter for the {@link UserSecurityHandler}
+     * Getter for the {@link UserSecurityProvider}
      * </p>
      * 
-     * @return The UserSecurityHandler.
+     * @return The {@link UserSecurityProvider}.
      */
-    UserSecurityHandler getUserSecurityHandler();
+    UserSecurityProvider getUserSecurityProvider();
 
     /**
      * <p>

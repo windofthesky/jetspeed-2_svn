@@ -36,9 +36,9 @@ import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.UserSecurityProvider;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -53,8 +53,8 @@ public class UserManagerImpl implements UserManager
 {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
-    /** The user security handler. */
-    private UserSecurityHandler userSecurityHandler = null;
+    /** The user security provider. */
+    private UserSecurityProvider userSecurityProvider = null;
 
     /** The security mapping handler. */
     private SecurityMappingHandler securityMappingHandler = null;
@@ -67,7 +67,7 @@ public class UserManagerImpl implements UserManager
      */
     public UserManagerImpl(SecurityProvider securityProvider)
     {
-        this.userSecurityHandler = securityProvider.getUserSecurityHandler();
+        this.userSecurityProvider = securityProvider.getUserSecurityProvider();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
         this.credentialHandler = securityProvider.getCredentialHandler();
     }
@@ -82,7 +82,7 @@ public class UserManagerImpl implements UserManager
     {
         securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(roleHierarchyResolver);
         securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(groupHierarchyResolver);
-        this.userSecurityHandler = securityProvider.getUserSecurityHandler();
+        this.userSecurityProvider = securityProvider.getUserSecurityProvider();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
         this.credentialHandler = securityProvider.getCredentialHandler();
     }
@@ -149,7 +149,7 @@ public class UserManagerImpl implements UserManager
             if ((null != preferences) && preferences.absolutePath().equals(fullPath))
             {
                 // Add user principal.
-                userSecurityHandler.setUserPrincipal(userPrincipal);
+                userSecurityProvider.setUserPrincipal(userPrincipal);
                 // Set security credentials
                 PasswordCredential pwdCredential = new PasswordCredential(username, password.toCharArray());
                 credentialHandler.setPrivatePasswordCredential(null, pwdCredential);
@@ -188,7 +188,7 @@ public class UserManagerImpl implements UserManager
 
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
-        userSecurityHandler.removeUserPrincipal(userPrincipal);
+        userSecurityProvider.removeUserPrincipal(userPrincipal);
         if (!userExists(username))
         {
             // Remove preferences
@@ -217,7 +217,7 @@ public class UserManagerImpl implements UserManager
     {
         ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "userExists(java.lang.String)");
 
-        Principal principal = userSecurityHandler.getUserPrincipal(username);
+        Principal principal = userSecurityProvider.getUserPrincipal(username);
         boolean userExists = (null != principal);
         if (log.isDebugEnabled())
         {
@@ -237,7 +237,7 @@ public class UserManagerImpl implements UserManager
         Set principals = new HashSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
-        Principal userPrincipal = userSecurityHandler.getUserPrincipal(username);
+        Principal userPrincipal = userSecurityProvider.getUserPrincipal(username);
         if (null == userPrincipal)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
@@ -261,7 +261,7 @@ public class UserManagerImpl implements UserManager
     public Iterator getUsers(String filter) throws SecurityException
     {
         List users = new LinkedList();
-        Iterator userPrincipals = userSecurityHandler.getUserPrincipals(filter);
+        Iterator userPrincipals = userSecurityProvider.getUserPrincipals(filter);
         while (userPrincipals.hasNext())
         {
             String username = ((Principal) userPrincipals.next()).getName();
