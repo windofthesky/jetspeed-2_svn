@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page id="p001">
+  <defaults
+     skin="light-blue"
+     layout-decorator="clear"
+     portlet-decorator="box-titled"
+  />
+  <title>Welcome to Jetspeed-2</title>
+  <fragment id="f001" type="layout" name="OneColumn">
+    <fragment id="p002-01" type="portlet" name="LoginPortlet"/>
+    <fragment id="p002-01" type="portlet" name="HelloPortlet"/>
+    <fragment id="p002-01" type="portlet" name="DisplayRequestPortlet"/>
+    <fragment id="p002-01" type="portlet" name="CustomerList"/>
+    <fragment id="p002-01" type="portlet" name="CustomerInfo"/>
+    <fragment id="p002-01" type="portlet" name="CustomerDetail"/>
+    <fragment id="p002-01" type="portlet" name="JMXPortlet"/>
+    <fragment id="p002-01" type="portlet" name="PreferencePortlet"/>
+  </fragment>
+</page>

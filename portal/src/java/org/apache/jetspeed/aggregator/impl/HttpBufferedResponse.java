@@ -51,28 +51,89 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
+package org.apache.jetspeed.aggregator.impl;
 
-import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.request.RequestContext;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
-/**
- * This service handles the generation of first step of agregation process
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
- */
-public interface Aggregator extends CommonService
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.pluto.util.PrintWriterServletOutputStream;
+
+public class HttpBufferedResponse extends javax.servlet.http.HttpServletResponseWrapper
 {
-    public String SERVICE_NAME = "Aggregator";
+    private boolean usingWriter;
+    private boolean usingStream;
 
-    /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
-     */
-    public void build(RequestContext context)
-        throws JetspeedException;
+    /** Commons logging */
+    protected final static Log log = LogFactory.getLog(HttpBufferedResponse.class);
 
+    private ServletOutputStream wrappedStream;
+    private PrintWriter writer;
+
+    public HttpBufferedResponse(HttpServletResponse servletResponse,
+                                PrintWriter writer)
+    {
+        super(servletResponse);
+        this.writer = writer;
+    }
+
+    public ServletOutputStream getOutputStream() throws IllegalStateException, IOException
+    {
+        if (usingWriter)
+        {
+            throw new IllegalStateException("getOutputStream can't be used after getWriter was invoked");
+        }
+
+        if (wrappedStream == null)
+        {
+            wrappedStream = new PrintWriterServletOutputStream(getResponse().getWriter(),
+                                                               getResponse().getCharacterEncoding());
+        }
+
+        usingStream = true;
+
+        return wrappedStream;
+    }
+
+    public PrintWriter getWriter() throws UnsupportedEncodingException, IllegalStateException, IOException {
+
+        if (usingStream)
+        {
+            throw new IllegalStateException("getWriter can't be used after getOutputStream was invoked");
+        }
+
+        usingWriter = true;
+
+        return writer;
+    }
+
+
+    public void setBufferSize(int size)
+    {
+        // ignore
+    }
+
+    public int getBufferSize()
+    {
+        return 0;
+    }
+
+    public void flushBuffer() throws IOException
+    {
+        writer.flush();
+    }
+
+    public boolean isCommitted()
+    {
+        return false;
+    }
+
+    public void reset()
+    {
+        // ignore right now
+    }
 }

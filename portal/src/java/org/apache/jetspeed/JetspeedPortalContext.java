@@ -100,7 +100,7 @@ public class JetspeedPortalContext implements PortalContext
     }
 
     // ------------------------------------------------------------------------
-    //  A C C E S S O R S 
+    //  A C C E S S O R S
     // ------------------------------------------------------------------------
 
     /**
@@ -187,7 +187,7 @@ public class JetspeedPortalContext implements PortalContext
     {
         return getPortalContextProvider().getProperty(name);
     }
-    
+
     /* (non-Javadoc)
      * @see javax.portlet.PortalContext#getPropertyNames()
      */
@@ -195,7 +195,7 @@ public class JetspeedPortalContext implements PortalContext
     {
         return new Enumerator(getPortalContextProvider().getPropertyNames());
     }
- 
+
     /* (non-Javadoc)
      * @see javax.portlet.PortalContext#getSupportedPortletModes()
      */
@@ -209,7 +209,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getSupportedWindowStates()
     {
-        return new Enumerator(getPortalContextProvider().getSupportedWindowStates());        
+        return new Enumerator(getPortalContextProvider().getSupportedWindowStates());
     }
 
     /* (non-Javadoc)
@@ -217,15 +217,15 @@ public class JetspeedPortalContext implements PortalContext
      */
     public String getPortalInfo()
     {
-        return getPortalContextProvider().getPortalInfo();        
+        return getPortalContextProvider().getPortalInfo();
     }
-   
+
     /**
      * TODO: need to refactor context provider, move implementation directly into here since it comes back here anyway
      * @return
      */
     private PortalContextProvider getPortalContextProvider()
-    {        
+    {
         javax.servlet.ServletContext context = engine.getServletConfig().getServletContext();
 
         PortalContextProvider provider =
@@ -237,6 +237,6 @@ public class JetspeedPortalContext implements PortalContext
             context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
         }
 
-        return provider;        
+        return provider;
     }
 }

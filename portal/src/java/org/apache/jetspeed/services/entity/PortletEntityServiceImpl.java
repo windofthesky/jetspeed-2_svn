@@ -74,7 +74,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * <p>
  * PortletEntityServiceImpl
  * </p>
- * 
+ *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *

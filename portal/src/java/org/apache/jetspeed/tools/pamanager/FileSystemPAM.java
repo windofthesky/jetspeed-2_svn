@@ -73,7 +73,7 @@ import org.apache.jetspeed.persistence.TransactionStateException;
  * This is the catalina specific implemenation for deplyment of Portlet Applications.
  *
  *
- * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a> 
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
 
@@ -84,15 +84,55 @@ public class FileSystemPAM implements Deployment
     private static final String DEPLOYMENT_SYSTEM = "jetspeed-deploy";
 
     private String deploymentDbAlias;
+
+    /**
+     * <p>
+     * deploy
+     * </p>
+     *
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String, java.lang.String, java.lang.String)
+     * @param webAppsDir
+     * @param warFile
+     * @param paName
+     * @throws PortletApplicationException
+     */
+    public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
+    {
+        deploy(webAppsDir, warFile, paName, null, 0);
+
+    }
+
+    /**
+     * <p>
+     * deploy
+     * </p>
+     *
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String, java.lang.String, java.lang.String)
+     * @param webAppsDir
+     * @param warFile
+     * @param paName
+     * @param startState The deployment state where deployment should start:
+     * 0 deploy war - 1 Update Web XML - 2 Update Regsitry
+     * @throws PortletApplicationException
+     */
+    public void deploy(String webAppsDir, String warFile, String paName, int startState) throws PortletApplicationException
+    {
+        deploy(webAppsDir, warFile, paName, null, startState);
+
+    }
+
     /**
      * Deploys the specified war file to the webapps dirctory specified.
-     * 
+     *
      * @param webAppsDir The webapps directory inside the Application Server
      * @param warFile The warFile containing the Portlet Application
      * @param paName The Portlet Application name
+     * @param startState The deployment state where deployment should start:
+     * 0 deploy war - 1 Update Web XML - 2 Update Regsitry
      * @throws PortletApplicationException
      */
-    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias)
+    public void deploy(String webAppsDir, String warFile, String paName,
+                       String deploymentDbAlias, int startState)
         throws PortletApplicationException
     {
         this.deploymentDbAlias = deploymentDbAlias;
@@ -111,18 +151,35 @@ public class FileSystemPAM implements Deployment
 
         try
         {
-            util.deployArchive(webAppsDir, warFile, paName);
+            if (startState <= nState)
+            {
+                util.deployArchive(webAppsDir, warFile, paName);
+            }
+
             nState = 1;
 
-            util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
+            if (startState <= nState)
+            {
+                util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
+            }
+
             nState = 2;
 
-            // Application is deployed -- populate the registry with the portlet.xml
-            String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
+            if (startState <= nState)
+            {
+                // Application is deployed -- populate the registry with the portlet.xml
+                String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
 
-            // load the portlet.xml
-            System.out.println("Loading " + portletXMLPath + " into memory....");
-            app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
+                // load the portlet.xml
+                System.out.println("Loading " + portletXMLPath + " into memory....");
+                app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
+
+                if (app == null)
+                {
+                    System.out.println("Error loading: " + portletXMLPath);
+                    rollback(nState, webAppsDir, paName, app);
+                    return;
+                }
 
             if (app == null)
             {
@@ -136,9 +193,9 @@ public class FileSystemPAM implements Deployment
             }
             else
             {
-                app.setApplicationType(MutablePortletApplication.WEBAPP);                
+                app.setApplicationType(MutablePortletApplication.WEBAPP);
             }
-            // create the web application 
+            // create the web application
             MutableWebApplication webapp = new WebApplicationDefinitionImpl();
             if (paName.startsWith("/"))
             {
@@ -159,15 +216,17 @@ public class FileSystemPAM implements Deployment
             //                      + app.getName());
             //                rollback(nState, webAppsDir, paName, app );
             //                return;
-            //                   
+            //
             //            }
 
-            // save it to the registry
-            System.out.println("Saving the portlet.xml in the registry...");
-            // locate the deployment home
-            identifyDeploymentSystem();
+                // save it to the registry
+                System.out.println("Saving the portlet.xml in the registry...");
+                // locate the deployment home
+                identifyDeploymentSystem();
 
-            JetspeedPortletRegistry.registerPortletApplication(app, DEPLOYMENT_SYSTEM);
+                JetspeedPortletRegistry.registerPortletApplication(app, DEPLOYMENT_SYSTEM);
+            }
+
             nState = 3;
 
             // DONE
@@ -192,7 +251,7 @@ public class FileSystemPAM implements Deployment
         catch (Throwable t)
         {
             t.printStackTrace();
-            
+
         }
 
     }
@@ -205,14 +264,14 @@ public class FileSystemPAM implements Deployment
     }
 
     /**
-     * Undeploys application.
-     * 
+     * Unregisters application.
+     *
      * @param webAppsDir The webapps directory inside the Application Server
-     * @param paName The Portlet Application name 
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
 
-    public void undeploy(String webAppsDir, String paName) throws PortletApplicationException
+    public void unregister(String webAppsDir, String paName) throws PortletApplicationException
     {
         String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
         try
@@ -235,11 +294,43 @@ public class FileSystemPAM implements Deployment
 
             // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
             // locate the deployment home
-			JetspeedPortletRegistry.beginTransaction();
+            JetspeedPortletRegistry.beginTransaction();
             JetspeedPortletRegistry.removeApplication(app);
-			JetspeedPortletRegistry.commitTransaction();
+            JetspeedPortletRegistry.commitTransaction();
             // Remove the webapps directory
             System.out.println("Remove " + webAppsDir + paName + " and all sub-directories.");
+
+        }
+        catch (Exception re)
+        {
+            try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            throw new PortletApplicationException(re.getMessage());
+        }
+
+    }
+
+    /**
+     * Undeploys application.
+     *
+     * @param webAppsDir The webapps directory inside the Application Server
+     * @param paName The Portlet Application name
+     * @throws PortletApplicationException
+     */
+
+    public void undeploy(String webAppsDir, String paName) throws PortletApplicationException
+    {
+        try
+        {
+            // First unergister the application from Registry
+            unregister(webAppsDir, paName);
 
             // Call into DeplyUtilities class
             DeployUtilities util = new DeployUtilities();
@@ -255,7 +346,7 @@ public class FileSystemPAM implements Deployment
         }
         catch (Exception re)
         {
-			try
+            try
             {
                 JetspeedPortletRegistry.rollbackTransaction();
             }
@@ -299,8 +390,8 @@ public class FileSystemPAM implements Deployment
 
     /**
      * Undeploys application.
-     * 
-     * @param paName The Portlet Application name 
+     *
+     * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
     public void undeploy(String paName) throws PortletApplicationException
@@ -322,15 +413,15 @@ public class FileSystemPAM implements Deployment
                 System.out.println("Saving the portlet.xml in the registry...");
                 // locate the deployment home
                 identifyDeploymentSystem();
-				JetspeedPortletRegistry.beginTransaction();
+                JetspeedPortletRegistry.beginTransaction();
                 JetspeedPortletRegistry.removeApplication(app);
-				JetspeedPortletRegistry.commitTransaction();
+                JetspeedPortletRegistry.commitTransaction();
             }
 
         }
         catch (Exception e1)
         {
-			try
+            try
             {
                 JetspeedPortletRegistry.rollbackTransaction();
             }
@@ -366,21 +457,4 @@ public class FileSystemPAM implements Deployment
             return;
         }
     }
-    /** 
-     * <p>
-     * deploy
-     * </p>
-     * 
-     * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String, java.lang.String, java.lang.String)
-     * @param webAppsDir
-     * @param warFile
-     * @param paName
-     * @throws PortletApplicationException
-     */
-    public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
-    {
-        deploy(webAppsDir, warFile, paName, null);
-
-    }
-
 }

@@ -51,43 +51,85 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.entity;
+package org.apache.jetspeed.layout;
 
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.StringTokenizer;
+import java.util.Collections;
+
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * <p>
- * PortletEntityAccess
- * </p>
- *
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
  */
-public class PortletEntityAccess
+public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
 {
+    /** Commons logging */
+    protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
 
-    public static PortletEntity getEntity(ObjectID oid)
+    public void init(PortletConfig config)
+    throws PortletException
     {
-        return getService().getPortletEntity(oid);
+        super.init(config);
     }
 
-    public static PortletEntity getEntity(PortletDefinition def, String entityName)
+    public void doView(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
     {
-        return getService().getPortletEntity(def, entityName);
+        response.setContentType("text/html");
+
+        request.setAttribute("page", getPage(request));
+        request.setAttribute("fragment", getFragment(request));
+        request.setAttribute("dispatcher", getDispatcher(request));
+
+        // now invoke the JSP associated with this portlet
+        super.doView(request,response);
+
+        request.removeAttribute("page");
+        request.removeAttribute("fragment");
+        request.removeAttribute("dispatcher");
     }
 
-    public static void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException
+    protected Fragment getFragment(RenderRequest request)
     {
-        getService().storePortletEntity(portletEntity);
+        // Very ugly and Pluto dependant but I don't see anything better right now
+        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
+        Fragment fragment = (Fragment)innerRequest.getAttribute("org.apache.jetspeed.Fragment");
+
+        return fragment;
     }
 
-    protected static PortletEntityService getService()
+    protected Page getPage(RenderRequest request)
     {
-        return (PortletEntityService) CommonPortletServices.getPortalService(PortletEntityService.SERVICE_NAME);
+        // Very ugly and Pluto dependant but I don't see anything better right now
+        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
+        Page page = (Page)innerRequest.getAttribute("org.apache.jetspeed.Page");
+
+        return page;
+    }
+
+    protected ContentDispatcher getDispatcher(RenderRequest request)
+    {
+        // Very ugly and Pluto dependant but I don't see anything better right now
+        ServletRequest innerRequest = ((HttpServletRequestWrapper)request).getRequest();
+        ContentDispatcher dispatcher = (ContentDispatcher)innerRequest.getAttribute("org.apache.jetspeed.ContentDispatcher");
+
+        return dispatcher;
     }
 
 }

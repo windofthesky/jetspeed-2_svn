@@ -111,74 +111,74 @@ import javax.portlet.RenderResponse;
  */
 public class ServletPortlet extends GenericPortlet
 {
-    
+
     /**
      * Name of portlet preference for Action page
      */
     public static final String PARAM_ACTION_PAGE = "ActionPage";
-    
+
     /**
      * Name of portlet preference to allow the use of preferenecs to set pages
      */
     public static final String PARAM_ALLOW_PREFERENCES   = "AllowPreferences";
-    
+
     /**
      * Name of portlet preference for Custom page
      */
     public static final String PARAM_CUSTOM_PAGE = "CustomPage";
-    
+
     /**
      * Name of portlet preference for Edit page
      */
     public static final String PARAM_EDIT_PAGE   = "EditPage";
-    
+
     /**
      * Name of portlet preference for Edit page
      */
     public static final String PARAM_HELP_PAGE   = "HelpPage";
-    
+
     /**
      * Name of portlet preference for View page
      */
     public static final String PARAM_VIEW_PAGE   = "ViewPage";
-    
+
     /**
      * Allow preferences to be set by preferences.
      */
     private boolean allowPreferences = false;
-    
+
     /**
      * Default URL for the action page.
      */
     private String defaultActionPage = null;
-    
+
     /**
      * Default URL for the custom page.
      */
     private String defaultCustomPage = null;
-    
+
     /**
      * Default URL for the edit page.
      */
     private String defaultEditPage = null;
-    
+
     /**
      * Default URL for the help page.
      */
     private String defaultHelpPage = null;
-    
+
     /**
      * Default URL for the view page.
      */
     private String defaultViewPage = null;
-    
+
     /**
      * Creates a new instance of StrutsPortlet
      */
     public ServletPortlet()
     {
     }
-    
+
     public void init(PortletConfig config)
     throws PortletException
     {
@@ -192,7 +192,7 @@ public class ServletPortlet extends GenericPortlet
         {
             this.allowPreferences = new Boolean(allowPreferencesString).booleanValue();
         }
-        
+
         if ((this.defaultActionPage == null) &&
         (this.defaultCustomPage == null) &&
         (this.defaultEditPage == null) &&
@@ -203,7 +203,7 @@ public class ServletPortlet extends GenericPortlet
             throw new PortletException("Portlet " + config.getPortletName() + " is incorrectly configured. No pages are defined.");
         }
     }
-    
+
     /**
      * Execute the servlet as define by the init parameter or preference PARAM_ACTION_PAGE.  The value
      * if the parameter is a relative URL, i.e. /actionPage.jsp will execute the
@@ -230,7 +230,7 @@ public class ServletPortlet extends GenericPortlet
                 actionPage = prefs.getValue(PARAM_ACTION_PAGE, this.defaultActionPage);
             }
         }
-        
+
 
         if (actionPage != null)
         {
@@ -238,11 +238,11 @@ public class ServletPortlet extends GenericPortlet
            * At this point the desire action should be execute.  See the @TASK.
            */
         }
-        
-        
+
+
         return;
     }
-    
+
     /**
      * Execute the servlet as define by the init parameter or preference PARAM_EDIT_PAGE.  The value
      * if the parameter is a relative URL, i.e. /editPage.jsp will execute the
@@ -262,7 +262,7 @@ public class ServletPortlet extends GenericPortlet
                 customPage = prefs.getValue(PARAM_CUSTOM_PAGE, this.defaultCustomPage);
             }
         }
-        
+
         if (customPage != null)
         {
             PortletContext context = getPortletContext();
@@ -271,9 +271,9 @@ public class ServletPortlet extends GenericPortlet
         }
         return;
     }
-    
+
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_EDIT_PAGE.  
+     * Execute the servlet as define by the init parameter or preference PARAM_EDIT_PAGE.
      * The value if the parameter is a relative URL, i.e. /editPage.jsp will execute the
      * JSP editPage.jsp in the portlet application's web app.
      *
@@ -291,7 +291,7 @@ public class ServletPortlet extends GenericPortlet
                 editPage = prefs.getValue(PARAM_EDIT_PAGE, this.defaultEditPage);
             }
         }
-        
+
         if (editPage != null)
         {
             PortletContext context = getPortletContext();
@@ -300,7 +300,7 @@ public class ServletPortlet extends GenericPortlet
         }
         return;
     }
-    
+
     /**
      * Execute the servlet as define by the init parameter or preference PARAM_HELP_PAGE.
      * The value if the parameter is a relative URL, i.e. /helpPage.jsp will exeute the
@@ -320,7 +320,7 @@ public class ServletPortlet extends GenericPortlet
                 helpPage = prefs.getValue(PARAM_HELP_PAGE, this.defaultHelpPage);
             }
         }
-        
+
         if (helpPage != null)
         {
             PortletContext context = getPortletContext();
@@ -329,7 +329,7 @@ public class ServletPortlet extends GenericPortlet
         }
         return;
     }
-    
+
     /**
      * Execute the servlet as define by the init parameter or preference PARAM_VIEW_PAGE.
      * The value if the parameter is a relative URL, i.e. /viewPage.jsp will execute the
@@ -349,7 +349,7 @@ public class ServletPortlet extends GenericPortlet
                 viewPage = prefs.getValue(PARAM_VIEW_PAGE, this.defaultViewPage);
             }
         }
-        
+
         if (viewPage != null)
         {
             PortletContext context = getPortletContext();
@@ -358,7 +358,7 @@ public class ServletPortlet extends GenericPortlet
         }
         return;
     }
-    
+
     /**
      * Getter for property defaultViewPage.
      *
@@ -368,7 +368,7 @@ public class ServletPortlet extends GenericPortlet
     {
         return defaultViewPage;
     }
-    
+
     /**
      * Setter for property defaultViewPage.
      *
@@ -378,7 +378,7 @@ public class ServletPortlet extends GenericPortlet
     {
         this.defaultViewPage = defaultViewPage;
     }
-    
+
     /**
      * Getter for property defaultHelpPage.
      *
@@ -388,7 +388,7 @@ public class ServletPortlet extends GenericPortlet
     {
         return defaultHelpPage;
     }
-    
+
     /**
      * Setter for property defaultHelpPage.
      *
@@ -398,7 +398,7 @@ public class ServletPortlet extends GenericPortlet
     {
         this.defaultHelpPage = defaultHelpPage;
     }
-    
+
     /**
      * Getter for property defaultEditPage.
      *
@@ -408,7 +408,7 @@ public class ServletPortlet extends GenericPortlet
     {
         return defaultEditPage;
     }
-    
+
     /**
      * Setter for property defaultEditPage.
      *
@@ -418,7 +418,7 @@ public class ServletPortlet extends GenericPortlet
     {
         this.defaultEditPage = defaultEditPage;
     }
-    
+
     /**
      * Getter for property defaultCustomPage.
      *
@@ -428,7 +428,7 @@ public class ServletPortlet extends GenericPortlet
     {
         return defaultCustomPage;
     }
-    
+
     /**
      * Setter for property defaultCustomPage.
      *
@@ -438,7 +438,7 @@ public class ServletPortlet extends GenericPortlet
     {
         this.defaultCustomPage = defaultCustomPage;
     }
-    
+
     /**
      * Getter for property defaultActionPage.
      *
@@ -448,7 +448,7 @@ public class ServletPortlet extends GenericPortlet
     {
         return defaultActionPage;
     }
-    
+
     /**
      * Setter for property defaultActionPage.
      *
@@ -458,5 +458,5 @@ public class ServletPortlet extends GenericPortlet
     {
         this.defaultActionPage = defaultActionPage;
     }
-    
+
 }

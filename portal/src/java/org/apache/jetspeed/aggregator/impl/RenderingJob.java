@@ -51,95 +51,109 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.container.invoker;
 
-import java.util.Map;
+package org.apache.jetspeed.aggregator.impl;
 
-import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.pluto.factory.PortletInvokerFactory;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.invoker.PortletInvoker;
+import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.pluto.PortletContainer;
+import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * Portlet Invoker Factory creates portlet invokers based on the servlet context.
+ * The RenderingJob is responsible for storing all necessary objets for
+ * asynchronous portlet rendering as well as implementing the rendering logic
+ * in its Runnable method.
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class PortletInvokerFactoryImpl
-    implements PortletInvokerFactory
+public class RenderingJob implements Runnable
 {
-    private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
+    /** Commons logging */
+    protected final static Log log = LogFactory.getLog(RenderingJob.class);
 
-    public final static String INVOKER_SERVLET    = "factory.invoker.servlet";
-    public final static String INVOKER_LOCAL    = "factory.invoker.local";
+    /** WorkerMonitor used to flush the queue */
+    private PortletWindow window = null;
+    private HttpServletRequest request = null;
+    private HttpServletResponse response = null;
+    private ContentDispatcherCtrl dispatcher = null;
+    private PortletContainer container = null;
 
-    private ServletConfig servletConfig;
-
-    public void init(ServletConfig config, Map properties)
-    throws Exception
+    public void setWindow(PortletWindow window)
     {
-        servletConfig = config;
+        this.window = window;
     }
 
-    public void destroy()
-    throws Exception
+    public PortletWindow getWindow()
     {
+        return this.window;
     }
 
-    public PortletInvoker getPortletInvoker(PortletDefinition portletDefinition)
+    public void setRequest(HttpServletRequest request)
     {
-        PortalContext pc = Jetspeed.getContext();
-        JetspeedPortletInvoker invoker = null;
+        this.request = request;
+    }
 
-        MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
-        if (app.getApplicationType() == MutablePortletApplication.LOCAL)
-        {
-            System.out.println("$$$$$$ LOCAL INVOKIN " + portletDefinition.getName());
+    public HttpServletRequest getRequest()
+    {
+        return this.request;
+    }
 
-            // TODO: pooling
+    public void setResponse(HttpServletResponse response)
+    {
+        this.response = response;
+    }
 
-            try
-            {
-                String className = pc.getConfigurationProperty(INVOKER_LOCAL);
-                invoker = (JetspeedPortletInvoker)Class.forName(className).newInstance();
-                invoker.activate(portletDefinition, servletConfig);
-                return invoker;
-            }
-            catch (Throwable t)
-            {
-                log.error("failed to create LOCAL invoker, using default", t);
-                // try default
-                invoker = new LocalPortletInvoker();
-                invoker.activate(portletDefinition, servletConfig);
-                return invoker;
-            }
-        }
+    public HttpServletResponse getResponse()
+    {
+        return this.response;
+    }
 
-        // TODO: pooling
-        System.out.println("$$$$$$ EXTERNAL INVOKIN " + portletDefinition.getName());
+    public void setDispatcher(ContentDispatcherCtrl dispatcher)
+    {
+        this.dispatcher = dispatcher;
+    }
 
+    public ContentDispatcherCtrl getDispatcher()
+    {
+        return this.dispatcher;
+    }
+
+    public void setContainer(PortletContainer container)
+    {
+        this.container = container;
+    }
+
+    public PortletContainer getContainer()
+    {
+        return this.container;
+    }
+
+    /**
+     * Checks if queue is empty, if not try to empty it by calling
+     * the WorkerMonitor. When done, pause until next scheduled scan.
+     */
+    public void run()
+    {
         try
         {
-            String className = pc.getConfigurationProperty(INVOKER_SERVLET);
-            //PortletInvoker invoker = new ServletPortletInvoker(portletDefinition, servletConfig);
-            invoker = (JetspeedPortletInvoker)Class.forName(className).newInstance();
-            invoker.activate(portletDefinition, servletConfig);
-            return invoker;
+            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+            container.renderPortlet(this.window, this.request, this.response);
+            log.debug("Notifying dispatcher OID "+this.window.getId());
+            this.response.flushBuffer();
+            dispatcher.notify(this.window.getId());
         }
         catch (Throwable t)
         {
-            log.error("failed to create SERVLET invoker, using default", t);
-            invoker = new ServletPortletInvoker();
-            invoker.activate(portletDefinition, servletConfig);
-            return invoker;
+            // this will happen is request is prematurely aborted
+            log.error("Error rendering portlet OID " + this.window.getId());
         }
     }
-
 }

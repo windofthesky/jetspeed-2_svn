@@ -53,26 +53,47 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * This service handles the generation of first step of agregation process
+ * <h4>PortletRendererService<br />
+ * Jetspeed-2 Rendering service.</h4>
+ * <p>This service process all portlet rendering requests and interfaces with the portlet
+ * container to generate the resulting markup</p>
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface Aggregator extends CommonService
+public interface PortletRenderer extends CommonService
 {
-    public String SERVICE_NAME = "Aggregator";
+    /** The name of this service */
+    public String SERVICE_NAME = "PortletRenderer";
 
     /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
+        Render the specified Page fragment.
+        Result is returned in the PortletResponse.
      */
-    public void build(RequestContext context)
-        throws JetspeedException;
+    public void renderNow(Fragment fragment, RequestContext request);
+
+    /**
+        Render the specified Page fragment.
+        Result is returned in the PortletResponse.
+     */
+    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response);
+
+    /** Render the specified Page fragment.
+        The method returns before rendering is complete, rendered content can be
+        accessed through the ContentDispatcher
+    */
+    public void render(Fragment fragment, RequestContext request);
+
+    /**
+     * Retrieve the ContentDispatcher for the specified request
+     */
+    public ContentDispatcher getDispatcher(RequestContext request, boolean isParallel);
 
 }

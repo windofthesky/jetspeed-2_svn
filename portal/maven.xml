@@ -1,36 +1,74 @@
 <project default="java:jar"
-         xmlns:j="jelly:core" 
+         xmlns:j="jelly:core"
          xmlns:define="jelly:define"
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.capability.TestCapability'/>        
- 
+<property name='testcase' value='org.apache.jetspeed.capability.TestCapability'/>
+
 <!--
   <goal name="jaxb:portlet"
         description="Generate java classes from protlet API schema">
 
       <echo>Processing "Compile portlet.xsd to java classes"</echo>
 
-      <uptodate property="xsdBuild.uptodate" 
+      <uptodate property="xsdBuild.uptodate"
         targetfile="./src/java/org/apache/jetspeed/om/portlets/PortletApp.java">
         <srcfiles dir= "../src/xml" includes="portlets.xsd"/>
       </uptodate>
 
      <j:set var="xsdBuild.notRequired" value="${xsdBuild.uptodate}"/>
-		<echo>xsd=[${xsdBuild.notRequired}]</echo>
+    <echo>xsd=[${xsdBuild.notRequired}]</echo>
 
-     <j:if test="${xsdBuild.notRequired == null}">     
- 			<exec  executable="java" >
-		  	<arg line="-jar ${maven.home}/repository/jaxb/jars/jaxb-xjc.jar -d ${basedir}/src -p java.org.apache.jetspeed.om.portlets ${basedir}/../src/xml/portlet.xsd"/>
-			</exec>  
-	  </j:if>  
+     <j:if test="${xsdBuild.notRequired == null}">
+      <exec  executable="java" >
+        <arg line="-jar ${maven.home}/repository/jaxb/jars/jaxb-xjc.jar -d ${basedir}/src -p java.org.apache.jetspeed.om.portlets ${basedir}/../src/xml/portlet.xsd"/>
+      </exec>
+    </j:if>
   </goal>
 
   <preGoal name="java:compile">
-   <attainGoal name= "jaxb:portlet"/> 
+   <attainGoal name= "jaxb:portlet"/>
   </preGoal>
 -->
+
+ <goal name="pam.register">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="register" />
+            <arg value="-PortletAppName" />
+            <arg value="jetspeed" />
+            <arg value="-warfilename" />
+            <arg value="target/jetspeed.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+        </java>
+ </goal>
+
+ <goal name="pam.unregister">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="unregister" />
+            <arg value="-PortletAppName" />
+            <arg value="jetspeed" />
+            <arg value="-warfilename" />
+            <arg value="target/jetspeed.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+        </java>
+ </goal>
 
  <goal name="pam.deploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
@@ -45,9 +83,9 @@
             <arg value="-warfilename" />
             <arg value="../applications/demo/target/demo.war" />
             <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />            
+            <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
-            <arg value="jetspeed" />            
+            <arg value="jetspeed" />
         </java>
   </goal>
 
@@ -65,14 +103,14 @@
             <arg value="-warfilename" />
             <arg value="../applications/pam/target/pam.war" />
             <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />            
+            <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
-            <arg value="jetspeed" />            
+            <arg value="jetspeed" />
             <arg value="-ApplicationType" />
-            <arg value="local" />            
+            <arg value="local" />
         </java>
   </goal>
-  
+
   <goal name="pam.undeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
@@ -84,9 +122,9 @@
             <arg value="-PortletAppName" />
             <arg value="HW_App" />
             <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}" />            
+            <arg value="${pam.deploy.dir}" />
             <arg value="-PortalName" />
-            <arg value="jetspeed" />            
+            <arg value="jetspeed" />
         </java>
   </goal>
 
@@ -95,11 +133,11 @@
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.execute">
-    <sql driver="${database.default.driver}" 
-         classpathref="maven.dependency.classpath" 
+    <sql driver="${database.default.driver}"
+         classpathref="maven.dependency.classpath"
          url="${database.default.url}"
-         userid="${database.default.username}" 
-         password="${database.default.password}" 
+         userid="${database.default.username}"
+         password="${database.default.password}"
          src="${database.arg.script}">
     </sql>
   </goal>
@@ -156,16 +194,16 @@
     <attainGoal name="db.test.drop" />
     <attainGoal name="db.test.create" />
   </goal>
-   
+
   <!-- ================================================================ -->
   <!-- Deploy to Catalina and Expand                                    -->
   <!-- ================================================================ -->
   <goal name="deploy">
      <echo message="Deploying ${pom.id}, ${pom.name}"/>
-      <delete dir="${deploy.war.dir}/${webapp.name}"/> 
+      <delete dir="${deploy.war.dir}/${webapp.name}"/>
       <!-- <copy  file="./target/jetspeed-2.0-a1-dev.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>-->
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
-      <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>      
+      <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
       <copy  file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml"/>
       <attainGoal name="catalina:base-shared" />
       <attainGoal name="catalina:shared" />
@@ -179,7 +217,7 @@
     <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
         <fileset dir="${maven.build.dir}/classes">
         </fileset>
-    </copy>       
+    </copy>
     <copy todir="${deploy.war.dir}/${webapp.name}/">
       <fileset dir="${webapp.dir}">
          <exclude name="WEB-INF/db/**"/>
@@ -188,28 +226,28 @@
   </goal>
 
   <preGoal name="hotdeploy">
-   <attainGoal name= "java:compile"/> 
+   <attainGoal name= "java:compile"/>
   </preGoal>
-  
+
   <goal name="deployClasses">
-  	<attainGoal name="java:compile"/>
-  	<attainGoal name="java:jar-resources"/> 
-  	<copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
-  		<fileset dir="${basedir}/target/classes" />
+    <attainGoal name="java:compile"/>
+    <attainGoal name="java:jar-resources"/>
+    <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
+      <fileset dir="${basedir}/target/classes" />
     </copy>
      <copy todir="${deploy.war.dir}/${webapp.name}">
-  		<fileset dir="${basedir}/src/webapp" />
+      <fileset dir="${basedir}/src/webapp" />
     </copy>
   </goal>
-  
+
   <goal name="debugWebapp">
-  	<copy todir="${debug.webapp.dir}/jetspeed">
-  		<fileset dir="${basedir}/src/webapp" />
+    <copy todir="${debug.webapp.dir}/jetspeed">
+      <fileset dir="${basedir}/src/webapp" />
     </copy>
 
      <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
        <classpath>
-       	  
+
          <path refid="maven.dependency.classpath"/>
          <pathelement path="${maven.build.dest}"/>
         </classpath>
@@ -220,16 +258,16 @@
          <arg value="-warfilename" />
          <arg value="../applications/demo/target/demo.war" />
          <arg value="-webappDir" />
-         <arg value="${debug.webapp.dir}/" />            
+         <arg value="${debug.webapp.dir}/" />
          <arg value="-PortalName" />
          <arg value="jetspeed" />
          <arg value="-DbAlias" />
-         <arg value="${debug.webapp.dir}/jetspeed/WEB-INF/db/hsql/Registry" />            
-         
+         <arg value="${debug.webapp.dir}/jetspeed/WEB-INF/db/hsql/Registry" />
+
       </java>
 
   </goal>
-  
+
   <goal name="catalina:base-shared"
         description="Copy all base jars necessary for common container">
     <echo>Copying from ${maven.repo.local} to ${catalina.shared.lib}...</echo>
@@ -239,11 +277,11 @@
     <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.6.jar" todir="${catalina.shared.lib}"/>
   </goal>
-  
+
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
     <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
   </goal>
-  
+
 </project>

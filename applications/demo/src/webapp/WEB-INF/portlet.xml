@@ -2,10 +2,10 @@
 <portlet-app id="HW_App" version="1.0">
   <portlet id="HelloPortlet">
     <init-param>
-			<description>test init param</description>
-			<name>hello</name>
-			<value>Hello Portlet</value>
-     </init-param>   
+      <description>test init param</description>
+      <name>hello</name>
+      <value>Hello Portlet</value>
+     </init-param>
     <portlet-name>HelloPortlet</portlet-name>
     <display-name>HelloWorld Portlet Wrapper</display-name>
     <description>This is the hello world of portlets, it doesn't do much</description>
@@ -23,9 +23,9 @@
       <keywords>Test</keywords>
     </portlet-info>
   </portlet>
-  
+
    <portlet id="JMXPortlet">
-      
+
     <portlet-name>JMXPortlet</portlet-name>
     <display-name>JMX Registry Access portlet</display-name>
     <portlet-class>org.apache.jetspeed.demo.jmx.JMXPortlet</portlet-class>
@@ -40,8 +40,8 @@
       <keywords>JMX</keywords>
     </portlet-info>
   </portlet>
-  
-  <portlet id="PreferencePortlet">      
+
+  <portlet id="PreferencePortlet">
     <portlet-name>PreferencePortlet</portlet-name>
     <display-name>PreferencePortlet</display-name>
     <portlet-class>org.apache.jetspeed.demo.preferences.PreferencePortlet</portlet-class>
@@ -56,23 +56,23 @@
       <keywords>Preferences</keywords>
     </portlet-info>
     <portlet-preferences>
-    	 <preference>
-    	 	 <name>pref1</name>
-    	 	 <value>Hello</value>
-    	 	 <value>Hello2</value>
-    	  </preference>
+       <preference>
+         <name>pref1</name>
+         <value>Hello</value>
+         <value>Hello2</value>
+        </preference>
     </portlet-preferences>
   </portlet>
- 
+
   <portlet id="DisplayRequestPortlet">
-    <init-param> 
-	    <name>HelpPage</name>
-	    <value>/WEB-INF/demo/simple/DisplayRequestHelp.jsp</value>
-    </init-param> 
-    <init-param> 
-	    <name>ViewPage</name>
-  	  <value>/WEB-INF/demo/simple/DisplayRequest.jsp</value>
-    </init-param> 
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/demo/simple/DisplayRequestHelp.jsp</value>
+    </init-param>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/demo/simple/DisplayRequest.jsp</value>
+    </init-param>
     <portlet-name>DisplayRequestPortlet</portlet-name>
     <display-name>DisplayRequest Portlet Wrapper</display-name>
     <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
@@ -87,7 +87,7 @@
       <short-title>Portlet Request Information</short-title>
     </portlet-info>
   </portlet>
- 
+
   <portlet id="PickANumberPortlet">
     <portlet-name>PickANumberPortlet</portlet-name>
     <display-name>Pick a number game</display-name>
@@ -102,7 +102,7 @@
       <title>Pick a Number</title>
     </portlet-info>
   </portlet>
-  
+
   <portlet id="AttributeScopePortlet">
     <portlet-name>AttributeScopePortlet</portlet-name>
     <display-name>Attribute Scope Demo</display-name>
@@ -119,10 +119,10 @@
   </portlet>
 
   <portlet id="CustomerList">
-    <init-param> 
-	  <name>ViewPage</name>
-  	  <value>/WEB-INF/demo/customerInfo/Page1.jsp</value>
-    </init-param> 
+    <init-param>
+    <name>ViewPage</name>
+      <value>/WEB-INF/demo/customerInfo/Page1.jsp</value>
+    </init-param>
     <portlet-name>CustomerList</portlet-name>
     <display-name>Customer List</display-name>
     <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
@@ -138,10 +138,10 @@
   </portlet>
 
   <portlet id="CustomerInfo">
-    <init-param> 
-	  <name>ViewPage</name>
-  	  <value>/WEB-INF/demo/customerInfo/Page2.jsp</value>
-    </init-param> 
+    <init-param>
+    <name>ViewPage</name>
+      <value>/WEB-INF/demo/customerInfo/Page2.jsp</value>
+    </init-param>
     <portlet-name>CustomerInfo</portlet-name>
     <display-name>Customer Information</display-name>
     <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
@@ -157,10 +157,10 @@
   </portlet>
 
   <portlet id="CustomerDetail">
-    <init-param> 
-	  <name>ViewPage</name>
-  	  <value>/WEB-INF/demo/customerInfo/Page3.jsp</value>
-    </init-param> 
+    <init-param>
+    <name>ViewPage</name>
+      <value>/WEB-INF/demo/customerInfo/Page3.jsp</value>
+    </init-param>
     <portlet-name>CustomerDetail</portlet-name>
     <display-name>Customer Detail</display-name>
     <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
@@ -176,10 +176,10 @@
   </portlet>
 
   <portlet id="LoginPortlet">
-    <init-param> 
-	    <name>ViewPage</name>
-  	  <value>/WEB-INF/demo/simple/Login.jsp</value>
-    </init-param> 
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/demo/simple/Login.jsp</value>
+    </init-param>
     <portlet-name>LoginPortlet</portlet-name>
     <display-name>LoginRequest Portlet Wrapper</display-name>
     <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>

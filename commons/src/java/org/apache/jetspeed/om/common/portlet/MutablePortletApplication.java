@@ -68,14 +68,14 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  */
 /**
- * 
+ *
  * MutablePortletApplication
- * 
+ *
  * Extends the <code>org.apache.pluto.om.portlet.PortletApplicationDefinition</code>
  * interface adding mutator methods for those attributes that do not have them
  * so as to make manipulating the portlet OM easier.
  * It has additional methods to make it easier to use within Jetspeed.
- * 
+ *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
@@ -116,20 +116,20 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
     void setId(String objectID);
 
     /**
-     * 
+     *
      * @param version
      */
     void setVersion(String version);
 
     /**
-     * Sets the Portlet Application type. 
+     * Sets the Portlet Application type.
      * Valid values are:
      * <p>
      *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
      *               server's web application space.
-     * <p> 
+     * <p>
      *      {@link MutablePortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
-     * <p>  
+     * <p>
      * @param type The type of portlet application.
      */
     void setApplicationType(int type);
@@ -140,22 +140,22 @@ public interface MutablePortletApplication extends PortletApplicationDefinition,
      * <p>
      *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
      *               server's web application space.
-     * <p> 
+     * <p>
      *      {@link MutablePortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
-     * <p>  
+     * <p>
      * @return The type of portlet application.
-     */    
+     */
     int getApplicationType();
-    
+
     /**
-     * Marks this application as a standard web application, 
+     * Marks this application as a standard web application,
      * stored in the web application server's web application space.
-     */    
+     */
     public static final int WEBAPP = 0;
-    
+
     /**
-     * Marks this application as a LOCAL portlet application, 
+     * Marks this application as a LOCAL portlet application,
      * stored in Jetspeed managed portlet application space.
-     */        
-    public static final int LOCAL = 1; 
+     */
+    public static final int LOCAL = 1;
 }

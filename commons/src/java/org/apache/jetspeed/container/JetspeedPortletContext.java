@@ -70,7 +70,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * Implements the Portlet API Portlet Context class
- * 
+ *
  * TODO: on LOCAL apps, we need to merge in web.xml props. See PLT 10.3
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
@@ -81,15 +81,15 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
     /**
      * The path to the Local Portlet Apps directory
      */
-    public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";    
-    
+    public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";
+
     private static final int MAJOR_VERSION = 2;
     private static final int MINOR_VERSION = 0;
     private static final String JETSPEED_APPLICATION_INFO =
         "Jakarta Jetspeed Portal Server, Version " + MAJOR_VERSION + "." + MINOR_VERSION;
 
     private ServletContext servletContext;
-    private MutablePortletApplication application;    
+    private MutablePortletApplication application;
 
     public JetspeedPortletContext(ServletContext servletContext, PortletApplicationDefinition application)
     {
@@ -116,21 +116,21 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public javax.portlet.PortletRequestDispatcher getRequestDispatcher(String path)
     {
-        String localizedPath = localizePath(path, this.application);         
-        RequestDispatcher rd = servletContext.getRequestDispatcher(localizedPath);        
-        
-        
-        // TODO: factory        
+        String localizedPath = localizePath(path, this.application);
+        RequestDispatcher rd = servletContext.getRequestDispatcher(localizedPath);
+
+
+        // TODO: factory
         return new JetspeedRequestDispatcher(rd);
     }
 
     public PortletRequestDispatcher getNamedDispatcher(String name)
     {
         // TODO: localize name
-        
+
         RequestDispatcher rd = servletContext.getNamedDispatcher(name);
         // TODO: factory
-        
+
         return new JetspeedRequestDispatcher(rd);
     }
 
@@ -165,7 +165,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public void log(java.lang.String message, java.lang.Throwable throwable)
     {
-        // TODO: setup a logger for the portlet application        
+        // TODO: setup a logger for the portlet application
         servletContext.log(message, throwable);
     }
 
@@ -246,7 +246,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
     }
 
     private String localizePath(String path, MutablePortletApplication app)
-    {        
+    {
         if (path == null)
         {
             return "/";
@@ -255,14 +255,14 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         {
             return path;
         }
-        
+
         StringBuffer pathBuffer = new StringBuffer(LOCAL_PA_ROOT);
         pathBuffer.append(app.getWebApplicationDefinition().getContextRoot());
         if (!path.startsWith("/"))
         {
             pathBuffer.append("/");
         }
-        pathBuffer.append(path); 
+        pathBuffer.append(path);
         String result = pathBuffer.toString();
         return result;
     }

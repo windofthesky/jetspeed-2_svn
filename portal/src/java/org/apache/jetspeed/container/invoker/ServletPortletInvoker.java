@@ -100,9 +100,9 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
      */
     public void passivate()
     {
-        activated = false;    
+        activated = false;
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#isActivated()
      */
@@ -119,7 +119,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         this.jetspeedConfig = servletConfig;
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
-        activated = true;        
+        activated = true;
     }
 
 
@@ -128,7 +128,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     }
 
     /**
-     * 
+     *
      * @param request
      * @param response
      * @throws PortletException
@@ -139,7 +139,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     }
 
     /**
-     * 
+     *
      */
     public void action(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
@@ -147,7 +147,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     }
 
     /**
-     * 
+     *
      */
     public void load(PortletRequest request, RenderResponse response) throws PortletException
     {
@@ -166,7 +166,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
      * Creates a servlet request dispatcher to dispatch to another web application to render the portlet.
      * NOTE: this method requires that your container supports cross-context dispatching.
      * Cross-context dispatching is known to work on Tomcat, Catalina, Tomcat-5.
-     * 
+     *
      * @param portletRequest
      * @param portletResponse
      * @param methodID
@@ -223,18 +223,18 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         {
             String message =
                 "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
-            log.error(message, e);            
+            log.error(message, e);
             throw new PortletException(message, e);
         }
         finally
         {
-            servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
+            //servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
+            //servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
         }
-        
+
     }
 
 }

@@ -68,35 +68,35 @@ public interface CapabilityMap
 
     /**
      * Sets the client for the CapabilityMap
-     * 
+     *
      * @param client The client associated with this map
      */
     public void setClient(Client client);
 
     /**
      *  Returns the Client for the CapabilityMap
-     * 
+     *
      * @return The client associated with this map
      */
     public Client getClient();
 
     /**
      * Add capability to the CapabilityMap
-     * 
+     *
      * @param capability
      */
     public void addCapability(Capability capability);
 
     /**
      * Add Mimetype to the MimetypeMap
-     * 
+     *
      * @param mimetype
      */
     public void addMimetype(MimeType mimetype);
 
     /**
      * Add MediaType to the MediaTypeMap
-     * 
+     *
      * @param Mediatype to add
      */
     public void addMediaType(MediaType mediatype);
@@ -113,7 +113,7 @@ public interface CapabilityMap
 
     /**
      * Sets the preferred MediaType for this CapabilityMap
-     * @param MediaTypeEntry 
+     * @param MediaTypeEntry
      */
     public void setPreferredMediaType(MediaType type);
 
@@ -130,7 +130,7 @@ public interface CapabilityMap
 
     /**
      * @parm userAgent Agent from the request
-     * 
+     *
      * Set the userAgent in the capabilityMap
      */
     public void setAgent(String userAgent);

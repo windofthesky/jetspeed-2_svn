@@ -51,28 +51,51 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.request.RequestContext;
+package org.apache.jetspeed.util;
 
 /**
- * This service handles the generation of first step of agregation process
+ * Simple FIFO implementation of Queue interface extending Vector
+ * as storage backend.
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface Aggregator extends CommonService
+public class FIFOQueue extends java.util.Vector implements Queue
 {
-    public String SERVICE_NAME = "Aggregator";
+   /**
+    * Adds a new object into the queue
+    */
+   public synchronized void push(Object obj)
+   {
+       this.add(obj);
+   }
 
-    /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
-     */
-    public void build(RequestContext context)
-        throws JetspeedException;
+   /**
+    * Gets the first object in the queue and remove it from the queue
+    */
+   public synchronized Object pop()
+   {
 
+       if (this.size() == 0)
+       {
+           return null;
+       }
+
+       return this.remove(0);
+   }
+
+   /**
+    * Gets the first object in the queue without removing it from the queue
+    */
+   public synchronized Object peek()
+   {
+
+       if (this.size() == 0)
+       {
+           return null;
+       }
+
+       return this.get(0);
+   }
 }

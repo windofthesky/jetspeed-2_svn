@@ -53,26 +53,29 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
- * This service handles the generation of first step of agregation process
+ * <p>The ContentDispatcher allows customer classes to retrieved
+ *    rendered content for a specific fragment</p>
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public interface Aggregator extends CommonService
+public interface ContentDispatcher
 {
-    public String SERVICE_NAME = "Aggregator";
-
     /**
-     * Builds the portlet set defined in the context into a portlet tree.
-     *
-     * @return Unique Portlet Entity ID
+     * Include in the provided PortletResponse output stream the rendered content
+     * of the request fragment.
+     * If the fragment rendered content is not yet available, the method will
+     * hold until it's completely rendered.
      */
-    public void build(RequestContext context)
-        throws JetspeedException;
-
+    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp);
 }
