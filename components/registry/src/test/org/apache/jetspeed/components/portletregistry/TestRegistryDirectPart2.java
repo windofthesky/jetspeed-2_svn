@@ -20,7 +20,7 @@ import java.util.Locale;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
@@ -96,8 +96,9 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
     {
        // ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRegistryDirectPart2.class);
        // suite.setScript("org/apache/jetspeed/containers/test.registry.groovy");
-        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRegistryDirectPart2.class);
-        return suite;
+       // NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRegistryDirectPart2.class);
+       // return suite;
+        return new ContainerDeployerTestSuite(TestRegistryDirectPart2.class);
     }
 
     
@@ -107,7 +108,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
      */
     public TestRegistryDirectPart2(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
     
     

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components;
-import java.io.File;
 import java.sql.Connection;
 
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import junit.framework.Test;
@@ -37,11 +37,7 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
 {
     public static Test suite() throws Exception
     {
-        //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRDBMS.class);
-        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRDBMS.class);
-        // suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
-        suite.setApplicationFolders(new String[] {new File("./target/classes").toURL().toString()});
-        return suite;
+        return new ContainerDeployerTestSuite(TestRDBMS.class, new String[]{"RDBMS"});
     }
     
     /**
@@ -52,7 +48,7 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
      */
     public TestRDBMS(String name)
     {
-        super(name, "./src/test/Log4j.properties");
+        super(name);
     }
     
     public void testDBCP_1() throws Exception
@@ -69,6 +65,12 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
         assertNotNull(conn);
         assertFalse(conn.isClosed());
         conn.close();
+    }
+    
+    public void testLookup() throws Exception
+    {
+        InitialContext context = new InitialContext();
+        assertNotNull(context.lookup("java:comp/env/jdbc/jetspeed"));
     }
 
 }

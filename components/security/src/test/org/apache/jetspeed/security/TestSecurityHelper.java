@@ -23,7 +23,7 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
@@ -41,7 +41,7 @@ public class TestSecurityHelper extends AbstractComponentAwareTestCase
      */
     public TestSecurityHelper(String name)
     {
-        super(name, "./src/test/Log4j.properties");
+        super(name);
     }
 
     /**
@@ -70,8 +70,7 @@ public class TestSecurityHelper extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestSecurityHelper.class);
 //        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestSecurityHelper.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestSecurityHelper.class);
     }
     
     public void testHelpers() throws Exception

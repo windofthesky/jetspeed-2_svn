@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.impl.PropertyException;
 import org.picocontainer.MutablePicoContainer;
@@ -56,7 +56,7 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
      */
     public TestPropertyManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -87,8 +87,7 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPropertyManager.class);
 //        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPropertyManager.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestPropertyManager.class);
     }
 
     /**
@@ -112,6 +111,7 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
         }
         catch (PropertyException pex)
         {
+            pex.printStackTrace();
             assertTrue("could not add property keys to node: " + pex, false);
         }
     }

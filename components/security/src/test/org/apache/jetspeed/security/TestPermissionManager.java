@@ -23,7 +23,7 @@ import java.util.Enumeration;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -58,7 +58,7 @@ public class TestPermissionManager extends AbstractComponentAwareTestCase
      */
     public TestPermissionManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -92,8 +92,7 @@ public class TestPermissionManager extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPermissionManager.class);
 //        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPermissionManager.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestPermissionManager.class);
     }
 
     /**

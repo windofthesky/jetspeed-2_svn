@@ -22,7 +22,7 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.picocontainer.MutablePicoContainer;
@@ -47,7 +47,7 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
      */
     public TestLoginModule(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -90,8 +90,7 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestLoginModule.class);
 //        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestLoginModule.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestLoginModule.class);
     }
 
     public void testLogin() throws LoginException

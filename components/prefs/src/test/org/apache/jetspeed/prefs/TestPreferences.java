@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.impl.PropertyException;
 import org.picocontainer.MutablePicoContainer;
@@ -56,7 +56,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
      */
     public TestPreferences(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -87,8 +87,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPreferences.class);
 //        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPreferences.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestPreferences.class);
     }
 
     /**

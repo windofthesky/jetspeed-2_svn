@@ -25,7 +25,7 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.picocontainer.MutablePicoContainer;
@@ -53,7 +53,7 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
      */
     public TestRdbmsPolicy(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -112,8 +112,7 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
     {
 //        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRdbmsPolicy.class);
 //        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRdbmsPolicy.class);
-        return suite;
+    	return new ContainerDeployerTestSuite(TestRdbmsPolicy.class);
     }
 
     /**

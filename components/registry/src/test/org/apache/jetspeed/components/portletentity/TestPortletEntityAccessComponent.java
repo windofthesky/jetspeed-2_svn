@@ -21,7 +21,8 @@ import java.util.Locale;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -81,22 +82,14 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
     {
         //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletEntityAccessComponent.class);
         //suite.setScript("org/apache/jetspeed/containers/test-entity.groovy");
-        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPortletEntityAccessComponent.class);
+       // NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPortletEntityAccessComponent.class);
+        return new ContainerDeployerTestSuite(TestPortletEntityAccessComponent.class);                
         
-        
-        return suite;
     }
 
     
 
-    /**
-     * @param testName
-     */
-    public TestPortletEntityAccessComponent(String testName)
-    {
-        super(testName, "./src/test/Log4j.properties");
-    }
-        
+           
     public void testEntities() throws Exception
     {
         assertNotNull(container);
@@ -140,29 +133,39 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
     throws Exception
     {
         // TODO: this should strictly use the registry api only         
-        PersistenceStore store = registry.getPersistenceStore();
-        store.getTransaction().begin();
-        PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
-        app.setName(TEST_APP);
-        app.setApplicationIdentifier(TEST_APP);
-                
-        WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
-        webApp.setContextRoot("/app1");
-        webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: La fromage est dans ma pantalon!");
-        
-        PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName(TEST_PORTLET);
-        portlet.addDescription(Locale.getDefault(),"Portlet description.");
-        portlet.addDisplayName(Locale.getDefault(),"Portlet display Name.");
-        
-        portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
-                        
-        app.addPortletDefinition(portlet);
-        app.setWebApplicationDefinition(webApp);
-        store.makePersistent(app);
-        store.getTransaction().commit();              
+        try
+        {
+            PersistenceStore store = registry.getPersistenceStore();
+            store.getTransaction().begin();
+            PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
+            app.setName(TEST_APP);
+            app.setApplicationIdentifier(TEST_APP);
+                    
+            WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
+            webApp.setContextRoot("/app1");
+            webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
+            webApp.addDisplayName(Locale.FRENCH, "Display Name: La fromage est dans ma pantalon!");
+            
+            PortletDefinitionComposite portlet = new PortletDefinitionImpl();
+            portlet.setClassName("org.apache.Portlet");
+            portlet.setName(TEST_PORTLET);
+            portlet.addDescription(Locale.getDefault(),"Portlet description.");
+            portlet.addDisplayName(Locale.getDefault(),"Portlet display Name.");
+            
+            portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
+                            
+            app.addPortletDefinition(portlet);
+            app.setWebApplicationDefinition(webApp);
+            store.makePersistent(app);
+            store.getTransaction().commit();
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            System.err.println("Unable to setup testdata for entity test");
+            e.printStackTrace();
+            throw e;
+        }              
     }
     
     private void teardownTestData()
