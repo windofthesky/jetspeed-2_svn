@@ -29,9 +29,6 @@ limitations under the License.
       <className>org.apache.jetspeed.security.impl.SecurityValveImpl</className>
     </valveDescriptor>
     <valveDescriptor>
-      <className>org.apache.jetspeed.pipeline.valve.impl.UserInfoValveImpl</className>
-    </valveDescriptor>
-    <valveDescriptor>
       <className>org.apache.jetspeed.profiler.impl.ProfilerValveImpl</className>
     </valveDescriptor>
      <valveDescriptor>

@@ -80,12 +80,11 @@ public class TestPipeline extends JetspeedTest
         assertTrue(valves[0].toString().equals("LocalizationValve"));
         assertTrue(valves[1].toString().equals("CapabilityValveImpl"));        
         assertTrue(valves[2].toString().equals("ContainerValve"));
-        assertTrue(valves[3].toString().equals("SecurityValve"));
-        assertTrue(valves[4].toString().equals("UserInfoValveImpl"));      
-        assertTrue(valves[5].toString().equals("ProfilerValve"));
-        assertTrue(valves[6].toString().equals("ActionValveImpl"));
-        assertTrue(valves[7].toString().equals("VerySimpleLayoutValveImpl"));
-        assertTrue(valves[8].toString().equals("AggregatorValve"));
-        assertTrue(valves[9].toString().equals("CleanupValveImpl"));
+        assertTrue(valves[3].toString().equals("SecurityValve"));     
+        assertTrue(valves[4].toString().equals("ProfilerValve"));
+        assertTrue(valves[5].toString().equals("ActionValveImpl"));
+        assertTrue(valves[6].toString().equals("VerySimpleLayoutValveImpl"));
+        assertTrue(valves[7].toString().equals("AggregatorValve"));
+        assertTrue(valves[8].toString().equals("CleanupValveImpl"));
     }
 }
