@@ -95,6 +95,27 @@ CREATE TABLE PREFERENCE_VALUE(
 );
 
 ------------------------------------------------------------------------------
+-- User Preference and User Preference Values
+------------------------------------------------------------------------------
+CREATE TABLE USER_PORTLET_PREFERENCE(
+    ID INTEGER PRIMARY KEY,
+    PORTLET_ID INTEGER NOT NULL,
+    USER_NAME VARCHAR(50),
+    NAME VARCHAR(80) NOT NULL
+
+);
+
+CREATE TABLE USER_PREFERENCE_VALUE(
+    PREFERENCE_ID INTEGER,
+	ID INTEGER,
+    VALUE LONGVARCHAR,
+    
+    CONSTRAINT PK
+ 	PRIMARY KEY (PREFERENCE_ID, ID)
+
+);
+
+------------------------------------------------------------------------------
 -- Localized Descriptions
 ------------------------------------------------------------------------------
 CREATE TABLE LOCALIZED_DESCRITPION(
