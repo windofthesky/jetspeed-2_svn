@@ -44,8 +44,11 @@ public class SSODemoServlet extends HttpServlet
     {
         String principal = request.getParameter(DEMO_SSO_PRINCIPAL_PARAM);
         String credential = request.getParameter(DEMO_SSO_CREDENTIAL_PARAM);
-        String authenticatedPrincipal = "";
+        String authenticatedPrincipal = "007";
         
+        /*
+         * this is not working on Tomcat 5.0.30
+         
         Principal userPrincipal = request.getUserPrincipal();
         if (userPrincipal == null)
         {
@@ -55,11 +58,13 @@ public class SSODemoServlet extends HttpServlet
         {
             authenticatedPrincipal = userPrincipal.toString();
         }
+        */
         if (principal == null)
         {
             error403(request, response, "SSO Principal is not valid. Please provide a valid SSO principal.");
             return;
         }
+        
         if (credential == null)
         {
             error403(request, response, "SSO Credential is not valid. Please provide a valid SSO credential.");
