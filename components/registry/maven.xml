@@ -30,23 +30,12 @@ limitations under the License.
 <property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryFromPortletDescriptor'/> 
 
     
-   <!-- ================================================================ -->
-  <!-- Merge OJB desriptor with Jetspeed main OJB descriptor                                              -->
-  <!-- ================================================================ -->
-  <goal name="ojb.registry">
-    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/java/repository_registry.xml" overwrite="true"/>
-<!--    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/test/repository_registry.xml"/> -->
-   </goal>
 
   <goal name="deployJar">
   	<attainGoal name="jar:install"/>
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
 
-  <goal name="build.registry">
-  	<attainGoal name="ojb.registry"/>
-  	<attainGoal name="jar:install"/>
- </goal>
 
   <preGoal name="test:test">
     <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
