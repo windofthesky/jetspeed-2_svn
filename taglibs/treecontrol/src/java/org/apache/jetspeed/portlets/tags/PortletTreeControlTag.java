@@ -173,6 +173,12 @@ public class PortletTreeControlTag extends TreeControlTag
 //            encodeURL(updateTreeAction);
 
         out.print("    <td>");
+        
+		//add an anchor so that we can return to this node
+        out.print("<a name=\"");
+        out.print(node.getName());
+        out.print("\">");
+        
         if ((action != null) && !node.isLeaf()) {
             out.print("<a href=\"");
             out.print(response.encodeURL(treeAction));
