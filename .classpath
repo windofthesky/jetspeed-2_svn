@@ -12,7 +12,6 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/localeselector/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/perl/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
