@@ -37,6 +37,12 @@ limitations under the License.
    <class>org.apache.jetspeed.velocity.RemoteContentTool</class>
  </tool>
  
+ <tool>
+   <key>htmlUtil</key>
+   <scope>application</scope>
+   <class>org.apache.jetspeed.velocity.HtmlUtilTool</class>
+ </tool>
+ 
   <tool>
    <key>pp</key>
    <scope>request</scope>
