@@ -159,6 +159,29 @@ public class DefaultCredentialHandler implements CredentialHandler
             {
                 credentials.remove(oldInternalCredential);
             }
+            else
+            {
+                // supplied PasswordCredential not defined for this user
+                throw new SecurityException(SecurityException.INVALID_PASSWORD);
+            }
+        }
+        else
+        {
+            Iterator iter = credentials.iterator();
+            while (iter.hasNext())
+            {
+                InternalCredential credential = (InternalCredential) iter.next();
+                if (credential.getType() == type)
+                {
+                    if ((null != credential.getClassname())
+                            && (credential.getClassname().equals((PasswordCredential.class).getName())))
+                    {
+                        // User *has* an PasswordCredential: setting a new Credential without supplying
+                        // its current one is not allowed
+                        throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+                    }
+                }
+            }            
         }
         InternalCredential newInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
                 new String(newPwdCredential.getPassword()), type, newPwdCredential.getClass().getName());
