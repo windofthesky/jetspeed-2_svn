@@ -82,13 +82,13 @@
 <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.driver")</font></th>
     <td>
-      <input type="input" name="SSOJdbcDriver" $!disableSSO  value="$!prefsMap.get('JdbcDriver')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+      <input type="input" name="SSOJdbcDriver" $!disableSSO  value="$!prefsMap.get('SSOJdbcDriver')" size="60" maxlength="60" class="portlet-form-field-label"/> 
     </td>
   </tr>
   <tr>
     <th class="portlet-section-alternate"><font class="portlet-form-field-label">$MESSAGES.getString("label.jdbc.connection")</font></th>
     <td>
-      <input type="input" name="SSOJdbcConnection" $!disableSSO value="$!prefsMap.get('JdbcConnection')" size="60" maxlength="60" class="portlet-form-field-label"/> 
+      <input type="input" name="SSOJdbcConnection" $!disableSSO value="$!prefsMap.get('SSOJdbcConnection')" size="60" maxlength="60" class="portlet-form-field-label"/> 
     </td>
   </tr>
   <tr>
@@ -160,7 +160,8 @@
   function disableSSO(flag) 
   {
     document.forms['J2DBEdit'].SSOSite.disabled = flag;            
-    document.forms['J2DBEdit'].SSOPrincipal.disabled = flag;                
+    document.forms['J2DBEdit'].SSOJdbcDriver.disabled = flag;            
+    document.forms['J2DBEdit'].SSOJdbcConnection.disabled = flag;                   
   }
 
   function presave()
