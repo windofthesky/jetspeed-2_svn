@@ -38,6 +38,14 @@ import org.apache.jetspeed.profiler.impl.JetspeedProfiler
 import org.apache.jetspeed.capability.Capabilities
 import org.apache.jetspeed.capability.impl.JetspeedCapabilities
 
+import org.apache.jetspeed.aggregator.PageAggregator
+import org.apache.jetspeed.aggregator.impl.PageAggregatorImpl
+import org.apache.jetspeed.aggregator.PortletAggregator
+import org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl
+import org.apache.jetspeed.aggregator.PortletRenderer
+import org.apache.jetspeed.aggregator.impl.PortletRendererImpl
+import org.apache.pluto.PortletContainer
+
 import org.apache.jetspeed.components.util.NanoQuickAssembler
        
 // WARNING!!!!!!
@@ -119,10 +127,22 @@ container.registerComponentImplementation(PortletWindowAccessor, PortletWindowAc
 //
 NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/portlet-container.groovy", container)
 
+// Renderer
+container.registerComponentImplementation(PortletRenderer, 
+                                          PortletRendererImpl,
+                              new Parameter[] {new ComponentParameter(PortletContainer), new ComponentParameter(PortletWindowAccessor)} )
+
 // 
 // Aggregator
 //
 // NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/aggregator-container.groovy", container)
+container.registerComponentImplementation(PageAggregator, 
+                                           PageAggregatorImpl,
+                              new Parameter[] {new ComponentParameter(PortletRenderer), 
+                                               new ConstantParameter(strategy)} )                           	    
+container.registerComponentImplementation(PortletAggregator, 
+                                           PortletAggregatorImpl,
+                              new Parameter[] {new ComponentParameter(PortletRenderer)})
 
 
 return container
