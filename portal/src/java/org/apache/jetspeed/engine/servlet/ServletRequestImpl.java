@@ -53,9 +53,18 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.jetspeed.engine.core.PortalControlParameter;
+import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.InformationProviderAccess;
 
 /**
@@ -65,28 +74,102 @@ import org.apache.pluto.services.information.InformationProviderAccess;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletRequestImpl
-    extends HttpServletRequestWrapper
+public class ServletRequestImpl extends HttpServletRequestWrapper
 {
 
-    public ServletRequestImpl(HttpServletRequest servletRequest)
+    PortalControlParameter control = null;
+
+    PortletWindow portletWindow = null;
+
+    private Map portletParameters;
+
+    public ServletRequestImpl(javax.servlet.http.HttpServletRequest servletRequest, PortletWindow window)
     {
         super(servletRequest);
+
+        this.portletWindow = window;
+        control = new PortalControlParameter(new PortalURL(servletRequest));
+
     }
 
     private HttpServletRequest _getHttpServletRequest()
     {
-        return(HttpServletRequest) super.getRequest();
+        return (HttpServletRequest) super.getRequest();
     }
+
+    //	HttpServletRequestWrapper overlay
 
     public String getContentType()
     {
-        String contentType = InformationProviderAccess.getDynamicProvider(_getHttpServletRequest()).getResponseContentType();
-        if (getCharacterEncoding()!=null)
+        String contentType = "text/html";
+        if (getCharacterEncoding() != null)
         {
             contentType += ";" + getCharacterEncoding();
         }
         return contentType;
+    }
+
+    //	ServletRequestWrapper overlay
+
+    public String getParameter(String name)
+    {
+        return (String) this.getParameterMap().get(name);
+
+    }
+
+    public Map getParameterMap()
+    {
+        //get control params
+        if (portletParameters == null)
+        {
+
+            portletParameters = new HashMap();
+
+            Iterator iterator = control.getRenderParamNames(portletWindow);
+            while (iterator.hasNext())
+            {
+                String name = (String) iterator.next();
+
+                String[] values = control.getRenderParamValues(portletWindow, name);
+
+                portletParameters.put(name, values);
+
+            }
+
+            //get request params      
+            String pid = control.getPIDValue();
+            String wid = portletWindow.getId().toString();
+            if (pid.equals(wid))
+            {
+                for (Enumeration parameters = super.getParameterNames(); parameters.hasMoreElements();)
+                {
+                    String paramName = (String) parameters.nextElement();
+                    String[] paramValues = (String[]) super.getParameterValues(paramName);
+                    String[] values = (String[]) portletParameters.get(paramName);
+
+                    if (values != null)
+                    {
+                        String[] temp = new String[paramValues.length + values.length];
+                        System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
+                        System.arraycopy(values, 0, temp, paramValues.length, values.length);
+                        paramValues = temp;
+                    }
+                    portletParameters.put(paramName, paramValues);
+                }
+            }
+        }
+
+        return Collections.unmodifiableMap(portletParameters);
+    }
+
+    public Enumeration getParameterNames()
+    {
+        return Collections.enumeration(this.getParameterMap().keySet());
+    }
+
+    public String[] getParameterValues(String name)
+    {
+        return (String[]) this.getParameterMap().get(name);
     }
 
 }
