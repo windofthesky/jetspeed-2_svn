@@ -53,8 +53,10 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.window.PortletWindowImpl;
+import org.apache.jetspeed.services.entity.PortletEntityAccess;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
@@ -74,7 +76,7 @@ public class PortletWindowFactory
     {
         // TODO: 1. use a factory entity from config file to create PortletEntities
         // TODO: 2. cache portlet windows and entities, don't create everytime
-        PortletEntity entity = new PortletEntityImpl(portletDefinition, portletName); 
+        PortletEntity entity = PortletEntityAccess.getEntity(Jetspeed.getCurrentRequestContext(), portletDefinition, portletName); 
         PortletWindow portletWindow = new PortletWindowImpl(entity.getId());                
         ((PortletWindowCtrl)portletWindow).setPortletEntity(entity);
         PortletWindowList windowList = entity.getPortletWindowList();        
