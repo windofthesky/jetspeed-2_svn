@@ -181,7 +181,7 @@ limitations under the License.
             <arg value="jetspeed" />
         </java>
   </goal>
-  
+
   <goal name="pam.securitydeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
@@ -278,7 +278,7 @@ limitations under the License.
             <arg value="webapp" />
         </java>
   </goal>
-  
+
   <goal name="pam.securityundeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
@@ -500,16 +500,25 @@ limitations under the License.
 
   <goal name="db.entities">
     <j:set var="dbase" value="${org.apache.jetspeed.production.database.default.name}"/>
-    <j:choose>    
+    <attainGoal name="db.production.properties"/>
+    <j:choose>
 	    <j:when test="${dbase == 'mysql'}" >
         	<j:set var="database.arg.script" value="../src/sql/mysql/populate-entities-for-default-psml.sql" />
 	    </j:when>
 	    <j:otherwise>
         	<j:set var="database.arg.script" value="../src/sql/populate-entities-for-default-psml.sql" />
 	    </j:otherwise>
-	</j:choose>	
-    <attainGoal name="db.production.properties"/>
-    <attainGoal name="db.execute" />	
+  	</j:choose>
+    <attainGoal name="db.execute" />
+    <j:choose>
+      <j:when test="${dbase == 'oracle'}" >
+          <j:set var="database.arg.script" value="../src/sql/oracle/populate-userinfo-for-default-psml.sql" />
+      </j:when>
+      <j:otherwise>
+          <j:set var="database.arg.script" value="../src/sql/populate-userinfo-for-default-psml.sql" />
+      </j:otherwise>
+    </j:choose>
+    <attainGoal name="db.execute" />
   </goal>
 
   <goal name="ojb.set.production.database.platform">
@@ -542,7 +551,7 @@ limitations under the License.
     <attainGoal name="dbsetup"/>
   </preGoal>
 
-  <goal name="dbsetup">  
+  <goal name="dbsetup">
     <attainGoal name="db.test.properties"/>
     <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true">
     <filterset begintoken="@" endtoken="@">
@@ -556,10 +565,10 @@ limitations under the License.
 
   <goal name='remove.wars'>
     <delete dir="${deploy.war.dir}/${webapp.name}"/>
-    <delete file="${deploy.war.dir}/${webapp.name}.war"/>    
+    <delete file="${deploy.war.dir}/${webapp.name}.war"/>
     <delete dir="${deploy.war.dir}/HW_App"/>
     <delete dir="${deploy.war.dir}/security"/>
-    <delete dir="${deploy.war.dir}/struts-demo"/>      
+    <delete dir="${deploy.war.dir}/struts-demo"/>
   </goal>
-    
+
 </project>

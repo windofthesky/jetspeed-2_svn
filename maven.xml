@@ -360,8 +360,6 @@ limitations under the License.
   <goal name="db.create.production">
     <attainGoal name="db.production.properties"/>
     <attainGoal name="db.create"/>
-    <j:set var="database.arg.script" value="./src/sql/populate-userinfo-for-default-psml.sql" />
-    <attainGoal name="db.execute" />
   </goal>
 
   <goal name="db.create">
