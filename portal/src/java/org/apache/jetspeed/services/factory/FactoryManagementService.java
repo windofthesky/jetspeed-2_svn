@@ -59,7 +59,7 @@ import org.apache.pluto.factory.Factory;
 /**
  * <p>
  * Manages the life-time of portal-to-container shared factories as defined by Pluto's factory interfaces.
- * A factory must derive from {@link org.apache.pluto.factory.Factory} and implement the
+ * A factory must derive from <a href='http://jakarta.apache.org/pluto/apidocs/org/apache/pluto/factory/Factory.html'>org.apache.pluto.factory.Factory</a> and implement the
  * <CODE>init()</CODE> and <CODE>destroy()</CODE> methods to meet Pluto's factory contract.
  * Factories create the shared classes between the portal and Pluto container. 
  * Implementations are created by portal provided factories. Most of the shared
