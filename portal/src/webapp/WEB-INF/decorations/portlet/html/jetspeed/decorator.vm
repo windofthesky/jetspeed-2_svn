@@ -57,14 +57,12 @@ limitations under the License.
 ##
 #if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <tr>
-    <td  nowrap="nowrap"><div class="PContentLeft" >&nbsp;</div></td>
+    <td nowrap="nowrap" class="PContentLeft" >&nbsp;</td>
     
-    <td class="PContent" >
+    <td class="PContent" colspan="2">
        $jetspeed.include($myF)
     </td>   
 
-    <td align="right" valign="middle" class="PContent" />
-    
     <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>
    
   </tr>
