@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -191,6 +192,20 @@ public class FolderImpl extends AbstractNode implements Folder
     public NodeSet getLinks() throws NodeException
     {
         return getAllNodes().subset(Link.DOCUMENT_TYPE);
+    }
+
+    /**
+     * <p>
+     * getDocumentSets
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getDocumentSets()
+     * @return @throws
+     *         DocumentNotFoundException
+     */
+    public NodeSet getDocumentSets() throws NodeException
+    {
+        return getAllNodes().subset(DocumentSet.DOCUMENT_TYPE);
     }
 
     /**
