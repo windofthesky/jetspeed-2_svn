@@ -17,13 +17,13 @@ package org.apache.jetspeed.idgenerator;
 
 // Java imports
 import java.util.HashMap;
+import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAssemblyTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
+import org.picocontainer.ComponentAdapter;
 
 /**
  * TestIdGenerator
@@ -43,7 +43,7 @@ public class TestIdGenerator extends AbstractComponentAwareTestCase
      */
     public TestIdGenerator(String name) 
     {
-        super( name );
+        super(name );
     }
     
     public String getBaseProject()
@@ -71,7 +71,8 @@ public class TestIdGenerator extends AbstractComponentAwareTestCase
     {
         // All methods starting with "test" will be executed in the test suite.
         // return new TestSuite( TestIdGenerator.class );
-        return new NanoDeployerBasedTestSuite(TestIdGenerator.class);
+        // return new NanoDeployerBasedTestSuite(TestIdGenerator.class);
+        return new ContainerDeployerTestSuite(TestIdGenerator.class);
     }
     
     /**
@@ -86,6 +87,14 @@ public class TestIdGenerator extends AbstractComponentAwareTestCase
     public void testVerifyUniquePeid() throws Exception
     {
         IdGenerator generator = (IdGenerator)getContainer().getComponentInstance("IdGenerator");
+        
+        Iterator itr = getContainer().getComponentAdapters().iterator();
+        System.out.println("Adapter count: "+ getContainer().getComponentAdapters().size());
+        while(itr.hasNext())
+        {
+            ComponentAdapter adapter = (ComponentAdapter)itr.next();
+            System.out.println("Component key: "+adapter.getComponentKey());
+        }
         assertNotNull("idgenerator is null", generator);            
  
         HashMap generatedIds = new HashMap( ID_TEST_TRIES + 1);
