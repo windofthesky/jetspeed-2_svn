@@ -112,9 +112,18 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <!--
+     <dependency>
+      <id>jpox</id>
+      <version>1.0.0-beta-1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    -->
     <dependency>
-      <id>ojb</id>
-      <version>1.0.rc4</version>
+      <id>ojb:db-ojb</id>
+      <version>1.0.rc5</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
@@ -190,6 +199,13 @@
       <version>2.3</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
     <dependency>
@@ -307,14 +323,15 @@
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
+
+
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
       <excludes>
         <exclude>org/apache/jetspeed/aggregator/TestAggregator.java</exclude>
-        <!-- The follow are failing and should be fixed or removed -->
-        <exclude>org/apache/jetspeed/tools/TestWebXML.java</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
-        <!-- Preferences SPI exclude -->
+        <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
+
         <exclude>org/apache/jetspeed/spi/services/prefs/TestUtils.java</exclude>
        </excludes>
       <includes>
