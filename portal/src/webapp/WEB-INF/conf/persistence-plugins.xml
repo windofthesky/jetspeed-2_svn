@@ -1,15 +1,14 @@
 <!DOCTYPE plugins SYSTEM "plugins.dtd">
 <plugins>
 	<plugin name="jetspeed" default="true">
-		<!--
-		<classname>
+	 <classname>
   	 	org.apache.jetspeed.persistence.impl.OJBODMGPersistencePlugin
   	 </classname>
-  	 -->
-  	  <classname>
+	 <!--
+  	 <classname>
   	 	org.apache.jetspeed.persistence.impl.OJBPBPersistencePlugin
   	 </classname>
- 
+   	 -->
 	 <OJB.path>
   	 	WEB-INF/conf/ojb
  	 </OJB.path> 	
