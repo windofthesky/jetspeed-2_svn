@@ -202,8 +202,8 @@ public class JetspeedEngine implements Engine
             InformationProviderServiceService ips = InformationProviderManager.getService();
             ips.init(config, null);
             environment.addServiceForClass(InformationProviderService.class, ips);
-
-            container.init(config, environment);
+            //TODO !!! Pluto has changed this siganture There is now a container unique id string and Properties. WE need to figure what these are really for.
+            container.init("jetspeed", config, environment, new Properties());
         }
         catch (Exception e)
         {
@@ -227,7 +227,7 @@ public class JetspeedEngine implements Engine
         try
         {
             PortletContainer container = PortletContainerFactory.getPortletContainer();
-            container.destroy();
+            container.shutdown();
         }
         catch (PortletContainerException e)
         {
