@@ -99,8 +99,9 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
             String absViewPage = null;
             try
             {
-                String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns.vm");
-                absViewPage = jpt.getTemplate(viewPage).getAppRelativePath();
+                String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
+                // Need to retreive layout.properties instead of hard-coding ".vm" 
+                absViewPage = jpt.getTemplate(viewPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+".vm", JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 log.debug("Path to view page for LayoutPortlet "+absViewPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
             }
