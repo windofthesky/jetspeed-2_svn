@@ -449,6 +449,7 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
   	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  
+  	   <property name="searchEngine"><ref bean="org.apache.jetspeed.search.SearchEngine"/></property>
   </bean>
 
   
@@ -489,6 +490,8 @@ limitations under the License.
   	<constructor-arg>
   		<map>
   			<entry key="java.net.URL"><value>org.apache.jetspeed.search.handlers.URLToDocHandler</value></entry>
+  			<entry key="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"><value>org.apache.jetspeed.search.handlers.pam.PortletApplicationHandler</value></entry>
+  			<entry key="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"><value>org.apache.jetspeed.search.handlers.pam.PortletDefinitionHandler</value></entry>
   		</map>
 	</constructor-arg>
   </bean>
