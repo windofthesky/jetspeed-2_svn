@@ -6,6 +6,12 @@
  */
 package org.apache.jetspeed.components;
 
+import java.io.FileInputStream;
+import java.util.Properties;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4jFactory;
+import org.apache.log4j.PropertyConfigurator;
+
 import org.picocontainer.MutablePicoContainer;
 
 import junit.framework.TestCase;
@@ -61,5 +67,31 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
     {
         this.container = container;
     }
+
+    public static final String LOG4J_CONFIG_FILE = "log4j.file";
+	// TODO: make this relative, move it into script
+    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
+    
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        
+        System.out.println("MAIN --------------");
+        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
+        Properties p = new Properties();
+        try
+        {
+            p.load(new FileInputStream(log4jFile));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        PropertyConfigurator.configure(p);
+        
+        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+        
+    }
+    
 
 }
