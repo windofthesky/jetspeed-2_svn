@@ -120,7 +120,7 @@ public class OTMStoreImpl implements PersistenceStore
             {
                 tx.commit();
             }
-            if (OTMConn != null)
+            if (OTMConn != null && !OTMConn.isClosed())
             {
                 OTMConn.close();
             }
