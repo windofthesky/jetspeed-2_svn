@@ -30,7 +30,7 @@ import org.picocontainer.defaults.SimpleReference;
 
 /**
  * <p>
- * ComponentManager
+ * PicoComponentManager
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
