@@ -73,7 +73,7 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
      */
     public void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException
     {
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(rolePrincipal.getName());
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(rolePrincipal.getFullPath());
         if (null != internalRole)
         {
             commonQueries.removeInternalRolePrincipal(internalRole);

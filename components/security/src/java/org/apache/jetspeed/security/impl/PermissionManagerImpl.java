@@ -37,34 +37,50 @@ import org.apache.jetspeed.security.om.impl.InternalPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
- * <p>Implementation for managing {@link Permission} and permission
- * association to {@link Principal}.  Permissions are used to manage Principals
- * access entitlement on specified resources.</p>
- * <p>For instance:</p>
+ * <p>
+ * Implementation for managing {@link Permission}and permission association to
+ * {@link Principal}. Permissions are used to manage Principals access
+ * entitlement on specified resources.
+ * </p>
+ * <p>
+ * For instance:
+ * </p>
+ * 
  * <pre><code>
- * grant principal o.a.j.security.UserPrincipal "theUserPrincipal"
- * {
- *     permission o.a.j.security.PortletPermission "myportlet", "view,edit,minimize,maximize";
- * };
- * </code><pre>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * 
+ *  
+ *   grant principal o.a.j.security.UserPrincipal &quot;theUserPrincipal&quot;
+ *   {
+ *       permission o.a.j.security.PortletPermission &quot;myportlet&quot;, &quot;view,edit,minimize,maximize&quot;;
+ *   };
+ *   
+ *  
+ * </code>
+ * 
+ *  &lt;pre&gt;
+ *   @author &lt;a href=&quot;mailto:dlestrat@apache.org&quot;&gt;David Le Strat&lt;/a&gt;
+ * 
+ * 
  */
 public class PermissionManagerImpl implements PermissionManager
 {
     private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
 
-    PersistenceStore persistenceStore;
+    /** The persistence store. */
+    private PersistenceStore persistenceStore;
 
     /**
-     * <p>Constructor providing access to the persistence component.</p>
+     * <p>
+     * Constructor providing access to the persistence component.
+     * </p>
      */
     public PermissionManagerImpl(PersistenceStore persistenceStore)
     {
         if (persistenceStore == null)
         {
-            throw new IllegalArgumentException("persistenceStore cannot be null for BaseSecurityImpl");
+            throw new IllegalArgumentException("persistenceStore cannot be null.");
         }
-        
+
         this.persistenceStore = persistenceStore;
     }
 
@@ -74,16 +90,17 @@ public class PermissionManagerImpl implements PermissionManager
     public Permissions getPermissions(Principal principal)
     {
         String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
+        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" },
+                "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
-        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
-        Collection omPermissions = new ArrayList();
-        if (null != omPrincipal)
+        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        Collection internalPermissions = new ArrayList();
+        if (null != internalPrincipal)
         {
-            omPermissions = omPrincipal.getPermissions();
+            internalPermissions = internalPrincipal.getPermissions();
         }
-        return getSecurityPermissions(omPermissions);
+        return getSecurityPermissions(internalPermissions);
     }
 
     /**
@@ -91,25 +108,25 @@ public class PermissionManagerImpl implements PermissionManager
      */
     public Permissions getPermissions(Collection principals)
     {
-        ArgUtil.notNull(new Object[] { principals }, new String[] { "principals" }, "getPermissions(java.util.Collection)");
+        ArgUtil.notNull(new Object[] { principals }, new String[] { "principals" },
+                "getPermissions(java.util.Collection)");
 
         Permissions permissions = new Permissions();
         Collection principalsFullPath = getPrincipalsFullPath(principals);
         if ((null != principalsFullPath) && principalsFullPath.size() > 0)
         {
-            PersistenceStore store = getPersistenceStore();
-            Filter filter = store.newFilter();
+            Filter filter = persistenceStore.newFilter();
             filter.addIn("fullPath", principalsFullPath);
-            Object query = store.newQuery(InternalPrincipalImpl.class, filter);
-            Collection omPrincipals = store.getCollectionByQuery(query);
-            Iterator omPrincipalsIterator = omPrincipals.iterator();
-            while (omPrincipalsIterator.hasNext())
+            Object query = persistenceStore.newQuery(InternalPrincipalImpl.class, filter);
+            Collection internalPrincipals = persistenceStore.getCollectionByQuery(query);
+            Iterator internalPrincipalsIter = internalPrincipals.iterator();
+            while (internalPrincipalsIter.hasNext())
             {
-                InternalPrincipal omPrincipal = (InternalPrincipal) omPrincipalsIterator.next();
-                Collection omPermissions = omPrincipal.getPermissions();
-                if (null != omPermissions)
+                InternalPrincipal internalPrincipal = (InternalPrincipal) internalPrincipalsIter.next();
+                Collection internalPermissions = internalPrincipal.getPermissions();
+                if (null != internalPermissions)
                 {
-                    permissions = getSecurityPermissions(omPermissions);
+                    permissions = getSecurityPermissions(internalPermissions);
                 }
             }
         }
@@ -117,7 +134,10 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
-     * <p>Get the full path for the {@link Principal} in the collection.</p>
+     * <p>
+     * Get the full path for the {@link Principal}in the collection.
+     * </p>
+     * 
      * @param principals The collection of principals.
      * @return The collection of principals names.
      */
@@ -138,25 +158,28 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
-     * <p>Iterate through a collection of {@link InternalPermission}
-     * and build a collection of {@link java.security.Permission}.</p>
+     * <p>
+     * Iterate through a collection of {@link InternalPermission}and build a
+     * collection of {@link java.security.Permission}.
+     * </p>
+     * 
      * @param omPermissions The collection of {@link InternalPermission}.
      * @return The collection of {@link java.security.Permission}.
      */
     private Permissions getSecurityPermissions(Collection omPermissions)
     {
         Permissions permissions = new Permissions();
-        Iterator omPermissionsIterator = omPermissions.iterator();
-        while (omPermissionsIterator.hasNext())
+        Iterator internalPermissionsIter = omPermissions.iterator();
+        while (internalPermissionsIter.hasNext())
         {
-            InternalPermission omPermission = (InternalPermission) omPermissionsIterator.next();
+            InternalPermission internalPermission = (InternalPermission) internalPermissionsIter.next();
             Permission permission = null;
             try
             {
-                Class permissionClass = Class.forName(omPermission.getClassname());
+                Class permissionClass = Class.forName(internalPermission.getClassname());
                 Class[] parameterTypes = { String.class, String.class };
                 Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
-                Object[] initArgs = { omPermission.getName(), omPermission.getActions()};
+                Object[] initArgs = { internalPermission.getName(), internalPermission.getActions() };
                 permission = (Permission) permissionConstructor.newInstance(initArgs);
                 permissions.add(permission);
             }
@@ -169,39 +192,51 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
+     * @see org.apache.jetspeed.security.PermissionManager#addPermission(java.security.Permission)
+     */
+    public void addPermission(Permission permission) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" },
+                "addPermission(java.security.Permission)");
+
+        InternalPermission internalPermission = new InternalPermissionImpl(permission.getClass().getName(), permission
+                .getName(), permission.getActions());
+        try
+        {
+            persistenceStore.lockForWrite(internalPermission);
+            persistenceStore.getTransaction().checkpoint();
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to add permission.";
+            log.error(msg, e);
+            persistenceStore.getTransaction().rollback();
+            throw new SecurityException(msg, e);
+        }
+    }
+
+    /**
      * @see org.apache.jetspeed.security.PermissionManager#removePermission(java.security.Permission)
      */
     public void removePermission(Permission permission) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" }, "removePermission(java.security.Permission)");
+        ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" },
+                "removePermission(java.security.Permission)");
 
-        InternalPermission omPermission = getJetspeedPermission(permission);
-        if (null != omPermission)
+        InternalPermission internalPermission = getInternalPermission(permission);
+        if (null != internalPermission)
         {
-            Collection omPrincipals = omPermission.getPrincipals();
-            if (null != omPrincipals)
-            {
-                omPrincipals.clear();
-            }
-            PersistenceStore store = getPersistenceStore();
             try
             {
-                // TODO Can this be done in one shot?
-                // Remove principals.
-                store.lockForWrite(omPermission);
-                omPermission.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                omPermission.setPrincipals(omPrincipals);
-                store.getTransaction().checkpoint();
-
                 // Remove permission.
-                store.deletePersistent(omPermission);
-                store.getTransaction().checkpoint();
+                persistenceStore.deletePersistent(internalPermission);
+                persistenceStore.getTransaction().checkpoint();
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Permission for update.";
                 log.error(msg, e);
-                store.getTransaction().rollback();
+                persistenceStore.getTransaction().rollback();
                 throw new SecurityException(msg, e);
             }
         }
@@ -213,117 +248,125 @@ public class PermissionManagerImpl implements PermissionManager
     public void removePermissions(Principal principal) throws SecurityException
     {
         String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
+        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" },
+                "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
-        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
-        if (null != omPrincipal)
+        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        if (null != internalPrincipal)
         {
-            Collection omPermissions = omPrincipal.getPermissions();
-            if (null != omPermissions)
+            Collection internalPermissions = internalPrincipal.getPermissions();
+            if (null != internalPermissions)
             {
-                omPermissions.clear();
+                internalPermissions.clear();
             }
-            PersistenceStore store = getPersistenceStore();
             try
             {
-                store.lockForWrite(omPrincipal);
-                omPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                omPrincipal.setPermissions(omPermissions);
-                store.getTransaction().checkpoint();
+                persistenceStore.lockForWrite(internalPrincipal);
+                internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                internalPrincipal.setPermissions(internalPermissions);
+                persistenceStore.getTransaction().checkpoint();
             }
             catch (Exception e)
             {
                 String msg = "Unable to lock Principal for update.";
                 log.error(msg, e);
-                store.getTransaction().rollback();
+                persistenceStore.getTransaction().rollback();
                 throw new SecurityException(msg, e);
             }
         }
     }
 
     /**
-     * @see org.apache.jetspeed.security.PermissionManager#grantPermission(java.security.Principal, java.security.Permission)
+     * @see org.apache.jetspeed.security.PermissionManager#grantPermission(java.security.Principal,
+     *      java.security.Permission)
      */
     public void grantPermission(Principal principal, Permission permission) throws SecurityException
     {
         String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(
-            new Object[] { fullPath, permission },
-            new String[] { "fullPath", "permission" },
-            "grantPermission(java.security.Principal, java.security.Permission)");
+        ArgUtil.notNull(new Object[] { fullPath, permission }, new String[] { "fullPath", "permission" },
+                "grantPermission(java.security.Principal, java.security.Permission)");
 
         boolean createPermission = true;
-        Collection omPermissions = new ArrayList();
+        Collection internalPermissions = new ArrayList();
 
-        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
-        if (null == omPrincipal)
+        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        if (null == internalPrincipal)
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST + ": " + principal.getName());
         }
-        InternalPermission omPermission = getJetspeedPermission(permission);
-        if (null == omPermission)
+        InternalPermission internalPermission = getInternalPermission(permission);
+        if (null == internalPermission)
         {
-            omPermission =
-                new InternalPermissionImpl(permission.getClass().getName(), permission.getName(), permission.getActions());
+            throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST + ": " + permission.getName());
         }
 
-        if (null != omPrincipal.getPermissions())
+        if (null != internalPrincipal.getPermissions())
         {
-            omPermissions.addAll(omPrincipal.getPermissions());
+            internalPermissions.addAll(internalPrincipal.getPermissions());
         }
-        if (!omPermissions.contains(omPermission))
+        if (!internalPermissions.contains(internalPermission))
         {
-            omPermissions.add(omPermission);
+            internalPermissions.add(internalPermission);
         }
-        PersistenceStore store = getPersistenceStore();
         try
         {
-            store.lockForWrite(omPrincipal);
-            omPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            omPrincipal.setPermissions(omPermissions);
-            store.getTransaction().checkpoint();
+            persistenceStore.lockForWrite(internalPrincipal);
+            internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+            internalPrincipal.setPermissions(internalPermissions);
+            persistenceStore.getTransaction().checkpoint();
         }
         catch (Exception e)
         {
             String msg = "Unable to lock Principal for update.";
             log.error(msg, e);
-            store.getTransaction().rollback();
+            persistenceStore.getTransaction().rollback();
             throw new SecurityException(msg, e);
         }
     }
-    
-    // TODO Add a permissionExists method.
 
     /**
-     * @see org.apache.jetspeed.security.PermissionManager#revokePermission(java.security.Principal, java.security.Permission)
+     * @see org.apache.jetspeed.security.PermissionManager#permissionExists(java.security.Permission)
+     */
+    public boolean permissionExists(Permission permission)
+    {
+        boolean permissionExists = true;
+        InternalPermission internalPermission = getInternalPermission(permission);
+        if (null == internalPermission)
+        {
+            permissionExists = false;
+        }
+        return permissionExists;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.PermissionManager#revokePermission(java.security.Principal,
+     *      java.security.Permission)
      */
     public void revokePermission(Principal principal, Permission permission) throws SecurityException
     {
         String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(
-            new Object[] { fullPath, permission },
-            new String[] { "fullPath", "permission" },
-            "revokePermission(java.security.Principal, java.security.Permission)");
+        ArgUtil.notNull(new Object[] { fullPath, permission }, new String[] { "fullPath", "permission" },
+                "revokePermission(java.security.Principal, java.security.Permission)");
 
         // Remove permissions on principal.
-        InternalPrincipal omPrincipal = getJetspeedPrincipal(fullPath);
-        if (null != omPrincipal)
+        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        if (null != internalPrincipal)
         {
-            Collection omPermissions = omPrincipal.getPermissions();
-            if (null != omPermissions)
+            Collection internalPermissions = internalPrincipal.getPermissions();
+            if (null != internalPermissions)
             {
                 boolean revokePermission = false;
-                ArrayList newOmPermissions = new ArrayList();
-                Iterator omPermissionsIterator = omPermissions.iterator();
-                while (omPermissionsIterator.hasNext())
+                ArrayList newInternalPermissions = new ArrayList();
+                Iterator internalPermissionsIter = internalPermissions.iterator();
+                while (internalPermissionsIter.hasNext())
                 {
-                    InternalPermission omPermission = (InternalPermission) omPermissionsIterator.next();
-                    if (!((omPermission.getClassname().equals(permission.getClass().getName()))
-                        && (omPermission.getName().equals(permission.getName()))
-                        && (omPermission.getActions().equals(permission.getActions()))))
+                    InternalPermission internalPermission = (InternalPermission) internalPermissionsIter.next();
+                    if (!((internalPermission.getClassname().equals(permission.getClass().getName()))
+                            && (internalPermission.getName().equals(permission.getName())) && (internalPermission.getActions()
+                            .equals(permission.getActions()))))
                     {
-                        newOmPermissions.add(omPermission);
+                        newInternalPermissions.add(internalPermission);
                     }
                     else
                     {
@@ -332,19 +375,18 @@ public class PermissionManagerImpl implements PermissionManager
                 }
                 if (revokePermission)
                 {
-                    PersistenceStore store = getPersistenceStore();
                     try
                     {
-                        store.lockForWrite(omPrincipal);
-                        omPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                        omPrincipal.setPermissions(newOmPermissions);
-                        store.getTransaction().checkpoint();
+                        persistenceStore.lockForWrite(internalPrincipal);
+                        internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                        internalPrincipal.setPermissions(newInternalPermissions);
+                        persistenceStore.getTransaction().checkpoint();
                     }
                     catch (Exception e)
                     {
                         String msg = "Unable to lock Principal for update.";
                         log.error(msg, e);
-                        store.getTransaction().rollback();
+                        persistenceStore.getTransaction().rollback();
                         throw new SecurityException(msg, e);
                     }
                 }
@@ -353,46 +395,39 @@ public class PermissionManagerImpl implements PermissionManager
     }
 
     /**
-     * <p>Returns the {@link InternalPrincipal} from the full path.</p>
+     * <p>
+     * Returns the {@link InternalPrincipal}from the full path.
+     * </p>
+     * 
      * @param fullPath The full path.
      * @return The {@link InternalPrincipal}.
      */
-    InternalPrincipal getJetspeedPrincipal(String fullPath)
+    InternalPrincipal getInternalPrincipal(String fullPath)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("fullPath", fullPath);
-        Object query = store.newQuery(InternalPrincipalImpl.class, filter);
-        InternalPrincipal omPrincipal = (InternalPrincipal) store.getObjectByQuery(query);
-        return omPrincipal;
+        Object query = persistenceStore.newQuery(InternalPrincipalImpl.class, filter);
+        InternalPrincipal internalPrincipal = (InternalPrincipal) persistenceStore.getObjectByQuery(query);
+        return internalPrincipal;
     }
 
     /**
-     * <p>Returns the {@link InternalPermission} from the full path.</p>
+     * <p>
+     * Returns the {@link InternalPermission}from the full path.
+     * </p>
+     * 
      * @param fullPath The full path.
      * @return The {@link InternalPermission}.
      */
-    InternalPermission getJetspeedPermission(Permission permission)
+    InternalPermission getInternalPermission(Permission permission)
     {
-        PersistenceStore store = getPersistenceStore();
-        Filter filter = store.newFilter();
+        Filter filter = persistenceStore.newFilter();
         filter.addEqualTo("classname", permission.getClass().getName());
         filter.addEqualTo("name", permission.getName());
         filter.addEqualTo("actions", permission.getActions());
-        Object query = store.newQuery(InternalPermissionImpl.class, filter);
-        InternalPermission omPermission = (InternalPermission) store.getObjectByQuery(query);
-        return omPermission;
-    }
-
-    /**
-     * <p>Utility method to get the persistence store and initiate
-     * the transaction if not open.</p>
-     * @return The persistence store.
-     */
-    PersistenceStore getPersistenceStore()
-    {
-    
-        return persistenceStore;
+        Object query = persistenceStore.newQuery(InternalPermissionImpl.class, filter);
+        InternalPermission internalPermission = (InternalPermission) persistenceStore.getObjectByQuery(query);
+        return internalPermission;
     }
 
 }

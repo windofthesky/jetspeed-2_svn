@@ -68,8 +68,8 @@ limitations under the License.
 	        name="credentials"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="true"
+	        auto-update="object"
+	        auto-delete="object"
 	    >
 	        <documentation>This is the reference to security credentials.</documentation>
 	        <inverse-foreignkey field-ref="credentialId"/>
@@ -80,8 +80,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="true"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_USER_ROLE"
 	    >
 	        <documentation>This is the reference to role principals.</documentation>
@@ -94,8 +94,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="true"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_USER_GROUP"
 	    >
 	        <documentation>This is the reference to group principals.</documentation>
@@ -108,8 +108,8 @@ limitations under the License.
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
-	        auto-update="true"
-	        auto-delete="true"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
 	    >
 	        <documentation>This is the reference to a policy permission.</documentation>
@@ -234,8 +234,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_USER_ROLE"
 	    >
 	        <documentation>This is the reference to user principals.</documentation>
@@ -248,8 +248,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_GROUP_ROLE"
 	    >
 	        <documentation>This is the reference to group principals.</documentation>
@@ -262,8 +262,8 @@ limitations under the License.
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
 	    >
 	        <documentation>This is the reference to a policy permission.</documentation>
@@ -326,8 +326,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_USER_GROUP"
 	    >
 	        <documentation>This is the reference to user principals.</documentation>
@@ -340,8 +340,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="SECURITY_GROUP_ROLE"
 	    >
 	        <documentation>This is the reference to group principals.</documentation>
@@ -354,8 +354,8 @@ limitations under the License.
 	        proxy="false"
 	        refresh="false"
 	        auto-retrieve="false"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
 	    >
 	        <documentation>This is the reference to a policy permission.</documentation>
@@ -418,8 +418,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
 	    >
 	        <documentation>This is the reference to a policy permission.</documentation>
@@ -490,8 +490,8 @@ limitations under the License.
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
-	        auto-update="true"
-	        auto-delete="false"
+	        auto-update="link"
+	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
 	    >
 	        <documentation>This is the reference to a permission principals.</documentation>

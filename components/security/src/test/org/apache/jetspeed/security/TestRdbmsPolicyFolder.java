@@ -277,6 +277,10 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         FolderPermission perm3 = new FolderPermission("/files/subfolder2/-", "view");
         try
         {
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
+            pms.addPermission(perm3);
+            
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
             pms.grantPermission(user, perm3);

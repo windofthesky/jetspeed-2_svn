@@ -27,6 +27,9 @@ public class SecurityException extends JetspeedException
     /** <p>Principal does not exist exception message.</p> */
     public static final String PRINCIPAL_DOES_NOT_EXIST = "The principal does not exist.";
 
+    /** <p>Permission does not exist exception message.</p> */
+    public static final String PERMISSION_DOES_NOT_EXIST = "The permission does not exist.";
+    
     /** <p>User principal already exists exception message.</p> */
     public static final String USER_ALREADY_EXISTS = "The user already exists.";
 

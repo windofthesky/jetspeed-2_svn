@@ -78,6 +78,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         try
         {
             ums.addUser(user.getName(), "password");
+            pms.addPermission(perm);
             pms.grantPermission(user, perm);
         }
         catch (SecurityException sex)
@@ -112,6 +113,35 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Test remove permission.</p>
      */
+    public void testPermissionExists()
+    {
+        PortletPermission perm1 = new PortletPermission("removepermission1", "view, edit, secure, minimized, maximized");
+        PortletPermission perm2 = new PortletPermission("removepermission2", "view, edit, minimized, maximized");
+        try
+        {
+            pms.addPermission(perm1);
+            assertTrue(pms.permissionExists(perm1));
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("could not add permission, " + sex, false);
+        }
+        assertFalse(pms.permissionExists(perm2));
+        
+        //  Cleanup test.
+        try
+        {
+            pms.removePermission(perm1);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("could not remove permission. exception caught: " + sex, false);
+        }
+    }
+    
+    /**
+     * <p>Test remove permission.</p>
+     */
     public void testRemovePermission()
     {
         // Init test.
@@ -123,6 +153,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         {
             ums.addUser(user.getName(), "password");
             rms.addRole(role.getName());
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
             pms.grantPermission(role, perm1);
@@ -184,6 +216,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         try
         {
             ums.addUser(user2.getName(), "password");
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
         }
         catch (SecurityException sex)
         {
@@ -261,6 +295,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         try
         {
             ums.addUser(user.getName(), "password");
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
         }
@@ -322,6 +358,10 @@ public class TestPermissionManager extends AbstractSecurityTestcase
             rms.addRole(role2.getName());
             gms.addGroup(group1.getName());
             gms.addGroup(group2.getName());
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
+            pms.addPermission(perm3);
+            pms.addPermission(perm4);
             pms.grantPermission(role1, perm1);
             pms.grantPermission(role2, perm1);
             pms.grantPermission(role2, perm2);
@@ -405,6 +445,8 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         try
         {
             ums.addUser(user.getName(), "password");
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
         }

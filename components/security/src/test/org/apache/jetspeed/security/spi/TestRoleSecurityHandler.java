@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 
@@ -94,7 +95,7 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
      * Test <code>removeRolePrincipal</code>.
      * </p>
      */
-    /*public void testRemoveRolePrincipal() throws Exception
+    public void testRemoveRolePrincipal() throws Exception
     {
         initMappedRole();
         rsh.removeRolePrincipal(new RolePrincipalImpl("mappedrole"));
@@ -103,7 +104,7 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
         // The group should still exist.
         assertTrue(gms.groupExists("mappedgroup"));
         // The permission should still exist.
-        // TODO Need permissionExists
+        assertTrue(pms.permissionExists(new PortletPermission("myportlet", "view")));
         // The user-role mapping should be gone.
         assertFalse(rms.isUserInRole("mappedroleuser", "mappedrole"));
         // The group-role mapping should be gone.
@@ -113,7 +114,7 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
         assertFalse(perms.implies(new PortletPermission("myportlet", "view")));
         
         destroyMappedRole();
-    }*/
+    }
     
     /**
      * <p>
@@ -141,7 +142,11 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
         rms.addRole("mappedrole");
         rms.addRole("mappedrole.role1");
         gms.addGroup("mappedgroup");
-        pms.grantPermission(new RolePrincipalImpl("mappedrole"), new PortletPermission("myportlet", "view"));
+        
+        Permission perm = new PortletPermission("myportlet", "view");
+        pms.addPermission(perm);
+        pms.grantPermission(new RolePrincipalImpl("mappedrole"), perm);
+        
         rms.addRoleToUser("mappedroleuser", "mappedrole");
         rms.addRoleToGroup("mappedrole", "mappedgroup");    
     }
@@ -150,6 +155,7 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
     {
         ums.removeUser("mappedroleuser");
         rms.removeRole("mappedrole");
+        rms.removeRole("mappedrole.role1");
         gms.removeGroup("mappedgroup");
         pms.removePermission(new PortletPermission("myportlet", "view"));   
     }

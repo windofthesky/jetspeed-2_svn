@@ -20,52 +20,92 @@ import java.security.Principal;
 import java.util.Collection;
 
 /**
- * <p>Describe the interface for managing {@link Permission} and permission
- * association to {@link Principal}.  Permissions are used to manage Principals
- * access entitlement on specified resources.</p>
- * <p>For instance:</p>
+ * <p>
+ * Describe the interface for managing {@link Permission}and permission
+ * association to {@link Principal}. Permissions are used to manage Principals
+ * access entitlement on specified resources.
+ * </p>
+ * <p>
+ * For instance:
+ * </p>
+ * 
  * <pre><code>
- * grant principal o.a.j.security.UserPrincipal "theUserPrincipal"
- * {
- *     permission o.a.j.security.PortletPermission "myportlet", "view,edit,minimize,maximize";
- * };
- * </code><pre>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * 
+ *  grant principal o.a.j.security.UserPrincipal &quot;theUserPrincipal&quot;
+ *  {
+ *      permission o.a.j.security.PortletPermission &quot;myportlet&quot;, &quot;view,edit,minimize,maximize&quot;;
+ *  };
+ *  
+ * </code>
+ * &lt;pre&gt;
+ *  @author &lt;a href=&quot;mailto:dlestrat@apache.org&quot;&gt;David Le Strat&lt;/a&gt;
+ * 
  */
 public interface PermissionManager
 {
 
     /**
-     * <p>Gets the {@link Permissions} given a {@link Principal}.
+     * <p>
+     * Gets the {@link Permissions}given a {@link Principal}.
+     * 
      * @param principal The principal.
      * @return The permissions.
      */
     Permissions getPermissions(Principal principal);
 
     /**
-     * <p>Gets the {@link Permissions} given a collection
-     * of {@link Principal}.
+     * <p>
+     * Gets the {@link Permissions}given a collection of {@link Principal}.
+     * 
      * @param principals A collection of principal.
      * @return The permissions.
      */
     Permissions getPermissions(Collection principals);
 
     /**
-     * <p>Remove all instances of a given permission.</p>
+     * <p>
+     * Adds a permission definition.
+     * </p>
+     * 
+     * @param permission The permission to add.
+     * @throws Throws a security exception.
+     */
+    void addPermission(Permission permission) throws SecurityException;
+
+    /**
+     * <p>
+     * Remove all instances of a given permission.
+     * </p>
+     * 
      * @param permission The permission to remove.
      * @throws Throws a security exception.
      */
     void removePermission(Permission permission) throws SecurityException;
 
     /**
-     * <p>Remove all permissions for a given principal.</p>
+     * <p>
+     * Whether the given permission exists.
+     * </p>
+     * 
+     * @param permission The permission to look for.
+     * @return Whether the permission exists.
+     */
+    boolean permissionExists(Permission permission);
+
+    /**
+     * <p>
+     * Remove all permissions for a given principal.
+     * </p>
+     * 
      * @param principal The principal.
      * @throws Throws a security exception.
      */
     void removePermissions(Principal principal) throws SecurityException;
 
     /**
-     * <p>Grant a {@link Permission} to a given {@link Principal}. 
+     * <p>
+     * Grant a {@link Permission}to a given {@link Principal}.
+     * 
      * @param principal The principal.
      * @param permission The permission.
      * @throws Throws a security exception if the principal does not exist.
@@ -73,7 +113,9 @@ public interface PermissionManager
     void grantPermission(Principal principal, Permission permission) throws SecurityException;
 
     /**
-     * <p>Revoke a {@link Permission} from a given {@link Principal}.
+     * <p>
+     * Revoke a {@link Permission}from a given {@link Principal}.
+     * 
      * @param principal The principal.
      * @param permission The permission.
      * @throws Throws a security exception.

@@ -393,9 +393,9 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
                 "isUserInRole(java.lang.String, java.lang.String)");
 
         boolean isUserInRole = false;
-        
+
         Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
-        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);       
+        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
         if (rolePrincipals.contains(rolePrincipal))
         {
             isUserInRole = true;
@@ -498,21 +498,21 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
                 "groupFullPathName" }, "isGroupInRole(java.lang.String, java.lang.String)");
 
+        boolean isGroupInRole = false;
+
         InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
         if (null == omGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
         }
         InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
+        if (null != omRole)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
-        }
-        boolean isGroupInRole = false;
-        Collection omRoles = omGroup.getRolePrincipals();
-        if ((null != omRoles) && (omRoles.contains(omRole)))
-        {
-            isGroupInRole = true;
+            Collection omRoles = omGroup.getRolePrincipals();
+            if ((null != omRoles) && (omRoles.contains(omRole)))
+            {
+                isGroupInRole = true;
+            }
         }
         return isGroupInRole;
     }

@@ -202,6 +202,9 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         PortletPermission perm2 = new PortletPermission("myportlet", "view, edit");
         try
         {
+            pms.addPermission(perm1);
+            pms.addPermission(perm2);
+            
             pms.grantPermission(user, perm1);
             pms.grantPermission(user, perm2);
         }
