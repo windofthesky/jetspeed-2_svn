@@ -260,7 +260,7 @@ limitations under the License.
     
     <dependency>
       <id>jmock</id>
-      <version>1.0.1</version>
+      <version>SNAPSHOT</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
