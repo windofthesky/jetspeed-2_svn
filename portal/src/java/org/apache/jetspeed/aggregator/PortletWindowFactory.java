@@ -53,8 +53,9 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -78,7 +79,8 @@ public class PortletWindowFactory
     		throw new IllegalArgumentException("PortletDefinition for PortletWindow.getWindow() cannot be null.");
     	}
     	
-        PortletEntity portletEntity = PortletEntityAccess.getEntity(portletDefinition, portletName);
+    	PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
+        PortletEntity portletEntity = entityAccess.getPortletEntity(portletDefinition, portletName);
 
 
         // TODO: This needs to be changed to support multiple windows per entity

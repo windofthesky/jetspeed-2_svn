@@ -60,17 +60,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -229,7 +229,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
     protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
-        PortletEntity portletEntity = PortletEntityAccess.getEntity(oid);
+        PortletEntityAccessComponent entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
+        PortletEntity portletEntity = entityAccess.getPortletEntity(oid);
         PortletWindow portletWindow = null;
 
         if (portletEntity==null)
@@ -246,7 +247,7 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             // fix issues, persist entity and update fragment ID
             try
             {
-                PortletEntityAccess.storePortletEntity(portletWindow.getPortletEntity());
+                entityAccess.storePortletEntity(portletWindow.getPortletEntity());
             }
             catch (Exception e)
             {

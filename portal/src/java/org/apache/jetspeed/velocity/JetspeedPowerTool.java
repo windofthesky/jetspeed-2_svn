@@ -76,11 +76,11 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.locator.LocatorDescriptor;
-import org.apache.jetspeed.locator.TemplateLocatorException;
+import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
-import org.apache.jetspeed.entity.PortletEntityAccess;
+import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
@@ -155,6 +155,7 @@ public class JetspeedPowerTool implements ViewTool
     private Locale locale;
     private LocatorDescriptor locatorDescriptor;
     private TemplateLocator locator;
+    private PortletEntityAccessComponent entityAccess;
     /**
      * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
      * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
@@ -205,6 +206,7 @@ public class JetspeedPowerTool implements ViewTool
         templateWriter = jspContext.getOut();
         fragmentStack = new Stack();
 		clientSetup(Jetspeed.getCurrentRequestContext());
+		entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
     }
 
     /**
@@ -213,6 +215,7 @@ public class JetspeedPowerTool implements ViewTool
     public void init(Object obj)
     {
         Context ctx = null;
+        entityAccess = (PortletEntityAccessComponent) Jetspeed.getComponentManager().getComponent(PortletEntityAccessComponent.class);
         if (obj instanceof ViewContext)
         {
             ViewContext viewContext = (ViewContext) obj;
@@ -296,7 +299,7 @@ public class JetspeedPowerTool implements ViewTool
     {
         String fragmentId = getCurrentFragment().getId();
         JetspeedObjectID peid = JetspeedObjectID.createFromString(fragmentId);
-        PortletEntity portletEntity = PortletEntityAccess.getEntity(peid);
+        PortletEntity portletEntity = entityAccess.getPortletEntity(peid);
         return portletEntity;
     }
 
@@ -307,7 +310,7 @@ public class JetspeedPowerTool implements ViewTool
      */
     public PortletEntity getPortletEntity(Fragment f)
     {
-        PortletEntity portletEntity = PortletEntityAccess.getEntity(JetspeedObjectID.createFromString(f.getId()));
+        PortletEntity portletEntity = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(f.getId()));
         return portletEntity;
     }
 
