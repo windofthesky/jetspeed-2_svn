@@ -65,7 +65,7 @@ public class JetspeedProfiler implements Profiler
     /** The configured default rule for this portal */
     private String defaultRule = "j1";
 
-    private String anonymousUser = "anon";
+    private String anonymousUser = "guest";
 
     PersistenceStore persistentStore;
 
@@ -99,7 +99,7 @@ public class JetspeedProfiler implements Profiler
     {
         this(persistentStore);
         this.defaultRule = properties.getProperty("defaultRule", "j1");
-        this.anonymousUser = properties.getProperty("anonymousUser", "anon");
+        this.anonymousUser = properties.getProperty("anonymousUser", "guest");
         initModelClasses(properties); // TODO: move this to start()
     }
 

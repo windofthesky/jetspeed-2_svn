@@ -58,7 +58,8 @@ public abstract class AbstractProfilingRule implements ProfilingRule
         resolvers.put(RuleCriterionResolver.MEDIATYPE, new MediatypeCriterionResolver());
         resolvers.put(RuleCriterionResolver.LANGUAGE, new LanguageCriterionResolver());
         resolvers.put(RuleCriterionResolver.COUNTRY, new CountryCriterionResolver());
-        resolvers.put(RuleCriterionResolver.GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());                         
+        resolvers.put(RuleCriterionResolver.GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());
+        resolvers.put(RuleCriterionResolver.USER_ATTRIBUTE, new UserAttributeResolver());
     }
     
     protected ProfileLocator getLocatorFromCache(String key)
