@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -101,7 +102,9 @@ public class PermissionManagerImpl implements PermissionManager
         {
             internalPermissions = internalPrincipal.getPermissions();
         }
-        return getSecurityPermissions(internalPermissions);
+        Permissions permissions = new Permissions();
+        appendSecurityPermissions(internalPermissions, permissions);
+        return permissions;
     }
 
     /**
@@ -127,7 +130,7 @@ public class PermissionManagerImpl implements PermissionManager
                 Collection internalPermissions = internalPrincipal.getPermissions();
                 if (null != internalPermissions)
                 {
-                    permissions = getSecurityPermissions(internalPermissions);
+                    permissions = appendSecurityPermissions(internalPermissions, permissions);
                 }
             }
         }
@@ -161,15 +164,14 @@ public class PermissionManagerImpl implements PermissionManager
     /**
      * <p>
      * Iterate through a collection of {@link InternalPermission}and build a
-     * collection of {@link java.security.Permission}.
+     * unique collection of {@link java.security.Permission}.
      * </p>
      * 
      * @param omPermissions The collection of {@link InternalPermission}.
      * @return The collection of {@link java.security.Permission}.
      */
-    private Permissions getSecurityPermissions(Collection omPermissions)
-    {
-        Permissions permissions = new Permissions();
+    private Permissions appendSecurityPermissions(Collection omPermissions, Permissions permissions)
+    {     
         Iterator internalPermissionsIter = omPermissions.iterator();
         while (internalPermissionsIter.hasNext())
         {
@@ -182,7 +184,10 @@ public class PermissionManagerImpl implements PermissionManager
                 Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
                 Object[] initArgs = { internalPermission.getName(), internalPermission.getActions() };
                 permission = (Permission) permissionConstructor.newInstance(initArgs);
-                permissions.add(permission);
+                if(!Collections.list(permissions.elements()).contains(permission))
+                {
+                    permissions.add(permission);
+                }
             }
             catch (Exception e)
             {
