@@ -84,5 +84,10 @@
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-util-1.4.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/saxpath/jars/saxpath-1.0-FCS.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jaxen/jars/jaxen-1.0-FCS-full.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/aopalliance/jars/aopalliance-1.0.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/spring/jars/spring-aop-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/spring/jars/spring-context-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/spring/jars/spring-core-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
