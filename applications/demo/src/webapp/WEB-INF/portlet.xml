@@ -58,6 +58,7 @@
     	 <preference>
     	 	 <name>pref1</name>
     	 	 <value>Hello</value>
+    	 	  <value>Hello2</value>
     	  </preference>
     </portlet-preferences>
   </portlet>
