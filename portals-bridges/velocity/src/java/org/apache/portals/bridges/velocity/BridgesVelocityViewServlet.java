@@ -1,8 +1,17 @@
-/**
- * Created on Jan 9, 2004
- *
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
  * 
- * @author
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.portals.bridges.velocity;
 
@@ -11,17 +20,11 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.Constants;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -32,25 +35,19 @@ import org.apache.velocity.tools.view.servlet.VelocityViewServlet;
 import org.apache.velocity.util.SimplePool;
 
 /**
- * <p>
- * JetspeedVelocityViewServlet
- * </p>
- * Extends <code>VelocityViewServlet</code> to allow us to put portle-specific
- * information into the Velocity context.
- * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
  */
-public class JetspeedVelocityViewServlet extends VelocityViewServlet
+public class BridgesVelocityViewServlet extends VelocityViewServlet
 {
+    public final static String PORTLET_REQUEST = "javax.portlet.request";
+    public final static String PORTLET_RESPONSE = "javax.portlet.response";
+    public final static String PORTLET_CONFIG = "javax.portlet.config";
 	
 	public static final String VELOCITY_WRITER_ATTR = "org.apache.velocity.io.VelocityWriter";
     /** Cache of writers */
     private static SimplePool writerPool = new SimplePool(40);
 	
-    private static final Log log = LogFactory.getLog(JetspeedVelocityViewServlet.class);
-
     public static final String VELOCITY_CONTEXT_ATTR = "org.apache.velocity.Context";
     /**
      * Adds the RenderRequest, RenderResponse and PortletConfig to the context
@@ -59,27 +56,19 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
      */
     protected Template handleRequest(HttpServletRequest request, HttpServletResponse response, Context ctx) throws Exception
     {
-        PortletRequest renderRequest = (PortletRequest) request.getAttribute(Constants.PORTLET_REQUEST);
-        RenderResponse renderResponse = (RenderResponse) request.getAttribute(Constants.PORTLET_RESPONSE);
-        PortletConfig portletConfig = (PortletConfig) request.getAttribute(Constants.PORTLET_CONFIG);
+        PortletRequest renderRequest = (PortletRequest) request.getAttribute(PORTLET_REQUEST);
+        RenderResponse renderResponse = (RenderResponse) request.getAttribute(PORTLET_RESPONSE);
+        PortletConfig portletConfig = (PortletConfig) request.getAttribute(PORTLET_CONFIG);
+        
         if (renderRequest != null)
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
-        }        
-        ctx.put("JS2RequestContext", request.getAttribute(RequestContext.REQUEST_PORTALENV));
-        ctx.put("renderRequest", renderRequest);
-        ctx.put("renderResponse", renderResponse);
-        ctx.put("portletConfig", portletConfig);
-        ctx.put("portletModeView", PortletMode.VIEW);
-        ctx.put("portletModeEdit", PortletMode.EDIT);
-        ctx.put("portletModeHelp", PortletMode.HELP);
-        ctx.put("windowStateNormal", WindowState.NORMAL);
-        ctx.put("windowStateMinimized", WindowState.MINIMIZED);
-        ctx.put("windowStateMaximized", WindowState.MAXIMIZED);
-        StringBuffer appRoot = new StringBuffer(request.getScheme()).append("://")
-                                   .append(request.getServerName()).append(":")
-                                   .append(request.getServerPort()).append(renderRequest.getContextPath());
-        ctx.put("appRoot", appRoot.toString());
+        }
+
+        // standard render request and response also available in context
+        ctx.put(PORTLET_REQUEST, renderRequest);
+        ctx.put(PORTLET_RESPONSE, renderResponse);
+        
         return super.handleRequest(request, response, ctx);
     }
 
@@ -117,8 +106,6 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
         }
         catch (Exception e)
         {
-            // log and rethrow exception
-            log.error("Exception occured during merge template: " + e.toString(), e);
             throw e;
         }
         finally
