@@ -378,6 +378,20 @@ public class FileSystemPAM implements Deployment
         }
         webapp.addDisplayName(Jetspeed.getDefaultLocale(), paName);
         app.setWebApplicationDefinition(webapp);
+        
+        try
+        {
+            String jetspeedXMLPath = portletAppDir + "/WEB-INF/jetspeed-portlet.xml";
+            log.info("Loading " + jetspeedXMLPath + " into memory....");
+            if(JetspeedDescriptorUtilities.loadPortletDescriptor(jetspeedXMLPath, app))
+            {
+                log.info("Loaded " + jetspeedXMLPath + " into memory....");
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
         // save it to the registry
         log.info("Saving the portlet.xml in the registry...");
