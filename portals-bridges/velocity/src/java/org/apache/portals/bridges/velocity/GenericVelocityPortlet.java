@@ -26,6 +26,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -64,7 +65,7 @@ import org.apache.velocity.context.Context;
  * </p>
  * <p>
  * Constants: $MODE_EDIT, $MODE_HELP, $MODE_VIEW, $STATE_NORMAL, $STATE_MIN,
- * $STATE_MAX
+ * $STATE_MAX, $USER_INFO
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: GenericVelocityPortlet.java,v 1.1 2004/10/29 01:29:50 taylor
@@ -177,6 +178,7 @@ public class GenericVelocityPortlet extends GenericServletPortlet
         ctx.put("MODE_VIEW", PortletMode.VIEW);
         ctx.put("MODE_EDIT", PortletMode.EDIT);
         ctx.put("MODE_HELP", PortletMode.HELP);
+        ctx.put("USER_INFO", PortletRequest.USER_INFO);
         return ctx;
     }
 
