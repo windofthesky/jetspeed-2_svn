@@ -128,6 +128,7 @@ public class PortletApplicationBrowser extends ServletPortlet
 			            //set selected tab to portlets tab
 			            if(pa != null)
 			            {
+			                //TODO:  do we need to look up the pdef?  Could we just pass the child name into setAttribute?
 			                PortletDefinition pdef = pa.getPortletDefinitionByName(child.getName());
 			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef.getName(), PortletSession.APPLICATION_SCOPE);
 			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, new TabBean("pa_portlets"), PortletSession.APPLICATION_SCOPE);
