@@ -32,6 +32,17 @@ public final class JetspeedPortletFactoryProxy
 {
     private static PortletFactory portletFactory;
 
+    private static ThreadLocal tlData = new ThreadLocal();
+    
+    public static void setCurrentPortletDefinition(PortletDefinition pd)
+    {
+        tlData.set(pd);
+    }
+    
+    public static PortletDefinition getCurrentPortletDefinition()
+    {
+        return (PortletDefinition)tlData.get();
+    }
     
     public JetspeedPortletFactoryProxy(PortletFactory portletFactory)
     {

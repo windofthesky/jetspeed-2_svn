@@ -201,15 +201,18 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             }
 
             // infuseClasspath();
-
-            PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
-            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
-            portletName = portletDefinition.getName();
+            
             Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
                 return;
             }
+            
+            PortletDefinition portletDefinition = JetspeedPortletFactoryProxy.getCurrentPortletDefinition();
+System.out.println("Got thread local PD = " + portletDefinition);
+                        
+            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(this.getServletConfig(), portletDefinition);
+            portletName = portletDefinition.getName();
 
             // log.debug("Rendering: Portlet Class = " + portletDefinition.getClassName());
 

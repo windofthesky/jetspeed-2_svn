@@ -32,7 +32,4 @@ public class ContainerConstants
     public final static Integer METHOD_RENDER = new Integer(1);
     public final static Integer METHOD_ACTION = new Integer(3);
     public final static Integer METHOD_NOOP = new Integer(5);
-
-    public final static String PORTLET_ENTITY = "org.apache.jetspeed.portlet";
-
 }
