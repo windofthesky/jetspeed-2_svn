@@ -34,19 +34,23 @@ limitations under the License.
      name="HW_App::PreferencePortlet"
      decorator="metal">
       <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>
     <fragment id="9" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
     </fragment>
     <fragment id="7" type="portlet" name="HW_App::PickANumberPortlet" decorator="minty-blue">
       <property layout="TwoColumns" name="row" value="2" />
-      <property layout="TwoColumns" name="column" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>        
     <fragment id="16" type="portlet" name="HW_App::RoleSecurityTest">
       <property layout="TwoColumns" name="row" value="2" />
-      <property layout="TwoColumns" name="column" value="2" />
-    </fragment>        
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+    <fragment id="17" type="portlet" name="HW_App::UserInfoTest">
+      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>    
   </fragment>
 </page>

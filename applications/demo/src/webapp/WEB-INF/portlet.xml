@@ -237,6 +237,34 @@ limitations under the License.
       <role-link>user</role-link>
     </security-role-ref>
   </portlet>
+  
+  <portlet id="UserInfoTest">
+    <init-param>
+    <name>ViewPage</name>
+      <value>/WEB-INF/demo/userinfo/userinfo.jsp</value>
+    </init-param>
+    <init-param>
+    <name>EditPage</name>
+      <value>/WEB-INF/demo/userinfo/userinfo.jsp</value>
+    </init-param>
+    <init-param>
+    <name>HelpPage</name>
+      <value>/WEB-INF/demo/userinfo/help.html</value>
+    </init-param>
+    <portlet-name>UserInfoTest</portlet-name>
+    <display-name>User Info Test</display-name>
+    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>User Info Test</title>
+      <short-title>User Info Test</short-title>
+    </portlet-info>
+  </portlet>
 
   <user-attribute>
 	<description>User Given Name</description>
