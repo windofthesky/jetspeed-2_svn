@@ -303,12 +303,6 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         }
     }
 
-    /**
-     * @see org.apache.jetspeed.tools.pamanager.FileSystemPAM#identifyDeploymentSystem()
-     */
-    protected void identifyDeploymentSystem() throws IOException
-    {
-		JetspeedPortletRegistry.setDeploymentSystem(null, null);
-    }
+
 
 }
