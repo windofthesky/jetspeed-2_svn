@@ -65,10 +65,10 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.common.PreferenceComposite;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.pluto.om.common.Description;

@@ -239,7 +239,7 @@
 
       <collection-descriptor
          name="prefSet"
-         element-class-ref="org.apache.jetspeed.om.common.PreferenceImpl"
+         element-class-ref="org.apache.jetspeed.om.common.preference.PreferenceImpl"
          collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSetImpl"
          auto-delete="true"
       >         
@@ -513,16 +513,16 @@
  -->
  
      <class-descriptor
-   	  class="org.apache.jetspeed.om.common.PreferenceComposite"
+   	  class="org.apache.jetspeed.om.common.preference.PreferenceComposite"
 
    >
-      <extent-class class-ref="org.apache.jetspeed.om.common.PreferenceImpl" />
+      <extent-class class-ref="org.apache.jetspeed.om.common.preference.PreferenceImpl" />
       
    </class-descriptor>
  
 
     <class-descriptor
-   	  class="org.apache.jetspeed.om.common.PreferenceImpl"
+   	  class="org.apache.jetspeed.om.common.preference.PreferenceImpl"
    	  table="PORTLET_PREFERENCE"
    >
       
@@ -551,7 +551,7 @@
       
       <collection-descriptor
          name="valueObjects"
-         element-class-ref="org.apache.jetspeed.om.common.PreferenceValueImpl"
+         element-class-ref="org.apache.jetspeed.om.common.preference.PreferenceValueImpl"
          auto-delete="true"
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
@@ -578,7 +578,7 @@
  
         
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.PreferenceValueImpl"
+   	  class="org.apache.jetspeed.om.common.preference.PreferenceValueImpl"
    	  table="PREFERENCE_VALUE"
    >
       

@@ -57,7 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.jetspeed.om.common.PreferenceSetImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;

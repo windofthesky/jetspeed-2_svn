@@ -73,8 +73,8 @@ import org.apache.pluto.om.common.LanguageSet;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.jetspeed.om.common.PreferenceComposite;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor
