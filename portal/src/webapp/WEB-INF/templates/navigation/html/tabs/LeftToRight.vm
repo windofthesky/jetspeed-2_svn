@@ -3,13 +3,13 @@
   <tr>
         #foreach($childPage in $_nodeSet.iterator())
         #set($tabName = $childPage.getTitle($preferedLocale))
-        #if($jetspeed.page == $childPage)
+        #if($jetspeed.page.id == $childPage.id)
         <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
         <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
         <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
         #else
         <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-        <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.path)">${tabName}</a></td>
+        <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.url)">${tabName}</a></td>
         <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
         #end
         #end
