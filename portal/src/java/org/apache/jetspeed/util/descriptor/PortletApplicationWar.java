@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2001,2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -39,6 +39,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.VFSClassLoader;
+import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
@@ -54,9 +55,9 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
 /**
- * This class facilitates opertions a portlet applications WAR file or WAR file-like 
+ * This class facilitates opertions a portlet applications WAR file or WAR file-like
  * structure.
- * 
+ *
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
  * @version $Id$
  */
@@ -98,10 +99,14 @@ public class PortletApplicationWar
      * @param locale
      *                  locale to deploy to
      * @param webAppDisplayName
+     * @param vfsConfigUri
+     *                  Optional URI to a Commons VFS configuration file, since
+     *                  this class uses it to manipulate the WAR file. Can be
+     *                  null if we want Common VFS to use default behavior.
      * @throws IOException
      */
     public PortletApplicationWar( String warPath, String paName, String webAppContextRoot, Locale locale,
-            String webAppDisplayName ) throws IOException
+            String webAppDisplayName, String vfsConfigUri ) throws IOException
     {
         if (paName == null || paName.startsWith("/") || paName.startsWith("\\") || paName.endsWith("/")
                 || paName.endsWith("\\"))
@@ -110,7 +115,15 @@ public class PortletApplicationWar
                     + "\".  paName cannot be null nor can it begin nor end with any slashes.");
         }
 
-        fsManager = VFS.getManager();
+        if (vfsConfigUri != null) {
+            StandardFileSystemManager standardManager = new StandardFileSystemManager();
+            standardManager.setConfiguration(vfsConfigUri);
+            fsManager = standardManager;
+        }
+        else
+        {
+            fsManager = VFS.getManager();
+        }
         File warPathFile = new File(warPath).getAbsoluteFile();
 
         if (!warPathFile.exists())
@@ -134,13 +147,13 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * createWebApp
      * </p>
      * Creates a web applicaiton object based on the values in this WAR's
      * WEB-INF/web.xml
-     * 
+     *
      * @return @throws
      *              PortletApplicationException
      * @throws IOException
@@ -175,13 +188,13 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * createPortletApp
      * </p>
      * Creates a portlet application object based of the WAR file's
      * WEB-INF/portlet.xml
-     * 
+     *
      * @return @throws
      *              PortletApplicationException
      * @throws IOException
@@ -225,11 +238,11 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * getReader
      * </p>
-     * 
+     *
      * @param path
      * @return @throws
      *              IOException
@@ -240,11 +253,11 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * getInputStream
      * </p>
-     * 
+     *
      * @param path
      * @return @throws
      *              IOException
@@ -261,13 +274,13 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * copyWar
      * </p>
      * Copies the entire WAR structure to the path defined in
      * <code>targetAppRoot</code>
-     * 
+     *
      * @param targetAppRoot
      * @throws IOException
      */
@@ -337,13 +350,13 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * removeWar
      * </p>
      * Deletes this WAR. If the WAR is a file structure and not an actual WAR
      * file, all children are delted first, then the directory is removed.
-     * 
+     *
      * @throws IOException
      *                   if there is an error removing the WAR from the file system.
      */
@@ -364,7 +377,7 @@ public class PortletApplicationWar
      * web application. An error message is logged and a
      * PortletApplicationException is thrown if not.
      * </ul>
-     * 
+     *
      * @param app
      *                  The PortletApplicationDefinition to validate
      * @throws PortletApplicationException
@@ -402,19 +415,19 @@ public class PortletApplicationWar
             }
         }
     }
-   
+
     /**
-     * 
+     *
      * <p>
      * processWebXML
      * </p>
-     * 
+     *
      * Infuses this the <code>webXmlIn</code>, which is expected to be the contents of a web.xml web
-     * application descriptor, with <code>servlet</code> and a <code>servlet-mapping</code> element 
-     * for the JetspeedContainer servlet.  This is only done if the descriptor does not already contain these 
+     * application descriptor, with <code>servlet</code> and a <code>servlet-mapping</code> element
+     * for the JetspeedContainer servlet.  This is only done if the descriptor does not already contain these
      * items.
      *
-     * @param webXmlIn web.xml content that is not yet infused 
+     * @param webXmlIn web.xml content that is not yet infused
      * @param webXmlOut target for infused web.xml content
      * @throws MetaDataException if there is a problem infusing
      */
@@ -509,17 +522,17 @@ public class PortletApplicationWar
         }
 
     }
-    
+
     /**
-     * 
+     *
      * <p>
      * insertElementCorrectly
      * </p>
      *
-     * @param root JDom element representing the &lt; web-app &gt; 
+     * @param root JDom element representing the &lt; web-app &gt;
      * @param toInsert JDom element to insert into the web.xml hierarchy.
      * @param elementsBefore an array of web.xml elements that should be defined
-     * before the element we want to insert.  This order should be the order defined by the 
+     * before the element we want to insert.  This order should be the order defined by the
      * web.xml's DTD type definition.
      */
     protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
@@ -531,7 +544,7 @@ public class PortletApplicationWar
         boolean moreAfter = false;
         for (int i = 0; i < allChildren.size(); i++)
         {
-            Element element = (Element) allChildren.get(i);            
+            Element element = (Element) allChildren.get(i);
             if (elementsBeforeList.contains(element.getName()))
             {
                 insertAfter = i;
@@ -561,12 +574,12 @@ public class PortletApplicationWar
     }
 
     /**
-     * 
+     *
      * <p>
      * close
      * </p>
      * Closes any resource this PortletApplicationWar may have opened.
-     * 
+     *
      * @throws IOException
      */
     public void close() throws IOException

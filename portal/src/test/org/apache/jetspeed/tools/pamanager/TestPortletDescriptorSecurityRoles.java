@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -34,9 +34,9 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * TestPortletDescriptorSecurityRoles - test and validate security roles and
  * security role references from portlet.xml and web.xml deployment descriptor.
- * 
+ *
  * @author <a href="ate@douma.nu">Ate Douma </a>
- * 
+ *
  * @version $Id: TestPortletDescriptorSecurityRoles.java,v 1.4 2004/05/27
  *                19:57:24 weaver Exp $
  */
@@ -45,7 +45,7 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
 
     /**
      * Defines the testcase name for JUnit.
-     * 
+     *
      * @param name
      *                  the testcase's name.
      */
@@ -56,7 +56,7 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
 
     /**
      * Start the tests.
-     * 
+     *
      * @param args
      *                  the arguments. Not used
      */
@@ -67,7 +67,7 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
 
     /**
      * Creates the test suite.
-     * 
+     *
      * @return a test suite (<code>TestSuite</code>) that includes all
      *              methods starting with "test"
      */
@@ -80,11 +80,11 @@ public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCas
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");
-        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Jetspeed.getDefaultLocale(), "unit-test");
-  
+        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Jetspeed.getDefaultLocale(), "unit-test", null);
+
         MutablePortletApplication app = paWar.createPortletApp();
         assertNotNull("App is null", app);
-      
+
         MutableWebApplication webApp = paWar.createWebApp();
         assertNotNull("WebApp is null", webApp);
 

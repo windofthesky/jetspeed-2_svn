@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,7 +56,7 @@ import org.jdom.xpath.XPath;
  * into Java objects
  *
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
- * 
+ *
  * @version $Id$
  */
 public class TestPortletDescriptor extends RegistrySupportedTestCase
@@ -82,11 +82,15 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
     }
 
     public static Test suite()
+
     {
+
         // All methods starting with "test" will be executed in the test suite.
+
         return new TestSuite(TestPortletDescriptor.class);
+
     }
-    
+
     /*
      * Overrides the database properties
      */
@@ -175,7 +179,7 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
         assertNotNull("Portlet.Expiration is null", portlet.getExpirationCache());
         assertTrue("Portlet.Expiration invalid: " + portlet.getExpirationCache(), portlet.getExpirationCache().equals("-1"));
 
-        // Display Name                
+        // Display Name
         DisplayName displayName = portlet.getDisplayName(Locale.ENGLISH);
         assertNotNull("Display Name is null", displayName);
         assertTrue(
@@ -308,7 +312,7 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
             store.getTransaction().commit();
             store.getTransaction().begin();
         }
-        
+
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet2.xml"), "HW_App");
         app = pad.createPortletApplication();
 
@@ -350,54 +354,54 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
         store.getTransaction().commit();
 
     }
-    
+
     public void testInfusingWebXML() throws Exception
     {
-        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test");
-        
+        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test", null);
+
         SAXBuilder builder = new SAXBuilder(false);
-        
+
         FileReader srcReader = new FileReader("./test/testdata/deploy/webapp/WEB-INF/web.xml");
         FileReader targetReader = null;
-        Document  doc = builder.build(srcReader);    
-      
+        Document  doc = builder.build(srcReader);
+
         Element root = doc.getRootElement();
-        
+
         try
         {
             Object jetspeedServlet = XPath.selectSingleNode(root, PortletApplicationWar.JETSPEED_SERVLET_XPATH);
             Object jetspeedServletMapping = XPath.selectSingleNode(root, PortletApplicationWar.JETSPEED_SERVLET_MAPPING_XPATH);
-            
+
             assertNull(jetspeedServlet);
             assertNull(jetspeedServletMapping);
-            
-            paWar.copyWar("./target/webapp");            
+
+            paWar.copyWar("./target/webapp");
             paWar.processWebXML("./target/webapp/WEB-INF/web.xml");
-            
+
             targetReader = new FileReader("./target/webapp/WEB-INF/web.xml");
-            
+
             builder = new SAXBuilder(false);
             Document targetDoc = builder.build(targetReader);
             Element targetRoot = targetDoc.getRootElement();
-            
+
             jetspeedServlet = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_XPATH);
             jetspeedServletMapping = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_MAPPING_XPATH);
-          
-           
+
+
             assertNotNull(jetspeedServlet);
             assertNotNull(jetspeedServletMapping);
-            
+
         }
         finally
         {
             srcReader.close();
-            paWar.close();          
+            paWar.close();
             targetReader.close();
-            PortletApplicationWar targetWar = new PortletApplicationWar("./target/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test") ;
+            PortletApplicationWar targetWar = new PortletApplicationWar("./target/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test", null) ;
             targetWar.removeWar();
-            targetWar.close();           
+            targetWar.close();
         }
-        
+
     }
 
 }

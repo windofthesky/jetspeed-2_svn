@@ -1,12 +1,12 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,7 +33,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 /**
  * This is the catalina specific implemenation for deplyment of Portlet
  * Applications.
- * 
+ *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann </a>
  * @version $Id$
  */
@@ -44,13 +44,14 @@ public class FileSystemPAM implements PortletApplicationManagement
     public final int DEPLOY_WAR = 0;
     public final int UPDATE_WEB_XML = 1;
     public final int UPDATE_REGISTRY = 2;
-    
+
     public static final String SYS_PROPS_DEPLOY_TO_DIR = "org.apache.jetspeed.deploy.target.dir";
 
     private static final Log log = LogFactory.getLog("deployment");
- 
+
     //private DeployUtilities util;
     private PortletRegistryComponent registry;
+    private String vfsConfigUri = null;
 
     public FileSystemPAM()
     {
@@ -60,10 +61,22 @@ public class FileSystemPAM implements PortletApplicationManagement
     }
 
     /**
+     * Setup Commons VFS configuration, which is used during deployment.
+     * If this is never set, the default Common VFS configuration is used.
+     *
+     * @param vfsConfigUri String the URI to the configuration file to
+     * be used by Common VFS.
+     */
+    public void setVfsConfigUri(String vfsConfigUri)
+    {
+        this.vfsConfigUri = vfsConfigUri;
+    }
+
+    /**
      * <p>
      * deploy
      * </p>
-     * 
+     *
      * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String,
      *          java.lang.String, java.lang.String)
      * @param webAppsDir
@@ -81,7 +94,7 @@ public class FileSystemPAM implements PortletApplicationManagement
      * <p>
      * deploy
      * </p>
-     * 
+     *
      * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String,
      *          java.lang.String, java.lang.String)
      * @param webAppsDir
@@ -100,15 +113,15 @@ public class FileSystemPAM implements PortletApplicationManagement
     }
 
 
- 
-    
- 
+
+
+
 
     /**
      * <p>
      * deploy
      * </p>
-     * 
+     *
      * @param warFile path to the war file or war file structure.
      * @param paName of the portlet applicaiton being deployed.
      * @throws java.lang.IllegalStateException if the <code>org.apache.jetspeed.deploy.target.dir</code>
@@ -133,7 +146,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     /**
      * Unregisters application.
-     * 
+     *
      * @param webAppsDir
      *                  The webapps directory inside the Application Server
      * @param paName
@@ -144,12 +157,12 @@ public class FileSystemPAM implements PortletApplicationManagement
     public void unregister( String webAppsDir, String paName ) throws PortletApplicationException
     {
         PersistenceStore store = registry.getPersistenceStore();
-        
+
         try
         {
             store.getTransaction().begin();
             MutablePortletApplication app = (MutablePortletApplication) registry.getPortletApplication(paName);
-            
+
             if (app == null)
             {
                 log.warn("Error retrieving Application from Registry Database. Application not found: " + paName);
@@ -175,7 +188,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     /**
      * Undeploys application.
-     * 
+     *
      * @param webAppsDir
      *                  The webapps directory inside the Application Server
      * @param paName
@@ -184,8 +197,8 @@ public class FileSystemPAM implements PortletApplicationManagement
      */
 
     public void undeploy( String webAppsDir, String paName ) throws PortletApplicationException
-    {       
-        
+    {
+
         try
         {
             // First unergister the application from Registry
@@ -199,7 +212,7 @@ public class FileSystemPAM implements PortletApplicationManagement
         PortletApplicationWar paWar = null;
         try
         {
-            paWar = new PortletApplicationWar(webAppsDir+"/"+paName, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName );
+            paWar = new PortletApplicationWar(webAppsDir+"/"+paName, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
             paWar.removeWar();
             log.info("FileSystem un-deployment completed successfully.");
 
@@ -232,7 +245,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     /**
      * Undeploys application.
-     * 
+     *
      * @param paName
      *                  The Portlet Application name
      * @throws PortletApplicationException
@@ -243,7 +256,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     }
 
-   
+
     protected void sysDeploy( String webAppsDir, String warFile, String paName, int startState )
             throws PortletApplicationException
     {
@@ -255,19 +268,19 @@ public class FileSystemPAM implements PortletApplicationManagement
         // 3 Registry updated
         //
         int nState = DEPLOY_WAR; //Initialize
-        MutablePortletApplication app = null;    
-        
-        PortletApplicationWar paWar = null;                
+        MutablePortletApplication app = null;
+
+        PortletApplicationWar paWar = null;
         try
         {
-            paWar = new PortletApplicationWar(warFile, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName );
-            
+            paWar = new PortletApplicationWar(warFile, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
+
             String portletAppDirectory = webAppsDir+"/"+paName;
             log.info("Portlet application deployment target directory is "+portletAppDirectory);
-            
+
             if (startState <= nState)
-            {                
-                paWar.copyWar(portletAppDirectory);                
+            {
+                paWar.copyWar(portletAppDirectory);
             }
 
             nState = UPDATE_WEB_XML;
@@ -326,12 +339,12 @@ public class FileSystemPAM implements PortletApplicationManagement
             RegistryException
     {
         MutablePortletApplication app;
-        PersistenceStore store = registry.getPersistenceStore();        
-       
+        PersistenceStore store = registry.getPersistenceStore();
+
         try
-        { 
+        {
             app = paWar.createPortletApp();
-           
+
             if (app == null)
             {
                 String msg = "Error loading portlet.xml: ";
@@ -351,7 +364,7 @@ public class FileSystemPAM implements PortletApplicationManagement
             // load the web.xml
             log.info("Loading web.xml into memory....");
             MutableWebApplication webapp = paWar.createWebApp();
-            paWar.validate(); 
+            paWar.validate();
             app.setWebApplicationDefinition(webapp);
 
             // save it to the registry
@@ -388,7 +401,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     protected void rollbackFileSystem( String webAppsDir, String paName )
     {
-        
+
         String portletAppDir = webAppsDir+"/"+ paName;
         PortletApplicationWar paWar = null;
         try
@@ -396,10 +409,10 @@ public class FileSystemPAM implements PortletApplicationManagement
             // Remove the webapps directory
 
             log.info("Rollback: Remove " + portletAppDir + " and all sub-directories.");
-                                
-            paWar = new PortletApplicationWar(portletAppDir, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName );
+
+            paWar = new PortletApplicationWar(portletAppDir, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
             paWar.removeWar();
-           
+
         }
         catch (FileNotFoundException fnfe)
         {
@@ -427,7 +440,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     /**
      * Roles back any registry changes that have been made
-     * 
+     *
      * @param app
      */
     protected void rollbackRegistry( MutablePortletApplication app )

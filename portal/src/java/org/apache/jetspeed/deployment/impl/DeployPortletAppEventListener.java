@@ -89,7 +89,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 						appNameToFile.put(handler.getFile().getName(), id);
 						if(isLocal)
 						{
-						    PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id );
+						    PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id, null );
 	                         JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));						    
 						}
                         return;
@@ -101,7 +101,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     {
                          log.info(handler.getFile().getName()+" will be registered as a local portlet applicaiton.");
                          pam.register(id, id, handler.getPath());
-                         PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id );
+                         PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id, null );
                          JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                     }
                     else
