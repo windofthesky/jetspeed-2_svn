@@ -21,8 +21,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -45,19 +45,8 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id: TestPortletDescriptorSecurityRoles.java,v 1.4 2004/05/27
  *                19:57:24 weaver Exp $
  */
-public class TestPortletDescriptorSecurityRoles extends AbstractPrefsSupportedTestCase
+public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCase
 {
-
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name
-     *                  the testcase's name.
-     */
-    public TestPortletDescriptorSecurityRoles( String name )
-    {
-        super(name);
-    }
 
     /**
      * Start the tests.
@@ -134,19 +123,19 @@ public class TestPortletDescriptorSecurityRoles extends AbstractPrefsSupportedTe
         // persist the app
         try
         {
-            persistenceStore.getTransaction().begin();
+            
             portletRegistry.registerPortletApplication(app);
-            persistenceStore.getTransaction().commit();
+            
         }
         catch (Exception e)
         {
             String msg = "Unable to register portlet application, " + app.getName()
                     + ", through the portlet registry: " + e.toString();
-            persistenceStore.getTransaction().rollback();
+            
             throw new Exception(msg, e);
         }
         // clear cache
-        persistenceStore.invalidateAll();
+        
 
         // read back in
         app = portletRegistry.getPortletApplication("unit-test");
@@ -164,9 +153,9 @@ public class TestPortletDescriptorSecurityRoles extends AbstractPrefsSupportedTe
         // remove the app
         try
         {
-            persistenceStore.getTransaction().begin();
+            
             portletRegistry.removeApplication(app);
-            persistenceStore.getTransaction().commit();
+            
         }
         catch (Exception e)
         {
