@@ -245,7 +245,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
         deleteFile(deployPortletAppDirectory, true);
         if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists() && !deployPortletAppWarFile.exists())
         {
-            log.error("Portlet application undeployment of " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
+            log.info("Portlet application undeployment of " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
         }
         else
         {
@@ -358,7 +358,15 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                         File tempWarManifestFile = (File) warFiles.get("META-INF/MANIFEST.MF");
                         if (tempWarManifestFile != null)
                         {
-                            tempWarManifest = new Manifest(new FileInputStream(tempWarManifestFile));
+                            FileInputStream in = new FileInputStream(tempWarManifestFile);
+                            try
+                            {
+                              tempWarManifest = new Manifest(in);
+                            }
+                            finally
+                            {
+                              in.close();
+                            }
                         }
                         else
                         {
