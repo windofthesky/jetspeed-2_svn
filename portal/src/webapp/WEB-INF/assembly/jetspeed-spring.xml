@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+   
+   
+   <!-- Commons configuration object generated from jetspeed.properties -->
+   <bean id="portal_configuration"
+      class="org.apache.commons.configuration.PropertiesConfiguration">
+    <constructor-arg>
+      <value>${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
+    </constructor-arg>
+  </bean>  
+   
+  <!-- Portlet Services  -->
+  <bean id="PortalServices" 
+  	   class="org.apache.jetspeed.services.JetspeedPortletServices" >
+  	   <constructor-arg>
+  	   	<map>
+  	   	  <entry key="PortletRegistryComponent">
+  	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" />
+  	   	  </entry>
+  	   	</map>
+  	   </constructor-arg>
+  </bean>
+  
+  <!-- Template Locators -->
+  <bean id="TemplateLocator" 
+  	   class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start" destroy-method="stop" >
+  	   <constructor-arg>
+  	   	 <list>
+            <value>${applicationRoot}/WEB-INF/templates</value>         
+         </list>
+  	   </constructor-arg>
+  	   <constructor-arg><value>${applicationRoot}</value></constructor-arg>
+  </bean>
+  
+  <bean id="DecorationLocator" 
+  	   class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start" destroy-method="stop"  >
+  	   <constructor-arg>
+  	   	 <list>
+            <value>${applicationRoot}/WEB-INF/decorations</value>         
+         </list>
+  	   </constructor-arg>
+  	   <constructor-arg><value>${applicationRoot}</value></constructor-arg>
+  </bean>
+  
+  <!-- ID Generator -->
+  <bean id="IdGenerator" 
+  	   class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start" destroy-method="stop" >
+  	   <!-- ID Start value -->
+  	   <constructor-arg index="0"><value>65536</value></constructor-arg>
+  	   <!-- ID Prefix -->
+  	   <constructor-arg index="1"><value>P-</value></constructor-arg>
+  	   <!-- ID Suffix -->
+  	   <constructor-arg index="2"><value></value></constructor-arg>
+  </bean>
+  
+  <!-- Page File Cache -->
+  <bean id="PageFileCache" 
+  	   class="org.apache.jetspeed.cache.file.FileCache" >
+  	   <!-- Scan rate for changes in cached files on the file system -->
+  	   <constructor-arg index="0"><value>120</value></constructor-arg>
+  	   <!-- Cache size -->
+  	   <constructor-arg index="1"><value>100</value></constructor-arg>  	   
+  </bean>
+  
+  <!-- PageManager -->
+  <bean id="org.apache.jetspeed.page.PageManager" 
+  	   class="org.apache.jetspeed.page.impl.CastorXmlPageManager" init-method="start" destroy-method="stop">  	   
+  	   <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
+  	   <constructor-arg index="1"><ref bean="PageFileCache"/></constructor-arg>
+  	   <constructor-arg index="2"><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>  	   
+  </bean>
+  
+
+  <!-- Persistence Store -->
+  <bean id="persistenceStoreTarget" 
+  	   class="org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore"  	   
+  	   singleton="false" >  	   
+  	   <!-- Name of the DataSource to use for DB operations -->
+  	   <constructor-arg index="0"><value>jetspeed</value></constructor-arg>
+  </bean>
+  
+  <!-- Makes it so that each thread has an its own instance of the PersistenceStore -->
+  <bean id="threadLocalPersistenceStore" 
+  	    class="org.springframework.aop.target.ThreadLocalTargetSource">
+     <property name="targetBeanName">
+     	<value>persistenceStoreTarget</value>
+     </property>
+  </bean>
+
+  <!-- Helps generate our pre-thread PersistenceStore instance -->
+  <bean id="org.apache.jetspeed.components.persistence.store.PersistenceStore"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+  >             
+       <property name="targetSource"><ref local="threadLocalPersistenceStore"/></property>
+       <property name="proxyInterfaces"><value>org.apache.jetspeed.components.persistence.store.PersistenceStore</value></property>
+  </bean>
+  
+  <!-- Portlet Registry DAO-->
+  <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" 
+  	   class="org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg> 	   
+  </bean>
+  
+  <!-- Portlet Entity Access DAO-->
+  <bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" 
+  	   class="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent"/></constructor-arg> 	   
+  </bean>
+  
+  <!-- Profiler -->
+  <bean id="org.apache.jetspeed.profiler.Profiler" 
+  	   class="org.apache.jetspeed.profiler.impl.JetspeedProfiler"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.page.PageManager"/></constructor-arg> 	   
+  </bean>
+  
+  <!-- Capabillites -->
+  <bean id="org.apache.jetspeed.capabilities.Capabilities" 
+  	   class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Property Manager -->
+   <bean id="org.apache.jetspeed.prefs.PropertyManager" 
+  	   class="org.apache.jetspeed.prefs.impl.PropertyManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Preferences Implementation -->
+   <bean id="org.apache.jetspeed.prefs.PreferencesProvider" 
+  	   class="org.apache.jetspeed.prefs.impl.PreferencesProviderImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  	   <constructor-arg ><value>org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl</value></constructor-arg>
+  	   <constructor-arg type="boolean"><value>false</value></constructor-arg>  	     	   
+  </bean>
+  
+  <!-- Security: User Manager -->
+  <bean id="org.apache.jetspeed.security.UserManager" 
+  	   class="org.apache.jetspeed.security.impl.UserManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+   <!-- Security: Group Manager -->
+  <bean id="org.apache.jetspeed.security.GroupManager" 
+  	   class="org.apache.jetspeed.security.impl.GroupManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: Role Manager -->
+  <bean id="org.apache.jetspeed.security.RoleManager" 
+  	   class="org.apache.jetspeed.security.impl.RoleManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+ <!-- Security: Permission Manager -->
+  <bean id="org.apache.jetspeed.security.PermissionManager" 
+  	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: RDBMS Policy implemetnation for JAAS -->
+  <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" 
+  	   class="org.apache.jetspeed.security.impl.RdbmsPolicy"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- Security: Security Provider -->
+  <bean id="org.apache.jetspeed.security.SecurityProvider" 
+  	   class="org.apache.jetspeed.security.impl.SecurityProviderImpl"
+  >  	   
+  	   <constructor-arg ><value>login.conf</value></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy"/></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	   
+  </bean>
+  
+  <!-- User Info -->
+  <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 
+  	   class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl"
+  >
+     <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>  	     	   
+     <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent"/></constructor-arg>
+
+  </bean>
+  
+  <!--  Navigational State component -->
+  <bean id="org.apache.jetspeed.container.session.NavigationalStateComponent" 
+  	   class="org.apache.jetspeed.container.session.impl.JetspeedNavigationalStateComponent"
+  >  	   
+  	   <constructor-arg index="0"><value>org.apache.jetspeed.container.session.impl.SessionNavigationalState</value></constructor-arg>
+  	   <constructor-arg index="1"><value>org.apache.jetspeed.container.url.impl.SessionPortalURL</value></constructor-arg>
+  	   <constructor-arg index="2"><value>_,a,m,s,r,i,pm,ps,:</value></constructor-arg>  	   
+  </bean>
+  
+  <!-- Request Context -->
+   <bean id="org.apache.jetspeed.request.RequestContextComponent" 
+  	   class="org.apache.jetspeed.request.JetspeedRequestContextComponent"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.session.NavigationalStateComponent" /></constructor-arg>
+  	   <constructor-arg ><value>org.apache.jetspeed.request.JetspeedRequestContext</value></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>  	   
+  </bean>
+  
+  <!-- Portlet Window Component -->
+  <bean id="org.apache.jetspeed.container.window.PortletWindowAccessor" 
+  	   class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
+  </bean>
+  
+  <!-- Pluto Portlet Container -->
+  <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl" />  	   
+  
+  <!-- Jetspeed 2's wrapper around Pluto -->
+  <bean id="org.apache.pluto.PortletContainer" 
+  	   class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper"  >  	   
+  	   <constructor-arg ><ref bean="Pluto" /></constructor-arg>
+  </bean>
+  
+  <!-- Portlet Renderer -->
+  <bean id="org.apache.jetspeed.aggregator.PortletRenderer" 
+  	   class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl"  
+  	   init-method="start" destroy-method="stop"
+  >  	   
+  	   <constructor-arg ><ref bean="org.apache.pluto.PortletContainer" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
+  </bean>
+  	   
+  <!-- Aggregation: Page -->
+  <bean id="org.apache.jetspeed.aggregator.PageAggregator" 
+  	   class="org.apache.jetspeed.aggregator.impl.PageAggregatorImpl"  >  	   
+  	   <constructor-arg index="0" ><ref bean="org.apache.jetspeed.aggregator.PortletRenderer" /></constructor-arg>
+  	   <!-- Aggregation Strategies:
+  	   	    0 = PageAggregatorImpl.STRATEGY_SEQUENTIAL
+  	   	    1 = PageAggregatorImpl.STRATEGY_PARALLEL
+  	   	 -->
+  	   <constructor-arg index="1"><value>0</value></constructor-arg>
+  </bean>
+  
+  <!-- Aggregation: Portlet -->
+  <bean id="org.apache.jetspeed.aggregator.PortletAggregator" 
+  	   class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl"  >  	   
+  	   <constructor-arg  ><ref bean="org.apache.jetspeed.aggregator.PortletRenderer" /></constructor-arg>
+  </bean>
+  
+  <!-- Application Server Manager 
+  	   Provides hooks into the application server to help us deploy portlet applications
+  	   as web application into that server.
+  	-->
+  <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" 
+  	   class="org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager" 
+  	   init-method="start" destroy-method="stop"
+  >  	   
+  	   <constructor-arg index="0"><value>${autodeployment.server}</value></constructor-arg>
+  	   <constructor-arg index="1"><value>${autodeployment.port}</value></constructor-arg>
+  	   <constructor-arg index="2"><value>${autodeployment.user}</value></constructor-arg>
+  	   <constructor-arg index="3"><value>${autodeployment.password}</value></constructor-arg>
+  </bean>
+  
+  <!-- Portlet Application Manager 
+  	   Deploys portlet application to both Jetspeed's portlet registry
+  	   and to application server Jetspeed is using to process the web application
+  	   portion of the portlet application.
+  	-->
+   <bean id="PAM" 
+  	   class="org.apache.jetspeed.tools.pamanager.ApplicationServerPAM" 
+  	   init-method="start" destroy-method="stop"
+  >  	   
+  	   <constructor-arg ><value>${autodeployment.target.dir}</value></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
+  </bean>
+  
+  <!-- Portlet Application deployment event listener -->
+  <bean id="portletAppDeploymentListener" 
+  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"   	   
+  > 	
+       <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
+  	   <constructor-arg ><ref bean="PAM" /></constructor-arg>
+  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" /></constructor-arg>
+  </bean>
+  
+  <!-- The deployment manager watches a specific staging directory for
+  	   deploying components.  What components get deployed depend of
+  	   DeploymentEventListeners registered to it.
+   -->
+  <bean id="deploymentManager" 
+  	   class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" 
+  	   init-method="start" destroy-method="stop"
+  >  	   
+  	   <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
+       <constructor-arg type="long" ><value>${autodeployment.delay}</value></constructor-arg>
+       <constructor-arg >
+         <list>
+            <ref bean="portletAppDeploymentListener"/>      
+         </list>
+       </constructor-arg>
+  </bean>
+
+  
+  
+  <!-- Adds jetspeed.properties as our configuration object to support ${...} vars -->
+  <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
+
+  <bean id="placeholderConfig"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location"><value>file:///${applicationRoot}/WEB-INF/conf/jetspeed.properties</value></property>
+  </bean>  
+  
+</beans>
