@@ -43,14 +43,30 @@ public class DefaultInternalPasswordCredentialInterceptor implements InternalPas
             throws SecurityException
     {
         boolean updated = false;
-        if (!credential.isEncoded() && pcProvider.getEncoder() != null)
+        if (!credential.isEncoded())
         {
+            boolean encode = pcProvider.getEncoder() != null;
             if ( pcProvider.getValidator() != null)
             {
-                pcProvider.getValidator().validate(credential.getValue());
+                try
+                {
+                    pcProvider.getValidator().validate(credential.getValue());
+                }
+                catch (SecurityException e)
+                {
+                    // database contains an invalid password
+                    // allow login (assuming the user knows the invalid value) but enforce an update
+                    credential.setUpdateRequired(true);
+                    // don't encode it yet to be able to check setUpdateRequired(false)
+                    // in DefaultCredentialHandler.setPasswordUpdateRequired
+                    encode = false;
+                }
             }            
-            credential.setValue(pcProvider.getEncoder().encode(userName,credential.getValue()));
-            credential.setEncoded(true);
+            if ( encode )
+            {
+                credential.setValue(pcProvider.getEncoder().encode(userName,credential.getValue()));
+                credential.setEncoded(true);
+            }
             updated = true;
         }
         return updated;
