@@ -53,6 +53,9 @@
  */
 package org.apache.jetspeed.engine.core;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.portlet.PortalContext;
 import org.apache.pluto.core.impl.PortalContextImpl;
 import org.apache.pluto.services.information.PortalContextProvider;
@@ -82,4 +85,72 @@ public class PortalContextProviderImpl
         return portalContext;
     }
     
+    /** 
+     * <p>
+     * getPortalInfo
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.PortalContextProvider#getPortalInfo()
+     * @return
+     */
+    public String getPortalInfo()
+    {
+        
+        return portalContext.getPortalInfo();
+    }
+
+    /** 
+     * <p>
+     * getProperty
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.PortalContextProvider#getProperty(java.lang.String)
+     * @param arg0
+     * @return
+     */
+    public String getProperty(String arg0)
+    {        
+        return portalContext.getProperty(arg0);
+    }
+
+    /** 
+     * <p>
+     * getPropertyNames
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.PortalContextProvider#getPropertyNames()
+     * @return
+     */
+    public Collection getPropertyNames()
+    {     
+        return Collections.list(portalContext.getPropertyNames());
+    }
+
+    /** 
+     * <p>
+     * getSupportedPortletModes
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.PortalContextProvider#getSupportedPortletModes()
+     * @return
+     */
+    public Collection getSupportedPortletModes()
+    {
+        
+        return Collections.list(portalContext.getSupportedPortletModes());
+    }
+
+    /** 
+     * <p>
+     * getSupportedWindowStates
+     * </p>
+     * 
+     * @see org.apache.pluto.services.information.PortalContextProvider#getSupportedWindowStates()
+     * @return
+     */
+    public Collection getSupportedWindowStates()
+    {        
+        return Collections.list(portalContext.getSupportedWindowStates());
+    }
+
 }

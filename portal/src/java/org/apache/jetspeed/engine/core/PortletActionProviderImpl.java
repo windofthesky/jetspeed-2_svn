@@ -70,32 +70,29 @@ import org.apache.jetspeed.request.JetspeedRequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletActionProviderImpl
-implements PortletActionProvider
+public class PortletActionProviderImpl implements PortletActionProvider
 {
     HttpServletRequest request = null;
     ServletConfig config = null;
+    private PortletWindow portletWindow;
 
-    public PortletActionProviderImpl(HttpServletRequest request,
-                                          ServletConfig config)
+    public PortletActionProviderImpl(HttpServletRequest request, ServletConfig config, PortletWindow portletWindow)
     {
         this.request = request;
         this.config = config;
+        this.portletWindow = portletWindow;
     }
 
     /* (non-Javadoc)
      * @see org.apache.pluto.services.information.PortletActionProvider#changePortletMode(PortletWindow, PortletMode)
      */
-    public void changePortletMode(
-        PortletWindow portletWindow,
-        PortletMode mode) 
+    public void changePortletMode(PortletMode mode)
     {
         RequestContext context = JetspeedRequestContext.getRequestContext(request);
 
         PortalURL url = context.getRequestedPortalURL();
         PortalControlParameter controlURL = new PortalControlParameter(url);
-        if (!(controlURL.getMode(portletWindow).equals(mode))
-            && mode != null) 
+        if (!(controlURL.getMode(portletWindow).equals(mode)) && mode != null)
         {
             controlURL.setMode(portletWindow, mode);
             context.changeRequestedPortalURL(url, controlURL);
@@ -106,21 +103,18 @@ implements PortletActionProvider
     /* (non-Javadoc)
      * @see org.apache.pluto.services.information.PortletActionProvider#changePortletWindowState(PortletWindow, WindowState)
      */
-    public void changePortletWindowState(
-        PortletWindow portletWindow,
-        WindowState state) 
+    public void changePortletWindowState(WindowState state)
     {
         RequestContext context = JetspeedRequestContext.getRequestContext(request);
 
         PortalURL url = context.getRequestedPortalURL();
         PortalControlParameter controlURL = new PortalControlParameter(url);
 
-        if (!(controlURL.getState(portletWindow).equals(state))
-            && state != null) 
+        if (!(controlURL.getState(portletWindow).equals(state)) && state != null)
         {
             controlURL.setState(portletWindow, state);
             context.changeRequestedPortalURL(url, controlURL);
         }
     }
-    
+
 }
