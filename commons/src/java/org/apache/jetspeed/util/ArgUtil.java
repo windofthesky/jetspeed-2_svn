@@ -87,4 +87,12 @@ public final class ArgUtil
             throw new IllegalArgumentException(thisObject.getClass().getName()+"."+methodName+" requires a non-null "+nonNullClass.getName()+" as an argument.");
         }
     }
+    
+    public static final void assertPropertyNotNull(Object nonNullObject, Object thisObject, String methodName, String property) throws IllegalArgumentException
+    {
+        if(nonNullObject == null)
+        {
+            throw new IllegalStateException(thisObject.getClass().getName()+"."+methodName+" cannot be invoked until the property "+property+" has been set.");
+        }
+    }
 }
