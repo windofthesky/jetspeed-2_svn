@@ -116,12 +116,33 @@ public class JetspeedDeploy
             JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, registerAtInit);
             rewriter.processWebXML();
             
+            
+            
             // mung the web.xml
             //webXml.getRootElement().setAttribute("foo", "bar");
 
             // write the web.xml and portlet.xml files
             addFile("WEB-INF/web.xml", webXml, jout);
             addFile("WEB-INF/portlet.xml", portletXml, jout);
+            
+            if(rewriter.isPortletTaglibAdded())
+            {
+                System.out.println("Attempting to add portlet.tld to war...");
+                File portletTld = new File("../../portal/src/webapp/WEB-INF/tld/portlet.tld");
+                System.out.println("Looking for portlet.tld in " + portletTld);
+                if(portletTld.exists())
+                {
+                    System.out.println("Adding portlet.tld to war...");
+	                FileInputStream fis = new FileInputStream(portletTld);
+	                
+	                addFile("WEB-INF/tld/portlet.tld", fis, jout);
+	                fis.close();
+                }
+                else
+                {
+                    System.out.println("Failed to find portlet.tld...  Skipping...");
+                }
+            }
             
             jout.close();
         } 
