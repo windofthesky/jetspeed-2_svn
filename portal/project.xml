@@ -23,7 +23,7 @@
     <dependency>
       <id>pluto</id>
       <groupId>pluto-container</groupId>
-      <version>0.46</version>
+      <version>0.1-dev-unreleased</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
