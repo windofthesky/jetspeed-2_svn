@@ -113,7 +113,8 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
             // process update/add operations
             while (adds.hasNext())
             {
-                pb.store(adds.next());
+                Object object = adds.next();
+                pb.store(object);
             }
 
             // process delete operations

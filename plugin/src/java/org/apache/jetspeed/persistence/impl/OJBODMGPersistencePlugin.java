@@ -209,11 +209,12 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
 
             // 1. Start the transaction
             TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
+            tx.begin();
+            
             //  2. remove object from the OJB cache
             PersistenceBroker pb = tx.getBroker();
             //pb.removeFromCache(object);
 
-            tx.begin();
             tx.markDirty(object);
 
             // 3. retreive a "stale" version of this object from the db
