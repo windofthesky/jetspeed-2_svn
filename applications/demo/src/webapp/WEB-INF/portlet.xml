@@ -554,5 +554,45 @@ limitations under the License.
         </portlet-info>
     </portlet>
 
+  <portlet id="SSOWebContent">
+        <portlet-name>SSOWebContentPortlet</portlet-name>
+        <display-name>SSO WebContent Portlet</display-name>
+        <description>
+            Prototype of the SSO WebContent portlet
+        </description>
+		<init-param>
+		<name>EditPage</name>
+		  <value>/WEB-INF/view/sso-edit-prefs.vm</value>
+		</init-param>
+
+        <portlet-class>org.apache.jetspeed.portlet.SSOWebContentPortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>VIEW</portlet-mode>
+         </supports>
+        <portlet-preferences>
+            <preference>
+                <name>SRC</name>
+				<value>http://www.apache.org</value>
+            </preference>
+			<preference>
+				<name>sso.url.Principal</name>
+				<value>sso-principal</value>
+			</preference>			
+			<preference>
+				<name>sso.url.Credential</name>
+				<value>sso-credential</value>
+			</preference>									
+        </portlet-preferences>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>WebContent Prototype Portlet</title>
+            <short-title>WebContent</short-title>
+            <keywords>WebContent,Web, SSO, single signon</keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>
 
