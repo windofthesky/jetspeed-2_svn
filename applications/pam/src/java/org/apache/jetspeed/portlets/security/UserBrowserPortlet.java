@@ -35,6 +35,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.bridges.common.GenericServletPortlet;
+import org.apache.portals.messaging.PortletMessaging;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
@@ -84,7 +85,19 @@ public class UserBrowserPortlet extends GenericServletPortlet
     {
         response.setContentType("text/html");
 
-        TreeControl control = (TreeControl) request.getPortletSession().getAttribute(TREE_CONTROL);
+        String errorMessage = (String)PortletMessaging.consume(request, "user.error");
+        if (errorMessage != null)
+        {
+            request.setAttribute("errorMessage", errorMessage);            
+        }
+        
+        TreeControl control = null;
+        String refresh = (String)PortletMessaging.consume(request, "users", "refresh");
+        if (refresh == null)
+        {        
+            control = (TreeControl) request.getPortletSession().getAttribute(TREE_CONTROL);
+        }
+        
         try
         {
             if (control == null)
@@ -104,9 +117,42 @@ public class UserBrowserPortlet extends GenericServletPortlet
 
     }
 
-    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException,
-            IOException
+    private boolean isEmpty(String s)
     {
+        if (s == null) return true;
+        
+        if (s.trim().equals("")) return true;
+        
+        return false;
+    }
+    
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) 
+    throws PortletException,
+          IOException
+    {
+        String browserAction = actionRequest.getParameter("browser.action");
+        if (browserAction != null)
+        {
+            String userName = actionRequest.getParameter("jetspeed.user");
+            String password = actionRequest.getParameter("jetspeed.password");            
+            if (!isEmpty(userName) && !isEmpty(password)) 
+            {
+                try
+                {            
+                    manager.addUser(userName, password);
+                    TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute(TREE_CONTROL);
+                    Iterator users = manager.getUsers(USER_FILTER);
+                    control = buildTree(users, actionRequest.getLocale());
+                    actionRequest.getPortletSession().setAttribute(TREE_CONTROL, control);
+                    selectNode(actionRequest, control, userName);                    
+                }
+                catch (SecurityException se)
+                {
+                    PortletMessaging.publish(actionRequest, "user.error", se.getMessage());
+                }
+            }
+            return;
+        }
         TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute(TREE_CONTROL);
         //assert control != null
         if (control != null)
@@ -126,25 +172,30 @@ public class UserBrowserPortlet extends GenericServletPortlet
             String selectedNode = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_NODE);
             if (selectedNode != null)
             {
-                control.selectNode(selectedNode);
-                TreeControlNode child = control.findNode(selectedNode);
-                if (child != null)
-                {
-                    String domain = child.getDomain();
-                    if (domain.equals(USER_DETAIL_DOMAIN))
-                    {
-                        if (selectedNode != null)
-                        {
-                            actionRequest.getPortletSession().setAttribute(
-                                    PortletApplicationResources.PAM_CURRENT_USER, selectedNode,
-                                    PortletSession.APPLICATION_SCOPE);
-                        }
-                    }
-                }
+                selectNode(actionRequest, control, selectedNode);
             }
         }
     }
 
+    private void selectNode(ActionRequest actionRequest, TreeControl control, String selectedNode)
+    {
+        control.selectNode(selectedNode);
+        TreeControlNode child = control.findNode(selectedNode);
+        if (child != null)
+        {
+            String domain = child.getDomain();
+            if (domain.equals(USER_DETAIL_DOMAIN))
+            {
+                if (selectedNode != null)
+                {
+                    actionRequest.getPortletSession().setAttribute(
+                            PortletApplicationResources.PAM_CURRENT_USER, selectedNode,
+                            PortletSession.APPLICATION_SCOPE);
+                }
+            }
+        }
+    }
+    
     private TreeControl buildTree(Iterator users, Locale locale)
     {
 

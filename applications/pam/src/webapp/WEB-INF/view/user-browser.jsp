@@ -30,3 +30,33 @@ limitations under the License.
       styleUnselected="tree-control-unselected"
       --%>
 
+<h3 class="portlet-section-subheader">Add User</h3>
+
+<div class="portlet-section-text">
+
+<portlet:actionURL var="addUser" />
+
+<form action="<c:out value="${addUser}"/>" method="post">
+<input type='hidden' name='browser.action' value='adduser'/>
+<table>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">New User Name:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="text" name="jetspeed.user" size="30" value="" class="portlet-form-label-field">
+    </td>
+  </tr>
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">Password:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-label-field">
+    </td>
+  </tr>
+  
+</table>
+<br/>
+<input type="submit" value="Add User" class="portlet-form-button"/>
+</form>
+<c:if test="${errorMessage != null}">
+  <li style="color:red"><c:out value="${errorMessage}"/></li>
+</c:if>
+  

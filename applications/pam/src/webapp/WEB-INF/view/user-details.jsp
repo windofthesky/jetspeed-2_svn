@@ -346,11 +346,19 @@ limitations under the License.
 </c:if>
 <%--End of Profile tab data--%>
 
+<portlet:actionURL var="removeUser" />
+<form action="<c:out value="${removeUser}"/>" method="post">
+<input type="hidden" name="portlet_action" value="remove.user"/>
+<br/>
+<input type="submit" value="Remove User" class="portlet-form-button"/>
+</form>
+
+<br />
+<br />
 
 <%--End of User check --%>
 </c:if>
+<br />
 
-<br />
-<br />
 
 

@@ -48,6 +48,7 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.bridges.common.GenericServletPortlet;
+import org.apache.portals.messaging.PortletMessaging;
 
 /**
  * This portlet is a tabbed editor user interface for editing user attributes
@@ -218,7 +219,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }            
         }             
         String action = actionRequest.getParameter(PortletApplicationResources.PORTLET_ACTION);
-        if (action != null && isUserPortletAction(action))
+        if (action != null && action.equals("remove.user"))
+        {
+            removeUser(actionRequest, actionResponse);
+        }
+        else if (action != null && isUserPortletAction(action))
         {
             action = getAction(USER_ACTION_PREFIX, action);                
             if (action.endsWith(ACTION_UPDATE_ATTRIBUTE))
@@ -263,6 +268,27 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
         }
     }    
+    
+    public void removeUser(ActionRequest actionRequest, ActionResponse actionResponse) 
+    throws PortletException
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                             PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            try
+            {
+                userManager.removeUser(userName);
+                PortletMessaging.publish(actionRequest, "users", "refresh", "all");
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
+    }
     
     public Principal createPrincipal(Subject subject, Class classe)
     {
