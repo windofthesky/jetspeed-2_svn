@@ -91,7 +91,9 @@ limitations under the License.
 
 <goal name="copyPortlaWebApp">
 	 <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
-         <fileset dir="../portal/src/webapp" />            	       	       
+         <fileset dir="../portal/src/webapp" >
+            <exclude name="**/WEB-INF/pages/*"/>
+         </fileset>            	       	       
      </copy>
      <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
          <fileset dir="../portal/src/resources" />            	       	       
