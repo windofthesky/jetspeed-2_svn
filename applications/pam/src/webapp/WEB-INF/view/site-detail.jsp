@@ -139,4 +139,3 @@ limitations under the License.
 		</table>
 		</form>
 	</c:if>
-</c:if>
