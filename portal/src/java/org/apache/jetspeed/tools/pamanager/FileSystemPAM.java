@@ -88,17 +88,16 @@ public class FileSystemPAM implements Deployment
 
     private String deploymentDbAlias;
     private static final Log log = LogFactory.getLog("deployment");
-    
+
     public FileSystemPAM()
     {
-    	super();
+        super();
     }
-    
+
     public FileSystemPAM(String deploymentDbAlias)
     {
-    	this.deploymentDbAlias = deploymentDbAlias;
+        this.deploymentDbAlias = deploymentDbAlias;
     }
-    
 
     /**
      * <p>
@@ -146,7 +145,7 @@ public class FileSystemPAM implements Deployment
      * 0 deploy war - 1 Update Web XML - 2 Update Regsitry
      * @throws PortletApplicationException
      */
-    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState) 
+    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState)
         throws PortletApplicationException
     {
         this.deploymentDbAlias = deploymentDbAlias;
@@ -243,25 +242,28 @@ public class FileSystemPAM implements Deployment
                     + " attempting rollback...",
                 pae);
             rollback(nState, webAppsDir, paName, app);
-            throw new PortletApplicationException(pae.getMessage());
+            throw pae;
         }
         catch (RegistryException re)
         {
-            log.error(
-                "RegistryException encountered deploying portlet application: " + re.toString() + " attempting rollback...",
-                re);
+            String msg =
+                "RegistryException encountered deploying portlet application: " + re.toString() + " attempting rollback...";
+            log.error(msg, re);
             rollback(nState, webAppsDir, paName, app);
-            throw new PortletApplicationException(re.getMessage());
+            throw new PortletApplicationException(msg, re);
         }
         catch (IOException e)
         {
-            log.error("IOException encountered deploying portlet application: " + e.toString() + " attempting rollback...", e);
+            String msg = "IOException encountered deploying portlet application: " + e.toString() + " attempting rollback...";
+            log.error(msg, e);
             rollback(nState, webAppsDir, paName, app);
-            throw new PortletApplicationException(e.getMessage());
+            throw new PortletApplicationException(msg, e);
         }
         catch (Throwable t)
         {
-            log.error("Unexpected exception deploying portlet application: " + t.toString() + " attempting rollback...", t);
+            String msg = "Unexpected exception deploying portlet application: " + t.toString() + " attempting rollback...";
+            log.error(msg, t);
+            throw new PortletApplicationException(msg, t);
 
         }
 
@@ -502,4 +504,5 @@ public class FileSystemPAM implements Deployment
             log.error("Error removing file system deployment artifacts: " + e.toString(), e);
         }
     }
+
 }
