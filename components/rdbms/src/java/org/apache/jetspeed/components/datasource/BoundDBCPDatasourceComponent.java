@@ -79,7 +79,9 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
         }
         catch (NamingException e)
         {
-            throw new IllegalStateException("Naming exception "+e.toString());
+            IllegalStateException ise = new IllegalStateException("Naming exception "+e.toString());
+            ise.initCause(e);
+            throw ise;
         }
     }
 
