@@ -45,6 +45,6 @@ public class RegistrySupportedTestCase extends PersistenceSupportedTestCase
     {       
         super.setUp();
         portletRegistry = new PortletRegistryComponentImpl(persistenceStore);
-        entityAccess = new PortletEntityAccessComponentImpl(persistenceStore);
+        entityAccess = new PortletEntityAccessComponentImpl(persistenceStore, portletRegistry);
     }
 }
