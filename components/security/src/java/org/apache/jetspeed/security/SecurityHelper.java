@@ -17,6 +17,8 @@ package org.apache.jetspeed.security;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -126,4 +128,27 @@ public class SecurityHelper
         principals.add(principal);
         return new Subject(true, principals, new HashSet(), new HashSet());
     }
+    
+    /**
+     * <p>Given a subject, finds all principals of the given classe for that subject.
+     * If no principals of the given class is not found, null is returned.</p>
+     * @param subject The subject supplying the principals.
+     * @param classe A class or interface derived from java.security.InternalPrincipal.
+     * @return A List of all principals of type Principal matching a principal classe parameter.
+     */
+    public static List getPrincipals(Subject subject, Class classe)
+    {
+        List result = new LinkedList();
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = (Principal) principals.next();
+            if (classe.isInstance(p))
+            {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+    
 }
