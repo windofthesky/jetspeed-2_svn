@@ -16,6 +16,7 @@ limitations under the License.
 <%@page import="org.apache.jetspeed.portlets.security.ChangePasswordPortlet"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet"%>
 <%@taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c_rt"%>
 <%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
@@ -24,8 +25,17 @@ limitations under the License.
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
 
+    <c:set var="whyKey"><%=ChangePasswordPortlet.WHY%></c:set>
+    <c:set var="why" value="${requestScope[whyKey]}"/>
+    <c:set var="requiredKey"><%=ChangePasswordPortlet.REQUIRED%></c:set>
+    <c:set var="required" value="${requestScope[requiredKey]}"/>
     <c:set var="errorMessagesKey"><%=ChangePasswordPortlet.ERROR_MESSAGES%></c:set>
     <c:set var="errorMessages" value="${requestScope[errorMessagesKey]}"/>
+    
+    <c:if test="${why != null}">
+      <i><c:out value="${why}"/></i>
+      <br/>
+    </c:if>
     <c:if test="${errorMessages != null}">
     <ul>
       <c:forEach items="${errorMessages}" var="error">
@@ -34,7 +44,7 @@ limitations under the License.
     </ul>
     </c:if>
 
-    <c:set var="passwordChangedKey"><%=ChangePasswordPortlet.PASSWORD_CHANGED%></c:set>
+    <c_rt:set var="passwordChangedKey" value="<%=ChangePasswordPortlet.PASSWORD_CHANGED%>"/>
     <c:set var="p" value="${requestScope[passwordChangedKey]}"/>
     <c:if test="${requestScope[passwordChangedKey] != null}">
       <br>
@@ -57,7 +67,25 @@ limitations under the License.
         <td><input type="password" size="30" name="<%=ChangePasswordPortlet.NEW_PASSWORD_AGAIN%>"></td>
       </tr>
       <tr>
-        <td colspan="2"><input type="submit" value="<fmt:message key="chgpwd.label.save"/>"></td>
+        <td colspan="2">
+          <input type="submit" value="<fmt:message key="chgpwd.label.save"/>">
+          <c:if test="${why != null}">
+            <c:choose>
+              <c:when test="${required == null}">
+                &nbsp;&nbsp;
+                <c_rt:set var="cancelItem" value="<%=ChangePasswordPortlet.CANCELLED%>"/>
+                <input type="checkbox" style="display:none" name="<c:out value="${cancelItem}"/>">
+                <input type="submit" 
+                       value="<fmt:message key="chgpwd.label.cancel"/>"
+                       onClick="this.form.<c:out value="${cancelItem}"/>.checked=true">
+              </c:when>
+              <c:otherwise>
+                <br/><br/>
+                <a href='<c:url value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
+              </c:otherwise>
+            </c:choose>
+          </c:if>
+        </td>
       </tr>
       </table>
     </form>

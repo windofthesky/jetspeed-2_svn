@@ -311,6 +311,11 @@ insert into PROFILING_RULE values ('group-fallback',
 insert into RULE_CRITERION values (15, 'group-fallback', 0, 'group', 'group', null, 2);
 insert into RULE_CRITERION values (16, 'group-fallback', 1, 'request.session', 'page', 'default-page', 0);
 
+insert into PROFILING_RULE values ('security', 
+   'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
+   'The security profiling rule needed for credential change requirements.');
+insert into RULE_CRITERION values (17, 'security', 0, 'hard.coded', 'page', '/my-account.psml', 0);
+
 insert into PRINCIPAL_RULE_ASSOC values ( 'guest', 'page', 'j1' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'page', 'role-fallback' );
 insert into PRINCIPAL_RULE_ASSOC values ( 'jetspeed', 'docset', 'role-group' );

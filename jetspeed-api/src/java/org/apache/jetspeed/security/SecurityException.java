@@ -23,7 +23,6 @@ import org.apache.jetspeed.exception.JetspeedException;
  */
 public class SecurityException extends JetspeedException
 {
-
     /** <p>Principal does not exist exception message.</p> */
     public static final String PRINCIPAL_DOES_NOT_EXIST = "The principal does not exist.";
 
@@ -62,6 +61,9 @@ public class SecurityException extends JetspeedException
 
     /** <p>Password already used exception message.</p> */
     public static final String PASSWORD_ALREADY_USED = "Password already used.";
+
+    /** <p>The anonymous user is protected exception message.</p> */
+    public static final String ANONYMOUS_USER_PROTECTED = "The anonymous user is protected.";
 
     /**
      * <p>Default Constructor.</p>

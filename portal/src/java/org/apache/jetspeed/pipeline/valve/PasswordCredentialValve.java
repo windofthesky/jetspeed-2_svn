@@ -16,8 +16,8 @@
 package org.apache.jetspeed.pipeline.valve;
 
 /**
- * Determine the page to display and add it to the RequestContext
- *
+ * Checks the PasswordCredential (only once) after a User is logged in
+ * and redirects to a Change Password page if necessary.
  * <br/>
  * Read from the ValveContext:
  * <ul>
@@ -31,12 +31,11 @@ package org.apache.jetspeed.pipeline.valve;
  * <br>
  * Note: The primary purpose of this interface is primary for documention.
  * 
- * @author <a href="mailto:paul@apache.org">Paul Spencer</a>
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
- *
- * @see ValveContext
+ * 
+ * @see PasswordCredentialContext
  */
-public interface PageProfilerValve extends Valve
+public interface PasswordCredentialValve extends Valve
 {
-    String PROFILE_LOCATOR_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.ProfileLocator";
 }

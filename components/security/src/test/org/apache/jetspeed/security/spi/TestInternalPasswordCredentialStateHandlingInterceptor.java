@@ -61,7 +61,7 @@ public class TestInternalPasswordCredentialStateHandlingInterceptor extends Abst
     public void testExpired() throws Exception
     {
         assertTrue("should be allowed to authenticate",ums.authenticate("testcred","password"));
-        credential.setExpirationDate(new Date(System.currentTimeMillis()));
+        credential.setExpirationDate(new Date(new java.util.Date().getTime()));
         updateCredential();
         assertFalse("should be expired",ums.authenticate("testcred","password"));
         ums.setPassword("testcred","password","password2");

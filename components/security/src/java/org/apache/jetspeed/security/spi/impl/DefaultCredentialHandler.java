@@ -17,6 +17,7 @@ package org.apache.jetspeed.security.spi.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -215,7 +216,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             credential.setEncoded(encoded);
         }
                 
-        internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+        internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
         internalUser.setCredentials(credentials);
         // Set the user with the new credentials.
         securityAccess.setInternalUserPrincipal(internalUser, false);
@@ -234,7 +235,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             if ( credential != null && !credential.isExpired() && credential.isEnabled() != enabled )
             {
                 credential.setEnabled(enabled);
-                internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
         }
@@ -256,7 +257,7 @@ public class DefaultCredentialHandler implements CredentialHandler
             if ( credential != null && !credential.isExpired() && credential.isUpdateRequired() != updateRequired )
             {
                 credential.setUpdateRequired(updateRequired);
-                internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                internalUser.setModifiedDate(new Timestamp(new Date().getTime()));
                 securityAccess.setInternalUserPrincipal(internalUser, false);
             }
         }
@@ -297,7 +298,8 @@ public class DefaultCredentialHandler implements CredentialHandler
                 if ( authenticated )
                 {
                     credential.setAuthenticationFailures(0);
-                    credential.setLastLogonDate(new Timestamp(System.currentTimeMillis()));
+                    credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
+                    credential.setLastAuthenticationDate(new Timestamp(System.currentTimeMillis()));
                     update = true;
                 }
                 

@@ -130,8 +130,6 @@ public class DefaultPasswordCredentialProvider implements PasswordCredentialProv
      */
     public PasswordCredential create(String userName, InternalCredential credential) throws SecurityException
     {
-        return new DefaultPasswordCredentialImpl(userName, credential.getValue().toCharArray(), 
-                credential.isUpdateRequired(),credential.isEnabled(), credential.isExpired(), 
-                credential.getExpirationDate(), credential.getLastLogonDate());
+        return new DefaultPasswordCredentialImpl(userName, credential);
     }
 }

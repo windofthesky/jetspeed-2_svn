@@ -182,6 +182,16 @@
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
+    <!-- needed for hack around PLUTO-83 bug in ChangePasswordPortlet
+         TODO: should be removed again when rc2 is release -->
+    <dependency>
+      <id>pluto</id>
+      <groupId>pluto</groupId>
+      <version>1.0.1-rc1</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+     </dependency>    
    </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

@@ -23,6 +23,7 @@ import org.apache.jetspeed.security.om.InternalCredential;
  * <p>{@link InternalCredential} interface implementation.</p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public class InternalCredentialImpl implements InternalCredential
 {
@@ -46,7 +47,7 @@ public class InternalCredentialImpl implements InternalCredential
         this.value = value;
         this.type = type;
         this.classname = classname;
-        this.creationDate = new Timestamp(System.currentTimeMillis());
+        this.creationDate = new Timestamp(new java.util.Date().getTime());
         this.modifiedDate = this.creationDate;
     }
     
@@ -64,7 +65,8 @@ public class InternalCredentialImpl implements InternalCredential
         this.encoded = credential.isEncoded();
         this.expirationDate = credential.getExpirationDate();
         this.expired = credential.isExpired();
-        this.lastLogonDate = credential.getLastLogonDate();
+        this.previousAuthenticationDate = credential.getPreviousAuthenticationDate();
+        this.lastAuthenticationDate = credential.getLastAuthenticationDate();
         this.modifiedDate = credential.getModifiedDate();
         this.principalId = credential.getPrincipalId();
         this.type = credential.getType();
@@ -306,22 +308,40 @@ public class InternalCredentialImpl implements InternalCredential
         this.modifiedDate = modifiedDate;
     }
 
-    private Timestamp lastLogonDate;
-    
+    private Timestamp previousAuthenticationDate;
+
     /**
-     * @see org.apache.jetspeed.security.om.InternalCredential#getLastLoggedInDate()
+     * @see org.apache.jetspeed.security.om.InternalCredential#getPreviousAuthenticationDate()
      */
-    public Timestamp getLastLogonDate()
+    public Timestamp getPreviousAuthenticationDate()
     {
-        return lastLogonDate;
+        return previousAuthenticationDate;
     }
     
     /**
-     * @see org.apache.jetspeed.security.om.InternalCredential#setLastLogonDate(java.sql.Timestamp)
+     * @see org.apache.jetspeed.security.om.InternalCredential#setPreviousAuthenticationDate(java.sql.Timestamp)
      */
-    public void setLastLogonDate(Timestamp lastLogonDate)
+    public void setPreviousAuthenticationDate(Timestamp previousAuthenticationDate)
     {
-        this.lastLogonDate = lastLogonDate;
+        this.previousAuthenticationDate = previousAuthenticationDate;
+    }
+
+    private Timestamp lastAuthenticationDate;
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#getLastAuthenticationDate()
+     */
+    public Timestamp getLastAuthenticationDate()
+    {
+        return lastAuthenticationDate;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#setLastAuthenticationDate(java.sql.Timestamp)
+     */
+    public void setLastAuthenticationDate(Timestamp lastAuthenticationDate)
+    {
+        this.lastAuthenticationDate = lastAuthenticationDate;
     }
     
     /**
@@ -358,7 +378,8 @@ public class InternalCredentialImpl implements InternalCredential
             + "[classname, " + this.classname + "], "
             + "[creationDate, " + this.creationDate + "], "
             + "[modifiedDate, " + this.modifiedDate + "], "
-            + "[lastLogonDate, " + this.lastLogonDate + "]"
+            + "[previousAuthenticationDate, " + this.previousAuthenticationDate + "]"
+            + "[lastAuthenticationDate, " + this.lastAuthenticationDate + "]"
             + (expirationDate != null ? (", [expirationDate, "+ this.expirationDate + "]]") : "]");
         return toStringCredential;
     }    

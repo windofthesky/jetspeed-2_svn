@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.jetspeed.security.SecurityException;
@@ -112,7 +113,7 @@ public class InternalPasswordCredentialHistoryHandlingInterceptor extends
         credentials.add(historicalPasswordCredential);
         
         // fake update to current InternalCredential as being an insert of a new one
-        credential.setCreationDate(new Timestamp(System.currentTimeMillis()));
+        credential.setCreationDate(new Timestamp(new Date().getTime()));
         
         super.beforeSetPassword(internalUser, credentials, userName, credential, password, authenticated);
     }

@@ -32,6 +32,7 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -67,7 +68,7 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
             Principal userPrincipal = request.getRequest().getUserPrincipal();
             if (userPrincipal == null)
             {
-                userPrincipal = new UserPrincipalImpl(profiler.getAnonymousUser());
+                userPrincipal = new UserPrincipalImpl(userMgr.getAnonymousUser());
             }
 
             // check for previously established session subject and
@@ -89,8 +90,19 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
             {
                 // attempt to get complete subject for user principal
                 // from user manager
-                subject = userMgr.getUser(userPrincipal.getName()).getSubject();
-
+                try
+                {
+                    User user = userMgr.getUser(userPrincipal.getName());
+                    if ( user != null )
+                    {
+                        subject = user.getSubject();
+                    }
+                }
+                catch (SecurityException sex)
+                {
+                    subject = null;
+                }
+                
                 // if subject not available, generate default subject using
                 // request or default profiler anonymous user principal
                 if (subject == null)

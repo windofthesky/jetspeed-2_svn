@@ -27,7 +27,11 @@ import java.util.Iterator;
  */
 public interface UserManager
 {
-
+    /**
+     * @return the name of the anonymous user
+     */
+    String getAnonymousUser();
+    
     /**
      * <p>
      * Authenticate a user.

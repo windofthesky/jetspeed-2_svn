@@ -91,6 +91,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private Profiler     profiler;
 
     private LinkedHashMap userTabMap = new LinkedHashMap();
+    private LinkedHashMap anonymousUserTabMap = new LinkedHashMap();
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -128,6 +129,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
         userTabMap.put(tb2.getId(), tb2);
         userTabMap.put(tb3.getId(), tb3); 
         userTabMap.put(tb4.getId(), tb4);
+        
+        anonymousUserTabMap.put(tb1.getId(), tb1);
+        anonymousUserTabMap.put(tb2.getId(), tb2);
+        anonymousUserTabMap.put(tb3.getId(), tb3);
+        anonymousUserTabMap.put(tb4.getId(), tb4);
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -147,15 +153,30 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         
         if (user != null)
-        {        
+        {       
+            LinkedHashMap tabMap = null;
+            if ( userManager.getAnonymousUser().equals(userName) )
+            {
+                tabMap = anonymousUserTabMap;
+            }
+            else
+            {
+                tabMap = userTabMap;
+            }
             
             // Tabs
-            request.setAttribute("tabs", userTabMap.values());        
+            request.setAttribute("tabs", tabMap.values());        
             TabBean selectedTab = 
                 (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB);
+
+            if(selectedTab != null && !tabMap.containsKey(selectedTab.getId()))
+            {
+                selectedTab = null;
+            }
+            
             if(selectedTab == null)
             {
-                selectedTab = (TabBean) userTabMap.values().iterator().next();
+                selectedTab = (TabBean) tabMap.values().iterator().next();
             }
             JetspeedUserBean bean = new JetspeedUserBean(user);
             request.setAttribute(VIEW_USER, bean);

@@ -148,7 +148,7 @@ limitations under the License.
           <fmt:message key="security.credential.last.logon"/>
         </td>
         <td class="portlet-section-body" >
-          <fmt:formatDate value="${credential.lastLogonDate}" type="both" dateStyle="short" timeStyle="long"/>
+          <fmt:formatDate value="${credential.lastAuthenticationDate}" type="both" dateStyle="short" timeStyle="long"/>
         </td>
         <td>
           &nbsp;

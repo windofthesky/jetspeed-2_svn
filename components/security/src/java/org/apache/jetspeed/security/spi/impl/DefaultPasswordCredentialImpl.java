@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.om.InternalCredential;
 
 /**
  * <p>
@@ -54,8 +55,11 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     /** The expiration date. */
     private Date expirationDate;
     
-    /** The last logged in date */
-    private Timestamp lastLogonDate;
+    /** The previous authentication in date */
+    private Timestamp previousAuthenticationDate;
+    
+    /** The last authentication in date */
+    private Timestamp lastAuthenticationDate;
     
     /**
      * @param userName
@@ -67,15 +71,15 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
         this.password = (char[]) password.clone();
     }
     
-    public DefaultPasswordCredentialImpl(String userName, char[] password, boolean updateRequired, boolean enabled, 
-            boolean expired, Date expirationDate, Timestamp lastLogonDate)
+    public DefaultPasswordCredentialImpl(String userName, InternalCredential credential)
     {
-        this(userName, password);
-        this.updateRequired = updateRequired;
-        this.enabled = enabled;
-        this.expired = expired;
-        this.expirationDate = expirationDate;
-        this.lastLogonDate = lastLogonDate;
+        this(userName, credential.getValue().toCharArray());
+        this.updateRequired = credential.isUpdateRequired();
+        this.enabled = credential.isEnabled();
+        this.expired = credential.isExpired();
+        this.expirationDate = credential.getExpirationDate();
+        this.previousAuthenticationDate = credential.getPreviousAuthenticationDate();
+        this.lastAuthenticationDate = credential.getLastAuthenticationDate();
     }
     
     /**
@@ -128,11 +132,19 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     }
     
     /**
-     * @see org.apache.jetspeed.security.PasswordCredential#getLastLogonDate()
+     * @see org.apache.jetspeed.security.PasswordCredential#getPreviousAuthenticationDate()
      */
-    public Timestamp getLastLogonDate()
+    public Timestamp getPreviousAuthenticationDate()
     {
-        return lastLogonDate;
+        return previousAuthenticationDate;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#getLastAuthenticationDate()
+     */
+    public Timestamp getLastAuthenticationDate()
+    {
+        return lastAuthenticationDate;
     }
 
     /**

@@ -47,6 +47,20 @@ limitations under the License.
    </constructor-arg>
   </bean> 
   
+  <bean id="passwordCredentialValve"
+        class="org.apache.jetspeed.security.impl.PasswordCredentialValveImpl"
+        init-method="initialize"
+  >
+   <constructor-arg>
+     <!-- expirationWarningDays -->
+     <list>
+       <value>2</value>
+       <value>3</value>
+       <value>7</value>
+     </list>
+   </constructor-arg>
+  </bean> 
+  
   <bean id="profilerValve"
         class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl"
         init-method="initialize"
@@ -110,6 +124,7 @@ limitations under the License.
     	<ref bean="capabilityValve"/>
       <ref bean="portalURLValve"/>
     	<ref bean="securityValve"/>
+      <ref bean="passwordCredentialValve"/>
     	<ref bean="profilerValve"/>
     	<ref bean="containerValve"/>
     	<ref bean="actionValve"/>

@@ -27,6 +27,8 @@ import java.sql.Timestamp;
  */
 public interface PasswordCredential
 {
+    String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
+
     /**
      * @return The username.
      */
@@ -58,7 +60,12 @@ public interface PasswordCredential
     Date getExpirationDate();
     
     /**
+     * @return the previous time the user logged in 
+     */
+    Timestamp getPreviousAuthenticationDate();
+
+    /**
      * @return the last time the user logged in 
      */
-    Timestamp getLastLogonDate();
+    Timestamp getLastAuthenticationDate();
 }

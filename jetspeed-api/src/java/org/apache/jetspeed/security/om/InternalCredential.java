@@ -32,8 +32,9 @@ import java.sql.Timestamp;
  * </ul>
  * <p>The credential classname represent the class of credential.
  * </p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * TODO Add multiple credentials support.
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public interface InternalCredential extends Serializable, Cloneable
 {
@@ -212,14 +213,26 @@ public interface InternalCredential extends Serializable, Cloneable
     void setModifiedDate(Timestamp modifiedDate);
 
     /**
-     * <p>Getter for the last logon date</p>
-     * @return The last logon date.
+     * <p>Getter for the previous authentication date</p>
+     * @return The previous authentication date.
      */
-    Timestamp getLastLogonDate();
+    Timestamp getPreviousAuthenticationDate();
     
     /**
-     * <p>Setter for the last logon date</p>
-     * @param lastLogonDate The last logon date.
+     * <p>Setter for the previous authentication date</p>
+     * @param previousAuthenticationDate The previous authentication date.
      */
-    void setLastLogonDate(Timestamp lastLogonDate);
+    void setPreviousAuthenticationDate(Timestamp previousAuthenticationDate);
+
+    /**
+     * <p>Getter for the last authentication date</p>
+     * @return The last authentication date.
+     */
+    Timestamp getLastAuthenticationDate();
+    
+    /**
+     * <p>Setter for the last authentication date</p>
+     * @param lastAuthenticationDate The last authentication date.
+     */
+    void setLastAuthenticationDate(Timestamp lastAuthenticationDate);
 }

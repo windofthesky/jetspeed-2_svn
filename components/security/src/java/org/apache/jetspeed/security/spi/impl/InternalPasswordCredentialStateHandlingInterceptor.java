@@ -51,7 +51,9 @@ public class InternalPasswordCredentialStateHandlingInterceptor extends DefaultI
         boolean update = super.afterAuthenticated(internalUser, userName, credential, authenticated);
         if ( !credential.isExpired() )
         {
-            if (credential.getExpirationDate().getTime() < System.currentTimeMillis())
+            long expirationTime = credential.getExpirationDate().getTime();
+            long currentTime     = new java.util.Date().getTime();
+            if (expirationTime <= currentTime)
             {
                 credential.setExpired(true);
                 update = true;
@@ -79,10 +81,10 @@ public class InternalPasswordCredentialStateHandlingInterceptor extends DefaultI
         boolean update = super.afterLoad(pcProvider, userName, credential);
         if ( credential.getExpirationDate() == null )
         {
-            credential.setExpirationDate(new Date(System.currentTimeMillis()+maxLifeSpanInMillis));
+            credential.setExpirationDate(new Date(new java.util.Date().getTime()+maxLifeSpanInMillis));
             update = true;
         }
-        if (credential.getLastLogonDate() == null && !credential.isUpdateRequired())
+        if ( !credential.isUpdateRequired() && credential.getLastAuthenticationDate() == null )
         {
             credential.setUpdateRequired(true);
             update = true;
@@ -97,7 +99,7 @@ public class InternalPasswordCredentialStateHandlingInterceptor extends DefaultI
             InternalCredential credential, String password) throws SecurityException
     {
         super.beforeCreate(internalUser, credentials, userName, credential, password);
-        credential.setExpirationDate(new Date(System.currentTimeMillis()+maxLifeSpanInMillis));
+        credential.setExpirationDate(new Date(new java.util.Date().getTime()+maxLifeSpanInMillis));
         credential.setExpired(false);
         credential.setAuthenticationFailures(0);
     }
@@ -109,8 +111,9 @@ public class InternalPasswordCredentialStateHandlingInterceptor extends DefaultI
             InternalCredential credential, String password, boolean authenticated) throws SecurityException
     {
         super.beforeSetPassword(internalUser, credentials, userName, credential, password, authenticated);
-        credential.setExpirationDate(new Date(System.currentTimeMillis()+maxLifeSpanInMillis));
+        credential.setExpirationDate(new Date(new java.util.Date().getTime()+maxLifeSpanInMillis));
         credential.setExpired(false);
         credential.setAuthenticationFailures(0);
+        credential.setUpdateRequired(false);
     }
 }

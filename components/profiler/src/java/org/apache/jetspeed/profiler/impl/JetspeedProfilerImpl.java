@@ -71,8 +71,6 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     /** The configured default rule for this portal */
     private String defaultRule = "j1";
 
-    private String anonymousUser = "guest";
-
     private Map principalRules = new HashMap();
 
     public JetspeedProfilerImpl( String repositoryPath )
@@ -100,7 +98,6 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     {
         this(repositoryPath);
         this.defaultRule = properties.getProperty("defaultRule", "j1");
-        this.anonymousUser = properties.getProperty("anonymousUser", "guest");
         initModelClasses(properties); // TODO: move this to
         // start()
     }
@@ -245,17 +242,29 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
      */
     public ProfilingRule getRuleForPrincipal( Principal principal, String locatorName )
     {
+        ProfilingRule rule = null;
         // lookup the rule for the given principal in our user/rule table
         PrincipalRule pr = lookupPrincipalRule(principal.getName(), locatorName);
 
-        // if not found, fallback to the system wide rule
+        // if not found, fallback to the locator named rule or system wide rule
         if (pr == null)
         {
-            return getDefaultRule();
+            // find rule on locator name
+            rule = getRule(locatorName);
+            
+            if ( rule == null )
+            {
+                // if not found, fallback to the system wide rule
+                rule = getDefaultRule();
+            }
+        }
+        else
+        {
+            // Get the associated rule
+            rule = pr.getProfilingRule();
         }
 
-        // Now get the associated rule
-        return pr.getProfilingRule();
+        return rule;
     }
 
     /*
@@ -350,16 +359,6 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
 
         return (ProfilingRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(profilingRuleClass, c));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.Profiler#getAnonymousUser()
-     */
-    public String getAnonymousUser()
-    {
-        return this.anonymousUser;
     }
 
     /*

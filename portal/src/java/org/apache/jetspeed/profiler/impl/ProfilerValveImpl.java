@@ -17,6 +17,7 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -84,9 +85,24 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 throw new ProfilerException("Missing principal for request: " + request.getPath());
             }
 
-            // get all locators for the current user
-            Map locators = profiler.getProfileLocators(request, principal);
+            Map locators = null;
+            String locatorName = (String)request.getAttribute(PROFILE_LOCATOR_REQUEST_ATTR_KEY);
+            if ( locatorName != null )
+            {
+                ProfileLocator locator = profiler.getProfile(request,locatorName);
+                if ( locator != null )
+                {
+                    locators = new HashMap();
+                    locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+                }
+            }
             
+            if ( locators ==  null )
+            {
+                // get all locators for the current user
+                locators = profiler.getProfileLocators(request, principal);
+            }
+
             if (locators.size() == 0)
             {
                 locators = profiler.getDefaultProfileLocators(request);                

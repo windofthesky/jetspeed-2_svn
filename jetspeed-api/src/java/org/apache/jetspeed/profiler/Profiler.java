@@ -134,11 +134,6 @@ public interface Profiler
     ProfilingRule getRule(String id);
     
     /**
-     * @return
-     */
-    String getAnonymousUser();
-    
-    /**
      * For a given principal, find all supported locators and return a string array of 
      * locator names.
      * 

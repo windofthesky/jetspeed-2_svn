@@ -195,8 +195,15 @@ limitations under the License.
 	    >
 	    </field-descriptor>
       <field-descriptor
-          name="lastLogonDate"
-          column="last_logon_date"
+          name="previousAuthenticationDate"
+          column="prev_auth_date"
+          jdbc-type="TIMESTAMP"
+          nullable="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="lastAuthenticationDate"
+          column="last_auth_date"
           jdbc-type="TIMESTAMP"
           nullable="true"
       >

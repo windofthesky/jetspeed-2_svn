@@ -147,7 +147,8 @@ limitations under the License.
         <column name="IS_EXPIRED" required="true" type="BIT"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
-        <column name="LAST_LOGON_DATE" required="false" type="TIMESTAMP"/>
+        <column name="PREV_AUTH_DATE" required="false" type="TIMESTAMP"/>
+        <column name="LAST_AUTH_DATE" required="false" type="TIMESTAMP"/>
         <column name="EXPIRATION_DATE" required="false" type="DATE"/>
         <foreign-key foreignTable="SECURITY_PRINCIPAL">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>

@@ -19,12 +19,11 @@ INSERT INTO SECURITY_PRINCIPAL VALUES(10,'org.apache.jetspeed.security.JetspeedR
 INSERT INTO SECURITY_PRINCIPAL VALUES(11,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl',0,1,'/group/accounting','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_PRINCIPAL VALUES(12,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl',0,1,'/group/marketing','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
 INSERT INTO SECURITY_PRINCIPAL VALUES(13,'org.apache.jetspeed.security.JetspeedGroupPrincipalImpl',0,1,'/group/engineering','2004-05-22 16:27:12.572','2004-05-22 16:27:12.572');
-INSERT INTO SECURITY_CREDENTIAL VALUES(1,1,'admin',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
-INSERT INTO SECURITY_CREDENTIAL VALUES(2,2,'manager',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
-INSERT INTO SECURITY_CREDENTIAL VALUES(3,3,'user',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
-INSERT INTO SECURITY_CREDENTIAL VALUES(4,4,'tomcat',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
-INSERT INTO SECURITY_CREDENTIAL VALUES(5,5,'jetspeed',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
-INSERT INTO SECURITY_CREDENTIAL VALUES(9,9,'guest',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null);
+INSERT INTO SECURITY_CREDENTIAL VALUES(1,1,'admin',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null,null);
+INSERT INTO SECURITY_CREDENTIAL VALUES(2,2,'manager',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null,null);
+INSERT INTO SECURITY_CREDENTIAL VALUES(3,3,'user',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null,null);
+INSERT INTO SECURITY_CREDENTIAL VALUES(4,4,'tomcat',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null,null);
+INSERT INTO SECURITY_CREDENTIAL VALUES(5,5,'jetspeed',0,'org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl',0,0,1,0,0,'2004-05-22 16:27:12.572','2004-05-22 16:27:12.572',null,null,null);
 INSERT INTO SECURITY_USER_ROLE VALUES(1,6);
 INSERT INTO SECURITY_USER_ROLE VALUES(1,7);
 INSERT INTO SECURITY_USER_ROLE VALUES(1,8);
