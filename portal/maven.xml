@@ -464,11 +464,31 @@ limitations under the License.
      <attainGoal name="db.entities" />
   </goal>
 
+  <goal name="nodbfullDeploy">
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+  	 <attainGoal name="pam.deploy" />
+  	 <attainGoal name="pam.pamdeploy" />  	 
+     <attainGoal name="pam.strutsdeploy" />
+     <attainGoal name="pam.jsfdeploy" />
+     <attainGoal name="pam.securitydeploy" />
+     <attainGoal name="pam.phpdeploy" />
+     <attainGoal name="pam.perldeploy" />
+     <attainGoal name="pam.rss" />
+  </goal>
+
   <goal name='minDeploy'>
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
      <attainGoal name="pam.securitydeploy" />  	     
      <attainGoal name="db.entities" />     
+  </goal>
+
+  <goal name='nodbMinDeploy'>
+  	 <attainGoal name="remove.wars" />
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+     <attainGoal name="pam.securitydeploy" />  	     
   </goal>
 
   <goal name="deployClasses">
