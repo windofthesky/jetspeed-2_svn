@@ -112,36 +112,6 @@
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
   </bean>  
   
-  <!--
-  <bean id="org.apache.pluto.services.information.StaticInformationProvider"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.services.information.InformationProviderServiceImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
-  
-  <bean id="org.apache.pluto.services.information.DynamicInformationProvider"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.services.information.InformationProviderServiceImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
-  
-  <bean id="org.apache.pluto.services.information.PortletActionProvider"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.services.information.InformationProviderServiceImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
-  
-  <bean id="org.apache.pluto.services.information.PortalContextProvider"
-        class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
-  >             
-       <property name="className"><value>org.apache.jetspeed.services.information.InformationProviderServiceImpl</value></property>
-       <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
-  </bean>
-  -->
-  
   <bean id="javax.servlet.http.HttpServletRequest"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
@@ -162,5 +132,9 @@
        <property name="className"><value>org.apache.jetspeed.om.ControllerFactoryImpl</value></property>
        <property name="servletConfig"><ref bean="javax.servlet.ServletConfig"/></property>
   </bean>
+  
+  <bean id="org.apache.pluto.services.log.LogService"
+        class="org.apache.jetspeed.container.services.log.PlutoLogService"
+  />  
 	
 </beans>
