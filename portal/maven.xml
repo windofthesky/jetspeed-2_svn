@@ -441,6 +441,10 @@ limitations under the License.
     </copy>
   </goal>
 
+  <preGoal name="hotdeploy">
+   <attainGoal name= "java:compile"/>
+  </preGoal>
+
   <!-- ================================================================ -->
   <!-- Does all three deployment steps at once                                                                        -->
   <!-- ================================================================ -->
@@ -460,9 +464,12 @@ limitations under the License.
      <attainGoal name="db.entities" />
   </goal>
 
-  <preGoal name="hotdeploy">
-   <attainGoal name= "java:compile"/>
-  </preGoal>
+  <goal name='minDeploy'>
+  	 <attainGoal name="deploy" />
+  	 <attainGoal name="pam.register" />
+     <attainGoal name="pam.securitydeploy" />  	     
+     <attainGoal name="db.entities" />     
+  </goal>
 
   <goal name="deployClasses">
     <attainGoal name="java:compile"/>
