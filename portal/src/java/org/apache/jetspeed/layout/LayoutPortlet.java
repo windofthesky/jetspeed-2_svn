@@ -66,7 +66,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.cps.template.TemplateLocatorException;
+import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.velocity.JetspeedPowerTool;

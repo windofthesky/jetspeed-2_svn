@@ -55,6 +55,7 @@ package org.apache.jetspeed.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -67,6 +68,7 @@ import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.services.JetspeedContainerServices;
 import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
@@ -86,6 +88,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.services.information.InformationProviderService;
+import org.picocontainer.defaults.ObjectReference;
+import org.picocontainer.defaults.SimpleReference;
 
 /**
  * Jetspeed Engine implementation
@@ -100,6 +104,7 @@ public class JetspeedEngine implements Engine
     private Pipeline defaultPipeline = null;
     private Class pipelineClass = null;
     private HashMap pipelines = new HashMap();
+    private ComponentManager componentManager = null;
 
     private static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
@@ -157,6 +162,9 @@ public class JetspeedEngine implements Engine
             initServices();
             log.info("Service initialization complete");
 
+            initComponents();
+            log.info("Components initialization complete");
+            
             // 
             // create the container
             //
@@ -324,6 +332,16 @@ public class JetspeedEngine implements Engine
 
     }
 
+    private void initComponents() throws IOException, ClassNotFoundException
+    {
+        String applicationRoot = getRealPath("/");
+        File containerAssembler = new File(applicationRoot + "/WEB-INF/assembly/jetspeed.groovy");
+        componentManager = new  ComponentManager(containerAssembler);
+        ObjectReference rootContainerRef = new SimpleReference();       
+                            
+        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "PORTAL_SCOPE");       
+    }
+
     private void initServices() throws CPSInitializationException
     {
         // Get the instance of the service manager        
@@ -455,6 +473,11 @@ public class JetspeedEngine implements Engine
     public RequestContext getCurrentRequestContext()
     {
         return (RequestContext) tlRequestContext.get();
+    }
+
+    public ComponentManager getComponentManager()
+    {
+        return this.componentManager;
     }
 
 }

@@ -75,11 +75,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.cps.template.Template;
-import org.apache.jetspeed.cps.template.TemplateLocator;
-import org.apache.jetspeed.cps.template.TemplateLocatorException;
-import org.apache.jetspeed.cps.template.TemplateLocatorService;
+import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.locator.LocatorDescriptor;
+import org.apache.jetspeed.locator.TemplateLocatorException;
+import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -153,8 +153,8 @@ public class JetspeedPowerTool implements ViewTool
 
     private CapabilityMap capabilityMap;
     private Locale locale;
-    private TemplateLocator templateLocator;
-    private TemplateLocatorService locatorService;
+    private LocatorDescriptor locatorDescriptor;
+    private TemplateLocator locator;
     /**
      * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
      * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
@@ -345,7 +345,7 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * Retreives a template using Jetspeed's @see org.apache.jetspeed.cps.template.TemplateLocatorService
+     * Retreives a template using Jetspeed's @see org.apache.jetspeed.locator.TemplateLocator
      * 
      * 
      * @param path Expected to the template.  This may actually be changed by the TL service
@@ -355,7 +355,7 @@ public class JetspeedPowerTool implements ViewTool
      * request template path in the current response
      * @throws TemplateLocatorException if the <code>path</code> does not exist.
      */
-    public Template getTemplate(String path, String templateType) throws TemplateLocatorException
+    public TemplateDescriptor getTemplate(String path, String templateType) throws TemplateLocatorException
     {
         checkState();
         if (templateType == null)
@@ -365,10 +365,10 @@ public class JetspeedPowerTool implements ViewTool
         try
         {
         	
-			templateLocator.setName(path);
-			templateLocator.setType(templateType);
+			locatorDescriptor.setName(path);
+			locatorDescriptor.setType(templateType);
 			
-            Template template = locatorService.locateTemplate(templateLocator);
+            TemplateDescriptor template = locator.locateTemplate(locatorDescriptor);
             return template;
         }
         catch (TemplateLocatorException e)
@@ -485,7 +485,7 @@ public class JetspeedPowerTool implements ViewTool
             decorator = getPage().getDefaultDecorator(f.getType());
         }
 
-        Template propsTemp = getTemplate(decorator + "/" + DECORATOR_TEMPLATE_TYPE + ".properties", DECORATOR_TEMPLATE_TYPE);
+        TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TEMPLATE_TYPE + ".properties", DECORATOR_TEMPLATE_TYPE);
 
         Configuration decoConf = new PropertiesConfiguration(propsTemp.getAbsolutePath());
         String ext = decoConf.getString("template.extension");
@@ -499,7 +499,7 @@ public class JetspeedPowerTool implements ViewTool
         setCurrentFragment(f);
 
         String decoratorPath = decorator + "/" + DECORATOR_TEMPLATE_TYPE + ext;
-        Template template = getTemplate(decoratorPath, DECORATOR_TEMPLATE_TYPE);
+        TemplateDescriptor template = getTemplate(decoratorPath, DECORATOR_TEMPLATE_TYPE);
         PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
         prd.include(renderRequest, renderResponse);
 
@@ -530,17 +530,18 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     protected void clientSetup(RequestContext requestContext) 
-    {
-        locatorService = (TemplateLocatorService) CommonPortletServices.getPortalService(TemplateLocatorService.SERVICE_NAME);
+    {        
+        ComponentManager cm = Jetspeed.getComponentManager();
+        locator = (TemplateLocator) cm.getComponent("TemplateLocator");
         // By using null, we create a re-useable locator    
         try
         {
-            templateLocator = locatorService.createLocator(null);        
+            locatorDescriptor = locator.createLocatorDescriptor(null);        
             capabilityMap = requestContext.getCapabilityMap();
-            templateLocator.setMediaType(capabilityMap.getPreferredMediaType().getName());
+            locatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
             locale = requestContext.getLocale();
-            templateLocator.setCountry(locale.getCountry());
-            templateLocator.setLanguage(locale.getLanguage());       
+            locatorDescriptor.setCountry(locale.getCountry());
+            locatorDescriptor.setLanguage(locale.getLanguage());       
         }
         catch (Exception e)
         {

@@ -59,6 +59,7 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngine;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -161,4 +162,8 @@ public class Jetspeed
         return Locale.getDefault();
     }
 
+    public static ComponentManager getComponentManager()
+    {
+        return engine.getComponentManager();
+    }
 }

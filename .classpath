@@ -8,12 +8,14 @@
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/test"/>
     <classpathentry excluding="**/CVS*" kind="src" path="plugin/src/java"/>
     <classpathentry kind="src" path="portal/src/test"/>
-    <classpathentry excluding="**/CVS*" kind="src" path="cornerstone/src/java"/>
-    <classpathentry excluding="**/CVS*" kind="src" path="cornerstone-demo/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="services/registry/src/java"/>
     <classpathentry kind="src" path="applications/pam/src/java"/>
     <classpathentry kind="src" path="services/security/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/java"/>
+    <classpathentry kind="src" path="components/jetspeed/src/test"/>
     <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
@@ -47,5 +49,6 @@
     <classpathentry kind="var" path="MAVEN_REPO/picocontainer/jars/picocontainer-1.0-beta-5-SNAPSHOT.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.1.jar"/>
     <classpathentry kind="var" path="MAVEN_REPO/commons-configuration/jars/commons-configuration-SNAPSHOT.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/nanocontainer/jars/nanocontainer-1.0-beta-1-SNAPSHOT.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,0 +1,14 @@
+<project default="java:jar"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+  <!-- Target of maven test:single test -->
+  <property name='testcase' value='org.apache.jetspeed.locator.TestTemplateLocator'/> 
+  
+   <goal name="deployJar">
+  	<attainGoal name="jar:install"/>
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
+  </goal>
+
+</project>

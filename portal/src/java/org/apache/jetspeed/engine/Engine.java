@@ -57,6 +57,7 @@ import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
@@ -151,5 +152,8 @@ public interface Engine extends JetspeedEngineConstants
      * @return RequestContext associated with the current thread.
      */
     public RequestContext getCurrentRequestContext();
+
+    public ComponentManager getComponentManager();
+    
 
 }
