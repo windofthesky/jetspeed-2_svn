@@ -90,14 +90,13 @@ limitations under the License.
       <id>ojb:db-ojb</id>
       <version>1.0.rc6-PATCHED</version>
     </dependency>
-  
      <dependency>
       <id>commons-pool</id>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <id>commons-dbcp</id>
-      <version>1.1</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <id>jdbc-se</id>
