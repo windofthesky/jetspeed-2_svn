@@ -181,14 +181,7 @@ limitations under the License.
                banner="Build and Install the portlet commons services jar"
                postProcessing="false"
                ignoreFailures="false"/>
-               
-     <maven:reactor
-               basedir="${basedir}/maven-plugin"
-               includes="project.xml"
-               goals="plugin:deploy"
-               banner="Build and deploy the Jetspeed 2 Maven plugin"
-               postProcessing="false"
-               ignoreFailures="false"/>
+       
 
      <!-- Build war files -->
      <maven:reactor
@@ -232,6 +225,16 @@ limitations under the License.
                banner="Build and Install the PAM application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+               
+       <!-- build jetspeed 2 plugin -->
+            <maven:reactor
+               basedir="${basedir}/maven-plugin"
+               includes="project.xml"
+               goals="plugin:deploy"
+               banner="Build and deploy the Jetspeed 2 Maven plugin"
+               postProcessing="false"
+               ignoreFailures="false"/>
+       
 
           <attainGoal name="copy.shared.deps" />
           <attainGoal name="check.patch.tomcat5.jaas.realm"/>
