@@ -35,10 +35,7 @@ import org.apache.pluto.om.common.ObjectID;
  *
  */
 public class GenericMetadataImpl implements GenericMetadata
-{
-
-    private int id;
-    
+{   
     private Collection fields = null;
     private transient MultiHashMap fieldMap = new MultiHashMap();
     
@@ -106,22 +103,6 @@ public class GenericMetadataImpl implements GenericMetadata
             
             fields.addAll(values);
         }
-    }
-    
-    /**
-     * 
-     */
-    public ObjectID getId()
-    {
-        return new JetspeedObjectID(id);
-    }
-
-    /**
-     * 
-     */
-    public void setId(String oid)
-    {
-        id = JetspeedObjectID.createFromString(oid).intValue();
     }
 
     /* (non-Javadoc)

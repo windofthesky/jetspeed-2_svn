@@ -36,14 +36,4 @@ public interface GenericMetadata {
     
     public Collection getFields();
     public void setFields(Collection fields);
-    
-    /**
-     * @param objectID
-     */
-    void setId(String objectID);
-    
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getId()
-     */
-    public ObjectID getId();
 }
