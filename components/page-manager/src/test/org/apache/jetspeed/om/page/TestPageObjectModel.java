@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 
 import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 
@@ -32,7 +34,7 @@ import org.apache.jetspeed.om.page.psml.PageImpl;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPageObjectModel extends TestCase
+public class TestPageObjectModel extends AbstractComponentAwareTestCase
 {
 
     /**
@@ -69,7 +71,7 @@ public class TestPageObjectModel extends TestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite( TestPageObjectModel.class );
+        return new NanoDeployerBasedTestSuite( TestPageObjectModel.class );
     }
 
     private Page buildBasePage()
