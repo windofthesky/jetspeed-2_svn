@@ -32,8 +32,7 @@ limitations under the License.
     if (value != null)
     {
     	lastGuess = value.longValue();
-    }
-        	
+    }       	
 %>
 
 <c:set var="guessCount" scope="session" value="${GuessCount}"/>
@@ -99,3 +98,15 @@ limitations under the License.
     <input type="submit" value='<fmt:message key="pickanumber.label.guess"/>'/>
   </form>
 </p>
+
+<portlet:renderURL var="helpMe" portletMode='help'/>
+<portlet:renderURL var="editMe" portletMode='Edit'/>
+<portlet:renderURL var="maxMe" windowState='Maximized'/>
+<portlet:renderURL var="minMe" windowState='Minimized'/>
+<portlet:renderURL var="normalMe" windowState='Normal' portletMode='View'/>
+
+<a href='<%=helpMe%>'>Help</a>
+<a href='<%=editMe%>'>Edit</a>
+<a href='<%=maxMe%>'>Max</a>
+<a href='<%=minMe%>'>Min</a>
+<a href='<%=normalMe%>'>Normal</a>

@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+
 <fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.PickANumberResources" />
 <hr/>
 <h2><fmt:message key="pickanumber.help.label.thisishelppage"/></h2>
@@ -42,3 +44,5 @@ limitations under the License.
 <fmt:message key="pickanumber.help.label.thisportlethasonepreference"/>
 </p>
 
+<portlet:renderURL var="viewMe" portletMode='View'/>
+<a href='<%=viewMe%>'>View</a>

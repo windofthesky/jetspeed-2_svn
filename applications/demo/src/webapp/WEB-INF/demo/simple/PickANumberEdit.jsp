@@ -37,3 +37,5 @@ limitations under the License.
   </form>  
 </div>
 
+<portlet:renderURL var="normalMe" portletMode='View'/>
+<a href='<%=normalMe%>'>View</a>
