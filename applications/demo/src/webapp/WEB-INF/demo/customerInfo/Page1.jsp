@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ page language="java"
-         session="false"
+         session="true"
 %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
