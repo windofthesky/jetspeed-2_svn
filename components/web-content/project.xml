@@ -37,7 +37,8 @@ limitations under the License.
   <shortDescription>Web Content</shortDescription>
   <dependencies>  
   
-  	&pico-nano-groovy;
+  	&spring-deps;
+  	&commons-config-dep;
   	
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>

@@ -76,7 +76,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
                 conf.load(configStream);
             }
         }
-        catch (IOException e1)
+        catch (Exception e1)
         {
             // TODO Auto-generated catch block
 

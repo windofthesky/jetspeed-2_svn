@@ -37,9 +37,11 @@ limitations under the License.
   <shortDescription>Profiler</shortDescription>
   <dependencies>
   
-  	&pico-nano-groovy;
+  	&spring-deps;
   	
   	&db-ojb-deps;
+  	
+  	&commons-config-dep;
   	
   	<dependency>
       <id>jetspeed-cm</id>

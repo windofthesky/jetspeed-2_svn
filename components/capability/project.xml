@@ -39,9 +39,11 @@ limitations under the License.
   <shortDescription>Capability Components</shortDescription>
   <dependencies>
   
-  	&pico-nano-groovy;
+  	&spring-deps;
   	
   	&db-ojb-deps;
+  	
+  	&commons-config-dep;
   	
   	<dependency>
       <id>jetspeed-cm</id>

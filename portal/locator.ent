@@ -1,6 +1,8 @@
 <!-- Project dependencies -->
-<!ENTITY pico-nano-groovy SYSTEM "file:../etc/project-dependencies/spring-deps.xml">
+<!ENTITY spring-deps SYSTEM "file:../etc/project-dependencies/spring-deps.xml">
 <!ENTITY db-ojb-deps SYSTEM "file:../etc/project-dependencies/db-ojb-deps.xml">
+<!ENTITY jmock-deps SYSTEM "file:../etc/project-dependencies/jmock-deps.xml">
+<!ENTITY commons-config-dep SYSTEM "file:../etc/project-dependencies/commons-config-dep.xml">
 
 <!-- Project resources -->
 <!ENTITY db-ojb-resources SYSTEM "file:../etc/project-resources/db-ojb-resources.xml">

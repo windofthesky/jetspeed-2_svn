@@ -36,7 +36,8 @@ limitations under the License.
   </repository>
 
   <dependencies>
-  	&pico-nano-groovy;
+  	&spring-deps;
+  	&commons-config-dep;
     <dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
@@ -64,14 +65,6 @@ limitations under the License.
       <version>1.2.8</version>
       <properties>
         <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    
-    <dependency>
-      <id>commons-configuration</id>
-      <version>1.0-dev</version>
-      <properties>
-        <war.bundle>false</war.bundle>
       </properties>
     </dependency>
      <dependency>

@@ -1,5 +1,6 @@
 <!-- Project dependencies -->
-<!ENTITY pico-nano-groovy SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
+<!ENTITY spring-deps SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
+<!ENTITY commons-config-dep SYSTEM "file:../../etc/project-dependencies/commons-config-dep.xml">
 
 <!-- Project reports -->
 <!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

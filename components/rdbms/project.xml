@@ -36,7 +36,7 @@ limitations under the License.
   </repository>
 
   <dependencies>  
-  	&pico-nano-groovy;
+  	&spring-deps;
   	<dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>

@@ -82,7 +82,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/commons-httpclient/jars/commons-httpclient-2.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/velocity-tools/jars/velocity-tools-view-1.1-beta1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.2.1.jar"/>
-	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-configuration/jars/commons-configuration-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-configuration/jars/commons-configuration-1.0.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/mockrunner/jars/mockrunner-0.2.7.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/struts/jars/struts-1.2.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jmock/jars/jmock-SNAPSHOT.jar"/>

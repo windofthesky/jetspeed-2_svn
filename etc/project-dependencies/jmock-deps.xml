@@ -1,0 +1,7 @@
+<dependency>
+  <id>jmock</id>
+   <version>SNAPSHOT</version>
+   <properties>
+     <war.bundle>false</war.bundle>
+   </properties>
+</dependency>
