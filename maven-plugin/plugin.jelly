@@ -363,7 +363,7 @@ limitations under the License.
     <copy file="${portal_project.getDependencyPath('portlet-api')}" todir="./target/shared" failonerror="true" overwrite="true"/>  	  
     <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="./target/shared" failonerror="true" overwrite="true"/>    
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="./target/shared"/>    
-    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.1.jar" todir="./target/shared"/>    
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.2.jar" todir="./target/shared"/>    
   </goal> 
 
 
