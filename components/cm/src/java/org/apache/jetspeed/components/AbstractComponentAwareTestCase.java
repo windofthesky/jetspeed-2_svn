@@ -119,5 +119,10 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
         
     }
     
+    public String getApplicationRoot()
+    {
+        return System.getProperty("org.apache.jetspeed.application_root", "./");
+    }
+    
 
 }
