@@ -61,8 +61,8 @@ package org.apache.jetspeed.components;
  */
 public interface ComponentManagement
 {
-    Object getComponent(String componentName);
+    Object getComponent(Object componentName);
     
-    Object getComponent(String containerName, String componentName);
+    Object getComponent(Object containerName, Object componentName);
     
 }

@@ -152,7 +152,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
     /**
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.String)
      */
-    public Object getComponent(String componentName)
+    public Object getComponent(Object componentName)
     {        
         
         return getRootContainer().getComponentInstance(componentName);
@@ -174,7 +174,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
     /**
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.String, java.lang.String)
      */
-    public Object getComponent(String containerName, String componentName)
+    public Object getComponent(Object containerName, Object componentName)
     {
          MutablePicoContainer container = (MutablePicoContainer) getRootContainer().getComponentInstance(containerName);
          if(container != null)
