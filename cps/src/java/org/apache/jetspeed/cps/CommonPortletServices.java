@@ -70,9 +70,7 @@ import org.apache.fulcrum.BaseServiceBroker;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class CommonPortletServices
-    extends BaseServiceBroker
-    implements ServiceManager, CPSConstants
+public class CommonPortletServices extends BaseServiceBroker implements ServiceManager, CPSConstants
 {
     /** The single instance of this class. */
     private static CommonPortletServices instance = new CommonPortletServices();
@@ -98,30 +96,50 @@ public class CommonPortletServices
         return instance;
     }
 
-    public void init(Configuration configuration, String applicationRoot)
-       throws CPSInitializationException
+    /**
+     * 
+     * <p>
+     * init
+     * </p>
+     * Initializes th CPS with the <code>configuration</code>
+     * and <code>applicationRoot provided</code>.
+     * 
+     * @param configuration Configuration to use to configure all CPS services
+     * @param applicationRoot The application root of the system
+     * @param initLog4j <code>true</code> means that CPS will attempt configure
+     * Log4j, <code>false</code> Log4j will not be configured (used if the implementation
+     * system already initializes Log4j)
+     * @throws CPSInitializationException
+     *
+     */
+    public void init(Configuration configuration, String applicationRoot, boolean initLog4j) throws CPSInitializationException
     {
         try
-        {                
+        {
             //
             // bootstrap the initable services
             //
             this.setApplicationRoot(applicationRoot);
             this.setConfiguration(configuration);
 
-            String log4jFile = configuration.getString(LOG4J_CONFIG_FILE,
-                                                       LOG4J_CONFIG_FILE_DEFAULT);
-            log4jFile = this.getRealPath(log4jFile);
-            Properties p = new Properties();
-            p.load(new FileInputStream(log4jFile));
-            p.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
-            PropertyConfigurator.configure(p);
-            log.info("Configured log4j from " + log4jFile);
+            if (initLog4j)
+            {
 
-            // Set up Commons Logging to use the Log4J Logging
-            System.getProperties().setProperty(LogFactory.class.getName(),
-                                               Log4jFactory.class.getName());
+                String log4jFile = configuration.getString(LOG4J_CONFIG_FILE, LOG4J_CONFIG_FILE_DEFAULT);
+                log4jFile = this.getRealPath(log4jFile);
+                Properties p = new Properties();
+                p.load(new FileInputStream(log4jFile));
+                p.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
+                PropertyConfigurator.configure(p);
+                log.info("Configured log4j from " + log4jFile);
 
+                // Set up Commons Logging to use the Log4J Logging
+                System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+            }
+            else
+            {
+                log.info("Skipping Log4j configuration");
+            }
 
             this.init();
         }
@@ -134,8 +152,26 @@ public class CommonPortletServices
 
     }
 
-    public void shutdown()
-       throws CPSException
+    /**
+     * 
+     * <p>
+     * init
+     * </p>
+     * Initializes th CPS with the <code>configuration</code>
+     * and <code>applicationRoot provided</code>.  Will configure Log4j
+     * by default.  This is the same acalling <code>init(Configuration, AppRoot, true)</code>
+     * 
+     * @param configuration
+     * @param applicationRoot
+     * @throws CPSInitializationException
+     *
+     */
+    public void init(Configuration configuration, String applicationRoot) throws CPSInitializationException
+    {
+        init(configuration, applicationRoot, true);
+    }
+
+    public void shutdown() throws CPSException
     {
         getInstance().shutdownServices();
         System.gc();
@@ -149,10 +185,11 @@ public class CommonPortletServices
      */
     public static CommonService getPortalService(String name)
     {
+
         Object service = getInstance().getService(name);
         if (service instanceof CommonService)
         {
-            return (CommonService)service;
+            return (CommonService) service;
         }
         return null;
     }
