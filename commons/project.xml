@@ -25,6 +25,12 @@ limitations under the License.
 	  Common code used by engine(portal) and container.
   </description>
   <shortDescription>Common Code for Jetspeed Portal</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/commons</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/commons/</url>
+  </repository>
+
   <dependencies>
     <dependency>
       <id>commons-collections</id>
@@ -115,7 +121,9 @@ limitations under the License.
   </build>
   <reports>
     <report>maven-jdepend-plugin</report>
+<!--
     <report>maven-checkstyle-plugin</report>
+-->
     <report>maven-pmd-plugin</report>
     <report>maven-changelog-plugin</report>
     <report>maven-file-activity-plugin</report>
