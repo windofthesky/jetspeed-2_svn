@@ -15,9 +15,11 @@ limitations under the License.
 --%>
 <%@ page language="java" session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ page import="javax.portlet.PortletSession"%>
 <portlet:defineObjects/>
+<fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.PickANumberResources" />
 
 <portlet:actionURL var="myAction">
 	<portlet:param name="myParam" value="testParam"/>
@@ -40,7 +42,7 @@ limitations under the License.
 <c:set var="topRange" scope="session" value="${TopRange}"/>
 
 <h2>
-Pick a Number Guess Count Game 
+<fmt:message key="pickanumber.label.pickanumberguess"/>
 </h2>
 
 <c:choose>
@@ -49,19 +51,21 @@ Pick a Number Guess Count Game
 <c:when test="${targetValue == lastGuess}">
 </c:when>
 <c:otherwise>
-You have made <c:out value="${guessCount}"/> guess thus far.
+<fmt:message key="pickanumber.label.guessthusfar">
+	<fmt:param><c:out value="${guessCount}"/></fmt:param>
+</fmt:message>
 </c:otherwise>
 </c:choose>
 
 <c:choose>
 <c:when test="${targetValue == lastGuess}">
 <p>
-Start a new Game now!<br/>Enter a number between 1 and <c:out value="${TopRange}"/>
+<fmt:message key="pickanumber.label.startnewgame"/><br/><fmt:message key="pickanumber.label.enternumber"><fmt:param><c:out value="${TopRange}"/></fmt:param></fmt:message>
 </p>
 </c:when>
 <c:otherwise>
 <p>
-Enter a number between 1 and <c:out value="${TopRange}"/>
+<fmt:message key="pickanumber.label.enternumber"><fmt:param><c:out value="${TopRange}"/></fmt:param></fmt:message>
 </p>
 </c:otherwise>
 </c:choose>
@@ -69,29 +73,29 @@ Enter a number between 1 and <c:out value="${TopRange}"/>
 <p>
   <c:choose>
     <c:when test="${empty targetValue}">
-       Ready to start a New game.
+       <fmt:message key="pickanumber.label.readytostartanewgame"/>
     </c:when>  
     <c:when test="${empty lastGuess}">
-       Ready to start a New game.
+       <fmt:message key="pickanumber.label.readytostartanewgame"/>
     </c:when>      
     <c:when test="${targetValue == lastGuess}">
-      <center><strong><%=lastGuess%> is correct! You have guessed the number in <c:out value="${guessCount}"/> guesses!!!!</strong></center>
+      <center><strong><fmt:message key="pickanumber.label.guessiscorrect"><fmt:param><%=lastGuess%></fmt:param><fmt:param><c:out value="${guessCount}"/></fmt:param></fmt:message></strong></center>
       <c:remove var="targetValue" scope="session"/> 
     </c:when>
     <c:when test="${targetValue < lastGuess}">
-      You have guessed to high.  Try a lower Number 
+      <fmt:message key="pickanumber.label.guessedtohigh"/>
     </c:when>
     <c:when test="${targetValue > lastGuess}">
-      You have guessed to low.  Try a higher Number
+      <fmt:message key="pickanumber.label.guessedtolow"/>
     </c:when>
     <c:otherwise>
-       Ready to start a New game.    
+       <fmt:message key="pickanumber.label.readytostartanewgame"/>
     </c:otherwise>
   </c:choose>
 </p>
 <p>
   <form action="<%=myAction%>" method="POST">
     <input type="text" name="Guess" value="<%=lastGuess%>"/>
-    <input type="submit" value='Guess'/>
+    <input type="submit" value='<fmt:message key="pickanumber.label.guess"/>'/>
   </form>
 </p>

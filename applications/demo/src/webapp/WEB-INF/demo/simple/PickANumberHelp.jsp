@@ -13,34 +13,32 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.PickANumberResources" />
 <hr/>
-<h2>This is the Help Page for the PickANumber demo portlet</h2>
+<h2><fmt:message key="pickanumber.help.label.thisishelppage"/></h2>
 <hr/>
-<h3>Instructions</h3>
+<h3><fmt:message key="pickanumber.help.label.instructions"/></h3>
 <p>
-This portlet runs the popular 'Pick A Number' guessing game.
-The goal is to guess, in the least number of guesses, a number between [1..{Range}]:
+<fmt:message key="pickanumber.help.label.thisportletsrunsthepopularguessinggame"/>
 </p>
 <p>
-where {Range} is the highest possible number<br/>
-where '1' is always the lowest possible number.<br/>
+<fmt:message key="pickanumber.help.label.whererangeis"/><br/>
+<fmt:message key="pickanumber.help.label.where1is"/><br/>
 </p>
-<h4>Winning</h4>
+<h4><fmt:message key="pickanumber.help.label.winning"/></h4>
 <p>
- Who ever guesses in the lowest number of guesses wins.
+<fmt:message key="pickanumber.help.label.whoeverguesses"/>
 </p>
 <p> 
- Take turn with your friends playing this action packed game.
- This game is sure to provide endless hours of amusement! 
+<fmt:message key="pickanumber.help.label.taketurnwithyourfriends"/>
 </p>
 <p>
 <hr/>
 <h3>
-Preferences
+<fmt:message key="pickanumber.help.label.preferences"/>
 </h3>
 <p>
-This portlet has one preference: the <b>Range</b>, which defaults to 100.
-This default value can be overridden as a preference for each portlet entity.
-Select Edit mode to change top range value.
+<fmt:message key="pickanumber.help.label.thisportlethasonepreference"/>
 </p>
 

@@ -15,9 +15,11 @@ limitations under the License.
 --%>
 <%@ page language="java" session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ page import="javax.portlet.PortletSession"%>
 <portlet:defineObjects/>
+<fmt:setBundle basename="org.apache.jetspeed.demo.simple.resources.PickANumberResources" />
 
 <portlet:actionURL var="editAction">
 </portlet:actionURL>
@@ -29,9 +31,9 @@ limitations under the License.
 <div>
   <br/>
   <form action="<%=editAction%>" method="POST">  
-    High End of Guess Range: [2..]:
+    <fmt:message key="pickanumber.edit.label.highendofguessrange"/>
     <input type="text" name="TopRange" value="<%=topRange%>">
-    <input type="submit" value='Save'> 
+    <input type="submit" value='<fmt:message key="pickanumber.edit.label.save"/>'> 
   </form>  
 </div>
 
