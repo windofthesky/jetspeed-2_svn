@@ -97,12 +97,16 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
         Properties p = new Properties();
         try
         {
-            File baseDir = new File(System.getProperty("basedir"));
-            if(baseDir.exists())
+            String base = System.getProperty("basedir");
+            if (base != null)
             {
-                System.out.println("Finding logfile from basedir " + baseDir);
-                File logFile = new File(baseDir, log4jFile);
-                p.load(new FileInputStream(logFile));
+                File baseDir = new File(base);
+                if(baseDir.exists())
+                {
+                    System.out.println("Finding logfile from basedir " + baseDir);
+                    File logFile = new File(baseDir, log4jFile);
+                    p.load(new FileInputStream(logFile));
+                }
             }
         }
         catch (Exception e)
