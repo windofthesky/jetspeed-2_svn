@@ -46,6 +46,22 @@
       </properties>
     </dependency>
     
+    <dependency>
+      <id>hsqldb</id>
+      <version>1.7.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    
+      <dependency>
+      <id>junit</id>
+      <version>3.8.1</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    
       <dependency>
       <id>junit</id>
       <version>3.8.1</version>
