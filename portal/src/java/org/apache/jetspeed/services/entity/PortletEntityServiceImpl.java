@@ -108,9 +108,10 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
 
         if (entityCache.containsKey(portletEntity.getId()))
         {
+            ObjectID oid = portletEntity.getId();
             // Speed GC object reclaimation.
             portletEntity = null;
-            return (PortletEntity) entityCache.get(portletEntity.getId());
+            return (PortletEntity) entityCache.get(oid);
         }
         else
         {
