@@ -40,7 +40,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface Profiler 
+public interface Profiler
 {
     /**
      *  Get the Profile object using the request parameters.

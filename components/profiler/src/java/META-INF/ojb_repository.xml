@@ -43,13 +43,16 @@ limitations under the License.
      column="TITLE"
      jdbc-type="VARCHAR"
     />    
-    <collection-descriptor
+      <collection-descriptor
          name="criteria"
          element-class-ref="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" 
-         auto-retrieve="true"
-    >
-    <inverse-foreignkey field-ref="ruleId"/>
-    </collection-descriptor>
+         auto-delete="object"
+         auto-update = "object"
+         auto-retrieve = "true"
+       >
+       <inverse-foreignkey field-ref="ruleId"/>
+      </collection-descriptor>
+
 
 </class-descriptor>
 

@@ -30,7 +30,6 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
@@ -76,7 +75,7 @@ public class JetspeedProfiler implements Profiler
     {
         this.persistentStore = persistentStore;
     }
-
+    
     /**
      * Create a JetspeedProfiler with properties. Expected properties are:
      * 
@@ -397,14 +396,11 @@ public class JetspeedProfiler implements Profiler
     {
         try
         {
-            System.out.println("making pers : " + rule.getId());
             Transaction tx = persistentStore.getTransaction();
             tx.begin();
             persistentStore.makePersistent(rule);
             persistentStore.lockForWrite(rule);
-            tx.commit();
-            System.out.println("done making pers : " + rule.getId());
-            
+            tx.commit();            
         }
         catch (Exception e)
         {
