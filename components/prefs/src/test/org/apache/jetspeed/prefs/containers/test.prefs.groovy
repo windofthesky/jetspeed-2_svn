@@ -18,8 +18,6 @@ ClassLoader cl = Thread.currentThread().getContextClassLoader()
 
 NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/rdbms.container.groovy", container)
 
-NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/persistence.container.groovy", container)
-
 //
 // Preferences
 //
