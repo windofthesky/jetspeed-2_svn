@@ -67,15 +67,6 @@ limitations under the License.
   	<attainGoal name="db.scripts.gen"/>
   	<attainGoal name="db.create.test"/>
   	
-    <!-- build jetspeed 2 plugin -->
-    <maven:reactor
-               basedir="${basedir}/maven-plugin"
-               includes="project.xml"
-               goals="plugin:deploy"
-               banner="Build and deploy the Jetspeed 2 Maven plugin"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
     <!-- Build jars -->
     <maven:reactor
                basedir="${basedir}/portlet-api"
@@ -241,6 +232,15 @@ limitations under the License.
                includes="project.xml"
                goals="war"
                banner="Building layout portlets WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>
+     
+         <!-- build jetspeed 2 plugin -->
+    <maven:reactor
+               basedir="${basedir}/maven-plugin"
+               includes="project.xml"
+               goals="plugin:deploy"
+               banner="Build and deploy the Jetspeed 2 Maven plugin"
                postProcessing="false"
                ignoreFailures="false"/>
                
