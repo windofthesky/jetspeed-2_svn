@@ -51,78 +51,71 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.demo.preferences;
+package org.apache.jetspeed.engine.core;
 
-import java.io.IOException;
+import java.util.Enumeration;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.PortalContext;
+
+import org.apache.pluto.services.information.PortalContextProvider;
+import org.apache.pluto.util.Enumerator;
 
 /**
- * <p>
- * PreferencePortlet
- * </p>
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * PortalContextImpl
  *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
-public class PreferencePortlet extends GenericPortlet
+public class PortalContextImpl implements PortalContext
 {
+    PortalContextProvider provider = null;
 
-    /**
-     * @see javax.portlet.GenericPortlet#doView(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
-     */
-    protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    public PortalContextImpl(PortalContextProvider provider) 
     {
-        PortletContext context = getPortletContext();        
-        String attribute = (String) request.getAttribute("invokeMessage");
-        if (attribute != null)
+        this.provider = provider;
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getProperty(java.lang.String)
+     */
+    public String getProperty(String name)
+    {
+        if (name == null)
         {
-            System.out.println("+++ Got the attribute: " + attribute);
-            response.setContentType("text/html");
-            response.getWriter().println("Got attribute set in ACTION: " + attribute + "<br/>");
+            throw new IllegalArgumentException("Property name == null");
         }
-        request.setAttribute("viewMessage", "My Mode is view.");
-
-        PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/demo/preference/pref-view.jsp");
-        rd.include(request, response);
+        return provider.getProperty(name);
     }
-
-    /**
-     * @see javax.portlet.GenericPortlet#init()
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getPropertyNames()
      */
-    public void init(PortletConfig config) throws PortletException
+    public Enumeration getPropertyNames()
     {
-        System.out.println("Initializing Preference portlet example. ");
-        super.init(config);
+        return(new Enumerator(provider.getPropertyNames()));
     }
-
-    /**
-     * @see javax.portlet.Portlet#processAction(javax.portlet.ActionRequest, javax.portlet.ActionResponse)
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getSupportedPortletModes()
      */
-    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
+    public Enumeration getSupportedPortletModes()
     {
-        Integer iCount = (Integer) request.getAttribute("org.apache.jetspeed.invocationCount");
-        if (iCount == null)
-        {
-            iCount = new Integer(0);
-        }
-
-        int count = iCount.intValue();
-        count++;
-
-        request.setAttribute("org.apache.jetspeed.invocationCount", new Integer(count));
-
-        request.setAttribute("invokeMessage", "I was invoked " + count + " times!");
-        System.out.println("--------------------------- I was invoked!!!---------------------------------");
+        return new Enumerator(provider.getSupportedPortletModes());
     }
-
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getSupportedWindowStates()
+     */
+    public Enumeration getSupportedWindowStates()
+    {
+        return new Enumerator(provider.getSupportedWindowStates());        
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getPortalInfo()
+     */
+    public String getPortalInfo()
+    {
+        return provider.getPortalInfo();        
+    }
 }

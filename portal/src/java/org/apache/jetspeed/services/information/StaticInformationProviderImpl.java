@@ -105,12 +105,12 @@ public class StaticInformationProviderImpl
             javax.servlet.ServletContext context = config.getServletContext();
 
             PortalContextProvider provider =
-                (PortalContextProvider) context.getAttribute("org.apache.engine.core.PortalContextProvider");
+                (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
 
             if (provider == null)
             {
                 provider = new PortalContextProviderImpl();
-                context.setAttribute("org.apache.engine.core.PortalContextProvider", provider);
+                context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
             }
 
             return provider;

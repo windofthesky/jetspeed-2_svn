@@ -57,13 +57,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
-import org.apache.jetspeed.engine.core.PortalURL;
-import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
-import org.apache.pluto.services.information.PortalContextProvider;
-import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
@@ -115,14 +110,14 @@ public class InformationProviderServiceImpl extends BaseService implements Facto
     public DynamicInformationProvider getDynamicProvider(javax.servlet.http.HttpServletRequest request)
     {
         DynamicInformationProvider provider =
-            (DynamicInformationProvider) request.getAttribute("org.apache.engine.core.DynamicInformationProvider");
+            (DynamicInformationProvider) request.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
 
         log.info("Dynamic information provider " + provider);
 
         if (provider == null)
         {
             provider = new DynamicInformationProviderImpl(request, servletConfig);
-            request.setAttribute("org.apache.engine.core.DynamicInformationProvider", provider);
+            request.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
         }
 
         return provider;
@@ -143,7 +138,7 @@ public class InformationProviderServiceImpl extends BaseService implements Facto
     //
     //        return provider;
     //    }
-    //	
+
     //    public PortletActionProvider getPortletActionProvider(javax.servlet.http.HttpServletRequest request)
     //    {
     //        PortletActionProvider provider =
@@ -151,7 +146,7 @@ public class InformationProviderServiceImpl extends BaseService implements Facto
     //
     //        if (provider == null)
     //        {
-    //        	        	
+
     //            provider = new PortletActionProviderImpl(request, servletConfig);
     //            request.setAttribute("org.apache.engine.core.PortletActionProvider", provider);
     //        }

@@ -12,6 +12,6 @@
     <entry type="ref" name="CustomerInfo" parent="CustomerInfo"/>
     <entry type="ref" name="CustomerDetail" parent="CustomerDetail"/>
     <entry type="ref" name="JMXPortlet" parent="JMXPortlet"/>
-<!--    <entry type="ref" name="PreferencePortlet" parent="PreferencePortlet"/> -->
+    <entry type="ref" name="PreferencePortlet" parent="PreferencePortlet"/> 
     
 </portlets>
