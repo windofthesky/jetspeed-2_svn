@@ -30,6 +30,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
@@ -324,7 +325,6 @@ public abstract class AbstractPageManager
             }
             catch (SecurityException se)
             {
-                log.debug("checkAccess(): Access denied to folder or document " + node);
                 if (!throwException)
                 {
                     return null;
@@ -337,56 +337,10 @@ public abstract class AbstractPageManager
 
     protected NodeSet checkAccess(NodeSet nodes, String actions)
     {
-        if ((nodes != null) && (nodes.size() > 0))
+        if (nodes != null)
         {
             // check permissions and constraints, filter nodes as required
-            NodeSet filteredNodes = null;
-            Iterator checkAccessIter = nodes.iterator();
-            while (checkAccessIter.hasNext())
-            {
-                AbstractNode node = (AbstractNode)checkAccessIter.next();
-                try
-                {
-                    // check access
-                    checkAccess(node, actions, true);
-
-                    // add to filtered nodes if copying
-                    if (filteredNodes != null)
-                    {
-                        // permitted, add to filtered nodes
-                        filteredNodes.add(node);
-                    }
-                }
-                catch (SecurityException se)
-                {
-                    // create filtered nodes if not already copying
-                    if (filteredNodes == null)
-                    {
-                        // not permitted, copy previously permitted nodes
-                        // to new filtered node set with same comparator
-                        filteredNodes = new NodeSetImpl(null, ((NodeSetImpl)nodes).getComparator());;
-                        Iterator copyIter = nodes.iterator();
-                        while (copyIter.hasNext())
-                        {
-                            Node copyNode = (Node)copyIter.next();
-                            if (copyNode != node)
-                            {
-                                filteredNodes.add(copyNode);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // return filtered nodes if generated
-            if (filteredNodes != null)
-            {
-                nodes = filteredNodes;
-            }
+            return AbstractBaseElement.checkAccess(nodes, actions);
         }
         return nodes;
     }

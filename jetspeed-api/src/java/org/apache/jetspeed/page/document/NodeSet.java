@@ -35,7 +35,7 @@ public interface NodeSet
 
     /**
      * <p>
-     * getNode
+     * get
      * </p>     
      * Returns a Node based on <code>name</code>. <code>name</code>
      * can either be the fully quallified path, <code>folder1/folder2/myPage.psml</code>
@@ -56,5 +56,4 @@ public interface NodeSet
     NodeSet exclusiveSubset(String regex);
 
     int size();
-
 }

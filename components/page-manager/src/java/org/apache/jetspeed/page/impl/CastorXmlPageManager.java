@@ -38,6 +38,7 @@ import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.DocumentSetPath;
 import org.apache.jetspeed.om.folder.Folder;
@@ -259,8 +260,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 foldersIter = profiledFolders.iterator();
                 while (foldersIter.hasNext())
                 {
-                    Folder aggregatePagesFolder = (Folder) foldersIter.next();
-                    NodeSet aggregatePages = aggregatePagesFolder.getPages();
+                    FolderImpl aggregatePagesFolder = (FolderImpl) foldersIter.next();
+                    NodeSet aggregatePages = aggregatePagesFolder.getPages(false);
                     Iterator aggregatePagesIter = aggregatePages.iterator();
                     while (aggregatePagesIter.hasNext())
                     {
@@ -269,9 +270,10 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 }
 
                 // profile parent folder using profiled parent
-                if ((folder.getParent() != null) && ! ((AbstractNode) folder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
+                if ((((AbstractNode)folder).getParent(false) != null) &&
+                    !((AbstractNode)folder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
                 {
-                    parentFolder = (Folder) setProfiledNodePathAndUrl((AbstractNode) folder.getParent());
+                    parentFolder = (Folder)setProfiledNodePathAndUrl((AbstractNode)((AbstractNode)folder).getParent(false));
                 }
 
                 // profile sibling folders by aggregating all siblings in profiled folders
@@ -280,8 +282,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 foldersIter = profiledFolders.iterator();
                 while (foldersIter.hasNext())
                 {
-                    Folder aggregateFoldersFolder = (Folder) foldersIter.next();
-                    NodeSet aggregateFolders = aggregateFoldersFolder.getFolders().exclusiveSubset("^.*/" + PROFILE_PROPERTY_FOLDER_PREFIX + "[^/]*$");
+                    FolderImpl aggregateFoldersFolder = (FolderImpl) foldersIter.next();
+                    NodeSet aggregateFolders = aggregateFoldersFolder.getFolders(false).exclusiveSubset("^.*/" + PROFILE_PROPERTY_FOLDER_PREFIX + "[^/]*$");
                     Iterator aggregateFoldersIter = aggregateFolders.iterator();
                     while (aggregateFoldersIter.hasNext())
                     {
@@ -295,8 +297,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 foldersIter = searchProfiledFolders.iterator();
                 while (foldersIter.hasNext())
                 {
-                    Folder aggregateFolder = (Folder) foldersIter.next();
-                    NodeSet aggregateFolderDocumentSets = aggregateFolder.getDocumentSets();
+                    FolderImpl aggregateFolder = (FolderImpl) foldersIter.next();
+                    NodeSet aggregateFolderDocumentSets = aggregateFolder.getDocumentSets(false);
                     Iterator aggregateFolderDocumentSetsIter = aggregateFolderDocumentSets.iterator();
                     while (aggregateFolderDocumentSetsIter.hasNext())
                     {
@@ -363,10 +365,10 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     foldersIter = profiledFolders.iterator();
                     while (foldersIter.hasNext())
                     {
-                        Folder aggregateLinksFolder = (Folder) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
-                        if (((AbstractNode) aggregateLinksFolder).getProfiledPath().equals(Folder.PATH_SEPARATOR))
+                        FolderImpl aggregateLinksFolder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) foldersIter.next());
+                        if (aggregateLinksFolder.getProfiledPath().equals(Folder.PATH_SEPARATOR))
                         {
-                            NodeSet aggregateLinks = aggregateLinksFolder.getLinks();
+                            NodeSet aggregateLinks = aggregateLinksFolder.getLinks(false);
                             Iterator aggregateLinksIter = aggregateLinks.iterator();
                             while (aggregateLinksIter.hasNext())
                             {
@@ -408,13 +410,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         folderPath = Folder.PATH_SEPARATOR;
                     }
                 }
-                folder = getFolder(folderPath);
+                folder = folderHandler.getFolder(folderPath);
                 String pagePath = requestPath;
                 if (! pagePath.endsWith(Page.DOCUMENT_TYPE))
                 {
                     pagePath = folder.getDefaultPage(true);
                 }
-                page = folder.getPage(pagePath);
+                page = ((FolderImpl)folder).getPage(pagePath, false);
             }
             catch (NodeException ne)
             {
@@ -425,9 +427,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 log.warn("computeProfiledPageContext(): Falling back to managed root default page for " + requestPath);
                 try
                 {
-                    folder = getFolder(Folder.PATH_SEPARATOR);
+                    folder = folderHandler.getFolder(Folder.PATH_SEPARATOR);
                     String pagePath = folder.getDefaultPage(true);
-                    page = folder.getPage(pagePath);
+                    page = ((FolderImpl)folder).getPage(pagePath, false);
                 }
                 catch (NodeException ne)
                 {
@@ -438,13 +440,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             if (page != null)
             {
                 // return folders and pages relative to requested page
-                siblingPages = folder.getPages();
-                parentFolder = (Folder) folder.getParent();
-                siblingFolders = folder.getFolders();
+                siblingPages = ((FolderImpl)folder).getPages(false);
+                parentFolder = (Folder) ((AbstractNode)folder).getParent(false);
+                siblingFolders = ((FolderImpl)folder).getFolders(false);
                 try
                 {
-                    Folder rootFolder = getFolder(Folder.PATH_SEPARATOR);
-                    rootLinks = rootFolder.getLinks();
+                    Folder rootFolder = folderHandler.getFolder(Folder.PATH_SEPARATOR);
+                    rootLinks = ((FolderImpl)rootFolder).getLinks(false);
                 }
                 catch (NodeException ne)
                 {
@@ -452,18 +454,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 try
                 {
                     // get default document set order from folder
-                    Comparator documentComparator = ((NodeSetImpl) folder.getAllNodes()).getComparator();
+                    Comparator documentComparator = ((NodeSetImpl)((FolderImpl)folder).getAllNodes()).getComparator();
 
                     // aggregate and expand document sets from page to root folder;
                     documentSets = new NodeSetImpl(null, documentComparator);
                     documentSetNames = new HashMap(8);
                     documentSetNodeSets = new HashMap(8);
                     Set uniqueDocumentSetPaths = new HashSet(8);
-                    Folder aggregateFolder = folder;
+                    FolderImpl aggregateFolder = (FolderImpl)folder;
                     do
                     {
                         // aggregate uniquely named and expand folder document sets
-                        Iterator documentSetsIter = aggregateFolder.getDocumentSets().iterator();
+                        Iterator documentSetsIter = aggregateFolder.getDocumentSets(false).iterator();
                         while (documentSetsIter.hasNext())
                         {
                             DocumentSet documentSet = (DocumentSet) documentSetsIter.next();
@@ -487,7 +489,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         }
 
                         // aggregate document sets in parent
-                        aggregateFolder = (Folder) aggregateFolder.getParent();
+                        aggregateFolder = (FolderImpl) ((AbstractNode)aggregateFolder).getParent(false);
                     }
                     while (aggregateFolder != null);
                 }
@@ -547,7 +549,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 }
                 try
                 {
-                    FolderImpl folder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) getFolder(folderPath));
+                    FolderImpl folder = (FolderImpl) setProfiledNodePathAndUrl((AbstractNode) folderHandler.getFolder(folderPath));
                     if ((folder.getMetaData() != null) && (folder.getMetaData().getDocumentOrder() != null) &&
                         ! folder.getMetaData().getDocumentOrder().isEmpty())
                     {
@@ -602,7 +604,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 // document set nodes
                 try
                 {
-                    Iterator pathNodesIter = filterDocumentSet(getNodes(searchPath, regexp, null)).iterator();
+                    Iterator pathNodesIter = filterDocumentSet(folderHandler.getNodes(searchPath, regexp, null)).iterator();
                     while (pathNodesIter.hasNext())
                     {
                         expandedNodes = addUniqueOrDescribedUrlNode(expandedNodes, setProfiledNodePathAndUrl((AbstractNode) pathNodesIter.next()));
@@ -928,7 +930,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         folderPath = Folder.PATH_SEPARATOR;
                     }
                 }
-                searchFolder = getFolder(folderPath);
+                searchFolder = folderHandler.getFolder(folderPath);
 
                 // match page if not previously matched
                 if (page[0] == null)
@@ -974,7 +976,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     // access matched page
                     if (pagePath != null)
                     {
-                        searchPage = searchFolder.getPage(pagePath);
+                        searchPage = ((FolderImpl)searchFolder).getPage(pagePath, false);
                     }
                 }
 
@@ -1023,7 +1025,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     do
                     {
                         searchFolders.add(searchFolder);
-                        searchFolder = (Folder) searchFolder.getParent();
+                        searchFolder = (Folder) ((AbstractNode)searchFolder).getParent(false);
                     }
                     while ((searchFolder != null) && ! searchFolder.getName().startsWith(PROFILE_PROPERTY_FOLDER_PREFIX));
                 }
@@ -1051,7 +1053,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             // get folder if it exists and folder name
                             try
                             {
-                                searchFolder = getFolder(folderPath);
+                                searchFolder = folderHandler.getFolder(folderPath);
                                 searchFolderName = searchFolder.getName();
                             }
                             catch (NodeException ne)
@@ -1070,7 +1072,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         else
                         {
                             // get folder as parent of search folder
-                            searchFolder = (Folder) searchFolder.getParent();
+                            searchFolder = (Folder) ((AbstractNode)searchFolder).getParent(false);
                             if (searchFolder != null)
                             {
                                 searchFolderName = searchFolder.getName();
@@ -1104,7 +1106,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             Page lastSearchFolderFoundPage = null;
             try
             {
-                lastSearchFolderFoundPage = lastSearchFolderFound.getPage(defaultPagePath);
+                lastSearchFolderFoundPage = ((FolderImpl)lastSearchFolderFound).getPage(defaultPagePath, false);
             }
             catch (NodeException ne)
             {
@@ -1306,7 +1308,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             // get filtered document/folder node or nodes and add to expanded set
             try
             {
-                Iterator pathNodesIter = filterDocumentSet(getNodes(path, regexp, null)).iterator();
+                Iterator pathNodesIter = filterDocumentSet(folderHandler.getNodes(path, regexp, null)).iterator();
                 while (pathNodesIter.hasNext())
                     expandedNodes.add((AbstractNode) pathNodesIter.next());
             }
@@ -1381,27 +1383,32 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     }
 
     /**
-     * 
      * <p>
      * getPage
      * </p>
      * 
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
      * @param path
-     * @return @throws
-     *         PageNotFoundException
-     * @throws IllegalStateException
-     *             if the page could be inserted into the FileCache.
+     * @return page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     * @throws FolderNotFoundException
      */
-    public Page getPage( String path ) throws PageNotFoundException, NodeException
+    public Page getPage(String path) throws PageNotFoundException, FolderNotFoundException, NodeException
     {
-        return (Page) addParent(handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).getDocument(path), path);
+        // get page via folder, (access checked in Folder.getPage())
+        Folder folder = getNodeFolder(path);
+        return folder.getPage(getNodeName(path));
     }
 
     /**
+     * <p>
+     * registerPage
+     * </p>
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
      */
-    public void registerPage( Page page ) throws JetspeedException
+    public void registerPage(Page page) throws JetspeedException
     {
         // make sure path and related members are set
         if (page.getPath() == null)
@@ -1416,26 +1423,42 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 return;
             }
             setProfiledNodePathAndUrl((AbstractNode)page);
-            addParent(page, page.getPath());
+            Folder folder = getNodeFolder(page.getPath());
+            page.setParent(folder);
         }
+
+        // check for edit access
+        page.checkAccess(SecuredResource.EDIT_ACTION);
 
         // register page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
     }
 
     /**
+     * <p>
+     * updatePage
+     * </p>
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void updatePage( Page page ) throws JetspeedException
+    public void updatePage(Page page) throws JetspeedException
     {
         registerPage(page);
     }
 
     /**
+     * <p>
+     * removePage
+     * </p>
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage( Page page ) throws JetspeedException
+    public void removePage(Page page) throws JetspeedException
     {
+        // check for edit access
+        page.checkAccess(SecuredResource.EDIT_ACTION);
+
+        // remove page
         handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).removeDocument(page);
     }
 
@@ -1446,17 +1469,17 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * 
      * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
      * @param path
-     * @return @throws
-     *         DocumentNotFoundException
+     * @return link
      * @throws DocumentNotFoundException
      * @throws UnsupportedDocumentTypeException
-     * @throws 
      * @throws NodeException
      * @throws FolderNotFoundException
      */
-    public Link getLink( String path ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public Link getLink(String path) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        return (Link) addParent(handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).getDocument(path), path);
+        // get link via folder, (access checked in Folder.getLink())
+        Folder folder = getNodeFolder(path);
+        return folder.getLink(getNodeName(path));
     }
 
     /**
@@ -1466,16 +1489,17 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * 
      * @see org.apache.jetspeed.page.PageManager#getDocumentSet(java.lang.String)
      * @param path
-     * @return @throws
-     *         DocumentNotFoundException
+     * @return document set
      * @throws DocumentNotFoundException
      * @throws UnsupportedDocumentTypeException
      * @throws NodeException
      * @throws FolderNotFoundException
      */
-    public DocumentSet getDocumentSet( String path ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
+    public DocumentSet getDocumentSet(String path) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        return (DocumentSet) addParent(handlerFactory.getDocumentHandler(DocumentSet.DOCUMENT_TYPE).getDocument(path), path);
+        // get document set via folder, (access checked in Folder.getDocumentSet())
+        Folder folder = getNodeFolder(path);
+        return folder.getDocumentSet(getNodeName(path));
     }
 
     /**
@@ -1492,8 +1516,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public PageSecurity getPageSecurity() throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        String pageSecurityPath = Folder.PATH_SEPARATOR + PageSecurity.DOCUMENT_TYPE;
-        return (PageSecurity) addParent(handlerFactory.getDocumentHandler(PageSecurity.DOCUMENT_TYPE).getDocument(pageSecurityPath), pageSecurityPath);
+        // get page security via folder, (always allow access)
+        Folder folder = getNodeFolder(Folder.PATH_SEPARATOR);
+        return folder.getPageSecurity();
     }
 
     /**
@@ -1510,48 +1535,31 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * @throws InvalidFolderException
      * @throws IOException
      */
-    public Folder getFolder( String folderPath ) throws FolderNotFoundException, InvalidFolderException, NodeException
+    public Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException
     {
+        // get folder, (always allow access to facilitate
+        // navigation to potentially accessible pages)
         return folderHandler.getFolder(folderPath);
     }
 
-    protected Node addParent( Node childNode, String nodePath ) throws NodeException, InvalidFolderException
+    private Folder getNodeFolder(String nodePath) throws NodeException, InvalidFolderException
     {
-        int lastSlash = nodePath.indexOf(Folder.PATH_SEPARATOR);
-        if (lastSlash > -1)
+        int folderIndex = nodePath.lastIndexOf(Folder.PATH_SEPARATOR);
+        if (folderIndex > 0)
         {
-            childNode.setParent(folderHandler.getFolder(nodePath.substring(0, lastSlash)));
+            return folderHandler.getFolder(nodePath.substring(0, folderIndex));
         }
-        else
-        {
-            childNode.setParent(folderHandler.getFolder(Folder.PATH_SEPARATOR));
-        }
-        return childNode;
+        return folderHandler.getFolder(Folder.PATH_SEPARATOR);
     }
 
-    /**
-     * <p>
-     * getNodes
-     * </p>
-     * <p>
-     * Returns a set of nodes relative to the <code>folder</code> argument of the type
-     * indicated by the <code>documentType</code> argument. The <code>folder</code> argument
-     * may include regular expressions if indicated by the <code>regex</code> argument. The
-     * returned set is unordered.
-     * </p>
-     *
-     * @param path Path from which to locate documents
-     * @param regex Flag indicating whether regex should be expanded in path
-     * @param documentType document type to filter on.
-     * @return NodeSet of documents and folders located under the <code>path</code> argument.
-     * @throws FolderNotFoundException if folder under the <code>path</code> does not actually exist.
-     * @throws DocumentException if an error is encountered reading the folders.
-     * @throws InvalidFolderException
-     * @throws NodeException
-     */
-    public NodeSet getNodes(String path, boolean regex, String documentType) throws FolderNotFoundException, InvalidFolderException, NodeException
+    private String getNodeName(String nodePath)
     {
-        return folderHandler.getNodes(path,regex,documentType);
+        int folderIndex = nodePath.lastIndexOf(Folder.PATH_SEPARATOR);
+        if (folderIndex > -1)
+        {
+            return nodePath.substring(folderIndex+1);
+        }
+        return nodePath;
     }
 
     /**

@@ -16,9 +16,14 @@
 package org.apache.jetspeed.om.folder;
 
 
+import org.apache.jetspeed.om.folder.DocumentSet;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -91,6 +96,19 @@ public interface Folder extends Node
     /**
      * 
      * <p>
+     * getFolder
+     * </p>
+     *
+     * @param name
+     * @return A Folder referenced by this folder.
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    Folder getFolder(String name) throws FolderNotFoundException, DocumentException;
+
+    /**
+     * 
+     * <p>
      * getPages
      * </p>
      *
@@ -108,7 +126,8 @@ public interface Folder extends Node
      * </p>
      *
      * @param name
-.     * @throws PageNotFoundException if the Page requested could not be found.
+     * @return A Page referenced by this folder.
+     * @throws PageNotFoundException if the Page requested could not be found.
      * @throws DocumentException
      * @throws NodeException
      */
@@ -120,7 +139,7 @@ public interface Folder extends Node
      * getLinks
      * </p>
      *
-     * @return
+     * @return NodeSet of all the Links referenced by this Folder.
      * @throws DocumentException
      * @throws NodeException
      */    
@@ -129,10 +148,23 @@ public interface Folder extends Node
     /**
      * 
      * <p>
+     * getLink
+     * </p>
+     *
+     * @param name
+     * @return A Link referenced by this folder.
+     * @throws DocumentNotFoundException if the document requested could not be found.
+     * @throws NodeException
+     */    
+    Link getLink(String name) throws DocumentNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
      * getDocumentSets
      * </p>
      *
-     * @return
+     * @return NodeSet of all the Document Sets referenced by this Folder.
      * @throws DocumentException
      * @throws NodeException
      */    
@@ -141,12 +173,26 @@ public interface Folder extends Node
     /**
      * 
      * <p>
-     * getAllNodes
+     * getDocumentSet
      * </p>
      *
-     * @return All Nodes immediatley under this Folder.
-     * @throws DocumentException
-     * @throws FolderNotFoundException
-     */
-    NodeSet getAllNodes() throws FolderNotFoundException, DocumentException;
+     * @param name
+     * @return A DocumentSet referenced by this folder.
+     * @throws DocumentNotFoundException if the document requested could not be found.
+     * @throws NodeException
+     */    
+    DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getPageSecurity
+     * </p>
+     *
+     * @param name
+     * @return A PageSecurity referenced by this folder.
+     * @throws DocumentNotFoundException if the document requested could not be found.
+     * @throws NodeException
+     */    
+    PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException;
 }

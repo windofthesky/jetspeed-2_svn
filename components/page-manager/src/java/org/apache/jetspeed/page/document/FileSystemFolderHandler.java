@@ -384,7 +384,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             if (regexp)
             {
                 // get regexp matched folders
-                matchedFolders = folder.getFolders().inclusiveSubset(folderPath);
+                matchedFolders = ((FolderImpl)folder).getFolders(false).inclusiveSubset(folderPath);
             }
             else
             {
@@ -418,7 +418,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         if (regexp)
         {
             // get regexp matched nodes
-            Iterator addIter = folder.getAllNodes().inclusiveSubset(nodePath).iterator();
+            Iterator addIter = ((FolderImpl)folder).getAllNodes().inclusiveSubset(nodePath).iterator();
             while (addIter.hasNext())
             {
                 matched.add((Node) addIter.next());
@@ -427,7 +427,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         else
         {
             // get single matched node
-            Iterator findIter = folder.getAllNodes().iterator();
+            Iterator findIter = ((FolderImpl)folder).getAllNodes().iterator();
             while (findIter.hasNext())
             {
                 Node addNode = (Node) findIter.next();
@@ -486,18 +486,18 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             Folder folder = (Folder) entry.getDocument();            
             entry.setDocument(getFolder(folder.getPath(), false));
-            if(folder.getParent() != null)
+            if (((AbstractNode)folder).getParent(false) != null)
             {
-                FileCacheEntry parentEntry = (FileCacheEntry)fileCache.get(folder.getParent().getPath());
+                FileCacheEntry parentEntry = (FileCacheEntry)fileCache.get(((AbstractNode)folder).getParent(false).getPath());
                 refresh(parentEntry);                
             }
         }
         else if(entry.getDocument() instanceof Document)
         {
             Document doc = (Document) entry.getDocument();
-            if(doc.getType().equals(FolderMetaData.DOCUMENT_TYPE))
+            if (doc.getType().equals(FolderMetaData.DOCUMENT_TYPE))
             {
-                FileCacheEntry folderEntry = fileCache.get(doc.getParent().getPath());
+                FileCacheEntry folderEntry = fileCache.get(((AbstractNode)doc).getParent().getPath());
                 refresh(folderEntry);
             }
         }

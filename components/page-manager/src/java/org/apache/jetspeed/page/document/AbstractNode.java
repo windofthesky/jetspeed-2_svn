@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.PageMetadataImpl;
@@ -197,12 +198,33 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * getParent
      * </p>
      * 
-     * @see org.apache.jetspeed.om.folder.ChildNode#getParent()
+     * @param checkAccess flag
+     * @return parent node
+     */
+    public Node getParent(boolean checkAccess)
+    {
+        AbstractNode parent = (AbstractNode) this.parent;
+
+        // check access
+        if ((parent != null) && checkAccess)
+        {
+            parent.checkAccess(SecuredResource.VIEW_ACTION);
+        }
+        return parent;
+    }
+
+    /**
+     * <p>
+     * getParent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.Node#getParent()
      * @return
      */
     public Node getParent()
     {
-        return parent;
+        // by default disable access checks to facilitate navigation
+        return getParent(false);
     }
 
     /**
@@ -210,7 +232,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * setParent
      * </p>
      * 
-     * @see org.apache.jetspeed.om.folder.ChildNode#setParent(org.apache.jetspeed.om.folder.Folder)
+     * @see org.apache.jetspeed.page.document.Node#setParent(org.apache.jetspeed.om.folder.Folder)
      * @param parent
      */
     public void setParent( Node parent )
@@ -220,26 +242,26 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
 
     /**
      * <p>
-     * getRelativeName
+     * getName
      * </p>
      *
-     * @see org.apache.jetspeed.om.folder.ChildNode#getRelativeName()
+     * @see org.apache.jetspeed.page.document.Node#getName()
      * @return
      */
     public String getName()
     {
         String path = getPath();
         String parentName = "";
-        if(getParent() != null)
+        if(getParent(false) != null)
         {
-            parentName = getParent().getPath();
+            parentName = getParent(false).getPath();
             if (! parentName.endsWith(PATH_SEPARATOR))
             {
                 parentName += PATH_SEPARATOR;
             }
         }
         
-        if(path.indexOf(parentName) > -1)
+        if (path.startsWith(parentName))
         {
             return path.substring(parentName.length());
         }

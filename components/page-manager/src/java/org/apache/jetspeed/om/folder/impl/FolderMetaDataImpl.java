@@ -66,7 +66,7 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     public String getUrl()
     {
        
-        return getParent().getPath() + PATH_SEPARATOR + getType();
+        return getParent(false).getPath() + PATH_SEPARATOR + getType();
     }
     /**
      * <p>

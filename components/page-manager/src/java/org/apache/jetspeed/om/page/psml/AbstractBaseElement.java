@@ -30,6 +30,9 @@ import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.page.document.NodeSetImpl;
 import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.PagePermission;
@@ -484,5 +487,70 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     public String toString()
     {      
         return getId();
+    }
+
+    /**
+     * <p>
+     * checkAccess
+     * </p>
+     *
+     * @param nodes
+     * @param actions
+     * @return
+     */
+    public static NodeSet checkAccess(NodeSet nodes, String actions)
+    {
+        if ((nodes != null) && (nodes.size() > 0))
+        {
+            // check permissions and constraints, filter nodes as required
+            NodeSetImpl filteredNodes = null;
+            Iterator checkAccessIter = nodes.iterator();
+            while (checkAccessIter.hasNext())
+            {
+                AbstractBaseElement node = (AbstractBaseElement)checkAccessIter.next();
+                try
+                {
+                    // check access
+                    node.checkAccess(actions);
+
+                    // add to filteredNodes nodes if copying
+                    if (filteredNodes != null)
+                    {
+                        // permitted, add to filteredNodes nodes
+                        filteredNodes.add((Node)node);
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    // create filteredNodes nodes if not already copying
+                    if (filteredNodes == null)
+                    {
+                        // not permitted, copy previously permitted nodes
+                        // to new filteredNodes node set with same comparator
+                        filteredNodes = new NodeSetImpl(null, ((NodeSetImpl) nodes).getComparator());
+                        Iterator copyIter = nodes.iterator();
+                        while (copyIter.hasNext())
+                        {
+                            Node copyNode = (Node)copyIter.next();
+                            if (copyNode != node)
+                            {
+                                filteredNodes.add(copyNode);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // return filteredNodes nodes if generated
+            if (filteredNodes != null)
+            {
+                return filteredNodes;
+            }
+        }
+        return nodes;
     }
 }

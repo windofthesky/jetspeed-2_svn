@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
@@ -30,10 +31,12 @@ import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.AbstractNode;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
@@ -106,7 +109,7 @@ public class FolderImpl extends AbstractNode implements Folder
             {
                 defaultPage = FALLBACK_DEFAULT_PAGE;
             }
-            return getPage(defaultPage).getName();
+            return getPage(defaultPage, false).getName();
         }
         catch (NodeException e)
         {
@@ -114,7 +117,7 @@ public class FolderImpl extends AbstractNode implements Folder
             {
                 try
                 {
-                    Iterator pagesIter = getPages().iterator();
+                    Iterator pagesIter = getPages(false).iterator();
                     if (pagesIter.hasNext())
                     {
                         return ((Page) pagesIter.next()).getName();
@@ -163,6 +166,29 @@ public class FolderImpl extends AbstractNode implements Folder
         this.defaultTheme = defaultTheme;
     }
 
+    /**
+     * <p>
+     * getFolders
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return folders node set
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    public NodeSet getFolders(boolean checkAccess) throws FolderNotFoundException, DocumentException
+    {
+        // get list of all folders
+        NodeSet folders = getAllNodes().subset(Folder.FOLDER_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            folders = checkAccess(folders, SecuredResource.VIEW_ACTION);
+        }
+        return folders;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -170,7 +196,69 @@ public class FolderImpl extends AbstractNode implements Folder
      */
     public NodeSet getFolders() throws FolderNotFoundException, DocumentException
     {
-        return getAllNodes().subset(Folder.FOLDER_TYPE);
+        // by default disable access checks to facilitate navigation
+        return getFolders(false);
+    }
+
+    /**
+     * <p>
+     * getFolder
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return folder
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    public Folder getFolder(String name, boolean checkAccess) throws FolderNotFoundException, DocumentException
+    {
+        // get folder
+        Folder folder = (Folder) getAllNodes().subset(Folder.FOLDER_TYPE).get(name);
+        if (folder == null)
+        {
+            throw new FolderNotFoundException("Jetspeed PSML folder not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            folder.checkAccess(SecuredResource.VIEW_ACTION);
+        }
+        return folder;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getFolder(java.lang.String)
+     */
+    public Folder getFolder(String name) throws FolderNotFoundException, DocumentException
+    {
+        // by default disable access checks to facilitate navigation
+        return getFolder(name, false);
+    }
+
+    /**
+     * <p>
+     * getPages
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return pages node set
+     * @throws NodeException
+     */
+    public NodeSet getPages(boolean checkAccess) throws NodeException
+    {
+        // get list of all pages
+        NodeSet pages = getAllNodes().subset(Page.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            pages = checkAccess(pages, SecuredResource.VIEW_ACTION);
+        }
+        return pages;
     }
 
     /*
@@ -180,17 +268,47 @@ public class FolderImpl extends AbstractNode implements Folder
      */
     public NodeSet getPages() throws NodeException
     {
-        return getAllNodes().subset(Page.DOCUMENT_TYPE);
+        // by default enable access checks
+        return getPages(true);
     }
 
-    public Page getPage( String name ) throws PageNotFoundException, NodeException
+    /**
+     * <p>
+     * getPage
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public Page getPage(String name, boolean checkAccess) throws PageNotFoundException, NodeException
     {
-        Page page = (Page) getPages().get(name);
+        // get page
+        Page page = (Page) getAllNodes().subset(Page.DOCUMENT_TYPE).get(name);
         if (page == null)
         {
             throw new PageNotFoundException("Jetspeed PSML page not found: " + name);
         }
+
+        // check access
+        if (checkAccess)
+        {
+            page.checkAccess(SecuredResource.VIEW_ACTION);
+        }
         return page;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getPage(java.lang.String)
+     */
+    public Page getPage(String name) throws PageNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getPage(name, true);
     }
 
     /**
@@ -198,13 +316,71 @@ public class FolderImpl extends AbstractNode implements Folder
      * getLinks
      * </p>
      * 
+     * @param checkAccess flag
+     * @return links node set
+     * @throws NodeException
+     */
+    public NodeSet getLinks(boolean checkAccess) throws NodeException
+    {
+        // get list of all links
+        NodeSet links = getAllNodes().subset(Link.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            links = checkAccess(links, SecuredResource.VIEW_ACTION);
+        }
+        return links;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getLinks()
-     * @return @throws
-     *         DocumentNotFoundException
      */
     public NodeSet getLinks() throws NodeException
     {
-        return getAllNodes().subset(Link.DOCUMENT_TYPE);
+        // by default enable access checks
+        return getLinks(true);
+    }
+
+    /**
+     * <p>
+     * getLink
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return link
+     * @throws DocumentNotFoundException
+     * @throws NodeException
+     */
+    public Link getLink(String name, boolean checkAccess) throws DocumentNotFoundException, NodeException
+    {
+        // get link
+        Link link = (Link) getAllNodes().subset(Link.DOCUMENT_TYPE).get(name);
+        if (link == null)
+        {
+            throw new DocumentNotFoundException("Jetspeed PSML link not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            link.checkAccess(SecuredResource.VIEW_ACTION);
+        }
+        return link;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getLink(java.lang.String)
+     */
+    public Link getLink(String name) throws DocumentNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getLink(name, true);
     }
 
     /**
@@ -212,13 +388,110 @@ public class FolderImpl extends AbstractNode implements Folder
      * getDocumentSets
      * </p>
      * 
+     * @param checkAccess flag
+     * @return documentSets node set
+     * @throws NodeException
+     */
+    public NodeSet getDocumentSets(boolean checkAccess) throws NodeException
+    {
+        // get list of all documentSets
+        NodeSet documentSets = getAllNodes().subset(DocumentSet.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            documentSets = checkAccess(documentSets, SecuredResource.VIEW_ACTION);
+        }
+        return documentSets;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentSets()
-     * @return @throws
-     *         DocumentNotFoundException
      */
     public NodeSet getDocumentSets() throws NodeException
     {
-        return getAllNodes().subset(DocumentSet.DOCUMENT_TYPE);
+        // by default enable access checks
+        return getDocumentSets(true);
+    }
+
+    /**
+     * <p>
+     * getDocumentSet
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return document set
+     * @throws DocumentNotFoundException
+     * @throws NodeException
+     */
+    public DocumentSet getDocumentSet(String name, boolean checkAccess) throws DocumentNotFoundException, NodeException
+    {
+        // get documentSet
+        DocumentSet documentSet = (DocumentSet) getAllNodes().subset(DocumentSet.DOCUMENT_TYPE).get(name);
+        if (documentSet == null)
+        {
+            throw new DocumentNotFoundException("Jetspeed PSML document set not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            documentSet.checkAccess(SecuredResource.VIEW_ACTION);
+        }
+        return documentSet;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getDocumentSet(java.lang.String)
+     */
+    public DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getDocumentSet(name, true);
+    }
+
+    /**
+     * <p>
+     * getPageSecurity
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return page security
+     * @throws DocumentNotFoundException
+     * @throws NodeException
+     */
+    public PageSecurity getPageSecurity(boolean checkAccess) throws DocumentNotFoundException, NodeException
+    {
+        // check access to this folder in place
+        // of access to page security document
+        if (checkAccess)
+        {
+            checkAccess(SecuredResource.VIEW_ACTION);
+        }
+
+        // get pageSecurity
+        PageSecurity pageSecurity = (PageSecurity) getAllNodes().subset(PageSecurity.DOCUMENT_TYPE).get(PageSecurity.DOCUMENT_TYPE);
+        if (pageSecurity == null)
+        {
+            throw new DocumentNotFoundException("Jetspeed PSML page security not found: " + PageSecurity.DOCUMENT_TYPE);
+        }
+        return pageSecurity;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getPageSecurity()
+     */
+    public PageSecurity getPageSecurity() throws DocumentNotFoundException, NodeException
+    {
+        // by default disable access checks
+        return getPageSecurity(false);
     }
 
     /**
@@ -239,8 +512,7 @@ public class FolderImpl extends AbstractNode implements Folder
      * getAllNodes
      * </p>
      *
-     * @see org.apache.jetspeed.om.folder.Folder#getAllNodes()
-     * @return
+     * @return all nodes immediatley under this
      * @throws DocumentException
      * @throws FolderNotFoundException
      */
