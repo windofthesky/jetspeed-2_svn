@@ -52,7 +52,7 @@ import org.apache.pluto.util.NamespaceMapperAccess;
  */
 public class ServletRequestImpl extends HttpServletRequestWrapper
 {
-    public static final String ACCEPT_LANGUAGE = "Accept_Language";
+    public static final String ACCEPT_LANGUAGE = "Accept-Language";
     /** Logger */
     private static final Log log = LogFactory.getLog(ServletRequestImpl.class);
 
