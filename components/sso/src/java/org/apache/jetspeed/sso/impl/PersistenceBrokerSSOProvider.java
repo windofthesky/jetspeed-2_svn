@@ -178,7 +178,8 @@ public class PersistenceBrokerSSOProvider extends
          	e.printStackTrace();
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
          }
-         
+         // Add to site
+         this.mapSite.put(site, ssoSite);
          // Clear cache
          //this.mapSite.clear();
 
@@ -416,10 +417,7 @@ public class PersistenceBrokerSSOProvider extends
 			System.out.println("Warning: Remote User " + remotePrincipal.getFullPath() + " doesn't have a credential");
 			return null; 
 		}
-		else
-		{
-			System.out.println("Found Credential: " + credential.getValue() + " for PrincipalID " + remotePrincipal.getPrincipalId() + " Name: "+remotePrincipal.getFullPath() );
-		}
+		
 		
 		// Create new context
 		String name = remotePrincipal.getFullPath();
