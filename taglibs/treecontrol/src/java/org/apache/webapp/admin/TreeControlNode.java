@@ -37,6 +37,30 @@ public class TreeControlNode implements Serializable {
 
     // ----------------------------------------------------------- Constructors
 
+	/**
+     * Construct a new TreeControlNode with the specified parameters.
+     *
+     * @param name Internal name of this node (must be unique within
+     *  the entire tree)
+     * @param icon Pathname of the image file for the icon to be displayed
+     *  when this node is visible, relative to the image directory
+     *  for our images
+     * @param label The label that will be displayed to the user if
+     *  this node is visible
+     * @param action The hyperlink to be selected if the user
+     *  selects this node, or <code>null</code> if this node's label should
+     *  not be a hyperlink
+     * @param target The window target in which the <code>action</code>
+     *  hyperlink's results will be displayed, or <code>null</code> for
+     *  the current window
+     * @param expanded Should this node be expanded?
+     */
+	public TreeControlNode(String name,
+            String icon, String label,
+            String action, String target,
+            boolean expanded, String domain) {
+		this(name, icon, label, action, target, expanded, domain, false);
+	}
 
     /**
      * Construct a new TreeControlNode with the specified parameters.
@@ -55,11 +79,13 @@ public class TreeControlNode implements Serializable {
      *  hyperlink's results will be displayed, or <code>null</code> for
      *  the current window
      * @param expanded Should this node be expanded?
+     * @param lazy Is this node's children lazy loaded?
      */
     public TreeControlNode(String name,
                            String icon, String label,
                            String action, String target,
-                           boolean expanded, String domain) {
+                           boolean expanded, String domain,
+						   boolean lazy) {
 
         super();
         this.name = name;
@@ -69,7 +95,8 @@ public class TreeControlNode implements Serializable {
         this.target = target;
         this.expanded = expanded;
         this.domain = domain;
-
+        this.lazy = lazy;
+        this.loaded = false;
     }
 
 
@@ -152,15 +179,46 @@ public class TreeControlNode implements Serializable {
     void setLast(boolean last) {
         this.last = last;
     }
+    
+    protected boolean lazy = false;
+    
+    public boolean isLazy() {
+    	return (this.lazy);
+    }
 
 
     /**
      * Is this a "leaf" node (i.e. one with no children)?
      */
+    protected boolean leaf = true;
+    
     public boolean isLeaf() {
-        synchronized (children) {
-            return (children.size() < 1);
-        }
+    	if(lazy)
+    	{
+    		return leaf;
+    	}
+    	else
+    	{
+	        synchronized (children) {
+	            return (children.size() < 1);
+	        }
+    	}
+    }
+    
+    public void setLeaf(boolean leaf)
+    {
+    	this.leaf = leaf;
+    }
+    
+    protected boolean loaded = false;
+    
+    public boolean isLoaded() {
+    	return (this.loaded);
+    }
+    
+    public void setLoaded(boolean loaded)
+    {
+    	this.loaded = loaded;
     }
 
 
@@ -244,7 +302,6 @@ public class TreeControlNode implements Serializable {
     public int getWidth() {
         return (this.width);
     }
-
 
     // --------------------------------------------------------- Public Methods
 
