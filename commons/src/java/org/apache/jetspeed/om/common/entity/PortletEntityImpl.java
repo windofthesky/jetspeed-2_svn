@@ -53,8 +53,7 @@
  */
 package org.apache.jetspeed.om.common.entity;
 
-import java.util.Collection;
-import java.util.Enumeration;
+
 import java.util.Locale;
 
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -67,9 +66,8 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.util.StringUtils;
 
-import org.apache.jetspeed.om.api.PortletPreferencesImpl;
-import org.apache.jetspeed.om.common.PreferenceSetComposite;
-import org.apache.jetspeed.om.common.PreferenceSetImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.common.preference.UserPreferencesImpl;
 import org.apache.jetspeed.om.common.window.PortletWindowListImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 
@@ -81,45 +79,42 @@ import org.apache.jetspeed.util.JetspeedObjectID;
  */
 public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java.io.Serializable
 {
-    private int id;
-    private int definitionId;
 
-    protected PortletPreferencesImpl preferences;
+    private JetspeedObjectID oid;
 
-    private PortletPreferencesImpl workingPreferences;
+    protected UserPreferencesImpl preferences;
+
+    private UserPreferencesImpl workingPreferences;
 
     private PortletApplicationEntity applicationEntity = null;
 
     private PortletWindowList portletWindows = new PortletWindowListImpl();
-
-    private ObjectID objectId = null;
+    
 
     private PortletEntity modifiedObject = null;
 
     private PortletDefinition portletDefinition = null;
 
-    public PortletEntityImpl(PortletDefinition pd)
+    public PortletEntityImpl(PortletDefinition pd, String instanceName)
     {
         this.portletDefinition = pd;
-        preferences = new PortletPreferencesImpl((PreferenceSetComposite)portletDefinition.getPreferenceSet());
+        // TODO: Get UserPreferences from a service
+        preferences = new UserPreferencesImpl((PreferenceSetComposite) portletDefinition.getPreferenceSet());
+        oid = JetspeedObjectID.createFromString(pd.getName() + ":" + pd.getId().toString() + ":" + instanceName);
     }
 
     public ObjectID getId()
     {
-        if (objectId == null)
-        {
-            objectId = new JetspeedObjectID(id);
-        }
-        return objectId;
+        return oid;
     }
 
     public void setId(String id)
     {
-        this.id = JetspeedObjectID.createFromString(id).intValue();
+        this.oid = JetspeedObjectID.createFromString(id);
     }
 
     public PreferenceSet getPreferenceSet()
-    {    
+    {
         return preferences;
     }
 
@@ -151,16 +146,6 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java
 
     }
 
-    public int getDefinitionId()
-    {
-        return definitionId;
-    }
-
-    public void setDefinitionId(String definitionId)
-    {
-        this.definitionId = JetspeedObjectID.createFromString(definitionId).intValue();
-    }
-
     // internal methods used for debugging purposes only
 
     public String toString()
@@ -178,11 +163,11 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, java
         buffer.append("{");
         StringUtils.newLine(buffer, indent);
         buffer.append("id='");
-        buffer.append(id);
+        buffer.append(oid);
         buffer.append("'");
         StringUtils.newLine(buffer, indent);
         buffer.append("definition-id='");
-        buffer.append(definitionId);
+        buffer.append(portletDefinition.getId().toString());
         buffer.append("'");
 
         StringUtils.newLine(buffer, indent);
