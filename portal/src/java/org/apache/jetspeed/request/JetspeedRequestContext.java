@@ -305,11 +305,9 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletResponse getResponseForWindow(PortletWindow window)
     {
-        return response;
-        // TODO: Get the wrapper worker, as of now, it appears no content type is returned so we get plain text
-        //        ServletResponseFactory rspFac = (ServletResponseFactory) FactoryManager.getFactory(HttpServletResponse.class);
-        //        HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
-        //        return wrappedResponse;
+        ServletResponseFactory rspFac = (ServletResponseFactory) FactoryManager.getFactory(HttpServletResponse.class);
+        HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
+        return wrappedResponse;
     }
 
 }
