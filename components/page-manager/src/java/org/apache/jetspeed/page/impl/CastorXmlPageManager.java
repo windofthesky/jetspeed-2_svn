@@ -123,7 +123,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
 
     public void start()
     {
-        super.start();
         
         //If it is still missing, try to create it
         if (!rootDir.exists())

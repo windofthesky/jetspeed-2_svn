@@ -36,7 +36,7 @@ import org.picocontainer.Startable;
  * @version $Id$
  */
 public abstract class AbstractPageManager 
-    implements PageManager, Startable    
+    implements PageManager    
 {
     private final static Log log = LogFactory.getLog(AbstractPageManager.class);
     
@@ -65,14 +65,6 @@ public abstract class AbstractPageManager
                 }                
             }
         }                                 
-    }
-    
-    public void start()
-    {
-    }
-    
-    public void stop()
-    {
     }
     
     /* (non-Javadoc)

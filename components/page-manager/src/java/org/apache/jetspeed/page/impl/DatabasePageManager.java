@@ -32,7 +32,7 @@ import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.picocontainer.Startable;
+
 
 /**
  * DatabasePageManagerService
@@ -40,7 +40,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DatabasePageManager extends AbstractPageManager implements PageManager, Startable
+public class DatabasePageManager extends AbstractPageManager implements PageManager
 {
     protected final static Log log = LogFactory.getLog(DatabasePageManager.class);
     private PersistenceStore persistenceStore;
@@ -63,16 +63,6 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         
     }
 
-    public void start()
-    {
-        //PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-        // TODO: use new stuff String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
-        // String pluginName = "jetspeed";
-
-        // plugin = ps.getPersistencePlugin(pluginName);
-
-    }
-    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
      */
