@@ -31,7 +31,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
@@ -55,7 +55,7 @@ public class PortletApplicationBrowser extends GenericServletPortlet
 {
     private String template;
     private PortletContext context;
-    private PortletRegistryComponent registry;
+    private PortletRegistry registry;
     private SearchEngine searchEngine;
     
     public void init(PortletConfig config)
@@ -63,7 +63,7 @@ public class PortletApplicationBrowser extends GenericServletPortlet
     {
         super.init(config);
         context = getPortletContext();                
-        registry = (PortletRegistryComponent)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        registry = (PortletRegistry)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
         searchEngine = (SearchEngine)context.getAttribute(PortletApplicationResources.CPS_SEARCH_COMPONENT);
         if (null == registry)
         {
