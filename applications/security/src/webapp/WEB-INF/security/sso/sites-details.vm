@@ -35,6 +35,10 @@ function openWindow(pipeline)
 
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
 
+#if ($statusMsg)
+#parse ('/WEB-INF/view/status-include.vm')
+#end
+
 #if ($currentSite)
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
   <tr>

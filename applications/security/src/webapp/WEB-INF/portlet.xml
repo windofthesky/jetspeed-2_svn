@@ -290,5 +290,65 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="GroupBrowser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/groups/groups-view.vm</value>
+     </init-param>   
+    <portlet-name>GroupBrowserPortlet</portlet-name>
+    <display-name>Group Admin</display-name>
+    <description>Group Browser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupBrowser</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>                
+    <portlet-info>
+      <title>Group admin</title>
+      <short-title>Groups</short-title>
+      <keywords>admin,security,groups</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="RoleBrowser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/roles/roles-view.vm</value>
+     </init-param>   
+    <portlet-name>RoleBrowserPortlet</portlet-name>
+    <display-name>Role Admin</display-name>
+    <description>Role Browser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleBrowser</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-preferences>
+      <preference>                            
+        <name>WindowSize</name>                    
+        <value>1000</value>    
+      </preference>                               		    
+    </portlet-preferences>                
+    <portlet-info>
+      <title>Role admin</title>
+      <short-title>Roles</short-title>
+      <keywords>admin,security,roles</keywords>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 

@@ -43,6 +43,7 @@ import org.apache.jetspeed.sso.SSOSite;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
+import org.apache.portals.gems.util.StatusMessage;
 import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
@@ -140,6 +141,12 @@ public class SSODetails extends BrowserPortlet
         context.put("userChooser", userChooser);
         context.put("groupChooser", groupChooser);
         
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "SSODetails", "status");
+        if (msg != null)
+        {
+            this.getContext(request).put("statusMsg", msg);            
+        }
+        
         super.doView(request, response);
     }
     
@@ -183,13 +190,11 @@ public class SSODetails extends BrowserPortlet
                 }
                 catch (SecurityException e)
                 {
-                    // TODO: exception handling
-                    System.err.println("Exception storing site: " + e);                        
+                    publishStatusMessage(request, "SSODetails", "status", e, "Could not remove credentials");
                 }
                 catch (SSOException e)
                 {
-                    // TODO: exception handling
-                    System.err.println("Exception storing site: " + e);
+                    publishStatusMessage(request, "SSODetails", "status", e, "Could not remove credentials");
                 }
             }
             else if (add != null)
@@ -215,13 +220,11 @@ public class SSODetails extends BrowserPortlet
                     }
                     catch (SSOException e)
                     {
-                        // TODO: exception handling
-                        System.err.println("Exception storing site: " + e);
+                        publishStatusMessage(request, "SSODetails", "status", e, "Could not add credentials");
                     }
                     catch (SecurityException se)
                     {
-                        // TODO: exception handling
-                        System.err.println("Exception storing site: " + se);
+                        publishStatusMessage(request, "SSODetails", "status", se, "Could not add credentials");
                     }                    
                 }
             }            

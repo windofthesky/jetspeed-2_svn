@@ -10,17 +10,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="pam">
+<page id="group-role-admin">
   <defaults
-     skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
-  <title>JSF Prototype</title>
-  <fragment id="um-32" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="um-33" type="portlet" name="pam::JetspeedUserAdmin">
+  <title>Roles and Groups</title>
+  <fragment id="group-2" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="group-200" type="portlet" name="security::GroupBrowserPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
+    <fragment id="group-201" type="portlet" name="security::RoleBrowserPortlet">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>    
   </fragment>
 </page>

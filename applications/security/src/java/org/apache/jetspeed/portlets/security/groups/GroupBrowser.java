@@ -12,9 +12,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.portlets.security.sso;
+package org.apache.jetspeed.portlets.security.groups;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,9 +30,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
-import org.apache.jetspeed.sso.SSOException;
-import org.apache.jetspeed.sso.SSOProvider;
-import org.apache.jetspeed.sso.SSOSite;
+import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
@@ -40,27 +41,27 @@ import org.apache.portals.messaging.PortletMessaging;
 import org.apache.velocity.context.Context;
 
 /**
- * SSOBrowser
+ * Group Browser - flat non-hierarchical view
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SSOBrowser extends BrowserPortlet
+public class GroupBrowser extends BrowserPortlet
 {
-    private SSOProvider sso;
+    private GroupManager groupManager;
     
     public void init(PortletConfig config)
     throws PortletException 
     {
         super.init(config);
-        sso = (SSOProvider)getPortletContext().getAttribute(SecurityResources.CPS_SSO_COMPONENT);
-        if (null == sso)
+        groupManager = (GroupManager) 
+            getPortletContext().getAttribute(SecurityResources.CPS_GROUP_MANAGER_COMPONENT);
+        if (null == groupManager)
         {
-            throw new PortletException("Failed to find the SSO Provider on portlet initialization");
+            throw new PortletException("Failed to find the Group Manager on portlet initialization");
         }
     }
-       
-    
+           
     public void getRows(RenderRequest request, String sql, int windowSize)
     throws Exception
     {
@@ -68,35 +69,26 @@ public class SSOBrowser extends BrowserPortlet
         List resultSetTypeList = new ArrayList();
         try
         {
-            Iterator sites = sso.getSites("");
-            
-            // List userObjectList = (List)getParameterFromTemp(portlet, rundata, USER_OBJECTS);
-
-            //
-            // Add MetaData headers, types
-            //
+            Iterator groups = groupManager.getGroups("");
+                        
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
-            resultSetTitleList.add(0, "Url");
-            resultSetTitleList.add(1, "Site");
-
-            //subPopulate(rundata, qResult, repo, folder, null);
+            resultSetTitleList.add("Group");
 
             List list = new ArrayList();
-            while (sites.hasNext())
+            while (groups.hasNext())
             {
-                List row = new ArrayList(2);
-                SSOSite site = (SSOSite)sites.next();
-                row.add(0, site.getSiteURL());                     
-                row.add(1, site.getName());
-                list.add(row);
+                Group group = (Group)groups.next();
+                
+                Principal principal = group.getPrincipal();                
+                list.add(principal.getName());
             }            
+            
             BrowserIterator iterator = new DatabaseBrowserIterator(
                     list, resultSetTitleList, resultSetTypeList,
                     windowSize);
             setBrowserIterator(request, iterator);
-            iterator.sort("Site");
+            iterator.sort("Group");
         }
         catch (Exception e)
         {
@@ -105,19 +97,17 @@ public class SSOBrowser extends BrowserPortlet
             throw e;
         }        
     }
-   
+       
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String selectedSite = (String)PortletMessaging.receive(request, "site", "selectedUrl");
-        if (selectedSite != null)
+        String selected = (String)PortletMessaging.receive(request, "group", "selected");
+        if (selected != null)
         {        
             Context context = this.getContext(request);
-            context.put("currentUrl", selectedSite);
-            String selectedName = (String)PortletMessaging.receive(request, "site", "selectedName");
-            context.put("currentName", selectedName);            
+            context.put("selected", selected);
         }
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "SSOBrowser", "status");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "GroupBrowser", "status");
         if (msg != null)
         {
             this.getContext(request).put("statusMsg", msg);            
@@ -125,27 +115,26 @@ public class SSOBrowser extends BrowserPortlet
         
         super.doView(request, response);
     }
-    
+
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {
         if (request.getPortletMode() == PortletMode.VIEW)
         {
-            String selectedSite = request.getParameter("ssoSite");
-            if (selectedSite != null)
+            String selected = request.getParameter("group");
+            if (selected != null)
             {
-                SSOSite site = sso.getSite(selectedSite);
-                if (site != null)
+                Group group = lookupGroup(selected);
+                if (group != null)
                 {
-                    PortletMessaging.publish(request, "site", "selectedUrl", selectedSite);
-                    PortletMessaging.publish(request, "site", "selectedName", site.getName());
-                    PortletMessaging.publish(request, "site", "change", selectedSite);
+                    PortletMessaging.publish(request, "group", "selected", selected);
+                    PortletMessaging.publish(request, "group", "change", selected);
                 }
             }
-            String refresh = request.getParameter("sso.refresh");
-            String save = request.getParameter("sso.save");
-            String neue = request.getParameter("sso.new");
-            String delete = request.getParameter("ssoDelete");
+            String refresh = request.getParameter("group.refresh");
+            String save = request.getParameter("group.save");
+            String neue = request.getParameter("group.new");
+            String delete = request.getParameter("groupDelete");
             
             if (refresh != null)
             {
@@ -153,64 +142,61 @@ public class SSOBrowser extends BrowserPortlet
             }
             else if (neue != null)
             {
-                PortletMessaging.cancel(request, "site", "selected");
-                PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                PortletMessaging.cancel(request, "group", "selected");
             }
             else if (delete != null && (!(isEmpty(delete))))
             {
                 try
                 {
-                    SSOSite site = null;
-                    site = sso.getSite(delete);
-                    if (site != null)
+                    Group group = lookupGroup(delete);
+                    if (group != null)
                     {
-                        sso.removeSite(site);
+                        groupManager.removeGroup(delete);
                         this.clearBrowserIterator(request);
-                        PortletMessaging.cancel(request, "site", "selected");
-                        PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                        PortletMessaging.cancel(request, "group", "selected");
                     }
                 }
-                catch (SSOException e)
+                catch (Exception e)
                 {
-                    publishStatusMessage(request, "SSOBrowser", "status", e, "Could not remove site");
+                    publishStatusMessage(request, "GroupBrowser", "status", e, "Could not remove group");
                 }
             }
             else if (save != null)
             {
-                String siteName = request.getParameter("site.name");                
-                String siteUrl = request.getParameter("site.url");
-                if (!(isEmpty(siteName) || isEmpty(siteUrl)))
+                String groupName = request.getParameter("group.name");                
+                if (!(isEmpty(groupName)))
                 {
                     try
                     {
-                        SSOSite site = null;
-                        String old = (String)PortletMessaging.receive(request, "site", "selectedUrl");
+                        Group group = null;
+                        String old = (String)PortletMessaging.receive(request, "group", "selected");
                         if (old != null)
                         {
-                            site = sso.getSite(old);
+                            group = lookupGroup(old);
                         }
                         else
                         {
-                            site = sso.getSite(siteUrl);
+                            group = lookupGroup(groupName);
                         }                        
-                        if (site != null)
+                        if (group != null)
                         {
-                            site.setName(siteName);
-                            site.setSiteURL(siteUrl);
-                            sso.updateSite(site);
-                            this.clearBrowserIterator(request);
-                            PortletMessaging.publish(request, "site", "selectedName", siteName);
-                            PortletMessaging.publish(request, "site", "selectedUrl", siteUrl);                            
+                            if (old != null && !old.equals(groupName))
+                            {
+                                groupManager.removeGroup(old);
+                                groupManager.addGroup(groupName);                            
+                                this.clearBrowserIterator(request);
+                                PortletMessaging.publish(request, "group", "selected", groupName);
+                            }
                         }
                         else
                         {
-                            sso.addSite(siteName, siteUrl);
+                            groupManager.addGroup(groupName);
                             this.clearBrowserIterator(request);
                         }
                     }
-                    catch (SSOException e)
+                    catch (Exception e)
                     {
-                        publishStatusMessage(request, "SSOBrowser", "status", e, "Could not store site");
+                        publishStatusMessage(request, "GroupBrowser", "status", e, "Could not store group");
                     }
                 }
             }            
@@ -219,6 +205,18 @@ public class SSOBrowser extends BrowserPortlet
             
     }
 
+    private Group lookupGroup(String groupName)
+    {
+        try
+        {
+            return groupManager.getGroup(groupName);
+        }
+        catch (SecurityException e)
+        {
+            return null;
+        }
+    }
+    
     private boolean isEmpty(String s)
     {
         if (s == null) return true;

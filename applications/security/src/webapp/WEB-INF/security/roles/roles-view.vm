@@ -32,7 +32,7 @@ limitations under the License.
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
   <tr>
     <td width='12' class="jetdbHeadNoLink"></td>      
-    #set ($column = $title.get(1))
+    #set ($column = $title.get(0))
 	  #set ($columnLink = $renderResponse.createRenderURL())
 	  $columnLink.setParameter("js_dbcolumn",$column)
 ##      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap onClick="window.location.href='$columnLink'">
@@ -42,11 +42,9 @@ limitations under the License.
     <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
     <td class=""></td>        
   </tr>
-  #foreach ( $ssoItem in $table )
+  #foreach ( $role in $table )
   <tr>
-     #set ($ssoName = $ssoItem.get(1))
-     #set ($ssoUrl = $ssoItem.get(0))
-     #if ($currentUrl == $ssoUrl)
+     #if ($selected == $role)
        #set ($rowstyle = "jetdbLight")
        <td class="$rowstyle" nowrap width='12'>
          <img src="/security/images/selected.gif" width="7" height="12" border="0" vspace="2"/>
@@ -59,11 +57,11 @@ limitations under the License.
 	 #end   	 
       <td class="$rowstyle" nowrap width="40%">
         #set ($action = $renderResponse.createActionURL())
-        $action.setParameter('ssoSite', $ssoUrl)
-        <div align="center"><a href='$action'>$ssoName</a></div>
-      </td>
+        $action.setParameter('role', $role)
+        <div align="center"><a href='$action'>$role</a></div>
+      </td>	 
        <td class="$rowstyle" nowrap width='24' align='center'>
-         <a href="javascript:YesNoPopup('Confirm to Delete Site:','Confirm Delete','ssoForm','ssoDelete','$ssoUrl','YesNoReturnMethod()');">
+         <a href="javascript:YesNoPopup('Confirm to Delete Role:','Confirm Delete','roleForm','roleDelete','$role','YesNoReturnMethod()');">
            <img src="/security/images/waste_bin.gif" width="20" height="15" border="0"/>            
          </a>
        </td>      
@@ -79,25 +77,20 @@ limitations under the License.
   </tr>
 </table>
 <br/>
-<form name='ssoForm' action="$renderResponse.createActionURL()" method="post">
+<form name='roleForm' action="$renderResponse.createActionURL()" method="post">
 <table>
   <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Site Name:&nbsp;</td>
+    <td nowrap class="portlet-section-alternate" align="right">Role Name:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="site.name" size="40" value="$!currentName" class="portlet-form-field-label">
-    </td>
-  </tr>
-  <tr colspan="2" align="right">
-    <td nowrap class="portlet-section-alternate" align="right">Site URL:&nbsp;</td>
-    <td class="portlet-section-body" align="left">
-      <input type="text" name="site.url" size="40" value="$!currentUrl" class="portlet-form-field-label">
+      <input type="text" name="role.name" size="40" value="$!selected" class="portlet-form-field-label">
     </td>
   </tr>
 </table>
 <br/>
-<input name='ssoDelete' type='hidden' value=''/>
-<input name='sso.save' type="submit" value="$MESSAGES.getString('save')" class="portlet-form-button"/>
-<input name='sso.refresh' class="portlet-form-button" type="submit" value="$MESSAGES.getString('refresh')" />
-<input name='sso.new' class="portlet-form-button" type="submit" value="$MESSAGES.getString('new')" />
+<input name='roleDelete' type='hidden' value=''/>
+<input name='role.save' type="submit" value="$MESSAGES.getString('security.save')" class="portlet-form-button"/>
+<input name='role.refresh' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.refresh')" />
+<input name='role.new' class="portlet-form-button" type="submit" value="$MESSAGES.getString('security.new')" />
+
 </form>	      
 
