@@ -68,7 +68,6 @@ public class TestUserManager extends AbstractComponentAwareTestCase
         System.setProperty("java.util.prefs.PreferencesFactory", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");   
         container = (MutablePicoContainer) getContainer();
         ums = (UserManager) container.getComponentInstance(UserManager.class);
-        container.getComponentInstance(PreferencesProvider.class);
     }
 
     /**
