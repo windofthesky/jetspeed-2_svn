@@ -53,6 +53,7 @@ public interface ParsedObject
     // Known object types
     public static final String OBJECT_TYPE_URL = "url";
     public static final String OBJECT_TYPE_PORTLET = "portlet";
+    public static final String OBJECT_TYPE_PORTLET_APPLICATION = "portlet_application";
     public static final String OBJECT_TYPE_PDF = "pdf";
 
     /**
