@@ -15,16 +15,22 @@
  */
 package org.apache.jetspeed.portlet;
 
+import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import javax.security.auth.Subject;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.sso.SSOContext;
+import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 
 
@@ -45,6 +51,8 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
     public static final String SSO_TYPE_URL_USERNAME = "sso.url.param.username";
     public static final String SSO_TYPE_URL_PASSWORD = "sso.url.param.password";
     
+    public static final String SSO_REQUEST_ATTRIBUTE_USERNAME = "sso.ra.username";
+    public static final String SSO_REQUEST_ATTRIBUTE_PASSWORD = "sso.ra.password";
 
     private PortletContext context;
     private SSOProvider sso;
@@ -59,7 +67,102 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
            throw new PortletException("Failed to find SSO Provider on portlet initialization");
         }        
     }
+
+    public void doEdit(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
+    {
+        try
+        {
+            Subject subject = getSubject();                 
+            String site = request.getPreferences().getValue("SRC", "");
+            SSOContext context = sso.getCredentials(subject, site);
+            getContext(request).put("ssoUserName", context.getUserName());
+            getContext(request).put("ssoCredential", context.getPassword());
+        }
+        catch (SSOException e)
+        {
+            if (e.getMessage().equals(SSOException.NO_CREDENTIALS_FOR_SITE))
+            {
+                // no credentials configured in SSO store
+                // switch to SSO Configure View
+                getContext(request).put("ssoUserName", "");
+                getContext(request).put("ssoCredential", "");
+            }
+            else
+            {
+                throw new PortletException(e);
+            }
+        }        
         
+        super.doEdit(request, response);
+    }
+    
+    public void doView(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
+    {
+        String site = request.getPreferences().getValue("SRC", null);
+        if (site == null)
+        {
+            // no credentials configured in SSO store
+            // switch to SSO Configure View
+            request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
+            super.doView(request, response);
+            return;
+        }
+        
+        try
+        {
+            Subject subject = getSubject();                 
+            SSOContext context = sso.getCredentials(subject, site);
+            request.setAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME, context.getUserName());
+            request.setAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD, context.getPassword());
+        }
+        catch (SSOException e)
+        {
+            if (e.getMessage().equals(SSOException.NO_CREDENTIALS_FOR_SITE))
+            {
+                // no credentials configured in SSO store
+                // switch to SSO Configure View
+                request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
+            }
+            else
+            {
+                throw new PortletException(e);
+            }
+        }        
+        
+        super.doView(request, response);
+    }
+    
+    public void processAction(ActionRequest request, ActionResponse actionResponse)
+    throws PortletException, IOException
+    {
+        // save the prefs
+        super.processAction(request, actionResponse);
+        
+        // save the SSO params
+        String ssoUserName = request.getParameter("ssoUserName");
+        String ssoCredential = request.getParameter("ssoCredential");
+        String site = request.getPreferences().getValue("SRC", "");
+        try
+        {
+            Subject subject = getSubject();
+            if (sso.hasSSOCredentials(subject, site))
+            {
+                sso.updateCredentialsForSite(getSubject(), "TODO", site, ssoCredential);
+            }
+            else
+            {
+                sso.addCredentialsForSite(getSubject(), "TODO", site, ssoCredential);
+            }
+        }
+        catch (SSOException e)
+        {
+            throw new PortletException(e);
+        }
+        
+    }
+    
     public String getURLSource(RenderRequest request, PortletPreferences prefs)
     {
         String baseSource = super.getURLSource(request, prefs);
@@ -77,19 +180,19 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             {
                 source.append("&");
             }
-            AccessControlContext context = AccessController.getContext();
-            Subject subject = Subject.getSubject(context); 
-            System.out.println("GOT A SUBJECT " + subject);
             source.append(userNameParam);
             source.append("=");
             
-            // LEFT OFF HERE: get credentials from subject, and pass into SSO component
+            String userName = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME);
+            if (userName == null) userName = "";
+            String password = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD);
+            if (password == null) password = "";
             
-            source.append("joey");
+            source.append(userName);
             source.append("&");
             source.append(passwordParam);
             source.append("=");
-            source.append("joeys-password");
+            source.append(password);
             return source.toString();
         }
         else
@@ -98,6 +201,10 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         }
     }
     
-    
+    private Subject getSubject()
+    {
+        AccessControlContext context = AccessController.getContext();
+        return Subject.getSubject(context);         
+    }
     
 }

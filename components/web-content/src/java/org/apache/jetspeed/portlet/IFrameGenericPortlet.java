@@ -106,7 +106,15 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
 
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        doIFrame(request, response);
+        String viewPage = (String)request.getAttribute(PARAM_VIEW_PAGE);
+        if (viewPage != null)
+        {
+            super.doView(request, response);
+        }
+        else
+        {
+            doIFrame(request, response);
+        }
     }
 
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
