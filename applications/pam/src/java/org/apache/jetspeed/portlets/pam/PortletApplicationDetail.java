@@ -288,11 +288,7 @@ public class PortletApplicationDetail extends ServletPortlet
             String userAttrDesc = actionRequest.getParameter("user_attr_desc");
             if(userAttrName != null)
             {
-                //TODO: should this come from a factory??
-                UserAttribute userAttribute = new UserAttributeImpl();
-                userAttribute.setName(userAttrName);
-                userAttribute.setDescription(userAttrDesc);
-                pa.addUserAttribute(userAttribute);
+                pa.addUserAttribute(userAttrName, userAttrDesc);
 	            
 	            registry.getPersistenceStore().getTransaction().commit();
             }
@@ -319,7 +315,6 @@ public class PortletApplicationDetail extends ServletPortlet
 	            }
 	            
 	            registry.getPersistenceStore().getTransaction().commit();
-                
             }
         }
     }

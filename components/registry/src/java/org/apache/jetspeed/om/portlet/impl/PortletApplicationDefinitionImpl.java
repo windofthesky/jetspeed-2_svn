@@ -28,6 +28,7 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -252,6 +253,17 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void addUserAttribute(UserAttribute userAttribute)
     {
+        userAttributes.add(userAttribute);
+    }
+    
+    /** 
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addUserAttribute(java.lang.String, java.lang.String)
+     */
+    public void addUserAttribute(String userName, String description)
+    {
+        UserAttributeImpl userAttribute = new UserAttributeImpl();
+        userAttribute.setName(userName);
+        userAttribute.setDescription(description);
         userAttributes.add(userAttribute);
     }
     

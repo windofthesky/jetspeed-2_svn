@@ -76,6 +76,12 @@ public interface MutablePortletApplication extends PortletApplication, Serializa
      * @param userAttribute The user attribute.
      */
     void addUserAttribute(UserAttribute userAttribute);
+    
+    /**
+     * <p>Adds a user attribute to the user attribute set.</p>
+     * @param userAttribute The user attribute.
+     */
+    void addUserAttribute(String name, String description);
 
     /**
      * <p>Sets a user-attribute-ref to the collection of user attribute refs associated
