@@ -28,8 +28,12 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+
+import org.apache.pluto.om.common.ObjectID;
+
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -75,9 +79,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         container = (MutablePicoContainer) getContainer();
         registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
         store = registry.getPersistenceStore();
-        
-       
-        
+
         testPasses++;
     }
 
@@ -88,8 +90,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
      */
     protected void tearDown() throws Exception
     {
-              
-        
+
         super.tearDown();
     }
 
@@ -100,8 +101,6 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         return suite;
     }
 
-    
-
     /**
      * @param testName
      */
@@ -109,37 +108,38 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
     {
         super(testName, "./src/test/Log4j.properties");
     }
-    
-    
+
     public void test001() throws Exception
     {
-      
+
         // now makes sure everthing got persisted
-       
+
         store.getTransaction().begin();
         PortletApplicationDefinitionImpl app = null;
         Filter filter = store.newFilter();
         filter.addEqualTo("name", "App_1");
-        app =(PortletApplicationDefinitionImpl) store.getObjectByQuery(store.newQuery(PortletApplicationDefinitionImpl.class, filter));        
+        app =
+            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
+                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
         store.getTransaction().commit();
         assertNotNull("Failed to reteive portlet application", app);
-        
+
         validateDublinCore(app.getMetadata());
-        
+
         WebApplicationDefinitionImpl webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite)app.getPortletDefinitionByName("Portlet 1");
+        PortletDefinitionComposite portlet = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 1");
 
         store.invalidateAll();
-        
+
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
-        
+
         validateDublinCore(portlet.getMetadata());
-        
+
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet.getPortletApplicationDefinition());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
         assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
@@ -151,28 +151,35 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertNotNull("Content Type html not found.", portlet.getContentTypeSet().get("html/text"));
         assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));
         Iterator itr = portlet.getPreferenceSet().get("preference 1").getValues();
-        int valueCount = 0;;
-        while(itr.hasNext())
+        int valueCount = 0;
+        ;
+        while (itr.hasNext())
         {
             itr.next();
             valueCount++;
         }
-        assertEquals("\"preference 1\" did not have to values.", 2, valueCount );
+        assertEquals("\"preference 1\" did not have to values.", 2, valueCount);
 
         store.getTransaction().begin();
         webApp = null;
         filter = store.newFilter();
         filter.addEqualTo("name", "App_1");
-        app =(PortletApplicationDefinitionImpl) store.getObjectByQuery(store.newQuery(PortletApplicationDefinitionImpl.class, filter));            
+        app =
+            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
+                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        
+
         store.getTransaction().commit();
         assertNotNull("Web app was not located by query.", webApp);
         assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
- 
+
+        ObjectID oid = app.getId();
+        MutablePortletApplication pa = registry.getPortletApplication(oid);
+        assertNotNull("could retrieve portlet application by id.", pa);
+
         registry.removeApplication(app);
     }
-    
+
     private void validateDublinCore(GenericMetadata metadata)
     {
         DublinCoreImpl dc = new DublinCoreImpl(metadata);
@@ -189,9 +196,8 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertEquals(dc.getRights().size(), 1);
         assertEquals(dc.getSources().size(), 1);
         assertEquals(dc.getSubjects().size(), 1);
-        assertEquals(dc.getTypes().size(), 1);        
+        assertEquals(dc.getTypes().size(), 1);
     }
-    
 
     protected void invalidate(Object[] objs) throws LockFailedException
     {
