@@ -21,6 +21,7 @@ import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
@@ -47,16 +48,19 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
     private boolean started;
 
     /**
+     * ApplicationServerPAM
      * 
      * @param webAppsDir
      * @param registry
-     * @param fsManager
      * @param entityAccess
+     * @param windowAccess
      * @param appServerManager
+     * @param portletCachs
+     * @param portletFactory
      */
-    public ApplicationServerPAM( String webAppsDir, PortletRegistry registry, PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, ApplicationServerManager appServerManager, PortletCache portletCache )
+    public ApplicationServerPAM( String webAppsDir, PortletRegistry registry, PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, ApplicationServerManager appServerManager, PortletCache portletCache, PortletFactory portletFactory )
     {       
-        super(webAppsDir, registry, entityAccess, windowAccess, portletCache, appServerManager);
+        super(webAppsDir, registry, entityAccess, windowAccess, portletCache, portletFactory, appServerManager);
         ArgUtil.assertNotNull(ApplicationServerManager.class, appServerManager, this);
     }
 

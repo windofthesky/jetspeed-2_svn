@@ -34,6 +34,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.RegistryException;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
@@ -80,8 +81,9 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     protected String webAppsDir;
     protected PortletEntityAccessComponent entityAccess;
     protected PortletWindowAccessor windowAccess;
-    private PortletCache portletCache;
-    private SearchEngine searchEngine;
+    protected PortletCache portletCache;
+    protected PortletFactory portletFactory;
+    protected SearchEngine searchEngine;
 
     protected ApplicationServerManager appServerManager;
    
@@ -90,6 +92,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                           PortletEntityAccessComponent entityAccess, 
                           PortletWindowAccessor windowAccess, 
                           PortletCache portletCache,
+                          PortletFactory portletFactory,
                           ApplicationServerManager appServerManager)                          
     {
         super();
@@ -100,6 +103,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         this.entityAccess = entityAccess;
         this.webAppsDir = webAppsDir;
         this.portletCache = portletCache;
+        this.portletFactory = portletFactory;
         this.windowAccess = windowAccess;
         this.appServerManager = appServerManager;      
     }
@@ -349,69 +353,55 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
 
     }
     
-    protected void registerApplication( PortletApplicationWar paWar ) throws PortletApplicationException,
-            RegistryException
+    protected void registerApplication(PortletApplicationWar paWar) throws PortletApplicationException, RegistryException
     {
-        MutablePortletApplication app;
-        
         String paName = paWar.getPortletApplicationName();
-        
+        MutablePortletApplication app = (MutablePortletApplication) registry.getPortletApplication(paName);
         try
         {
-            app = paWar.createPortletApp();
-
             if (app == null)
             {
-                String msg = "Error loading portlet.xml: ";
-                log.error(msg);
-                throw new PortletApplicationException(msg);
-            }
-
-            if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
-            {
-                app.setApplicationType(MutablePortletApplication.LOCAL);
+                app = paWar.createPortletApp();
+                if (app == null)
+                {
+                    String msg = "Error loading portlet.xml: ";
+                    log.error(msg);
+                    throw new PortletApplicationException(msg);
+                }
+                if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
+                {
+                    app.setApplicationType(MutablePortletApplication.LOCAL);
+                }
+                else
+                {
+                    app.setApplicationType(MutablePortletApplication.WEBAPP);
+                }
+                
+                app.setChecksum(paWar.getFileSystem().getChecksum(PORTLET_XML));
+                
+                // load the web.xml
+                log.info("Loading web.xml into memory...." + paName);
+                MutableWebApplication webapp = paWar.createWebApp();
+                paWar.validate();
+                app.setWebApplicationDefinition(webapp);
+                
+                // register the portlet application
+                registerPortletApplication(app, paName, paWar);
             }
             else
             {
-                app.setApplicationType(MutablePortletApplication.WEBAPP);
-            }
-            
-            app.setChecksum(paWar.getFileSystem().getChecksum(PORTLET_XML));
-
-            // load the web.xml
-            log.info("Loading web.xml into memory....");
-            MutableWebApplication webapp = paWar.createWebApp();
-            paWar.validate();
-            app.setWebApplicationDefinition(webapp);
-
-            // save it to the registry
-            log.info("Saving the portlet.xml in the registry...");
-         
-            if(registry.namedPortletApplicationExists(app.getName()))
-            {
-                log.warn("Deployment has found an app with the application name, "+app.getName()+
-                        ".  The existing app will be removed in favor of this one.");
-                undeploy(paWar);
-            }
-            registry.registerPortletApplication(app);
-            log.info("Committing registry changes...");
-            
-            
-            if(searchEngine != null)
-            {
-                searchEngine.add(app);
-                searchEngine.add(app.getPortletDefinitions());
+                // complete registration of the the portlet application
+                registerPortletApplication(app, paName, paWar);         
             }
         }
         catch (Exception e)
         {
             String msg = "Unable to register portlet application, " + paName + ", through the portlet registry: "
-                    + e.toString();
+                + e.toString();
             log.error(msg, e);
             
             throw new RegistryException(msg, e);
         }
-
     }
 
     protected void rollback( int nState, PortletApplicationWar paWar, MutablePortletApplication app )
@@ -504,7 +494,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     {
         if (webAppPath != null)
         {
-            return webAppsDir + webAppPath;
+            return webAppsDir + "/" + webAppPath;
         }
         else
         {
@@ -575,12 +565,12 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     
 
     public boolean registerPortletApplication(FileSystemHelper fileSystem,
-            String portletApplicationName) 
+                                              String portletApplicationName) 
     throws RegistryException
     {        
         long checksum = fileSystem.getChecksum(PORTLET_XML);
         MutablePortletApplication pa = registry
-                .getPortletApplication(portletApplicationName);
+            .getPortletApplication(portletApplicationName);
         if (pa != null)
         {
             System.out.println("CHECKSUM from APP Server: " + checksum);
@@ -628,25 +618,19 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                 log.error(msg);
                 throw new RegistryException(msg);
             }
-
             app.setApplicationType(MutablePortletApplication.WEBAPP);
             app.setChecksum(checksum);
 
             // load the web.xml
-            log.info("Loading web.xml into memory...."
-                            + portletApplicationName);
+            log.info("Loading web.xml into memory...." + paName);
             MutableWebApplication webapp = paWar.createWebApp();
             paWar.validate();
             app.setWebApplicationDefinition(webapp);
 
-            // save it to the registry
-            log.info("Saving the portlet.xml in the registry..."
-                    + portletApplicationName);
-            
-            registry.registerPortletApplication(app);
-            log.info("Committing registry changes..." + portletApplicationName);
-            
-        } catch (Exception e)
+            // register the portlet application
+            registerPortletApplication(app, paName, paWar);
+        }
+        catch (Exception e)
         {
             String msg = "Unable to register portlet application, " + paName
                     + ", through the portlet registry: " + e.toString();
@@ -672,23 +656,15 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                 log.error(msg);
                 throw new RegistryException(msg);
             }
-
             app.setApplicationType(MutablePortletApplication.WEBAPP);
-            //app.setChecksum(checksum);
 
             // load the web.xml
-            log.info("Loading web.xml into memory...."
-                            + portletApplicationName);
+            log.info("Loading web.xml into memory...." + portletApplicationName);
             MutableWebApplication webapp = createWebApp(contextName, context);
             app.setWebApplicationDefinition(webapp);
 
-            // save it to the registry
-            log.info("Saving the portlet.xml in the registry..."
-                    + portletApplicationName);
-            
-            registry.registerPortletApplication(app);
-            log.info("Committing registry changes..." + portletApplicationName);
-            
+            // register the portlet application
+            registerPortletApplication(app, portletApplicationName, null);
         } 
         catch (Exception e)
         {
@@ -823,6 +799,56 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         }
     }
    
+    /**
+     * <p>
+     * registerPortletApplication
+     * </p>
+     * 
+     * @param app
+     * @param paName
+     * @param paWar
+     * throws Exception
+     */
+    private void registerPortletApplication(MutablePortletApplication app, String paName, PortletApplicationWar paWar) throws Exception
+    {
+        // save app to the registry if not already done
+        if (registry.getPortletApplication(paName) == null)
+        {
+            registry.registerPortletApplication(app);
+            log.info("Registered the portlet app... " + paName);
+        }
+
+        // validate portlet app war file descriptor
+        // used to configure class loader: load directly
+        // from "local" jetspeed portlet apps or from
+        // deployed portlet app directories
+        if ((paWar == null) || !paWar.getFileSystem().getRootDirectory().getName().startsWith("jetspeed-"))
+        {
+            // use expanded portlet app war file deployment directory
+            File deploymentDirectory = new File(getDeploymentPath(paName));
+            if (deploymentDirectory.isDirectory())
+            {
+                FileSystemHelper paDirectory = new DirectoryHelper(deploymentDirectory);
+                paWar = new PortletApplicationWar(paDirectory, paName, "/" + paName);
+            }
+            else
+            {
+                throw new RuntimeException("Unable to configure class loader: missing portlet app deployment directory for " + paName);
+            }
+        }
+        // create and register class loader for portlet app
+        portletFactory.addClassLoader(app.getId().toString(), paWar.createClassloader(getClass().getClassLoader()));
+        log.info("Registered portlet app in the class loader registry... " + paName);
+
+        // add to search engine result
+        if (searchEngine != null)
+        {
+            searchEngine.add(app);
+            searchEngine.add(app.getPortletDefinitions());
+            log.info("Registered portlet app in the search engine... " + paName);
+        }
+    }
+
     /**
      * @param searchEngine The searchEngine to set.
      */

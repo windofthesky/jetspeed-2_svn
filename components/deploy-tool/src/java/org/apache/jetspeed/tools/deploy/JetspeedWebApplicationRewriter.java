@@ -23,12 +23,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Parent;
-import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor
@@ -94,29 +89,8 @@ public class JetspeedWebApplicationRewriter
     public void processWebXML()
     throws Exception
     {
-        SAXBuilder builder = new SAXBuilder();
-        Writer webXmlWriter = null;
-        InputStream webXmlIn = null;
-    
         try
         {
-            // Use the local dtd instead of remote dtd. This
-            // allows to deploy the application offline
-            builder.setEntityResolver(new EntityResolver()
-            {
-                public InputSource resolveEntity( java.lang.String publicId, java.lang.String systemId )
-                        throws SAXException, java.io.IOException
-                {
-    
-                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
-                    {
-                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
-                    }
-                    else return null;
-                }
-            });
-    
-    
             Element root = document.getRootElement();
         
             Object jetspeedServlet = XPath.selectSingleNode(document, JETSPEED_SERVLET_XPATH);

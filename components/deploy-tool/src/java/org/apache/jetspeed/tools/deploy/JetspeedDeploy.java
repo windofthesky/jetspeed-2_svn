@@ -28,6 +28,9 @@ import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Makes a web application Deploy-ready for Jetspeed. 
@@ -36,7 +39,7 @@ import org.jdom.output.XMLOutputter;
  * @author <a href="mailto:dsundstrom@gluecode.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedDeploy 
+public class JetspeedDeploy implements Deploy
 {
     public static void main(String[] args) throws Exception 
     {        
@@ -78,12 +81,13 @@ public class JetspeedDeploy
             String portletApplicationName = getPortletApplicationName(outputName);
             jin = new JarInputStream(new FileInputStream(inputName));
             jout = new JarOutputStream(new FileOutputStream(outputName), jin.getManifest());
-            
+                
             // copy over all of the files in the input war to the output
-            // war except for web.xml and portlet.xml, which we parse for
-            // use later
+            // war except for web.xml, portlet.xml, and context.xml which
+            // we parse for use later
             Document webXml = null;
             Document portletXml = null;
+            Document contextXml = null;
             ZipEntry src;
             while ((src = jin.getNextEntry()) != null) 
             {
@@ -98,12 +102,17 @@ public class JetspeedDeploy
                     System.out.println("Found WEB-INF/portlet.xml");
                     portletXml = parseXml(jin);
                 } 
+                else if ("META-INF/context.xml".equals(target))
+                {
+                    System.out.println("Found META-INF/context.xml");
+                    contextXml = parseXml(jin);
+                } 
                 else 
                 {
                     addFile(target, jin, jout);
                 }
             }
-
+                
             if (webXml == null) 
             {
                 throw new IllegalArgumentException("WEB-INF/web.xml");
@@ -112,24 +121,20 @@ public class JetspeedDeploy
             {
                 throw new IllegalArgumentException("WEB-INF/portlet.xml");
             }
-            
-            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, registerAtInit);
-            rewriter.processWebXML();
-            
-            
-            
-            // mung the web.xml
-            //webXml.getRootElement().setAttribute("foo", "bar");
-
-            // write the web.xml and portlet.xml files
+                
+            JetspeedWebApplicationRewriter webRewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, registerAtInit);
+            webRewriter.processWebXML();
+            JetspeedContextRewriter contextRewriter = new JetspeedContextRewriter(contextXml, portletApplicationName);
+            contextRewriter.processContextXML();
+                
+            // write the web.xml, portlet.xml, and context.xml files
             addFile("WEB-INF/web.xml", webXml, jout);
             addFile("WEB-INF/portlet.xml", portletXml, jout);
-            
-            if(rewriter.isPortletTaglibAdded())
+            addFile("META-INF/context.xml", contextXml, jout);
+                
+            if(webRewriter.isPortletTaglibAdded())
             {
                 System.out.println("Attempting to add portlet.tld to war...");
-                //File portletTld = new File("../../portal/src/webapp/WEB-INF/tld/portlet.tld");
-                //System.out.println("Looking for portlet.tld in " + portletTld);
                 InputStream is = this.getClass().getResourceAsStream("/org/apache/jetspeed/tools/deploy/portlet.tld");
                 if(is == null)
                 {
@@ -137,19 +142,19 @@ public class JetspeedDeploy
                 }
                 else
                 {
-	                System.out.println("Adding portlet.tld to war...");
-	                
-	                addFile("WEB-INF/tld/portlet.tld", is, jout);
-	                is.close();
+                    System.out.println("Adding portlet.tld to war...");
+                        
+                    addFile("WEB-INF/tld/portlet.tld", is, jout);
+                    is.close();
                 }
             }
-            
+                
             jout.close();
         } 
         catch (IOException e) 
         {
             e.printStackTrace();
-
+                
             if(jin != null) 
             {
                 try 
@@ -173,14 +178,28 @@ public class JetspeedDeploy
             new File(outputName).delete();
         }
     }
-
+        
     private Document parseXml(InputStream jin) throws Exception {
+        // Parse using the local dtds instead of remote dtds. This
+        // allows to deploy the application offline
         SAXBuilder saxBuilder = new SAXBuilder();
+        saxBuilder.setEntityResolver(new EntityResolver()
+            {
+                public InputSource resolveEntity( java.lang.String publicId, java.lang.String systemId )
+                    throws SAXException, java.io.IOException
+                {                    
+                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+                    {
+                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
+                    }
+                    return null;
+                }
+            });
         Document document = saxBuilder.build(new UncloseableInputStream(jin));
         return document;
     }
 
-    public void addFile(String path, InputStream source, JarOutputStream jos) throws IOException 
+    private void addFile(String path, InputStream source, JarOutputStream jos) throws IOException 
     {
         jos.putNextEntry(new ZipEntry(path));
         try {
@@ -192,24 +211,26 @@ public class JetspeedDeploy
             jos.closeEntry();
         }
     }
-
-    public void addFile(String path, Document source, JarOutputStream jos) throws IOException {
-        jos.putNextEntry(new ZipEntry(path));
-
-        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-        try {
-            xmlOutputter.output(source, jos);
-        } finally {
-            jos.closeEntry();
+        
+    private void addFile(String path, Document source, JarOutputStream jos) throws IOException {
+        if (source != null)
+        {
+            jos.putNextEntry(new ZipEntry(path));
+            XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+            try {
+                xmlOutputter.output(source, jos);
+            } finally {
+                jos.closeEntry();
+            }
         }
     }
-
+        
     private String getPortletApplicationName(String path)
     {
         File file = new File(path);
         String name = file.getName();
         String portletApplicationName = name;
-        
+            
         int index = name.lastIndexOf(".");
         if (index > -1)
         {
@@ -217,7 +238,7 @@ public class JetspeedDeploy
         }
         return portletApplicationName;
     }
-    
+
     private class UncloseableInputStream extends InputStream {
         private final InputStream in;
 
