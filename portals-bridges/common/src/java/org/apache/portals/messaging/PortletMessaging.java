@@ -91,7 +91,7 @@ public class PortletMessaging
         String key = messageName;
         Object object = request.getPortletSession().getAttribute(key, PortletSession.PORTLET_SCOPE);
         // consume it
-        request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);        
+        request.getPortletSession().removeAttribute(key, PortletSession.PORTLET_SCOPE);        
         return object;
     }
 
@@ -107,7 +107,7 @@ public class PortletMessaging
     throws NotSerializableException
     {
         String key = messageName;
-        request.getPortletSession().removeAttribute(key, PortletSession.APPLICATION_SCOPE);
+        request.getPortletSession().removeAttribute(key, PortletSession.PORTLET_SCOPE);
     }
     
 }
