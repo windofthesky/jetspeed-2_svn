@@ -29,6 +29,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.PicoContainer;
 
 /**
  * Unit test for FileCache 
@@ -68,19 +69,24 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
     private MutablePicoContainer container = null;
     
     private FileCache cache = null;
+
+    private FileCache cacheViaParent;
     
     protected void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
+        container = (MutablePicoContainer) getContainer();        
         cache = (FileCache) container.getComponentInstance(FileCache.class);
+        PicoContainer parent = container.getParent();
+        cacheViaParent = (FileCache) parent.getComponentInstance(FileCache.class);
     }    
     
     public void testComponent()
     throws Exception
     {
         assertNotNull("container failed to load", container);
-        assertNotNull("component failed to load", cache);        
+        assertNotNull("component failed to load", cache);       
+        assertNotNull("component failed to load via parent", cacheViaParent);
     }
 
     /**
