@@ -467,7 +467,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         }
 
         putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
-
+        request.setAttribute("model", model);
+        
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher(template);
         rd.include(request, response);

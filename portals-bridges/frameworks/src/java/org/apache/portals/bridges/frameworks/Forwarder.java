@@ -49,6 +49,11 @@ public class Forwarder
         this.response = response;
     }
     
+    public String toString()
+    {
+        return response.createRenderURL().toString();        
+    }
+    
     private Forwarder()
     {        
     }
