@@ -21,9 +21,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.ListResourceBundle;
 import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
@@ -33,24 +35,25 @@ import org.apache.pluto.om.common.Language;
 
 /**
  * 
- * LanguageImpl
- * <br>
- * Okay, base Language really has nothing to really do at all with language 
- * per se.  It actually represents the locallized <code>title</code> and
- * <code>short-title</code> attributes of a portlet's definition.  It
- * also contains a resource bundle for the specifc locale.
- * <br>
- * TODO: org.apache.pluto.om.common.Language should be seperated  into 
- * TODO a Language class that just contains the resource bundle and
- * TODO a Title class that contains a localized title and short title.
+ * LanguageImpl <br>
+ * Okay, base Language really has nothing to really do at all with language per
+ * se. It actually represents the locallized <code>title</code> and
+ * <code>short-title</code> attributes of a portlet's definition. It also
+ * contains a resource bundle for the specifc locale. <br>
+ * TODO: org.apache.pluto.om.common.Language should be seperated into TODO a
+ * Language class that just contains the resource bundle and TODO a Title class
+ * that contains a localized title and short title.
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
 public class LanguageImpl implements MutableLanguage, Serializable
 {
 
+    public static final String JAVAX_PORTLET_KEYWORDS = "javax.portlet.keywords";
+    public static final String JAVAX_PORTLET_SHORT_TITLE = "javax.portlet.short-title";
+    public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
     private Locale locale; // new Locale("en");
     private String title;
     private String shortTitle;
@@ -58,8 +61,8 @@ public class LanguageImpl implements MutableLanguage, Serializable
     private ResourceBundle resourceBundle;
 
     /**
-     * This field can be used by persistence tools for storing PK info
-     * Otherwise it has no effect on the functioning of the portal.
+     * This field can be used by persistence tools for storing PK info Otherwise
+     * it has no effect on the functioning of the portal.
      */
     protected long id;
 
@@ -70,41 +73,33 @@ public class LanguageImpl implements MutableLanguage, Serializable
         this(Locale.getDefault(), null, "", "", "");
     }
 
-    public LanguageImpl(Locale locale, String title)
+    public LanguageImpl( Locale locale, String title )
     {
         this(locale, null, title, "", "");
     }
 
-    public LanguageImpl(
-        Locale locale,
-        ResourceBundle bundle,
-        String defaultTitle,
-        String defaultShortTitle,
-        String defaultKeyWords)
+    public LanguageImpl( Locale locale, ResourceBundle bundle, String defaultTitle, String defaultShortTitle,
+            String defaultKeyWords )
     {
-        this.resourceBundle =
-            new ResourceBundleImpl(
-                bundle,
-                new DefaultsResourceBundle(defaultTitle, defaultShortTitle, defaultKeyWords));
+
+        HashMap defaults = new HashMap(3);
+        defaults.put(JAVAX_PORTLET_TITLE, defaultTitle);
+        defaults.put(JAVAX_PORTLET_SHORT_TITLE, defaultShortTitle);
+        defaults.put(JAVAX_PORTLET_KEYWORDS, defaultKeyWords);
+        this.resourceBundle = new DefaultsResourceBundle(bundle, defaults);
 
         this.locale = locale;
-        setTitle(this.resourceBundle.getString("javax.portlet.title"));
-        setShortTitle(this.resourceBundle.getString("javax.portlet.short-title"));
-        setKeywords(this.resourceBundle.getString("javax.portlet.keywords"));
+        setTitle(this.resourceBundle.getString(JAVAX_PORTLET_TITLE));
+        setShortTitle(this.resourceBundle.getString(JAVAX_PORTLET_SHORT_TITLE));
+        setKeywords(this.resourceBundle.getString(JAVAX_PORTLET_KEYWORDS));
     }
 
-    public LanguageImpl(
-            Locale locale,
-            ResourceBundle bundle)
+    public LanguageImpl( Locale locale, ResourceBundle bundle )
     {
-        this.resourceBundle =
-            new ResourceBundleImpl(
-                bundle,
-                new DefaultsResourceBundle("", "", ""));
+        this.resourceBundle = new DefaultsResourceBundle(bundle, new HashMap());
         this.locale = locale;
-        
     }
-    
+
     /**
      * @see org.apache.pluto.om.common.Language#getLocale()
      */
@@ -148,14 +143,14 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public ResourceBundle getResourceBundle()
     {
-        
+
         return resourceBundle;
     }
 
     /**
      * @see org.apache.pluto.om.common.LanguageCtrl#setLocale(java.util.Locale)
      */
-    public void setLocale(Locale locale)
+    public void setLocale( Locale locale )
     {
         this.locale = locale;
 
@@ -164,7 +159,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
     /**
      * @see org.apache.pluto.om.common.LanguageCtrl#setTitle(java.lang.String)
      */
-    public void setTitle(String title)
+    public void setTitle( String title )
     {
         this.title = title;
     }
@@ -172,7 +167,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
     /**
      * @see org.apache.pluto.om.common.LanguageCtrl#setShortTitle(java.lang.String)
      */
-    public void setShortTitle(String title)
+    public void setShortTitle( String title )
     {
         this.shortTitle = title;
     }
@@ -180,7 +175,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    public boolean equals(Object obj)
+    public boolean equals( Object obj )
     {
         if (obj != null && obj instanceof Language)
         {
@@ -203,7 +198,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
     /**
      * @see org.apache.jetspeed.om.common.LanguageComposite#setKeywords(java.util.Collection)
      */
-    public void setKeywords(Collection keywords)
+    public void setKeywords( Collection keywords )
     {
         this.keywords = keywords;
     }
@@ -217,9 +212,9 @@ public class LanguageImpl implements MutableLanguage, Serializable
      * A comma delimited list of keywords
      * 
      * @param keywords
-     *
+     *  
      */
-    public void setKeywords(String keywordStr)
+    public void setKeywords( String keywordStr )
     {
         if (keywords == null)
         {
@@ -232,71 +227,94 @@ public class LanguageImpl implements MutableLanguage, Serializable
         }
     }
 
-    private static class DefaultsResourceBundle extends ListResourceBundle
+    private static class DefaultsResourceBundle extends ResourceBundle
     {
-        private Object[][] resources;
+        private ResourceBundle baseBundle;
+        private Map defaultValues;
 
-        public DefaultsResourceBundle(String defaultTitle, String defaultShortTitle, String defaultKeyWords)
+        public DefaultsResourceBundle( ResourceBundle baseBundle, Map defaultValues )
         {
-            if (defaultTitle == null)
-            {
-                defaultTitle = "";
-            }
-            if (defaultShortTitle == null)
-            {
-                defaultShortTitle = "";
-            }
-            if (defaultKeyWords == null)
-            {
-                defaultKeyWords = "";
-            }
-            resources = new Object[][] { { "javax.portlet.title", defaultTitle }, {
-                    "javax.portlet.short-title", defaultShortTitle }, {
-                    "javax.portlet.keywords", defaultKeyWords
-                }
-            };
+            this.baseBundle = baseBundle;
+            this.defaultValues = defaultValues;
         }
 
-        protected Object[][] getContents()
-        {
-            return resources;
-        }
-    }
-
-    private static class ResourceBundleImpl extends ResourceBundle
-    {
-        private HashMap data;
-
-        public ResourceBundleImpl(ResourceBundle bundle, ResourceBundle defaults)
-        {
-            data = new HashMap();
-
-            importData(defaults);
-            importData(bundle);
-        }
-
-        private void importData(ResourceBundle bundle)
-        {
-            if (bundle != null)
-            {
-                for (Enumeration keys = bundle.getKeys(); keys.hasMoreElements();)
-                {
-                    String key = (String) keys.nextElement();
-                    Object value = bundle.getObject(key);
-                    data.put(key, value);
-                }
-            }
-        }
-
-        protected Object handleGetObject(String key)
-        {
-            return data.get(key);
-        }
-
+        /**
+         * <p>
+         * getKeys
+         * </p>
+         * 
+         * @see java.util.ResourceBundle#getKeys()
+         * @return
+         */
         public Enumeration getKeys()
         {
-            return Collections.enumeration(data.keySet());
+            if (baseBundle != null)
+            {
+                Enumeration baseKeys = baseBundle.getKeys();
+                HashSet mergedKeys = new HashSet(defaultValues.keySet());
+                while (baseKeys.hasMoreElements())
+                {
+                    mergedKeys.add(baseKeys.nextElement());
+                }
+                return Collections.enumeration(mergedKeys);
+            }
+            else
+            {
+                return Collections.enumeration(defaultValues.keySet());
+            }
+        }
+
+        /**
+         * <p>
+         * handleGetObject
+         * </p>
+         * 
+         * @see java.util.ResourceBundle#handleGetObject(java.lang.String)
+         * @param key
+         * @return
+         */
+        protected Object handleGetObject( String key )
+        {
+
+            try
+            {
+                if(baseBundle != null)
+                {
+                    return baseBundle.getObject(key);
+                }
+                else
+                {
+                    return getDefaultValue(key);
+                }
+            }
+            catch (MissingResourceException e)
+            {
+                return getDefaultValue(key);
+            }
+        }
+
+        /**
+         * <p>
+         * getDefaultValue
+         * </p>
+         *
+         * @param key
+         * @return
+         */
+        protected Object getDefaultValue( String key )
+        {
+            Object value = defaultValues.get(key);
+            if (value != null)
+            {
+                return value;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
+    
+    
 
 }
