@@ -16,7 +16,7 @@
 import org.picocontainer.defaults.DefaultPicoContainer
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.ComponentAdapter
-import org.picocontainer.defaults.ConstructorComponentAdapter
+import org.picocontainer.defaults.ConstructorInjectionComponentAdapter
 import org.picocontainer.defaults.CachingComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ComponentParameter
@@ -35,6 +35,8 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent
+
+import java.util.Locale;
 
 import org.apache.jetspeed.cache.file.FileCache
 import org.apache.jetspeed.profiler.Profiler
@@ -111,6 +113,10 @@ import org.apache.jetspeed.services.JetspeedPortletServices
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite
+
+// Autodeploy
+import org.apache.jetspeed.deployment.impl.CatalinaAutoDeploymentServiceImpl
+import org.apache.jetspeed.tools.pamanager.CatalinaPAM
        
 /* **********************************************************
  *  U T I L L I T Y   C L O S U R E S                       *
@@ -121,17 +127,17 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite
 { 
   key, clazz, parameters | return new CachingComponentAdapter(
                   new InterceptorAdapter( 
-                   new ConstructorComponentAdapter(key, clazz, parameters),
+                   new ConstructorInjectionComponentAdapter(key, clazz, parameters),
                    ThreadLocalDelegationStrategy
                    )
                  )
 }
 
 // Shorthand for creating a ConstantParameter
-cstParam = { key | return  new ConstantParameter(key) }
+def cstParam(key){ return  new ConstantParameter(key) }
 
 // Shorthand for creating a ComponentParameter
-cmpParam = { key | return  new ComponentParameter(key) }
+def cmpParam(key) { return  new ComponentParameter(key) }
 
 // Closure to perform easy building of Parameter[]
 doParams = 
@@ -144,6 +150,26 @@ doParams =
                          i++
                       }
                       return paramArray
+}
+
+// Shorthand for a ConstructorInjectionComponentAdapter
+def constructorAdapter(key, clazz, parameters)
+{   
+    
+	return new ConstructorInjectionComponentAdapter(key, clazz, parameters)
+}
+
+// Shorthand for a CachingComponentAdapter
+def cachingAdapter(delegate) 
+{       
+	return new CachingComponentAdapter(delegate)
+}
+
+// Combine CachingComponentAdapter and ConstructorInjectionComponentAdapter 
+// to create Singletons
+def singletonAdapter(key, clazz, parameters)
+{
+    return cachingAdapter(constructorAdapter(key, clazz, parameters))
 }
                    
  
@@ -160,7 +186,7 @@ applicationRoot = Jetspeed.getRealPath("/")
 FSSystemResourceUtilImpl resourceUtil = new FSSystemResourceUtilImpl(applicationRoot)
 
 // create the root container
-container = new DefaultPicoContainer()
+container = new DefaultPicoContainer(parent)
 
 /* **********************************************************
  *  Portlet Services                                        *
@@ -233,12 +259,14 @@ container.registerComponent(makeThreadLocalAdapter(PersistenceStore, PBStore,  n
 
 
 /* **********************************************************
- *  Porlet Registry                                         *
+ *  Portlet Registry                                         *
  * ******************************************************** */
- container.registerComponentImplementation(
-                            PortletRegistryComponent, 
-                            PortletRegistryComponentImpl, 
-                            doParams([cmpParam(PersistenceStore)])
+ 
+ container.registerComponent(singletonAdapter(
+                              PortletRegistryComponent, 
+                              PortletRegistryComponentImpl, 
+                              doParams([cmpParam(PersistenceStore)])                         
+                            )
 )
 
 services.addPortletService("PortletRegistryComponent", container.getComponentInstance(PortletRegistryComponent))
@@ -246,10 +274,13 @@ services.addPortletService("PortletRegistryComponent", container.getComponentIns
 /* **********************************************************
  *  Portlet Entity                                          *
  * ******************************************************** */
-container.registerComponentImplementation(
-                           PortletEntityAccessComponent, 
-                           PortletEntityAccessComponentImpl,
-                           doParams([cmpParam(PersistenceStore), cmpParam(PortletRegistryComponent)])
+container.registerComponent(singletonAdapter(
+                             PortletEntityAccessComponent, 
+                             PortletEntityAccessComponentImpl,
+                             doParams([cmpParam(PersistenceStore), 
+                                     cmpParam(PortletRegistryComponent)]
+                             )
+                          )
 )
 
 /* **********************************************************
@@ -428,5 +459,31 @@ container.registerComponentImplementation(
                       PortletAggregatorImpl,
                       doParams([cmpParam(PortletRenderer)])
 )
+
+/* **********************************************************
+ *  Autodeployment                                          *
+ * ******************************************************** */
+
+container.registerComponent(singletonAdapter(
+                             "PAM", 
+                             CatalinaPAM,
+                             doParams([cmpParam(PortletRegistryComponent),
+                                       cstParam(Locale.getDefault())                                       
+                                       ]
+                             )
+                          )
+)
+
+container.registerComponent(singletonAdapter(
+                             "autodeployment", 
+                             CatalinaAutoDeploymentServiceImpl,
+                             doParams([cmpParam("portal_configuration"), 
+                                       cstParam(Locale.getDefault()),                                        
+                                       cmpParam(PortletRegistryComponent),
+                                       cmpParam("PAM")]
+                             )
+                          )
+)
+
 
 return container
