@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -33,6 +36,7 @@ limitations under the License.
   </repository>
 
   <dependencies>  
+  	&pico-nano-groovy;
   	<dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
@@ -111,34 +115,7 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    <dependency>
-      <id>picocontainer</id>
-      <version>1.0-beta-5</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>nanocontainer</id>
-      <version>1.0-beta-1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>    
-     <dependency>
-      <id>groovy</id>
-     <version>1.0-beta-4-snapshot</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>asm</id>
-      <version>1.4.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
+    
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

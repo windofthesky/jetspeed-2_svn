@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -34,6 +37,7 @@ limitations under the License.
   </repository>
 
   <dependencies>
+  	&pico-nano-groovy;
     <dependency>
       <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>
@@ -54,10 +58,6 @@ limitations under the License.
       <id>log4j</id>
       <version>1.2.8</version>
     </dependency>
-    <dependency>
-     <id>picocontainer</id>
-      <version>1.0-RC-1-SNAPSHOT</version>
-    </dependency>       
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

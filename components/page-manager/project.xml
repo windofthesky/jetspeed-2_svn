@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -33,6 +36,7 @@ limitations under the License.
 
   <shortDescription>Page Manager</shortDescription>
   <dependencies>  
+  	&pico-nano-groovy;
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>
@@ -126,10 +130,6 @@ limitations under the License.
       <id>commons-dbcp</id>
       <version>1.1</version>
     </dependency>
-    <dependency>
-      <id>picocontainer</id>
-      <version>1.0-beta-5</version>
-    </dependency>      
     <dependency>
       <id>castor</id>
       <version>0.9.4.3</version>
