@@ -36,7 +36,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="13" type="portlet" name="PAM::PortletApplicationBrowser" decorator="minty-blue">
+    <fragment id="13" type="portlet" name="jetspeed::PortletApplicationBrowser" decorator="minty-blue">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

@@ -70,6 +70,29 @@ limitations under the License.
     </portlet-info>
   </portlet>
   
+  <portlet id="PortletApplicationBrowser">
+    <init-param>
+			<description>This parameter sets the template used to format the browser.</description>
+			<name>template</name>
+			<value>/pages/pam/pam-browser.jsp</value>
+     </init-param>   
+    <portlet-name>PortletApplicationBrowser</portlet-name>
+    <display-name>Portlet Application Browser</display-name>
+    <description>The PAM (Portlet Application Manager) Portlet Application Browser displays a list of portlet applications deployed to this portal. From here you can add, edit, and delete portlet applications.</description>
+    <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationBrowser</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portlet Application Browser</title>
+      <short-title>Apps</short-title>
+      <keywords>applications,apps,PAM</keywords>
+    </portlet-info>
+  </portlet>
   
 
 </portlet-app>

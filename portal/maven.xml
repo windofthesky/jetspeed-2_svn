@@ -158,32 +158,6 @@ limitations under the License.
         </java>
   </goal>
 
-  <!-- testing out Portlet App within Jetspeed -->
- <goal name="pam.padeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="PAM" />
-            <arg value="-warfilename" />
-            <arg value="../applications/pam/target/pam.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
-  </goal>
-
   <goal name="pam.undeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
@@ -198,29 +172,6 @@ limitations under the License.
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
             <arg value="HW_App" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
-  </goal>
-
-  <goal name="pam.paundeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
-            <arg value="-action" />
-            <arg value="undeploy" />
-            <arg value="-PortletAppName" />
-            <arg value="PAM" />
             <arg value="-webappDir" />
             <arg value="${pam.deploy.dir}" />
             <arg value="-PortalName" />
@@ -295,7 +246,6 @@ limitations under the License.
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
-  	 <attainGoal name="pam.padeploy" />
      <attainGoal name="db.entities" />
   </goal>
 
