@@ -1,31 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <page id="p001">
   <defaults
-     skin="light-blue"
+     skin="orange"
      layout-decorator="clear"
-     portlet-decorator="box-titled"
+     portlet-decorator="portletstd"
   />
   <title>My First PSML Page</title>
-  <fragment id="f001" type="layout" name="Layout">
-    <fragment id="pe000" type="portlet" name="PortletApplicationBrowser">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="0" />      
-    </fragment>
+  <fragment id="f001" type="layout" name="TwoColumns">
     <fragment id="pe001" type="portlet" name="HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />      
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>
     <fragment id="pe002" type="portlet" name="JMXPortlet">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="0" />      
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe003" type="portlet" name="CustomerList">
+    <fragment id="pe003" type="portlet" name="PreferencePortlet">
       <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />      
+      <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe004" type="portlet" name="CustomerInfo">
+    <fragment id="pe004" type="portlet" name="CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="2" />      
+      <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
 </page>
