@@ -113,12 +113,17 @@ public class JetspeedContainerServlet extends HttpServlet
     throws ServletException
     {
 
+/* TODO: Ate Douma, 2005-03-25
+   Under fusion, this call always results in a javax.naming.NameNotFoundException: "Name jdbc is not bound in this Context"
+   but when started from a separate (timer) Thread, even with only a delay of 1ms, it works again.
+   I don't have any clue what is the cause of this or how to solve it, thus for now I disabled starting directly
+
         if (attemptStart(context, contextName, paDir, paClassLoader)) 
         {
           started = true;
             return;
         }
-
+*/
         final String START_DELAYED_MSG = JCS + "Could not yet start portlet application at: "+contextName+". Starting back ground thread to start when the portal comes online.";
         context.log(START_DELAYED_MSG);
         startTimer = new Timer(true);
@@ -139,7 +144,8 @@ public class JetspeedContainerServlet extends HttpServlet
                         }
                     }
                 },
-                10000,
+//                10000, Setting delay to 1ms, see TODO comment above
+                1,
                 10000);
     }
 
