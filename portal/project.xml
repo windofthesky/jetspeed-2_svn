@@ -29,6 +29,42 @@
       </properties>
     </dependency>
     <dependency>
+      <id>jetspeed-components</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>picocontainer</id>
+      <version>1.0-beta-5-SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>nanocontainer</id>
+      <version>1.0-beta-1-SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>groovy</id>
+     <version>1.0-beta-4-snapshot</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>asm</id>
+      <version>1.4.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>    
+    <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
       <version>1.0</version>

@@ -13,7 +13,7 @@
         >
     <maven:reactor
                basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml,services/*/project.xml"
+               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml"
                excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
@@ -40,6 +40,20 @@
                includes="portlet-api/project.xml"
                goals="jar:install"
                banner="Build and Install the Portlet API jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
+               includes="components/cm/project.xml"
+               goals="jar:install"
+               banner="Build and Install the Component Manager jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
+               includes="components/jetspeed/project.xml"
+               goals="jar:install"
+               banner="Build and Install the Jetspeed Components jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
