@@ -21,6 +21,7 @@ import java.io.FileFilter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
@@ -337,5 +339,26 @@ public class TestCastorXmlPageManager extends TestCase
         assertNotNull(folder3.getPages().get("folder1/folder3/test001.psml"));
         assertNotNull(folder3.getPages().get("test001.psml"));
         
+    }
+    
+    public void testFolderMetaData() throws Exception
+    {
+        Folder folder1French = pageManager.getFolder("folder1");
+        FolderMetaData metaData = folder1French.getMetaData();
+        assertNotNull(metaData);
+        assertEquals("Titre français pour la chemise 1", metaData.getTitle(Locale.FRENCH));
+        
+        Folder folder1English = pageManager.getFolder("folder1");
+        metaData = folder1English.getMetaData();
+        assertNotNull(metaData);
+        assertEquals("English Title for Folder 1", metaData.getTitle(Locale.ENGLISH));
+        
+       
+        
+        // check that default works
+        Folder folder1German = pageManager.getFolder("folder1");
+        metaData = folder1German.getMetaData();
+        assertNotNull(metaData);
+        assertEquals("Default Title for Folder 1", metaData.getTitle(Locale.GERMAN));
     }
 }

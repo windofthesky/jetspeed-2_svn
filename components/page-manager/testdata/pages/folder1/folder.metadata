@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<js:folder xmlns:dc="http://www.purl.org/dc"
+	       xmlns:js="http://portals.apache.org/jetspeed" 
+>
+  <dc:title >Default Title for Folder 1</dc:title>
+  <dc:title xml:lang="en">English Title for Folder 1</dc:title>
+  <dc:title xml:lang="fr">Titre français pour la chemise 1</dc:title>
+</js:folder>
