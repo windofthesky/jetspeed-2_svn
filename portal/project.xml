@@ -204,6 +204,7 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <!--
     <dependency>
       <id>ojb:db-ojb</id>
       <version>1.0.rc5-PATCHED</version>
@@ -211,14 +212,14 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    <!--
+    -->
     <dependency>
       <id>ojb</id>
       <version>1.0.rc4</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>-->
+    </dependency>
      <dependency>
       <id>commons-pool</id>
       <version>1.1</version>
