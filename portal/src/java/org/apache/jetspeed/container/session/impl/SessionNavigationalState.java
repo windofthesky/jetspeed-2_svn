@@ -166,7 +166,10 @@ public class SessionNavigationalState
                 else
                 {
                     Page page = context.getPage();
-                    pages.put(page.getId(), null);
+                    if (null != page)
+                    {
+                        pages.put(page.getId(), null);
+                    }
                 }
                 // System.out.println("STATE UPDATED = " + windowId + ", = " + windowState);                
             }
