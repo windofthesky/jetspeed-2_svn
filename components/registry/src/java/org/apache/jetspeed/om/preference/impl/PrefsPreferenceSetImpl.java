@@ -213,6 +213,19 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
     {
         prefsRootNode.flush();
     }
+    
+    /**
+     * 
+     * <p>
+     * clear
+     * </p>
+     *
+     * @throws BackingStoreException
+     */
+    public void clear() throws BackingStoreException
+    {
+        prefsRootNode.removeNode();
+    }
 
     /**
      * <p>
