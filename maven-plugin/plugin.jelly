@@ -191,7 +191,7 @@ limitations under the License.
              in a test failure (TestSpringEngine)
              This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
         -->
-        <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+        <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
           <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         </filterset>
         <filterset begintoken="autodeployment.port" endtoken="8080">
@@ -231,7 +231,7 @@ limitations under the License.
            in a test failure (TestSpringEngine)
            This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
       -->
-      <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+      <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
         <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
       </filterset>
     </copy>
@@ -305,28 +305,26 @@ limitations under the License.
 
 <goal name="jetspeed2:copy.context">    
 
-	  <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+     <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
       <echo>Build jetspeed.xml for Tomcat version ${catalina_version_major}</echo>
       <j:choose>
-        <j:when test="${catalina_version_major == '5'}" >
-          <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
-          <j:set var="use_contextclassloader" value='useContextClassLoader="false"'/>
+        <j:when test="${catalina_version_major == '5.5'}" >
+          <j:set var="context_file_source" value="jetspeed-tomcat-5.5.xml"/>
         </j:when>
         <j:otherwise>
-          <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
-          <j:set var="use_contextclassloader" value=""/>
+          <j:set var="context_file_source" value="jetspeed-tomcat-5.xml"/>
         </j:otherwise>
       </j:choose>
+      <j:set var="context_file_target" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/jetspeed.xml"/>
       
-      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed.xml" tofile="${context_dir}/jetspeed.xml" overwrite="true">
+      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/${context_file_source}" tofile="${context_file_target}" overwrite="true">
         <filterset begintoken="@" endtoken="@">
           <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
           <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
           <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
           <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
-          <filter token="USE_CONTEXTCLASSLOADER" value="${use_contextclassloader}"/>
         </filterset>
-      </copy> 
+      </copy>
 </goal>   
 
 

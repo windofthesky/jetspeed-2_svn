@@ -56,13 +56,12 @@
 	</copy>
 	
 	<!-- Set up tomcat's local security -->
-	<copy file="${basedir}/resources/jetspeed.xml" tofile="${tomcat.home}/conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+	<copy file="${basedir}/resources/jetspeed-tomcat-5.xml" tofile="${tomcat.home}/conf/Catalina/localhost/jetspeed.xml" overwrite="true">
 	   <filterset begintoken="@" endtoken="@">
 	   <filter token="USERNAME" value="${db.username}"/>
 	   <filter token="PASSWORD" value="${db.password}"/>
 	   <filter token="DRIVER" value="${jdbc.driver}"/>
 	   <filter token="URL" value="${db.url}"/>
-	   <filter token="USE_CONTEXTCLASSLOADER" value=""/>
 	 </filterset>
 	</copy>
 	
@@ -84,7 +83,7 @@
 	           in a test failure (TestSpringEngine)
 	           This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
 	      -->
-	      <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+	      <filterset begintoken="autodeployment.catalina.version.major" endtoken="5">
 	        <filter token="=" value="autodeployment.catalina.version.major=5"/>
 	      </filterset>
 	      <filterset begintoken="autodeployment.port" endtoken="8080">
