@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -112,7 +113,7 @@ public class RenderingJob implements Runnable
         {
             // this will happen is request is prematurely aborted            
             log.error("Error rendering portlet OID " + this.window.getId(), t);
-            fragment.overrideRenderedContent("Error rendering portlet fragment: "+fragment.getId());
+            fragment.overrideRenderedContent(t.getMessage());
         }
         finally
         {
