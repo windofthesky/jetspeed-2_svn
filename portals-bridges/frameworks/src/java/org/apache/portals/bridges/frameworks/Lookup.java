@@ -25,4 +25,5 @@ package org.apache.portals.bridges.frameworks;
 public interface Lookup
 {
     boolean lookup(String key);
+    boolean isNew();
 }

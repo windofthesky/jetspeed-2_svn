@@ -56,6 +56,7 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  */
 public class GenericFrameworkPortlet extends GenericVelocityPortlet
 {
+
     /**
      * Init Parameter: default spring configuration property
      */
@@ -69,11 +70,12 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     private static final String PREFS_SUFFIX = ".prefs";
 
     private static final String SESSION_ERROR_MESSAGES = "portals.bridges.framework.errors";
+
     /**
      * Action signature for calling velocity portlet actions
      */
     private static final Class[] VELOCITY_PORTLET_ACTION_SIGNATURE =
-    { ActionRequest.class, ActionResponse.class};
+    { ActionRequest.class, ActionResponse.class, Object.class};
 
     private static PortletApplicationModel model = null;
 
@@ -87,7 +89,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     {
         model.setExternalSupport(map);
     }
-    
+
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
@@ -141,7 +143,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         if (errors.isEmpty())
         {
             request.getPortletSession().removeAttribute(SESSION_ERROR_MESSAGES, PortletSession.PORTLET_SCOPE);
-            
+
             // (4) execute the velocity action
             String action = request.getParameter(FrameworkConstants.BRIDGES_ACTION);
             if (null == action)
@@ -157,7 +159,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             else
             {
                 // call the specified action in the post params
-                String actionForward = invokeVelocityPortletAction(action, request, response);
+                String actionForward = invokeVelocityPortletAction(action, request, response, bean);
                 forward = model.getForward(actionForward);
             }
         }
@@ -327,7 +329,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultViewPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -339,7 +342,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultEditPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -350,7 +354,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 if (view == null || view.equals(this.getDefaultHelpPage()))
                 {
-                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -365,7 +370,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultViewPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -377,7 +383,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (view == null || view.equals(this.getDefaultEditPage()))
                 {
                     // clear it
-                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -388,7 +395,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 if (view == null || view.equals(this.getDefaultHelpPage()))
                 {
-                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String) null);
+                    response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view); //(String)
+                                                                                          // null);
                 }
                 else
                 {
@@ -402,7 +410,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     {
 
         // try to get the bean from the session first
-        Object bean = getBeanFromSession(request, mb); 
+        Object bean = getBeanFromSession(request, mb);
         if (bean == null)
         {
             bean = model.createBean(mb);
@@ -472,14 +480,14 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
      * 
      * @param methodName
      */
-    protected String invokeVelocityPortletAction(String methodName, ActionRequest request, ActionResponse response)
-            throws PortletException
+    protected String invokeVelocityPortletAction(String methodName, ActionRequest request, ActionResponse response,
+            Object bean) throws PortletException
     {
         try
         {
             Method method = this.getClass().getMethod(methodName, VELOCITY_PORTLET_ACTION_SIGNATURE);
             Object[] parameters =
-            { request, response};
+            { request, response, bean};
             String result = (String) method.invoke(this, parameters);
             return result;
         }
@@ -523,9 +531,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             break;
         }
         putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
-        Map errors = (Map)request.getPortletSession().getAttribute(SESSION_ERROR_MESSAGES, PortletSession.PORTLET_SCOPE);
+        Map errors = (Map) request.getPortletSession().getAttribute(SESSION_ERROR_MESSAGES,
+                PortletSession.PORTLET_SCOPE);
         if (errors != null)
-        {            
+        {
             putRequestVariable(request, "ERRORS", errors);
         }
         request.setAttribute(FrameworkConstants.MODEL_TOOL, model);
@@ -538,8 +547,13 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     private void beanToContext(RenderRequest request, String view, ModelBean mb)
     {
         Object bean;
+
+        String key = null;
+        if (mb.getLookupKey() != null)
+        {
+            key = (String) request.getAttribute(mb.getLookupKey());
+        }
         
-        String key = (String)request.getAttribute(mb.getLookupKey());
         if (key != null)
         {
             bean = model.lookupBean(mb, key);
@@ -569,7 +583,6 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         putRequestVariable(request, FrameworkConstants.PREFS_VARIABLE, bean);
     }
 
-    
     private Object getBeanFromSession(PortletRequest request, ModelBean mb)
     {
         return request.getPortletSession().getAttribute(makeModelBeanKey(mb));
@@ -582,12 +595,12 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             request.getPortletSession().setAttribute(makeModelBeanKey(mb), bean);
         }
     }
-    
+
     private String makeModelBeanKey(ModelBean mb)
     {
         return "ModelBean:" + mb.getBeanName();
     }
-    
+
     /**
      * Specific for Velocity
      * 
