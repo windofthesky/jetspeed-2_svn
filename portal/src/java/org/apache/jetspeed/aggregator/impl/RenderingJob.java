@@ -54,6 +54,8 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -147,13 +149,32 @@ public class RenderingJob implements Runnable
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
             container.renderPortlet(this.window, this.request, this.response);
             log.debug("Notifying dispatcher OID "+this.window.getId());
-            this.response.flushBuffer();
-            dispatcher.notify(this.window.getId());
+          
         }
         catch (Throwable t)
         {
             // this will happen is request is prematurely aborted
-            log.error("Error rendering portlet OID " + this.window.getId());
+            log.error("Error rendering portlet OID " + this.window.getId(), t);
+			try
+            {
+                t.printStackTrace(this.response.getWriter());
+            }
+            catch (IOException e)
+            {
+                // not important
+            }
+        }
+        finally
+        {
+			try
+            {            	
+                this.response.flushBuffer();
+                dispatcher.notify(this.window.getId());
+            }
+            catch (Exception e)
+            {
+                log.error("Error flushing response buffer: "+e.toString(), e);
+            }
         }
     }
 }
