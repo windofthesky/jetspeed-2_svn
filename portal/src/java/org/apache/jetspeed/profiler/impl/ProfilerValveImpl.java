@@ -31,7 +31,6 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.profiler.impl.JetspeedProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;

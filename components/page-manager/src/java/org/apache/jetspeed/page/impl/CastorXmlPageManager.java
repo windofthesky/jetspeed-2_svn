@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.logging.Log;
@@ -38,7 +37,6 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.DocumentSetPath;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.om.folder.InvalidFolderException;

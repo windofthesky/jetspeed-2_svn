@@ -18,7 +18,6 @@ package org.apache.jetspeed.profiler.impl;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 

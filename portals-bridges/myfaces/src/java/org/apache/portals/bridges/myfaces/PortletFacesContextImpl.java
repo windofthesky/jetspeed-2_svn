@@ -34,7 +34,6 @@ import javax.faces.render.RenderKit;
 import javax.faces.render.RenderKitFactory;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;

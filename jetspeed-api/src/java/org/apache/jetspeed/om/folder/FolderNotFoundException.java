@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 
 /**

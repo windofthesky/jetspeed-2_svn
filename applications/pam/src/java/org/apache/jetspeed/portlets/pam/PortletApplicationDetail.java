@@ -19,7 +19,6 @@ package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;

@@ -15,22 +15,13 @@
 
 package guessNumber;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-
 import java.util.Locale;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
-import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.text.MessageFormat;
-import java.io.IOException;
 
 /**
  * 

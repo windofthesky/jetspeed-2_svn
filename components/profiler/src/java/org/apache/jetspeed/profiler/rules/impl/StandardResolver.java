@@ -23,7 +23,6 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityHelper;
 
 /**

@@ -16,7 +16,6 @@
 package org.apache.jetspeed.portlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;

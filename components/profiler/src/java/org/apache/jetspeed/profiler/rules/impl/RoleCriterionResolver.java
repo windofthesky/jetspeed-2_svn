@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import java.security.Principal;
-
 import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
@@ -24,9 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.SecurityHelper;
 
 /**
  * Standard Jetspeed-1 Role resolver (not role-based fallback).

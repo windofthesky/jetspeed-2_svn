@@ -17,7 +17,6 @@ package org.apache.jetspeed.portlets.security.users;
 
 import java.security.Principal;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.portlet.PortletConfig;

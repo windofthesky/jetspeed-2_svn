@@ -22,9 +22,6 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;

@@ -16,8 +16,6 @@
 
 package org.apache.jetspeed.page;
 
-import java.util.Map;
-
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
@@ -29,11 +27,9 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
-import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
-import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
  * This service is responsible for loading and saving Pages into
