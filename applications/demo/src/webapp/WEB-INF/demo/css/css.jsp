@@ -15,165 +15,304 @@ limitations under the License.
 --%>
 <%@ page session="false"%>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="org.apache.jetspeed.demo.css.resources.CSSResources" />
 <portlet:defineObjects/>
 <br/>
-<div class="portlet-section-header">CSS Style Definitions</div><br/>
-<div class="portlet-section-subheader">PLT.C.1 Links: </div><br/>
+<div class="portlet-section-header"><fmt:message key="css.label.CSSStyleDefinitions"/></div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC1"/></div><br/>
 <div class="portlet-section-text">
-<a href="">Link Test</a><br/>
+<a href=""><fmt:message key="css.label.LinkTest"/></a><br/>
 </div>
 <br/>
-<div class="portlet-section-subheader">PLT.C.2 Fonts: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC2"/></div><br/>
 <div class="portlet-section-text">
-portlet-font style: <font class="portlet-font">Normal Text</font><br/>
-portlet-font-dim style: <font class="portlet-font-dim">Dim Text</font><br/>
+portlet-font <fmt:message key="css.label.style"/>: <font class="portlet-font"><fmt:message key="css.label.NormalText"/></font><br/>
+portlet-font-dim <fmt:message key="css.label.style"/>: <font class="portlet-font-dim"><fmt:message key="css.label.DimText"/></font><br/>
 </div>
 <br/>
-<div class="portlet-section-subheader">PLT.C.3 Messages: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC3"/></div><br/>
 <div class="portlet-section-text">
-portlet-msg-status style: <div class="portlet-msg-status">Progress: 80%</div><br/>
-portlet-msg-info style: <div class="portlet-msg-info">Info about</div><br/>
-portlet-msg-error style: <div class="portlet-msg-error">Portal not available</div><br/>
-portlet-msg-alert style: <div class="portlet-msg-alert">Time out occurred, try again later</div><br/>
-portlet-msg-success style: <div class="portlet-msg-success">Operation completed successfully</div><br/>
+portlet-msg-status <fmt:message key="css.label.style"/>: <div class="portlet-msg-status"><fmt:message key="css.label.Progress"/></div><br/>
+portlet-msg-info <fmt:message key="css.label.style"/>: <div class="portlet-msg-info"><fmt:message key="css.label.Infoabout"/></div><br/>
+portlet-msg-error <fmt:message key="css.label.style"/>: <div class="portlet-msg-error"><fmt:message key="css.label.PortalNotAvailable"/></div><br/>
+portlet-msg-alert <fmt:message key="css.label.style"/>: <div class="portlet-msg-alert"><fmt:message key="css.label.TimeOutOccurredTryAgainLater"/></div><br/>
+portlet-msg-success <fmt:message key="css.label.style"/>: <div class="portlet-msg-success"><fmt:message key="css.label.OperationCompletedSuccessfully"/></div><br/>
 </div>
 <br/>
-<div class="portlet-section-subheader">PLT.C.4 Sections: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC4"/></div><br/>
 <div class="portlet-section-text">
-portlet-section-header style: <div class="portlet-section-header">Table or section header</div><br/>
-portlet-section-body style: <div class="portlet-section-body">Normal text in a table cell</div><br/>
-portlet-section-alternate style: <div class="portlet-section-alternate">Text in every other row in the cell</div><br/>
-portlet-section-selected style: <div class="portlet-section-selected">Text in a selected cell range</div><br/>
-portlet-section-subheader style: <div class="portlet-section-subheader">Text of a subheading</div><br/>
-portlet-section-footer style: <div class="portlet-section-footer">Table or section footnote</div><br/>
-portlet-section-text style: <div class="portlet-section-text">Text that belongs to the table but does not fall in one of the other categories (e.g. explanatory or help text that is associated with the section)</div><br/>
+portlet-section-header <fmt:message key="css.label.style"/>: <div class="portlet-section-header"><fmt:message key="css.label.TableOrSectionHeader"/></div><br/>
+portlet-section-body <fmt:message key="css.label.style"/>: <div class="portlet-section-body"><fmt:message key="css.label.NormalTextInATableCell"/></div><br/>
+portlet-section-alternate <fmt:message key="css.label.style"/>: <div class="portlet-section-alternate"><fmt:message key="css.label.TextInEveryOtherRowInTheCell"/></div><br/>
+portlet-section-selected <fmt:message key="css.label.style"/>: <div class="portlet-section-selected"><fmt:message key="css.label.TextInASelectedCellRange"/></div><br/>
+portlet-section-subheader <fmt:message key="css.label.style"/>: <div class="portlet-section-subheader"><fmt:message key="css.label.TextOfASubheading"/></div><br/>
+portlet-section-footer <fmt:message key="css.label.style"/>: <div class="portlet-section-footer"><fmt:message key="css.label.TableOrSectionFootnote"/></div><br/>
+portlet-section-text <fmt:message key="css.label.style"/>: <div class="portlet-section-text"><fmt:message key="css.label.TextThatBelongsToTheTableButDoesNotFallInOneOfTheOtherCategories"/></div><br/>
 </div>
 <br/>
-<div class="portlet-section-subheader">PLT.C.5 Forms: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC5"/></div><br/>
 <div class="portlet-section-text">
-portlet-form-label style: <font class="portlet-form-label">This is form.</font><br/>
-portlet-form-label-field style: <input type="text" value="Value" class="portlet-form-label"/><br/>
-portlet-form-button style: <input type="button" value="Button" class="portlet-form-button"/><br/>
-portlet-icon-label style: <font class="portlet-icon-label">Save</font><br/>
-portlet-dlg-icon-label style: <font class="portlet-dlg-icon-label">OK</font><br/>
-portlet-form-field-label style: <font class="portlet-form-field-label">Checkbox 1</font><br/>
-portlet-form-field style: <font class="portlet-form-field">Label 1:</font><br/>
+portlet-form-label <fmt:message key="css.label.style"/>: <font class="portlet-form-label"><fmt:message key="css.label.ThisIsForm"/></font><br/>
+portlet-form-label-field <fmt:message key="css.label.style"/>: <input type="text" value="<fmt:message key="css.label.Value"/>" class="portlet-form-label"/><br/>
+portlet-form-button <fmt:message key="css.label.style"/>: <input type="button" value="<fmt:message key="css.label.Button"/>" class="portlet-form-button"/><br/>
+portlet-icon-label <fmt:message key="css.label.style"/>: <font class="portlet-icon-label"><fmt:message key="css.label.Save"/></font><br/>
+portlet-dlg-icon-label <fmt:message key="css.label.style"/>: <font class="portlet-dlg-icon-label"><fmt:message key="css.label.OK"/></font><br/>
+portlet-form-field-label <fmt:message key="css.label.style"/>: <font class="portlet-form-field-label"><fmt:message key="css.label.Checkbox1"/></font><br/>
+portlet-form-field <fmt:message key="css.label.style"/>: <font class="portlet-form-field"><fmt:message key="css.label.Label1"/></font><br/>
 </div>
 <br/>
-<div class="portlet-section-subheader">PLT.C.6 Menus: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.PLTC6"/></div><br/>
 <div class="portlet-section-text">
-portlet-menu style: <div class="portlet-menu">General menu settings</div><br/>
-portlet-menu-item style: <div class="portlet-menu-item">Normal, unselected menu item</div><br/>
-portlet-menu-item-selected style: <div class="portlet-menu-item-selected">Selected menu item</div><br/>
-portlet-menu-item-hover style: <div class="portlet-menu-item-hover">Normal, unselected menu item when the mouse hovers over it</div><br/>
-portlet-menu-item-hover-selected style: <div class="portlet-menu-item-hover-selected">Selected menu item when the mouse hovers overit</div><br/>
-portlet-menu-cascade-item style: <div class="portlet-menu-cascade-item">Normal, unselected menu item that has sub-menu</div><br/>
-portlet-menu-cascade-item-selected style: <div class="portlet-menu-cascade-item-selected">Selected sub-menu item that has sub-menu</div><br/>
-portlet-menu-description style: <div class="portlet-menu-description">Descriptive text for the menu</div><br/>
-portlet-menu-caption style: <div class="portlet-menu-caption">Menu Caption</div><br/>
+portlet-menu <fmt:message key="css.label.style"/>: <div class="portlet-menu"><fmt:message key="css.label.GeneralMenuSettings"/></div><br/>
+portlet-menu-item <fmt:message key="css.label.style"/>: <div class="portlet-menu-item"><fmt:message key="css.label.NormalUnselectedMenuItem"/></div><br/>
+portlet-menu-item-selected <fmt:message key="css.label.style"/>: <div class="portlet-menu-item-selected"><fmt:message key="css.label.SelectedMenuItem"/></div><br/>
+portlet-menu-item-hover <fmt:message key="css.label.style"/>: <div class="portlet-menu-item-hover"><fmt:message key="css.label.NormalUnselectedMenuItemWhenTheMouseHoversOverIt"/></div><br/>
+portlet-menu-item-hover-selected <fmt:message key="css.label.style"/>: <div class="portlet-menu-item-hover-selected"><fmt:message key="css.label.SelectedMenuItemWhenTheMouseHoversOverIt"/></div><br/>
+portlet-menu-cascade-item <fmt:message key="css.label.style"/>: <div class="portlet-menu-cascade-item"><fmt:message key="css.label.NormalUnselectedMenuItemThatHasSubMenu"/></div><br/>
+portlet-menu-cascade-item-selected <fmt:message key="css.label.style"/>: <div class="portlet-menu-cascade-item-selected"><fmt:message key="css.label.SelectedSubMenuItemThatHasSubMenu"/></div><br/>
+portlet-menu-description <fmt:message key="css.label.style"/>: <div class="portlet-menu-description"><fmt:message key="css.label.DescriptiveTextForTheMenu"/></div><br/>
+portlet-menu-caption <fmt:message key="css.label.style"/>: <div class="portlet-menu-caption"><fmt:message key="css.label.MenuCaption"/></div><br/>
 </div>
-<div class="portlet-section-subheader">Examples: </div><br/>
+<div class="portlet-section-subheader"><fmt:message key="css.label.Examples"/></div><br/>
 <div class="portlet-section-text">
-<div class="portlet-section-header">Example Form</div>
+<div class="portlet-section-header"><fmt:message key="css.label.ExampleForm"/></div>
 <table border="0" cellspacing="2" cellpadding="3">
   <tr>
-    <th class="portlet-section-alternate"><font class="portlet-form-field-label">Jetspeed ID</font></th>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label"><fmt:message key="css.label.JetspeedID"/></font></th>
     <td>
       <input type="text" name="#" value="admin" size="15" maxlength="15"  class="portlet-form-label-field"/>
-      <p class="portlet-form-field">ID consists of a-z, 0-9.</p>
+      <p class="portlet-form-field"><fmt:message key="css.label.IDConsistsOf"/></p>
     </td>
   </tr>
   <tr>
-    <th class="portlet-section-alternate"><font class="portlet-form-field-label">Password</font></th>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label"><fmt:message key="css.label.Password"/></font></th>
     <td>
       <input type="password" name="#" value="abcdefg" size="10" maxlength="10" class="portlet-form-label-field"/> 
     </td>
   </tr>
   <tr>
-    <th class="portlet-section-alternate"><font class="portlet-form-field-label">Language</font></th>
+    <th class="portlet-section-alternate"><font class="portlet-form-field-label"><fmt:message key="css.label.Language"/></font></th>
     <td>
       <div>
-        <input type="radio" name="#" checked="checked" /> <font class="portlet-form-field-label">English</font>
+        <input type="radio" name="#" checked="checked" /> <font class="portlet-form-field-label"><fmt:message key="css.label.English"/></font>
       </div>
       <div>
-        <input type="radio" name="#" value="J" /> <font class="portlet-form-field-label">Japanese</font>
+        <input type="radio" name="#" value="J" /> <font class="portlet-form-field-label"><fmt:message key="css.label.Japanese"/></font>
       </div>
       <div>
-        <input type="radio" name="#" value="F" /> <font class="portlet-form-field-label">French </font>
+        <input type="radio" name="#" value="F" /> <font class="portlet-form-field-label"><fmt:message key="css.label.French"/></font>
       </div>
-      <p class="portlet-form-field">The verbosity of logging produced by system operation and events</p>
+      <p class="portlet-form-field"><fmt:message key="css.label.PleaseSelectYourPreferredLanguage"/></p>
     </td>
   </tr>
 </table>
 <div class="portlet-section-footer">
-  <input type="submit" value="Submit" class="portlet-dlg-icon-label"/>
-  <input type="button" value="OK" class="portlet-dlg-icon-label"/>
+  <input type="submit" value="<fmt:message key="css.label.Submit"/>" class="portlet-dlg-icon-label"/>
+  <input type="button" value="<fmt:message key="css.label.OK"/>" class="portlet-dlg-icon-label"/>
 </div>
 
-<table border="0" cellspacing="2" cellpadding="3">
+<table border="0" cellspacing="2" cellpadding="3" width="100%">
   <tr>
-    <th class="portlet-section-header">Edit</th>
-    <th class="portlet-section-header">Style</th>
-    <th class="portlet-section-header">Description</th>
+    <th class="portlet-section-header"><fmt:message key="css.label.Edit"/></th>
+    <th class="portlet-section-header"><fmt:message key="css.label.Style"/></th>
+    <th class="portlet-section-header"><fmt:message key="css.label.Description"/></th>
   </tr>
   <tr>
     <td class="portlet-section-body"><input type="checkbox"/></th>
-    <td class="portlet-section-body">portlet-msg-status</th>
-    <td class="portlet-section-body">Status of the current operation.</th>
+    <td class="portlet-section-body"><fmt:message key="css.label.portlet-msg-status"/></th>
+    <td class="portlet-section-body"><fmt:message key="css.label.StatusOfTheCurrentOperation"/></th>
   </tr>
   <tr>
     <td class="portlet-section-alternate"><input type="checkbox"/></th>
-    <td class="portlet-section-alternate">portlet-msg-info</th>
-    <td class="portlet-section-alternate">Help messages, general additional information, etc.</th>
+    <td class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-info"/></th>
+    <td class="portlet-section-alternate"><fmt:message key="css.label.HelpMessagesGeneralAdditionalInformationEtc"/></th>
   </tr>
   <tr>
     <td class="portlet-section-body"><input type="checkbox"/></th>
-    <td class="portlet-section-body">portlet-msg-error</th>
-    <td class="portlet-section-body">Error messages.</th>
+    <td class="portlet-section-body"><fmt:message key="css.label.portlet-msg-error"/></th>
+    <td class="portlet-section-body"><fmt:message key="css.label.ErrorMessages"/></th>
   </tr>
   <tr>
     <td class="portlet-section-alternate"><input type="checkbox"/></th>
-    <td class="portlet-section-alternate">portlet-msg-alert</th>
-    <td class="portlet-section-alternate">Warning messages.</th>
+    <td class="portlet-section-alternate"><fmt:message key="css.label.portlet-msg-alert"/></th>
+    <td class="portlet-section-alternate"><fmt:message key="css.label.WarningMessages"/></th>
   </tr>
 </table>
 <div class="portlet-section-footer">
-  <input type="button" value="Prev" class="portlet-dlg-icon-label"/>
-  <input type="button" value="Next" class="portlet-dlg-icon-label"/>
+  <input type="button" value="<fmt:message key="css.label.Prev"/>" class="portlet-dlg-icon-label"/>
+  <input type="button" value="<fmt:message key="css.label.Next"/>" class="portlet-dlg-icon-label"/>
 </div>
 
-<div class="portlet-menu-caption">
-Project Documentation
+<!-- Default Menu Style -->
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="portlet-menu-caption">
+      <fmt:message key="css.label.ProjectDocumentation"/>
+    </td>
+  </tr>
+  <tr>
+    <td class="portlet-menu">
+      <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+          <td>
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.AboutJetspeed2EnterprisePortal"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item-selected">
+              <a href="#"><fmt:message key="css.label.ProjectInfo"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.MailingLists"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item-selected">
+              <fmt:message key="css.label.ProjectTeam"/>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.Dependencies"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.SourceRepository"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.IssueTracking"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item">
+              <a href="#"><fmt:message key="css.label.ProjectReports"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item">
+              <a href="#"><fmt:message key="css.label.DevelopmentProcess"/></a>
+            </font>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br/>
+
+<!-- Default Menu Style -->
+<div class="arrowfolder">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="portlet-menu-caption">
+      <fmt:message key="css.label.ProjectDocumentation"/>
+    </td>
+  </tr>
+  <tr>
+    <td class="portlet-menu">
+      <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+          <td>
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.AboutJetspeed2EnterprisePortal"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item-selected">
+              <a href="#"><fmt:message key="css.label.ProjectInfo"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.MailingLists"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item-selected">
+              <fmt:message key="css.label.ProjectTeam"/>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.Dependencies"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.SourceRepository"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            &nbsp;
+            <font class="portlet-menu-item">
+              <a href="#"><fmt:message key="css.label.IssueTracking"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item">
+              <a href="#"><fmt:message key="css.label.ProjectReports"/></a>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <font class="portlet-menu-cascade-item">
+              <a href="#"><fmt:message key="css.label.DevelopmentProcess"/></a>
+            </font>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
 </div>
-<div class="portlet-menu">
-<div class="portlet-menu-item">
-<a href="#">About Jetspeed 2 Enterprise Portal</a>
-</div>
-<div class="portlet-menu-item-selected">
-<a href="#">Project Info</a>
-</div>
-<div class="portlet-menu-cascade-item">
-&nbsp;<a href="#">Mailing Lists</a>
-</div>
-<div class="portlet-menu-item-hover-selected">
-&nbsp;Project Team
-</div>
-<div class="portlet-menu-cascade-item">
-&nbsp;<a href="#">Dependencies</a>
-</div>
-<div class="portlet-menu-cascade-item">
-&nbsp;<a href="#">Source Repository</a>
-</div>
-<div class="portlet-menu-cascade-item">
-&nbsp;<a href="#">Issue Tracking</a>
-</div>
-<div class="portlet-menu-item">
-<a href="#">Project Reports</a>
-</div>
-<div class="portlet-menu-item">
-<a href="#">Development Process</a>
-</div>
-</div>
+
 
 </div>
 
