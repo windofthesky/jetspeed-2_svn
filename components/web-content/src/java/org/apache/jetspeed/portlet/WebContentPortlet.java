@@ -105,6 +105,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
      * */
     public static final String CURRENT_URL = "webcontent.url.current";
     public static final String LAST_URL = "webcontent.url.last";
+    public static final String LAST_STATE = "webcontent.last.state";
     public static final String CACHE = "webcontent.cache";
 
     /** Default encoding */
@@ -251,6 +252,13 @@ public class WebContentPortlet extends GenericVelocityPortlet
             }
         }
 
+        String lastState = (String)PortletMessaging.receive(request, LAST_STATE);
+        String newState = request.getWindowState().toString();
+        if (lastState == null || newState == null || !lastState.equals(newState))
+        {
+            useCache = false;
+        }
+
         // Set the content type
         response.setContentType("text/html");
         byte[] content;
@@ -274,7 +282,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // Done just save the last URL
         lastURL = sourceURL;
         PortletMessaging.publish(request, LAST_URL, lastURL);
-
+        PortletMessaging.publish(request, LAST_STATE, newState);
     }
 
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
@@ -299,12 +307,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             htmlWriter = new OutputStreamWriter(byteOutputStream, this.defaultEncoding);
 
             // Set the action URL in the rewriter
-           WindowState ws = request.getWindowState();             
            PortletURL action = response.createActionURL();
-           if (ws == WindowState.MAXIMIZED)
-           {
-               action.setWindowState(WindowState.MAXIMIZED); // shouldnt have to do this               
-           }           
            ((WebContentRewriter) rewriter).setActionURL(action);
 
             URL baseURL = new URL(sourceAttr);
