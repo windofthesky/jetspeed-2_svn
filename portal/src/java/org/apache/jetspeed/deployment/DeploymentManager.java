@@ -64,5 +64,5 @@ public interface DeploymentManager
      * Fires all redeployment events registered to this DeploymentManager.
      *
      */
-    void fireReDeploymentEvent();
+    void fireRedeploymentEvent();
 }
