@@ -1,0 +1,124 @@
+<!--
+   - P A G E
+-->	
+ 
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.page.impl.ojb.PageImpl"
+   	  table="PAGE"
+   >     
+      <field-descriptor
+         name="pageId"
+         column="PAGE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="defaultSkin"
+         column="DEFAULT_SKIN"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="defaultDecorator"
+         column="DEFAULT_DECORATOR"
+         jdbc-type="VARCHAR"
+      /> 
+      <field-descriptor
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
+         jdbc-type="VARCHAR"
+      /> 
+      <field-descriptor
+         name="acl"
+         column="ACL"
+         jdbc-type="VARCHAR"
+      />              
+      <collection-descriptor
+      	  name="pageFragments" 
+          element-class-ref="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl" 
+          indirection-table="PAGE_FRAGMENTS">
+          <fk-pointing-to-this-class column="PAGE_ID"/>
+          <fk-pointing-to-element-class column="FRAGMENT_ID"/>
+       </collection-descriptor>              
+   </class-descriptor>
+   
+<!--
+   - F R A G M E N T
+-->	
+ 
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl"
+   	  table="FRAGMENT"
+   >     
+      <field-descriptor
+         name="fragmentId"
+         column="FRAGMENT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="component"
+         column="Component"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="Skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="decorator"
+         column="DECORATOR"
+         jdbc-type="VARCHAR"
+      /> 
+      <field-descriptor
+         name="acl"
+         column="ACL"
+         jdbc-type="VARCHAR"
+      />              
+      <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />              
+      <field-descriptor
+         name="state"
+         column="STATE"
+         jdbc-type="VARCHAR"
+      />              
+
+        <collection-descriptor
+      	  name="subFragments" 
+          element-class-ref="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl" 
+          indirection-table="FRAGMENTS">
+          <fk-pointing-to-this-class column="FRAGMENT_ID"/>
+          <fk-pointing-to-element-class column="SUB_FRAGMENT_ID"/>
+       </collection-descriptor>              
+            
+   </class-descriptor>
+
+   
+      
+      
+  
