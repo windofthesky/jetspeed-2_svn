@@ -83,6 +83,7 @@ limitations under the License.
     <report>maven-javadoc-plugin</report>
     <report>maven-jxr-plugin</report>
     <report>maven-junit-report-plugin</report>
+    <report>maven-jcoverage-plugin</report>
     <report>maven-linkcheck-plugin</report>
     <report>maven-tasklist-plugin</report>
   </reports>  
