@@ -30,7 +30,6 @@ import javax.faces.webapp.FacesServlet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -41,6 +40,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**
  * <p>
@@ -51,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:dlestrat@yahoo.com">David Le Strat</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
-public class FacesPortlet extends GenericPortlet
+public class FacesPortlet extends GenericServletPortlet
 {
 
     /** The Log instance for this class. */
@@ -195,6 +195,9 @@ public class FacesPortlet extends GenericPortlet
         // Save our PortletConfig instance
         this.portletConfig = portletConfig;
         this.defaultViewPage = portletConfig.getInitParameter(PARAM_VIEW_PAGE);
+        this.defaultEditPage = portletConfig.getInitParameter(PARAM_EDIT_PAGE);
+        this.defaultHelpPage = portletConfig.getInitParameter(PARAM_HELP_PAGE);
+        
         if (null == this.defaultViewPage)
         {
             // A Faces Portlet is required to have at least the
@@ -240,7 +243,14 @@ public class FacesPortlet extends GenericPortlet
      */
     public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        process(request, response, defaultHelpPage, FacesPortlet.HELP_REQUEST);
+        if (this.defaultHelpPage != null && this.defaultHelpPage.endsWith(".html"))
+        {
+            super.doHelp(request, response);
+        }
+        else
+        {
+            process(request, response, defaultHelpPage, FacesPortlet.HELP_REQUEST);
+        }
     }
 
     /**
