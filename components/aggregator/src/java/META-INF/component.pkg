@@ -1,4 +1,4 @@
-package.id=PageManger
+package.id=Aggregator
 
 component=org.apache.jetspeed.aggregator.PageAggregator
 
