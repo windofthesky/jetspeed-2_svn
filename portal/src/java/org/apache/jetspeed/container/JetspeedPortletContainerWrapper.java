@@ -18,19 +18,18 @@ package org.apache.jetspeed.container;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.portlet.PortletException;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.portlet.PortletException;
 
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.services.PortletContainerEnvironment;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
-import org.picocontainer.Startable;
+import org.apache.pluto.PortletContainer;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.services.PortletContainerEnvironment;
 
 /**
  * Portlet Container Wrapper to secure access to portlet container.
@@ -38,7 +37,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPortletContainerWrapper implements PortletContainerWrapper, Startable
+public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
 {
     private boolean initialized = false;
     private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);
@@ -49,15 +48,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper,
         this.pluto = pluto;
     }
 
-    public void start()
-    {
-        
-    }
-    
-    public void stop()
-    {
-        
-    }
+  
     /**
      * initialization is still handled outside component architecture, since Pluto is not a component
      */

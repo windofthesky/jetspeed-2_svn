@@ -42,7 +42,6 @@ import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.picocontainer.Startable;
 
 
 /**
@@ -51,7 +50,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedProfiler implements Profiler, Startable 
+public class JetspeedProfiler implements Profiler 
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(JetspeedProfiler.class);
@@ -126,13 +125,7 @@ public class JetspeedProfiler implements Profiler, Startable
         }
     }
     
-    public void start()
-	{                
-	}
-    
-    public void stop()
-	{
-	}
+
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getProfile(org.apache.jetspeed.request.RequestContext)

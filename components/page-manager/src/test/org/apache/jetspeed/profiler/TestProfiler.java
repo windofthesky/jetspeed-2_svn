@@ -67,7 +67,6 @@ public class TestProfiler extends PersistenceSupportedTestCase
      */
     protected void tearDown() throws Exception
     {
-        profiler.stop();
         pageManager.stop();
         super.tearDown();
     }
@@ -98,7 +97,6 @@ public class TestProfiler extends PersistenceSupportedTestCase
         pageManager = new CastorXmlPageManager(new JetspeedIdGenerator(), new FileCache(100, 120), PAGE_ROOT);
         pageManager.start();
         profiler = new JetspeedProfiler(persistenceStore, pageManager, TEST_PROPS);
-        profiler.start();
     }
 
     public static Test suite()

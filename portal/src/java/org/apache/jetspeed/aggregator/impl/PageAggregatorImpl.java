@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
@@ -29,11 +28,10 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.contentserver.ContentFilter;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
-import org.picocontainer.Startable;
 
 /**
  * PageAggregator builds the content required to render a page of portlets.
@@ -42,7 +40,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PageAggregatorImpl implements PageAggregator, Startable
+public class PageAggregatorImpl implements PageAggregator
 {
     private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
 
@@ -63,14 +61,7 @@ public class PageAggregatorImpl implements PageAggregator, Startable
         this(renderer, STRATEGY_SEQUENTIAL);
     }
 
-    public void start()
-    {
-    }
-
-    public void stop()
-    {
-
-    }
+   
 
     /**
      * Builds the portlet set defined in the context into a portlet tree.

@@ -42,7 +42,7 @@ import org.apache.pluto.om.window.PortletWindowListCtrl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startable 
+public class PortletWindowAccessorImpl implements PortletWindowAccessor 
 {
     protected final static Log log = LogFactory.getLog(PortletWindowAccessorImpl.class);
    
@@ -54,10 +54,6 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
     {
         this.entityAccessor = entityAccessor;
 
-    }
-    
-    public void start() 
-    {
     }
 
     public PortletWindow createPortletWindow(PortletEntity entity, String windowId)

@@ -24,7 +24,6 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.picocontainer.Startable;
 
 /**
  * PortletAggregator builds the content required to render a single portlet.
@@ -32,7 +31,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletAggregatorImpl implements PortletAggregator, Startable
+public class PortletAggregatorImpl implements PortletAggregator
 {
     private final static Log log = LogFactory.getLog(PortletAggregatorImpl.class);    
     
@@ -43,14 +42,6 @@ public class PortletAggregatorImpl implements PortletAggregator, Startable
         this.renderer = renderer;
     }
     
-    public void start()
-    {
-    }
-    
-    public void stop()
-    {
-        
-    }
     
     
     /* (non-Javadoc)
