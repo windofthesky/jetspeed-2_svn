@@ -73,6 +73,11 @@ public class PortletWindowFactory
 {
     public static PortletWindow getWindow(PortletDefinition portletDefinition, String portletName)
     {
+    	if(portletDefinition == null)
+    	{
+    		throw new IllegalArgumentException("PortletDefinition for PortletWindow.getWindow() cannot be null.");
+    	}
+    	
         PortletEntity portletEntity = PortletEntityAccess.getEntity(portletDefinition, portletName);
 
 
