@@ -210,24 +210,5 @@ limitations under the License.
     </portlet-info>
   </portlet>
 
-  <portlet id="LoginPortlet">
-    <init-param>
-      <name>ViewPage</name>
-      <value>/WEB-INF/demo/simple/Login.jsp</value>
-    </init-param>
-    <portlet-name>LoginPortlet</portlet-name>
-    <display-name>LoginRequest Portlet Wrapper</display-name>
-    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-   </supports>
-    <portlet-info>
-      <title>Login/Logout  Request Information</title>
-      <short-title>Portlet Request Information</short-title>
-    </portlet-info>
-  </portlet>
-
 </portlet-app>
 

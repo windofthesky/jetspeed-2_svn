@@ -234,27 +234,5 @@ limitations under the License.
         <js:metadata name=""></js:metadata>
         -->
     </portlet>
-    
-    <portlet>
-        <portlet-name>LoginPortlet</portlet-name>
-        <dc:title>Login/Logout  Request Information</dc:title>
-        <dc:creator>J2 Team</dc:creator>
-        
-        <!--
-        <dc:subject xml:lang="sp"></dc:subject>
-        <dc:coverage></dc:coverage>
-        <dc:contributor></dc:contributor>
-        <dc:description></dc:description>
-        <dc:format></dc:format>
-        <dc:identifer></dc:identifer>
-        <dc:language></dc:language>
-        <dc:publisher></dc:publisher>
-        <dc:relation></dc:relation>
-        <dc:right></dc:right>
-        <dc:source></dc:source>
-        <dc:type></dc:type>
-        <js:metadata name=""></js:metadata>
-        -->
-    </portlet>
 
 </portlet-app>
