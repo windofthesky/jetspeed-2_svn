@@ -43,7 +43,7 @@ public class BridgesVelocityViewServlet extends VelocityViewServlet
     public final static String PORTLET_REQUEST = "javax.portlet.request";
     public final static String PORTLET_RESPONSE = "javax.portlet.response";
     public final static String PORTLET_CONFIG = "javax.portlet.config";
-	
+    
 	public static final String VELOCITY_WRITER_ATTR = "org.apache.velocity.io.VelocityWriter";
     /** Cache of writers */
     private static SimplePool writerPool = new SimplePool(40);
@@ -63,12 +63,25 @@ public class BridgesVelocityViewServlet extends VelocityViewServlet
         if (renderRequest != null)
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
+            Context portletContext = (Context)renderRequest.getAttribute(GenericVelocityPortlet.PORTLET_BRIDGE_CONTEXT);
+            if (portletContext != null)
+            {
+                // merge in portletContext
+                Object[] keys = portletContext.getKeys();
+                for (int ix = 0; ix < keys.length; ix++)
+                {
+                    // is this api f'd in the head or what
+                    ctx.put((String)keys[ix], portletContext.get((String)keys[ix]));
+                }                
+            }
+            
         }
 
+        
         // standard render request and response also available in context
         ctx.put(PORTLET_REQUEST, renderRequest);
         ctx.put(PORTLET_RESPONSE, renderResponse);
-        
+                
         return super.handleRequest(request, response, ctx);
     }
 
