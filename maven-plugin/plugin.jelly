@@ -151,12 +151,15 @@ limitations under the License.
          <fileset dir="${basedir}/src/webapp"/>
      </copy>     
      
-     <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
-      <filterset begintoken="@" endtoken="@">
-        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
-        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
-      </filterset>
-    </copy>
+     
+     <util:available file="${maven.war.src}/WEB-INF/conf/jetspeed.properties">
+       <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+          <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+        </filterset>
+      </copy>
+     </util:available>
     
     <attainGoal name="war:war" />
   </goal>
