@@ -43,9 +43,6 @@ limitations under the License.
 		<js:service name='RoleManager'/>
 		<js:service name='GroupManager'/>
 		<js:service name='Profiler'/>
-        <js:service name='ApplicationServerManager'/>
-        <js:service name='PortletFactory'/>
-        <js:service name='DeploymentManager'/>
 	</js:services>
 	
 </portlet-app>

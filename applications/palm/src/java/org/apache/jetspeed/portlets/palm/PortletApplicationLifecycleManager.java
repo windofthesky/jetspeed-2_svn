@@ -12,7 +12,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.portlets.pam;
+package org.apache.jetspeed.portlets.palm;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,12 +41,12 @@ import org.apache.portals.gems.util.StatusMessage;
 import org.apache.portals.messaging.PortletMessaging;
 
 /**
- * PAM ManagerPortlet
+ * PALM Portlet
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PortletApplicationManager extends GenericServletPortlet
+public class PortletApplicationLifecycleManager extends GenericServletPortlet
 {
     private ApplicationServerManager asm;
     private PortletRegistry          registry;
@@ -79,7 +79,7 @@ public class PortletApplicationManager extends GenericServletPortlet
     {
         request.setAttribute("serverManagerAvailable",serverManagerAvailable?Boolean.TRUE:Boolean.FALSE);
         
-        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "PAM", "status");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "PALM", "status");
         if (msg != null)
         {
             request.setAttribute("statusMsg", msg);
@@ -118,7 +118,7 @@ public class PortletApplicationManager extends GenericServletPortlet
                     MutablePortletApplication pa = registry.getPortletApplication(value);
                     if ( pa == null )
                     {
-                        publishStatusMessage(request, "PAM", "status", null, "Portlet Application "+pa.getName()+" no longer exists");
+                        publishStatusMessage(request, "PALM", "status", null, "Portlet Application "+pa.getName()+" no longer exists");
                     }
                     else if ( pa.getApplicationType() == MutablePortletApplication.LOCAL )
                     {
@@ -175,11 +175,11 @@ public class PortletApplicationManager extends GenericServletPortlet
     {
         if ( portletFactory.isPortletApplicationRegistered(pa))
         {
-            publishStatusMessage(request, "PAM", "status", null, "Portlet Application "+pa.getName()+" already running");
+            publishStatusMessage(request, "PALM", "status", null, "Portlet Application "+pa.getName()+" already running");
         }
         else if ( !serverManagerAvailable || !asm.isConnected() )
         {
-            publishStatusMessage(request, "PAM", "status", null, "Application Server Manager not available");
+            publishStatusMessage(request, "PALM", "status", null, "Application Server Manager not available");
         }
         else
         {
@@ -188,7 +188,7 @@ public class PortletApplicationManager extends GenericServletPortlet
                 ApplicationServerManagerResult result = asm.start(pa.getWebApplicationDefinition().getContextRoot());
                 if ( !result.isOk() )
                 {
-                    publishStatusMessage(request, "PAM", "status", null, result.getMessage());
+                    publishStatusMessage(request, "PALM", "status", null, result.getMessage());
                 }
             }
             catch (Exception e)
@@ -203,11 +203,11 @@ public class PortletApplicationManager extends GenericServletPortlet
     {
         if ( !portletFactory.isPortletApplicationRegistered(pa))
         {
-            publishStatusMessage(request, "PAM", "status", null, "Portlet Application "+pa.getName()+" no longer running");
+            publishStatusMessage(request, "PALM", "status", null, "Portlet Application "+pa.getName()+" no longer running");
         }
         else if ( !serverManagerAvailable || !asm.isConnected() )
         {
-            publishStatusMessage(request, "PAM", "status", null, "Application Server Manager not available");
+            publishStatusMessage(request, "PALM", "status", null, "Application Server Manager not available");
         }
         else
         {
@@ -216,13 +216,13 @@ public class PortletApplicationManager extends GenericServletPortlet
                 ApplicationServerManagerResult result = asm.stop(pa.getWebApplicationDefinition().getContextRoot());
                 if ( !result.isOk() )
                 {
-                    publishStatusMessage(request, "PAM", "status", null, result.getMessage());
+                    publishStatusMessage(request, "PALM", "status", null, result.getMessage());
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                publishStatusMessage(request, "PAM", "status", e, "Could not stop Portlet Application "+pa.getName());
+                publishStatusMessage(request, "PALM", "status", e, "Could not stop Portlet Application "+pa.getName());
             }
         }
     }
@@ -231,7 +231,7 @@ public class PortletApplicationManager extends GenericServletPortlet
     {
         if ( !serverManagerAvailable || !asm.isConnected() )
         {
-            publishStatusMessage(request, "PAM", "status", null, "Application Server Manager not available");
+            publishStatusMessage(request, "PALM", "status", null, "Application Server Manager not available");
         }
         else
         {
@@ -240,27 +240,34 @@ public class PortletApplicationManager extends GenericServletPortlet
                 ApplicationServerManagerResult result = asm.undeploy(pa.getWebApplicationDefinition().getContextRoot());
                 if ( !result.isOk() )
                 {
-                    publishStatusMessage(request, "PAM", "status", null, result.getMessage());
+                    publishStatusMessage(request, "PALM", "status", null, result.getMessage());
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                publishStatusMessage(request, "PAM", "status", e, "Could not undeploy Portlet Application "+pa.getName());
+                publishStatusMessage(request, "PALM", "status", e, "Could not undeploy Portlet Application "+pa.getName());
             }
         }
     }
 
     protected void deletePA(ActionRequest request, MutablePortletApplication pa)
     {
-        try
+        if ( portletFactory.isPortletApplicationRegistered(pa))
         {
-            registry.removeApplication(pa);
+            publishStatusMessage(request, "PALM", "status", null, "Portlet Application "+pa.getName()+" is still running");
         }
-        catch (RegistryException e)
+        else
         {
-            e.printStackTrace();
-            publishStatusMessage(request, "PAM", "status", e, "Could not delete Portlet Application "+pa.getName());
+            try
+            {
+                registry.removeApplication(pa);
+            }
+            catch (RegistryException e)
+            {
+                e.printStackTrace();
+                publishStatusMessage(request, "PALM", "status", e, "Could not delete Portlet Application "+pa.getName());
+            }
         }
     }
 

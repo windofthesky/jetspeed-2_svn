@@ -193,16 +193,6 @@ limitations under the License.
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-
-    <dependency>
-        <groupId>portals-gems</groupId>
-        <artifactId>portals-gems</artifactId>
-        <version>2.0-M2-dev</version>
-        <type>jar</type>
-        <properties>
-            <war.bundle>true</war.bundle>
-        </properties>
-    </dependency>
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-frameworks</artifactId>

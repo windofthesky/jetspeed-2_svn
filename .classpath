@@ -55,6 +55,7 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/gems/src/java"/>
 	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="applications/jpetstore/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
+	<classpathentry excluding="**/CVS*" kind="src" path="applications/palm/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry kind="src" path="applications/rss/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/security/src/java"/>

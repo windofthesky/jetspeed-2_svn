@@ -22,7 +22,7 @@ limitations under the License.
   function doSubmit(a,pa) {
     for (ix = 0; ix < document.forms.length; ix++) {
       var f = document.forms[ix];
-      if (f.name == "paForm") {
+      if (f.name == "palmForm") {
         for (iy = 0; iy < f.elements.length; iy++) {
           var el = f.elements[iy];
           if (el.name == "action") el.value = a;
@@ -36,7 +36,7 @@ limitations under the License.
 </script>
 
 
-<form name="paForm" action="<portlet:actionURL/>" method="post">
+<form name="palmForm" action="<portlet:actionURL/>" method="post">
   <input name="action" type="hidden" value="">
   <input name="value" type="hidden" value="">
 </form>
@@ -95,7 +95,14 @@ limitations under the License.
           </c:otherwise>
         </c:choose>
       </c:if>
-      <a href="#" onClick='return checkSubmit("delete","<c:out value="${pa.name}"/>")'>delete</a>
+      <c:choose>
+        <c:when test="${pa.running}">
+          delete
+        </c:when>
+        <c:otherwise>
+          <a href="#" onClick='return checkSubmit("delete","<c:out value="${pa.name}"/>")'>delete</a>
+        </c:otherwise>
+      </c:choose>
     </td>
   </tr>
 </c:forEach>
