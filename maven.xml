@@ -259,6 +259,13 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/components/profiler"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Profiler Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/components/page-manager"
                includes="project.xml"
                goals="jar:install"
