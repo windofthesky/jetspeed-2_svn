@@ -27,7 +27,6 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -48,6 +47,7 @@ import org.apache.webapp.admin.TreeControlNode;
  */
 public class PortletApplicationBrowser extends ServletPortlet
 {
+    private static final String PORTLET_URL = "portlet_url";
     private String template;
     private PortletContext context;
     private PortletRegistryComponent registry;
@@ -73,8 +73,7 @@ public class PortletApplicationBrowser extends ServletPortlet
         TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
         if(control == null)
         {
-            PortletURL actionURL = response.createActionURL();
-        	control = buildTree(apps, actionURL);
+        	control = buildTree(apps);
         	request.getPortletSession().setAttribute("j2_tree", control);
         }
         request.setAttribute("j2_tree", control);
@@ -86,8 +85,6 @@ public class PortletApplicationBrowser extends ServletPortlet
     
 	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
-		System.out.println("PorletApplicationBrowser: processAction()");
-		
 		TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute("j2_tree");
 		//assert control != null
 		
@@ -113,30 +110,26 @@ public class PortletApplicationBrowser extends ServletPortlet
 		}	
 	}
 	
-	private TreeControl buildTree(List apps, PortletURL actionURL) {
+	private TreeControl buildTree(List apps) {
 	    
-	    
-	    actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, "ROOT-NODE");
 		TreeControlNode root =
             new TreeControlNode("ROOT-NODE",
                                 null, "J2_ROOT",
-                                actionURL.toString(),
+                                PORTLET_URL,
                                 null, true, "J2_DOMAIN");
 		
 		TreeControl control = new TreeControl(root);
 		
 		
-		actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, "APP_ROOT");
 		TreeControlNode portletApps = 
-			new TreeControlNode("APP-NODE", null, "APP_ROOT", actionURL.toString(), null, false, "J2_DOMAIN");
+			new TreeControlNode("APP_ROOT", null, "APP_ROOT", PORTLET_URL, null, false, "J2_DOMAIN");
 		root.addChild(portletApps);
 		
 		Iterator it = apps.iterator();
         while (it.hasNext())
         {
             MutablePortletApplication pa = (MutablePortletApplication)it.next();
-            actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, pa.getName());
-            TreeControlNode appNode = new TreeControlNode(pa.getName(), null, pa.getName(), actionURL.toString(), null, false, "PA_APP_DOMAIN"  );
+            TreeControlNode appNode = new TreeControlNode(pa.getName(), null, pa.getName(), PORTLET_URL, null, false, "PA_APP_DOMAIN"  );
             portletApps.addChild(appNode);
         }
 		
