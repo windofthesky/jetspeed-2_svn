@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components.persistence;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
+
 import junit.framework.Test;
-import junit.framework.TestSuite;
+
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.defaults.DefaultPicoContainer;
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
 
 /**
  * <p>
@@ -40,12 +36,10 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 {
-
-    private ComponentManager persistenceCm;
-    private ComponentManager rdbmsCm;
+    
     private MutablePicoContainer rdbmsContainer;
     private PersistenceStoreContainer persistenceContainer;
-    private DefaultPicoContainer parent;
+    private MutablePicoContainer parent;
     private PersistenceStore store;
 
 
@@ -60,14 +54,17 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPersistenceContainer.class);
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPersistenceContainer.class);
+        suite.setScript("org/apache/jetspeed/containers/test.persistence.groovy");
+        
+        return suite;
     }
 
     public void testStartContainer()
     {
-        assertNotNull(rdbmsCm);
-        assertNotNull(persistenceCm);
+        assertNotNull(parent);
+        assertNotNull(persistenceContainer);
+        assertNotNull(store);
     }
 
     public void test001() throws Exception
@@ -142,30 +139,8 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Reader rdbmsScript = new InputStreamReader(cl
-        .getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
-        Reader persistenceScript = new InputStreamReader(cl
-        .getResourceAsStream("org/apache/jetspeed/containers/persistence.container.groovy"));
-        rdbmsCm = new ComponentManager(rdbmsScript, ComponentManager.GROOVY);
-        persistenceCm = new ComponentManager(persistenceScript, ComponentManager.GROOVY);
-        ObjectReference parentRef = new SimpleReference();
-        ObjectReference rdbmsRef = new SimpleReference();
-        ObjectReference persistenceRef = new SimpleReference();
-        parentRef.set(parent);
-        rdbmsCm.getContainerBuilder().buildContainer(rdbmsRef, parentRef, "TEST_PERSISTENCE");
-        persistenceCm.getContainerBuilder().buildContainer(persistenceRef, parentRef, "TEST_PERSISTENCE");
-        rdbmsContainer = (MutablePicoContainer) rdbmsRef.get();
-        persistenceContainer = (PersistenceStoreContainer) persistenceRef.get();
-        store = persistenceContainer.getStoreForThread("jetspeed");
-    }
-
-    protected void tearDown() throws Exception
-    {
-        // parent.stop();
-
-        rdbmsContainer.stop();
-        ((MutablePicoContainer) persistenceContainer).stop();
-        super.tearDown();
+        parent = (MutablePicoContainer) getContainer();
+        persistenceContainer = (PersistenceStoreContainer) parent.getComponentInstance(PersistenceStoreContainer.class);
+        store = persistenceContainer.getStore("jetspeed");
     }
 }
