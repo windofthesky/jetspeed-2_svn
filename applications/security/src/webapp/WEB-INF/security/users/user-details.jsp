@@ -222,9 +222,15 @@ limitations under the License.
 				<td class="portlet-section-alternate" >
 					<fmt:message key="security.rolename"/>
 				</td>
-				<td class="portlet-section-body" >
-					<input type="text" name="role_name" value=""/>
-				</td>
+			    <td class="portlet-section-body" align="left">
+			 		<select name="role_name" class="portlet-form-label-field">		
+						<c:forEach var="roleName" items="${jetspeedRoles}">			    
+						    <option value="<c:out value='${roleName}'/>">
+							  <c:out value="${roleName}"/>						    
+						    </option>
+						</c:forEach>
+					</select>      
+			    </td>				
 			</tr>
 		</table>
 		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
@@ -254,7 +260,7 @@ limitations under the License.
 				</td>
 				<td class="portlet-section-body" >
 					<c:out value="${group.principal.name}"/>
-				</td>
+				</td>				
 			</tr>
 		</c:forEach>
 		</table>
@@ -268,9 +274,15 @@ limitations under the License.
 				<td class="portlet-section-alternate" >
 					<fmt:message key="security.groupname"/>
 				</td>
-				<td class="portlet-section-body" >
-					<input type="text" name="group_name" value=""/>
-				</td>
+			    <td class="portlet-section-body" align="left">
+			 		<select name="group_name" class="portlet-form-label-field">		
+						<c:forEach var="groupName" items="${jetspeedGroups}">			    
+						    <option value="<c:out value='${groupName}'/>">
+							  <c:out value="${groupName}"/>						    
+						    </option>
+						</c:forEach>
+					</select>      
+			    </td>								
 			</tr>
 		</table>
 		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />

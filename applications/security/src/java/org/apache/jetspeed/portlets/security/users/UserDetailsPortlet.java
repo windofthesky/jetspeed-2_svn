@@ -39,8 +39,10 @@ import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -85,6 +87,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String TAB_GROUP = "user_group";
     private final String TAB_PROFILE = "user_profile";
     private final String TAB_CREDENTIAL = "user_credential";
+    
+    /** the id of the roles control */
+    private static final String ROLES_CONTROL = "jetspeedRoles";
+
+    /** the id of the groups control */
+    private static final String GROUPS_CONTROL = "jetspeedGroups";
+    
     
     private UserManager  userManager;
     private RoleManager  roleManager;
@@ -182,12 +191,72 @@ public class UserDetailsPortlet extends GenericServletPortlet
             JetspeedUserBean bean = new JetspeedUserBean(user);
             request.setAttribute(VIEW_USER, bean);
             if (selectedTab.getId().equals(TAB_ROLE))
-            {
-                request.setAttribute(VIEW_ROLES, getRoles(userName));                
+            {                
+                request.setAttribute(VIEW_ROLES, getRoles(userName));
+                
+                // check for refresh on roles list
+                String refreshRoles = (String)PortletMessaging.consume(request, "roles", "refresh");
+                List roles = null;
+                if (refreshRoles == null)
+                {        
+                    roles = (List) request.getPortletSession().getAttribute(ROLES_CONTROL);
+                }
+                
+                // build the roles control and provide it to the view
+                try
+                {
+                    if (roles == null)
+                    {
+                        roles = new LinkedList();
+                        Iterator fullRoles = roleManager.getRoles("");
+                        while (fullRoles.hasNext())
+                        {
+                            Role role = (Role)fullRoles.next();
+                            roles.add(role.getPrincipal().getName());
+                        }
+                        request.getPortletSession().setAttribute(ROLES_CONTROL, roles);
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    throw new PortletException(se);
+                }        
+                request.setAttribute(ROLES_CONTROL, roles);
+                
             }
             else if (selectedTab.getId().equals(TAB_GROUP))
             {
-                request.setAttribute(VIEW_GROUPS, getGroups(userName));  
+                request.setAttribute(VIEW_GROUPS, getGroups(userName));
+                
+                // check for refresh on groups list
+                String refreshGroups = (String)PortletMessaging.consume(request, "groups", "refresh");
+                List groups = null;
+                if (refreshGroups == null)
+                {        
+                    groups = (List) request.getPortletSession().getAttribute(GROUPS_CONTROL);
+                }
+                
+                // build the groups control and provide it to the view
+                try
+                {
+                    if (groups == null)
+                    {
+                        groups = new LinkedList();
+                        Iterator fullGroups = groupManager.getGroups("");
+                        while (fullGroups.hasNext())
+                        {
+                            Group group = (Group)fullGroups.next();
+                            groups.add(group.getPrincipal().getName());
+                        }
+                        request.getPortletSession().setAttribute(GROUPS_CONTROL, groups);
+                    }
+                }
+                catch (SecurityException se)
+                {
+                    throw new PortletException(se);
+                }        
+                request.setAttribute(GROUPS_CONTROL, groups);
+                
             }
             else if (selectedTab.getId().equals(TAB_PROFILE))
             {

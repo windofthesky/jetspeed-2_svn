@@ -17,6 +17,7 @@ package org.apache.jetspeed.portlets.security.users;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -53,12 +55,16 @@ public class UserBrowserPortlet extends GenericServletPortlet
 {
     private UserManager userManager;
     private RoleManager roleManager;
+    private Profiler    profiler;
     
     /** the id of the tree control */
     private static final String TREE_CONTROL = "j2_tree";
 
     /** the id of the roles control */
-    private static final String ROLES_CONTROL = "jetspeed.roles";
+    private static final String ROLES_CONTROL = "jetspeedRoles";
+
+    /** the id of the rules control */
+    private static final String RULES_CONTROL = "jetspeedRules";
     
     /** query filter for selecting users */
     private static final String USER_FILTER = "";
@@ -93,6 +99,11 @@ public class UserBrowserPortlet extends GenericServletPortlet
         {
         		throw new PortletException("Failed to find the Role Manager on portlet initialization");
         }
+        profiler = (Profiler)getPortletContext().getAttribute(SecurityResources.CPS_PROFILER_COMPONENT);
+        if (null == profiler)
+        {
+            throw new PortletException("Failed to find the Profiler on portlet initialization");
+        }        
     }
 
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
@@ -157,6 +168,22 @@ public class UserBrowserPortlet extends GenericServletPortlet
             throw new PortletException(se);
         }        
         request.setAttribute(ROLES_CONTROL, roles);
+
+        // check for refresh on profiles list
+        String refreshProfiles = (String)PortletMessaging.consume(request, "profiles", "refresh");
+        Collection rules = null;
+        if (refreshProfiles == null)
+        {        
+            rules = (Collection) request.getPortletSession().getAttribute(RULES_CONTROL);
+        }
+        
+        // build the profiles control and provide it to the view
+        if (rules == null)
+        {
+            rules = profiler.getRules();
+            request.getPortletSession().setAttribute(RULES_CONTROL, rules);
+        }
+        request.setAttribute(RULES_CONTROL, rules);
         
         super.doView(request, response);
     }
@@ -188,13 +215,31 @@ public class UserBrowserPortlet extends GenericServletPortlet
                     Iterator users = userManager.getUsers(USER_FILTER);
                     control = buildTree(users, actionRequest.getLocale());
                     actionRequest.getPortletSession().setAttribute(TREE_CONTROL, control);
-                    selectNode(actionRequest, control, userName);                    
+                    selectNode(actionRequest, control, userName);
+                    
+                    User user = userManager.getUser(userName);
+                    String role = actionRequest.getParameter(ROLES_CONTROL);
+                    if (!isEmpty(role) && user != null) 
+                    {
+                        roleManager.addRoleToUser(userName, role);
+                    }
+
+                    String rule = actionRequest.getParameter(RULES_CONTROL);
+                    if (!isEmpty(rule) && user != null) 
+                    {
+                        Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);                         
+                        profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
+                    }
+                    
                 }
                 catch (SecurityException se)
                 {
                     PortletMessaging.publish(actionRequest, "user.error", se.getMessage());
                 }
+                
             }
+                        
+            
             return;
         }
         TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute(TREE_CONTROL);
@@ -298,5 +343,7 @@ public class UserBrowserPortlet extends GenericServletPortlet
     {
         return getResourceBundle(locale).getString(key);
     }
+    
+    
 
 }

@@ -51,34 +51,39 @@ limitations under the License.
       <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-label-field">
     </td>
   </tr>
-  <!--
+  
+  <!-- Select Roles -->
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
     <td class="portlet-section-body" align="left">
- 		<select name="jetspeed.role" class="portlet-form-label-field">		
-			<option value="" <c:if test="! ${selectedPDef}"> selected="true"</c:if> >
-				<fmt:message key="pam.details.choose_portlet"/>
-			</option>
-			<c:forEach var="portletDef" items="${pa.portletDefinitions}">
-			    <c:set var="pdefName" value="${portletDef.name}"/>
-			    
-			    <%--We must do this since portlet taglib doesn't support expressions--%>
-			    <% String pdefName = (String) pageContext.getAttribute("pdefName"); %>
-			    
-			    <option value="<c:out value="${portletDef.name}"/>" <c:if test="${selectedPDef.name == portletDef.name}">selected="true"</c:if>>
-				  <c:out value="${portletDef.name}"/>
+ 		<select name="jetspeedRoles" class="portlet-form-label-field">		
+			<option value=""/> 		 		
+			<c:forEach var="roleName" items="${jetspeedRoles}">			    
+			    <option value="<c:out value='${roleName}'/>"
+  			    <c:if test="${roleName == 'user'}">selected="true"</c:if>>			    
+				  <c:out value="${roleName}"/>
 			    </option>
-				<%--
-			    <a href="<c:out value="${select_portlet_link}"/>">
-			        <c:out value="${portletDef.name}" /><br />
-			    </a>
-			    --%>
 			</c:forEach>
-		</select>
-      
+		</select>      
     </td>
   </tr>
-  -->
+
+  <!-- Select Profiling Rules -->
+  <tr colspan="2" align="right">
+    <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+ 		<select name="jetspeedRules" class="portlet-form-label-field">		
+			<option value=""/> 		
+			<c:forEach var="ruleName" items="${jetspeedRules}">
+			    <option value="<c:out value='${ruleName}'/>"
+  			    <c:if test="${ruleName == 'role-fallback'}">selected="true"</c:if>>
+				  <c:out value="${ruleName}"/>
+			    </option>
+			</c:forEach>
+		</select>      
+    </td>
+  </tr>
+  
 </table>
 <br/>
 <input type="submit" value="Add User" class="portlet-form-button"/>
