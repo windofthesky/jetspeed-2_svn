@@ -16,10 +16,10 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.security.Principal;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
-import javax.naming.Context;
+import javax.faces.context.FacesContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.security.auth.Subject;
@@ -30,9 +30,6 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.portals.bridges.myfaces.FacesPortlet;
-
-import tyrex.naming.MemoryContext;
-import tyrex.tm.RuntimeContext;
 
 /**
  * Provides maintenance capabilities for User Administration.
@@ -69,23 +66,13 @@ public class UserManagerPortlet extends FacesPortlet
         {
             throw new PortletException(se);
         }
-        try
-        {
-            Hashtable env = new Hashtable();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory");
-            Context root = new MemoryContext(null);
-            Context ctx = root.createSubcontext("comp");
-            ctx.bind("UserManager", userManager);
-            RuntimeContext runCtx = RuntimeContext.newRuntimeContext(root, null);
-            RuntimeContext.setRuntimeContext(runCtx);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
     }
 
+    protected void preProcessFaces(FacesContext context)    
+    {
+        System.out.println("*** pre processing faces for user manager: " + context);
+    }
+    
     public Principal getPrincipal(Subject subject, Class classe)
     {
         Principal principal = null;

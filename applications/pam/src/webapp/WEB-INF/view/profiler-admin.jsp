@@ -23,48 +23,59 @@
  */
 //-->
 
-<%
-   if (pageContext.getAttribute("treeModel2", PageContext.SESSION_SCOPE) == null) {
-      DefaultMutableTreeNode root = new DefaultMutableTreeNode("XY");
-      DefaultMutableTreeNode a = new DefaultMutableTreeNode("A");
-      root.insert(a);
-      DefaultMutableTreeNode b = new DefaultMutableTreeNode("B");
-      root.insert(b);
-      DefaultMutableTreeNode c = new DefaultMutableTreeNode("C");
-      root.insert(c);
-
-      DefaultMutableTreeNode node = new DefaultMutableTreeNode("a1");
-      a.insert(node);
-      node = new DefaultMutableTreeNode("a2 ");
-      a.insert(node);
-      node = new DefaultMutableTreeNode("b ");
-      b.insert(node);
-
-      a = node;
-      node = new DefaultMutableTreeNode("x1");
-      a.insert(node);
-      node = new DefaultMutableTreeNode("x2");
-      a.insert(node);
-
-      pageContext.setAttribute("treeModel2", new DefaultTreeModel(root), PageContext.SESSION_SCOPE);
-   }
-%>
+<link href='css/security-admin.css' type='text/css'/>
 
 <f:view>
-	<h:form>
-                <x:tree id="tree" value="#{treeModel2}"
-                        styleClass="tree"
-                        nodeClass="treenode"
-                        selectedNodeClass="treenodeSelected"
-                        expandRoot="true">
-                </x:tree>
-                <f:verbatim><br></f:verbatim>
-
-
-    <h:inputText id="profileName" value="#{profileForm.name}">
-    </h:inputText>
+<h:panelGrid columns='2'>
+<h:panelGroup>
+<h:dataTable
+    value="#{rules.extent}"
+    var="erule"
+    styleClass="portlet-section-body"
+    headerClass="portlet-form-button"
+    rowClasses="portlet-menu-item-selected,portlet-MintyBlue"
+>
+    <h:column>
+       <f:facet name="header">
+          <h:outputText value="Rule Id" />
+       </f:facet>
+       <x:commandLink actionListener="#{rule.listen}" immediate="true" >
+            <h:outputText value="#{erule.id}" />
+            <f:param name='selectedRule' value="#{erule.id}"/>
+       </x:commandLink>
+    </h:column>
     
-    <h:commandButton value="Save" />
-	</h:form>
-    
+    <h:column>
+       <f:facet name="header">
+         <h:outputText value="Description"
+            style="font-weight: bold"/>
+       </f:facet>
+        <h:outputText value='#{erule.title}'/>
+    </h:column>
+    <h:column>
+        <h:selectBooleanCheckbox value="false"/>
+    </h:column>
+</h:dataTable>
+</h:panelGroup>
+<h:panelGroup>
+    <h:form id="ruleForm" name="ruleForm">
+        <h:panelGrid columns="2" >
+            <f:facet name="header">
+                <h:outputText id="cfH" value="Edit Rule"/>
+            </f:facet>
+            <f:facet name="footer">
+                <h:outputText value="End"/>
+            </f:facet>
+
+            <h:outputLabel for="title" value="Title"/>
+            <h:panelGroup>
+                <h:inputText id="title" value="#{rule.title}" required="true" />
+                <h:message for="title" styleClass="error" showDetail="true" showSummary="false" />
+            </h:panelGroup>
+
+        </h:panelGrid>
+    </h:form>
+
+</h:panelGroup>
+</h:panelGrid>
 </f:view>

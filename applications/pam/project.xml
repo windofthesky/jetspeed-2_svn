@@ -39,24 +39,6 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>tyrex</groupId>
-            <artifactId>tyrex</artifactId>
-            <version>1.0.1</version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <groupId>jta</groupId>
-            <artifactId>jta</artifactId>
-            <jar>jta1.0.1.jar</jar>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
             <groupId>portlet-api</groupId>
             <artifactId>portlet-api</artifactId>
             <version>1.0</version>

@@ -48,11 +48,18 @@ limitations under the License.
         <managed-bean-class>org.apache.jetspeed.portlets.security.users.TabbedPaneBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
-  
+
+	<!-- Profiler -->
   <managed-bean>
-    <managed-bean-name>profileForm</managed-bean-name>
-    <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileForm</managed-bean-class>
+    <managed-bean-name>rules</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileRulesExtent</managed-bean-class>
     <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+	  
+  <managed-bean>
+    <managed-bean-name>rule</managed-bean-name>
+    <managed-bean-class>org.apache.jetspeed.portlets.profiler.ProfileRuleForm</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
 
 </faces-config>

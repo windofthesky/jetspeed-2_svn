@@ -399,6 +399,8 @@ public class FacesPortlet extends GenericPortlet
             log.trace("Begin Executing phases");
         }
 
+        preProcessFaces(context);
+        
         // Execute the pre-render request processing lifecycle for this request
         try
         {
@@ -469,6 +471,11 @@ public class FacesPortlet extends GenericPortlet
         }
     }
 
+    protected void preProcessFaces(FacesContext context)
+    {        
+    }
+    
+    
     private String createViewRootKey(FacesContext context, String defaultView)
     {
         PortletRequest portletRequest = (PortletRequest) context.getExternalContext().getRequest();
@@ -489,7 +496,6 @@ public class FacesPortlet extends GenericPortlet
         {
             key = key + ":" + view;
         }
-        System.out.println("KEY [" + key + "]");
         return key;
     }
     

@@ -15,38 +15,28 @@
  */
 package org.apache.jetspeed.portlets.profiler;
 
-import java.io.Serializable;
+// import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.faces.context.FacesContext;
+
+import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.profiler.Profiler;
 
 /**
- * User state.
+ * Profile Rules Extent
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfileForm
-       implements Serializable
+public class ProfileRulesExtent // implements Serializable
 {
-    private String name;
     
-    public ProfileForm()
-    {        
-    }
-    
-    public ProfileForm(String name)
+    public Collection getExtent()
     {
-        this.name = name;
-    }
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * @return Returns the name.
-     */
-    public String getName()
-    {
-        return name;
+        Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
+        Profiler profiler = (Profiler)appMap.get(PortletApplicationResources.CPS_PROFILER_COMPONENT);
+        return profiler.getRules(); // TODO: optimize with cache
     }
 }

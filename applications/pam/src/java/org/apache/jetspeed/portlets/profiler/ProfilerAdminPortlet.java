@@ -15,20 +15,13 @@
  */
 package org.apache.jetspeed.portlets.profiler;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
+import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.portals.bridges.myfaces.FacesPortlet;
 
-
-//import org.apache.portals.bridges.myfaces.FacesPortlet;
 
 /**
  * This portlet is a browser over all folders and documents in the system.
@@ -39,28 +32,17 @@ import org.apache.portals.bridges.myfaces.FacesPortlet;
  */
 public class ProfilerAdminPortlet extends FacesPortlet
 {
-
-    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
-    {
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements())
-        {
-            String key = (String)e.nextElement();
-            System.out.println("[V]key/value = " + key + ": [" + request.getParameter(key) + "]");
-        }
-        super.doView(request, response);
-    }
-
-    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
-    {
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements())
-        {
-            String key = (String)e.nextElement();
-            System.out.println("[A]key/value = " + key + ": [" + request.getParameter(key) + "]");
-        }        
-        super.processAction(request, response);
-    }
+    Profiler profiler;
     
+    public void init(PortletConfig config) throws PortletException
+    {
+        super.init(config);
+        profiler = (Profiler) getPortletContext().getAttribute(
+                PortletApplicationResources.CPS_PROFILER_COMPONENT);
+        if (null == profiler)
+        {
+            throw new PortletException("Failed to find the Profiler on portlet initialization");
+        }
+    }        
     
 }
