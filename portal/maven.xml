@@ -73,6 +73,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="register" />
             <arg value="-PortletAppName" />
@@ -97,6 +98,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="unregister" />
             <arg value="-PortletAppName" />
@@ -121,6 +123,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -145,6 +148,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -169,6 +173,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -193,6 +198,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -217,6 +223,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -242,6 +249,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -266,6 +274,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -290,6 +299,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -395,6 +405,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
          <arg value="-action" />
          <arg value="deploy" />
          <arg value="-PortletAppName" />
@@ -450,6 +461,7 @@ limitations under the License.
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
             <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <sysproperty key="portal.use.internal.jndi" value="true"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />

@@ -1,26 +1,29 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.jetspeed.engine;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
+
 import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +38,6 @@ import org.apache.jetspeed.container.services.JetspeedContainerServices;
 import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.cps.jndi.JNDIService;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.pipeline.descriptor.PipelineDescriptor;
@@ -59,6 +61,7 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class JetspeedEngine implements Engine
 {
+    protected static final String JNDI_SUPPORT_FLAG_KEY = "portal.use.internal.jndi";
     private PortalContext context;
     private ServletConfig config = null;
     private Pipeline defaultPipeline = null;
@@ -72,21 +75,22 @@ public class JetspeedEngine implements Engine
     // private final HashMap requestContextPerThread = new HashMap();
 
     private boolean useInternalJNDI;
+
     /**
      * Initializes the engine with a commons configuration, starting all early
      * initable services.
      * 
      * @param configuration
-     *            a commons <code>Configuration</code> set
+     *                  a commons <code>Configuration</code> set
      * @param applicationRoot
-     *            a <code>String</code> path to the application root for
-     *            resources
+     *                  a <code>String</code> path to the application root for
+     *                  resources
      * @param
      * @throws JetspeedException
-     *             when the engine fails to initilialize
+     *                   when the engine fails to initilialize
      */
-    public void init(Configuration configuration, String applicationRoot, ServletConfig config)
-            throws JetspeedException
+    public void init( Configuration configuration, String applicationRoot,
+            ServletConfig config ) throws JetspeedException
     {
         try
         {
@@ -94,12 +98,30 @@ public class JetspeedEngine implements Engine
             this.config = config;
             context.setApplicationRoot(applicationRoot);
             context.setConfiguration(configuration);
-            useInternalJNDI = configuration.getBoolean("portal.use.internal.jndi", true);
-
+            useInternalJNDI = configuration.getBoolean(JNDI_SUPPORT_FLAG_KEY,
+                    true);
+            
+            
+            System.out.println("JNDI System Property flag "+System.getProperty(JNDI_SUPPORT_FLAG_KEY));
+            if(System.getProperty(JNDI_SUPPORT_FLAG_KEY) ==  null)
+            {
+                 System.setProperty(JNDI_SUPPORT_FLAG_KEY, String
+                    .valueOf(useInternalJNDI));
+                 
+            }
+            else
+            {
+                // System property over rides the configurtaion                
+                useInternalJNDI = Boolean.getBoolean(JNDI_SUPPORT_FLAG_KEY);
+                log.warn("Internal JNDI has been flagged "+useInternalJNDI+" by the "+JNDI_SUPPORT_FLAG_KEY+" system  property.  This overrides the configuration setting of "+configuration.getBoolean(JNDI_SUPPORT_FLAG_KEY,
+                        true));
+            }
+            
             //
             // Configure Log4J
             //
-            String log4jFile = configuration.getString(LOG4J_CONFIG_FILE, LOG4J_CONFIG_FILE_DEFAULT);
+            String log4jFile = configuration.getString(LOG4J_CONFIG_FILE,
+                    LOG4J_CONFIG_FILE_DEFAULT);
             log4jFile = getRealPath(log4jFile);
             Properties p = new Properties();
             p.load(new FileInputStream(log4jFile));
@@ -108,15 +130,16 @@ public class JetspeedEngine implements Engine
             log.info("Configured log4j from " + log4jFile);
 
             // Set up Commons Logging to use the Log4J Logging
-            System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());                                  
+            System.getProperties().setProperty(LogFactory.class.getName(),
+                    Log4jFactory.class.getName());
 
             //
             // bootstrap the initable services
             //
             initComponents(configuration);
-            log.info("Components initialization complete");            
+            log.info("Components initialization complete");
             initServices();
-            log.info("Service initialization complete");            
+            log.info("Service initialization complete");
 
             //
             // create the pipelines
@@ -154,19 +177,23 @@ public class JetspeedEngine implements Engine
      * Initializes the portlet container given a servlet configuration.
      * 
      * @param config
-     *            The servlet configuration.
+     *                  The servlet configuration.
      */
-    public void initContainer(ServletConfig config) throws PortletContainerException
+    public void initContainer( ServletConfig config )
+            throws PortletContainerException
     {
         try
         {
-            PortletContainer container = (PortletContainer)componentManager.getComponent(PortletContainer.class);
+            PortletContainer container = (PortletContainer) componentManager
+                    .getComponent(PortletContainer.class);
             JetspeedContainerServices environment = new JetspeedContainerServices();
             environment.addService(ContainerLogAdaptor.getService());
             environment.addService(FactoryManager.getService());
-            InformationProviderServiceService ips = InformationProviderManager.getService();
+            InformationProviderServiceService ips = InformationProviderManager
+                    .getService();
             ips.init(config, null);
-            environment.addServiceForClass(InformationProviderService.class, ips);
+            environment.addServiceForClass(InformationProviderService.class,
+                    ips);
             //TODO !!! Pluto has changed this siganture There is now a
             // container unique id string and Properties.
             // WE need to figure what these are really for.
@@ -186,19 +213,21 @@ public class JetspeedEngine implements Engine
             }
         }
     }
+
     public void shutdown() throws JetspeedException
     {
         CommonPortletServices.getInstance().shutdownServices();
 
         try
         {
-            PortletContainer container = (PortletContainer)componentManager.getComponent(PortletContainer.class);
+            PortletContainer container = (PortletContainer) componentManager
+                    .getComponent(PortletContainer.class);
             if (container != null)
             {
                 container.shutdown();
             }
-            
-            componentManager.killContainer();            
+
+            componentManager.killContainer();
         }
         catch (PortletContainerException e)
         {
@@ -206,7 +235,8 @@ public class JetspeedEngine implements Engine
         }
         System.gc();
     }
-    public void service(RequestContext context) throws JetspeedException
+
+    public void service( RequestContext context ) throws JetspeedException
     {
         // requestContextPerThread.put(Thread.currentThread(), context);
         try
@@ -214,15 +244,21 @@ public class JetspeedEngine implements Engine
             if (useInternalJNDI)
             {
                 // bind the current JNDI context to this service thread.
-                JNDIService jndiServ = (JNDIService) CommonPortletServices.getPortalService(JNDIService.SERVICE_NAME);
-                jndiServ.bindToCurrentThread();
+                JNDIComponent jndi = (JNDIComponent) componentManager
+                        .getComponent(JNDIComponent.class);
+                if (jndi != null)
+                {
+                    jndi.bindToCurrentThread();
+                }
             }
-            String targetPipeline = context.getRequestParameter(PortalReservedParameters.PIPELINE);
+            String targetPipeline = context
+                    .getRequestParameter(PortalReservedParameters.PIPELINE);
             tlRequestContext.set(context);
             Pipeline pipeline = defaultPipeline;
             if (targetPipeline != null)
             {
-                Pipeline specificPipeline = (Pipeline) pipelines.get(targetPipeline);
+                Pipeline specificPipeline = (Pipeline) pipelines
+                        .get(targetPipeline);
                 if (specificPipeline != null)
                 {
                     pipeline = specificPipeline;
@@ -232,7 +268,8 @@ public class JetspeedEngine implements Engine
         }
         catch (Throwable t)
         {
-            String msg = "JetspeedEngine unable to service request: " + t.toString();
+            String msg = "JetspeedEngine unable to service request: "
+                    + t.toString();
             log.error(msg, t);
             // throw new JetspeedException(msg, t);
         }
@@ -257,7 +294,7 @@ public class JetspeedEngine implements Engine
      * application root
      *  
      */
-    public String getRealPath(String path)
+    public String getRealPath( String path )
     {
         String result = "";
         String base = context.getApplicationRoot();
@@ -279,28 +316,46 @@ public class JetspeedEngine implements Engine
         }
         return base.concat(path);
     }
-    
-    private void initComponents(Configuration configuration) throws IOException, ClassNotFoundException, NamingException
+
+    private void initComponents( Configuration configuration )
+            throws IOException, ClassNotFoundException, NamingException
     {
         String applicationRoot = getRealPath("/");
-        String assemblyScript = configuration.getString("jetspeed.root.assembly", "/WEB-INF/assembly/jetspeed.groovy");
+        String assemblyScript = configuration.getString(
+                "jetspeed.root.assembly", "/WEB-INF/assembly/jetspeed.groovy");
+
         File containerAssembler = new File(applicationRoot + assemblyScript);
         componentManager = new ComponentManager(containerAssembler);
         ObjectReference rootContainerRef = new SimpleReference();
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "PORTAL_SCOPE");
-        // TODO: Script this some how
-        // Quick fix
-        JNDIComponent jndi = (JNDIComponent) componentManager.getComponent(JNDIComponent.class);
-        if (jndi != null)
+        componentManager.getContainerBuilder().buildContainer(rootContainerRef,
+                null, "PORTAL_SCOPE");
+
+        try
         {
-            DatasourceComponent ds = (DatasourceComponent) componentManager.getComponent(DatasourceComponent.class);
-            if(ds != null)
+            if (useInternalJNDI)
             {
-                jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
-                jndi.bindToCurrentThread();
+                JNDIComponent jndi = (JNDIComponent) componentManager
+                        .getComponent(JNDIComponent.class);
+                if (jndi != null)
+                {
+                    DatasourceComponent ds = (DatasourceComponent) componentManager
+                            .getComponent(DatasourceComponent.class);
+                    if (ds != null)
+                    {
+                        jndi.bindObject("comp/env/jdbc/jetspeed", ds
+                                .getDatasource());
+                        jndi.bindToCurrentThread();
+                    }
+                }
             }
         }
+        catch (NamingException e)
+        {
+            // skip for now
+        }
+
     }
+
     private void initServices() throws CPSInitializationException
     {
         // Get the instance of the service manager
@@ -309,7 +364,8 @@ public class JetspeedEngine implements Engine
 
         // Set the service managers application root. In our
         // case it is the webapp context.
-        cps.init(this.getContext().getConfiguration(), context.getApplicationRoot(), false);
+        cps.init(this.getContext().getConfiguration(), context
+                .getApplicationRoot(), false);
         //serviceManager.setApplicationRoot(context.getApplicationRoot());
 
         //serviceManager.setConfiguration(this.getContext().getConfiguration());
@@ -329,13 +385,15 @@ public class JetspeedEngine implements Engine
      */
     private void createPipelines() throws CPSInitializationException
     {
-        String className = this.getContext().getConfiguration().getString(PIPELINE_CLASS, null);
-        String defaultPipelineName = this.getContext().getConfiguration().getString(PIPELINE_DEFAULT,
-                "jetspeed-pipeline");
+        String className = this.getContext().getConfiguration().getString(
+                PIPELINE_CLASS, null);
+        String defaultPipelineName = this.getContext().getConfiguration()
+                .getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
         if (null == className)
         {
-            throw new CPSInitializationException("Failed to initialize pipeline, missing configuration entry: "
-                    + PIPELINE_CLASS);
+            throw new CPSInitializationException(
+                    "Failed to initialize pipeline, missing configuration entry: "
+                            + PIPELINE_CLASS);
         }
         try
         {
@@ -343,14 +401,16 @@ public class JetspeedEngine implements Engine
         }
         catch (Exception e)
         {
-            throw new CPSInitializationException("Failed to initialize pipeline, couldnt create pipeline class");
+            throw new CPSInitializationException(
+                    "Failed to initialize pipeline, couldnt create pipeline class");
         }
-        String pipelinesDir = this.getContext().getConfiguration().getString(PIPELINE_DIRECTORY,
-                "/WEB-INF/conf/pipelines/");
+        String pipelinesDir = this.getContext().getConfiguration().getString(
+                PIPELINE_DIRECTORY, "/WEB-INF/conf/pipelines/");
         File directory = new File(getRealPath(pipelinesDir));
         if (directory == null || !directory.exists())
         {
-            throw new CPSInitializationException("Failed to initialize pipeline, could not find pipeline directory");
+            throw new CPSInitializationException(
+                    "Failed to initialize pipeline, could not find pipeline directory");
         }
         File[] pipelineDescriptors = directory.listFiles();
         for (int ix = 0; ix < pipelineDescriptors.length; ix++)
@@ -378,11 +438,12 @@ public class JetspeedEngine implements Engine
      * Creates a pipeline from a pipeline descriptor file.
      * 
      * @param file
-     *            the descriptor file describing the pipeline.
+     *                  the descriptor file describing the pipeline.
      * @return The new pipeline.
      * @throws CPSInitializationException
      */
-    private Pipeline createPipeline(File file) throws CPSInitializationException
+    private Pipeline createPipeline( File file )
+            throws CPSInitializationException
     {
         Pipeline pipeline;
         PipelineDescriptor descriptor;
@@ -390,11 +451,13 @@ public class JetspeedEngine implements Engine
         {
             pipeline = (Pipeline) pipelineClass.newInstance();
             XmlReader reader = new XmlReader(PipelineDescriptor.class);
-            descriptor = (PipelineDescriptor) reader.parse(new FileInputStream(file));
+            descriptor = (PipelineDescriptor) reader.parse(new FileInputStream(
+                    file));
         }
         catch (Exception e)
         {
-            throw new CPSInitializationException("Failed to read pipeline descriptor from deployment");
+            throw new CPSInitializationException(
+                    "Failed to read pipeline descriptor from deployment");
         }
         try
         {
@@ -403,7 +466,8 @@ public class JetspeedEngine implements Engine
         }
         catch (Exception e)
         {
-            throw new CPSInitializationException("Failed to initialize pipeline: ", e);
+            throw new CPSInitializationException(
+                    "Failed to initialize pipeline: ", e);
         }
         return pipeline;
     }
@@ -413,7 +477,7 @@ public class JetspeedEngine implements Engine
      * 
      * @see org.apache.jetspeed.engine.Engine#getPipeline(java.lang.String)
      */
-    public Pipeline getPipeline(String pipelineName)
+    public Pipeline getPipeline( String pipelineName )
     {
         return (Pipeline) this.pipelines.get(pipelineName);
     }
@@ -427,6 +491,7 @@ public class JetspeedEngine implements Engine
     {
         return this.defaultPipeline;
     }
+
     /**
      * @see org.apache.jetspeed.engine.Engine#getCurrentRequestContext()
      */
@@ -434,6 +499,7 @@ public class JetspeedEngine implements Engine
     {
         return (RequestContext) tlRequestContext.get();
     }
+
     public ComponentManager getComponentManager()
     {
         return this.componentManager;
