@@ -417,16 +417,13 @@ limitations under the License.
   </goal>
   
   <goal name="db.drop2">
+	<j:set var='nodots' value="${org.apache.jetspeed.database.default.name}" /> 	
     <j:choose>
-      <j:when test="${org.apache.jetspeed.database.default.name == 'mssql'}" >		
+      <j:when test="${nodots == 'mysql'}" >		
           <j:set var="database.arg.script" value="./src/sql/mssql/drop.sql" />
           <attainGoal name="db.execute" />		  
       </j:when>   	
-      <j:when test="${org.apache.jetspeed.database.default.name == 'oracle'}" >		
-          <j:set var="database.arg.script" value="./src/sql/oracle/drop.sql" />
-          <attainGoal name="db.execute" />		  
-      </j:when>   		  
-	  </j:choose>
+     </j:choose>
   </goal>
 
   <goal name="db.drop.oracle">
