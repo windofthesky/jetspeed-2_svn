@@ -134,8 +134,8 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * @see org.apache.pluto.om.common.LanguageSet#getDefaultLocale()
      */
     public Locale getDefaultLocale()
-    {
-        return Locale.getDefault();
+    {        
+        return Locale.ENGLISH;
     }
 
     /**
@@ -146,7 +146,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         Language language = (Language) o;
         if (language.getLocale() == null)
         {
-            ((MutableLanguage) o).setLocale(JetspeedLocale.getDefaultLocale());
+            ((MutableLanguage) o).setLocale(Locale.ENGLISH);
         }
 
         return innerCollection.add(o);

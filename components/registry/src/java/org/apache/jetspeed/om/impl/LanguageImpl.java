@@ -70,7 +70,7 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
     public LanguageImpl()
     {
-        this(Locale.getDefault(), null, "", "", "");
+        this(Locale.ENGLISH, null, "", "", "");
     }
 
     public LanguageImpl( Locale locale, String title )
