@@ -59,12 +59,11 @@ import org.apache.pluto.services.factory.FactoryManagerService;
 
 
 /**
- * Manages the life-time of factories registered during container startup.
- * A service has to derive from {@link Factory} and implement the
- * <CODE>init()</CODE> and <CODE>destroy()</CODE> methods as appropriate.
- *
+ * Convenience static accessor for {@link FactoryManagementService}
+ *  
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
+ * @see FactoryManagementService
  */
 public abstract class FactoryManager
 {
@@ -80,16 +79,9 @@ public abstract class FactoryManager
             .getInstance().getService(FactoryManagementService.SERVICE_NAME);
     }
 
-    /**
-     ** Returns the service implementation for the given service class, or
-     ** <CODE>null</CODE> if no such service is registered.
-     **
-     ** @param   aClass
-     **          the service class
-     **
-     ** @return   the service implementation
-     **/
-
+    /* (non-Javadoc)
+     * @see org.apache.pluto.services.factory.FactoryManagerService#getFactory(java.lang.Class)
+     */    
     public static Factory getFactory (Class theClass)
     {
         return getServiceImpl().getFactory(theClass);

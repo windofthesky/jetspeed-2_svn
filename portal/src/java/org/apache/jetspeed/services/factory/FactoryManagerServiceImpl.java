@@ -73,12 +73,17 @@ import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 
 /**
- * Manages the life-time of factories registered during container startup.
- * A service has to derive from {@link Factory} and implement the
- * <CODE>init()</CODE> and <CODE>destroy()</CODE> methods as appropriate.
+ * <p>
+ * Manages the life-time of portal-to-container shared factories as defined by Pluto's factory interfaces.
+ * A factory must derive from <a href='http://jakarta.apache.org/pluto/apidocs/org/apache/pluto/factory/Factory.html'>org.apache.pluto.factory.Factory</a> and implement the
+ * <CODE>init()</CODE> and <CODE>destroy()</CODE> methods to meet Pluto's factory contract.
+ * Factories create the shared classes between the portal and Pluto container. 
+ * Implementations are created by portal provided factories. Most of the shared
+ * classes are implementations of the Java Portlet API interfaces. 
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
+ * @see <a href="org.apache.jetspeed.services.factory.FactoryManagerService">FactoryManagerService</a>
  */
 public class FactoryManagerServiceImpl 
     extends BaseCommonService
@@ -93,11 +98,10 @@ public class FactoryManagerServiceImpl
     }
 
     /**
-     * This is the early initialization method called by the 
-     * <code>Service</code> framework
-     * @param conf The <code>ServletConfig</code>
-     * @exception throws a <code>InitializationException</code> if the service
-     * fails to initialize
+     * This is the early initialization method called by the <code>Service</code> framework. 
+     * 
+     * @exception throws a <code>CPSInitializationException</code> if the service
+     * fails to initialize.
      */
     public void init() 
         throws CPSInitializationException 
@@ -271,22 +275,15 @@ public class FactoryManagerServiceImpl
     }
 
 
-    /**
-     ** Returns the service implementation for the given service class, or
-     ** <CODE>null</CODE> if no such service is registered.
-     **
-     ** @param   aClass
-     **          the service class
-     **
-     ** @return   the service implementation
-     **/
-
-    public Factory getFactory (Class theClass)
+    /* (non-Javadoc)
+     * @see org.apache.pluto.services.factory.FactoryManagerService#getFactory(java.lang.Class)
+     */
+    public Factory getFactory (Class managedInterface)
     {
         // at this state the services map is read-only,
         // therefore we can go without synchronization
 
-        return ((Factory) factoryMap.get (theClass));
+        return ((Factory) factoryMap.get (managedInterface));
     }
 
     // --- PRIVATE MEMBERS --- //
