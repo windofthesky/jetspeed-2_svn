@@ -109,8 +109,7 @@ limitations under the License.
     </dependency>
      <dependency>
       <id>jdom</id>
-      <version>b8</version>
-
+      <version>b10</version>
     </dependency>
     <!-- This is only a test dependency -->
     <dependency>
