@@ -117,11 +117,14 @@ public class CatalinaAutoDeploymentServiceImpl extends BaseCommonService impleme
         try
         {
             CatalinaPAM catPAM = new CatalinaPAM(server, port, userName, password);
-            DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(targetDir, catPAM);
-            DeploymentEventDispatcher dispatcher = new DeploymentEventDispatcher(targetDir);
+            
+            DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(targetDirFile.getCanonicalPath(), catPAM);
+            DeploymentEventDispatcher dispatcher = new DeploymentEventDispatcher(targetDirFile.getCanonicalPath());
+            dispatcher.addDeploymentListener(dpal);
             HashMap handlers = new HashMap();
             handlers.put("war", JARObjectHandlerImpl.class);
             scanner = new FileSystemScanner(stagingDirFile.getCanonicalPath(), handlers, dispatcher, delay);
+            scanner.setName("Autodeployment File Scanner Thread");
             scanner.start();
             log.info("Deployment scanner successfuly started!");
         }
