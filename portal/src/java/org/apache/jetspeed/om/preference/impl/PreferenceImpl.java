@@ -67,6 +67,9 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.Preference;
 
@@ -80,7 +83,7 @@ import org.apache.pluto.om.common.Preference;
  * @version $Id$
  *
  */
-public class PreferenceImpl implements PreferenceComposite, Serializable
+public class PreferenceImpl implements PreferenceComposite, Serializable, PersistenceBrokerAware
 {
     private String name;
     protected Collection values;
@@ -98,14 +101,14 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
 
     /** FK to parent portlet */
     protected long parentId;
-    
+
     /** The type of preference this is either the portlet default or user defined */
     private String type;
 
     public PreferenceImpl()
     {
         //values = new ArrayList();
-        super(); 
+        super();
     }
 
     /**
@@ -121,10 +124,7 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
      */
     public Iterator getValues()
     {
-        if (values == null)
-        {
-            values = PreferenceValueImpl.convertValueObjectsToStrings(this.valueObjects);
-        }
+
         return values.iterator();
     }
 
@@ -150,11 +150,6 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
     public void setValues(Collection values)
     {
         this.values = values;
-        if (this.valueObjects == null)
-        {
-            this.valueObjects = new ArrayList(values.size());
-        }
-        PreferenceValueImpl.convertStringsToValueObjects(values, valueObjects);
     }
 
     /**
@@ -278,7 +273,7 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
         valueObjects.set(index, value);
 
     }
-    
+
     /**
      * @return
      */
@@ -321,8 +316,117 @@ public class PreferenceImpl implements PreferenceComposite, Serializable
      */
     public boolean isValueSet()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return values != null && values.size() > 0;
+    }
+
+    /** 
+     * <p>
+     * afterDelete
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+
+    }
+
+    /** 
+     * <p>
+     * afterInsert
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+
+    }
+
+    /** 
+     * <p>
+     * afterLookup
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        //TODO we should move this out to a field conversion so as to remove the requirement to implement PersistenceBrokerAware 
+        values = PreferenceValueImpl.convertValueObjectsToStrings(this.valueObjects);
+
+    }
+
+    /** 
+     * <p>
+     * afterUpdate
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+
+    }
+
+    /** 
+     * <p>
+     * beforeDelete
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+
+    }
+
+    /** 
+     * <p>
+     * beforeInsert
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        if (this.valueObjects == null)
+        {
+            this.valueObjects = new ArrayList(values.size());
+        }
+        PreferenceValueImpl.convertStringsToValueObjects(values, valueObjects);
+
+    }
+
+    /** 
+     * <p>
+     * beforeUpdate
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        if (this.valueObjects == null)
+        {
+            this.valueObjects = new ArrayList(values.size());
+        }
+        PreferenceValueImpl.convertStringsToValueObjects(values, valueObjects);
+
     }
 
 }
