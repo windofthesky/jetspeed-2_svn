@@ -215,10 +215,6 @@ limitations under the License.
   	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
     
     <copy file="${portal_project.getDependencyPath('pluto')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
-    <copy file="${portal_project.getDependencyPath('commons-lang')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
-    <copy file="${portal_project.getDependencyPath('commons-logging')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
-    <copy file="${portal_project.getDependencyPath('commons-configuration')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
-    <copy file="${portal_project.getDependencyPath('log4j')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
     <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-commons')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true" />
     <copy file="${portal_project.getDependencyPath('portlet-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>  	  
     <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>    
