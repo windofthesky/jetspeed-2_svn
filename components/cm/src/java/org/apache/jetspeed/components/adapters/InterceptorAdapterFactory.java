@@ -15,12 +15,14 @@
  */
 package org.apache.jetspeed.components.adapters;
 
-import org.picocontainer.defaults.DecoratingComponentAdapterFactory;
-import org.picocontainer.defaults.DefaultComponentAdapterFactory;
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.Parameter;
 import org.picocontainer.PicoIntrospectionException;
-import org.picocontainer.defaults.*;
+import org.picocontainer.defaults.AssignabilityRegistrationException;
+import org.picocontainer.defaults.ComponentAdapterFactory;
+import org.picocontainer.defaults.DecoratingComponentAdapterFactory;
+import org.picocontainer.defaults.DefaultComponentAdapterFactory;
+import org.picocontainer.defaults.NotConcreteRegistrationException;
 
 /**
  * InterceptorAdapterFactory
