@@ -144,7 +144,7 @@ public class TestPersistenceContainer extends DatasourceTestCase
         store2.getTransaction().begin();
         A a2 = new A();
  
-        a.setName("a2");
+        a2.setName("a2");
         store2.makePersistent(a2);
         store2.getTransaction().commit();
         
