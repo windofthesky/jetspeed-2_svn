@@ -55,22 +55,36 @@
       </properties>
     </dependency>
     <dependency>
-      <id>spring:spring-core</id>
-      <version>1.0.2</version>
+      <id>springframework:spring-core</id>
+      <version>1.1.1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
-      <id>spring:spring-aop</id>
-      <version>1.0.2</version>
+      <id>springframework:spring-aop</id>
+      <version>1.1.1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
-      <id>spring:spring-context</id>
-      <version>1.0.2</version>
+      <id>springframework:spring-context</id>
+      <version>1.1.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>springframework:spring-dao</id>
+      <version>1.1.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>springframework:spring-orm</id>
+      <version>1.1.1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
