@@ -24,12 +24,16 @@ import java.util.ResourceBundle;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 
 import org.apache.commons.validator.Validator;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.commons.validator.ValidatorResources;
 import org.apache.commons.validator.ValidatorResults;
+import org.apache.portals.bridges.frameworks.ExternalComponentSupport;
+import org.apache.portals.bridges.frameworks.Lookup;
 import org.apache.portals.bridges.frameworks.model.ModelBean;
 import org.apache.portals.bridges.frameworks.model.PortletApplicationModel;
 import org.apache.portals.bridges.frameworks.spring.ModelBeanImpl;
@@ -93,6 +97,10 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
      */    
     private Map actionForwardMap = null;
     
+    private Map modelBeanMap = new HashMap();
+    
+    private Map externalSupportMap = new HashMap();
+    
     private static Object semaphore = new Object();
     
     private String springConfig;
@@ -102,6 +110,11 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
     {
         this.springConfig = springConfig;
         this.validatorConfig = validatorConfig;
+    }
+    
+    public void setExternalSupport(Map map)
+    {
+        this.externalSupportMap = map;
     }
     
     public void init(PortletConfig config)
@@ -172,7 +185,7 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
          
          // View to Validator Map
          synchronized (semaphore)
-         {
+         {             
              viewValidatorMap = (Map)springFactory.getBean(PORTLET_VIEW_VALIDATOR_MAP);
              if (viewValidatorMap == null)
              {
@@ -198,17 +211,45 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
              {
                  actionForwardMap = new HashMap();              
              }
-         }                          
+         }
+         
+         
     }
     
-    public ModelBean getBean(String view)
+    public ModelBean getModelBean(String view)
     {
+        ModelBean modelBean;
         String beanName = (String)viewBeanMap.get(view);
         if (beanName != null)
         {
-            return new ModelBeanImpl(beanName, ModelBean.POJO);
+            modelBean = (ModelBean)modelBeanMap.get(beanName);
+            if (modelBean == null)
+            {
+                BeanDefinition bd = springFactory.getBeanDefinition(beanName);
+                Object bean = springFactory.getBean(beanName);
+                if (bd == null || bean == null)
+                {
+                    return new ModelBeanImpl(beanName, ModelBean.POJO);
+                }                   
+                String lookup = null;
+                boolean requiresExternalSupport = false;
+                PropertyValue value = bd.getPropertyValues().getPropertyValue("lookupKey");
+                if (value != null)
+                {
+                    lookup = (String)value.getValue();
+                }                
+                if (bean instanceof ExternalComponentSupport)
+                {
+                    requiresExternalSupport = true;
+                }
+                modelBean = new ModelBeanImpl(beanName, ModelBean.POJO, lookup, requiresExternalSupport);
+            }
         }
-        return new ModelBeanImpl(beanName, ModelBean.PREFS_MAP);
+        else
+        {
+            modelBean = new ModelBeanImpl(beanName, ModelBean.PREFS_MAP);
+        }        
+        return modelBean;
     }
     
     public String getTemplate(String view)
@@ -216,11 +257,38 @@ public class PortletApplicationModelImpl implements PortletApplicationModel
         return (String)logicalViewMap.get(view);
     }
     
-    public Object createBean(ModelBean mb)
+    public Object lookupBean(ModelBean mb, String key)
     {
-        return springFactory.getBean(mb.getBeanName());
+        Object bean = springFactory.getBean(mb.getBeanName());
+        if (bean != null)
+        {
+            if (mb.isRequiresExternalSupport())
+            {
+                ExternalComponentSupport ecs = (ExternalComponentSupport)bean;
+                ecs.setExternalSupport(externalSupportMap.get(mb.getBeanName()));
+            }
+            if (mb.isRequiresLookup())
+            {
+                ((Lookup)bean).lookup(key);
+            }
+        }
+        return bean;
     }
 
+    public Object createBean(ModelBean mb)
+    {
+        Object bean = springFactory.getBean(mb.getBeanName());
+        if (bean != null)
+        {
+            if (mb.isRequiresExternalSupport())
+            {
+                ExternalComponentSupport ecs = (ExternalComponentSupport)bean;
+                ecs.setExternalSupport(externalSupportMap.get(mb.getBeanName()));
+            }
+        }
+        return bean;
+    }
+    
     public Map createPrefsBean(ModelBean mb, Map original)
     {
         Map prefs = new HashMap();

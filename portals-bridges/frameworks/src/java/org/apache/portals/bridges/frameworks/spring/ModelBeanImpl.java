@@ -29,11 +29,21 @@ public class ModelBeanImpl implements ModelBean
 
     private String beanName;
     private int beanType;
-    
+    private boolean requiresExternalSupport = false;
+    private String lookupKey;
+
     public ModelBeanImpl(String beanName, int beanType)
     {
         this.beanName = beanName;
         this.beanType = beanType;
+    }
+    
+    public ModelBeanImpl(String beanName, int beanType, String lookupKey, boolean requiresExternalSupport)
+    {
+        this.beanName = beanName;
+        this.beanType = beanType;
+        this.lookupKey = lookupKey;
+        this.requiresExternalSupport = requiresExternalSupport;
     }
     
     /* (non-Javadoc)
@@ -52,4 +62,38 @@ public class ModelBeanImpl implements ModelBean
         return beanType;
     }
 
+    /**
+     * @return Returns the lookupKey.
+     */
+    public String getLookupKey()
+    {
+        return lookupKey;
+    }
+    /**
+     * @param lookupKey The lookupKey to set.
+     */
+    public void setLookupKey(String lookupKey)
+    {
+        this.lookupKey = lookupKey;
+    }
+    /**
+     * @return Returns the requiresExternalSupport.
+     */
+    public boolean isRequiresExternalSupport()
+    {
+        return requiresExternalSupport;
+    }
+    /**
+     * @param requiresExternalSupport The requiresExternalSupport to set.
+     */
+    public void setRequiresExternalSupport(boolean requiresExternalSupport)
+    {
+        this.requiresExternalSupport = requiresExternalSupport;
+    }
+    
+    public boolean isRequiresLookup()
+    {
+        return (lookupKey!= null);
+    }
+    
 }

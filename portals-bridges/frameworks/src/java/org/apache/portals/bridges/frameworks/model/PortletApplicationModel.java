@@ -33,11 +33,12 @@ public interface PortletApplicationModel
     void init(PortletConfig config)
     throws PortletException;
     
-    ModelBean getBean(String view);
+    ModelBean getModelBean(String view);
 
     String getTemplate(String view);
     
     Object createBean(ModelBean mb);
+    Object lookupBean(ModelBean mb, String key);
     
     Map createPrefsBean(ModelBean mb, Map prefs);
     
@@ -47,5 +48,5 @@ public interface PortletApplicationModel
     String getForward(String view, String status);
     
     String getForward(String actionForward);
-    
+    void setExternalSupport(Map map);
 }

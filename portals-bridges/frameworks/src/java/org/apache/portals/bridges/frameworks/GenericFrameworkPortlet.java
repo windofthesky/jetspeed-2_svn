@@ -16,6 +16,7 @@
 package org.apache.portals.bridges.frameworks;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,7 +56,6 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  */
 public class GenericFrameworkPortlet extends GenericVelocityPortlet
 {
-
     /**
      * Init Parameter: default spring configuration property
      */
@@ -83,10 +83,14 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     {
     }
 
+    public void setExternalSupport(Map map)
+    {
+        model.setExternalSupport(map);
+    }
+    
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
-
         String springConfig = this.getInitParameter(INITPARAM_SPRING_CONFIG);
         if (springConfig == null) { throw new PortletException("Spring Configuration file not specified"); }
 
@@ -116,7 +120,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         String view = determineLogicalView(request);
 
         Object bean = null;
-        ModelBean mb = model.getBean(view);
+        ModelBean mb = model.getModelBean(view);
 
         if (mb.getBeanType() == ModelBean.PREFS_MAP)
         {
@@ -171,8 +175,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     protected void forwardToView(ActionRequest request, ActionResponse response, String forward)
     {
-        if (forward == null) { return; // stay on same page
-        }
+        if (forward == null) { return; } // stay on same page
 
         String logicalView = null;
         PortletMode newMode = null;
@@ -399,12 +402,12 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     {
 
         // try to get the bean from the session first
-        Object bean = request.getPortletSession().getAttribute(mb.getBeanName());
+        Object bean = getBeanFromSession(request, mb); 
         if (bean == null)
         {
             bean = model.createBean(mb);
             if (bean == null) { throw new PortletException("Portlet Action error in creating bean for view: " + view); }
-            request.getPortletSession().setAttribute(mb.getBeanName(), bean);
+            putBeanInSession(request, mb, bean);
         }
 
         Map params = request.getParameterMap();
@@ -509,16 +512,16 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         String template = model.getTemplate(view);
         if (template == null) { throw new PortletException("Template not found for Logical View: " + view); }
 
-        ModelBean mb = model.getBean(view);
-        if (mb.getBeanType() == ModelBean.PREFS_MAP)
+        ModelBean mb = model.getModelBean(view);
+        switch (mb.getBeanType())
         {
-            prefsToContext(request, view, mb);
-        }
-        else
-        {
+        case ModelBean.PREFS_MAP:
+            preferencesToContext(request, view, mb);
+            break;
+        case ModelBean.POJO:
             beanToContext(request, view, mb);
+            break;
         }
-
         putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
         Map errors = (Map)request.getPortletSession().getAttribute(SESSION_ERROR_MESSAGES, PortletSession.PORTLET_SCOPE);
         if (errors != null)
@@ -534,28 +537,57 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     private void beanToContext(RenderRequest request, String view, ModelBean mb)
     {
-        Object bean = request.getPortletSession().getAttribute(mb.getBeanName());
+        Object bean;
+        
+        String key = (String)request.getAttribute(mb.getLookupKey());
+        if (key != null)
+        {
+            bean = model.lookupBean(mb, key);
+        }
+        else
+        {
+            bean = getBeanFromSession(request, mb);
+        }
         if (bean == null)
         {
             bean = model.createBean(mb);
             if (bean == null) { return; }
-            request.getPortletSession().setAttribute(mb.getBeanName(), bean);
+            putBeanInSession(request, mb, bean);
         }
         putRequestVariable(request, mb.getBeanName(), bean);
     }
 
-    private void prefsToContext(RenderRequest request, String view, ModelBean mb)
+    private void preferencesToContext(RenderRequest request, String view, ModelBean mb)
     {
         Map bean = (Map) request.getPortletSession().getAttribute(view + PREFS_SUFFIX);
         if (bean == null)
         {
             PortletPreferences prefs = request.getPreferences();
             bean = model.createPrefsBean(mb, prefs.getMap());
-            request.getPortletSession().setAttribute(view + PREFS_SUFFIX, bean);
+            putBeanInSession(request, mb, bean);
         }
         putRequestVariable(request, FrameworkConstants.PREFS_VARIABLE, bean);
     }
 
+    
+    private Object getBeanFromSession(PortletRequest request, ModelBean mb)
+    {
+        return request.getPortletSession().getAttribute(makeModelBeanKey(mb));
+    }
+
+    private void putBeanInSession(PortletRequest request, ModelBean mb, Object bean)
+    {
+        if (bean instanceof Serializable)
+        {
+            request.getPortletSession().setAttribute(makeModelBeanKey(mb), bean);
+        }
+    }
+    
+    private String makeModelBeanKey(ModelBean mb)
+    {
+        return "ModelBean:" + mb.getBeanName();
+    }
+    
     /**
      * Specific for Velocity
      * 

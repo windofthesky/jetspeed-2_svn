@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.portals.bridges.frameworks.model;
+package org.apache.portals.bridges.frameworks;
 
 
 /**
- * BeanModel
+ * ExternalComponentSupport
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface ModelBean
+public interface ExternalComponentSupport
 {
-    final int POJO = 0;
-    final int PREFS_MAP = 1;
-    final int DYNABEAN = 2;
-    
-    String getBeanName();
-    
-    int getBeanType();
-           
-    String getLookupKey();
-    
-    boolean isRequiresLookup();
-    
-    boolean isRequiresExternalSupport();
+    void setExternalSupport(Object externalSupportObject);
 }
