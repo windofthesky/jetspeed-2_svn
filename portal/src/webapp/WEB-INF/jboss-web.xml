@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -16,10 +16,11 @@ limitations under the License.
 -->
 <jboss-web>
   <class-loading>
-    <loader-repository>
-      org.apache.jetspeed:loader=unique-archive-name
+    <loader-repository java2ClassLoadingCompliance="false">
+      org.apache.jetspeed:loader=jetspeed.war<loader-repository-config>java2ParentDelegation=false</loader-repository-config>
     </loader-repository>
   </class-loading>
+  <security-domain flushOnSessionInvalidation="true">java:/jaas/Jetspeed</security-domain>
   <resource-ref>
     <res-ref-name>jdbc/jetspeed</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
