@@ -194,7 +194,7 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}/components/deploy-tool"
                includes="project.xml"
-               goals="jar:install,uberjar"
+               goals="jar:install"
                banner="Build and Install the Jetspeed Components jar"
                postProcessing="false"
                ignoreFailures="false"/>			   
