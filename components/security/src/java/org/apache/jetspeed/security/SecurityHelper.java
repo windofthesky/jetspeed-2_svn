@@ -15,7 +15,9 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 
@@ -93,7 +95,7 @@ public class SecurityHelper
      */
     public static String getPreferencesFullPath(Principal principal)
     {
-        
+
         if ((UserPrincipal.class).isInstance(principal))
         {
             return UserPrincipalImpl.getFullPathFromPrincipalName(principal.getName());
@@ -110,5 +112,18 @@ public class SecurityHelper
         {
             return null;
         }
+    }
+
+    /**
+     * <p>Utility method to create a subject.</p>
+     * @param principalName The user principal name.
+     * @return The subject.
+     */
+    public static Subject createSubject(String principalName)
+    {
+        Principal principal = new UserPrincipalImpl(principalName);
+        Set principals = new HashSet();
+        principals.add(principal);
+        return new Subject(true, principals, new HashSet(), new HashSet());
     }
 }
