@@ -32,16 +32,18 @@ public interface PortletWindowAccessor
      * 
      * @param fragment
      * @return
+     * @throws FailedToRetrievePortletWindow
      */
-    PortletWindow getPortletWindow(Fragment fragment);
+    PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow;
     
     /**
      * Get the portlet window for a fragment and given principal
      * @param fragment
      * @param principal
      * @return
+     * @throws FailedToCreateWindowException
      */
-    PortletWindow getPortletWindow(Fragment fragment, String principal);
+    PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException;
 
     /**
      * Lookup a portlet window in the cache

@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.container.window.impl;
 
-import groovy.swing.impl.Startable;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
+import org.apache.jetspeed.container.window.FailedToCreateWindowException;
+import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
@@ -33,8 +33,6 @@ import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
 
 /**
  * Portlet Window Accessor Implementation
@@ -86,17 +84,24 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         return getWindowFromCache(windowId);
     }
     
-    public PortletWindow getPortletWindow(Fragment fragment)
+    public PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow
     {
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
         {
-            return createPortletWindow(fragment);
+            try
+            {
+                return createPortletWindow(fragment);
+            }
+            catch (FailedToCreateWindowException e)
+            {
+                throw new FailedToRetrievePortletWindow(e.toString(), e);
+            }
         }
         return portletWindow;
     }
     
-    public PortletWindow getPortletWindow(Fragment fragment, String principal)
+    public PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException
     {
         PortletWindow portletWindow = getWindowFromCache(fragment);
         if (portletWindow == null)
@@ -106,12 +111,12 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         return portletWindow;
     }
 
-    private PortletWindow createPortletWindow(Fragment fragment)
+    private PortletWindow createPortletWindow(Fragment fragment) throws FailedToCreateWindowException
     {
         return createPortletWindow(fragment, null);
     }
     
-    private PortletWindow createPortletWindow(Fragment fragment, String principal)
+    private PortletWindow createPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException
     {
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
                 
@@ -126,16 +131,16 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
             }
             catch (PortletEntityNotGeneratedException e)
             {
-                log.error("Error generating new PortletEntity: "+e.toString(), e);                
+                throw new FailedToCreateWindowException("Error generating new PortletEntity: "+e.toString(), e);                
             }
             catch (PortletEntityNotStoredException e)
             {
-                log.error("Error storing new PortletEntity: "+e.toString(), e);
+                throw new FailedToCreateWindowException("Error storing new PortletEntity: "+e.toString(), e);
             }
             
             if(portletEntity == null)
             {
-                throw new IllegalStateException("Unable to generate portlet entity.");
+                throw new FailedToCreateWindowException("Unable to generate portlet entity.");
             }
             
         }
