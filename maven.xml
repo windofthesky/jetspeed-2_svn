@@ -49,6 +49,18 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
   </goal>
+  
+  <goal name="build.all.components"
+        description="Build and install all the component jars">
+
+    <maven:reactor
+               basedir="${basedir}"
+               includes="**/components/*/project.xml"
+               goals="jar:install"
+               banner="Build and install all the component jars"
+               postProcessing="false"
+               ignoreFailures="false"/>
+   </goal>
 
   <goal name="allBuild"
         description="Build all jars and war">
