@@ -314,6 +314,15 @@ limitations under the License.
                banner="Building layout portlets WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+
+     <maven:reactor
+               basedir="${basedir}/applications/localeselector"
+               includes="project.xml"
+               excludes="applications/project.xml"
+               goals="war:install"
+               banner="Build and Install the Locale Selector WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>
      
     <!-- build jetspeed 2 plugin -->
     <maven:reactor
