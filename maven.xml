@@ -207,6 +207,61 @@
                postProcessing="false"
                ignoreFailures="false"/>
   </goal>
-  
-  
+    
+  <goal name="db.scripts.gen" prereqs="torque:init"
+        description="Build SQL scripts using Torque generator">
+
+    <echo message="Generating SQL schema creation scripts for HSQLDB"/>
+    <torque-sql
+      basePathToDbProps="sql/base/"
+      contextProperties="${torque.contextProperties}"
+      controlTemplate="${torque.template.sql}"
+      idTableXMLFile="${torque.idTableXMLFile}"
+      outputDirectory="${maven.build.src}/sql/hsql"
+      outputFile="report.${torque.project}.sql.generation"
+      sqldbmap="${maven.build.src}/sql/hsql/sqldb.map"
+      targetDatabase="hypersonic"
+      useClasspath="true">
+      <fileset dir="${torque.schema.dir}"
+        includes="${torque.schema.sql.includes}"
+        excludes="${torque.schema.sql.excludes}"
+      />
+    </torque-sql>
+
+    <echo message="Generating SQL schema creation scripts for MySQL"/>
+    <torque-sql
+      basePathToDbProps="sql/base/"
+      contextProperties="${torque.contextProperties}"
+      controlTemplate="${torque.template.sql}"
+      idTableXMLFile="${torque.idTableXMLFile}"
+      outputDirectory="${maven.build.src}/sql/mysql"
+      outputFile="report.${torque.project}.sql.generation"
+      sqldbmap="${maven.build.src}/sql/mysql/sqldb.map"
+      targetDatabase="mysql"
+      useClasspath="true">
+      <fileset dir="${torque.schema.dir}"
+        includes="${torque.schema.sql.includes}"
+        excludes="${torque.schema.sql.excludes}"
+      />
+    </torque-sql>
+
+    <echo message="Generating SQL schema creation scripts for Oracle"/>
+    <torque-sql
+      basePathToDbProps="sql/base/"
+      contextProperties="${torque.contextProperties}"
+      controlTemplate="${torque.template.sql}"
+      idTableXMLFile="${torque.idTableXMLFile}"
+      outputDirectory="${maven.build.src}/sql/oracle"
+      outputFile="report.${torque.project}.sql.generation"
+      sqldbmap="${maven.build.src}/sql/oracle/sqldb.map"
+      targetDatabase="oracle"
+      useClasspath="true">
+      <fileset dir="${torque.schema.dir}"
+        includes="${torque.schema.sql.includes}"
+        excludes="${torque.schema.sql.excludes}"
+      />
+    </torque-sql>
+                 
+  </goal>
+
 </project>
