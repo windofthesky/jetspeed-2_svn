@@ -136,7 +136,7 @@ limitations under the License.
           <input type="checkbox" 
                  <c:if test="${credential.updateRequired}">checked</c:if>
                  onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
-           class="portlet-form-label-field" />
+           class="portlet-form-field-label" />
         </td>
         <td class="portlet-section-body" >
           <fmt:message key="security.credential.update.required"/>
@@ -157,7 +157,7 @@ limitations under the License.
           <input type="checkbox" 
                  <c:if test="${credential.enabled}">checked</c:if>
                  onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
-           class="portlet-form-label-field" />
+           class="portlet-form-field-label" />
         </td>
         <td class="portlet-section-body" >
           <fmt:message key="security.enabled"/>
@@ -223,7 +223,7 @@ limitations under the License.
 					<fmt:message key="security.rolename"/>
 				</td>
 			    <td class="portlet-section-body" align="left">
-			 		<select name="role_name" class="portlet-form-label-field">		
+			 		<select name="role_name" class="portlet-form-field-label">		
 						<c:forEach var="roleName" items="${jetspeedRoles}">			    
 						    <option value="<c:out value='${roleName}'/>">
 							  <c:out value="${roleName}"/>						    
@@ -275,7 +275,7 @@ limitations under the License.
 					<fmt:message key="security.groupname"/>
 				</td>
 			    <td class="portlet-section-body" align="left">
-			 		<select name="group_name" class="portlet-form-label-field">		
+			 		<select name="group_name" class="portlet-form-field-label">		
 						<c:forEach var="groupName" items="${jetspeedGroups}">			    
 						    <option value="<c:out value='${groupName}'/>">
 							  <c:out value="${groupName}"/>						    
@@ -341,7 +341,7 @@ limitations under the License.
 					<fmt:message key="security.rule"/>
 				</td>
 				<td class="portlet-section-body" >
-					<select name="select_rule" class="portlet-form-label-field">								
+					<select name="select_rule" class="portlet-form-field-label">								
 						<c:forEach var="prule" items="${prules}">						    						    
 						    <option value="<c:out value="${prule.id}"/>">
 							  <c:out value="${prule.id}"/>

@@ -31,7 +31,7 @@ limitations under the License.
 
 <form action="<c:out value="${searchLink}"/>" method="post">
 
-	<input type="text" name="query" value="" class="portlet-form-label-field"/>
+	<input type="text" name="query" value="" class="portlet-form-field-label"/>
 	<input type="submit" value="Search" class="portlet-form-button"/>
 
 </form>

@@ -37,7 +37,7 @@
   #end
     <td nowrap class="portlet-section-alternate" align="right">$!MESSAGES.getString($label):&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value" class="portlet-form-label-field">
+      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value" class="portlet-form-field-label">
     </td>
     <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
   </tr>

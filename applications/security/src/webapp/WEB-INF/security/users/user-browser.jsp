@@ -38,13 +38,13 @@ limitations under the License.
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">New User Name:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="jetspeed.user" size="30" value="" class="portlet-form-label-field">
+      <input type="text" name="jetspeed.user" size="30" value="" class="portlet-form-field-label">
     </td>
   </tr>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Password:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-label-field">
+      <input type="password" name="jetspeed.password" size="30" value="" class="portlet-form-field-label">
     </td>
   </tr>
   
@@ -52,7 +52,7 @@ limitations under the License.
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Default Role:&nbsp;</td>
     <td class="portlet-section-body" align="left">
- 		<select name="jetspeedRoles" class="portlet-form-label-field">		
+ 		<select name="jetspeedRoles" class="portlet-form-field-label">		
 			<option value=""/> 		 		
 			<c:forEach var="roleName" items="${jetspeedRoles}">			    
 			    <option value="<c:out value='${roleName}'/>"
@@ -68,7 +68,7 @@ limitations under the License.
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Profiling Rule:&nbsp;</td>
     <td class="portlet-section-body" align="left">
- 		<select name="jetspeedRules" class="portlet-form-label-field">		
+ 		<select name="jetspeedRules" class="portlet-form-field-label">		
 			<option value=""/> 		
 			<c:forEach var="ruleName" items="${jetspeedRules}">
 			    <option value="<c:out value='${ruleName}'/>"

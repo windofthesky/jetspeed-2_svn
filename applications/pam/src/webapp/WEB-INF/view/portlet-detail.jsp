@@ -97,7 +97,7 @@ limitations under the License.
                         <tr>
                             
                             <td class="portlet-section-alternate"><c:out value="${displayName.locale}"/></td>
-                            <td class="portlet-section-body"><input type="text" name="display_name:<c:out value="${displayNameStatus.index}"/>" value="<c:out value="${displayName.displayName}"/>" class="portlet-form-label-field"/></td>
+                            <td class="portlet-section-body"><input type="text" name="display_name:<c:out value="${displayNameStatus.index}"/>" value="<c:out value="${displayName.displayName}"/>" class="portlet-form-field-label"/></td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -116,7 +116,7 @@ limitations under the License.
                     <fmt:message key="pam.details.display_name"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="display_name" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="display_name" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <span class="portlet-form-field-label"><fmt:message key="pam.details.display_name.description"/></span>
@@ -127,7 +127,7 @@ limitations under the License.
                     <fmt:message key="pam.details.locale"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="locale" value="" size="2"  class="portlet-form-label-field"/>
+                    <input type="text" name="locale" value="" size="2"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <span class="portlet-form-field-label"><fmt:message key="pam.details.locale.description"/></span>
@@ -183,7 +183,7 @@ limitations under the License.
                     <c:forEach var="value" items="${pref.values}" varStatus="status">
                         <tr>
                             <td>
-                                <input type="text" name="<c:out value="${pref.name}"/>:<c:out value="${status.index}"/>" value="<c:out value="${value}"/>" class="portlet-form-label-field"/>
+                                <input type="text" name="<c:out value="${pref.name}"/>:<c:out value="${status.index}"/>" value="<c:out value="${value}"/>" class="portlet-form-field-label"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -208,7 +208,7 @@ limitations under the License.
                     <fmt:message key="pam.details.name"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="name" class="portlet-form-label-field"/>
+                    <input type="text" name="name" class="portlet-form-field-label"/>
                 </td>
                 <%--TODO add combo box of existing keys--%>
             </tr>
@@ -217,7 +217,7 @@ limitations under the License.
                     <fmt:message key="pam.details.value"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="value" class="portlet-form-label-field"/>
+                    <input type="text" name="value" class="portlet-form-field-label"/>
                 </td>
             </tr>
             <%--
@@ -261,23 +261,23 @@ limitations under the License.
                 <input type="hidden" name="language_edit_id" value="<c:out value="${status.index}"/>"/>
             </td>
             <td class="portlet-section-body">
-                <input type="text" name="title:<c:out value="${status.index}"/>" value="<c:out value="${lang.title}"/>" class="portlet-form-label-field"/>
+                <input type="text" name="title:<c:out value="${status.index}"/>" value="<c:out value="${lang.title}"/>" class="portlet-form-field-label"/>
             </td>
             <td class="portlet-section-body">
-                <input type="text" name="short_title:<c:out value="${status.index}"/>" value="<c:out value="${lang.shortTitle}"/>"  class="portlet-form-label-field"/>
+                <input type="text" name="short_title:<c:out value="${status.index}"/>" value="<c:out value="${lang.shortTitle}"/>"  class="portlet-form-field-label"/>
             </td>
             <td class="portlet-section-body">
                 <table>
                 <c:forEach var="keyword" items="${lang.keywords}" varStatus="keywordStatus">
                     <tr>
                         <td>
-                            <input type="text" name="keyword:<c:out value="${status.index}"/>:<c:out value="${keywordStatus.index}"/>" value="<c:out value="${keyword}"/>"  class="portlet-form-label-field"/>
+                            <input type="text" name="keyword:<c:out value="${status.index}"/>:<c:out value="${keywordStatus.index}"/>" value="<c:out value="${keyword}"/>"  class="portlet-form-field-label"/>
                         </td>
                     </tr>
                 </c:forEach>
                 </table>
                 <%--
-                <input type="text" name="keyword:<c:out value="${status.index}"/>" value="<c:forEach var="keyword" items="${lang.keywords}" varStatus="keywordStatus"><c:out value="${keyword}"/>,</c:forEach>" class="portlet-form-label-field"/>
+                <input type="text" name="keyword:<c:out value="${status.index}"/>" value="<c:forEach var="keyword" items="${lang.keywords}" varStatus="keywordStatus"><c:out value="${keyword}"/>,</c:forEach>" class="portlet-form-field-label"/>
                 --%>
             </td>
             <td class="portlet-section-body">
@@ -300,7 +300,7 @@ limitations under the License.
                     <fmt:message key="pam.details.title"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="title" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="title" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.title.description"/>
@@ -311,7 +311,7 @@ limitations under the License.
                     <fmt:message key="pam.details.short_title"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="short_title" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="short_title" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.short_title.description"/>
@@ -322,7 +322,7 @@ limitations under the License.
                     <fmt:message key="pam.details.keyword"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="keyword" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="keyword" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.keyword.description"/>
@@ -333,7 +333,7 @@ limitations under the License.
                     <fmt:message key="pam.details.locale"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="locale" value="" size="2"  class="portlet-form-label-field"/>
+                    <input type="text" name="locale" value="" size="2"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.locale.description"/>
@@ -376,7 +376,7 @@ limitations under the License.
                 <c:out value="${theparam.name}"/>
             </td>
             <td class="portlet-section-body">
-                <input type="text" name="<c:out value="${theparam.name}"/>:value" value="<c:out value="${theparam.value}"/>"  class="portlet-form-label-field"/>
+                <input type="text" name="<c:out value="${theparam.name}"/>:value" value="<c:out value="${theparam.value}"/>"  class="portlet-form-field-label"/>
             </td>
             <td class="portlet-section-body">
                 <%
@@ -391,7 +391,7 @@ limitations under the License.
                         </td>
                         <td class="portlet-section-body">
                             <input type="text" name="<c:out value="${theparam.name}"/>:description:<c:out value="${descStatus.index}"/>"
-                                value="<c:out value="${description.description}"/>"  class="portlet-form-label-field"/>
+                                value="<c:out value="${description.description}"/>"  class="portlet-form-field-label"/>
                         </td>
                     </tr>
                 </c:forEach>
@@ -414,7 +414,7 @@ limitations under the License.
                     <fmt:message key="pam.details.name"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="name" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="name" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.name.description"/>
@@ -425,7 +425,7 @@ limitations under the License.
                     <fmt:message key="pam.details.value"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="value" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="value" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.value.description"/>
@@ -436,7 +436,7 @@ limitations under the License.
                     <fmt:message key="pam.details.description"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="description" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="description" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.description.description"/>
@@ -447,7 +447,7 @@ limitations under the License.
                     <fmt:message key="pam.details.locale"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="locale" value="" size="2"  class="portlet-form-label-field"/>
+                    <input type="text" name="locale" value="" size="2"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.locale.description"/>
@@ -482,10 +482,10 @@ limitations under the License.
                 </td>
                 <td class="portlet-section-body">
                     <input type="hidden" name="security_edit_id" value="<c:out value="${therole.roleName}"/>"/>
-                    <input type="text" name="<c:out value="${therole.roleName}"/>:name" value="<c:out value="${therole.roleName}"/>"  class="portlet-form-label-field"/>
+                    <input type="text" name="<c:out value="${therole.roleName}"/>:name" value="<c:out value="${therole.roleName}"/>"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="<c:out value="${therole.roleName}"/>:link" value="<c:out value="${therole.roleLink}"/>"  class="portlet-form-label-field"/>
+                    <input type="text" name="<c:out value="${therole.roleName}"/>:link" value="<c:out value="${therole.roleLink}"/>"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <%
@@ -500,7 +500,7 @@ limitations under the License.
                             </td>
                             <td class="portlet-section-body">
                                 <input type="text" name="<c:out value="${therole.roleName}"/>:description:<c:out value="${descStatus.index}"/>"
-                                    value="<c:out value="${description.description}"/>"  class="portlet-form-label-field"/>
+                                    value="<c:out value="${description.description}"/>"  class="portlet-form-field-label"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -524,7 +524,7 @@ limitations under the License.
                     <fmt:message key="pam.details.role_name"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="name" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="name" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.role_name.description"/>
@@ -535,7 +535,7 @@ limitations under the License.
                     <fmt:message key="pam.details.role_link"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="link" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="link" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.role_link.description"/>
@@ -546,7 +546,7 @@ limitations under the License.
                     <fmt:message key="pam.details.description"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="description" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="description" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.description.description"/>
@@ -557,7 +557,7 @@ limitations under the License.
                     <fmt:message key="pam.details.locale"/>
                 </td>
                 <td class="portlet-section-body">
-                    <input type="text" name="locale" value="" size="2"  class="portlet-form-label-field"/>
+                    <input type="text" name="locale" value="" size="2"  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.locale.description"/>
@@ -615,7 +615,7 @@ limitations under the License.
                 </td>
                 <td class="portlet-section-body">
                     <%--TODO:  this could be a select box--%>
-                    <input type="text" name="content_type" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="content_type" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.content_type.description"/>
@@ -642,7 +642,7 @@ limitations under the License.
                 </td>
                 <td class="portlet-section-body">
                     <%--TODO:  this could be a select box--%>
-                    <input type="text" name="custom_modes" value=""  class="portlet-form-label-field"/>
+                    <input type="text" name="custom_modes" value=""  class="portlet-form-field-label"/>
                 </td>
                 <td class="portlet-section-body">
                     <fmt:message key="pam.details.custom_modes.description"/>

@@ -95,7 +95,7 @@ function openWindow(element)
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Portal Principal:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="portal.principal" size="30" value="$!currentP" class="portlet-form-label-field">
+      <input type="text" name="portal.principal" size="30" value="$!currentP" class="portlet-form-field-label">
 	 <a href="javascript:openWindow('portal.principal');">
         <img title="Select a user"
              name="assigneeImage" 
@@ -106,12 +106,12 @@ function openWindow(element)
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Remote Principal:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="remote.principal" size="30" value="$!currentR" class="portlet-form-label-field">
+      <input type="text" name="remote.principal" size="30" value="$!currentR" class="portlet-form-field-label">
   </tr>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Remote Credential:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="password" name="remote.credential" size="30" value="$!remoteCredential" class="portlet-form-label-field">      
+      <input type="password" name="remote.credential" size="30" value="$!remoteCredential" class="portlet-form-field-label">      
     </td>
   </tr>  
 </table>

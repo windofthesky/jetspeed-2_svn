@@ -142,7 +142,7 @@ limitations under the License.
 					<c:out value="${userAttr.name}"/>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>" class="portlet-form-label-field"/>
+					<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 		</c:forEach>
@@ -161,7 +161,7 @@ limitations under the License.
 					<fmt:message key="pam.details.name"/>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="user_attr_name" value="" class="portlet-form-label-field"/>
+					<input type="text" name="user_attr_name" value="" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 			<tr>
@@ -169,7 +169,7 @@ limitations under the License.
 					<fmt:message key="pam.details.description"/>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="user_attr_desc" value="" class="portlet-form-label-field"/>
+					<input type="text" name="user_attr_desc" value="" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 		</table>

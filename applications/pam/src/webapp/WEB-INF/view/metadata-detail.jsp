@@ -52,7 +52,7 @@ limitations under the License.
 					<span class="portlet-form-label"><fmt:message key="pam.details.name"/></span>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="name" value="" class="portlet-form-label-field"/>
+					<input type="text" name="name" value="" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 			<tr>
@@ -60,7 +60,7 @@ limitations under the License.
 					<span class="portlet-form-label"><fmt:message key="pam.details.value"/></span>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="value" value="" class="portlet-form-label-field"/>
+					<input type="text" name="value" value="" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 			<tr>
@@ -68,7 +68,7 @@ limitations under the License.
 					<span class="portlet-form-label"><fmt:message key="pam.details.locale"/></span>
 				</td>
 				<td class="portlet-section-body">
-					<input type="text" name="locale" value="" class="portlet-form-label-field"/>
+					<input type="text" name="locale" value="" class="portlet-form-field-label"/>
 				</td>
 			</tr>
 		</table>

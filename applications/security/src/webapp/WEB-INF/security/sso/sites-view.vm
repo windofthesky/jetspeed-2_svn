@@ -79,13 +79,13 @@ limitations under the License.
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Site Name:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="site.name" size="40" value="$!currentSite" class="portlet-form-label-field">
+      <input type="text" name="site.name" size="40" value="$!currentSite" class="portlet-form-field-label">
     </td>
   </tr>
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Site URL:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="site.url" size="40" value="$!currentUrl" class="portlet-form-label-field">
+      <input type="text" name="site.url" size="40" value="$!currentUrl" class="portlet-form-field-label">
     </td>
   </tr>
 </table>
