@@ -261,7 +261,7 @@ limitations under the License.
           <directory>${basedir}/src/test</directory>
           <excludes>
            <exclude>**/*.java</exclude>
-          <exclude>repository_database.xml</exclude>
+           <exclude>repository_database.xml</exclude>
           </excludes>
         </resource>
       </resources>
