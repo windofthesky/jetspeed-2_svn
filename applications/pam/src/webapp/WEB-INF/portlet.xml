@@ -16,6 +16,29 @@ limitations under the License.
 -->
 <portlet-app id="pam" version="1.0">
 
+<portlet id="PortletApplicationBrowser">
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+            <value>/WEB-INF/view/pam.jsp</value>
+     </init-param>   
+    <portlet-name>PortletApplicationManager</portlet-name>
+    <display-name>Portlet Application Manager</display-name>
+    <description>The PAM (Portlet Application Manager)</description>
+    <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationManager</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>    
+    <portlet-info>
+      <title>Portlet Application Manager</title>
+      <short-title>PAM</short-title>
+      <keywords>applications,apps,PAM</keywords>
+    </portlet-info>
+  </portlet>
+
 <portlet id="LocaleSelector">
     <portlet-name>LocaleSelector</portlet-name>
     <display-name>Locale Selector</display-name>

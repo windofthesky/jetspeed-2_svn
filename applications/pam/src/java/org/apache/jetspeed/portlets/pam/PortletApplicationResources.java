@@ -31,6 +31,9 @@ public interface PortletApplicationResources
     public final static String CPS_GROUP_MANAGER_COMPONENT = "cps:GroupManager";
     public final static String CPS_PROFILER_COMPONENT = "cps:Profiler";
     public final static String CPS_SSO_COMPONENT = "cps:SSO";    
+    public final static String CPS_APPLICATION_SERVER_MANAGER_COMPONENT = "cps:ApplicationServerManager";
+    public final static String CPS_PORTLET_FACTORY_COMPONENT = "cps:PortletFactory";    
+    public final static String CPS_DEPLOYMENT_MANAGER_COMPONENT = "cps:DeploymentManager";    
     
     /** the selected non-leaf node in the tree view */
     public final static String REQUEST_NODE = "node";
