@@ -17,11 +17,11 @@ package org.apache.portals.applications.rss;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
@@ -167,9 +167,7 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
         if (entry != null)
         {
             byte[] bytes = (byte[])entry.getDocument();
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            Streams.drain(bais, response.getPortletOutputStream());
-            bais.close();
+            Streams.drain(new StringReader(new String(bytes,"UTF-8")),  response.getWriter());
         }
         else
         {
@@ -187,12 +185,11 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
                 parameters.put("showtitle", prefs.getValue("showtitle", "true"));
                 parameters.put("showtextinput", prefs.getValue("showtextinput", "true"));
                            
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();                                
-                transform.transform(realStylesheet, source, baos, parameters); //response.getPortletOutputStream(), parameters);
-                byte[] bytes = baos.toByteArray();
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                Streams.drain(bais, response.getPortletOutputStream());                
-                cache.put(key, bytes, 15);                
+                StringWriter sw= new StringWriter();
+                transform.transform(realStylesheet, source, sw, parameters); //response.getPortletOutputStream(), parameters);
+                Streams.drain(new StringReader(sw.toString()), response.getWriter());
+
+                cache.put(key, sw.toString().getBytes("UTF-8"), 15);                
             }
             catch (Exception ex)
             {
