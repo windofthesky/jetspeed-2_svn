@@ -17,6 +17,7 @@ limitations under the License.
 <!--
    - S E C U R I T Y  U S E R
 -->	
+<descriptor-repository version="1.0" isolation-level="read-uncommitted">
 <class-descriptor
     class="org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl"
     proxy="dynamic"
@@ -497,3 +498,4 @@ limitations under the License.
         <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
     </collection-descriptor>
 </class-descriptor>
+</descriptor-repository>
