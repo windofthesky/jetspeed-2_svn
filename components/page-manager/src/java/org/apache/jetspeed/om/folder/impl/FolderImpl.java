@@ -16,133 +16,70 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
-import org.apache.jetspeed.om.folder.FolderSet;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageSet;
-import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.impl.PageSetImpl;
-import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.page.document.AbstractNode;
+import org.apache.jetspeed.page.document.DocumentException;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.FolderHandler;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeOrderCompartaor;
+import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.page.document.NodeSetImpl;
+import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 /**
  * FolderImpl
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class FolderImpl implements Folder
+public class FolderImpl extends AbstractNode implements Folder
 {
 
-    private int id;
-    private String name;
     //TODO: need to grab this from metadata...once we have metadata
     private String defaultPage = "default-page.psml";
     private String defaultTheme;
-    private FolderSet folders;
-    private PageSet pages;
-    private String acl;
-    private Folder parent;
+    private NodeSet allNodes;
     private File directory;
-    private PageManager pageManager;
- 
-    private FolderMetaData metaData;
-    private Locale locale;
+    private DocumentHandlerFactory handlerFactory;
+    private FolderMetaData metadata;
+    private FolderHandler folderHandler;
+    
+    private static final Log log = LogFactory.getLog(FolderImpl.class);
 
-    //private GenericMetadata metadata;
-
-    public FolderImpl( File directory, String name, PageManager pageManager ) throws   IOException
+    public FolderImpl( String path, FolderMetaData metadata, DocumentHandlerFactory handlerFactory,
+            FolderHandler folderHandler )
     {
-
-        this.directory = directory;
-        ArgUtil.assertNotNull(String.class, name, this);
-        this.name = name;
-        this.pageManager = pageManager;
-        this.metaData = new FolderMetaDataImpl(this, directory);        
-        
+        this.metadata = metadata;
+        this.metadata.setParent(this);
+        this.handlerFactory = handlerFactory;
+        this.folderHandler = folderHandler;
+        setId(path);
+        setPath(path);
     }
 
-    /**
-     * @return Returns the directory.
-     */
-    public File getDirectory()
+    public FolderImpl( String path, DocumentHandlerFactory handlerFactory, FolderHandler folderHandler )
     {
-        return directory;
-    }
-
-    /**
-     * @return Returns the parent.
-     * @throws IOException
-     */
-    public Folder getParent() throws IOException
-    {
-        if (name.equals("/"))
-        {
-            return null;
-        }
-
-        if (parent == null)
-        {
-            int lastSlash = name.lastIndexOf('/');
-            if (lastSlash != -1)
-            {
-                parent = pageManager.getFolder(name.substring(0, lastSlash));
-            }
-        }
-
-        return parent;
-    }
-
-    /**
-     * @param parent
-     *            The parent to set.
-     */
-    public void setParent( Folder parent )
-    {
-        this.parent = parent;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getName()
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * @return Returns the acl.
-     */
-    public String getAcl()
-    {
-        return acl;
-    }
-
-    /**
-     * @param acl
-     *            The acl to set.
-     */
-    public void setAcl( String acl )
-    {
-        this.acl = acl;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#setName(java.lang.String)
-     */
-    public void setName( String name )
-    {
-        this.name = name;
+        this.metadata = new FolderMetaDataImpl();
+        this.metadata.setTitle(path);
+        this.metadata.setParent(this);
+        this.handlerFactory = handlerFactory;
+        this.folderHandler = folderHandler;
+        setId(path);
+        setPath(path);
     }
 
     /*
@@ -157,13 +94,13 @@ public class FolderImpl implements Folder
             getPage(defaultPage);
             return defaultPage;
         }
-        catch (PageNotFoundException e)
+        catch (NodeException e)
         {
             try
             {
                 return ((Page) getPages().iterator().next()).getId();
             }
-            catch (PageNotFoundException e1)
+            catch (NodeException e1)
             {
                 return "page_not_found.psml";
             }
@@ -206,42 +143,9 @@ public class FolderImpl implements Folder
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getFolders()
      */
-    public FolderSet getFolders() throws IOException
+    public NodeSet getFolders() throws FolderNotFoundException, DocumentException
     {
-        if (folders == null)
-        {
-            folders = new FolderSetImpl(this);
-            File[] children = getDirectory().listFiles();
-            for (int i = 0; i < children.length; i++)
-            {
-                String folderName = null;
-                if (children[i].isDirectory())
-                {
-                    if (name.equals("/"))
-                    {
-                        folderName = name + children[i].getName();
-                    }
-                    else
-                    {
-                        folderName = name + "/" + children[i].getName();
-                    }
-
-                    folders.add(pageManager.getFolder(folderName));
-                }
-            }
-        }
-
-        return folders;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#setFolders(java.util.Collection)
-     */
-    public void setFolders( FolderSet folders )
-    {
-        this.folders = folders;
+        return getAllNodes().subset(Folder.FOLDER_TYPE);
     }
 
     /*
@@ -249,40 +153,14 @@ public class FolderImpl implements Folder
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getPages()
      */
-    public PageSet getPages() throws PageNotFoundException
+    public NodeSet getPages() throws NodeException
     {
-        if (pages == null)
-        {
-            pages = new PageSetImpl(this);
-            File[] children = getDirectory().listFiles(new FilenameFilter(){
-
-                public boolean accept( File dir, String name )
-                {                   
-                    return name.endsWith(".psml");
-                }});
-            for (int i = 0; i < children.length; i++)
-            {
-                if (children[i].isFile())
-                {
-                    if (name.equals("/"))
-                    {
-                        pages.add(pageManager.getPage(name + children[i].getName()));
-                    }
-                    else
-                    {
-                        pages.add(pageManager.getPage(name + "/" + children[i].getName()));
-                    }
-                }
-
-            }
-        }
-
-        return pages;
+        return getAllNodes().subset(Page.DOCUMENT_TYPE);
     }
 
-    public Page getPage( String name ) throws PageNotFoundException
+    public Page getPage( String name ) throws PageNotFoundException, NodeException
     {
-        Page page = getPages().get(name);
+        Page page = (Page) getPages().get(name);
         if (page == null)
         {
             throw new PageNotFoundException("Jetspeed PSML page not found: " + name);
@@ -290,26 +168,199 @@ public class FolderImpl implements Folder
         return page;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * <p>
+     * getLinks
+     * </p>
      * 
-     * @see org.apache.jetspeed.om.folder.Folder#setPages(java.util.Collection)
+     * @see org.apache.jetspeed.om.folder.Folder#getLinks()
+     * @return @throws
+     *         DocumentNotFoundException
      */
-    public void setPages( PageSet pages )
+    public NodeSet getLinks() throws NodeException
     {
-        this.pages = pages;
+        return getAllNodes().subset(Link.DOCUMENT_TYPE);
     }
 
     /**
      * <p>
      * getMetaData
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.om.folder.Folder#getMetaData()
      * @return
      */
     public FolderMetaData getMetaData()
+    {
+        return metadata;
+    }
+
+    /**
+     * <p>
+     * getAllNodes
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getAllNodes()
+     * @return
+     * @throws DocumentException
+     * @throws FolderNotFoundException
+     */
+    public NodeSet getAllNodes() throws FolderNotFoundException, DocumentException
+    {
+        if(allNodes == null)
+        {            
+            if(metadata.getDocumentOrder() != null)
+            {
+                if (getPath().endsWith("/"))
+                {
+                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath()));
+                }
+                else
+                {
+                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath()+"/"));
+                }
+            }
+            else
+            {
+                allNodes = new NodeSetImpl(getPath());
+            }
+            
+            //DocumentHandler docHandler = handlerFactory.getDocumentHandler(documentType);
+
+            String[] nodeNames = folderHandler.listAll(getPath());
+            for (int i = 0; i < nodeNames.length; i++)
+            {
+                Node node = null;
+                try
+                {
+                    if (getPath().endsWith("/"))
+                    {
+                        if(nodeNames[i].indexOf(".") > -1)
+                        {    
+                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
+                        }
+                        else
+                        {
+                            node = folderHandler.getFolder(getPath() + nodeNames[i]);
+                        }
+                    }
+                    else
+                    {
+                        
+                        if(nodeNames[i].indexOf(".") > -1)
+                        {    
+                            node = handlerFactory.getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() +"/"+ nodeNames[i]);
+                        }
+                        else
+                        {
+                            node = folderHandler.getFolder(getPath() +"/"+ nodeNames[i]);
+                        }
+                    }
+                    
+                    node.setParent(this);
+                    allNodes.add(node);
+                }               
+                catch (UnsupportedDocumentTypeException e)
+                {
+                    // Skip unsupported documents
+                    log.info("getAllNodes() Skipping unsupported document: "+nodeNames[i]);
+                }
+                catch (Exception e)
+                {
+                    log.warn("getAllNodes() failed to create Node: "+nodeNames[i]+":"+e.toString(), e);
+                }               
+            }            
+        }
+        
+        return allNodes;
+    }
+    /**
+     * <p>
+     * getMetadata
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.AbstractNode#getMetadata()
+     * @return
+     */
+    public GenericMetadata getMetadata()
     {        
-        return metaData;
+        return metadata.getMetadata();
+    }
+    
+    
+    /**
+     * <p>
+     * getTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.AbstractNode#getTitle(java.util.Locale)
+     * @param locale
+     * @return
+     */
+    public String getTitle( Locale locale )
+    {
+        return metadata.getTitle(locale);
+    }
+    
+    
+    /**
+     * <p>
+     * getAcl
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecuredResource#getAcl()
+     * @return
+     */
+    public String getAcl()
+    {
+        return metadata.getAcl();
+    }
+    /**
+     * <p>
+     * getTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getTitle()
+     * @return
+     */
+    public String getTitle()
+    {
+        return metadata.getTitle();
+    }
+    /**
+     * <p>
+     * setAcl
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.common.SecuredResource#setAcl(java.lang.String)
+     * @param aclName
+     */
+    public void setAcl( String aclName )
+    {
+       metadata.setAcl(aclName);
+    }
+    /**
+     * <p>
+     * setTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#setTitle(java.lang.String)
+     * @param title
+     */
+    public void setTitle( String title )
+    {
+        metadata.setTitle(title);
+    }
+    /**
+     * <p>
+     * getType
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.Node#getType()
+     * @return
+     */
+    public String getType()
+    {
+        return FOLDER_TYPE;
     }
 }

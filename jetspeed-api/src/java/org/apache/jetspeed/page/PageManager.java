@@ -16,14 +16,18 @@
 
 package org.apache.jetspeed.page;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.page.document.DocumentException;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
@@ -36,7 +40,7 @@ public interface PageManager
 {
     /** The name of the service */
     public String SERVICE_NAME = "PageManager";
-    static final String PAGE_SUFFIX = ".psml";
+    
 
     /**
      * Creates a new empty Page instance
@@ -69,8 +73,11 @@ public interface PageManager
     *
     * @param locator The locator descriptor of the document to be retrieved.
     * @throws PageNotFoundException if the page cannot be found
+    * @throws NodeException
     */
-    public Page getPage(String id) throws PageNotFoundException;
+    public Page getPage(String id) throws PageNotFoundException, NodeException;
+    
+    public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
     
     /**
      * 
@@ -81,8 +88,12 @@ public interface PageManager
      * @param folderPath
      * @return <code>Folder</code> object represented by the <code>folderPath</code> or
      * <code>null</code> if no such folder exists.
+     * @throws DocumentException
+     * @throws FolderNotFoundException
+     * @throws NodeException
+     * @throws InvalidFolderException
      */
-    Folder getFolder(String folderPath) throws IOException;
+    Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
 
     /**
      * 
@@ -93,16 +104,10 @@ public interface PageManager
      * @param locator
      * @return
      * @throws PageNotFoundException if the page cannot be found.
+     * @throws DocumentException
+     * @throws NodeException
      */
-    public Page getPage(ProfileLocator locator) throws PageNotFoundException;
-
-    /** Query for a collection of profiles given a profile locator criteria.
-     *
-     * @param locator The profile locator criteria.
-     *
-     * @return A collection of profiles that match the criteria specified in the locator.
-     */
-    public List listPages();
+    public Page getPage(ProfileLocator locator) throws PageNotFoundException, DocumentException, NodeException;
 
     /** Store the PSML document on disk, using its locator
      *
@@ -120,8 +125,10 @@ public interface PageManager
     /** Remove a document.
      *
      * @param locator The description of the profile to be removed.
+     * @throws UnsupportedDocumentTypeException
+     * @throws FailedToDeleteDocumentException
+     * @throws DocumentNotFoundException
      */
-    public void removePage(Page page)  throws PageNotRemovedException;
 
 }
 

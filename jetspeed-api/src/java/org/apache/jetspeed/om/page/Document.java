@@ -13,34 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder;
+package org.apache.jetspeed.om.page;
 
-import java.io.IOException;
+import org.apache.jetspeed.page.document.Node;
 
 /**
  * <p>
- * ChildNode
+ * Document
  * </p>
  * <p>
- *
+ * 
  * </p>
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
-public interface ChildNode
+public interface Document extends Node
 {
-    /**
-     * 
-     * <p>
-     * getParent
-     * </p>
-     *
-     * @return The parent folder for this node or <code>null</code> if this 
-     * node is the root folder of a system.
-     * @throws IOException
-     */
-    Folder getParent() throws IOException;
     
-    void setParent(Folder parent);
 }

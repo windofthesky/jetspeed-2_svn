@@ -16,41 +16,28 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Stack;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.document.AbstractNode;
 
 /**
  * @version $Id$
  */
-public class PageImpl extends AbstractBaseElement implements Page
+public class PageImpl extends AbstractNode implements Page
 {
     private Defaults defaults = new Defaults();
 
     private Fragment root = null;
 
-    private Collection metadataFields = null;
-
     private int hashCode;
-
-    private Folder parent;
-    
-    private Map localizedTitles;
 
     public PageImpl()
     {
         // empty constructor
-        this.localizedTitles = new HashMap();
+        super();
     }
 
     /**
@@ -65,35 +52,9 @@ public class PageImpl extends AbstractBaseElement implements Page
     {
         // Cheaper to generate the hash code now then every call to hashCode()
         hashCode = (Page.class.getName()+":"+id).hashCode();
-        super.setId(id);
-        
+        super.setId(id);        
     }
-    /**
-     * <p>
-     * getParent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.folder.ChildNode#getParent()
-     * @return
-     */
-    public Folder getParent()
-    {
-        return parent;
-    }
-
-    /**
-     * <p>
-     * setParent
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.folder.ChildNode#setParent(org.apache.jetspeed.om.folder.Folder)
-     * @param parent
-     */
-    public void setParent( Folder parent )
-    {
-        this.parent = parent;
-    }
-
+    
     /**
      * <p>
      * equals
@@ -212,92 +173,29 @@ public class PageImpl extends AbstractBaseElement implements Page
         return cloned;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.page.Page#getMetadata()
-     */
-    public GenericMetadata getMetadata()
-    {
-        if (metadataFields == null)
-        {
-            metadataFields = new ArrayList();
-        }
-
-        GenericMetadata metadata = new PageMetadataImpl();
-        metadata.setFields(metadataFields);
-        return metadata;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.page.Page#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
-     */
-    public void setMetadata( GenericMetadata metadata )
-    {
-        this.metadataFields = metadata.getFields();
-    }
-
     /**
-     * This should only be used during castor marshalling
-     * 
-     * @see org.apache.jetspeed.om.page.Page#getMetadataFields()
+     * <p>
+     * getType
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Document#getType()
+     * @return
      */
-    public Collection getMetadataFields()
-    {
-        return metadataFields;
-    }
-
-    /**
-     * This should only be used during castor unmarshalling
-     * 
-     * @see org.apache.jetspeed.om.page.Page#setMetadataFields(java.util.Collection)
-     */
-    public void setMetadataFields( Collection metadataFields )
-    {
-        this.metadataFields = metadataFields;
-        Iterator fieldsItr = metadataFields.iterator();
-        while(fieldsItr.hasNext())
-        {
-            LocalizedField field = (LocalizedField) fieldsItr.next();
-            if(field.getName().equals("title"))
-            {
-                localizedTitles.put(field.getLocale(), field);
-            }
-        }
+    public String getType()
+    {       
+        return DOCUMENT_TYPE;
     }
     /**
      * <p>
-     * getName
+     * getUrl
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getName()
+     * @see org.apache.jetspeed.om.page.Document#getUrl()
      * @return
      */
-    public String getName()
+    public String getUrl()
     {
         return getId();
-    }
-    /**
-     * <p>
-     * getTitle
-     * </p>
-     *
-     * @see org.apache.jetspeed.om.page.Page#getTitle(java.util.Locale)
-     * @param locale
-     * @return
-     */
-    public String getTitle( Locale locale )
-    {
-        if(localizedTitles.containsKey(locale))
-        {            
-            return ((LocalizedField)localizedTitles.get(locale)).getValue().trim();
-        }
-        else
-        {
-            return getTitle();
-        }
     }
 }
 

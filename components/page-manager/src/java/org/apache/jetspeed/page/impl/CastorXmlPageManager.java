@@ -17,40 +17,29 @@
 package org.apache.jetspeed.page.impl;
 
 //standard java stuff
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cache.file.FileCache;
-import org.apache.jetspeed.cache.file.FileCacheEntry;
-import org.apache.jetspeed.cache.file.FileCacheEventListener;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
+import org.apache.jetspeed.page.document.FolderHandler;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.Serializer;
-import org.apache.xml.serialize.XMLSerializer;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.picocontainer.Startable;
-import org.xml.sax.InputSource;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to
@@ -60,93 +49,33 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:weaver@apache.org">Scott T Weaver </a>
  * @version $Id$
  */
-public class CastorXmlPageManager extends AbstractPageManager implements FileCacheEventListener, PageManager, Startable
+public class CastorXmlPageManager extends AbstractPageManager implements PageManager
 {
     private final static Log log = LogFactory.getLog(CastorXmlPageManager.class);
 
-    // configuration keys
-    protected final static String CONFIG_ROOT = "root";
     protected final static String CONFIG_EXT = "ext";
-    protected final static String CONFIG_SCAN_RATE = "scanRate";
-    protected final static String CONFIG_CACHE_SIZE = "cacheSize";
+
+    private DocumentHandlerFactory handlerFactory;
+
+    private FolderHandler folderHandler;
 
     // default configuration values
 
-    // the root psml resource directory
-    protected String root;
-    // base store directory
-    protected File rootDir = null;
-    // file extension
-    protected String ext = PAGE_SUFFIX;
-
-    /** The pages loaded by this manager */
-    protected FileCache pages = null;
-
-    /** the output format for pretty printing when saving registries */
-    protected OutputFormat format = null;
-
-    // castor mapping
-    protected String mapFileResource = "META-INF/page-mapping.xml";
-
-    /** the Castor mapping file name */
-    protected Mapping mapping = null;
-
-    public CastorXmlPageManager( IdGenerator generator, FileCache fileCache, String root ) throws FileNotFoundException
+    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
+            FolderHandler folderHandler ) throws FileNotFoundException
     {
         super(generator);
-        this.rootDir = new File(root);
-        verifyPath(rootDir);
-        this.pages = fileCache;
+        this.handlerFactory = hanlderFactory;
+        this.folderHandler = folderHandler;
+
     }
 
-    public CastorXmlPageManager( IdGenerator generator, FileCache fileCache, String root, List modelClasses )
-            throws FileNotFoundException
+    public CastorXmlPageManager( IdGenerator generator, DocumentHandlerFactory hanlderFactory,
+            FolderHandler folderHandler, List modelClasses ) throws FileNotFoundException
     {
         super(generator, modelClasses);
-        this.rootDir = new File(root);
-        verifyPath(rootDir);
-        this.pages = fileCache;
-    }
-
-    public CastorXmlPageManager( IdGenerator generator, FileCache fileCache, String root, List modelClasses,
-            String extension ) throws FileNotFoundException
-
-    {
-        this(generator, fileCache, root, modelClasses);
-        this.ext = extension;
-    }
-
-    public void start()
-    {
-
-        //If it is still missing, try to create it
-        if (!rootDir.exists())
-        {
-            try
-            {
-                rootDir.mkdirs();
-            }
-            catch (Exception e)
-            {
-            }
-        }
-
-        // create the serializer output format
-        this.format = new OutputFormat();
-        format.setIndenting(true);
-        format.setIndent(4);
-
-        // psml castor mapping file
-        loadMapping();
-
-        pages.addListener(this);
-        pages.startFileScanner();
-
-    }
-
-    public void stop()
-    {
-        pages.stopFileScanner();
+        this.handlerFactory = hanlderFactory;
+        this.folderHandler = folderHandler;
     }
 
     /**
@@ -159,8 +88,10 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
      * @param locator
      * @return @throws
      *         PageNotFoundException
+     * @throws PageNotFoundException
+     * @throws NodeException
      */
-    public Page getPage( ProfileLocator locator ) throws PageNotFoundException
+    public Page getPage( ProfileLocator locator ) throws PageNotFoundException, NodeException
     {
         return getPage(locator.getValue("page"));
     }
@@ -178,189 +109,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
      * @throws IllegalStateException
      *             if the page could be inserted into the FileCache.
      */
-    public Page getPage( String id ) throws PageNotFoundException
+    public Page getPage( String id ) throws PageNotFoundException, NodeException
     {
-        if (id == null)
-        {
-            String message = "PageManager: Must specify an id";
-            log.error(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        if (log.isDebugEnabled())
-        {
-            log.debug("Asked for PageID=" + id);
-        }
-
-        Page page = null;
-
-        page = (Page) pages.getDocument(id);
-
-        if (page == null)
-        {
-            page = buildPage(id);
-           
-            synchronized (pages)
-            {
-                // store the document in the hash and reference it to the
-                // watcher
-                try
-                {
-                    pages.put(id, page, this.rootDir);
-                    int lastSlash = id.indexOf("/");
-                    if (lastSlash > -1)
-                    {
-                        page.setParent(getFolder(id.substring(0, lastSlash)));
-                    }
-                    else
-                    {
-                        page.setParent(getFolder("/"));
-                    }
-                }
-                catch (java.io.IOException e)
-                {
-                    log.error("Error putting document: " + e);
-                    IllegalStateException ise = new IllegalStateException("Error storing Page in the FileCache: "
-                            + e.toString());
-                    ise.initCause(e);
-                }
-            }
-        }
-
-        return page;
-    }
-
-    /**
-     * <p>
-     * buildPage
-     * </p>
-     * 
-     * @param id
-     * @param page
-     * @return @throws
-     *         PageNotFoundException
-     */
-    protected Page buildPage( String id ) throws PageNotFoundException
-    {
-        Page page = null;
-        File f = null;
-        if (id.endsWith(this.ext))
-        {
-            f = new File(this.rootDir, id);
-        }
-        else
-        {
-            f = new File(this.rootDir, id + this.ext);
-        }
-
-        if (!f.exists())
-        {
-            throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
-        }
-
-        FileReader reader = null;
-
-        try
-        {
-            reader = new FileReader(f);
-            Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-            page = (Page) unmarshaller.unmarshal(reader);
-            page.setId(id);
-
-        }
-        catch (IOException e)
-        {
-            throw new PageNotFoundException("Could not load the file " + f.getAbsolutePath(), e);
-        }
-        catch (MarshalException e)
-        {
-            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-        }
-        catch (MappingException e)
-        {
-            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-        }
-        catch (ValidationException e)
-        {
-            throw new PageNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
-        }
-        finally
-        {
-            try
-            {
-                reader.close();
-            }
-            catch (IOException e)
-            {
-            }
-        }
-
-        if (page == null)
-        {
-            throw new PageNotFoundException("Page not found: " + id);
-        }
-        else
-        {
-            return page;
-        }
-    }
-
-    public Folder getFolder( String folderPath ) throws IOException
-    {
-        Folder folder = (Folder) pages.getDocument(folderPath);
-
-        if (folder == null)
-        {
-            folder = buildFolder(folderPath);
-        }
-        return folder;
-    }
-
-    /**
-     * <p>
-     * buildFolder
-     * </p>
-     *
-     * @param folderPath
-     * @param folder
-     * @return
-     * @throws IOException
-     */
-    protected Folder buildFolder( String folderPath ) throws IOException
-    {
-        File f = new File(this.rootDir, folderPath);
-        Folder folder = null;
-
-        if (f.exists())
-        {
-            folder = new FolderImpl(f, folderPath, this);
-            pages.put(folderPath, folder, this.rootDir);
-
-        }
-        return folder;
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
-     */
-    public List listPages()
-    {
-        ArrayList results = new ArrayList();
-        File[] files = this.rootDir.listFiles(new FilenameFilter()
-        {
-            public boolean accept( File dir, String file )
-            {
-                return file.endsWith(CastorXmlPageManager.this.ext);
-            }
-        });
-
-        for (int i = 0; i < files.length; i++)
-        {
-            String id = files[i].getName().substring(0, files[i].getName().length() - this.ext.length());
-            results.add(id);
-        }
-
-        return results;
+        return (Page) addParent(handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).getDocument(id), id);
     }
 
     /**
@@ -384,66 +135,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             log.warn("Page with no Id, created new Id : " + id);
         }
 
-        // marshal page to disk
-        File f = new File(this.rootDir, id + this.ext);
-        FileWriter writer = null;
-
-        try
-        {
-            writer = new FileWriter(f);
-            Serializer serializer = new XMLSerializer(writer, this.format);
-            Marshaller marshaller = new Marshaller(serializer.asDocumentHandler());
-            marshaller.setMapping(this.mapping);
-            marshaller.marshal(page);
-        }
-        catch (MarshalException e)
-        {
-            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
-            throw new JetspeedException(e);
-        }
-        catch (MappingException e)
-        {
-            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
-            throw new JetspeedException(e);
-        }
-        catch (ValidationException e)
-        {
-            log.error("Document " + f.getAbsolutePath() + " is not valid", e);
-            throw new JetspeedException(e);
-        }
-        catch (IOException e)
-        {
-            log.error("Could not save the file " + f.getAbsolutePath(), e);
-            throw new JetspeedException(e);
-        }
-        catch (Exception e)
-        {
-            log.error("Error while saving  " + f.getAbsolutePath(), e);
-            throw new JetspeedException(e);
-        }
-        finally
-        {
-            try
-            {
-                writer.close();
-            }
-            catch (IOException e)
-            {
-            }
-        }
-
-        // update it in cache
-        synchronized (pages)
-        {
-            try
-            {
-                pages.put(id, page, this.rootDir);
-            }
-            catch (IOException e)
-            {
-                log.error("Error storing document: " + e);
-            }
-        }
+        handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
     }
 
     /**
@@ -455,9 +147,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     }
 
     /**
+     * @throws UnsupportedDocumentTypeException
+     * @throws FailedToDeleteDocumentException
+     * @throws DocumentNotFoundException
      * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage( Page page )
+    public void removePage( Page page ) throws DocumentNotFoundException, FailedToDeleteDocumentException,
+            UnsupportedDocumentTypeException
     {
         String id = page.getId();
 
@@ -467,88 +163,62 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             return;
         }
 
-        File file = new File(this.rootDir, id + this.ext);
-
-        synchronized (pages)
-        {
-            pages.remove(id);
-        }
-
-        file.delete();
-
-    }
-
-    protected void loadMapping()
-    {
-        try
-        {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(mapFileResource);
-
-            if (log.isDebugEnabled())
-            {
-                log.debug("Loading psml mapping file " + mapFileResource);
-            }
-
-            mapping = new Mapping();
-
-            InputSource is = new InputSource(stream);
-
-            is.setSystemId(mapFileResource);
-            mapping.loadMapping(is);
-        }
-        catch (Exception e)
-        {
-            log.error("Error in psml mapping creation", e);
-        }
+        handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).removeDocument(page);
 
     }
 
     /**
-     * Refresh event, called when the entry is being refreshed from file system.
+     * <p>
+     * getLink
+     * </p>
      * 
-     * @param entry
-     *            the entry being refreshed.
-     * @throws Exception
+     * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
+     * @param name
+     * @return @throws
+     *         DocumentNotFoundException
+     * @throws DocumentNotFoundException
+     * @throws UnsupportedDocumentTypeException
+     * @throws 
+     * @throws NodeException
+     * @throws FolderNotFoundException
      */
-    public void refresh( FileCacheEntry entry ) throws Exception
+    public Link getLink( String name ) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException
     {
-        log.debug("Entry is refreshing: " + entry.getFile().getName());
-        
-        if(entry.getDocument() instanceof Page)
-        {
-            Page page = (Page) entry.getDocument();
-            entry.setDocument(buildPage(page.getId()));
-        }
-        else if(entry.getDocument() instanceof Folder)
-        {
-            Folder folder = (Folder) entry.getDocument();
-            entry.setDocument(buildFolder(folder.getName()));
-        }
-            
-
+        return (Link) addParent(handlerFactory.getDocumentHandler(Link.DOCUMENT_TYPE).getDocument(name), name);
     }
 
     /**
-     * Evict event, called when the entry is being evicted out of the cache
+     * <p>
+     * getFolder
+     * </p>
      * 
-     * @param entry
-     *            the entry being refreshed.
+     * @see org.apache.jetspeed.page.PageManager#getFolder(java.lang.String)
+     * @param folderPath
+     * @return @throws
+     *         DocumentException
+     * @throws FolderNotFoundException
+     * @throws NodeException
+     * @throws InvalidFolderException
+     * @throws IOException
      */
-    public void evict( FileCacheEntry entry )
+    public Folder getFolder( String folderPath ) throws FolderNotFoundException, InvalidFolderException, NodeException
     {
-        log.debug("Entry is evicting: " + entry.getFile().getName());
+        return folderHandler.getFolder(folderPath);
     }
 
-    protected void verifyPath( File path ) throws FileNotFoundException
+    protected Node addParent( Node childNode, String nodePath ) throws NodeException, InvalidFolderException
     {
-        if (path == null)
+        int lastSlash = nodePath.indexOf("/");
+        if (lastSlash > -1)
         {
-            throw new IllegalArgumentException("Page root cannot be null");
+            childNode.setParent(folderHandler.getFolder(nodePath.substring(0, lastSlash)));
+        }
+        else
+        {
+            childNode.setParent(folderHandler.getFolder("/"));
         }
 
-        if (!path.exists())
-        {
-            throw new FileNotFoundException("Could not locate root pages path " + path.getAbsolutePath());
-        }
+        return childNode;
+
     }
 }

@@ -13,53 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page;
-
-import org.apache.jetspeed.page.document.DocumentNotFoundException;
-
+package org.apache.jetspeed.page.document;
 
 /**
  * <p>
- * PageNotFoundException
+ * DocumentTypeAlreadyRegisteredException
  * </p>
  * <p>
- * Thrown when a requested page cannot be found.
+ *
  * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PageNotFoundException extends DocumentNotFoundException
+public class DocumentTypeAlreadyRegisteredException extends DocumentException
 {
 
     /**
      * 
      */
-    public PageNotFoundException()
+    public DocumentTypeAlreadyRegisteredException()
     {
         super();
-       
+        // TODO Auto-generated constructor stub
     }
+
     /**
      * @param message
      */
-    public PageNotFoundException( String message )
+    public DocumentTypeAlreadyRegisteredException( String message )
     {
         super(message);
+        // TODO Auto-generated constructor stub
     }
+
+    /**
+     * @param nested
+     */
+    public DocumentTypeAlreadyRegisteredException( Throwable nested )
+    {
+        super(nested);
+        // TODO Auto-generated constructor stub
+    }
+
     /**
      * @param msg
      * @param nested
      */
-    public PageNotFoundException( String msg, Throwable nested )
+    public DocumentTypeAlreadyRegisteredException( String msg, Throwable nested )
     {
         super(msg, nested);
+        // TODO Auto-generated constructor stub
     }
-    /**
-     * @param nested
-     */
-    public PageNotFoundException( Throwable nested )
-    {
-        super(nested);
-    }
+
 }

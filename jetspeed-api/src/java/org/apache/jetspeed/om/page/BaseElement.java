@@ -15,13 +15,15 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.common.SecuredResource;
+
 /**
  * BaseElement
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface BaseElement
+public interface BaseElement extends SecuredResource
 {
     /**
      * Returns the unique Id of this element. This id is guaranteed to be unique
@@ -53,24 +55,5 @@ public interface BaseElement
      */
     public void setTitle(String title);
 
-    /**
-     * Returns the name of the default ACL that applies to this
-     * element. This name should reference an entry in the Securtiy
-     * registry
-     *
-     * @return the page default acl
-     */
-    public String getAcl();
-
-    /**
-     * Modifies the default ACL for this element.
-     * This new acl must reference an entry in the Security
-     * registry.
-     * Additionnally, replacing the default ACL will not affect any
-     * children fragments with their own specific ACLs
-     *
-     * @param aclName the name of the new ACL for the element
-     */
-    public void setAcl(String aclName);
         
 }

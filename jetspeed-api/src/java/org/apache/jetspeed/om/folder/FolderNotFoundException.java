@@ -15,11 +15,11 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.util.Iterator;
+import org.apache.jetspeed.page.document.NodeException;
 
 /**
  * <p>
- * FolderSet
+ * FolderNotFoundException
  * </p>
  * <p>
  *
@@ -28,27 +28,44 @@ import java.util.Iterator;
  * @version $Id$
  *
  */
-public interface FolderSet
+public class FolderNotFoundException extends NodeException
 {
+
     /**
      * 
-     * <p>
-     * get
-     * </p>
-     * Returns a folder based on <code>folderName</code>. <code>folderName</code>
-     * can either be the fully quallified path, <code>folder1/folder2/folder3</code>
-     * or the folder name relative the <code>Folder</code> that this FolderSet
-     * was generated for.
-     *
-     * @param folderName
-     * @return
      */
-    Folder get(String folderName);
-    
-    void add(Folder folder);
-    
-    Iterator iterator();
-    
-    int size();
+    public FolderNotFoundException()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     */
+    public FolderNotFoundException( String message )
+    {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param nested
+     */
+    public FolderNotFoundException( Throwable nested )
+    {
+        super(nested);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param msg
+     * @param nested
+     */
+    public FolderNotFoundException( String msg, Throwable nested )
+    {
+        super(msg, nested);
+        // TODO Auto-generated constructor stub
+    }
 
 }

@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder;
+package org.apache.jetspeed.om.page;
 
-import java.util.Vector;
 
-import org.apache.jetspeed.om.page.Document;
 
 /**
  * <p>
- * FolderMetaData
+ * Link
  * </p>
  * <p>
  *
@@ -30,12 +28,17 @@ import org.apache.jetspeed.om.page.Document;
  * @version $Id$
  *
  */
-public interface FolderMetaData extends Document
+public interface Link extends Document
 {
-    String DOCUMENT_TYPE = "folder.metadata";
+    String DOCUMENT_TYPE = ".link";
     
-    Vector getDocumentOrder();
-    
-    void setDocumentOrder(Vector docIndexes);
+    /**
+     * @return Returns the target.
+     */
+    String getTarget();
 
+    /**
+     * @param target The target to set.
+     */
+    void setTarget( String target );
 }

@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -26,9 +28,18 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.om.folder.FolderMetaData;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl;
+import org.apache.jetspeed.page.document.FileSystemFolderHandler;
+import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.impl.CastorXmlPageManager;
 import org.apache.jetspeed.profiler.impl.JetspeedProfiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
@@ -38,6 +49,7 @@ import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -52,6 +64,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
     private MutablePicoContainer container;    
     protected static final String PAGE_ROOT = "target/testdata/pages";
     protected static final Properties TEST_PROPS = new Properties();
+    protected DirectoryHelper dirHelper;
     
     static
     {         
@@ -67,8 +80,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
      */
     protected void tearDown() throws Exception
     {
-        pageManager.stop();
-        super.tearDown();
+      super.tearDown();
     }
     /**
      * Defines the testcase name for JUnit.
@@ -94,8 +106,33 @@ public class TestProfiler extends PersistenceSupportedTestCase
     {
         super.setUp();
         
-        pageManager = new CastorXmlPageManager(new JetspeedIdGenerator(), new FileCache(100, 120), PAGE_ROOT);
-        pageManager.start();
+        dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
+        FileFilter noCVS = new FileFilter() {
+
+            public boolean accept( File pathname )
+            {
+                return !pathname.getName().equals("CVS");                
+            }
+            
+        };
+        dirHelper.copyFrom(new File("testdata/pages"), noCVS);
+        IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
+        FileCache cache = new FileCache(10, 12);
+        
+        
+        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", ".psml", Page.class, "target/testdata/pages", cache);
+        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", ".link", Link.class, "target/testdata/pages", cache);
+        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", "folder.metadata", FolderMetaData.class, "target/testdata/pages", cache);
+        
+        DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
+        handlerFactory.registerDocumentHandler(psmlHandler);
+        handlerFactory.registerDocumentHandler(linkHandler);
+        handlerFactory.registerDocumentHandler(folderMetaDataHandler);        
+        
+        FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
+        
+        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler );
+        
         profiler = new JetspeedProfiler(persistenceStore, pageManager, TEST_PROPS);
     }
 

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.psml;
 
 import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.page.BaseElement;
 
 
 /**
@@ -28,12 +29,10 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
 
     private String id = null;
 
-    private String name = null;
-
     private String acl = null;
 
     private String title = null;
-
+    
     public String getId()
     {
          return this.id;
@@ -42,16 +41,6 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     public void setId(String id)
     {
         this.id = id;
-    }
-
-    public String getName()
-    {
-        return this.name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     public String getAcl()
@@ -87,4 +76,51 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         return cloned;
 
     }   // clone
+    /**
+     * <p>
+     * equals
+     * </p>
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param obj
+     * @return
+     */
+    public boolean equals( Object obj )
+    {
+        if(obj instanceof BaseElement)
+        {
+            AbstractBaseElement element = (AbstractBaseElement) obj;
+            return id != null && element.getId() != null && id.equals(element.getId());            
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    /**
+     * <p>
+     * hashCode
+     * </p>
+     *
+     * @see java.lang.Object#hashCode()
+     * @return
+     */
+    public int hashCode()
+    {
+        return id.hashCode();
+    }
+    
+    /**
+     * <p>
+     * toString
+     * </p>
+     *
+     * @see java.lang.Object#toString()
+     * @return
+     */
+    public String toString()
+    {      
+        return getId();
+    }
 }

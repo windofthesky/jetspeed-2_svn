@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.folder;
+package org.apache.jetspeed.page.document;
 
-import java.util.Vector;
-
-import org.apache.jetspeed.om.page.Document;
+import java.util.Iterator;
 
 /**
  * <p>
- * FolderMetaData
+ * NodeSet
  * </p>
  * <p>
  *
@@ -30,12 +28,29 @@ import org.apache.jetspeed.om.page.Document;
  * @version $Id$
  *
  */
-public interface FolderMetaData extends Document
+public interface NodeSet
 {
-    String DOCUMENT_TYPE = "folder.metadata";
+
+    void add(Node node);
+
+    /**
+     * <p>
+     * getNode
+     * </p>     
+     * Returns a Node based on <code>name</code>. <code>name</code>
+     * can either be the fully quallified path, <code>folder1/folder2/myPage.psml</code>
+     * as returned by Node.getPath(), or the page name relative the <code>Node.getParent().getPath()</code>
+     * as return by Node.getName()that this DocumentSet was generated for.
+     * 
+     * @param name
+     * @return
+     */
+    Node get(String name);
+
+    Iterator iterator();
     
-    Vector getDocumentOrder();
-    
-    void setDocumentOrder(Vector docIndexes);
+    NodeSet subset(String type);
+
+    int size();
 
 }

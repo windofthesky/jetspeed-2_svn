@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.page;
+package org.apache.jetspeed.page.document;
 
-import java.util.Iterator;
+import org.apache.jetspeed.om.page.Document;
 
 /**
  * <p>
- * PageCollection
+ * DocumentHandler
  * </p>
  * <p>
  *
@@ -28,25 +28,15 @@ import java.util.Iterator;
  * @version $Id$
  *
  */
-public interface PageSet
+public interface DocumentHandler
 {
-    /**
-     * <p>
-     * getPage
-     * </p>     
-     * Returns a Page based on <code>name</code>. <code>name</code>
-     * can either be the fully quallified path, <code>folder1/folder2/myPage.psml</code>
-     * or the page name relative the <code>Folder</code> that this PageSet
-     * was generated for.
-     * 
-     * @param name
-     * @return
-     */
-    Page get(String name);
+    Document getDocument(String name) throws DocumentNotFoundException, NodeException;
     
-    void add(Page page);
+    Document getDocument(String name, boolean fromCahe) throws DocumentNotFoundException, NodeException;
     
-    Iterator iterator();
+    void updateDocument(Document document) throws FailedToUpdateDocumentException;
     
-    int size();
+    void removeDocument(Document document)  throws DocumentNotFoundException, FailedToDeleteDocumentException;
+    
+    String getType();
 }

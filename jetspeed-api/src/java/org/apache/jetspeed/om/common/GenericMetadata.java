@@ -18,22 +18,84 @@ import java.util.Collection;
 import java.util.Locale;
 
 /**
- * GenericMetadata
- * <br/>
- * Interface that allows retrieving localized information
+ * GenericMetadata <br/>Interface that allows retrieving localized information
  * 
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
  * @version $Id$
  */
-public interface GenericMetadata {
-
-    public void addField(Locale locale, String name, String value);
-    public void addField(LocalizedField field);
-    public Collection getFields(String name);
-    public void setFields(String name, Collection values);
+public interface GenericMetadata
+{
+    /**
+     * 
+     * <p>
+     * addField
+     * </p>
+     *
+     * @param locale
+     * @param name
+     * @param value
+     */
+    public void addField( Locale locale, String name, String value );
     
+    /**
+     * 
+     * <p>
+     * addField
+     * </p>
+     *
+     * @param field
+     */
+    public void addField( LocalizedField field );
+    
+    /**
+     * 
+     * <p>
+     * getFields
+     * </p>
+     *
+     * @param name
+     * @return
+     */
+    public Collection getFields( String name );
+    
+    /**
+     * 
+     * <p>
+     * setFields
+     * </p>
+     *
+     * @param name
+     * @param values
+     */
+    public void setFields( String name, Collection values );
+    
+    /**
+     * 
+     * <p>
+     * getFields
+     * </p>
+     *
+     * @return
+     */
     public Collection getFields();
-    public void setFields(Collection fields);
     
+    /**
+     * 
+     * <p>
+     * setFields
+     * </p>
+     *
+     * @param fields
+     */
+    public void setFields( Collection fields );
+    
+    /**
+     * 
+     * <p>
+     * createLocalizedField
+     * </p>
+     *
+     * @return
+     */
     LocalizedField createLocalizedField();
 }

@@ -15,12 +15,13 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.io.IOException;
 
-import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageSet;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.DocumentException;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * Folder
@@ -29,33 +30,62 @@ import org.apache.jetspeed.page.PageNotFoundException;
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
  * @version $Id$
  */
-public interface Folder extends SecuredResource, ChildNode
+public interface Folder extends Node
 {
-    /**
-     * Gets the unique name of this desktop
-     * 
-     * @return The unique name of the desktop
-     */
-    String getName();
+    String FOLDER_TYPE = "folder";
     
     /**
-     * Sets the unique name of this desktop
      * 
-     * @param name The name of the desktop 
+     * <p>
+     * getDefaultPage
+     * </p>
+     *
+     * @return A String representing the default psml page for this folder
      */
-    void setName(String name);
-    
     String getDefaultPage();
     
+    /**
+     * 
+     * <p>
+     * setDefaultPage
+     * </p>
+     *
+     * @param defaultPage
+     */
     void setDefaultPage(String defaultPage);
     
+    /**
+     * 
+     * <p>
+     * getDefaultTheme
+     * </p>
+     *
+     * @return A String representing the default theme for this Folder
+     */
     String getDefaultTheme();
     
+    /**
+     * 
+     * <p>
+     * setDefaultTheme
+     * </p>
+     *
+     * @param defaultTheme
+     */
     void setDefaultTheme(String defaultTheme);
     
-    FolderSet getFolders() throws IOException;
-    
-    void setFolders(FolderSet folders);
+    /**
+     * 
+     * <p>
+     * getFolders
+     * </p>
+     *
+     * @return A <code>NodeSet</code> containing all sub-folders directly under
+     * this folder.
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     */
+    NodeSet getFolders() throws FolderNotFoundException, DocumentException;
     
     /**
      * 
@@ -63,15 +93,13 @@ public interface Folder extends SecuredResource, ChildNode
      * getPages
      * </p>
      *
-     * @return PageSet of all the Pages referenced by this Folder.
+     * @return NodeSet of all the Pages referenced by this Folder.
+     * @throws NodeException
      * @throws PageNotFoundException if any of the Pages referenced by this Folder
      * could not be found.
      */
-    PageSet getPages() throws PageNotFoundException;
+    NodeSet getPages() throws NodeException;
     
-    void setPages(PageSet pages);
-    
-  
     /**
      * 
      * <p>
@@ -80,8 +108,32 @@ public interface Folder extends SecuredResource, ChildNode
      *
      * @param name
 .     * @throws PageNotFoundException if the Page requested could not be found.
+     * @throws DocumentException
+     * @throws NodeException
      */
-    Page getPage(String name) throws PageNotFoundException;
+    Page getPage(String name) throws PageNotFoundException, NodeException;
     
-    FolderMetaData getMetaData();
+    /**
+     * 
+     * <p>
+     * getLinks
+     * </p>
+     *
+     * @return
+     * @throws DocumentException
+     * @throws NodeException
+     */    
+    NodeSet getLinks() throws NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getAllNodes
+     * </p>
+     *
+     * @return All Nodes immediatley under this Folder.
+     * @throws DocumentException
+     * @throws FolderNotFoundException
+     */
+    NodeSet getAllNodes() throws FolderNotFoundException, DocumentException;
 }

@@ -13,53 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.page;
+package org.apache.jetspeed.om.folder;
 
-import org.apache.jetspeed.page.document.DocumentNotFoundException;
-
+import org.apache.jetspeed.page.document.NodeException;
 
 /**
  * <p>
- * PageNotFoundException
+ * InvalidFolderException
  * </p>
  * <p>
- * Thrown when a requested page cannot be found.
+ *  Thrown when there is an attempt to represent a node as folder when
+ *  it is actually not a folder.
  * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PageNotFoundException extends DocumentNotFoundException
+public class InvalidFolderException extends NodeException
 {
 
     /**
      * 
      */
-    public PageNotFoundException()
+    public InvalidFolderException()
     {
         super();
-       
+        // TODO Auto-generated constructor stub
     }
+
     /**
      * @param message
      */
-    public PageNotFoundException( String message )
+    public InvalidFolderException( String message )
     {
         super(message);
+        // TODO Auto-generated constructor stub
     }
+
+    /**
+     * @param nested
+     */
+    public InvalidFolderException( Throwable nested )
+    {
+        super(nested);
+        // TODO Auto-generated constructor stub
+    }
+
     /**
      * @param msg
      * @param nested
      */
-    public PageNotFoundException( String msg, Throwable nested )
+    public InvalidFolderException( String msg, Throwable nested )
     {
         super(msg, nested);
+        // TODO Auto-generated constructor stub
     }
-    /**
-     * @param nested
-     */
-    public PageNotFoundException( Throwable nested )
-    {
-        super(nested);
-    }
+
 }

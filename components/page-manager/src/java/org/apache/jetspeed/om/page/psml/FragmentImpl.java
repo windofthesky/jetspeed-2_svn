@@ -17,9 +17,9 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.Iterator;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
@@ -41,6 +41,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private List fragments = new Vector();
 
     private List properties = new Vector();
+    
+    private String name;
 
     public FragmentImpl()
     {}
@@ -275,5 +277,30 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         {
             return super.hashCode();
         }
+    }
+    /**
+     * <p>
+     * getName
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Fragment#getName()
+     * @return
+     */
+    public String getName()
+    {
+        return name;
+    }
+    /**
+     * <p>
+     * setName
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Fragment#setName(java.lang.String)
+     * @param name
+     */
+    public void setName( String name )
+    {
+       this.name = name;
+
     }
 }

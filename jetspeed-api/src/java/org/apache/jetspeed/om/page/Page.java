@@ -15,10 +15,6 @@
  */
 package org.apache.jetspeed.om.page;
 
-import java.util.Locale;
-
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.folder.ChildNode;
 
 /**
  * This interface represents a complete page document used by Jetspeed
@@ -26,23 +22,10 @@ import org.apache.jetspeed.om.folder.ChildNode;
  *
  * @version $Id$
  */
-public interface Page extends BaseElement, java.io.Serializable, Cloneable, ChildNode
+public interface Page extends Document, java.io.Serializable, Cloneable
 {
+    String DOCUMENT_TYPE = ".psml";
     
-    /**
-     * 
-     * <p>
-     * getTitle
-     * </p>
-     * 
-     * @param locale
-     * @return Title for the specified Locale
-     */
-    String getTitle(Locale locale);
-    
-	public GenericMetadata getMetadata();
-	
-	public void setMetadata(GenericMetadata metadata);
 
     /**
      * Returns the name of the default skin that applies to this

@@ -26,18 +26,19 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.profiler.ProfileLocator;
-
 
 /**
  * DatabasePageManagerService
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class DatabasePageManager extends AbstractPageManager implements PageManager
@@ -47,49 +48,58 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
 
-	/**
-	 * 
-	 * @param pContainer PersistenceStoreContainer that will be used to look up 
-	 * the <code>PersistenceStore</code> to use for persistence operations
-	 * @param generator ID generator that will be used to generate unique page ids
-	 * @param storeName Name of the <code>PersistenceStore</code> that will be used
-	 * by the <code>PersistenceStoreContainer.getStoreForThread(String)</code>
-	 * method to obtain the current persistence for this thread.
-	 */
-    public DatabasePageManager(PersistenceStore persistenceStore, IdGenerator generator)
+    /**
+     * 
+     * @param pContainer
+     *            PersistenceStoreContainer that will be used to look up the
+     *            <code>PersistenceStore</code> to use for persistence
+     *            operations
+     * @param generator
+     *            ID generator that will be used to generate unique page ids
+     * @param storeName
+     *            Name of the <code>PersistenceStore</code> that will be used
+     *            by the
+     *            <code>PersistenceStoreContainer.getStoreForThread(String)</code>
+     *            method to obtain the current persistence for this thread.
+     */
+    public DatabasePageManager( PersistenceStore persistenceStore, IdGenerator generator )
     {
         super(generator);
         this.persistenceStore = persistenceStore;
-        
+
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(org.apache.jetspeed.profiler.ProfileLocator)
      */
-    public Page getPage(ProfileLocator locator) throws PageNotFoundException
+    public Page getPage( ProfileLocator locator ) throws PageNotFoundException
     {
         return getPage(locator.getValue("page"));
-    }    
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
      */
-    public Page getPage(String id) throws PageNotFoundException
+    public Page getPage( String id ) throws PageNotFoundException
     {
         if (pageCache.containsKey(id))
         {
             return (Page) pageCache.get(id);
         }
         else
-        {          
+        {
             Filter filter = persistenceStore.newFilter();
             filter.addEqualTo("id", id);
             Object q = persistenceStore.newQuery(pageClass, filter);
             persistenceStore.getTransaction().begin();
-            Page page = (Page) persistenceStore.getObjectByQuery( q);
-            if(page == null)
+            Page page = (Page) persistenceStore.getObjectByQuery(q);
+            if (page == null)
             {
-                throw new PageNotFoundException("Jetspeed PSML page not found: "+id);
+                throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
             }
 
             pageCache.put(id, page);
@@ -97,7 +107,9 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
      */
     public List listPages()
@@ -106,10 +118,12 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
      */
-    public void registerPage(Page page) throws JetspeedException
+    public void registerPage( Page page ) throws JetspeedException
     {
         // sanity checks
         if (page == null)
@@ -129,13 +143,15 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException
+    public void updatePage( Page page ) throws JetspeedException, PageNotUpdatedException
     {
         try
-        {           
+        {
             persistenceStore.getTransaction().begin();
             persistenceStore.lockForWrite(page);
             persistenceStore.getTransaction().commit();
@@ -148,17 +164,19 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage(Page page) throws PageNotRemovedException
+    public void removePage( Page page ) throws PageNotRemovedException
     {
         if (pageCache.containsKey(page.getId()))
         {
             pageCache.remove(pageCache.get(page.getId()));
         }
         try
-        {         
+        {
             persistenceStore.getTransaction().begin();
             persistenceStore.deletePersistent(page);
             persistenceStore.getTransaction().commit();
@@ -175,14 +193,28 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      * <p>
      * getFolder
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.page.PageManager#getFolder(java.lang.String)
      * @param folderPath
      * @return
      */
     public Folder getFolder( String folderPath )
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * getLink
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getLink(java.lang.String)
+     * @param name
+     * @return @throws
+     *         DocumentNotFoundException
+     */
+    public Link getLink( String name ) throws DocumentNotFoundException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
     }
 }

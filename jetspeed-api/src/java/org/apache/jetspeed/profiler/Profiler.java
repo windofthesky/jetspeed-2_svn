@@ -22,6 +22,7 @@ import org.apache.jetspeed.om.desktop.Desktop;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -78,8 +79,9 @@ public interface Profiler
      * @param locator
      * @return
      * @throws PageNotFoundException
+     * @throws NodeException
      */
-    Page getPage(ProfileLocator locator) throws PageNotFoundException;
+    Page getPage(ProfileLocator locator) throws PageNotFoundException, NodeException;
     
     /**
      * @param locator

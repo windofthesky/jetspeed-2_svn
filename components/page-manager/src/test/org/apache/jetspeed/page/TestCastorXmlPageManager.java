@@ -33,17 +33,26 @@ import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderMetaData;
+import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.page.document.CastorFileSystemDocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.page.document.DocumentHandlerFactoryImpl;
+import org.apache.jetspeed.page.document.FileSystemFolderHandler;
+import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.impl.CastorXmlPageManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 
 /**
  * TestPageXmlPersistence
- *
- * @author <a href="raphael@apache.org">Raphaël Luta</a>
- * @version $Id$
+ * 
+ * @author <a href="raphael@apache.org">Raphaël Luta </a>
+ * @version $Id: TestCastorXmlPageManager.java,v 1.9 2004/08/24 21:33:05 weaver
+ *          Exp $
  */
 public class TestCastorXmlPageManager extends TestCase
 {
@@ -51,10 +60,12 @@ public class TestCastorXmlPageManager extends TestCase
     protected CastorXmlPageManager pageManager;
     protected DirectoryHelper dirHelper;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception
+protected void setUp() throws Exception
     {
         super.setUp();
         dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
@@ -69,48 +80,63 @@ public class TestCastorXmlPageManager extends TestCase
         dirHelper.copyFrom(new File("testdata/pages"), noCVS);
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
-        pageManager = new CastorXmlPageManager(idGen, cache, "target/testdata/pages");
         
-        pageManager.start();
+        
+        DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Page.DOCUMENT_TYPE, Page.class, "target/testdata/pages", cache);
+        DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", Link.DOCUMENT_TYPE, Link.class, "target/testdata/pages", cache);
+        DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/META-INF/page-mapping.xml", FolderMetaData.DOCUMENT_TYPE, FolderMetaData.class, "target/testdata/pages", cache);
+        
+        DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
+        handlerFactory.registerDocumentHandler(psmlHandler);
+        handlerFactory.registerDocumentHandler(linkHandler);
+        handlerFactory.registerDocumentHandler(folderMetaDataHandler);        
+        
+        FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
+        
+        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler );
+        
+        
     }
-    
     /**
      * <p>
      * tearDown
      * </p>
-     *
+     * 
      * @see junit.framework.TestCase#tearDown()
      * @throws java.lang.Exception
      */
     protected void tearDown() throws Exception
-    {        
+    {
         super.tearDown();
     }
+
     /**
      * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
+     * 
+     * @param name
+     *            the testcase's name.
      */
-    public TestCastorXmlPageManager(String name)
+    public TestCastorXmlPageManager( String name )
     {
         super(name);
     }
 
     /**
      * Start the tests.
-     *
-     * @param args the arguments. Not used
+     * 
+     * @param args
+     *            the arguments. Not used
      */
-    public static void main(String args[])
+    public static void main( String args[] )
     {
-        junit.awtui.TestRunner.main(new String[] { TestCastorXmlPageManager.class.getName()});
+        junit.awtui.TestRunner.main(new String[]{TestCastorXmlPageManager.class.getName()});
     }
 
     /**
      * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
+     * 
+     * @return a test suite (<code>TestSuite</code>) that includes all
+     *         methods starting with "test"
      */
     public static Test suite()
     {
@@ -119,7 +145,7 @@ public class TestCastorXmlPageManager extends TestCase
     }
 
     public void testNewPage()
-    {            
+    {
         Page testpage = pageManager.newPage();
         assertNotNull(testpage);
         assertNotNull(testpage.getId());
@@ -128,7 +154,7 @@ public class TestCastorXmlPageManager extends TestCase
     }
 
     public void testNewFragment()
-    {    
+    {
         Fragment f = pageManager.newFragment();
         assertNotNull(f);
         assertNotNull(f.getId());
@@ -141,7 +167,7 @@ public class TestCastorXmlPageManager extends TestCase
     }
 
     public void testGetPage() throws Exception
-    {               
+    {
         Page testpage = pageManager.getPage("test001");
         assertNotNull(testpage);
         assertTrue(testpage.getId().equals("test001"));
@@ -150,13 +176,12 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(testpage.getDefaultSkin().equals("test-skin"));
         assertTrue(testpage.getDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
         assertTrue(testpage.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
-        
+
         GenericMetadata md = testpage.getMetadata();
         Collection descriptions = md.getFields("description");
         Collection subjects = md.getFields("subject");
         assertEquals(2, descriptions.size());
         assertEquals(1, subjects.size());
-        
 
         Fragment root = testpage.getRootFragment();
         assertNotNull(root);
@@ -205,9 +230,8 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(f.getFragments().size() == 2);
     }
 
-    
     public void testRegisterPage() throws Exception
-    {     
+    {
         Page page = pageManager.newPage();
         System.out.println("Retrieved test_id in register " + this.testId);
         page.setId(this.testId);
@@ -277,16 +301,8 @@ public class TestCastorXmlPageManager extends TestCase
         assertTrue(page.getTitle().equals("Updated Title"));
     }
 
-    public void testListPages() throws Exception
-    {   
-        List pages = pageManager.listPages();
-        assertTrue(pages.size() == 3);
-        assertTrue(pages.contains(this.testId));
-        assertTrue(pages.contains("test001"));
-    }
-
     public void testRemovePage() throws Exception
-    {        
+    {
         Page page = pageManager.getPage(this.testId);
 
         try
@@ -311,59 +327,76 @@ public class TestCastorXmlPageManager extends TestCase
             exceptionFound = true;
         }
         assertTrue(exceptionFound);
-        
+
     }
-    
+
     public void testFolders() throws Exception
     {
-        
+
         Folder folder1 = pageManager.getFolder("folder1");
         assertNotNull(folder1);
         assertEquals(2, folder1.getFolders().size());
         Iterator childItr = folder1.getFolders().iterator();
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
-        assertEquals("folder1/folder2",folder2.getName());        
+        assertEquals("folder1/folder2", folder2.getPath());
+        assertEquals("folder2", folder2.getName());
         Folder folder3 = (Folder) childItr.next();
-        assertEquals("folder1/folder3",folder3.getName());        
-        
+        assertEquals("folder1/folder3", folder3.getPath());
+
         assertEquals(1, folder2.getPages().size());
-        assertEquals(2, folder3.getPages().size());       
+        assertEquals(2, folder3.getPages().size());
         
+        // Check link order
+        Iterator linkItr = folder3.getAllNodes().iterator();
+        assertEquals("Jetspeed2Wiki.link", ((Link)linkItr.next()).getName());
+        assertEquals("Jetspeed2.link", ((Link)linkItr.next()).getName());        
+        assertEquals("apache_portals.link", ((Link)linkItr.next()).getName());
+        assertEquals("apache.link", ((Link)linkItr.next()).getName());
+        assertEquals("test001.psml", ((Page)linkItr.next()).getName());
+        assertEquals("default-page.psml", ((Page)linkItr.next()).getName());
+        
+
         //Test FolderSet with both absolute and relative names
         assertNotNull(folder1.getFolders().get("folder1/folder2"));
         assertNotNull(folder1.getFolders().get("folder2"));
         assertEquals(folder1.getFolders().get("folder1/folder2"), folder1.getFolders().get("folder2"));
-        
+
         //Test PageSet with both absolute and relative names
         assertNotNull(folder3.getPages().get("folder1/folder3/test001.psml"));
         assertNotNull(folder3.getPages().get("test001.psml"));
+        assertEquals("test001.psml", folder3.getPages().get("folder1/folder3/test001.psml").getName());
         
+        //Test relative name
+        
+
     }
-    
+
     public void testFolderMetaData() throws Exception
     {
         Folder folder1French = pageManager.getFolder("folder1");
-        FolderMetaData metaData = folder1French.getMetaData();
-        assertNotNull(metaData);
-        assertEquals("Titre français pour la chemise 1", metaData.getTitle(Locale.FRENCH));
-        
+;
+        assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRENCH));
+        assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRANCE));
+
         Folder folder1English = pageManager.getFolder("folder1");
-        metaData = folder1English.getMetaData();
-        assertNotNull(metaData);
-        assertEquals("English Title for Folder 1", metaData.getTitle(Locale.ENGLISH));
-        
-       
-        
+
+        assertEquals("English Title for Folder 1", folder1English.getTitle(Locale.ENGLISH));
+
         // check that default works
         Folder folder1German = pageManager.getFolder("folder1");
-        metaData = folder1German.getMetaData();
-        assertNotNull(metaData);
-        assertEquals("Default Title for Folder 1", metaData.getTitle(Locale.GERMAN));
+       
+        assertEquals("Default Title for Folder 1", folder1German.getTitle(Locale.GERMAN));
+        
+        // Test folder with no metadata assigned
+        Folder rootFolder = pageManager.getFolder("/");
+
+        assertEquals("/", rootFolder.getTitle());
+        assertEquals(rootFolder.getTitle(), rootFolder.getTitle(Locale.FRENCH));
     }
-    
+
     public void testPageMetaData() throws Exception
-    {	
+    {
         Page page = pageManager.getPage("default-page.psml");
         assertNotNull(page);
         String frenchTitle = page.getTitle(Locale.FRENCH);
@@ -372,5 +405,21 @@ public class TestCastorXmlPageManager extends TestCase
         String defaultTitle = page.getTitle(Locale.GERMAN);
         assertNotNull(defaultTitle);
         assertEquals("My First PSML Page", defaultTitle);
+    }
+
+    public void testLinks() throws Exception
+    {
+        Link link = pageManager.getLink("apache_portals.link");
+        assertNotNull(link);
+        assertEquals("http://portals.apache.org", link.getUrl());
+        assertEquals("Apache Portals Website", link.getTitle());
+        assertEquals("Apache Software Foundation [french]", link.getTitle(Locale.FRENCH));
+
+        Folder folder = pageManager.getFolder("/");
+        assertNotNull(folder);
+        assertNotNull(folder.getLinks());
+        assertEquals(folder.getLinks().size(), 1);
+        assertEquals("http://portals.apache.org", ((Document) folder.getLinks().iterator().next()).getUrl());
+       
     }
 }
