@@ -63,6 +63,8 @@ import javax.servlet.ServletResponse;
 
 import javax.portlet.ActionResponse;
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -76,8 +78,10 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.core.InternalPortletRequest;
 import org.apache.pluto.core.InternalPortletResponse;
+import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.portlet.PortletUtils;
 import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletContextFactory;
 
 /**
  * Portlet Invoker implementation, invokes the JetspeedContainerServlet
@@ -88,17 +92,16 @@ import org.apache.jetspeed.container.ContainerConstants;
 public class ServletPortletInvoker implements PortletInvoker
 {
     public static final String MVC_ENTRY_SERVLET = "/container";
-    
+
     private final static Log log = LogFactory.getLog(ServletPortletInvoker.class);
 
-    protected ServletContext    jetspeedContext;
+    protected ServletContext jetspeedContext;
     private PortletDefinition portletDefinition;
 
-    public ServletPortletInvoker(PortletDefinition portletDefinition,
-                                 ServletConfig servletConfig)
+    public ServletPortletInvoker(PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
         System.out.println("%%% invoker.portletdef = " + portletDefinition);
-        
+
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
     }
@@ -109,36 +112,31 @@ public class ServletPortletInvoker implements PortletInvoker
      * @param response
      * @throws PortletException
      */
-    public void render(RenderRequest request, 
-                       RenderResponse response) 
-        throws PortletException, IOException
+    public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        invoke(request, response, ContainerConstants.METHOD_RENDER);  
+        invoke(request, response, ContainerConstants.METHOD_RENDER);
     }
 
     /**
      * 
      */
-    public void action(ActionRequest request, ActionResponse response) 
-        throws PortletException, IOException
+    public void action(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-        invoke(request, response, ContainerConstants.METHOD_ACTION);  
+        invoke(request, response, ContainerConstants.METHOD_ACTION);
     }
 
     /**
      * 
      */
-    public void load(PortletRequest request, 
-                     RenderResponse response) 
-        throws PortletException                     
+    public void load(PortletRequest request, RenderResponse response) throws PortletException
     {
         try
         {
             invoke(request, response, ContainerConstants.METHOD_NOOP);
-        } 
+        }
         catch (IOException e)
         {
-            log.error("PortletInvokerImpl.load() - Error while dispatching portlet.",e);
+            log.error("PortletInvokerImpl.load() - Error while dispatching portlet.", e);
             throw new PortletException(e);
         }
     }
@@ -151,50 +149,43 @@ public class ServletPortletInvoker implements PortletInvoker
      * @throws PortletException
      * @throws IOException
      */
-    protected void invoke(PortletRequest portletRequest, 
-                          PortletResponse portletResponse, 
-                          Integer methodID) 
-        throws PortletException,IOException
-    {         
+    protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID)
+        throws PortletException, IOException
+    {
         PortletApplicationDefinition app = portletDefinition.getPortletApplicationDefinition();
         System.out.println("%%% invoker.pa = " + app);
-                
+
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
         //String portletApplicationName = "/HW_App";
-        
-        InternalPortletRequest internalPortletRequest = 
-            PortletUtils.getInternalRequest(portletRequest);
 
-        InternalPortletResponse internalPortletResponse = 
-            PortletUtils.getInternalResponse(portletResponse);
+        InternalPortletRequest internalPortletRequest = PortletUtils.getInternalRequest(portletRequest);
+
+        InternalPortletResponse internalPortletResponse = PortletUtils.getInternalResponse(portletResponse);
 
         // gather all required data from request and response
-        ServletRequest servletRequest = 
-            ((javax.servlet.http.HttpServletRequestWrapper)internalPortletRequest).getRequest();
+        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) internalPortletRequest).getRequest();
 
-        ServletResponse servletResponse = 
-            ((javax.servlet.http.HttpServletResponseWrapper)internalPortletResponse).getResponse();
-
+        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) internalPortletResponse).getResponse();
 
         ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
         if (null == appContext)
         {
-            String message = "Failed to find Servlet context for Portlet Application: " 
-                                       + portletApplicationName;
+            String message = "Failed to find Servlet context for Portlet Application: " + portletApplicationName;
             log.error(message);
             throw new PortletException();
         }
 
-
         RequestDispatcher dispatcher = appContext.getRequestDispatcher(MVC_ENTRY_SERVLET);
         if (null == dispatcher)
         {
-            String message = "Failed to get Request Dispatcher for Portlet Application: " 
-                      + portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
-            log.error(message); 
+            String message =
+                "Failed to get Request Dispatcher for Portlet Application: "
+                    + portletApplicationName
+                    + ", servlet: "
+                    + MVC_ENTRY_SERVLET;
+            log.error(message);
             throw new PortletException(message);
         }
-            
 
         try
         {
@@ -203,13 +194,18 @@ public class ServletPortletInvoker implements PortletInvoker
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
             servletRequest.setAttribute(ContainerConstants.PORTLET_ENTITY, portletDefinition);
-            
+
+            PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
+            //TODO: We need to get the ServletConfig somehow!!!
+            PortletConfig portletConfig = new PortletConfigImpl(null, portletContext, portletDefinition);
+            servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
+
             dispatcher.include(servletRequest, servletResponse);
         }
         catch (Exception e)
         {
-            String message = "Failed to dispatch.include for Portlet Application: " + 
-                                portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
+            String message =
+                "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
             log.error(message, e);
             throw new PortletException(message, e);
         }
@@ -218,10 +214,9 @@ public class ServletPortletInvoker implements PortletInvoker
             servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
+            servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
         }
     }
 
-
 }
-
