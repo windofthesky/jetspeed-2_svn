@@ -53,6 +53,8 @@
   <goal name="db.drop">
     <j:set var="database.arg.script" value="${basedir}/src/sql/${database.default.name}/drop-db.sql" />
     <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="${basedir}/../../portal/src/sql/${database.default.name}/drop-db.sql" />
+    <attainGoal name="db.execute" />
   </goal>
 
   <!-- ================================================================ -->
