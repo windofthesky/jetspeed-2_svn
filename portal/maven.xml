@@ -138,7 +138,8 @@
   <goal name="deploy">
      <echo message="Deploying ${pom.id}, ${pom.name}"/>
       <delete dir="${deploy.war.dir}/${webapp.name}"/> 
-      <copy  file="${maven.build.dir}/${webapp.name}.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
+      <!-- <copy  file="./target/jetspeed-2.0-a1-dev.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>-->
+      <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>      
   </goal>
 
@@ -173,5 +174,6 @@
   <preGoal name="hotdeploy">
    <attainGoal name= "java:compile"/> 
   </preGoal>
+
 
 </project>
