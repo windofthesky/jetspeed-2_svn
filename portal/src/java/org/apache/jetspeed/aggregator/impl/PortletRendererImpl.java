@@ -128,6 +128,7 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         //
         try
         {
+            PortletContainerServices.prepare("jetspeed"); 
             RequestContext context = (RequestContext) request.getAttribute("org.apache.jetspeed.request.RequestContext");
             PortletWindow portletWindow = getPortletWindow(fragment);
             HttpServletRequest servletRequest = context.getRequestForWindow(portletWindow);
@@ -150,6 +151,7 @@ public class PortletRendererImpl implements PortletRenderer, Startable
     public void render(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException
     {
         RenderingJob rJob = new RenderingJob();
+        PortletContainerServices.prepare("jetspeed"); 
 
         PortletWindow portletWindow;
         try
