@@ -16,9 +16,9 @@
 package org.apache.jetspeed.page;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
-import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 
@@ -28,7 +28,7 @@ import org.apache.jetspeed.om.page.Page;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestDatabasePageManager extends PortalComponentAssemblyTestCase
+public class TestDatabasePageManager extends AbstractComponentAwareTestCase
 {
     private PageManager service = null;
     
@@ -66,13 +66,15 @@ public class TestDatabasePageManager extends PortalComponentAssemblyTestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestDatabasePageManager.class);
+       // return new TestSuite(TestDatabasePageManager.class);
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestDatabasePageManager.class);
+    	return suite;
     }
     
     
     public void testBuildBasePage()
     {
-        PageManager pm = (PageManager)componentManager.getComponent("DatabasePageManager");
+    	PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("page manager is null", pm);            
         
         Page page = pm.newPage();

@@ -14,20 +14,19 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Permission;
+import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.security.Permission;
-import java.security.Permissions;
 
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -91,8 +90,9 @@ public class TestPermissionManager extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPermissionManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+//        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPermissionManager.class);
+//        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPermissionManager.class);
         return suite;
     }
 

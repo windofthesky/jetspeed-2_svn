@@ -28,7 +28,7 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
@@ -85,8 +85,9 @@ public class TestProfiler extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestProfiler.class);
-        suite.setScript("org/apache/jetspeed/profiler/containers/profiler-container.groovy");
+        // ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestProfiler.class);
+        // suite.setScript("org/apache/jetspeed/profiler/containers/profiler-container.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestProfiler.class);
         return suite;
     }
 

@@ -14,8 +14,8 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.AccessController;
 import java.security.AccessControlException;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javax.security.auth.Subject;
@@ -25,11 +25,9 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -112,8 +110,9 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRdbmsPolicy.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+//        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRdbmsPolicy.class);
+//        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestRdbmsPolicy.class);
         return suite;
     }
 

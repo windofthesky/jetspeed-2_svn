@@ -24,9 +24,8 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -78,8 +77,9 @@ public class TestUserManager extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestUserManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+//        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestUserManager.class);
+//        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestUserManager.class);
         return suite;
     }
 

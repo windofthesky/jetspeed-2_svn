@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components.persistence;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 

@@ -24,9 +24,8 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -82,8 +81,9 @@ public class TestGroupManager extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestGroupManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+//        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestGroupManager.class);
+//        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestGroupManager.class);
         return suite;
     }
 

@@ -22,10 +22,9 @@ import java.util.prefs.Preferences;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.impl.PropertyException;
-
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -86,8 +85,9 @@ public class TestPreferences extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPreferences.class);
-        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
+//        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPreferences.class);
+//        suite.setScript("org/apache/jetspeed/prefs/containers/test.prefs.groovy");
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestPreferences.class);
         return suite;
     }
 

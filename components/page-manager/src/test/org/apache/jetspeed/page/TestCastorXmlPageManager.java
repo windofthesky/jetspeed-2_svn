@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.List;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
-import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -34,7 +34,7 @@ import org.apache.jetspeed.om.page.Property;
  * @author <a href="raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
+public class TestCastorXmlPageManager extends AbstractComponentAwareTestCase
 {
     private String testId = "test002";
 
@@ -67,15 +67,17 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestCastorXmlPageManager.class);
+        //return new TestSuite(TestCastorXmlPageManager.class);
         //ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCastorXmlPageManager.class);
         // suite.setScript("org/apache/jetspeed/page/impl/registry.container.groovy");
-        // return suite ;      
+        // return suite ;
+    	NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestCastorXmlPageManager.class);
+    	return suite;
     }
 
     public void testNewPage()
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Page testpage = pm.newPage();
         assertNotNull(testpage);
@@ -86,7 +88,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 
     public void testNewFragment()
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+    	PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Fragment f = pm.newFragment();
         assertNotNull(f);
@@ -101,7 +103,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 
     public void testGetPage()
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Page testpage = pm.getPage("test001");
         assertNotNull(testpage);
@@ -169,7 +171,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
     
     public void testRegisterPage() throws Exception
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Page page = pm.newPage();
         System.out.println("Retrieved test_id in register " + this.testId);
@@ -221,7 +223,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 
     public void testUpdatePage() throws Exception
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Page page = pm.getPage(this.testId);
         page.setTitle("Updated Title");
@@ -244,7 +246,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 
     public void testListPages() throws Exception
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         List pages = pm.listPages();
         assertTrue(pages.size() == 3);
@@ -254,7 +256,7 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 
     public void testRemovePage() throws Exception
     {
-        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        PageManager pm = (PageManager)getContainer().getComponentInstance(PageManager.class);
         assertNotNull("castor xml manager is null", pm);            
         Page page = pm.getPage(this.testId);
 

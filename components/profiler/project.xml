@@ -17,46 +17,22 @@ limitations under the License.
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <id>jetspeed-security</id>
+  <id>jetspeed-profiler</id>
   <groupId>jetspeed2</groupId>
-  <name>Jetspeed-2 Security Components</name>
+  <name>Jetspeed-2 Profiler Components</name>
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>
   <description>
-	  Security Components
+	  Profiler Components
   </description>
-  <shortDescription>Security Components</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/security</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/security/</url>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/registry</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/registry/</url>
   </repository>
 
-  <dependencies>
-    <!-- AspectJ -->
-    <dependency>
-      <id>aspectj:aspectjrt</id>
-      <version>1.0.6</version>
-      <properties>
-        <classloader>root</classloader>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>aspectj:aspectj-ant</id>
-      <version>1.0.6</version>
-      <properties>
-        <classloader>root</classloader>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>aspectj:aspectj-tools</id>
-      <version>1.0.6</version>
-      <properties>
-        <classloader>root</classloader>
-      </properties>
-    </dependency>
-
-	<!-- Components -->  
+  <shortDescription>Profiler Components</shortDescription>
+  <dependencies>  
   	<dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
@@ -73,15 +49,6 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    <dependency>
-      <id>jetspeed-prefs</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-
     <!-- Testing only -->
     <dependency>
       <id>jetspeed-rdbms</id>
@@ -90,7 +57,15 @@ limitations under the License.
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
-    </dependency>    	
+    </dependency>   
+    <dependency>
+      <id>jetspeed-security</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency> 	
   	 <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
@@ -108,6 +83,20 @@ limitations under the License.
     <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-vfs</id>
+      <version>SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>nanocontainer:nanocontainer-deployer</id>
+      <version>1.0-beta-1-SNAPSHOT</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
@@ -206,15 +195,14 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    <!-- This is only a test dependency -->
-    <dependency>
-      <id>jetspeed-commons</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
+      <dependency>
+      <id>fulcrum</id>
+      <version>3.0-b2-dev</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <!-- This is only a test dependency -->
     <dependency>
       <id>hsqldb</id>
       <version>1.7.1</version>
@@ -251,6 +239,51 @@ limitations under the License.
       </properties>
     </dependency>    
     <dependency>
+      <id>jetspeed-commons</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>pluto</id>
+      <groupId>pluto</groupId>
+      <version>1.0-SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+     </dependency>
+     <dependency>
+      <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
+      <id>portlet-api</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>groovy</id>
+     <version>1.0-beta-4-snapshot</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>asm</id>
+      <version>1.4.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
       <id>jta</id>
       <jar>jta1.0.1.jar</jar>
       <properties>
@@ -267,14 +300,10 @@ limitations under the License.
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <!--
+ 
+    
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
-    <aspectSourceDirectory>src/aop</aspectSourceDirectory>
     <unitTest>
-       <includes>
-        <include>**/Test*.java</include>
-      </includes>
-
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>
@@ -290,7 +319,6 @@ limitations under the License.
       </resource>
       </resources>
     </unitTest>
-    -->
     
     <resources>
       <resource>

@@ -19,8 +19,9 @@ package org.apache.jetspeed.om.page;
 import java.util.Iterator;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 
-import org.apache.jetspeed.test.JetspeedTest;
+
 import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
@@ -31,7 +32,7 @@ import org.apache.jetspeed.om.page.psml.PageImpl;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPageObjectModel extends JetspeedTest
+public class TestPageObjectModel extends TestCase
 {
 
     /**

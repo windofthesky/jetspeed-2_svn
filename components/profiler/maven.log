@@ -1,0 +1,9 @@
+2004-04-19 22:43:57,375 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but commons-vfs-SNAPSHOT.jar may be out of date!
+2004-04-19 22:43:57,375 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but nanocontainer-deployer-1.0-beta-1-SNAPSHOT.jar may be out of date!
+2004-04-19 22:43:57,375 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but picocontainer-1.0-RC-1-SNAPSHOT.jar may be out of date!
+2004-04-19 22:43:57,375 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but nanocontainer-1.0-beta-1-SNAPSHOT.jar may be out of date!
+2004-04-19 22:43:57,375 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but pluto-1.0-SNAPSHOT.jar may be out of date!
+2004-04-19 22:43:57,906 WARN  org.apache.maven.verifier.DependencyVerifier - You are working offline so the build will continue, but maven-SNAPSHOT.jar may be out of date!
+2004-04-19 22:44:00,843 INFO  org.apache.maven.cli.App - Total time: 6 seconds
+2004-04-19 22:44:00,843 INFO  org.apache.maven.cli.App - Finished at: Mon Apr 19 22:44:00 EDT 2004
+2004-04-19 22:44:00,843 INFO  org.apache.maven.cli.App - 
