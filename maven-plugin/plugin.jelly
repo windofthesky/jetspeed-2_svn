@@ -107,7 +107,13 @@ limitations under the License.
   <goal name="jetspeed2:build.portal"> 
   	
   	  <copy todir="${basedir}/etc/project-dependencies" overwrite="true" failonerror="true">
-         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-dependencies" />            	       	       
+         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-dependencies" />
+     </copy>
+     <copy todir="${basedir}/etc/project-resources" overwrite="true" failonerror="true">
+         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-resources" />
+     </copy>
+     <copy todir="${basedir}/etc/project-reports" overwrite="true" failonerror="true">
+         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-reports" />
      </copy>
      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.ent" tofile="${basedir}/locator.ent" overwrite="true" failonerror="true"/> 
   	

@@ -21,7 +21,13 @@ limitations under the License.
          
  <preGoal name="java:jar-resources">
  	 <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
-         <fileset dir="../etc/project-dependencies" />            	       	       
+         <fileset dir="../etc/project-dependencies" />
+     </copy>
+     <copy todir="target/classes/plugin-resources/etc/project-resources" overwrite="true" failonerror="true">
+         <fileset dir="../etc/project-resources" />              	       	       
+     </copy>
+     <copy todir="target/classes/plugin-resources/etc/project-reports" overwrite="true" failonerror="true">
+         <fileset dir="../etc/project-reports" />   
      </copy>
      <copy file="../locator.ent" tofile="${basedir}/target/classes/plugin-resources/locator.ent" overwrite="true" failonerror="true"/> 
  	 <attainGoal name="copyDb" />
