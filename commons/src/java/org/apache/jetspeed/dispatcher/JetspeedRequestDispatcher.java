@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.dispatcher;
 
+import java.io.PrintWriter;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +63,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.PortletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.core.impl.RenderRequestImpl;
 import org.apache.pluto.core.impl.RenderResponseImpl;
 
@@ -73,24 +77,25 @@ import org.apache.pluto.core.impl.RenderResponseImpl;
 public class JetspeedRequestDispatcher implements PortletRequestDispatcher
 {
     private RequestDispatcher requestDispatcher;
+    private static final Log log = LogFactory.getLog(JetspeedRequestDispatcher.class);
 
     public JetspeedRequestDispatcher(RequestDispatcher requestDispatcher)
     {
         this.requestDispatcher = requestDispatcher;
     }
 
-// portlet-only implementation
+    // portlet-only implementation
 
-    public void include(RenderRequest request, RenderResponse response)
-        throws PortletException, java.io.IOException
+    public void include(RenderRequest request, RenderResponse response) throws PortletException, java.io.IOException
     {
-        try 
+        HttpServletResponse servletResponse = null;
+        try
         {
-            HttpServletRequest servletRequest = (HttpServletRequest)((RenderRequestImpl)request).getRequest();
-            HttpServletResponse servletResponse = (HttpServletResponse)((RenderResponseImpl)response).getResponse();                
-                            
-            this.requestDispatcher.include(servletRequest, servletResponse); 
-                
+            HttpServletRequest servletRequest = (HttpServletRequest) ((RenderRequestImpl) request).getRequest();
+            servletResponse = (HttpServletResponse) ((RenderResponseImpl) response).getResponse();
+
+            this.requestDispatcher.include(servletRequest, servletResponse);
+
         }
         catch (java.io.IOException e)
         {
@@ -98,14 +103,50 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
         }
         catch (javax.servlet.ServletException e)
         {
-            if (e.getRootCause()!=null)
+            PrintWriter pw = null;
+            if (servletResponse != null)
             {
+                pw = servletResponse.getWriter();
+                pw.write("JetspeedRequestDispatcher failed to include servlet resources. (details below) <br/>");
+                pw.write("Exception: " + e.getClass().getName() + " <br/>");
+                pw.write("Message: " + e.getMessage() + " <br/>");
+                writeStackTrace(e.getStackTrace(), pw);
+
+            }
+            log.error("JetspeedRequestDispatcher failed (details below)");
+            log.error(
+                "Begin: ******************************************* JetspeedRequestDispatcher Failure Report******************************************");
+            log.error("Cause: " + e.getMessage(), e);
+            if (e.getRootCause() != null)
+            {
+                log.error("Root Cause: " + e.getRootCause().getMessage(), e.getRootCause());
+                if (pw != null)
+                {
+                    pw.write("<p>Root Cause: </p>");
+                    pw.write("Message: " + e.getRootCause().getMessage() + " <br/>");
+                    pw.write("Exception: " + e.getRootCause().getClass().getName() + " <br/>");
+                    writeStackTrace(e.getRootCause().getStackTrace(), pw);
+                }
+
+                log.error(
+                    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
                 throw new PortletException(e.getRootCause());
             }
             else
             {
+                log.error(
+                    "End: *******************************************JetspeedRequestDispatcher Failure Report******************************************");
                 throw new PortletException(e);
             }
+        }
+    }
+
+    protected static final void writeStackTrace(StackTraceElement[] traceArray, PrintWriter pw)
+    {
+        pw.write("<p>Stack Trace: </p>");
+        for (int i = 0; i < traceArray.length; i++)
+        {
+            pw.write("&nbsp;&nbsp;&nbsp;" + traceArray[i].toString() + "<br />");
         }
     }
 
