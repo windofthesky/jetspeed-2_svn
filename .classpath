@@ -58,5 +58,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/groovy/jars/groovy-1.0-beta-4-snapshot.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-1.4.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/mockrunner/jars/mockrunner-0.2.7.jar"/>
+    <classpathentry kind="var" path="MAVEN_REPO/struts-portlet/jars/struts-portlet-spi-0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
