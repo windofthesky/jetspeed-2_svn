@@ -22,7 +22,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**

@@ -28,8 +28,6 @@ import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 import org.apache.portals.messaging.PortletMessaging;
