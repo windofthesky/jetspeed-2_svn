@@ -16,7 +16,9 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -86,6 +88,8 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     protected SearchEngine searchEngine;
 
     protected ApplicationServerManager appServerManager;
+
+    private File tempDirectory;
    
     public FileSystemPAM( String webAppsDir, 
                           PortletRegistry registry,
@@ -93,7 +97,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                           PortletWindowAccessor windowAccess, 
                           PortletCache portletCache,
                           PortletFactory portletFactory,
-                          ApplicationServerManager appServerManager)                          
+                          ApplicationServerManager appServerManager)
     {
         super();
         ArgUtil.assertNotNull(PortletRegistry.class, registry, this);
@@ -106,6 +110,22 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         this.portletFactory = portletFactory;
         this.windowAccess = windowAccess;
         this.appServerManager = appServerManager;      
+
+        // configure temporary directory used in deployment
+        this.tempDirectory = new File(System.getProperty("java.io.tmpdir"), "jetspeed-FileSystemPAM");
+        if (!this.tempDirectory.isDirectory())
+        {
+            this.tempDirectory.mkdirs();
+        }
+        else
+        {
+            File [] purgeTempFiles = this.tempDirectory.listFiles();
+            for (int i = 0; (i < purgeTempFiles.length); i++)
+            {
+                deleteFile(purgeTempFiles[i], false);
+            }
+        }
+        this.tempDirectory.deleteOnExit();
     }
 
     /**
@@ -824,21 +844,53 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         // deployed portlet app directories
         if ((paWar == null) || !paWar.getFileSystem().getRootDirectory().getName().startsWith("jetspeed-"))
         {
-            // use expanded portlet app war file deployment directory
-            File deploymentDirectory = new File(getDeploymentPath(paName));
-            if (deploymentDirectory.isDirectory())
+            // copy jar files from expanded portlet app war
+            // file deployment directory into temp directory
+            // to avoid class loader jar/resource locking on
+            // windows platform
+            File paLib = new File(getDeploymentPath(paName), "WEB-INF/lib");
+            File paClasses = new File(getDeploymentPath(paName), "WEB-INF/classes");
+            if (paLib.isDirectory() || paClasses.isDirectory())
             {
-                FileSystemHelper paDirectory = new DirectoryHelper(deploymentDirectory);
-                paWar = new PortletApplicationWar(paDirectory, paName, "/" + paName);
+                // create temporary lib directory
+                File classLoaderDir = new File(tempDirectory, paName + "-classpath-" + getUniqueId());
+                File classLoaderLib = new File(classLoaderDir, "WEB-INF/lib");
+                File classLoaderClasses = new File(classLoaderDir, "WEB-INF/classes");
+                if (!classLoaderLib.exists())
+                {
+                    classLoaderLib.mkdirs();
+                }
+                if (!classLoaderClasses.exists())
+                {
+                    classLoaderClasses.mkdirs();
+                }
+
+                // copy lib files into temporary directory
+                if (paLib.isDirectory())
+                {
+                    (new DirectoryHelper(classLoaderLib)).copyFrom(paLib);
+                }
+                if (paClasses.isDirectory())
+                {
+                    (new DirectoryHelper(classLoaderClasses)).copyFrom(paClasses);
+                }
+                
+                // create psuedo portlet app war descriptor for
+                // temporary directory to use with class loader
+                FileSystemHelper classLoaderLibDirectory = new DirectoryHelper(classLoaderDir);
+                paWar = new PortletApplicationWar(classLoaderLibDirectory, paName, "/" + paName);
             }
             else
             {
-                throw new RuntimeException("Unable to configure class loader: missing portlet app deployment directory for " + paName);
+                log.warn("Unable to configure class loader: missing WEB-INF/lib and WEB-INF/classes portlet app deployment directory for " + paName);
             }
         }
         // create and register class loader for portlet app
-        portletFactory.addClassLoader(app.getId().toString(), paWar.createClassloader(getClass().getClassLoader()));
-        log.info("Registered portlet app in the class loader registry... " + paName);
+        if (paWar != null)
+        {
+            portletFactory.addClassLoader(app.getId().toString(), paWar.createClassloader(getClass().getClassLoader()));
+            log.info("Registered portlet app in the class loader registry... " + paName);
+        }
 
         // add to search engine result
         if (searchEngine != null)
@@ -855,5 +907,40 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     public void setSearchEngine(SearchEngine searchEngine)
     {
         this.searchEngine = searchEngine;
+    }
+
+    /**
+     * getUniqueId - used for temporary file creation
+     *
+     * @return new unique id
+     */
+    private static long uniqueId = System.currentTimeMillis();
+    protected synchronized static long getUniqueId()
+    {
+        return uniqueId++;
+    }
+
+    /**
+     * deleteFile - move and deep file delete utility
+     *
+     * @param file
+     * @param useTemp
+     */
+    protected boolean deleteFile(File file, boolean useTemp)
+    {
+        // move directories to temp if possible and delete
+        if (file.isDirectory())
+        {
+            if (useTemp)
+            {
+                File delete = new File(tempDirectory, file.getName() + "-move-to-delete-" + getUniqueId());
+                if (file.renameTo(delete))
+                {
+                    return (new DirectoryHelper(delete)).remove();
+                }
+            }
+            return (new DirectoryHelper(file)).remove();
+        }
+        return file.delete();
     }
 }

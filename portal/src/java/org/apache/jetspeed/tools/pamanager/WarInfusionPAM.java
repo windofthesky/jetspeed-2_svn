@@ -89,6 +89,14 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
         {
             this.tempDirectory.mkdirs();
         }
+        else
+        {
+            File [] purgeTempFiles = this.tempDirectory.listFiles();
+            for (int i = 0; (i < purgeTempFiles.length); i++)
+            {
+                deleteFile(purgeTempFiles[i], false);
+            }
+        }
         this.tempDirectory.deleteOnExit();
 
         // determine if other context.xml files exist in
@@ -234,7 +242,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
         File deployPortletAppContextFile = new File(webAppsDir + "/" + paName + ".xml");
         deployPortletAppWarFile.delete();
         deployPortletAppContextFile.delete();
-        deleteDirectory(deployPortletAppDirectory);
+        deleteFile(deployPortletAppDirectory, true);
         if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists() && !deployPortletAppWarFile.exists())
         {
             log.error("Portlet application undeployment of " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
@@ -335,7 +343,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 if (sourcePortletAppWarFile.isDirectory())
                 {
                     // war file is expanded directory, create temporary war file
-                    tempSourcePortletAppWarFile = new File(tempDirectory, sourcePortletAppWarFile.getName() + ".jar-" + getUniqueId());
+                    tempSourcePortletAppWarFile = new File(tempDirectory, sourcePortletAppWarFile.getName() + "-temp-repack-war-" + getUniqueId());
                     try
                     {
                         Map warFiles = new HashMap();
@@ -403,7 +411,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 // portlet.tld, and context.xml into portlet app war file;
                 // note that name of source file must match name of
                 // destination war
-                File tempDeployPortletAppWarFile = new File(tempDirectory, deployPortletAppWarFile.getName() + "-" + getUniqueId());
+                File tempDeployPortletAppWarFile = new File(tempDirectory, deployPortletAppWarFile.getName() + "-infused-war-" + getUniqueId());
                 Deploy warInfuser = deployFactory.getInstance(sourcePortletAppWar, tempDeployPortletAppWarFile.getAbsolutePath(), true);
                 if (tempSourcePortletAppWarFile != null)
                 {
@@ -417,7 +425,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 if (deployExpandedWars)
                 {
                     // expand portlet app directory
-                    tempDeployPortletAppDirectory = new File(tempDirectory, deployPortletAppDirectory.getName() + "-" + getUniqueId());
+                    tempDeployPortletAppDirectory = new File(tempDirectory, deployPortletAppDirectory.getName() + "-expanded-war-directory-" + getUniqueId());
                     byte[] buffer = new byte[1024];
                     int bytesRead;
                     JarInputStream tempWar = new JarInputStream(new FileInputStream(tempDeployPortletAppWarFile));
@@ -446,7 +454,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                     File contextXmlFile = new File(tempDeployPortletAppDirectory, "META-INF/context.xml");
                     if (contextXmlFile.exists())
                     {
-                        tempDeployPortletAppContextFile = new File(tempDirectory, deployPortletAppContextFile.getName() + "-" + getUniqueId());
+                        tempDeployPortletAppContextFile = new File(tempDirectory, deployPortletAppContextFile.getName() + "-expanded-war-context-" + getUniqueId());
                         FileInputStream read = new FileInputStream(contextXmlFile);
                         FileOutputStream copy = new FileOutputStream(tempDeployPortletAppContextFile);
                         while ((bytesRead = read.read(buffer)) != -1)
@@ -490,7 +498,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 {
                     // undeploy and deploy portlet app context.xml and expanded war file directory
                     deployPortletAppContextFile.delete();
-                    deleteDirectory(deployPortletAppDirectory);
+                    deleteFile(deployPortletAppDirectory, true);
                     if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists())
                     {
                         tempDeployPortletAppContextFile.renameTo(deployPortletAppContextFile);
@@ -502,7 +510,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                         else
                         {
                             deployPortletAppContextFile.delete();
-                            deleteDirectory(deployPortletAppDirectory);
+                            deleteFile(deployPortletAppDirectory, true);
                             log.error("Expanded portlet application deployment of " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to deploy.");
                         }
                     }
@@ -514,7 +522,7 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 else if (tempDeployPortletAppDirectory != null)
                 {
                     // undeploy and deploy portlet app expanded war file directory
-                    deleteDirectory(deployPortletAppDirectory);
+                    deleteFile(deployPortletAppDirectory, true);
                     if (!deployPortletAppDirectory.exists())
                     {
                         tempDeployPortletAppDirectory.renameTo(deployPortletAppDirectory);
@@ -589,37 +597,6 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
     {
         // invoke base FileSystemPAM implementation
         super.doUnregister(paName, purgeEntityInfo);
-    }
-
-    /**
-     * deleteDirectory
-     *
-     * @param directory
-     */
-    private boolean deleteDirectory(File directory)
-    {
-        // move to tempDirectory if possible and delete
-        if (directory.isDirectory())
-        {
-            File delete = new File(tempDirectory, directory.getName() + ".delete-" + getUniqueId());
-            if (directory.renameTo(delete))
-            {
-                return (new DirectoryHelper(delete)).remove();
-            }
-            return (new DirectoryHelper(directory)).remove();
-        }
-        return directory.delete();
-    }
-
-    /**
-     * getUniqueId - used for temporary file creation
-     *
-     * @return new unique id
-     */
-    private static long uniqueId = System.currentTimeMillis();
-    private synchronized static long getUniqueId()
-    {
-        return uniqueId++;
     }
 
     /**
