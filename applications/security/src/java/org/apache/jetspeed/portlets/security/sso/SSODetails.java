@@ -131,7 +131,7 @@ public class SSODetails extends BrowserPortlet
         if (selectedSite != null)
         {        
             context.put("currentSite", selectedSite);
-        }
+        }        
         
         // get relative link, TODO: encapsulate Jetspeed links access into component
         String userChooser = getAbsoluteUrl(request, "/Administrative/choosers/users.psml");
@@ -160,18 +160,39 @@ public class SSODetails extends BrowserPortlet
         if (request.getPortletMode() == PortletMode.VIEW)
         {
             String refresh = request.getParameter("sso.refresh");
-            String save = request.getParameter("sso.save");
-            String neue = request.getParameter("sso.new");
+            String add = request.getParameter("sso.add");
+            String delete = request.getParameter("ssoDelete");
+            
             if (refresh != null)
             {
                 this.clearBrowserIterator(request);
             }
-            else if (neue != null)
+            else if (delete != null && !(isEmpty(delete)))
             {
-                //PortletMessaging.cancel(request, "site", "selected");
-                //PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                try
+                {
+                    String siteName = (String)PortletMessaging.receive(request, "site", "selectedUrl");                                            
+                    SSOSite site = sso.getSite(siteName);
+                    User user = userManager.getUser(delete);                        
+                    if (site != null && user != null)
+                    {                            
+                        Subject subject = user.getSubject(); 
+                        sso.removeCredentialsForSite(subject, site.getSiteURL());
+                        this.clearBrowserIterator(request);
+                    }
+                }
+                catch (SecurityException e)
+                {
+                    // TODO: exception handling
+                    System.err.println("Exception storing site: " + e);                        
+                }
+                catch (SSOException e)
+                {
+                    // TODO: exception handling
+                    System.err.println("Exception storing site: " + e);
+                }
             }
-            else if (save != null)
+            else if (add != null)
             {
                 // Roger: here is the principal type
                 String principalType = request.getParameter("principal.type");
