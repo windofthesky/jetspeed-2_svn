@@ -107,11 +107,11 @@ public class TestFileCache extends AbstractComponentAwareTestCase implements Fil
             File[] files = directory.listFiles();
             for (int ix=0; ix < files.length; ix++)
             {
-                if (files[ix].isDirectory())
+                if (files[ix].isDirectory() || files[ix].getName().equals(".cvsignore"))
                 {
                     continue;
                 }
-                String testData = readFile(files[ix]);
+                String testData = readFile(files[ix]);                
                 cache.put(files[ix], testData);
             }
 
