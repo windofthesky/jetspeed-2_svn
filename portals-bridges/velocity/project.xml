@@ -52,7 +52,6 @@ limitations under the License.
       <version>1.1-beta1</version>
       <url>http://jakarta.apache.org/velocity</url>
     </dependency>
-
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
@@ -68,6 +67,12 @@ limitations under the License.
           <include>META-INF/*</include>
         </includes>
       </resource>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <includes>
+           <include>**/*.xml</include>
+        </includes>
+      </resource>      
     </resources>
   </build>
   <reports>
