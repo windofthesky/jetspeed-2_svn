@@ -20,7 +20,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/> 
+<property name='testcase' value='org.apache.jetspeed.container.session.TestNavigationalState'/> 
                                                   
  <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
@@ -206,6 +206,30 @@ limitations under the License.
             <arg value="webapp" />
         </java>
   </goal>
+
+  <goal name="pam.paundeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <arg value="-action" />
+            <arg value="undeploy" />
+            <arg value="-PortletAppName" />
+            <arg value="PAM" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
+
 
   <goal name="pam.tsundeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
