@@ -70,6 +70,14 @@ limitations under the License.
   </navigation-rule>
 
   <navigation-rule>
+    <from-view-id>/tree.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>guessGameStart</from-outcome>
+      <to-view-id>/greeting.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
    <description>
         The decision rules used by the NavigationHandler to
         determine which view must be displayed after the

@@ -51,20 +51,20 @@
 %>
 
 <f:view>
-	<x:panelLayout id="page">
-            <f:verbatim><h2>Here is a tree?</h2></f:verbatim>
-            
-	<h:form>
+    <f:verbatim><h2>Here is a tree example.</h2></f:verbatim>
 
-                <x:tree id="tree" value="#{treeModel}"
-                        styleClass="tree"
-                        nodeClass="treenode"
-                        selectedNodeClass="treenodeSelected"
-                        expandRoot="true">
-                </x:tree>
-                <f:verbatim><br></f:verbatim>
+    <h:form>
+        <x:tree id="tree" value="#{treeModel}"
+                styleClass="tree"
+                nodeClass="treenode"
+                selectedNodeClass="treenodeSelected"
+                expandRoot="true">
+        </x:tree>
+        <f:verbatim><br></f:verbatim>
+   </h:form>
 
-	</h:form>
-	</x:panelLayout>
-
+    <h:commandLink id="goHome" action="guessGameStart">
+        <h:outputText value="Return to Guess Game"/>
+    </h:commandLink>
+     
 </f:view>
