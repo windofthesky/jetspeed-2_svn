@@ -102,9 +102,7 @@
 
   <reports>
     <report>maven-jdepend-plugin</report>
-<!--
     <report>maven-checkstyle-plugin</report>
--->
     <report>maven-pmd-plugin</report>
     <report>maven-changelog-plugin</report>
     <report>maven-file-activity-plugin</report>
@@ -113,7 +111,6 @@
     <report>maven-javadoc-plugin</report>
     <report>maven-jxr-plugin</report>
     <report>maven-junit-report-plugin</report>
-    <report>maven-linkcheck-plugin</report>
     <report>maven-tasklist-plugin</report>
   </reports>  
 </project>
