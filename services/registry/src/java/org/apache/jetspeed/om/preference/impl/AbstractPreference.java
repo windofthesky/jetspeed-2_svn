@@ -63,13 +63,14 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDescriptionSet;
+
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.Preference;
+
 
 /**
  * <p>
@@ -82,15 +83,19 @@ import org.apache.pluto.om.common.Preference;
  * @version $ $
  *
  */
-public abstract class AbstractPreference implements PreferenceComposite
+public abstract class AbstractPreference implements PreferenceComposite, Cloneable
 {
+    protected String ojbConcreteClass = AbstractPreference.class.getName();
+    
     private static final Log log = LogFactory.getLog(AbstractPreference.class);
 
     protected String name;
 
     protected boolean readOnly;
-    
+
     protected int id;
+
+    protected long parentId;
 
     /** a collection of <code>PreferenceValueObjects</code>
          * that can be persisted in a unique fashion.
@@ -98,7 +103,8 @@ public abstract class AbstractPreference implements PreferenceComposite
     protected List values;
 
     /** Localized Descriptions */
-    protected MutableDescriptionSet descriptions;
+    protected Collection descriptions;
+    protected DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_PREFERENCE);
 
     /** The type of preference this is either the portlet default or user defined */
     protected String type;
@@ -197,13 +203,8 @@ public abstract class AbstractPreference implements PreferenceComposite
     public void setDescription(String description)
     {
         // TODO: Is this still needed as we are using localized text???
-        //this.description = description;
-        if (descriptions == null)
-        {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PREFERENCE);
-        }
-
-        descriptions.addDescription(new DescriptionImpl(Locale.getDefault(), description, MutableDescription.TYPE_PREFERENCE));
+       // addDescription(Jetspeed.getDefaultLocale(), description);
+	   addDescription(Locale.getDefault(), description);
     }
 
     /**
@@ -219,10 +220,13 @@ public abstract class AbstractPreference implements PreferenceComposite
          */
     public boolean equals(Object obj)
     {
-        if (obj != null && obj instanceof Preference)
+        if (obj != null && obj.getClass().equals(getClass()))
         {
-            Preference pref = (Preference) obj;
-            return pref.getName().equals(this.getName());
+            AbstractPreference pref = (AbstractPreference) obj;
+            boolean sameParent = (pref.parentId == parentId);
+            boolean sameName = (name != null && pref.getName() != null && name.equals(pref.getName()));
+            return sameParent && sameName;
+
         }
 
         return false;
@@ -245,9 +249,23 @@ public abstract class AbstractPreference implements PreferenceComposite
     {
         if (descriptions == null)
         {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PREFERENCE);
+            descriptions = new ArrayList();
         }
-        descriptions.addDescription(new DescriptionImpl(locale, description, MutableDescription.TYPE_PREFERENCE));
+        descCollWrapper.setInnerCollection(descriptions);
+        try
+        {
+            MutableDescription descObj =
+                (MutableDescription) JetspeedPortletRegistry.getNewObjectInstance(MutableDescription.TYPE_PREFERENCE, true);
+            descObj.setLocale(locale);
+            descObj.setDescription(description);
+            descCollWrapper.addDescription(descObj);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to instantiate Description implementor, " + e.toString();
+            log.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
     }
 
     /**
@@ -257,7 +275,8 @@ public abstract class AbstractPreference implements PreferenceComposite
     {
         if (descriptions != null)
         {
-            return descriptions.get(locale);
+            descCollWrapper.setInnerCollection(descriptions);
+            return descCollWrapper.get(locale);
         }
         return null;
     }
@@ -376,6 +395,32 @@ public abstract class AbstractPreference implements PreferenceComposite
 
         return null;
 
+    }
+
+    /**
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() 
+    {
+        try
+        {
+            AbstractPreference clone = (AbstractPreference) getClass().newInstance();
+            clone.name = name;
+            clone.ojbConcreteClass= getClass().getName();
+            clone.id = id;
+            clone.descriptions = descriptions;
+            clone.descCollWrapper = descCollWrapper;
+            clone.parentId = parentId;
+            clone.readOnly = readOnly;
+            clone.type = type;
+            clone.values = values;
+            return clone;
+        }
+        catch (Exception e)
+        {
+          throw new  IllegalStateException("Unable to clone this preference: "+e.toString());
+        }
+       
     }
 
 }
