@@ -97,10 +97,7 @@ public abstract class AbstractPortletInvokerFactory
         return (JetspeedPortletInvoker)pool.borrowObject();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.pool.PoolableObjectFactory#passivateObject(java.lang.Object)
-     */
-    public void passivateObject(Object object) throws Exception 
+    public void releaseObject(Object object) throws Exception 
     {
         JetspeedPortletInvoker invoker = (JetspeedPortletInvoker)object;
         pool.returnObject(invoker);

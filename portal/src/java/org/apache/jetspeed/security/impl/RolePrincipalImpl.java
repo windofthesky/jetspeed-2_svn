@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.RolePrincipal;
 
 /**
@@ -61,7 +63,7 @@ import org.apache.jetspeed.security.RolePrincipal;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class RolePrincipalImpl implements RolePrincipal
+public class RolePrincipalImpl implements RolePrincipal, Serializable
 {
     private final String roleName;
 

@@ -81,7 +81,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * JetspeedPortletInvoker invokes local (internal) portlet applications.
+ * LocalPortletInvoker invokes local (internal) portlet applications.
  * Local portlet applications are stored within the Jetspeed Portlet application.
  * They are not separate web applications; but are stored under Jetspeed's
  * WEB-INF/apps directory.

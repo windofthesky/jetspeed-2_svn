@@ -94,8 +94,6 @@ public class CapabilityValveImpl implements CapabilityValve
     public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
     {
-        System.out.println("Capability Valve Invoked");
-
         try
         {
             String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);

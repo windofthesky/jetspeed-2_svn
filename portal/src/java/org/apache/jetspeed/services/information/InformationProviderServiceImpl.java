@@ -97,7 +97,7 @@ public class InformationProviderServiceImpl extends BaseCommonService implements
 
         if (provider != null)
         {
-            log.info("Static information provider " + provider.getClass().getName());
+            // log.info("Static information provider " + provider.getClass().getName());
         }
         else
         {
@@ -111,8 +111,6 @@ public class InformationProviderServiceImpl extends BaseCommonService implements
     {
         DynamicInformationProvider provider =
             (DynamicInformationProvider) request.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
-
-        log.info("Dynamic information provider " + provider);
 
         if (provider == null)
         {

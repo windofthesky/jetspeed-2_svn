@@ -180,11 +180,11 @@ public class PortletInvokerFactoryImpl
         {
             if (invoker instanceof ServletPortletInvoker)
             {
-                servletInvokerFactory.passivateObject(invoker);                
+                servletInvokerFactory.releaseObject(invoker);                
             }
             else
             {
-                localInvokerFactory.passivateObject(invoker);                            
+                localInvokerFactory.releaseObject(invoker);                            
             }
         }
         catch (Exception e)
