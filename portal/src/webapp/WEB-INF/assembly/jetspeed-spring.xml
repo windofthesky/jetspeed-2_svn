@@ -47,6 +47,9 @@ limitations under the License.
   	   	  <entry key="UserManager">
   	   	    <ref bean="org.apache.jetspeed.security.UserManager"/>
   	   	  </entry>
+  	   	  <entry key="PageManager">
+  	   	    <ref bean="org.apache.jetspeed.page.PageManager"/>
+  	   	  </entry>
   	   	</map>
   	   </constructor-arg>
   </bean>
