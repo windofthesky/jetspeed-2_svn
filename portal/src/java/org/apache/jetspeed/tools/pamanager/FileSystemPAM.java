@@ -180,6 +180,15 @@ public class FileSystemPAM implements Deployment, Registration
         {
             // First unergister the application from Registry
             unregister(webAppsDir, paName);
+        }
+        catch (PortletApplicationException e)
+        {
+            log.warn("Undeploy could not unregister portlet application, "+paName+", from the database.  "+
+                          "Continuing removal of web application directory.");
+        }
+        
+        try
+        {           
 
             // Call into DeplyUtilities class
             DeployUtilities util = new DeployUtilities();
@@ -214,7 +223,7 @@ public class FileSystemPAM implements Deployment, Registration
         catch (Exception re)
         {
 
-            log.error("Failed to undeploy portlet application: " + re.toString() + " attempting to rollback changes", re);
+            log.error("Failed to undeploy portlet application: " + re.toString(), re);
 
             throw new PortletApplicationException(re.getMessage());
         }

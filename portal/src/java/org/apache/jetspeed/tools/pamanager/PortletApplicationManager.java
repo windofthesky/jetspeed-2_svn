@@ -317,13 +317,6 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             }
             else if (strAction.compareToIgnoreCase("undeploy") == 0)
             {
-                if (null == lifecycle)
-                {
-                    String msg = "PAM Lifecycle Error: Lifecycle interface not supported by implementation: " + className;            
-                    System.out.println("\n" + msg);
-                    log.error(msg);
-                    shutdownAndExit(engine);                                
-                }
                 
                 undeploy(deployer, strWebAppDir, strPortletAppName, strServer, intServerPort, strUserName, strPassword); // [RUN]
             }
