@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileSystemManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
@@ -47,7 +46,7 @@ import org.picocontainer.Startable;
  * @version $Id$
  *  
  */
-public class AutoDeploymentManager implements Startable, DeploymentManager
+public class StandardDeploymentManager implements Startable, DeploymentManager
 {
     protected Log log = LogFactory.getLog("deployment");
 
@@ -67,15 +66,14 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
 
     protected List deployedFiles;
 
-    protected FileSystemManager fsManager;
-    
+
     /**
      * 
      * @param stagingDirectory
      * @param scanningDelay
      * @param deploymentListeners
      */
-    public AutoDeploymentManager( String stagingDirectory, long scanningDelay, Collection deploymentListeners, FileSystemManager fsManager )
+    public StandardDeploymentManager( String stagingDirectory, long scanningDelay, Collection deploymentListeners )
     {
         this.scanningDelay = scanningDelay;
         this.stagingDirectory = stagingDirectory;
@@ -83,7 +81,6 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
         this.deploymentListeners = deploymentListeners;
         this.deployedFiles = new ArrayList();
         this.fileDates = new HashMap();
-        this.fsManager = fsManager;
     }
 
     /**
@@ -91,9 +88,9 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
      * <p>
      * start
      * </p>
-     *
+     * 
      * @see org.picocontainer.Startable#start()
-     *
+     *  
      */
     public void start()
     {
@@ -161,7 +158,7 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
 
     public void fireDeploymentEvent()
     {
-        String[] stagedFiles = AutoDeploymentManager.this.stagingDirectoryAsFile.list();
+        String[] stagedFiles = stagingDirectoryAsFile.list();
         for (int i = 0; i < stagedFiles.length; i++)
         {
             // check for new deployment
@@ -171,7 +168,15 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
                 DeploymentObject deploymentObject = null;
                 try
                 {
-                    deploymentObject = new VFSDeploymentObject(aFile, fsManager);
+                    try
+                    {
+                        deploymentObject = new StandardDeploymentObject(aFile);
+                    }
+                    catch (FileNotDeployableException e)
+                    {
+                        log.info(e.getMessage());                        
+                        continue;
+                    }
 
                     DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, deploymentObject);
                     dispatch(event);
@@ -211,25 +216,25 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
             }
         }
     }
-    
+
     /**
      * 
      * <p>
      * fireUndeploymentEvent
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentManager#fireUndeploymentEvent()
-     *
+     *  
      */
     public void fireUndeploymentEvent()
     {
-        List fileList = Arrays.asList(AutoDeploymentManager.this.stagingDirectoryAsFile.list());
+        List fileList = Arrays.asList(StandardDeploymentManager.this.stagingDirectoryAsFile.list());
 
         for (int i = 0; i < deployedFiles.size(); i++)
         {
             // get a current list of all the files in the deploy directory
             String fileName = (String) deployedFiles.get(i);
-            File aFile = new File(AutoDeploymentManager.this.stagingDirectoryAsFile, fileName);
+            File aFile = new File(stagingDirectoryAsFile, fileName);
 
             // File is still on the file system, so skip it
             if (fileList.contains(fileName))
@@ -237,11 +242,12 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
                 continue;
             }
 
-            DeploymentObject objHandler = null;
+       
             try
             {
 
-                DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, aFile.getName(), aFile.getAbsolutePath());
+                DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, aFile.getName(),
+                        aFile.getAbsolutePath());
                 dispatch(event);
 
                 if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
@@ -258,24 +264,7 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
             catch (Exception e1)
             {
                 log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
-            }
-            finally
-            {
-                if (objHandler != null)
-                {
-                    try
-                    {
-                        // we are responsible for reclaiming the FSObject's
-                        // resource
-                        objHandler.close();
-                    }
-                    catch (IOException e)
-                    {
-
-                    }
-                }
-
-            }
+            }   
 
         }
 
@@ -286,7 +275,7 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
      * <p>
      * dispatch
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentManager#dispatch(org.apache.jetspeed.deployment.DeploymentEvent)
      * @param event
      */
@@ -298,15 +287,19 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
             DeploymentEventListener listener = (DeploymentEventListener) itr.next();
             try
             {
-                if(event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+                if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
                 {
                     listener.invokeDeploy(event);
                 }
-                else if(event.getEventType().equals(DeploymentEvent.EVENT_TYPE_UNDEPLOY))
+                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_UNDEPLOY))
                 {
                     listener.invokeUndeploy(event);
                 }
-                
+                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+                {
+                    listener.invokeRedeploy(event);
+                }
+
                 if (event.getStatus() < 0)
                 {
                     event.setStatus(DeploymentEvent.STATUS_OKAY);
@@ -325,12 +318,75 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
      * <p>
      * fireReDeploymentEvent
      * </p>
-     *
-     * @see org.apache.jetspeed.deployment.DeploymentManager#fireReDeploymentEvent()
-     *
+     * 
+     * @see org.apache.jetspeed.deployment.DeploymentManager#fireRedeploymentEvent()
+     *  
      */
-    public void fireReDeploymentEvent()
+    public void fireRedeploymentEvent()
     {
+        List fileList = Arrays.asList(StandardDeploymentManager.this.stagingDirectoryAsFile.list());
+        
+        for (int i = 0; i < deployedFiles.size(); i++)
+        {
+            // get a current list of all the files in the deploy directory
+            String fileName = (String) deployedFiles.get(i);
+            File aFile = new File(stagingDirectoryAsFile, fileName);
+
+            // File is not on the file system, so skip it
+            Long longDateObj = ((Long) fileDates.get(fileName));
+            if (longDateObj == null)
+            {
+                continue;
+            }
+
+            long lastModifiedDate = longDateObj.longValue();
+            long currentModifiedDate = aFile.lastModified();
+
+            if (currentModifiedDate > lastModifiedDate)
+            {
+
+                DeploymentObject deploymentObject = null;
+                try
+                {
+                    deploymentObject = new StandardDeploymentObject(aFile);
+                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_REDEPLOY, deploymentObject);
+                    log.info("Re-deploying "+aFile.getAbsolutePath());
+                    dispatch(event);
+
+                    if (event.getStatus() == DeploymentEvent.STATUS_OKAY)
+                    {                        
+                        fileDates.put(fileName, new Long(currentModifiedDate));
+                    }
+                    else
+                    {
+                        log.error("Error redeploying " + aFile.getAbsolutePath());
+                    }
+
+                }
+                catch (Exception e1)
+                {
+                    log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
+                }
+                finally
+                {
+                    if (deploymentObject != null)
+                    {
+                        try
+                        {
+                            // we are responsible for reclaiming the FSObject's
+                            // resource
+                            deploymentObject.close();
+                        }
+                        catch (IOException e)
+                        {
+
+                        }
+                    }
+
+                }
+
+            }
+        }
 
     }
 
@@ -348,7 +404,6 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
         return deployedFiles.contains(fileName);
     }
 
-    
     public class FileSystemScanner extends Thread
     {
 
@@ -368,7 +423,7 @@ public class AutoDeploymentManager implements Startable, DeploymentManager
             while (started)
             {
                 fireUndeploymentEvent();
-                fireReDeploymentEvent();
+                fireRedeploymentEvent();
                 fireDeploymentEvent();
 
                 try
