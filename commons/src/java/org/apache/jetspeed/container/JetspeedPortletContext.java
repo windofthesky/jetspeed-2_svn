@@ -16,7 +16,9 @@
 package org.apache.jetspeed.container;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
@@ -25,6 +27,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletRequestDispatcher;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
@@ -111,6 +114,31 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         if (name.startsWith("cps:"))
         {
             String serviceName = name.substring("cps:".length());
+            
+            // validate service
+            Collection validServices = application.getJetspeedServices();
+            if (null == validServices)
+            {
+                return null;
+            }
+            boolean found = false;
+            Iterator iterator = validServices.iterator();
+            while (iterator.hasNext())
+            {
+                JetspeedServiceReference validService = (JetspeedServiceReference)iterator.next();
+                if (validService.getName().equals(serviceName))
+                {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found)
+            {
+                return null;
+            }
+            
+            // return the service
             PortletServices services = JetspeedPortletServices.getSingleton();
             return services.getService(serviceName);
         }
