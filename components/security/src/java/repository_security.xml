@@ -79,7 +79,7 @@ limitations under the License.
         refresh="true"
         auto-retrieve="true"
         auto-update="true"
-        auto-delete="false"
+        auto-delete="true"
         indirection-table="SECURITY_USER_ROLE"
     >
         <documentation>This is the reference to role principals.</documentation>
@@ -93,7 +93,7 @@ limitations under the License.
         refresh="true"
         auto-retrieve="true"
         auto-update="true"
-        auto-delete="false"
+        auto-delete="true"
         indirection-table="SECURITY_USER_GROUP"
     >
         <documentation>This is the reference to group principals.</documentation>
@@ -107,7 +107,7 @@ limitations under the License.
         refresh="false"
         auto-retrieve="false"
         auto-update="true"
-        auto-delete="false"
+        auto-delete="true"
         indirection-table="PRINCIPAL_PERMISSION"
     >
         <documentation>This is the reference to a policy permission.</documentation>
