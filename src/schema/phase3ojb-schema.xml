@@ -68,12 +68,13 @@ limitations under the License.
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="SIZE_" type="INTEGER"/>
     </table>
-    
+<!--    
     <table name="OJB_DMAP_ENTRIES">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="DMAP_ID" type="INTEGER"/>
         <column name="KEY_OID" type="BINARY"/>
         <column name="VALUE_OID" type="BINARY"/>
     </table>
+-->
     
 </database>

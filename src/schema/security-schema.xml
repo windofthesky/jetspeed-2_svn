@@ -63,7 +63,7 @@ limitations under the License.
     <!--
        Create Security Principal Permission Table
     -->
-    <table name="SECURITY_PRINCIPAL_PERMISSION">
+    <table name="PRINCIPAL_PERMISSION">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PERMISSION_ID" primaryKey="true" required="true" type="INTEGER"/>
         <foreign-key foreignTable="SECURITY_PERMISSION">
