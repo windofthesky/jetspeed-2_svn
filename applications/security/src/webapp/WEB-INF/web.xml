@@ -80,17 +80,6 @@ limitations under the License.
     	<load-on-startup>1</load-on-startup>
   	</servlet>
   	
-  	<!-- Struts Servlet -->
-  	<servlet>
-		<servlet-name>action</servlet-name>
-		<servlet-class>org.apache.portals.bridges.struts.PortletServlet</servlet-class>
-		<init-param>
-			<param-name>config</param-name>
-			<param-value>/WEB-INF/struts-config.xml</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
   	<!-- Define Velocity Servlet -->
 	<servlet>
 		<servlet-name>velocity</servlet-name>
@@ -113,12 +102,6 @@ limitations under the License.
    		<url-pattern>*.jsf</url-pattern>
   	</servlet-mapping>	
   	
-	<!-- Struts Mapping -->
-	<servlet-mapping>
-		<servlet-name>action</servlet-name>
-		<url-pattern>*.do</url-pattern>
-	</servlet-mapping>
-
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
 		<servlet-name>velocity</servlet-name>
