@@ -86,7 +86,7 @@ limitations under the License.
 	        auto-retrieve="true"
 	        auto-update="object"
 	        auto-delete="object"
-	        indirection-table="SSO_PRINCIPAL_TO_REMOTE_PRINCIPAL"
+	        indirection-table="SSO_PRINCIPAL_TO_REMOTE"
 	    >
 	        <documentation>This is the reference to principals.</documentation>
 	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
