@@ -77,7 +77,7 @@ limitations under the License.
        <table width="100%" class="portal-layout-column">
        #foreach($f in $entry)       
         <tr>
-         <td width="100%">
+         <td width="100%">			
             #set($row = $f.getPropertyValue($layoutType, "row"))
             #set($col = $f.getPropertyValue($layoutType, "column"))
             #set($temp = 0) ##create temp Integer to parse strings
@@ -139,14 +139,24 @@ limitations under the License.
 			</div>
 		 #end			
            ## get the decorated Portlet content
-           $jetspeed.decorateAndInclude($f)
+		  #if($f.type == "portlet")
+   		    #parse($jetspeed.decorateAndInclude($f))
+		  #else		
+			$jetspeed.setCurrentFragment($f)
+			$f.renderedContent			
+		  #end
+           
+          ##$jetspeed.decorateAndInclude($f)
+
 		  #if($editing)
 		 </div>
 		</div>
-       #end			  
+       #end		
+
       </td>
 	 </tr>
-    #end
+	   #end
+
     </table>
    </td>
    #end

@@ -60,7 +60,7 @@ limitations under the License.
     <td nowrap="nowrap" class="PContentLeft" >&nbsp;</td>
     
     <td class="PContent" colspan="2">
-       $jetspeed.include($myF)
+       $myF.renderedContent
     </td>   
     
     <td class="PContentRight"  ><div class="PContentRight" >&nbsp;</div></td>

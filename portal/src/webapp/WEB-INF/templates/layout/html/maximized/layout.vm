@@ -18,7 +18,7 @@ limitations under the License.
 
 #set($myPage = $jetspeed.page)
 
-#set($myFragment = $jetspeed.currentFragment)
+#set($myFragment = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
 
 #set($myLayout = $jetspeed.currentLayout)
 
@@ -43,12 +43,11 @@ limitations under the License.
   #if ($decoTop)
       #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
   #end
-
 <table width="100%" cellspacing="0" cellpadding="0">
   <tr>
     <td valign="top">
 	    ## get the decorated Portlet content
-	   $jetspeed.decorateAndInclude($myFragment)                
+	   #parse($jetspeed.decorateAndInclude($myFragment))    
      </td>
   </tr>
 </table>

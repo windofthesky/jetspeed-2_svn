@@ -62,8 +62,8 @@ limitations under the License.
 #if (!$jetspeed.isHidden($myF) || $jetspeed.WindowState != "minimized")
   <tr>
     
-    <td class="PContent">
-       $!jetspeed.include($myF)
+    <td class="PContent">	
+   	   $myF.renderedContent
     </td>   
 
   </tr>
