@@ -39,6 +39,7 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -200,10 +201,14 @@ public class PortletApplicationDetail extends ServletPortlet
                 {
                     processPortletAction(actionRequest, actionResponse, pa, pdef, action);
                 }
+                else if(action.endsWith("preference"))
+                {
+                    processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
+                }
             }
         }
 	}
-    
+
     private boolean isAppAction(String action)
     {
         return action.startsWith(PORTLET_APP_ACTION_PREFIX);
@@ -385,5 +390,35 @@ public class PortletApplicationDetail extends ServletPortlet
         {
             //TODO should this be allowed??
         }
+    }
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param pdef
+     * @param action
+     */
+    private void processPreferenceAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    {
+        if(action.equals("add_preference"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String name = actionRequest.getParameter("name");
+            String value = actionRequest.getParameter("value");
+            
+            Preference pref = portlet.getPreferenceSet().get(name);
+            //if(pref == null)
+            {
+                portlet.addPreference(name, new String[] { value });
+            }
+            //else
+            {
+                //pref.
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }        
     }
 }

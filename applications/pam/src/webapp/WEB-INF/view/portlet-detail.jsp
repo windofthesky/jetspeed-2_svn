@@ -29,7 +29,7 @@ limitations under the License.
 <c:if test="${selectedPortletTab.id == 'pd_details'}">
 	<table>
 		<tr>
-			<td	>
+			<td>
 				<fmt:message key="pam.details.expiration_cache"/>
 			</td>
 			<td>
@@ -90,13 +90,72 @@ limitations under the License.
 		Iterator prefIter = comp.iterator();
 		pageContext.setAttribute("prefIter", prefIter);
 	%>
+	<table border="1">
+		<tr>
+			<th><fmt:message key="pam.details.name"/></th>
+			<th><fmt:message key="pam.details.value"/></th>
+		</tr>
 	<c:forEach var="pref" items="${prefIter}">
-		<c:out value="${pref.name}"/> | 
-		<c:forEach var="value" items="${pref.values}">
-			<c:out value="${value}"/>, 
-		</c:forEach>
-		<br />
+		<tr>
+			<td>
+				<c:out value="${pref.name}"/>
+			</td>
+			<td>
+				<table>
+				<c:forEach var="value" items="${pref.values}">
+					<tr>
+						<td>
+							<c:out value="${value}"/>
+						</td>
+					</tr>
+				</c:forEach>
+				</table>
+			</tr>
+		</tr>
 	</c:forEach>
+	</table>
+	
+	<hr />
+	
+	<portlet:actionURL var="edit_preferenece_link" >
+        <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
+    </portlet:actionURL>
+	<form action="<c:out value="${edit_preferenece_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.add_preference"/>
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.name"/>
+				</td>
+				<td>
+					<input type="text" name="name"/>
+				</td>
+				<%--TODO add combo box of existing keys--%>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.value"/>
+				</td>
+				<td>
+					<input type="text" name="value"/>
+				</td>
+			</tr>
+			<%--
+			<tr>
+				<td>
+					<fmt:message key="pam.details.type"/>
+				</td>
+				<td>
+					<select>
+						<option value="string">String</option>
+						<option value="int">Int</option>
+					</select>
+				</td>
+			</tr>
+			--%>
+		</table>
+		<input type="submit" value="<fmt:message key="pam.details.add_preference"/>"/>
+	</form>
 </c:if>
 
 <c:if test="${selectedPortletTab.id == 'pd_languages'}">
