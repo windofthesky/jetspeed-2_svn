@@ -62,7 +62,9 @@ import javax.servlet.jsp.tagext.TagSupport;
  * @version $Revision$ $Date$
  */
 
-public class TreeControlTag extends TagSupport {
+public class TreeControlTag extends TagSupport 
+{
+    private static final long serialVersionUID = 1;    
 
 
     /**

@@ -32,7 +32,9 @@ import java.util.ArrayList;
  * @version $Revision$ $Date$
  */
 
-public class TreeControlNode implements Serializable {
+public class TreeControlNode implements Serializable 
+{
+    private static final long serialVersionUID = 1;    
 
 
     // ----------------------------------------------------------- Constructors

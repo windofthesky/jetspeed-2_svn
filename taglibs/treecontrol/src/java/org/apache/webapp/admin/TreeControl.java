@@ -33,7 +33,9 @@ import java.util.HashMap;
  * @version $Revision$ $Date$
  */
 
-public class TreeControl implements Serializable {
+public class TreeControl implements Serializable 
+{
+    private static final long serialVersionUID = 1;    
 
 
     // ----------------------------------------------------------- Constructors
