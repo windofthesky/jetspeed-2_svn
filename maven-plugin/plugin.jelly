@@ -194,6 +194,9 @@ limitations under the License.
         <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
           <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         </filterset>
+        <filterset begintoken="autodeployment.port" endtoken="8080">
+          <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
+        </filterset>
       </copy>
       
          
@@ -345,7 +348,23 @@ limitations under the License.
           <filter token="URL" value="${org.apache.jetspeed.database.url}"/>
         </filterset>
       </copy>    
-</goal>    
+</goal>   
+
+
+  <goal name='jetspeed2:deploy.shared.local'>
+    <echo>Copying from ${maven.repo.local} to ./target/shared...</echo>
+    
+    <j:set var="portal_project_desc_path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml" /> 	
+  	 	
+  	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
+    
+    <copy file="${portal_project.getDependencyPath('pluto')}" todir="./target/shared" failonerror="true" overwrite="true"/>
+    <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-commons')}" todir="./target/shared" failonerror="true" overwrite="true" />
+    <copy file="${portal_project.getDependencyPath('portlet-api')}" todir="./target/shared" failonerror="true" overwrite="true"/>  	  
+    <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="./target/shared" failonerror="true" overwrite="true"/>    
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="./target/shared"/>    
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-struts-0.1.jar" todir="./target/shared"/>    
+  </goal> 
 
 
   
