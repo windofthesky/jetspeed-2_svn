@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletContextFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -196,16 +197,18 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
         try
         {
+            PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
+            PortletConfig portletConfig = new PortletConfigImpl(this.jetspeedConfig, portletContext, portletDefinition);
+            
             servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
 
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-            servletRequest.setAttribute(ContainerConstants.PORTLET_ENTITY, portletDefinition);
-
-            PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
-            PortletConfig portletConfig = new PortletConfigImpl(this.jetspeedConfig, portletContext, portletDefinition);
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
+            JetspeedPortletFactoryProxy.setCurrentPortletDefinition(portletDefinition);                        
+            
             dispatcher.include(servletRequest, servletResponse);
+            
         }
         catch (Exception e)
         {

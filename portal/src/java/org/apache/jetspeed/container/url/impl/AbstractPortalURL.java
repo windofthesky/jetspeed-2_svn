@@ -80,6 +80,12 @@ public abstract class AbstractPortalURL implements PortalURL
             {
                 contextPath = "";
             }
+            
+            // NOTE: i will remove this as soon as I figure out why 
+            // weblogic is return the PA context instead of the portal context
+            // will remove it by end of day today
+            contextPath = "/jetspeed"; 
+            
             String servletPath = context.getRequest().getServletPath();
             if (servletPath == null)
             {
