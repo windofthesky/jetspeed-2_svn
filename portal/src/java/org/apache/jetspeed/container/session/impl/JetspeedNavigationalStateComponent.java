@@ -17,7 +17,6 @@ package org.apache.jetspeed.container.session.impl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Enumeration;
 import java.util.StringTokenizer;
 
 import javax.portlet.PortletMode;
@@ -31,6 +30,7 @@ import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * JetspeedNavigationalStateComponent
@@ -70,9 +70,16 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
      * @param navClassName  name of the class implementing Navigational State instances
      * @param urlClassName  name of the class implementing Portal URL instances
      * @param navigationsKeys comma-separated list of navigation keys
+     * @throws ClassNotFoundException if <code>navClassName</code> or <code>urlClassName</code>
+     * do not exist.
      */
-    public JetspeedNavigationalStateComponent(String navClassName, String urlClassName, String navigationKeys)
+    public JetspeedNavigationalStateComponent(String navClassName, String urlClassName, String navigationKeys) throws ClassNotFoundException 
     {
+        ArgUtil.assertNotNull(String.class, navClassName, this);
+        ArgUtil.assertNotNull(String.class, urlClassName, this);
+        ArgUtil.assertNotNull(String.class, navigationKeys, this);
+        this.urlClass = Class.forName(urlClassName);
+        this.navClass = Class.forName(navClassName);
         this.navClassName = navClassName;
         this.urlClassName  = urlClassName;
         this.navigationKeys = navigationKeys;
