@@ -28,9 +28,11 @@ import org.apache.jetspeed.prefs.impl.PropertyException;
 import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 
 /**
- * <p>Unit testing for {@link Preferences}.</p>
+ * <p>
+ * Unit testing for {@link Preferences}.
+ * </p>
  * 
- * @author <a href="dlestrat@yahoo.com">David Le Strat</a>
+ * @author <a href="dlestrat@yahoo.com">David Le Strat </a>
  */
 public class TestPreferences extends PersistenceSupportedTestCase
 {
@@ -39,7 +41,9 @@ public class TestPreferences extends PersistenceSupportedTestCase
     private static PropertyManager pms;
 
     /**
-     * <p>Defines property set types.</p>
+     * <p>
+     * Defines property set types.
+     * </p>
      */
     private final static int USER_PROPERTY_SET_TYPE = 0;
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
@@ -47,10 +51,14 @@ public class TestPreferences extends PersistenceSupportedTestCase
     private PreferencesProvider provider;
 
     /**
-     * <p>Defines the test case name for junit.</p>
-     * @param testName The test case name.
+     * <p>
+     * Defines the test case name for junit.
+     * </p>
+     * 
+     * @param testName
+     *            The test case name.
      */
-    public TestPreferences(String testName)
+    public TestPreferences( String testName )
     {
         super(testName);
     }
@@ -62,14 +70,15 @@ public class TestPreferences extends PersistenceSupportedTestCase
     {
         super.setUp();
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
     }
 
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
-    {      
+    {
         clean();
         // super.tearDown();
     }
@@ -79,14 +88,17 @@ public class TestPreferences extends PersistenceSupportedTestCase
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestPreferences.class);
     }
-    
+
     /**
-     * <p>Test user root.</p>
+     * <p>
+     * Test user root.
+     * </p>
      */
     public void testUserRoot()
     {
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.userRoot();
         if (null != prefs)
         {
@@ -97,27 +109,31 @@ public class TestPreferences extends PersistenceSupportedTestCase
             assertTrue("expected user root == '/', " + prefs, false);
         }
     }
-    
+
     public void testSansPropertyManager()
     {
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
         Preferences pref0 = Preferences.userRoot();
         // Test that the property manager is off
         Preferences pref1 = pref0.node("testOpenNode");
         pref1.put("0", "I am 0 key");
-        
+
         assertNotNull(pref1.get("0", null));
-        
+
     }
 
     /**
-     * <p>Test system root.</p>
+     * <p>
+     * Test system root.
+     * </p>
      */
     public void testSystemRoot()
     {
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.systemRoot();
         if (null != prefs)
         {
@@ -130,12 +146,15 @@ public class TestPreferences extends PersistenceSupportedTestCase
     }
 
     /**
-     * <p>Test node and whether children exist under a given node.</p>
+     * <p>
+     * Test node and whether children exist under a given node.
+     * </p>
      */
     public void testNodeAndChildrenNames()
     {
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.userRoot();
         // Test without children.
         try
@@ -143,7 +162,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
             String[] childrenNames = prefs.childrenNames();
             if (childrenNames.length > 0)
             {
-                assertTrue("expected no children, " + childrenNames.length + ", " + childrenNames[0], childrenNames.length == 0);
+                assertTrue("expected no children, " + childrenNames.length + ", " + childrenNames[0],
+                        childrenNames.length == 0);
             }
         }
         catch (BackingStoreException bse)
@@ -166,7 +186,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
         Preferences prefs3 = Preferences.userRoot().node("/an1");
         Preferences prefs4 = prefs3.node("rn1/srn1");
         assertNotNull("should not be null", prefs4);
-        assertTrue("expected node == /an1/rn1/srn1, " + prefs4.absolutePath(), prefs4.absolutePath().equals("/an1/rn1/srn1"));
+        assertTrue("expected node == /an1/rn1/srn1, " + prefs4.absolutePath(), prefs4.absolutePath().equals(
+                "/an1/rn1/srn1"));
 
         try
         {
@@ -187,22 +208,23 @@ public class TestPreferences extends PersistenceSupportedTestCase
         {
             assertTrue("backing store exception: " + bse, false);
         }
-        
-     
-        
+
     }
 
     /**
-     * <p>Test adding properties to a property set node and get property keys
-     * for a given node.</p>
+     * <p>
+     * Test adding properties to a property set node and get property keys for a
+     * given node.
+     * </p>
      */
     public void testPropertyAndPropertyKeys()
     {
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider = new PreferencesProviderImpl(persistenceStore,
+                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
 
         // 1. Current node does not have any property associated to it.
-        // No property has been defined nor added to the node.  There should be
+        // No property has been defined nor added to the node. There should be
         // no property and adding a child should return null.
         Preferences pref0 = Preferences.userRoot();
         try
@@ -210,7 +232,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
             String[] propertyKeys = pref0.keys();
             if (propertyKeys.length > 0)
             {
-                assertTrue("expected no children, " + propertyKeys.length + ", " + propertyKeys[0], propertyKeys.length == 0);
+                assertTrue("expected no children, " + propertyKeys.length + ", " + propertyKeys[0],
+                        propertyKeys.length == 0);
             }
         }
         catch (BackingStoreException bse)
@@ -259,12 +282,41 @@ public class TestPreferences extends PersistenceSupportedTestCase
         {
             assertTrue("backing store exception: " + bse, false);
         }
+
+    }
+
+    public void testNodeRemoval() throws Exception
+    {
+        Preferences prefs = Preferences.userRoot();
+
+        final String test_node = "removeTest";
+
+        assertFalse(prefs.nodeExists(test_node));
+
+        Preferences removeNode = prefs.node(test_node);
+
+        assertNotNull(removeNode);
+
+        // now remove then re-add and see if a IllegalStateException is thrown
+
+        removeNode.removeNode();
+        assertFalse(prefs.nodeExists(test_node));
         
-        
+        try
+        {
+           removeNode.childrenNames();
+           assertFalse("An IllegalStateException should have been thrown by the AbtractPreferences class", true);
+        }
+        catch (IllegalStateException e)
+        {
+            
+        }
     }
 
     /**
-     * <p>Init property property keys map.</p>
+     * <p>
+     * Init property property keys map.
+     * </p>
      */
     protected Map initPropertyKeysMap()
     {
@@ -279,7 +331,9 @@ public class TestPreferences extends PersistenceSupportedTestCase
     }
 
     /**
-     * <p>Init property property keys.</p>
+     * <p>
+     * Init property property keys.
+     * </p>
      */
     protected void initPropertyKeys()
     {
@@ -296,7 +350,9 @@ public class TestPreferences extends PersistenceSupportedTestCase
     }
 
     /**
-     * <p>Clean properties.</p>
+     * <p>
+     * Clean properties.
+     * </p>
      */
     protected void clean()
     {
@@ -309,6 +365,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
             Preferences.userRoot().node("/an1").removeNode();
             Preferences.userRoot().node("/rn1").removeNode();
             Preferences.userRoot().node("/testOpenNode").removeNode();
+            Preferences.userRoot().node("/removeTest").removeNode();
         }
         catch (PropertyException pex)
         {
@@ -319,7 +376,5 @@ public class TestPreferences extends PersistenceSupportedTestCase
             System.out.println("BackingStoreException" + bse);
         }
     }
-    
-    
 
 }

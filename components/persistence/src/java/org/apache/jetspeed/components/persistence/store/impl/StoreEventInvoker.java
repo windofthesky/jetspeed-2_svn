@@ -15,8 +15,8 @@
  */
 package org.apache.jetspeed.components.persistence.store.impl;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
@@ -39,7 +39,7 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @param eventListeners
      * @param store
      */
-    public StoreEventInvoker(List eventListeners, PersistenceStore store)
+    public StoreEventInvoker(Collection eventListeners, PersistenceStore store)
     {
         super(eventListeners, store);        
     }
@@ -52,13 +52,13 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterDeletePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
      * @param event
      */
-    public void afterDeletePersistent()
+    public void afterDeletePersistent(Object target)
     {
 		Iterator itr = listeners.iterator();
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.afterDeletePersistent(new PersistenceStoreEventImpl(store));
+			psel.afterDeletePersistent(new PersistenceStoreEventImpl(store, target));
 		}
 
     }
@@ -71,13 +71,13 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterLookup(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
      * @param event
      */
-    public void afterLookup()
+    public void afterLookup(Object target)
     {
 		Iterator itr = listeners.iterator();
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.afterLookup(new PersistenceStoreEventImpl(store));
+			psel.afterLookup(new PersistenceStoreEventImpl(store, target));
 		}
 
     }
@@ -90,13 +90,13 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#afterMakePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
      * @param event
      */
-    public void afterMakePersistent()
+    public void afterMakePersistent(Object target)
     {
 		Iterator itr = listeners.iterator();
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.afterMakePersistent(new PersistenceStoreEventImpl(store));
+			psel.afterMakePersistent(new PersistenceStoreEventImpl(store, target));
 		}
 
     }
@@ -109,13 +109,13 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeDeletePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
      * @param event
      */
-    public void beforeDeletePersistent()
+    public void beforeDeletePersistent(Object target)
     {
 		Iterator itr = listeners.iterator();
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.beforeDeletePersistent(new PersistenceStoreEventImpl(store));
+			psel.beforeDeletePersistent(new PersistenceStoreEventImpl(store, target));
 		}
 
     }
@@ -134,7 +134,7 @@ public class StoreEventInvoker extends TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.beforeLookup(new PersistenceStoreEventImpl(store));
+			psel.beforeLookup(new PersistenceStoreEventImpl(store, null));
 		}
 
     }
@@ -147,13 +147,13 @@ public class StoreEventInvoker extends TransactionEventInvoker
      * @see org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener#beforeMakePersistent(org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent)
      * @param event
      */
-    public void beforeMakePersistent()
+    public void beforeMakePersistent(Object target)
     {
 		Iterator itr = listeners.iterator();
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.beforeMakePersistent(new PersistenceStoreEventImpl(store));
+			psel.beforeMakePersistent(new PersistenceStoreEventImpl(store, target));
 		}
 
     }
@@ -164,7 +164,7 @@ public class StoreEventInvoker extends TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.beforeClose(new PersistenceStoreEventImpl(store));
+			psel.beforeClose(new PersistenceStoreEventImpl(store, null));
 		}
 
 	}
@@ -175,7 +175,7 @@ public class StoreEventInvoker extends TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			PersistenceStoreEventListener psel = (PersistenceStoreEventListener) itr.next();
-			psel.afterClose(new PersistenceStoreEventImpl(store));
+			psel.afterClose(new PersistenceStoreEventImpl(store, null));
 		}
 
 	}

@@ -29,4 +29,6 @@ package org.apache.jetspeed.components.persistence.store;
 public interface PersistenceStoreEvent extends TransactionEvent
 {
 	PersistenceStore getPersistenceStore();
+	
+	Object getTarget();
 }

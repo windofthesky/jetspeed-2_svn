@@ -57,7 +57,7 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class PBStore implements PersistenceStore
 {
     private PBKey pbKey;
-    private List listeners;
+    private static Set listeners;
     private StoreEventInvoker invoker;
     private PersistenceBroker pb;
    
@@ -79,7 +79,7 @@ public class PBStore implements PersistenceStore
             {
                 pbKey = PersistenceBrokerFactory.getDefaultKey();
             }
-            this.listeners = new ArrayList();        
+            listeners = new HashSet();        
             invoker = new StoreEventInvoker(listeners, this);
             pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);        
             toBeStored = new HashSet();
@@ -134,9 +134,9 @@ public class PBStore implements PersistenceStore
     public void deletePersistent(Object obj) throws LockFailedException
     {
         checkBroker();
-        invoker.beforeDeletePersistent();        
+        invoker.beforeDeletePersistent(obj);        
         pb.delete(obj);
-        invoker.afterDeletePersistent();
+        invoker.afterDeletePersistent(obj);
 
     }
 
@@ -150,9 +150,10 @@ public class PBStore implements PersistenceStore
         Iterator itr = deletes.iterator();
         while(itr.hasNext())
         {
-            invoker.beforeDeletePersistent();  
-            pb.delete(itr.next());
-            invoker.afterDeletePersistent();
+            Object obj = itr.next();
+            invoker.beforeDeletePersistent(obj);  
+            pb.delete(obj);
+            invoker.afterDeletePersistent(obj);
         }
 
     }
@@ -163,14 +164,16 @@ public class PBStore implements PersistenceStore
     public Collection getCollectionByQuery(Object query)
     {
         invoker.beforeLookup();
+        Collection result = null;
         try
         {
             checkBroker();
-            return pb.getCollectionByQuery((Query) query);
+            result =  pb.getCollectionByQuery((Query) query);
+            return result;
         }
         finally
         {
-            invoker.afterLookup();
+            invoker.afterLookup(result);
         }
     }
 
@@ -218,14 +221,16 @@ public class PBStore implements PersistenceStore
     public Object getObjectByQuery(Object query)
     {        
         invoker.beforeLookup();
+        Object result = null;
         try
         {
             checkBroker();
-            return pb.getObjectByQuery((Query) query);
+            result = pb.getObjectByQuery((Query) query);
+            return result;
         }
         finally
         {
-            invoker.afterLookup();
+            invoker.afterLookup(result);
         }
     }
 
@@ -243,14 +248,16 @@ public class PBStore implements PersistenceStore
     public Object getObjectByIdentity(Object object) throws LockFailedException
     {
         invoker.beforeLookup();
+        Object result = null;
         try
         {
             checkBroker();
-            return pb.getObjectByIdentity(new Identity(object, pb));
+            result = pb.getObjectByIdentity(new Identity(object, pb));
+            return result;
         }
         finally
         {
-            invoker.afterLookup();
+            invoker.afterLookup(result);
         }
     }
 
@@ -279,14 +286,16 @@ public class PBStore implements PersistenceStore
     public Iterator getIteratorByQuery(Object query)
     {
         invoker.beforeLookup();
+        Iterator result = null;
         try
         {
             checkBroker();
-            return pb.getIteratorByQuery((Query) query);
+            result = pb.getIteratorByQuery((Query) query);
+            return result;
         }
         finally
         {
-            invoker.afterLookup();
+            invoker.afterLookup(result);
         }
     }
 
@@ -375,10 +384,10 @@ public class PBStore implements PersistenceStore
     {
         try
         {
-            invoker.beforeMakePersistent();
+            invoker.beforeMakePersistent(obj);
             checkBroker();
             pb.store(obj);
-            invoker.afterMakePersistent();
+            invoker.afterMakePersistent(obj);
         }
         finally
         {
@@ -409,14 +418,16 @@ public class PBStore implements PersistenceStore
     public Collection getExtent(Class clazz)
     {
         invoker.beforeLookup();
+        Collection result = null;
         try
         {
             checkBroker();
-            return pb.getCollectionByQuery(QueryFactory.newQuery(clazz, new Criteria()));
+            result = pb.getCollectionByQuery(QueryFactory.newQuery(clazz, new Criteria()));
+            return result;
         }
         finally
         {
-            invoker.afterLookup();
+            invoker.afterLookup(result);
         }
     }
 

@@ -15,8 +15,8 @@
  */
 package org.apache.jetspeed.components.persistence.store.impl;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.TransactionEventListener;
@@ -35,10 +35,10 @@ import org.apache.jetspeed.components.persistence.store.TransactionEventListener
 public class TransactionEventInvoker
 {
 	
-	protected List listeners;
+	protected Collection listeners;
 	protected PersistenceStore store;
 	
-	public TransactionEventInvoker(List eventListeners, PersistenceStore store)
+	public TransactionEventInvoker(Collection eventListeners, PersistenceStore store)
 	{
 		this.listeners = eventListeners;
 		this.store = store;
@@ -58,7 +58,7 @@ public class TransactionEventInvoker
         while(itr.hasNext())
         {
         	TransactionEventListener tel = (TransactionEventListener) itr.next();
-        	tel.afterCommit(new PersistenceStoreEventImpl(store));
+        	tel.afterCommit(new PersistenceStoreEventImpl(store, null));
         }
 
     }
@@ -77,7 +77,7 @@ public class TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			TransactionEventListener tel = (TransactionEventListener) itr.next();
-			tel.beforeCommit(new PersistenceStoreEventImpl(store));
+			tel.beforeCommit(new PersistenceStoreEventImpl(store, null));
 		}
 
     }
@@ -96,7 +96,7 @@ public class TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			TransactionEventListener tel = (TransactionEventListener) itr.next();
-			tel.afterRollback(new PersistenceStoreEventImpl(store));
+			tel.afterRollback(new PersistenceStoreEventImpl(store, null));
 		}
 
     }
@@ -115,7 +115,7 @@ public class TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			TransactionEventListener tel = (TransactionEventListener) itr.next();
-			tel.beforeRollback(new PersistenceStoreEventImpl(store));
+			tel.beforeRollback(new PersistenceStoreEventImpl(store, null));
 		}
 
     }
@@ -134,7 +134,7 @@ public class TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			TransactionEventListener tel = (TransactionEventListener) itr.next();
-			tel.afterBegin(new PersistenceStoreEventImpl(store));
+			tel.afterBegin(new PersistenceStoreEventImpl(store, null));
 		}
 
     }
@@ -153,7 +153,7 @@ public class TransactionEventInvoker
 		while(itr.hasNext())
 		{
 			TransactionEventListener tel = (TransactionEventListener) itr.next();
-			tel.beforeBegin(new PersistenceStoreEventImpl(store));
+			tel.beforeBegin(new PersistenceStoreEventImpl(store, null));
 		}
 
     }

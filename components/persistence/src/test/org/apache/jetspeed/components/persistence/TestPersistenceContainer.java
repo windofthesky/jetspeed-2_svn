@@ -21,8 +21,13 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
 import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore;
 import org.apache.jetspeed.components.util.DatasourceTestCase;
+import org.jmock.Mock;
+import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
+import org.jmock.core.matcher.InvokeOnceMatcher;
+import org.jmock.core.stub.ReturnStub;
 
 /**
  * <p>
@@ -102,11 +107,32 @@ public class TestPersistenceContainer extends DatasourceTestCase
         }
         finally
         {
-            Filter af = store.newFilter();
-            store.getTransaction().begin();
-            store.deleteAll(store.newQuery(A.class, af));
-            store.getTransaction().commit();
+          
         }
+    }
+    
+    public void testEvents() throws Exception
+    {
+        Mock mockListener = new Mock(PersistenceStoreEventListener.class);
+        mockListener.expects(new InvokeOnceMatcher()).method("afterMakePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("beforeMakePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("afterDeletePersistent").isVoid();
+        mockListener.expects(new InvokeOnceMatcher()).method("beforeDeletePersistent").isVoid();
+        PersistenceStoreEventListener listener =(PersistenceStoreEventListener) mockListener.proxy();
+        store.addEventListener(listener);
+        
+        
+        store.getTransaction().begin();
+        A a = new A();
+        a.setName("a2");
+        store.makePersistent(a);
+        store.getTransaction().commit();
+        
+        store.getTransaction().begin();
+        store.deletePersistent(a);
+        store.getTransaction().commit();
+        
+        mockListener.verify();
     }
 
     /*
@@ -118,5 +144,22 @@ public class TestPersistenceContainer extends DatasourceTestCase
     {
         super.setUp();
         store = new PBStore("jetspeed");        
+    }
+    /**
+     * <p>
+     * tearDown
+     * </p>
+     *
+     * @see junit.framework.TestCase#tearDown()
+     * @throws Exception
+     */
+    protected void tearDown() throws Exception
+    {
+        Filter af = store.newFilter();
+        store.getTransaction().begin();
+        store.deleteAll(store.newQuery(A.class, af));
+        store.getTransaction().commit();
+
+        super.tearDown();
     }
 }

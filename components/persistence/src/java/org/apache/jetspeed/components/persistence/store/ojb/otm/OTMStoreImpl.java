@@ -156,9 +156,9 @@ public class OTMStoreImpl implements PersistenceStore
     {
         try
         {
-            invoker.beforeDeletePersistent();
+            invoker.beforeDeletePersistent(obj);
             OTMConn.deletePersistent(obj);
-            invoker.afterDeletePersistent();
+            invoker.afterDeletePersistent(obj);
         }
         catch (LockingException e)
         {
@@ -232,7 +232,7 @@ public class OTMStoreImpl implements PersistenceStore
 
         invoker.beforeLookup();
         Collection results = OTMConn.getCollectionByQuery((Query) query, lock);
-        invoker.afterLookup();
+        invoker.afterLookup(results);
         return results;
     }
 
@@ -293,7 +293,7 @@ public class OTMStoreImpl implements PersistenceStore
             Identity oid = OTMConn.getIdentity(object);
             invoker.beforeLookup();
             Object obj = OTMConn.getObjectByIdentity(oid);
-            invoker.afterLookup();
+            invoker.afterLookup(obj);
             return obj;
         }
         catch (LockingException e)
@@ -331,7 +331,7 @@ public class OTMStoreImpl implements PersistenceStore
             Identity oid = OTMConn.getIdentity(object);
             invoker.beforeLookup();
             Object obj = OTMConn.getObjectByIdentity(oid, lock);
-            invoker.afterLookup();
+            invoker.afterLookup(obj);
             return obj;
         }
         catch (LockingException e)
@@ -367,7 +367,7 @@ public class OTMStoreImpl implements PersistenceStore
     {
         invoker.beforeLookup();
         Iterator itr = OTMConn.getIteratorByQuery((Query) query);
-        invoker.afterLookup();
+        invoker.afterLookup(itr);
         return itr;
     }
 
@@ -397,7 +397,7 @@ public class OTMStoreImpl implements PersistenceStore
 
         invoker.beforeLookup();
         Iterator itr = OTMConn.getIteratorByQuery((Query) query, lock);
-        invoker.afterLookup();
+        invoker.afterLookup(itr);
         return itr;
     }
 
@@ -506,9 +506,9 @@ public class OTMStoreImpl implements PersistenceStore
     {
         try
         {
-            invoker.beforeMakePersistent();
+            invoker.beforeMakePersistent(obj);
             OTMConn.makePersistent(obj);
-            invoker.afterMakePersistent();
+            invoker.afterMakePersistent(obj);
         }
         catch (LockingException e)
         {

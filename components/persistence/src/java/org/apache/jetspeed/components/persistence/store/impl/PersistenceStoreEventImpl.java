@@ -34,10 +34,13 @@ public class PersistenceStoreEventImpl implements PersistenceStoreEvent
 {
 	private PersistenceStore store;
 	
+	private Object target;
 	
-	public PersistenceStoreEventImpl(PersistenceStore store)
+	
+	public PersistenceStoreEventImpl(PersistenceStore store, Object target)
 	{
 		this.store = store;
+		this.target = target;
 	}
 
     /** 
@@ -65,6 +68,11 @@ public class PersistenceStoreEventImpl implements PersistenceStoreEvent
     {
         
         return store.getTransaction();
+    }
+    
+    public Object getTarget()
+    {
+        return this.target;
     }
 
 }
