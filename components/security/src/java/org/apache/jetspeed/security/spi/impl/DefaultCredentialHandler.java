@@ -151,15 +151,25 @@ public class DefaultCredentialHandler implements CredentialHandler
         {
             credentials = new ArrayList();
         }
+            
         if (null != oldPwdCredential)
         {
             InternalCredential oldInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
                     new String(oldPwdCredential.getPassword()), type, oldPwdCredential.getClass().getName());
-            if (credentials.contains(oldInternalCredential))
+            Iterator iter = credentials.iterator();
+            boolean updated = false;
+            
+            while (iter.hasNext())
             {
-                credentials.remove(oldInternalCredential);
+                InternalCredential credential = (InternalCredential) iter.next();
+                if ( credential.equals(oldInternalCredential))
+                {
+                    credential.setValue(new String(newPwdCredential.getPassword()));
+                    updated = true;
+                    break;
+                }
             }
-            else
+            if (!updated)
             {
                 // supplied PasswordCredential not defined for this user
                 throw new SecurityException(SecurityException.INVALID_PASSWORD);
@@ -181,11 +191,11 @@ public class DefaultCredentialHandler implements CredentialHandler
                         throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
                     }
                 }
-            }            
+            } 
+            InternalCredential newInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
+                    new String(newPwdCredential.getPassword()), type, newPwdCredential.getClass().getName());
+            credentials.add(newInternalCredential);
         }
-        InternalCredential newInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
-                new String(newPwdCredential.getPassword()), type, newPwdCredential.getClass().getName());
-        credentials.add(newInternalCredential);
         internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
         internalUser.setCredentials(credentials);
         // Set the user with the new credentials.
