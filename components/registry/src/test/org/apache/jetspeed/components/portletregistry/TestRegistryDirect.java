@@ -28,6 +28,9 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.om.common.DublinCore;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -125,6 +128,9 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
+        
+        addDublinCore(app.getMetadata());        
+        
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
         webApp.setContextRoot("/app1");
         webApp.addDescription(Locale.FRENCH, "Description: La fromage est dans ma pantalon!");
@@ -137,6 +143,8 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
         portlet.addDisplayName(Locale.getDefault(),"Portlet display Name.");
         
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
+        
+        addDublinCore(portlet.getMetadata());
         
         PreferenceComposite pc = new DefaultPreferenceImpl();
         pc.setName("preference 1");
@@ -186,11 +194,18 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
         portlet = (PortletDefinitionImpl)app.getPortletDefinitionByName("Portlet 1");
         
         assertNotNull("Failed to reteive portlet application", app);
+        
+        validateDublinCore(app.getMetadata());
+        
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
+        
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
+        
+        validateDublinCore(portlet.getMetadata());  
+        
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet.getPortletApplicationDefinition());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
         assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
@@ -244,6 +259,47 @@ public class TestRegistryDirect extends AbstractComponentAwareTestCase
         assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
         
         
+    }
+    
+    private void addDublinCore(GenericMetadata metadata)
+    {
+        DublinCore dc = new DublinCoreImpl(metadata);
+        dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
+        dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 2");
+        dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 3");
+        dc.addContributor(JetspeedLocale.getDefaultLocale(), "Contrib 1");
+        dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 1");
+        dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 2");
+        dc.addCreator(JetspeedLocale.getDefaultLocale(), "Creator 1");
+        dc.addDescription(JetspeedLocale.getDefaultLocale(), "Description 1");
+        dc.addFormat(JetspeedLocale.getDefaultLocale(), "Format 1");
+        dc.addIdentifier(JetspeedLocale.getDefaultLocale(), "Identifier 1");
+        dc.addLanguage(JetspeedLocale.getDefaultLocale(), "Language 1");
+        dc.addPublisher(JetspeedLocale.getDefaultLocale(), "Publisher 1");
+        dc.addRelation(JetspeedLocale.getDefaultLocale(), "Relation 1");
+        dc.addRight(JetspeedLocale.getDefaultLocale(), "Right 1");
+        dc.addSource(JetspeedLocale.getDefaultLocale(), "Source 1");
+        dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
+        dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
+    }
+    
+    private void validateDublinCore(GenericMetadata metadata)
+    {
+        DublinCore dc = new DublinCoreImpl(metadata);
+        assertEquals(dc.getTitles().size(), 3);
+        assertEquals(dc.getContributors().size(), 1);
+        assertEquals(dc.getCoverages().size(), 2);
+        assertEquals(dc.getCreators().size(), 1);
+        assertEquals(dc.getDescriptions().size(), 1);
+        assertEquals(dc.getFormats().size(), 1);
+        assertEquals(dc.getIdentifiers().size(), 1);
+        assertEquals(dc.getLanguages().size(), 1);
+        assertEquals(dc.getPublishers().size(), 1);
+        assertEquals(dc.getRelations().size(), 1);
+        assertEquals(dc.getRights().size(), 1);
+        assertEquals(dc.getSources().size(), 1);
+        assertEquals(dc.getSubjects().size(), 1);
+        assertEquals(dc.getTypes().size(), 1);        
     }
     
 

@@ -25,6 +25,8 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -122,6 +124,8 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         store.getTransaction().commit();
         assertNotNull("Failed to reteive portlet application", app);
         
+        validateDublinCore(app.getMetadata());
+        
         WebApplicationDefinitionImpl webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         PortletDefinitionComposite portlet = (PortletDefinitionComposite)app.getPortletDefinitionByName("Portlet 1");
 
@@ -132,6 +136,9 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
+        
+        validateDublinCore(portlet.getMetadata());
+        
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet.getPortletApplicationDefinition());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
         assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
@@ -166,8 +173,25 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         store.getTransaction().begin();
         store.deleteAll(store.newQuery(PortletApplicationDefinitionImpl.class, filter));
         store.getTransaction().commit();  
-        
-        
+    }
+    
+    private void validateDublinCore(GenericMetadata metadata)
+    {
+        DublinCoreImpl dc = new DublinCoreImpl(metadata);
+        assertEquals(dc.getTitles().size(), 3);
+        assertEquals(dc.getContributors().size(), 1);
+        assertEquals(dc.getCoverages().size(), 2);
+        assertEquals(dc.getCreators().size(), 1);
+        assertEquals(dc.getDescriptions().size(), 1);
+        assertEquals(dc.getFormats().size(), 1);
+        assertEquals(dc.getIdentifiers().size(), 1);
+        assertEquals(dc.getLanguages().size(), 1);
+        assertEquals(dc.getPublishers().size(), 1);
+        assertEquals(dc.getRelations().size(), 1);
+        assertEquals(dc.getRights().size(), 1);
+        assertEquals(dc.getSources().size(), 1);
+        assertEquals(dc.getSubjects().size(), 1);
+        assertEquals(dc.getTypes().size(), 1);        
     }
     
 
