@@ -63,8 +63,6 @@ limitations under the License.
        	   	<td width="100%">
 		    #set($row = $f.getProperties($layoutType).get(0).intValue)
 			#set($col = $f.getProperties($layoutType).get(1).intValue)
-            Row: $row<br/>
-			Column:$col
 		#if($editing)<div id="_$f.id"> 
 		
 		  <div style="position:relative; top:10px; left:0; width:100%; height:100%; border: solid thin blue; ">
