@@ -281,6 +281,21 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>velocity</id>
+      <version>1.4-rc1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+	  <id>velocity-tools:velocity-tools-view</id>
+	  <version>1.1-beta1</version>
+		<url>http://jakarta.apache.org/velocity</url>
+		<properties>
+			<war.bundle.jar>true</war.bundle.jar>
+	    </properties>
+	</dependency>
 
   </dependencies>
   <build>
