@@ -58,12 +58,29 @@ limitations under the License.
 	
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-	<td valign="top" nowrap>	
-		
-	 Additional Links:
-	 #includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
-	</td>
-	<td width="99%" nowrap valign="top">
+  <td valign="top">
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    #if($profiledPageContext.rootLinks)
+    <tr>
+      <td nowrap>  
+        <br>Additional Links:
+        #includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
+      </td>
+    </tr>
+    #end
+    #foreach($docSetName in $profiledPageContext.documentSetNames)
+      #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
+      #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
+      <tr>
+        <td nowrap>    
+          <br>${docSet.getTitle($preferedLocale)}:
+          #includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
+        </td>
+      </tr>
+    #end
+    </table>
+  </td>
+  <td width="99%" nowrap valign="top">
   
 ## $jetspeed.include($jetspeed.currentFragment)
 

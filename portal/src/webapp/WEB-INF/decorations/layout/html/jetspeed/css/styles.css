@@ -83,6 +83,34 @@ BODY.layout-Jetspeed
     */
   margin-right:19px;  
 }
+.LinkFolder
+{
+  background: url(content/images/folder.sm.png) no-repeat;
+  padding-top: 5px;
+  width: 100%;
+  /** Padding is just a wee bit larger than our icons with */     
+  padding-left: 19px;	
+  
+  /** Needed to offset the 19px padding on the left, 
+    * othewise we "bleed" into our neighboring element 
+    * on the right.
+    */
+  margin-right:19px;  
+}
+.LinkPage
+{
+  background: url(content/images/page.sm.png) no-repeat;
+  padding-top: 5px;
+  width: 100%;
+  /** Padding is just a wee bit larger than our icons with */     
+  padding-left: 19px;	
+  
+  /** Needed to offset the 19px padding on the left, 
+    * othewise we "bleed" into our neighboring element 
+    * on the right.
+    */
+  margin-right:19px;  
+}
 
 .layout-Jetspeed .LTabLeftLow
 {
