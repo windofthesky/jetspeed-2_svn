@@ -15,12 +15,17 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
+
 /**
  * Registration interface for registering and deregistering portlet applications in the registry.
  * Registration does not include deployment operations. See the <link>Deployment</link> interface.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:mavery@einnovation.com">Matt Avery</a>
  * @version $Id$
+ * @see org.apache.jetspeed.util.desciptor.PortletApplicationWar
  */
 public interface Registration
 {
@@ -28,11 +33,10 @@ public interface Registration
      * Register a portlet application into the registry.
      * A PA should not be allowed to be registered if another PA with the same name or web application name exists. 
      * 
-     * @param webApplicationName The name or directory name of the web application to be registered.
-     * @param portletApplicationName The name of the portlet application to be registered. Can be same as web application.
+     * @param paWar PortletApplicationWar to register
      * @throws PortletApplicationException
      */
-    void register(String webApplicationName, String portletApplicationName, String warFile) 
+    void register(PortletApplicationWar paWar) 
         throws PortletApplicationException;
         
     /**
@@ -40,11 +44,10 @@ public interface Registration
      * A PA should not be allowed to be unregistered if any portlets are referenced 
      * in a portal page.
      * 
-     * @param webApplicationName The name or directory name of the web application to be unregistered.
      * @param portletApplicationName The name of the portlet application to be unregistered. Can be same as web application.
      * @throws PortletApplicationException
      */
-    void unregister(String webApplicationName, String portletApplicationName) 
+    void unregister(String paName) 
         throws PortletApplicationException;
     
 }
