@@ -31,7 +31,7 @@ limitations under the License.
   <tag>
 
     <name>tree</name>
-    <tag-class>org.apache.jetspeed.portlets.pam.tags.PAMTreeControlTag</tag-class>
+    <tag-class>org.apache.jetspeed.portlets.tags.PortletTreeControlTag</tag-class>
     <body-content>empty</body-content>
     <description>
       Render a "tree" control, based on the current state of a data object
