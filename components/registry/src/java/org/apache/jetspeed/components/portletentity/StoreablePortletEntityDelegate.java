@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.AbstractPreference;
@@ -55,7 +56,7 @@ import org.apache.pluto.om.window.PortletWindowList;
  * @version $ $
  *
  */
-public class StoreablePortletEntityDelegate implements PortletEntity, PortletEntityCtrl
+public class StoreablePortletEntityDelegate implements MutablePortletEntity
 {
     private PersistenceStore store;
     private PortletEntity entity;

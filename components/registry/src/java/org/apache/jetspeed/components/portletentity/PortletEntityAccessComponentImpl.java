@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.pluto.om.common.ObjectID;
@@ -60,7 +61,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.common.ObjectID)
      * 
      */
-    public StoreablePortletEntityDelegate getPortletEntity(ObjectID entityId)
+    public MutablePortletEntity getPortletEntity(ObjectID entityId)
     {
         if (entityCache.get(entityId) != null)
         {
@@ -106,7 +107,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#newPortletEntityInstance(org.apache.pluto.om.portlet.PortletDefinition)
      */
-    public StoreablePortletEntityDelegate newPortletEntityInstance(PortletDefinition portletDefinition)
+    public MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition)
     {
         PortletEntityCtrl portletEntity = new PortletEntityImpl();
         if (portletDefinition instanceof StoreablePortletDefinitionDelegate)
