@@ -25,9 +25,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionServlet;
+import org.apache.struts.config.ModuleConfig;
+import org.apache.struts.config.PlugInConfig;
+import org.apache.struts.tiles.TilesPlugin;
+import org.apache.struts.util.RequestUtils;
 
 /**
  * PortletServlet
@@ -37,18 +43,84 @@ import org.apache.struts.action.ActionServlet;
  */
 public class PortletServlet extends ActionServlet
 {
+    private static final Log log = LogFactory.getLog(PortletServlet.class);
+
     public PortletServlet()
     {
         super();
     }
+
     public void init(ServletConfig config) throws ServletException
     {
         super.init(new PortletServletConfigImpl(config));
     }
+
     public ServletContext getServletContext()
     {
         return getServletConfig().getServletContext();
     }
+
+    protected void initModulePlugIns(ModuleConfig config)
+    throws ServletException
+    {
+        boolean needTilesProcessor = false;
+        PlugInConfig plugInConfigs[] = config.findPlugInConfigs();
+        for ( int i = 0; !needTilesProcessor && i < plugInConfigs.length; i++ )
+        {
+            Class pluginClass = null;
+            try 
+            {
+                pluginClass = RequestUtils.applicationClass(plugInConfigs[i].getClassName());                    
+            } 
+            catch (ClassNotFoundException ex)
+            {
+                log.fatal("Can't load Plugin class: bad class name '"+ plugInConfigs[i].getClassName()+ "'.");
+                throw new ServletException(ex);
+            }
+            
+            if (TilesPlugin.class.isAssignableFrom(pluginClass))
+            {
+                needTilesProcessor = true;
+            }
+        }
+        
+        String processorClassName = config.getControllerConfig().getProcessorClass();
+        Class processorClass = null;
+        try 
+        {
+            processorClass = RequestUtils.applicationClass(processorClassName);                
+        } 
+        catch (ClassNotFoundException ex)
+        {
+            log.fatal("Can't load Plugin class: bad class name '"+ processorClass +"'.");
+            throw new ServletException(ex);
+        }
+        
+        String newProcessorClassName = null;
+        
+        if ((needTilesProcessor && !PortletTilesRequestProcessor.class.isAssignableFrom(processorClass)))
+        {
+            newProcessorClassName = PortletTilesRequestProcessor.class.getName();
+        }
+        else if (!PortletRequestProcessor.class.isAssignableFrom(processorClass))
+        {
+            newProcessorClassName = PortletRequestProcessor.class.getName();
+        }
+        
+        if (newProcessorClassName != null )
+        {
+            log.warn( "Replacing RequestProcessor " +
+                    processorClassName +
+                    " with " +
+                    newProcessorClassName +
+                    " for module: " +
+                    (config.getPrefix().equals("") ? "default" : config.getPrefix()) + ".");
+
+            config.getControllerConfig().setProcessorClass(newProcessorClassName);
+        }
+        super.initModulePlugIns(config);
+    }
+    
     public boolean performActionRenderRequest(HttpServletRequest request,
             HttpServletResponse response, ActionMapping mapping)
             throws IOException, ServletException
@@ -110,7 +182,7 @@ public class PortletServlet extends ActionServlet
         }
         return false;
     }
-    
+
     public static boolean isPortletRequest(ServletRequest request)
     {
         return request.getAttribute("javax.portlet.request") != null;
