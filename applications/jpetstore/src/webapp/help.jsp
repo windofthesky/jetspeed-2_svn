@@ -14,9 +14,8 @@
  limitations under the License.
 --%>
 <%@ page contentType="text/html" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
-    <TABLE background="<c:out value="${pageContext.request.contextPath}"/>/images/bkg-topbar.gif" border=0 cellSpacing=0
+    <TABLE background="<html:rewrite href="images/bkg-topbar.gif"/>" border=0 cellSpacing=0
            cellPadding=5 width="100%">
       <TR>
         <TD>

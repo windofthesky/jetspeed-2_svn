@@ -34,5 +34,6 @@
     <action path="/shop/newOrder"/>
     <render path="/shop/newOrderForm"/>
     <action path="/shop/listOrders"/>
+    <resource path="/images/"/>
   </portlet-url-type>
 </config>  

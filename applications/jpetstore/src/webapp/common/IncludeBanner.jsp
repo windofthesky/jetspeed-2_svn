@@ -18,7 +18,7 @@
   <logic:equal name="accountBean" property="authenticated" value="true">
     <logic:equal name="accountBean" property="account.bannerOption"
                  value="true">
-      <table align="center" background="<c:out value="${pageContext.request.contextPath}"/>/images/bkg-topbar.gif"
+      <table align="center" background="<html:rewrite href="../images/bkg-topbar.gif"/>"
              cellpadding="5" width="100%">
         <tr>
           <td>
