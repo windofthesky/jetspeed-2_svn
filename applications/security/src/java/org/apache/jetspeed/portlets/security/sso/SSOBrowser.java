@@ -127,6 +127,7 @@ public class SSOBrowser extends BrowserPortlet
                 {
                     PortletMessaging.publish(request, "site", "selected", selectedSite);
                     PortletMessaging.publish(request, "site", "selectedUrl", site.getSiteURL());
+                    PortletMessaging.publish(request, "site", "change", selectedSite);
                 }
             }
             String refresh = request.getParameter("sso.refresh");

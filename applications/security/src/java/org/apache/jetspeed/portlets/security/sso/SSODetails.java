@@ -15,7 +15,6 @@
 package org.apache.jetspeed.portlets.security.sso;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,8 +27,12 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;
@@ -48,6 +51,7 @@ import org.apache.velocity.context.Context;
 public class SSODetails extends BrowserPortlet
 {
     private SSOProvider sso;
+    private UserManager userManager;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -58,6 +62,11 @@ public class SSODetails extends BrowserPortlet
         {
             throw new PortletException("Failed to find the SSO Provider on portlet initialization");
         }
+        userManager = (UserManager) getPortletContext().getAttribute(SecurityResources.CPS_USER_MANAGER_COMPONENT);
+        if (null == userManager)
+        {
+            throw new PortletException("Failed to find the User Manager on portlet initialization");
+        }        
     }
        
     
@@ -70,7 +79,7 @@ public class SSODetails extends BrowserPortlet
         {
             SSOSite site = null;
             Iterator principals = null;
-            List list = new ArrayList();
+            List list = null;
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
             resultSetTitleList.add("Principal");
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
@@ -80,14 +89,11 @@ public class SSODetails extends BrowserPortlet
             if (selectedSite != null)
             {
                 site = sso.getSite(selectedSite);
-                principals = site.getPrincipals().iterator();
-                        
-                // TODO: need to try to normalize List/Collection/Iterators
-                while (principals.hasNext())
-                {
-                    Principal p = (Principal)principals.next();
-                    list.add(p.getName());
-                }
+                list = sso.getPrincipalsForSite(site);
+            }
+            else
+            {
+                list = new ArrayList();
             }
             BrowserIterator iterator = new DatabaseBrowserIterator(
                     list, resultSetTitleList, resultSetTypeList,
@@ -105,14 +111,17 @@ public class SSODetails extends BrowserPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
+        String change = (String)PortletMessaging.consume(request, "site", "change");
+        if (change != null)
+        { 
+            this.clearBrowserIterator(request);
+        }
         String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
         if (selectedSite != null)
         {        
             Context context = this.getContext(request);
             context.put("currentSite", selectedSite);
-            String selectedUrl = (String)PortletMessaging.receive(request, "site", "selectedUrl");
-            context.put("currentUrl", selectedUrl);            
-        }
+        }        
         super.doView(request, response);
     }
     
@@ -121,16 +130,6 @@ public class SSODetails extends BrowserPortlet
     {
         if (request.getPortletMode() == PortletMode.VIEW)
         {
-            String selectedSite = request.getParameter("ssoSite");
-            if (selectedSite != null)
-            {
-                SSOSite site = sso.getSite(selectedSite);
-                if (site != null)
-                {
-                    PortletMessaging.publish(request, "site", "selected", selectedSite);
-                    PortletMessaging.publish(request, "site", "selectedUrl", site.getSiteURL());
-                }
-            }
             String refresh = request.getParameter("sso.refresh");
             String save = request.getParameter("sso.save");
             String neue = request.getParameter("sso.new");
@@ -140,39 +139,25 @@ public class SSODetails extends BrowserPortlet
             }
             else if (neue != null)
             {
-                PortletMessaging.cancel(request, "site", "selected");
-                PortletMessaging.cancel(request, "site", "selectedUrl");                                
+                //PortletMessaging.cancel(request, "site", "selected");
+                //PortletMessaging.cancel(request, "site", "selectedUrl");                                
             }
             else if (save != null)
             {
-                String siteName = request.getParameter("site.name");                
-                String siteUrl = request.getParameter("site.url");
-                if (!(isEmpty(siteName) || isEmpty(siteUrl)))
+                String portalPrincipal = request.getParameter("portal.principal");                
+                String remotePrincipal = request.getParameter("remote.principal");
+                String remoteCredential = request.getParameter("remote.credential");
+                if (!(isEmpty(remotePrincipal) || isEmpty(remotePrincipal) || isEmpty(remoteCredential)))
                 {
                     try
                     {
-                        SSOSite site = null;
-                        String oldName = (String)PortletMessaging.receive(request, "site", "selected");
-                        if (oldName != null)
-                        {
-                            site = sso.getSite(oldName);
-                        }
-                        else
-                        {
-                            site = sso.getSite(siteName);
-                        }                        
-                        if (site != null)
-                        {
-                            site.setName(siteName);
-                            site.setSiteURL(siteUrl);
-                            sso.updateSite(site);
-                            this.clearBrowserIterator(request);
-                            PortletMessaging.publish(request, "site", "selected", siteName);
-                            PortletMessaging.publish(request, "site", "selectedUrl", siteUrl);                            
-                        }
-                        else
-                        {
-                            sso.addSite(siteName, siteUrl);
+                        String siteName = (String)PortletMessaging.receive(request, "site", "selected");                        
+                        SSOSite site = sso.getSite(siteName);
+                        User user = userManager.getUser(portalPrincipal);                        
+                        if (site != null && user != null)
+                        {                            
+                            Subject subject = user.getSubject(); 
+                            sso.addCredentialsForSite(subject, remotePrincipal, site.getSiteURL(), remoteCredential);
                             this.clearBrowserIterator(request);
                         }
                     }
@@ -181,6 +166,11 @@ public class SSODetails extends BrowserPortlet
                         // TODO: exception handling
                         System.err.println("Exception storing site: " + e);
                     }
+                    catch (SecurityException se)
+                    {
+                        // TODO: exception handling
+                        System.err.println("Exception storing site: " + se);
+                    }                    
                 }
             }            
         }
