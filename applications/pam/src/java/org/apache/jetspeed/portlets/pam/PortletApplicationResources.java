@@ -23,13 +23,16 @@ package org.apache.jetspeed.portlets.pam;
  */
 public final class PortletApplicationResources
 {
+    public final static String PORTLET_URL = "portlet_url";
     public final static String REQUEST_SELECT_NODE = "select_node";
     public final static String REQUEST_SELECT_PORTLET = "select_portlet";
     public final static String REQUEST_SELECT_TAB = "selected_tab";
     public final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
     public final static String CPS_REGISTRY_COMPONENT = "cps:PortletRegistryComponent";
-    public final static String CPS_USERMANAGER_COMPONENT = "cps:UserManager";
-    public static final String CPS_PAGE_MANAGER_COMPONENT = "cps:PageManager";
-    public static final String CURRENT_FOLDER = "current_folder";
-    public static final String CURRENT_PAGE = "current_page";    
+    public final static String CPS_USER_MANAGER_COMPONENT = "cps:UserManager";
+    public final static String CPS_PAGE_MANAGER_COMPONENT = "cps:PageManager";
+    public final static String CURRENT_FOLDER = "current_folder";
+    public final static String CURRENT_PAGE = "current_page";
+    public final static String CURRENT_USER = "current_user";
+    public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";    
 }

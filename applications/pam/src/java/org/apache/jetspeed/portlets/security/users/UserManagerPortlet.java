@@ -20,9 +20,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.security.auth.Subject;
 
@@ -44,15 +42,13 @@ import tyrex.tm.RuntimeContext;
  */
 public class UserManagerPortlet extends FacesPortlet
 {
-    private PortletContext context;
     private UserManager userManager;
     
     public void init(PortletConfig config)
     throws PortletException 
     {
         super.init(config);
-        context = getPortletContext();                
-        userManager = (UserManager)context.getAttribute(PortletApplicationResources.CPS_USERMANAGER_COMPONENT);
+        userManager = (UserManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");

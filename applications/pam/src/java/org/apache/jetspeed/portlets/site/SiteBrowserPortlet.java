@@ -33,7 +33,6 @@ import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -53,8 +52,6 @@ public class SiteBrowserPortlet extends ServletPortlet
     private PortletContext context;
     private PageManager pageManager;
     
-    private static final String PORTLET_URL = "portlet_url";
-
     public void init(PortletConfig config)
     throws PortletException 
     {
@@ -190,9 +187,12 @@ public class SiteBrowserPortlet extends ServletPortlet
 	    
 		TreeControlNode root =
             new TreeControlNode(folder.getName(),
-                                null, folder.getTitle(locale),
-                                PORTLET_URL,
-                                null, true, "FOLDER_DOMAIN");
+                                null, 
+                                folder.getTitle(locale),
+                                PortletApplicationResources.PORTLET_URL,
+                                null, 
+                                true, 
+                                "FOLDER_DOMAIN");
 		
 		TreeControl control = new TreeControl(root);
 		
@@ -223,7 +223,13 @@ public class SiteBrowserPortlet extends ServletPortlet
             while (folderIter.hasNext())
             {
                 Folder childFolder = (Folder) folderIter.next();
-                TreeControlNode childNode = new TreeControlNode(childFolder.getName(), null, childFolder.getTitle(locale), PORTLET_URL, null, false, "FOLDER_DOMAIN"  );
+                TreeControlNode childNode = new TreeControlNode(childFolder.getName(), 
+                                                                null, 
+                                                                childFolder.getTitle(locale), 
+                                                                PortletApplicationResources.PORTLET_URL, 
+                                                                null, 
+                                                                false, 
+                                                                "FOLDER_DOMAIN"  );
                 parent.addChild(childNode);
                 buildFolderNodes(childFolder, childNode, locale);
             }
@@ -251,7 +257,13 @@ public class SiteBrowserPortlet extends ServletPortlet
 	        while (pageIter.hasNext())
 	        {
 	            Page page = (Page)pageIter.next();
-	            TreeControlNode child = new TreeControlNode(page.getPath(), null, page.getTitle(locale), PORTLET_URL, null, false, "PAGE_DOMAIN"  );
+	            TreeControlNode child = new TreeControlNode(page.getPath(), 
+                                                            null, 
+                                                            page.getTitle(locale), 
+                                                            PortletApplicationResources.PORTLET_URL, 
+                                                            null, 
+                                                            false, 
+                                                            "PAGE_DOMAIN"  );
 	            node.addChild(child);
 	        }
         }

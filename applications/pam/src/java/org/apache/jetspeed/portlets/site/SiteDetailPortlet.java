@@ -42,7 +42,6 @@ import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
  */
 public class SiteDetailPortlet extends ServletPortlet
 {
-
     private PortletContext context;
     private PageManager pageManager;
 

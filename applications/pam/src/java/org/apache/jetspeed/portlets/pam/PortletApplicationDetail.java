@@ -52,7 +52,8 @@ import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
 
 /**
- * This portlet is a browser over all the portlet applications in the system.
+ * This portlet is a tabbed editor user interface for editing both portlet defintions
+ * and portlet applications.
  *
  * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>

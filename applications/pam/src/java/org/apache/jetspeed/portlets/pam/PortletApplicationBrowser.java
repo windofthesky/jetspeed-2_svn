@@ -51,7 +51,6 @@ import org.apache.webapp.admin.TreeControlNode;
  */
 public class PortletApplicationBrowser extends ServletPortlet
 {
-    private static final String PORTLET_URL = "portlet_url";
     private String template;
     private PortletContext context;
     private PortletRegistryComponent registry;
@@ -152,29 +151,50 @@ public class PortletApplicationBrowser extends ServletPortlet
 	    
 		TreeControlNode root =
             new TreeControlNode("ROOT-NODE",
-                                null, "J2_ROOT",
-                                PORTLET_URL,
-                                null, true, "J2_DOMAIN");
+                                null, 
+                                "J2_ROOT",
+                                PortletApplicationResources.PORTLET_URL,
+                                null, 
+                                true, 
+                                "J2_DOMAIN");
 		
 		TreeControl control = new TreeControl(root);
 		
 		
 		TreeControlNode portletApps = 
-			new TreeControlNode("APP_ROOT", null, "APP_ROOT", PORTLET_URL, null, false, "J2_DOMAIN");
+			new TreeControlNode("APP_ROOT", 
+                                null, 
+                                "APP_ROOT", 
+                                PortletApplicationResources.PORTLET_URL, 
+                                null, 
+                                false, 
+                                "J2_DOMAIN");
 		root.addChild(portletApps);
 		
 		Iterator it = apps.iterator();
         while (it.hasNext())
         {
             MutablePortletApplication pa = (MutablePortletApplication)it.next();
-            TreeControlNode appNode = new TreeControlNode(pa.getName(), null, pa.getName(), PORTLET_URL, null, false, "PA_APP_DOMAIN"  );
+            TreeControlNode appNode = new TreeControlNode(pa.getName(), 
+                                                          null, 
+                                                          pa.getName(), 
+                                                          PortletApplicationResources.PORTLET_URL, 
+                                                          null, 
+                                                          false, 
+                                                          "PA_APP_DOMAIN"  );
             portletApps.addChild(appNode);
             
             Iterator pdefIter = pa.getPortletDefinitionList().iterator();
             while (pdefIter.hasNext())
             {
                 PortletDefinitionComposite portlet = (PortletDefinitionComposite) pdefIter.next();
-                TreeControlNode portletNode = new TreeControlNode(portlet.getName(), null, portlet.getDisplayNameText(locale), PORTLET_URL, null, false, "PD_DOMAIN");
+                TreeControlNode portletNode = new TreeControlNode(portlet.getName(), 
+                                                                  null, 
+                                                                  portlet.getDisplayNameText(locale), 
+                                                                  PortletApplicationResources.PORTLET_URL, 
+                                                                  null, 
+                                                                  false, 
+                                                                  "PD_DOMAIN");
                 appNode.addChild(portletNode);
             }
         }
