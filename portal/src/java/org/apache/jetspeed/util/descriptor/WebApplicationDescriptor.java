@@ -36,12 +36,7 @@ public class WebApplicationDescriptor
 
     protected Reader webXmlReader;
     protected String contextRoot;
-    protected Locale locale;
-    protected String displayName;
-    
-    
-    public WebApplicationDescriptor(Reader webXmlReader, String contextRoot, Locale locale,
-            String displayName )
+    public WebApplicationDescriptor(Reader webXmlReader, String contextRoot )
     {
         if(webXmlReader == null)
         {
@@ -49,8 +44,6 @@ public class WebApplicationDescriptor
         }
         this.webXmlReader = webXmlReader;
         this.contextRoot = contextRoot;
-        this.locale = locale;
-        this.displayName = displayName;
     }
     
 
@@ -92,7 +85,8 @@ public class WebApplicationDescriptor
             WebApplicationDefinitionImpl wd = (WebApplicationDefinitionImpl) digester.parse(webXmlReader);
 
             wd.setContextRoot(contextRoot);
-            wd.addDescription(locale, displayName);
+            //wd.addDescription(locale, displayName);
+            wd.addDescription(Locale.getDefault(), contextRoot);
             return wd;
 
         }
