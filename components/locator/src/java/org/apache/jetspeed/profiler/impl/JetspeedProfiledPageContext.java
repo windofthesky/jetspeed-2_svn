@@ -15,10 +15,16 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
 
@@ -30,23 +36,25 @@ import org.apache.jetspeed.profiler.Profiler;
  */
 public class JetspeedProfiledPageContext implements ProfiledPageContext
 {    
-    private ProfileLocator locator;
+    private Map locators;
     private Page page;
     private Folder folder;
     private NodeSet siblingPages;
     private Folder parentFolder;
     private NodeSet siblingFolders;
     private NodeSet rootLinks;
+    private List documentSetNames;
+    private Map documentSets;
 
-    public void init(Profiler profiler, ProfileLocator locator)
+    public void init(Profiler profiler, Map locators)
     {
         // save profiled context supplied by profiler
-        this.locator = locator;
+        this.locators = locators;
     }
 
-    public ProfileLocator getLocator()
+    public Map getLocators()
     {
-        return locator;
+        return locators;
     }
 
     public Page getPage()
@@ -107,5 +115,60 @@ public class JetspeedProfiledPageContext implements ProfiledPageContext
     public void setRootLinks(NodeSet links)
     {
         this.rootLinks = links;
+    }
+
+    public DocumentSet getDocumentSet(String name)
+    {
+        if ((documentSets == null) || (name == null))
+        {
+            return null;
+        }
+        DocumentSetEntry entry = (DocumentSetEntry) documentSets.get(name);
+        return (entry != null ? entry.documentSet : null);
+    }
+
+    public NodeSet getDocumentSetNodes(String name)
+    {
+        if ((documentSets == null) || (name == null))
+        {
+            return null;
+        }
+        DocumentSetEntry entry = (DocumentSetEntry) documentSets.get(name);
+        return (entry != null ? entry.nodes : null);
+    }
+
+    public Iterator getDocumentSetNames()
+    {
+        if (documentSetNames == null)
+        {
+            return null;
+        }
+        return documentSetNames.iterator();
+    }
+
+    public void setDocumentSet(String name, DocumentSet documentSet, NodeSet nodes)
+    {
+        if ((name != null) && (documentSet != null) && (nodes != null))
+        {
+            if (this.documentSets == null)
+            {
+                this.documentSetNames = new ArrayList(12);
+                this.documentSets = new HashMap(12);
+            }
+            this.documentSetNames.add(name);
+            this.documentSets.put(name, new DocumentSetEntry(documentSet, nodes));
+        }
+    }
+
+    private class DocumentSetEntry
+    {
+        DocumentSet documentSet;
+        NodeSet nodes;
+
+        DocumentSetEntry(DocumentSet documentSet, NodeSet nodes)
+        {
+            this.documentSet = documentSet;
+            this.nodes = nodes;
+        }
     }
 }

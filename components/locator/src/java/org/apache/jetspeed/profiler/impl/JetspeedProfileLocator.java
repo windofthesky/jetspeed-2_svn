@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
-import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.Profiler;
@@ -162,12 +161,5 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
     public String getRequestPath()
     {
         return requestPath;
-    }
-
-    public ProfiledPageContext createProfiledPageContext()
-    {
-        if (profiler != null)
-            return profiler.createProfiledPageContext(this);
-        return null;
     }
 }
