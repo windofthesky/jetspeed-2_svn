@@ -137,6 +137,9 @@ limitations under the License.
 .portlet-Jetspeed .portlet-msg-info {
 }
 .portlet-Jetspeed .portlet-msg-error {
+    background: url(content/jetspeed/images/icon_error_sml.gif) no-repeat;
+    padding-left: 20px;
+    min-height: 15px;    
     color:#FF0000;
 }
 .portlet-Jetspeed .portlet-msg-alert {
