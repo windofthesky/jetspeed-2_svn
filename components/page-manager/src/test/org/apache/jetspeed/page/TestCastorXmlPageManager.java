@@ -93,7 +93,7 @@ protected void setUp() throws Exception
         
         FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/pages", handlerFactory, cache);
         
-        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, false);
+        pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, -1, false);
         
         
     }
