@@ -282,6 +282,7 @@ limitations under the License.
 /* PLT.C.5 Forms                     */
 /* --------------------------------- */
 .portlet-tigris .portlet-form-label {
+
 }
 
 .portlet-tigris .portlet-form-input-field {
@@ -291,16 +292,33 @@ limitations under the License.
 }
 
 .portlet-tigris .portlet-icon-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-dlg-icon-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-form-field-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
 
 .portlet-tigris .portlet-form-field {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
 }
+
 
 /* font */
 .portlet-tigris .portlet-section-header,
