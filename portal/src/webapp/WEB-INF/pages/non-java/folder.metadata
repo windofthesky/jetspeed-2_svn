@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<js:folder xmlns:dc="http://www.purl.org/dc"
+	       xmlns:js="http://portals.apache.org/jetspeed" 
+>
+  <dc:title >Non-Java Portlets</dc:title>
+  <dc:title xml:lang="fr">Portlets qui ne sont pas Java</dc:title>  
+</js:folder>
