@@ -180,6 +180,8 @@ public class DefaultPersistenceStoreContainer
         if (event.getPersistenceStore().equals(TL_store.get()))
         {
             TL_store.set(null);
+            // Remove the closed store from the check list of active Stores
+            storeLastUsed.remove(event.getPersistenceStore());
         }
 
     }
@@ -388,21 +390,21 @@ public class DefaultPersistenceStoreContainer
                 Iterator keys = storeLastUsed.keySet().iterator();
                 while (keys.hasNext())
                 {
-                    PersistenceStore pb = (PersistenceStore) keys.next();
-                    Date last = (Date) storeLastUsed.get(pb);
+                    PersistenceStore store = (PersistenceStore) keys.next();
+                    Date last = (Date) storeLastUsed.get(store);
                     Date now = new Date();
                     if ((now.getTime() - last.getTime()) > ttl)
                     {
-                        log.debug("PersistenceStore " + pb + " has exceeded its TTL, attemting to close.");
+                        log.debug("PersistenceStore " + store + " has exceeded its TTL, attemting to close.");
                         // broker should now be considered available
                         try
                         {
-                            pb.close();
+                            store.close();
                             log.debug("PersistenceStore successfully closed.");
                         }
                         catch (Throwable e1)
                         {
-                            log.error("Unable to close PersistenceStore " + pb, e1);
+                            log.error("Unable to close PersistenceStore " + store, e1);
                         }
                     }
                 }
