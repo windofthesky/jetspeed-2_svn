@@ -16,8 +16,6 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 
 /**
  *
@@ -35,14 +33,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable
     private String title = null;
 
     public String getId()
-    {
-        if (this.id==null)
-        {
-            // FIXME: not sure how yet, but this shouldn't be here
-            // components should have their dependencies wired on construction
-            IdGenerator generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");
-            this.id = generator.getNextPeid();
-        }
+    { 
         return this.id;
     }
 

@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
@@ -126,7 +125,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         {
             try
             {
-                this.rootDir = new File(Jetspeed.getRealPath(DEFAULT_ROOT));
+                this.rootDir = new File(root+DEFAULT_ROOT);
             }
             catch (Exception e)
             {
