@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.common.portlet;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
@@ -30,6 +31,7 @@ import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -70,6 +72,31 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
 
     void setInitSecurityRoleRefSet(SecurityRoleRefSet securityRefs);
 
+    /**
+     * <p>Adds a user attribute to the user attribute set.</p>
+     * @param name The user attribute name.
+     * @param description The user attribute description.
+     */
+    void addUserAttribute(String name, String description);
+
+    /**
+     * <p>Adds a user attribute to the user attribute set.</p>
+     * @param userAttribute The user attribute.
+     */
+    void addUserAttribute(UserAttribute userAttribute);
+
+    /**
+     * <p>Sets a user-attribute to the set of user attributes associated
+     * with this portlet.</p>
+     */
+    void setUserAttributeSet(Collection userAttributeSet);
+    
+    /**
+     * <p>Gets the collection of user attributes associated
+     * with this portlet.</p>
+     */
+    Collection getUserAttributeSet();
+    
     /**
      * Convenience method for directly adding init parameters
      * to this <code>PortletDefinition.</code>.  This has the

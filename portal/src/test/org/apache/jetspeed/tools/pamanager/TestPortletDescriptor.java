@@ -16,6 +16,7 @@
 package org.apache.jetspeed.tools.pamanager;
 
 import java.io.FileInputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
@@ -33,6 +34,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -82,17 +84,17 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
     }
 
     public static final String LOG4J_CONFIG_FILE = "log4j.file";
-	// TODO: make this relative, move it into script
+    // TODO: make this relative, move it into script
     public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
-    
+
     protected void setUp() throws Exception
     {
         // super.setUp();
-        
+
         // TODO: this is REALLY strange. If I don't setup LOG4J here Digester crashes with a NPE
         // if I setup Log4J in my super class, Digester crashes ... mysterious
         // TODO: need a Logging Component
-        
+
         String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
         Properties p = new Properties();
         try
@@ -104,14 +106,13 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
             e.printStackTrace();
         }
         PropertyConfigurator.configure(p);
-        
+
         System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
-        
-        
+
         container = (MutablePicoContainer) getContainer();
         registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
     }
-    
+
     /**
      * Creates the test suite.
      *
@@ -128,10 +129,10 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
     /*
      * Overrides the database properties
      */
-//    public void overrideProperties(Configuration properties)
-//    {
-//        super.overrideProperties(properties);
-//    }
+    //    public void overrideProperties(Configuration properties)
+    //    {
+    //        super.overrideProperties(properties);
+    //    }
 
     public void testLoadPortletApplicationTree() throws Exception
     {
@@ -284,6 +285,33 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
             count++;
         }
         assertTrue("PortletPreference Count != 2, count = " + count, count == 2);
+
+        // Portlet User Attributes
+        Collection userAttributeSet = portlet.getUserAttributeSet();
+        it = userAttributeSet.iterator();
+        while (it.hasNext())
+        {
+            UserAttribute userAttribute = (UserAttribute) it.next();
+            assertNotNull("User attribute name is null, ", userAttribute.getName());
+            if (userAttribute.getName().equals("user.name.given"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User Given Name"));
+            }
+            if (userAttribute.getName().equals("user.name.family"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User Last Name"));
+            }
+            if (userAttribute.getName().equals("user.home-info.online.email"))
+            {
+                assertTrue(
+                    "User attribute description: " + userAttribute.getDescription(),
+                    userAttribute.getDescription().equals("User eMail"));
+            }
+        }
     }
 
     private void validatePreferences(PreferenceComposite pref, String[] expectedValues)
@@ -308,26 +336,25 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         store.getTransaction().begin();
         MutablePortletApplication app = registry.getPortletApplication("HW_App");
         if (app != null)
-        {            
+        {
             registry.removeApplication(app);
             store.getTransaction().commit();
             store.getTransaction().begin();
         }
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
-        
+
         app.setName("HW_App");
-                
+
         store.getTransaction().begin();
-	    registry.registerPortletApplication(app);
-	    store.getTransaction().commit();
-	   // store.invalidateAll();
-	    
-	    store.getTransaction().begin();
+        registry.registerPortletApplication(app);
+        store.getTransaction().commit();
+        // store.invalidateAll();
+
+        store.getTransaction().begin();
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
         store.getTransaction().commit();
-        assertNotNull(pd);       
-       
-        
+        assertNotNull(pd);
+
         assertNotNull(pd.getPreferenceSet());
 
         Preference pref1 = pd.getPreferenceSet().get("pref1");
@@ -343,17 +370,15 @@ public class TestPortletDescriptor extends AbstractComponentAwareTestCase
         }
 
         assertTrue(count > 0);
-        
+
         store.getTransaction().begin();
         pd = registry.getPortletDefinitionByUniqueName("HW_App::PickANumberPortlet");
         store.getTransaction().commit();
         assertNotNull(pd);
-        
+
         store.getTransaction().begin();
-        registry.removeApplication(app);        
+        registry.removeApplication(app);
         store.getTransaction().commit();
-			
-     
 
     }
 

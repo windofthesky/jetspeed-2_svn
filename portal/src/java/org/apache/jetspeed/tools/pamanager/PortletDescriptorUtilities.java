@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -202,7 +203,12 @@ public class PortletDescriptorUtilities
                 0,
                 new Class[] { Boolean.class });
             digester.addSetNext("portlet-app/portlet/portlet-preferences/preference", "addPreference");
-
+            
+            digester.addObjectCreate("portlet-app/portlet/user-attribute", UserAttributeImpl.class);
+            digester.addBeanPropertySetter("portlet-app/portlet/user-attribute/description", "description");
+            digester.addBeanPropertySetter("portlet-app/portlet/user-attribute/name", "name");
+            digester.addSetNext("portlet-app/portlet/user-attribute", "addUserAttribute");
+            
             digester.addObjectCreate("portlet-app/portlet/security-role-ref", SecurityRoleRefImpl.class);
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/role-name", "roleName");
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/role-link", "roleLink");

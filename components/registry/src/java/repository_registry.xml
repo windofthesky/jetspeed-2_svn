@@ -383,7 +383,7 @@ limitations under the License.
        >         
 
          <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
+       </collection-descriptor>
       
        <collection-descriptor
          name="securityRoleRefSet"
@@ -392,6 +392,16 @@ limitations under the License.
       	 auto-update = "true"
       	 auto-retrieve = "true"
 
+       >         
+         <inverse-foreignkey field-ref="portletId"/>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="userAttributeSet"
+         element-class-ref="org.apache.jetspeed.om.impl.UserAttributeImpl"
+         auto-delete="false"
+      	 auto-update = "true"
+      	 auto-retrieve = "true"
        >         
 
          <inverse-foreignkey field-ref="portletId"/>
@@ -404,7 +414,6 @@ limitations under the License.
       	 auto-update = "true"
       	 auto-retrieve = "true"
       >         
-
          <inverse-foreignkey field-ref="parentId"/>
 
       </collection-descriptor>
@@ -1270,7 +1279,7 @@ limitations under the License.
   
   <!-- 
    - S E C U R T I T Y   R O L E   R E F
- -->
+  -->
      <class-descriptor
    	  class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
    	  proxy="dynamic"
@@ -1318,10 +1327,48 @@ limitations under the License.
          <inverse-foreignkey field-ref="parentId"/>
 
       </collection-descriptor>     
-
-      
-
   
-  </class-descriptor>
+   </class-descriptor>
+   
+   <!-- 
+   - U S E R  A T T R I B U T E
+   -->
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.impl.UserAttributeImpl"
+   	  proxy="dynamic"
+   	  table="USER_ATTRIBUTE"
+   >
+      
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+         
+      />
+      
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_DEFINITION_ID"
+         jdbc-type="INTEGER"
+         access="anonymous"
+
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"         
+      />   
+      
+       <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"         
+      />
+        
+   </class-descriptor>
    
   

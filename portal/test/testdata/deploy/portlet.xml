@@ -50,6 +50,18 @@ limitations under the License.
         <read-only>true</read-only>
       </preference>    
     </portlet-preferences>
+    <user-attribute>
+		<description>User Given Name</description>
+		<name>user.name.given</name>
+	</user-attribute>
+	<user-attribute>
+		<description>User Last Name</description>
+		<name>user.name.family</name>
+	</user-attribute>
+	<user-attribute>
+		<description>User eMail</description>
+		<name>user.home-info.online.email</name>
+	</user-attribute>
     <security-role-ref>
     	<description lang="en">This is the admin role</description>
     	<role-name>admin</role-name>
