@@ -20,17 +20,19 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.search.ParsedObject" %>
 
 <portlet:defineObjects/>
-<h2>Portlet Application Manager</h2>
-<h3>Application Tree View</h3>
+<h2 class="portlet-section-header">Portlet Application Manager</h2>
 
-<hr />
+<h3 class="portlet-section-subheader">Search</h3>
+
+<div class="portlet-section-text">
 
 <portlet:actionURL var="searchLink" />
 <portlet:actionURL var="searchSelectLink"/>
 
 <form action="<c:out value="${searchLink}"/>" method="post">
 
-	<input type="text" name="query" value="" /> <input type="submit" value="Search"/>
+	<input type="text" name="query" value="" class="portlet-form-label-field"/>
+	<input type="submit" value="Search" class="portlet-form-button"/>
 
 </form>
 
@@ -86,9 +88,10 @@ limitations under the License.
 	</c:forEach>
 </c:if>
 
-<hr />
+</div>
+<h3 class="portlet-section-subheader">Application Tree View</h3>
 
-
+<div class="portlet-section-text">
 
 <portlet:actionURL var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
@@ -104,3 +107,4 @@ limitations under the License.
       styleUnselected="tree-control-unselected"
       --%>
 
+</div>

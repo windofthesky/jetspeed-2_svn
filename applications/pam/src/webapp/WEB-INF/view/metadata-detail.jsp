@@ -14,24 +14,24 @@ limitations under the License.
 	<input type="hidden" name="portlet_action" value=""/>
 	<table>
 		<tr>
-			<th>&nbsp;</th>
-			<th><fmt:message key="pam.details.name"/></th>
-			<th><fmt:message key="pam.details.locale"/></th>
-			<th><fmt:message key="pam.details.value"/></th>
+			<th class="portlet-section-header">&nbsp;</th>
+			<th class="portlet-section-header"><fmt:message key="pam.details.name"/></th>
+			<th class="portlet-section-header"><fmt:message key="pam.details.locale"/></th>
+			<th class="portlet-section-header"><fmt:message key="pam.details.value"/></th>
 		</tr>
 	<c:forEach var="field" items="${md.fields}">
 		<tr>
-			<td>
+			<td class="portlet-section-body">
 				<input type="checkbox" name="metadata_id" value="<c:out value="${field.id}"/>"/>
 			</td>
-			<td>	
+			<td class="portlet-section-body">	
 				<c:out value="${field.name}"/>
 			</td>
-			<td align="center">
+			<td align="center" class="portlet-section-body">
 				<c:out value="${field.locale}"/> 
 				
 			</td>
-			<td>
+			<td class="portlet-section-body">
 				<%--TODO:  value needs to escaped, or use textarea--%>
 				<input type="text" name="<c:out value="${field.id}"/>:value" value="<c:out value="${field.value}"/>" size="50"/>
 			</td>
@@ -39,8 +39,8 @@ limitations under the License.
 	</c:forEach>
 	</table>
 			
-	<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>edit_metadata'"/>
-	<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>remove_metadata'"/>
+	<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>edit_metadata'" class="portlet-form-button"/>
+	<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>remove_metadata'" class="portlet-form-button"/>
 </form>
 		
 <form action="<c:out value="${edit_metadata_link}"/>" method="post">
@@ -48,30 +48,30 @@ limitations under the License.
 	<div>
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<span class="portlet-form-label"><fmt:message key="pam.details.name"/></span>
 				</td>
-				<td>
-					<input type="text" name="name" value=""/>
+				<td class="portlet-section-body">
+					<input type="text" name="name" value="" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<span class="portlet-form-label"><fmt:message key="pam.details.value"/></span>
 				</td>
-				<td>
-					<input type="text" name="value" value=""/>
+				<td class="portlet-section-body">
+					<input type="text" name="value" value="" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<span class="portlet-form-label"><fmt:message key="pam.details.locale"/></span>
 				</td>
-				<td>
-					<input type="text" name="locale" value=""/>
+				<td class="portlet-section-body">
+					<input type="text" name="locale" value="" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 		</table>
 	</div>
-	<input type="submit" value="<fmt:message key="pam.details.add_metadata"/>"/>
+	<input type="submit" value="<fmt:message key="pam.details.add_metadata"/>"  class="portlet-form-button"/>
 </form>

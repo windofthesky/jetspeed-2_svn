@@ -25,8 +25,8 @@ limitations under the License.
     value="#{users.users}"
     var="user"
     styleClass="portlet-section-body"
-    headerClass="portlet-form-button"
-    rowClasses="portlet-menu-item-selected,portlet-MintyBlue"
+    headerClass="portlet-section-header"
+    rowClasses="portlet-section-body,portlet-section-alternate"
 >
     <h:column>
        <f:facet name="header">

@@ -35,7 +35,7 @@ limitations under the License.
 
 
 <portlet:defineObjects/>
-<h3>Site Tree View</h3>
+<h3 class="portlet-section-header">Site Tree View</h3>
 <portlet:actionURL var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>

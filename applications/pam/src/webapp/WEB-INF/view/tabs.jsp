@@ -20,7 +20,7 @@ limitations under the License.
   		</td>
   	    <td <c:if test="${tab == currentTab}"> class="LTab" </c:if>
   	        <c:if test="${tab != currentTab}"> class="LTabLow" </c:if>
-  	         align="center" valign="middle" nowrap="true">
+  	         align="center" valign="middle" >
 		                     
   	         <% 
   				String tabid = ((TabBean)pageContext.getAttribute("tab")).getId(); 

@@ -29,12 +29,12 @@
 <h:dataTable
     value="#{rules.extent}"
     var="mRule"
-    styleClass="portlet-section-body"
-    headerClass="portlet-section-subheader"
+    styleClass="portlet-menu"
+    headerClass="portlet-menu-caption"
 >
     <h:column>
        <f:facet name="header">
-          <h:outputText  styleClass='portlet-section-header' value="#{MESSAGE['profiler.title.rules']}" />          
+          <h:outputText  styleClass='portlet-menu-item' value="#{MESSAGE['profiler.title.rules']}" />          
        </f:facet>
        <x:commandLink actionListener="#{rule.listen}" immediate="true" >
             <h:outputText value="#{mRule.id}" />
@@ -50,17 +50,17 @@
 
         <h:outputLabel for="xid" value="#{MESSAGE['profiler.rule.id']}: "/>
         <h:inputText readonly='#{rule.updating}' id="xid" styleClass='portlet-form-label' value="#{rule.id}" size='80'/>
-        <h:message for="xid" styleClass="error" showDetail="true" showSummary="false" />
+        <h:message for="xid" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
 
         <h:outputLabel for="title" value="#{MESSAGE['profiler.rule.title']}: "/>
-        <h:inputText id="title" styleClass='portlet-section-header' value="#{rule.title}"  size='100'/>
-        <h:message for="title" styleClass="error" showDetail="true" showSummary="false" />
+        <h:inputText id="title" styleClass='portlet-form-label' value="#{rule.title}"  size='100'/>
+        <h:message for="title" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
 
         <h:outputLabel for="classname" value="#{MESSAGE['profiler.rule.class']}: "/>
-        <h:selectOneMenu id="classname" styleClass='portlet-section-header' value="#{rule.classname}">
+        <h:selectOneMenu id="classname" styleClass='portlet-form-label' value="#{rule.classname}">
         	<f:selectItems value="#{rule.classnames}"/>
         </h:selectOneMenu>
-        <h:message for="classname" styleClass="error" showDetail="true" showSummary="false" />
+        <h:message for="classname" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
         
         </h:panelGrid>        
         
@@ -74,18 +74,20 @@
 
 <!-- criteria -->
     <br/>
+    <div>
 	<h:outputText styleClass='portlet-section-header' value="#{MESSAGE['criteria.title']}"/>
+    </div>
 	<br/>
 	
 	<h:dataTable
 	    value="#{rule.criteria}"
 	    var="mCriterion"
-	    styleClass="portlet-section-body"
-	    headerClass="portlet-section-body"	    
+	    styleClass="portlet-menu"
+	    headerClass="portlet-menu-caption"	    
 	>
 	    <h:column>
 	       <f:facet name="header">
-	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.name']}" />          
+	          <h:outputText styleClass="portlet-font" value="#{MESSAGE['criterion.name']}" />          
 	       </f:facet>
 	       <x:commandLink action='gotoCriterionForm' actionListener="#{criterion.listen}" immediate="true" >
 	            <h:outputText value="#{mCriterion.name}" />
@@ -95,19 +97,19 @@
 	    </h:column>
 	     <h:column>      
 	       <f:facet name="header">
-	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.value']}" />          
+	          <h:outputText styleClass="portlet-font" value="#{MESSAGE['criterion.value']}" />          
 	       </f:facet>
 	        <h:outputText value="#{mCriterion.value}" />       
 	    </h:column>
 	     <h:column>      
 	       <f:facet name="header">
-	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.resolver']}" />          
+	          <h:outputText styleClass="portlet-font" value="#{MESSAGE['criterion.resolver']}" />          
 	       </f:facet>
 	        <h:outputText value="#{mCriterion.type}" />       
 	    </h:column>
 	     <h:column>      
 	       <f:facet name="header">
-	          <h:outputText styleClass="portlet-section-body" value="#{MESSAGE['criterion.fallback.order']}" />          
+	          <h:outputText styleClass="portlet-font" value="#{MESSAGE['criterion.fallback.order']}" />          
 	       </f:facet>
 	        <h:outputText value="#{mCriterion.fallbackOrder}" />       
 	    </h:column>

@@ -63,51 +63,51 @@ limitations under the License.
 		
 		<table>
 			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="security.name"/></th>
-				<th><fmt:message key="security.value"/></th>
+				<th class="portlet-section-header" >&nbsp;</th>
+				<th class="portlet-section-header" ><fmt:message key="security.name"/></th>
+				<th class="portlet-section-header" ><fmt:message key="security.value"/></th>
 			</tr>
 		<c:forEach var="userAttr" items="${user.attributes}">
 			<tr>
 			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
 			
-				<td>
+				<td class="portlet-section-body" >
 					<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<c:out value="${userAttr.name}"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="<c:out value="${userAttr.name}"/>:value" value="<c:out value="${userAttr.value}"/>"/>
 				</td>
 			</tr>
 		</c:forEach>
 		</table>
-		<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_attribute'"/>
-		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_attribute'"/>
+		<input type="submit" value="<fmt:message key="security.update"/>" onClick="this.form.portlet_action.value = 'security_user.update_user_attribute'" class="portlet-form-button" />
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_attribute'" class="portlet-form-button" />
 	</form>
 	<form name="Add_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_attribute"/>
 		
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.name"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="user_attr_name" value=""/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.value"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="user_attr_value" value=""/>
 				</td>
 			</tr>
 		</table>
-		<input type="submit" value="<fmt:message key="security.add"/>"/>
+		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
 	</form>
   </div>	
 </c:if>
@@ -123,66 +123,66 @@ limitations under the License.
     <input type="hidden" name="portlet_action" value="security_user.update_user_credential"/>    
     <table>
       <tr>
-        <td>
+        <td class="portlet-section-alternate" >
           <fmt:message key="security.credential.value"/>
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <input type="password" name="user_cred_value" value=""/>
         </td>
         <td>
           &nbsp;
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <input type="hidden" name="user_cred_updreq" value="<c:out value="${credential.updateRequired}"/>"/>
           <input type="checkbox" 
                  <c:if test="${credential.updateRequired}">checked</c:if>
                  onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
-          />
+           class="portlet-form-label-field" />
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <fmt:message key="security.credential.update.required"/>
         </td>
       </tr>
       <tr>
-        <td>
+        <td class="portlet-section-alternate" >
           <fmt:message key="security.credential.last.logon"/>
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <fmt:formatDate value="${credential.lastLogonDate}" type="both" dateStyle="short" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <input type="hidden" name="user_cred_enabled" value="<c:out value="${credential.enabled}"/>"/>
           <input type="checkbox" 
                  <c:if test="${credential.enabled}">checked</c:if>
                  onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
-          />
+           class="portlet-form-label-field" />
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <fmt:message key="security.enabled"/>
         </td>
       </tr>
       <tr>
-        <td>
+        <td class="portlet-section-alternate" >
           <fmt:message key="security.credential.expires"/>
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="short" timeStyle="long"/>
         </td>
         <td>
           &nbsp;
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <input type="checkbox" disabled <c:if test="${credential.expired}">checked</c:if>/>
         </td>
-        <td>
+        <td class="portlet-section-body" >
           <fmt:message key="security.expired"/>
         </td>
       </tr>
     </table>
-    <input type="submit" value="<fmt:message key="security.update"/>"/>
+    <input type="submit" value="<fmt:message key="security.update"/>" class="portlet-form-button" />
   </form>
     
   </div>  
@@ -199,36 +199,36 @@ limitations under the License.
 		<input type="hidden" name="portlet_action" value="security_user.edit_role"/>		
 		<table>
 			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="security.rolename"/></th>
+				<th class="portlet-section-header" >&nbsp;</th>
+				<th class="portlet-section-header" ><fmt:message key="security.rolename"/></th>
 			</tr>
 		<c:forEach var="role" items="${roles}">
 			<tr>			
-				<td>
+				<td class="portlet-section-body" >
 					<input type="checkbox" name="user_role_id" value="<c:out value="${role.principal.name}"/>"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<c:out value="${role.principal.name}"/>
 				</td>
 			</tr>
 		</c:forEach>
 		</table>
-		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_role'"/>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_role'" class="portlet-form-button" />
     </form>
 	<form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_role"/>
 		
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.rolename"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="role_name" value=""/>
 				</td>
 			</tr>
 		</table>
-		<input type="submit" value="<fmt:message key="security.add"/>"/>
+		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
 	</form>
     
   </div>  
@@ -245,36 +245,36 @@ limitations under the License.
 		<input type="hidden" name="portlet_action" value="security_user.edit_group"/>		
 		<table>
 			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="security.groupname"/></th>
+				<th class="portlet-section-header" >&nbsp;</th>
+				<th class="portlet-section-header" ><fmt:message key="security.groupname"/></th>
 			</tr>
 		<c:forEach var="group" items="${groups}">
 			<tr>			
-				<td>
+				<td class="portlet-section-body" >
 					<input type="checkbox" name="user_group_id" value="<c:out value="${group.principal.name}"/>"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<c:out value="${group.principal.name}"/>
 				</td>
 			</tr>
 		</c:forEach>
 		</table>
-		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_group'"/>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_group'" class="portlet-form-button" />
     </form>
 	<form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_user_group"/>
 		
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.groupname"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="group_name" value=""/>
 				</td>
 			</tr>
 		</table>
-		<input type="submit" value="<fmt:message key="security.add"/>"/>
+		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
 	</form>
     
   </div>  
@@ -292,45 +292,45 @@ limitations under the License.
 		<input type="hidden" name="portlet_action" value="security_user.remove_user_rule"/>		
 		<table>
 			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="security.name"/></th>
-				<th><fmt:message key="security.rule"/></th>
+				<th class="portlet-section-header" >&nbsp;</th>
+				<th class="portlet-section-header" ><fmt:message key="security.name"/></th>
+				<th class="portlet-section-header" ><fmt:message key="security.rule"/></th>
 			</tr>
 		<c:forEach var="rule" items="${rules}">
 			<tr>			
-				<td>
+				<td class="portlet-section-body" >
 					<input type="checkbox" name="user_profile_id" value="<c:out value="${rule.locatorName}"/>"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<c:out value="${rule.locatorName}"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<c:out value="${rule.profilingRule}"/>
 				</td>
 			</tr>
 		</c:forEach>
 		</table>
-		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_rule'"/>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_rule'" class="portlet-form-button" />
 	</form>
 	<form name="Add_Profile_Form" action="<c:out value="${edit_profile_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.add_rule"/>
 		
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.name"/>
 				</td>
-				<td>
+				<td class="portlet-section-body" >
 					<input type="text" name="locator_name" value=""/>
 					Common Locator Names: [page,docset]
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate" >
 					<fmt:message key="security.rule"/>
 				</td>
-				<td>
-					<select name="select_rule">								
+				<td class="portlet-section-body" >
+					<select name="select_rule" class="portlet-form-label-field">								
 						<c:forEach var="prule" items="${prules}">						    						    
 						    <option value="<c:out value="${prule.id}"/>">
 							  <c:out value="${prule.id}"/>
@@ -340,7 +340,7 @@ limitations under the License.
 				</td>
 			</tr>
 		</table>
-		<input type="submit" value="<fmt:message key="security.add"/>"/>
+		<input type="submit" value="<fmt:message key="security.add"/>" class="portlet-form-button" />
 	</form>
   </div>	
 </c:if>

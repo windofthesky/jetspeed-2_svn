@@ -35,8 +35,32 @@ limitations under the License.
 <c:set var="selectedTab" value="${requestScope.selected_tab}"/>
 <c:set var="selectedPDef" value="${requestScope.portletDefinition}"/>
 
-<fmt:message key="pam.details.name"/> = <c:out value="${name}"/><br />
-<fmt:message key="pam.details.version"/> = <c:out value="${version}"/> <br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="portlet-menu-caption">
+      Information
+    </td>
+
+  </tr>
+  <tr>
+    <td class="portlet-menu">
+      <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+          <td class="portlet-menu-item">
+<fmt:message key="pam.details.name"/> = <c:out value="${name}"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="portlet-menu-item">
+<fmt:message key="pam.details.version"/> = <c:out value="${version}"/> 
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+<br/>
 
 <div id="tabs">
 	<c:set var="tab_items" value="${tabs}"/>
@@ -54,7 +78,7 @@ limitations under the License.
         <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
     </portlet:actionURL>
 	<form action="<c:out value="${select_portlet_link}"/>" method="post">
-		<select name="select_portlet" onChange="this.form.submit();">
+		<select name="select_portlet" onChange="this.form.submit();" class="portlet-form-field">
 		
 			<option value="" <c:if test="! ${selectedPDef}"> selected="true"</c:if> >
 				<fmt:message key="pam.details.choose_portlet"/>
@@ -103,29 +127,29 @@ limitations under the License.
 		
 		<table>
 			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="pam.details.name"/></th>
-				<th><fmt:message key="pam.details.value"/></th>
+				<th class="portlet-section-header">&nbsp;</th>
+				<th class="portlet-section-header"><fmt:message key="pam.details.name"/></th>
+				<th class="portlet-section-header"><fmt:message key="pam.details.value"/></th>
 			</tr>
 		<c:forEach var="userAttr" items="${pa.userAttributes}">
 			<tr>
 			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
 			
-				<td>
+				<td class="portlet-section-body">
 					<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
 				</td>
-				<td>
+				<td class="portlet-section-body">
 					<c:out value="${userAttr.name}"/>
 				</td>
-				<td>
-					<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>"/>
+				<td class="portlet-section-body">
+					<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 		</c:forEach>
 		</table>
 		
-		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet_app.edit_user_attribute'"/>
-		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet_app.remove_user_attribute'"/>
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet_app.edit_user_attribute'" class="portlet-form-button"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet_app.remove_user_attribute'" class="portlet-form-button"/>
 	</form>
 	
 	<form action="<c:out value="${edit_user_attr_link}"/>" method="post">
@@ -133,23 +157,23 @@ limitations under the License.
 		
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.name"/>
 				</td>
-				<td>
-					<input type="text" name="user_attr_name" value=""/>
+				<td class="portlet-section-body">
+					<input type="text" name="user_attr_name" value="" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.description"/>
 				</td>
-				<td>
-					<input type="text" name="user_attr_desc" value=""/>
+				<td class="portlet-section-body">
+					<input type="text" name="user_attr_desc" value="" class="portlet-form-label-field"/>
 				</td>
 			</tr>
 		</table>
-		<input type="submit" value="<fmt:message key="pam.details.add_user_attribute"/>"/>
+		<input type="submit" value="<fmt:message key="pam.details.add_user_attribute"/>" class="portlet-form-button"/>
 	</form>
   </div>
 </c:if>
@@ -179,33 +203,34 @@ limitations under the License.
 	<div id="details">
 		<table>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.name"/>
-				<td>
+                </td>
+				<td class="portlet-section-body">
 					<c:out value="${name}"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.version"/>
 				</td>
-				<td>
+				<td class="portlet-section-body">
 					<c:out value="${version}"/>
 				</td>
 			</tr>
 			<tr>
-				<td>		
+				<td class="portlet-section-alternate">		
 					<fmt:message key="pam.details.description"/>
 				</td>
-				<td>
+				<td class="portlet-section-body">
 					<c:out value="${pa.description}"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.type"/>
 				</td>
-				<td>
+				<td class="portlet-section-body">
 					<c:choose>
 						<c:when test="${pa.applicationType == '0'}">
 							<fmt:message key="pam.details.type.webapp"/>
@@ -217,10 +242,10 @@ limitations under the License.
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="portlet-section-alternate">
 					<fmt:message key="pam.details.id"/>
 				</td>
-				<td>
+				<td class="portlet-section-body">
 					<c:out value="${pa.applicationIdentifier}"/>
 				</td>
 			</tr>
@@ -228,12 +253,23 @@ limitations under the License.
 	
 		
 		<c:if test="${! empty pa.jetspeedServices}">
-			<hr />
+            <br/>
+            <table border="0"  cellspacing="0" cellpadding="0">
+                <tr>
+                    <td class="portlet-menu-caption">
 			<fmt:message key="pam.details.services"/>
-			<hr />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="portlet-menu">
+            <div class="portlet-section-body">
 			<c:forEach var="service" items="${pa.jetspeedServices}">
 				<c:out value="${service.name}"/> <br /> <%--| <c:out value="${service.appId}"/> | <c:out value="${service.id}"/><br />--%>
 			</c:forEach>
+            </div>
+                    </td>
+                </tr>
+            </table>
 		</c:if>
 	</div>
 </c:if>
