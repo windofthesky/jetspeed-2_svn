@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.util.Map;
+import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 /**
  * This is the interface that defines the Deployment-related methods to deploy
@@ -23,56 +23,33 @@ import java.util.Map;
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a> 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:mavery@einnovation.com">Matt Avery</a>
  * @version $Id$
+ * @see org.apache.jetspeed.util.desciptor.PortletApplicationWar
  */
 public interface Deployment
 {    
-    /**
-     * Some application servers require connections created before deploying.
-     * 
-     * @param params map of server specific properties
-     */
-    public void connect(Map params)
-    throws PortletApplicationException;
     
     /**
      * Deploys the specified war file to the webapps dirctory specified.
      * 
-     * @param webAppsDir The webapps directory inside the Application Server
-     * @param warFile The warFile containing the Portlet Application
-     * @param paName The Portlet Application name
+     * @param paWar PortletApplicationWar to deploy
      * @throws PortletApplicationException
      */
-    public void deploy(String webAppsDir, 
-                       String warFile,
-                       String paName
-                       ) 
+    public void deploy( PortletApplicationWar paWar ) 
     throws PortletApplicationException;
     
     /**
-     * Deploys the specified war file to the webapps directory on the Application Server.
-     * The appServer parameter specifies a specific Application Server.
-     * 
-     * @param warFile The warFile containing the Portlet Application
-     * @param paName The Portlet Application name
-     * @throws PortletApplicationException 
-     */
-    public void deploy(String warFile,
-                       String portletApplicationName) 
-        throws PortletApplicationException;
-                       
-	
-    /**
      * Undeploys application.
      * 
-     * @param webApplicationName The web application directory name inside the Application Server. 
-     *                           Parameter can be ignored for some servers
-     * @param portletApplicationName The Portlet Application name
+     * @param paWar PortletApplicaionWar to undeploy
      * @throws PortletApplicationException
      */
-    public void undeploy(String webApplicationName,
-                         String portletApplicationName) 
+    public void undeploy(PortletApplicationWar paWar) 
     throws PortletApplicationException;
+    
+    String getDeploymentPath(String webAppName);
 
 
 }
