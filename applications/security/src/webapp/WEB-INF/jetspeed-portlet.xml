@@ -35,6 +35,8 @@ limitations under the License.
     <js:service name='GroupManager'/>    
     <js:service name="Profiler" /> 
     <js:service name="SSO" />         
+	<js:service name='PortletRegistryComponent'/>
+	<js:service name='EntityAccessor'/>    
   </js:services>
 
 </portlet-app>

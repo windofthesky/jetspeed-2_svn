@@ -31,6 +31,7 @@ public interface SecurityResources
     public final static String CPS_GROUP_MANAGER_COMPONENT = "cps:GroupManager";
     public final static String CPS_PROFILER_COMPONENT = "cps:Profiler";
     public final static String CPS_SSO_COMPONENT = "cps:SSO";    
+    public final static String CPS_ENTITY_ACCESS_COMPONENT = "cps:EntityAccessor";
 
     public final static String CURRENT_USER = "current_user";
     public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";

@@ -216,5 +216,31 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="UserChooser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/security/users/user-chooser.vm</value>
+     </init-param>   
+    <portlet-name>UserChooser</portlet-name>
+    <display-name>Users</display-name>
+    <description>User Chooser Portlet</description>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
+    <portlet-info>
+      <title>User Select</title>
+      <short-title>Users</short-title>
+      <keywords>admin,security,users</keywords>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 

@@ -29,6 +29,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -36,6 +38,8 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.sso.SSOException;
 import org.apache.jetspeed.sso.SSOProvider;
 import org.apache.jetspeed.sso.SSOSite;
+import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.portals.gems.browser.BrowserIterator;
 import org.apache.portals.gems.browser.DatabaseBrowserIterator;
 import org.apache.portals.gems.browser.BrowserPortlet;
@@ -52,6 +56,12 @@ public class SSODetails extends BrowserPortlet
 {
     private SSOProvider sso;
     private UserManager userManager;
+    private PortletEntityAccessComponent entityAccess;
+    private PortletRegistry registry;
+    private PortletEntity chooserEntity = null;
+    
+    private static final String USER_CHOOSER_ENTITY_KEY = "_js2-security-714";
+    private static final String PORTLET_NAME = "security::UserChooser";
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -66,7 +76,41 @@ public class SSODetails extends BrowserPortlet
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
-        }        
+        }
+
+        registry = (PortletRegistry) 
+            getPortletContext().getAttribute(SecurityResources.CPS_REGISTRY_COMPONENT);
+        if (null == registry)
+        {
+            throw new PortletException("Failed to find the Registry on portlet initialization");
+        }      
+        entityAccess = (PortletEntityAccessComponent) 
+            getPortletContext().getAttribute(SecurityResources.CPS_ENTITY_ACCESS_COMPONENT);
+        if (null == entityAccess)
+        {
+            throw new PortletException("Failed to find the Entity Accessor on portlet initialization");
+        }      
+        
+        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(PORTLET_NAME);
+        if (null == portletDef)
+        {
+            throw new PortletException("Could not find portlet definition in registry for " + PORTLET_NAME);
+        }
+        
+        PortletEntity entity = entityAccess.getPortletEntity(USER_CHOOSER_ENTITY_KEY);
+        if (entity == null)
+        {            
+            entity = entityAccess.newPortletEntityInstance(portletDef, USER_CHOOSER_ENTITY_KEY);
+            try
+            {
+                entityAccess.storePortletEntity(entity);
+            }
+            catch (Exception e)
+            {
+                throw new PortletException("Could not create entity for " + PORTLET_NAME);
+            }
+        }
+        chooserEntity = entity;
     }
        
     
@@ -116,12 +160,13 @@ public class SSODetails extends BrowserPortlet
         { 
             this.clearBrowserIterator(request);
         }
+        Context context = this.getContext(request);        
         String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
         if (selectedSite != null)
         {        
-            Context context = this.getContext(request);
             context.put("currentSite", selectedSite);
         }        
+        context.put("chooser", chooserEntity);        
         super.doView(request, response);
     }
     
