@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -13,22 +14,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="testsuite_page">
-  <defaults
+<page id="RssPortlet">
+    <defaults
      skin="orange"
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
   
-  <title>Test Suite Page</title>
+   <title>Plumtree RSS Portlet</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="testsuite_page:1" type="portlet" name="testsuite:TestPortlet">
+     <fragment id="rrsPortlet1" type="portlet" name="RssPortlet::RssPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
-    </fragment>    
-    <fragment id="testsuite_page:2" type="portlet" name="testsuite:TestPortlet2">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>  
+    </fragment>                              
+    
   </fragment>
 </page>

@@ -79,7 +79,11 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     String id = portletApp.getAttributeValue("id");
                     if (id == null)
                     {
-                        throw new PortletApplicationException("<portlet-app> requires a unique \"id\" attribute.");
+                        
+                        String warFileName = handler.getFile().getName();
+                        int extensionIdx = warFileName.lastIndexOf(".war");
+                        id = warFileName.substring(0, extensionIdx);
+                        log.info("Application id not defined in portlet.xml so using war name "+id);
                     }
 					PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
                     if (regsitry.getPortletApplicationByIdentifier(id) != null)

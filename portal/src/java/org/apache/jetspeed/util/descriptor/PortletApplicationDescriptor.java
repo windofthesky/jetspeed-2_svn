@@ -23,6 +23,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.ParameterDescriptionImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
@@ -149,6 +150,21 @@ public class PortletApplicationDescriptor
             PortletApplicationDefinitionImpl pd = (PortletApplicationDefinitionImpl) digester.parse(portletXmlReader);
 
             pd.setName(appName);
+            if(pd.getApplicationIdentifier() == null)
+            {
+                pd.setApplicationIdentifier(appName);
+            }
+            
+            Iterator portletDefs = pd.getPortletDefinitions().iterator();
+            while(portletDefs.hasNext())
+            {
+                PortletDefinitionComposite portletDef = (PortletDefinitionComposite) portletDefs.next();
+                if(portletDef.getPortletIdentifier() == null)
+                {
+                    portletDef.setPortletIdentifier(portletDef.getName());
+                }
+            }
+            
             return pd;
 
         }
