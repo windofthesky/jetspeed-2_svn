@@ -323,8 +323,8 @@
     <echo>Copying from ${maven.repo.local} to ${catalina.shared.lib}...</echo>
     <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>-->
     <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-1.0.1.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.2.jar" todir="${catalina.shared.lib}"/>
+    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${catalina.shared.lib}"/>
+    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.6.jar" todir="${catalina.shared.lib}"/>
   </goal>
