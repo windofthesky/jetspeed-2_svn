@@ -50,7 +50,8 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 public class FolderImpl extends AbstractNode implements Folder
 {
     
-    private static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
+    public static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
+
     private static final String PAGE_NOT_FOUND_PAGE = "page_not_found.psml";
     private String defaultTheme;
     private NodeSet allNodes;

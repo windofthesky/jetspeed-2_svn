@@ -420,22 +420,43 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                     // set page path with page/path properties, assumes
                     // page names and relative paths are relative to
                     // request path and that any page paths with no url
-                    // separator should have the page extension appended;
-                    // better rules might be applied with differentiation
-                    // between control, page, and path properties
+                    // separator should have the page extension appended
                     if (locatorProperties[i].getValue() != null)
                     {
+                        // get locator path property
                         pagePath = locatorProperties[i].getValue();
+                        if (pagePath == null)
+                            pagePath = "";
+                        // append page extension if required
                         if ((pagePath.indexOf("/") == -1) && ! pagePath.endsWith(Page.DOCUMENT_TYPE))
                             pagePath = pagePath + Page.DOCUMENT_TYPE;
+                        // remove default page and let folder perform defaulting
+                        // if request path is probably referencing a folder, (i.e.
+                        // not a page)
+                        if (pagePath.equals(FolderImpl.FALLBACK_DEFAULT_PAGE))
+                            pagePath = "";
+                        // relative path: append to request path if page path is specified
+                        // or if request path is probably referencing a folder, (i.e.
+                        // not a page); the empty page path here forces a folder path
+                        // to be created with a trailing slash... the folder then will
+                        // choose its default page name according to its own rules.
                         if (! pagePath.startsWith("/"))
-                        {
-                            int lastSlashIndex = requestPath.lastIndexOf('/');
-                            if (lastSlashIndex > 0)
-                                pagePath = requestPath.substring(0, lastSlashIndex) + "/" + pagePath;
+                            if ((pagePath.length() > 0) || ! requestPath.endsWith(Page.DOCUMENT_TYPE))
+                            {
+                                // append page path to request path
+                                int lastSlashIndex = requestPath.lastIndexOf('/');
+                                if (lastSlashIndex > 0)
+                                    pagePath = requestPath.substring(0, lastSlashIndex) + "/" + pagePath;
+                                else if (requestPath.length() > 1)
+                                    pagePath = requestPath + "/" + pagePath;
+                                else
+                                    pagePath = "/" + pagePath;
+                            }
                             else
-                                pagePath = "/" + pagePath;
-                        }
+                            {
+                                // default page path to page request path
+                                pagePath = requestPath;
+                            }
                     }
                     else
                         pagePath = requestPath;
