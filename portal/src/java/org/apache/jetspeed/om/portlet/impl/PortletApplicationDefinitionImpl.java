@@ -99,6 +99,8 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
 
     private PortletDefinitionListImpl portlets;
 
+    private int applicationType = MutablePortletApplication.PORTLET_APP;
+    
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
@@ -246,6 +248,22 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     public String getApplicationIdentifier()
     {
         return this.applicationIdentifier;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setApplicationType(int)
+     */
+    public void setApplicationType(int type)
+    {
+        this.applicationType = type;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getApplicationType()
+     */
+    public int getApplicationType()
+    {
+        return applicationType;
     }
 
 }

@@ -50,24 +50,26 @@
       <field-descriptor
          name="webApplicationId"
          column="WEB_APP_ID"
-         jdbc-type="INTEGER"
+         jdbc-type="INTEGER"       
+      />
 
-       
+      <field-descriptor
+         name="applicationType"
+         column="APP_TYPE"
+         jdbc-type="INTEGER"       
       />
      
       <reference-descriptor 
       	  name="webApplication" 
       	  class-ref="org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl" 
       	  auto-delete="true"
-
       	  >
          <foreignkey field-ref="webApplicationId"/>
       </reference-descriptor>
       
       <collection-descriptor
          name="portlets"
-         auto-delete="true"
-    
+         auto-delete="true"    
          element-class-ref="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
          collection-class="org.apache.jetspeed.om.collection.ManageablePortletDefinitionListImpl"
       >
