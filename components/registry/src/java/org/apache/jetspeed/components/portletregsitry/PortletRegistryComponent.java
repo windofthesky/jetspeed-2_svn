@@ -113,6 +113,9 @@ public interface PortletRegistryComponent
     /**
      * Locates a portlet using it's unique <code>indentifier</code> 
      * field.
+     * <br/>
+     * This method automatically calls {@link getStoreableInstance(PortletDefinitionComposite portlet)}
+     * on the returned <code>PortletEntityInstance</code>
      * @param ident Unique id for this portlet
      * @return Portlet matching this unique id.
      */
@@ -125,7 +128,9 @@ public interface PortletRegistryComponent
      * <strong>FORMAT: </strong> <i>application name</i>::<i>portlet name</i>
      * <br/>
      * <strong>EXAMPLE: </strong> com.myapp.portletApp1::weather-portlet
-     * 
+     * <br/>
+     * This methos automatically calls {@link getStoreableInstance(PortletDefinitionComposite portlet)}
+     * on the returned <code>PortletEntityInstance</code> 
      * @param name portlets unique name.  
      * @return Portlet that matches the unique name 
      */
@@ -169,5 +174,20 @@ public interface PortletRegistryComponent
         * @param app
         */
     void updatePortletApplication(PortletApplicationDefinition app) throws RegistryException;
+    
+    /**
+     * 
+     * <p>
+     * getStoreableInstance
+     * </p>
+     * Wraps the <code>PortletDefinitionComposite</code>
+     * in an instance that correctly implements the 
+     * <code>store()</code> method;
+     * 
+     * @param portlet
+     * @return
+     *
+     */
+	PortletDefinitionComposite getStoreableInstance(PortletDefinitionComposite portlet);
 
 }

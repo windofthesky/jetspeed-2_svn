@@ -62,6 +62,10 @@ import org.apache.jetspeed.components.omfactory.OMFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -113,43 +117,27 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
 
     protected static final String KEY_STORE_NAME = "persistence.store.name";
     private PersistenceStoreContainer storeContainer;
-        private String jetspeedStoreName;
+    private String jetspeedStoreName;
     private Class portletDefClass;
     private Class portletAppClass;
-    private OMFactory omFactory;
 
     /**
      * 
      */
-    public PortletRegistryComponentImpl(PersistenceStoreContainer storeContainer, String keyStoreName, OMFactory omFactory)
-        throws RegistryException
+    public PortletRegistryComponentImpl(PersistenceStoreContainer storeContainer, String keyStoreName) throws RegistryException
     {
         if (storeContainer == null)
         {
             throw new IllegalArgumentException("storeContainer cannot be null for PortletRegistryComponentImpl");
         }
 
-
-
-        if (omFactory == null)
-        {
-            throw new IllegalArgumentException("omFactory cannot be null for PortletRegistryComponentImpl");
-        }
-
         this.storeContainer = storeContainer;
-        
-        this.omFactory = omFactory;
+
         jetspeedStoreName = keyStoreName;
 
-        try
-        {
-            portletDefClass = omFactory.getImplementation(PortletDefinition.class);
-            portletAppClass = omFactory.getImplementation(PortletApplicationDefinition.class);
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new RegistryException("Unable to identify implementation classes " + e.toString(), e);
-        }
+        portletDefClass = PortletDefinitionImpl.class;
+        portletAppClass = PortletApplicationDefinitionImpl.class;
+
     }
 
     /** 
@@ -172,7 +160,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
 
         try
         {
-            MutableLanguage lc = (MutableLanguage) omFactory.newInstance(Language.class);
+            MutableLanguage lc = new LanguageImpl();
             lc.setLocale(locale);
             lc.setTitle(title);
             lc.setShortTitle(shortTitle);
@@ -303,7 +291,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         Filter filter = store.newFilter();
         filter.addEqualTo("portletIdentifier", ident);
         Object query = store.newQuery(portletDefClass, filter);
-        return (PortletDefinitionComposite) store.getObjectByQuery(query);
+        return getStoreableInstance((PortletDefinitionComposite) store.getObjectByQuery(query));
     }
 
     /** 
@@ -338,7 +326,7 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         Object query = store.newQuery(portletDefClass, filter);
         PortletDefinitionComposite pdc = (PortletDefinitionComposite) store.getObjectByQuery(query);
 
-        return pdc;
+        return getStoreableInstance(pdc);
     }
 
     /** 
@@ -459,6 +447,19 @@ public class PortletRegistryComponentImpl implements org.apache.jetspeed.compone
         catch (LockFailedException e)
         {
             throw new RegistryException("Unable to lock PortletApplicaiton for update: " + e.toString(), e);
+        }
+
+    }
+
+    public PortletDefinitionComposite getStoreableInstance(PortletDefinitionComposite portlet)
+    {
+        if (portlet != null)
+        {
+            return new StoreablePortletDefinitionDelegate(portlet, getPersistenceStore());
+        }
+        else
+        {
+            return null;
         }
 
     }
