@@ -69,12 +69,18 @@ import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.persistence.PersistencePlugin;
+import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
 
 /**
@@ -131,7 +137,7 @@ public class TestPortletDescriptor extends JetspeedTest
     {
         System.out.println("Testing loadPortletApplicationTree");
         MutablePortletApplication app =
-            PortletDescriptorUtilities.loadPortletApplicationTree("./test/testdata/deploy/portlet.xml", "unit-test");
+            PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));
@@ -178,8 +184,9 @@ public class TestPortletDescriptor extends JetspeedTest
         // Display Name                
         DisplayName displayName = portlet.getDisplayName(Jetspeed.getDefaultLocale());
         assertNotNull("Display Name is null", displayName);
-        assertTrue("Portlet.DisplayName invalid: " + displayName.getDisplayName(), 
-                    displayName.getDisplayName().equals("HelloWorld Portlet Wrapper"));
+        assertTrue(
+            "Portlet.DisplayName invalid: " + displayName.getDisplayName(),
+            displayName.getDisplayName().equals("HelloWorld Portlet Wrapper"));
 
         // Init Parameters
         ParameterSet paramsList = portlet.getInitParameterSet();
@@ -233,6 +240,7 @@ public class TestPortletDescriptor extends JetspeedTest
                 "PortletInfo.ShortTitle invalid: " + info.getShortTitle(),
                 info.getShortTitle().equals("This is the short title"));
             Iterator keywords = info.getKeywords();
+            assertNotNull("Keywords cannot be null", keywords);
             int keywordCount = 0;
             while (keywords.hasNext())
             {
@@ -265,7 +273,7 @@ public class TestPortletDescriptor extends JetspeedTest
             {
                 assertTrue("Preference.Name invalid: " + pref.getName(), pref.getName().equals("time-server"));
                 assertTrue("Preference.Modifiable invalid: ", pref.isReadOnly() == false);
-                validatePreferences(pref, new String[] { "http://timeserver.myco.com" });
+                validatePreferences(pref, new String[] { "http://timeserver.myco.com", "http://timeserver.foo.com" });
             }
             else
             {
@@ -291,6 +299,45 @@ public class TestPortletDescriptor extends JetspeedTest
             // System.out.println("value = " + value);
         }
         assertTrue("Value Count != expectedCount, count = " + expectedValues.length, count == (expectedValues.length));
+
+    }
+
+    public void testWritingToDB() throws Exception
+    {
+        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication("HW_App");
+        if (app != null)
+        {
+            JetspeedPortletRegistry.removeApplication(app);
+        }
+        app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
+
+        app.setName("HW_App");
+        JetspeedPortletRegistry.registerPortletApplication(app);
+        PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+        PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
+        plugin.clearCache();
+        
+
+        PortletDefinition pd = JetspeedPortletRegistry.getPortletDefinitionByUniqueName("PreferencePortlet");
+        assertNotNull(pd);
+
+        assertNotNull(pd.getPreferenceSet());
+
+        Preference pref1 = pd.getPreferenceSet().get("pref1");
+
+        assertNotNull(pref1);
+
+        Iterator itr = pref1.getValues();
+        int count = 0;
+        while (itr.hasNext())
+        {
+            count++;
+            System.out.println("Value " + count + "=" + itr.next());
+        }
+
+        assertTrue(count > 0);
+
+        JetspeedPortletRegistry.removeApplication(app);
 
     }
 }
