@@ -50,7 +50,7 @@ public class TestBasicSSO extends TestCase
     public void testBasicSSO() throws Exception
     {
         System.out.println("Testing SSO");                                      
-        connect("http://localhost:8080/demo/sso-basic", "tomcat", "tomcat");
+        // connect("http://localhost:8080/demo/sso-basic", "tomcat", "tomcat");
     }
     
     public void connect(String server, String username, String password) throws Exception

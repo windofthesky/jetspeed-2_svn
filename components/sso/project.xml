@@ -43,6 +43,14 @@ limitations under the License.
   	
   	&commons-config-dep;
 
+    <dependency>
+      <id>commons-httpclient</id>
+      <version>2.0</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
 	<!-- Components -->
 	<!-- Servlet API -->
 	<dependency>
