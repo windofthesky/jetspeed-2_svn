@@ -37,22 +37,23 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PathNavigationalState implements NavigationalState 
+public class PathNavigationalState
+    extends
+        AbstractNavigationalState
+    implements 
+        NavigationalState 
 {
-    private RequestContext context;
     private PortalURL url;
     private PortalControlParameter pcp;
-    private NavigationalStateComponent nav;
     
     public PathNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
-        this.nav = nav;        
+        super(context, nav);
         init(context);
     }
     
     public void init(RequestContext context)
     {
-        this.context = context;
         this.url = new PortalURLImpl(context);               
         this.pcp = new PortalControlParameter(url, nav);        
     }
@@ -86,12 +87,7 @@ public class PathNavigationalState implements NavigationalState
     {
         return pcp.getPrevState(window);
     }
-    
-    public boolean isNavigationalParameter(String token)
-    {
-        return pcp.isControlParameter(token);
-    }
-    
+        
     public Iterator getRenderParamNames(PortletWindow window)
     {
         return pcp.getRenderParamNames(window);

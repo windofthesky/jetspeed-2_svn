@@ -28,7 +28,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
-import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
  * Provides access to the Portal URL manipulation 
@@ -130,10 +129,10 @@ public class PortletURLProviderImpl implements PortletURLProvider
                 : (String[]) value;
                 if (action)
                 {
-                    nav.setRequestParam(
-                        NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
-                        values);
-
+                    //nav.setRequestParam(
+                    //    NamespaceMapperAccess.getNamespaceMapper().encode(portletWindow.getId(), name),
+                    //    values);
+                    nav.setRequestParam(name, values);
                 }
                 else
                 {

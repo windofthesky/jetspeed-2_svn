@@ -349,7 +349,7 @@ public class PortalURLImpl implements PortalURL
             {
                 String token = tokenizer.nextToken();
                 
-                if (pcp.isControlParameter(token))
+                if (pcp.isNavigationalParameter(token))
                 {
                     mode = 1;
                     name = token;

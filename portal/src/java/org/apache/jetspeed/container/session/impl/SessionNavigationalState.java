@@ -15,9 +15,12 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -35,8 +38,10 @@ import org.apache.pluto.om.window.PortletWindow;
  * @version $Id$
  */
 public class SessionNavigationalState
-        implements
-            NavigationalState 
+    extends
+        AbstractNavigationalState
+    implements 
+        NavigationalState 
 {    
     private static final String STATES_KEY = "org.apache.jetspeed.container.session.impl.states";
     private static final String MODES_KEY = "org.apache.jetspeed.container.session.impl.modes";
@@ -46,17 +51,15 @@ public class SessionNavigationalState
     private static Object lock = new Object();
     
     private HttpSession session;
-    private RequestContext context;
     private Map states;
     private Map modes;
     private Map pstates;
     private Map pmodes;
-    private NavigationalStateComponent nav;
+    private List renderParams = null;
     
     public SessionNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
-        this.context = context;
-        this.nav = nav;
+        super(context, nav);
         session = context.getRequest().getSession();
         states = (Map)session.getAttribute(STATES_KEY);
         if (null == states)
@@ -155,15 +158,67 @@ public class SessionNavigationalState
     
     ///////////////////////////////////////////////////////////
     
-    public boolean isNavigationalParameter(String token)
-    {
-        return token.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
-    }
-
     public Iterator getRenderParamNames(PortletWindow window)
     {
-        return null;
+        if (null != renderParams)
+        {
+            return renderParams.iterator();
+        }
+
+        renderParams = new ArrayList();       
+        analyzeNavigationalParameters(context.getRequest().getPathInfo());
+        return renderParams.iterator();
     }
+    
+
+    private void analyzeNavigationalParameters(String pathInfo)
+    {
+        if (pathInfo != null)
+        {
+            StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/.");
+
+            int mode = 0; // 0=navigation, 1=control information
+            String name = null;
+            while (tokenizer.hasMoreTokens())
+            {
+                String token = tokenizer.nextToken();
+                
+                if (isNavigationalParameter(token))
+                {
+                    mode = 1;
+                    name = token;
+                }
+                else if (mode == 0)
+                {
+                    if (null == renderParams)
+                    {
+                        renderParams = new ArrayList();
+                    }
+                    renderParams.add(token);
+                }
+                else if (mode == 1)
+                {
+                    /*
+                    if ((isStateFullParameter(name)))
+                    {
+                        startControlParameter.put(
+                            pcp.decodeParameterName(name),
+                            pcp.decodeParameterValue(name, token));
+                    }
+                    else
+                    {
+                        startStateLessControlParameter.put(
+                            pcp.decodeParameterName(name),
+                            pcp.decodeParameterValue(name, token));
+                    }
+                    */
+                    mode = 0;
+                }
+            }
+        }
+        
+    }
+    
     
     public String[] getRenderParamValues(PortletWindow window, String paramName)
     {

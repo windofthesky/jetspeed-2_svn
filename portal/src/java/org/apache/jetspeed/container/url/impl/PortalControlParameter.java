@@ -18,6 +18,7 @@ package org.apache.jetspeed.container.url.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -175,7 +176,7 @@ public class PortalControlParameter
 
     public Iterator getRenderParamNames(PortletWindow window)
     {
-        ArrayList returnvalue = new ArrayList();
+        List returnvalue = new ArrayList();
         String prefix = getRenderParamKey(window);
         Iterator keyIterator = stateFullControlParameter.keySet().iterator();
 
@@ -296,28 +297,6 @@ public class PortalControlParameter
         return nav.getNavigationKey(NavigationalStateComponent.ID);
     }
 
-    public boolean isControlParameter(String param)
-    {
-        return param.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
-    }
-
-    public boolean isStateFullParameter(String param)
-    {
-        if (isControlParameter(param))
-        {
-            String prefix = nav.getNavigationKey(NavigationalStateComponent.PREFIX);            
-            if ((param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.MODE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_MODE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.STATE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_STATE)))
-                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public String decodeParameterName(String paramName)
     {
         int length = nav.getNavigationKey(NavigationalStateComponent.PREFIX).length();
@@ -406,6 +385,28 @@ public class PortalControlParameter
         value = StringUtils.replace(value, "_", "0x1");
         value = StringUtils.replace(value, ".", "0x2");
         return value;
+    }
+
+    public boolean isNavigationalParameter(String token)
+    {
+        return token.startsWith(nav.getNavigationKey(NavigationalStateComponent.PREFIX));
+    }
+    
+    public boolean isStateFullParameter(String param)
+    {
+        if (isNavigationalParameter(param))
+        {
+            String prefix = nav.getNavigationKey(NavigationalStateComponent.PREFIX);            
+            if ((param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.MODE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_MODE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.STATE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.PREV_STATE)))
+                || (param.startsWith(prefix + nav.getNavigationKey(NavigationalStateComponent.RENDER_PARAM))))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
 }

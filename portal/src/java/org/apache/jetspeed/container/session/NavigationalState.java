@@ -45,7 +45,7 @@ public interface NavigationalState
     ///////////////////////////////////////////////
     
     boolean isNavigationalParameter(String token);
-    
+        
     Iterator getRenderParamNames(PortletWindow window);
     
     String[] getRenderParamValues(PortletWindow window, String paramName);
