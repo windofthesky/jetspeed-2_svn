@@ -39,7 +39,6 @@ public class JetspeedPortletInstance implements PortletInstance
 {
   private Portlet portlet;
   private PortletConfig config;
-  private long threadCount;
   private boolean destroyed;
   
   public JetspeedPortletInstance(Portlet portlet)
@@ -47,48 +46,21 @@ public class JetspeedPortletInstance implements PortletInstance
     this.portlet = portlet;
   }
   
-  private void enterPortletThread() throws UnavailableException
+  private void checkAvailable() throws UnavailableException
   {
-    synchronized(portlet)
-    {
-        if ( destroyed )
-        {
-            throw new UnavailableException("Portlet "+portlet.getClass().getName()+" no longer available");
-        }
-        threadCount++;
-    }
-  }
-  
-  private synchronized void exitPortletThread()
-  {    
-    synchronized(portlet)
-    {
-      threadCount--;
-      if ( threadCount == 0 && destroyed )
+      if ( destroyed )
       {
-        portlet.notifyAll();
+          throw new UnavailableException("Portlet "+portlet.getClass().getName()+" no longer available");
       }
-    }
   }
   
   public void destroy()
   {
-    synchronized(portlet)
-    {
       if (!destroyed)
       {
         destroyed = true;
-        if (threadCount > 0)
-        {
-          try
-          {
-            portlet.wait();
-          }
-          catch (InterruptedException e) {}
-        }
       }
-    }
-    portlet.destroy();
+      portlet.destroy();
   }
   
   public boolean equals(Object obj)
@@ -114,28 +86,14 @@ public class JetspeedPortletInstance implements PortletInstance
   
   public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
   {
-    enterPortletThread();
-    try
-    {
-        portlet.processAction(request, response);
-    }
-    finally
-    {
-        exitPortletThread();
-    }
+    checkAvailable();
+    portlet.processAction(request, response);
   }
   
   public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
   {
-    enterPortletThread();
-    try
-    {
-        portlet.render(request, response);
-    }
-    finally
-    {
-        exitPortletThread();
-    }
+    checkAvailable();
+    portlet.render(request, response);
   }
   
   public String toString()
