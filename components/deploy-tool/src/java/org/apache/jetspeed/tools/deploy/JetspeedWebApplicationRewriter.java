@@ -46,6 +46,7 @@ public class JetspeedWebApplicationRewriter
     public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String REGISTER_AT_INIT_XPATH = "/init-param/param-name[contains(child::text(), \"registerAtInit\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
+    public static final String PORTLET_TAGLIB_XPATH = "/web-app/taglib/taglib-uri[contains(child::text(), \"http://java.sun.com/portlet\")]";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
 
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
@@ -53,12 +54,16 @@ public class JetspeedWebApplicationRewriter
     protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
             "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
             "servlet-mapping"};
+    
+    protected static final String[] ELEMENTS_BEFORE_TAGLIB_MAPPING = new String[]{"icon", "display-name",
+            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
+            "servlet-mapping", "session-config", "mime-mapping", "welcome-file-list", "error-page", "taglib"};
       
     private Document document;
     private String portletApplication;
     private boolean changed = false;
     private boolean registerAtInit = false;
-    
+    private boolean portletTaglibAdded = false;
     
     public JetspeedWebApplicationRewriter(Document doc, String portletApplication, boolean registerAtInit)
     {
@@ -116,6 +121,8 @@ public class JetspeedWebApplicationRewriter
         
             Object jetspeedServlet = XPath.selectSingleNode(document, JETSPEED_SERVLET_XPATH);
             Object jetspeedServletMapping = XPath.selectSingleNode(document, JETSPEED_SERVLET_MAPPING_XPATH);
+            Object portletTaglib = XPath.selectSingleNode(document, PORTLET_TAGLIB_XPATH);
+            
             if (!document.hasRootElement())
             {
                 root = new Element("web-app");
@@ -168,7 +175,21 @@ public class JetspeedWebApplicationRewriter
     
                 insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
                 changed = true;
-            }        
+            }
+            
+            if(portletTaglib == null)
+            {
+                Element taglib = new Element ("taglib");
+                Element taguri = (Element) new Element("taglib-uri").addContent("http://java.sun.com/portlet");
+                Element taglocation = (Element) new Element("taglib-location").addContent("/WEB-INF/portlet.tld");
+                
+                taglib.addContent(taguri);
+                taglib.addContent(taglocation);
+                
+                insertElementCorrectly(root, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
+                changed = true;
+                portletTaglibAdded = true;
+            }
         }
         catch (Exception e)
         {
@@ -249,4 +270,11 @@ public class JetspeedWebApplicationRewriter
     }
     
     
+    /**
+     * @return Returns the portletTaglibAdded.
+     */
+    public boolean isPortletTaglibAdded()
+    {
+        return portletTaglibAdded;
+    }
 }
