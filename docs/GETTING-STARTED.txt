@@ -40,6 +40,14 @@ Delete all of these lines from the jar creation section
     (this only needs to be done once)
 
      <Context path="/jetspeed" docBase="jetspeed" crossContext="true"/>
+     
+7.  Maven will download all necessary jars into it's repository as needed.  However, there are 2 jars that are not available via maven.
+	
+	JTA 1.0.1 B - This can be downloaded from http://java.sun.com/products/jta.  
+	Install the zip file into ${MAVEN_HOME}/repository/jta/jars as jta1.0.1.jar
+	
+	JDBC 2.0 SE - This can be downloaded from http://java.sun.com/products/jdbc/download.html.  Choose the JDBC(TM) 2.0 Optional Package.
+	Install the jar file into ${MAVEN_HOME}/repository/jdbc-se/jars as jdbc-se2.0.jar
 
 ---------------------------------------------
 Building - instructions as of May 26, 2003
