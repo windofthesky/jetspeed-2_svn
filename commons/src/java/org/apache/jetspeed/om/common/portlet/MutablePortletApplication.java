@@ -18,7 +18,6 @@ package org.apache.jetspeed.om.common.portlet;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
