@@ -25,6 +25,7 @@ package org.apache.jetspeed;
 public final class PortalReservedParameters
 {
     public final static String PORTLET = "portlet";
+    public final static String PORTLET_ENTITY = "entity";        
     public final static String PAGE = "page";
     public final static String PIPELINE = "pipeline";
 }

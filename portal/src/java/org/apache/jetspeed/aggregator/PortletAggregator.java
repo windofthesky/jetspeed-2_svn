@@ -59,6 +59,7 @@ public class PortletAggregator extends BaseCommonService implements Aggregator
         Fragment fragment = new FragmentImpl(); // TODO: fragment factory
         fragment.setType(Fragment.PORTLET);
         fragment.setName(context.getRequestParameter(PortalReservedParameters.PORTLET));
+        fragment.setId(context.getRequestParameter(PortalReservedParameters.PORTLET_ENTITY));            
         renderer.renderNow(fragment, context);
     }
 }

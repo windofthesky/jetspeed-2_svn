@@ -52,6 +52,6 @@ public class PortletValve extends AbstractValve
 
     public String toString()
     {
-        return "AggregatorValve";
+        return "PortletValve";
     }
 }
