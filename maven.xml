@@ -51,6 +51,13 @@
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}"
+               includes="cps/project.xml"
+               goals="jar:install"
+               banner="Build and Install the portlet commons services jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
                includes="plugin/project.xml"
                goals="jar:install"
                banner="Build and Install the Plugin jar"
@@ -70,13 +77,7 @@
                banner="Build and Install the container jar"
                postProcessing="false"
                ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}"
-               includes="cps/project.xml"
-               goals="jar:install"
-               banner="Build and Install the portlet commons services jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
+    
      <!-- Build war files -->
      <maven:reactor
                basedir="${basedir}"
