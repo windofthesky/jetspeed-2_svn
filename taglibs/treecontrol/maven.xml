@@ -16,8 +16,7 @@ limitations under the License.
 -->
 <project default="java:jar"
          xmlns:j="jelly:core" 
-         xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:define="jelly:define">
 
   <goal name="deployJar">
   	<attainGoal name="jar:install"/>

@@ -15,8 +15,7 @@ limitations under the License.
 -->
 <project default="java:jar"
          xmlns:j="jelly:core" 
-         xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:define="jelly:define">
 
   <!-- Target of maven test:single test -->
   <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 

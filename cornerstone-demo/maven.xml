@@ -15,8 +15,7 @@ limitations under the License.
 -->
 <project default="run-all-demos"
          xmlns:j="jelly:core" 
-         xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:define="jelly:define">
          
  <preGoal name="demo-1">
  	 <!-- Merge standard runtime and demo into same directory -->

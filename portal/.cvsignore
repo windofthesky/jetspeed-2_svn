@@ -4,3 +4,4 @@ target
 .classpath
 marshalled.psml
 jcoverage.ser
+junit*.properties

@@ -15,8 +15,7 @@ limitations under the License.
 -->
 <project default="full-build"
          xmlns:j="jelly:core" 
-         xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:define="jelly:define">
 
 <goal name="moveResources">
 	 <move todir="${basedir}/src/resources">

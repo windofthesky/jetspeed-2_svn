@@ -16,7 +16,6 @@ limitations under the License.
 <project default="java:jar"
          xmlns:j="jelly:core"
          xmlns:define="jelly:define"
-         xmlns:reactor="reactor"
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant"
          xmlns:util="jelly:util">
