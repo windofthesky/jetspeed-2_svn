@@ -459,12 +459,7 @@ public class OTMStoreImpl implements PersistenceStore
             }
         }
 
-        //        if(OTMConn.getTransaction() != tx.getWrappedTransaction())
-        //        {
-        //        	
-        //        	
-        //        	tx = new OTMTransactionImpl(OTMConn.getTransaction(), this);
-        //        }
+
 
         return tx;
     }

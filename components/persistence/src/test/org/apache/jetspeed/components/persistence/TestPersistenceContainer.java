@@ -60,6 +60,9 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentManager;
+import org.picocontainer.defaults.DefaultPicoContainer;
+import org.picocontainer.defaults.ObjectReference;
+import org.picocontainer.defaults.SimpleReference;
 
 /**
  * <p>
@@ -74,6 +77,7 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
 {
     private ComponentManager persistenceCm;
     private ComponentManager rdbmsCm;
+    private DefaultPicoContainer parent;
 
 
     /**
@@ -576,8 +580,13 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
         Reader persistenceScript = new InputStreamReader(cl.getResourceAsStream("org/apache/jetspeed/containers/persistence.container.groovy"));
         rdbmsCm = new ComponentManager(rdbmsScript, ComponentManager.GROOVY);
         persistenceCm = new ComponentManager(persistenceScript, ComponentManager.GROOVY);
-        rdbmsCm.getRootContainer();
-        persistenceCm.getRootContainer();
+        parent = new DefaultPicoContainer();
+        ObjectReference parentRef = new SimpleReference();
+        ObjectReference rdbmsRef = new SimpleReference();
+        ObjectReference persistenceRef = new SimpleReference();
+        parentRef.set(parent);
+        rdbmsCm.getContainerBuilder().buildContainer(rdbmsRef, parentRef, "TEST_PERSISTENCE");
+        persistenceCm.getContainerBuilder().buildContainer(persistenceRef, parentRef, "TEST_PERSISTENCE");
     }
 
    
