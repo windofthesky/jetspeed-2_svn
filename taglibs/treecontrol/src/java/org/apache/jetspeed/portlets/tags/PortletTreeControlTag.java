@@ -38,6 +38,19 @@ public class PortletTreeControlTag extends TreeControlTag
     private static final String PORTLET_REQUEST = "portlet_request";
     private static final String PORTLET_SESSION = "portlet_session";
     
+    /**
+     * The names of tree state images that we need.
+     * 
+     * Copied from parent
+     */
+    static final String IMAGE_HANDLE_DOWN_LAST =    "handledownlast.gif";
+    static final String IMAGE_HANDLE_DOWN_MIDDLE =  "handledownmiddle.gif";
+    static final String IMAGE_HANDLE_RIGHT_LAST =   "handlerightlast.gif";
+    static final String IMAGE_HANDLE_RIGHT_MIDDLE = "handlerightmiddle.gif";
+    static final String IMAGE_LINE_LAST =           "linelastnode.gif";
+    static final String IMAGE_LINE_MIDDLE =         "linemiddlenode.gif";
+    static final String IMAGE_LINE_VERTICAL =       "linevertical.gif";
+    
     public void setScope(String scope) {
         if (!PORTLET_REQUEST.equals(scope) &&
             !PORTLET_SESSION.equals(scope)
