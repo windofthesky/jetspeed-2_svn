@@ -117,7 +117,6 @@ public class ChangePasswordPortlet extends GenericServletPortlet
             {
                 try
                 {
-                    System.out.println("manager="+manager);
                     manager.setPassword(actionRequest.getUserPrincipal().getName(), currPassword, newPassword);
                 }
                 catch ( SecurityException e)
