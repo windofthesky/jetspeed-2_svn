@@ -46,6 +46,7 @@ public class TyrexJNDIComponent implements JNDIComponent
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory");
         rootJNDIContext = new MemoryContext(null);
+        rootJNDIContext.createSubcontext("jdbc");
         ctx = rootJNDIContext.createSubcontext("comp");
         ctx = ctx.createSubcontext("env");
         ctx = ctx.createSubcontext("jdbc");

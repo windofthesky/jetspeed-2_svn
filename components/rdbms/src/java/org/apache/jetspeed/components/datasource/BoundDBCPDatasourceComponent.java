@@ -76,6 +76,7 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
         try
         {
             jndi.bindObject("comp/env/jdbc/"+bindName, getDatasource());
+            jndi.bindObject("jdbc"+bindName, getDatasource());
         }
         catch (NamingException e)
         {
