@@ -1,0 +1,32 @@
+#macro (headerCell $body)
+  <td>
+    <b>     
+        $body
+    </b>
+  </td>
+#end
+
+#macro (entryCell $body)
+  <td>    
+      $body &nbsp;    
+  </td>
+#end
+
+#macro (form4ColumnCell $label $value $size $id)
+  <tr colspan="4" align="right">
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+    <td nowrap class="portlet-form-field-label" align="right">$!label:&nbsp;</td>
+    <td class="portlet-form-input-field" align="left">
+      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value">
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+  </tr>
+#end
+
+#macro (Preference $prefs $name)
+#set ($pall = $prefs.get($name))
+#foreach ($x in $pall)
+#set ($extraction = $x)
+#end
+$extraction
+#end

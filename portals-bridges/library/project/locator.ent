@@ -1,0 +1,4 @@
+<!-- Project dependencies -->
+<!ENTITY myfaces SYSTEM "file:./etc/project-dependencies/myfaces-deps.xml">
+<!ENTITY velocity SYSTEM "file:./etc/project-dependencies/velocity-deps.xml">
+<!ENTITY frameworks SYSTEM "file:./etc/project-dependencies/frameworks-deps.xml">
