@@ -259,6 +259,10 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 directError.close();
                 log.error("Error rendering JetspeedContainerServlet error page: " + e.toString(), e);
             }
+            finally
+            {
+                t.printStackTrace();
+            }
         }
 
     }
