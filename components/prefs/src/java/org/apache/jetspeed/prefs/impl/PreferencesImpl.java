@@ -335,9 +335,6 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public AbstractPreferences childSpi(String name)
     {
-        System.out.println("Child: " + name);
-        if (null != this.node)
-            System.out.println("Parent: " + this.node.getFullPath());
         return new PreferencesImpl(this, name, this.nodeType);
     }
 
