@@ -7,15 +7,20 @@
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/test"/>
     <classpathentry excluding="**/CVS*" kind="src" path="plugin/src/java"/>
-    <classpathentry kind="src" path="portal/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="portal/src/test"/>
     <classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
-    <classpathentry excluding="**/CVS*" kind="src" path="services/registry/src/java"/>
     <classpathentry kind="src" path="applications/pam/src/java"/>
-    <classpathentry kind="src" path="services/security/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="services/security/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="components/cm/src/test"/>
     <classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/java"/>
-    <classpathentry kind="src" path="components/jetspeed/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/jetspeed/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/persistence/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/persistence/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/rdbms/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/rdbms/src/test"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/registry/src/java"/>
+    <classpathentry excluding="**/CVS*" kind="src" path="components/registry/src/test"/>
     <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
     <classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
