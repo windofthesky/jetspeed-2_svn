@@ -55,6 +55,7 @@ package org.apache.jetspeed.cps.rewriter;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 
 
@@ -114,7 +115,7 @@ public class TestRewriterRules extends CPSTest
         assertNotNull("rewriter service is null", service);
         Rewriter basic = service.createRewriter();
         assertNotNull("basic rewriter is null", basic);
-        FileReader reader = new FileReader("./test/rewriter/test-rewriter-rules.xml");  
+        FileReader reader = getTestReader("test-rewriter-rules.xml");  
         Ruleset ruleset = service.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         RulesetRewriter rewriter = service.createRewriter(ruleset);
@@ -122,12 +123,14 @@ public class TestRewriterRules extends CPSTest
         assertNotNull("ruleset is null", rewriter.getRuleset());                        
     }
         
+
+            
     public void testRules()
               throws Exception
     { 
         RewriterService service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
         assertNotNull("rewriter service is null", service);
-        FileReader reader = new FileReader("./test/rewriter/test-rewriter-rules.xml");  
+        FileReader reader = getTestReader("test-rewriter-rules.xml");  
         Ruleset ruleset = service.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         assertEquals("ruleset id", "test-set-101", ruleset.getId());
@@ -227,16 +230,18 @@ public class TestRewriterRules extends CPSTest
         RewriterService service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
         assertNotNull("rewriter service is null", service);
         
-        FileReader reader = new FileReader("./test/rewriter/test-remove-rules.xml");  
+        FileReader reader = getTestReader("test-remove-rules.xml");  
+          
         Ruleset ruleset = service.loadRuleset(reader);
         reader.close();
         assertNotNull("ruleset is null", ruleset);
         RulesetRewriter rewriter = service.createRewriter(ruleset);
         assertNotNull("ruleset rewriter is null", rewriter);
         assertNotNull("ruleset is null", rewriter.getRuleset());
+
         
-        FileReader htmlReader = new FileReader("./test/rewriter/test-001.html");
-        FileWriter htmlWriter = new FileWriter("./test/rewriter/test-001-output.html");
+        FileReader htmlReader = getTestReader("test-001.html");
+        FileWriter htmlWriter = getTestWriter("test-001-output.html");
         
         ParserAdaptor adaptor = service.createParserAdaptor("text/html");
         rewriter.setBaseUrl("http://www.rewriter.com");
@@ -245,7 +250,7 @@ public class TestRewriterRules extends CPSTest
         htmlReader.close();    
 
         // validate result        
-        FileReader testReader = new FileReader("./test/rewriter/test-001-output.html");  
+        FileReader testReader = getTestReader("test-001-output.html");  
         UnitTestRewriter testRewriter = new UnitTestRewriter();
         testRewriter.parse(service.createParserAdaptor("text/html"), testReader);
         assertTrue("1st rewritten anchor: " + testRewriter.getAnchorValue("1"), 
@@ -262,6 +267,62 @@ public class TestRewriterRules extends CPSTest
                         testRewriter.getAnchorValue("6").equals("#INTERNAL"));
                         
         assertTrue("Paragraph text: " + testRewriter.getParagraph(), testRewriter.getParagraph().equals("This is a test"));
+    }
+
+    /**
+     * Gets a reader for a given filename in the test directory. 
+     * This unit test tries to work from within a Maven reactor or from
+     * within a normal Maven unit test task. This is a hack but I can't find a way to
+     * get Maven to change directories. I thought the basedir attribute would do so, but its 
+     * failing making me think its a bug in maven, or just my misunderstanding of reactors.
+     * TODO: deprecate this when I someone figures out the basedir attribute
+     * 
+     * @return A file reader to the test rules file
+     * @throws IOException
+     */
+    private FileReader getTestReader(String filename)
+        throws IOException
+    {
+        String cwd = System.getProperty("user.dir");
+        String path;
+        
+        if (cwd.endsWith("jakarta-jetspeed-2"))
+        {
+            path = "./cps/test/rewriter/" + filename;             
+        }
+        else
+        {
+            path = "./test/rewriter/" + filename;             
+        }
+        return new FileReader(path);
+    }
+
+    /**
+     * Gets a writer for a given filename in the test directory. 
+     * This unit test tries to work from within a Maven reactor or from
+     * within a normal Maven unit test task. This is a hack but I can't find a way to
+     * get Maven to change directories. I thought the basedir attribute would do so, but its 
+     * failing making me think its a bug in maven, or just my misunderstanding of reactors.
+     * TODO: deprecate this when I someone figures out the basedir attribute
+     * 
+     * @return A file reader to the test rules file
+     * @throws IOException
+     */
+    private FileWriter getTestWriter(String filename)
+        throws IOException
+    {
+        String cwd = System.getProperty("user.dir");
+        String path;
+        
+        if (cwd.endsWith("jakarta-jetspeed-2"))
+        {
+            path = "./cps/test/rewriter/" + filename;             
+        }
+        else
+        {
+            path = "./test/rewriter/" + filename;             
+        }
+        return new FileWriter(path);
     }
         
 }
