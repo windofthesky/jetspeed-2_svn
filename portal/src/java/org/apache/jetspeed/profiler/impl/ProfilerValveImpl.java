@@ -71,7 +71,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             }
             catch (IOException e1)
             {
-                log.error("Failed to invoke HttpServletReponse.sendError: "+e1.getMessage(), e);
+                log.error("Failed to invoke HttpServletReponse.sendError: "+e1.getMessage(), e1);
             }
         }       
     }
