@@ -6,17 +6,12 @@
  */
 package org.apache.jetspeed.cps.jndi;
 
-
-
 import javax.naming.Context;
 import javax.naming.NamingException;
-
 
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.components.jndi.*;
-
-
 
 /**
  * <p>
@@ -29,21 +24,27 @@ import org.apache.jetspeed.cps.components.jndi.*;
  */
 public class TyrexJNDIService extends BaseCommonService implements JNDIService
 {
-	protected JNDIComponent jndiComponent;
+    protected JNDIComponent jndiComponent;
 
     /**
      * @see org.apache.fulcrum.Service#init()
      */
     public void init() throws InitializationException
     {
-		try
+        if (!isInitialized())
         {
-            jndiComponent = new TyrexJNDIComponent();     
+
+            try
+            {
+                jndiComponent = new TyrexJNDIComponent();
+                jndiComponent.bindToCurrentThread();
+                setInit(true);
+            }
+            catch (NamingException e)
+            {
+                throw new InitializationException("jndi naming exception " + e.toString(), e);
+            }
         }
-        catch (NamingException e)
-        {
-            throw new InitializationException("jndi naming exception "+e.toString(), e);
-        }   
     }
 
     /**
@@ -51,15 +52,15 @@ public class TyrexJNDIService extends BaseCommonService implements JNDIService
      */
     public Context getRootContext()
     {
-		return jndiComponent.getRootContext();
+        return jndiComponent.getRootContext();
     }
 
     /**
      * @see org.apache.jetspeed.cps.jndi.JNDIService#bindToCurrentThread()
      */
     public void bindToCurrentThread() throws NamingException
-    {		 
-		jndiComponent.bindToCurrentThread();
+    {
+        jndiComponent.bindToCurrentThread();
     }
 
     /** 
