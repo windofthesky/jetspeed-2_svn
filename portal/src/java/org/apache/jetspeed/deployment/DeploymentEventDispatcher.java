@@ -104,7 +104,7 @@ public class DeploymentEventDispatcher
             }
             catch (DeploymentException e)
             {   
-            	log.error(e.toString());           	             
+            	log.error(e.toString(), e);           	             
                 event.setStatus(DeploymentEvent.STATUS_FAILED);
             }
     	}
