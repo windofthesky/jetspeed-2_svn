@@ -56,6 +56,11 @@ public class SessionNavigationalState
 
     static public final boolean SESSION_BASED = true;
     
+    public SessionNavigationalState()
+    {    
+        super();
+    }
+    
     public SessionNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
         super(context, nav);
