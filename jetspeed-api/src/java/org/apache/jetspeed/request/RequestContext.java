@@ -161,7 +161,10 @@ public interface RequestContext
     /**
      * Gets the Portal URL for the current request.
      * 
-     * @return The Portal URL object for the current request.
+     * @return The Portal URL object for the current request.  This method will never
+     * return a <code>null</code> value.
+     * @throws IllegalStateException if <code>portalUrl</code>
+     * has not been set or is null.
      */
     public PortalURL getPortalURL();
     

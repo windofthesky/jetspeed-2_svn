@@ -463,9 +463,22 @@ public class JetspeedRequestContext implements RequestContext
         this.requestPath = result;
         return this.requestPath;
     }
-
+    
+    /**
+     * 
+     * <p>
+     * getPortalURL
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#getPortalURL()
+     * @return
+     */
     public PortalURL getPortalURL()
     {
+        if(url == null)
+        {
+            throw new IllegalStateException("This RequestContext's portalUrl has not been and is null.");
+        }
         return url;
     }
 
