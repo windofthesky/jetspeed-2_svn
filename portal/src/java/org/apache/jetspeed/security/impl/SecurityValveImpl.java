@@ -16,7 +16,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,10 +24,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
@@ -41,9 +37,11 @@ import org.apache.jetspeed.security.UserPrincipal;
  * SecurityValve
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:rwatler@finali.com">Randy Walter </a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class SecurityValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.SecurityValve
+public class SecurityValveImpl extends AbstractSecurityValve implements SecurityValve
 {
     private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
     private Profiler profiler;
@@ -55,101 +53,86 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
         this.userMgr = userMgr;
     }
 
-    /**
-     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext,
-     *          org.apache.jetspeed.pipeline.valve.ValveContext)
-     */
-public void invoke(RequestContext request, ValveContext context) throws PipelineException
-    {
-
-            // initialize/validate security subject
-
-            // access request user principal if defined or default
-            // to profiler anonymous user
-            Principal userPrincipal = request.getRequest().getUserPrincipal();
-            if (userPrincipal == null)
-            {
-                userPrincipal = new UserPrincipalImpl(userMgr.getAnonymousUser());
-            }
-
-            // check for previously established session subject and
-            // invalidate if subject and current user principals do
-            // not match
-            HttpSession session = request.getRequest().getSession();
-            Subject subject = (Subject) session.getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
-            if (subject != null)
-            {
-                Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-                if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userPrincipal.getName()))
-                {
-                    subject = null;
-                }
-            }
-
-            // create new session subject for user principal if required
-            if (subject == null)
-            {
-                // attempt to get complete subject for user principal
-                // from user manager
-                try
-                {
-                    User user = userMgr.getUser(userPrincipal.getName());
-                    if ( user != null )
-                    {
-                        subject = user.getSubject();
-                    }
-                }
-                catch (SecurityException sex)
-                {
-                    subject = null;
-                }
-           
-                
-                // if subject not available, generate default subject using
-                // request or default profiler anonymous user principal
-                if (subject == null)
-                {
-                    Set principals = new HashSet();
-                    principals.add(userPrincipal);
-                    subject = new Subject(true, principals, new HashSet(), new HashSet());
-                }
-
-                // establish session subject
-                session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
-            }
-
-            // set request context subject
-            request.setSubject(subject);
-            
-            // Pass control to the next Valve in the Pipeline and execute under
-            // the current subject
-            final ValveContext vc = context;
-            final RequestContext rc = request;            
-            PipelineException pe = (PipelineException) Subject.doAsPrivileged(subject, new PrivilegedAction()
-            {
-                public Object run() 
-                {
-                     try
-                    {
-                        vc.invokeNext(rc);                 
-                        return null;
-                    }
-                    catch (PipelineException e)
-                    {
-                        return e;
-                    }                    
-                }
-            }, null);
-            
-            if(pe != null)
-            {
-                throw pe;
-            }       
-
-    }
     public String toString()
     {
         return "SecurityValve";
+    }
+    
+    /**
+     * 
+     * <p>
+     * getSubject
+     * </p>
+     * Check for previously established session subject and
+     * invalidate if subject and current user principals do
+     * not match
+     * @param request
+     * @return 
+     */
+    protected final Subject getSubject(RequestContext request)
+    {
+        HttpSession session = request.getRequest().getSession();
+        Principal userPrincipal = getUserPrincipal(request);
+        
+        Subject subject = getSubjectFromSession(request);
+        if (subject != null)
+        {
+            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(getUserPrincipal(request).getName()))
+            {
+                subject = null;
+            }
+        }
+        
+        // create new session subject for user principal if required
+        if (subject == null)
+        {
+            // attempt to get complete subject for user principal
+            // from user manager
+            try
+            {
+                User user = userMgr.getUser(userPrincipal.getName());
+                if ( user != null )
+                {
+                    subject = user.getSubject();
+                }
+            }
+            catch (SecurityException sex)
+            {
+                subject = null;
+            }       
+            
+            // if subject not available, generate default subject using
+            // request or default profiler anonymous user principal
+            if (subject == null)
+            {
+                Set principals = new HashSet();
+                principals.add(userPrincipal);
+                subject = new Subject(true, principals, new HashSet(), new HashSet());
+            }           
+        }
+        
+        return subject;
+    }
+    
+    /**
+     * 
+     * <p>
+     * getUserPrincipal
+     * </p>
+     * Aaccess request user principal if defined or default
+     * to profiler anonymous user
+     * @param request
+     * @return
+     */
+    protected final Principal getUserPrincipal(RequestContext request)
+    {
+        Principal userPrincipal = request.getRequest().getUserPrincipal();
+        if (userPrincipal == null)
+        {
+            userPrincipal = new UserPrincipalImpl(userMgr.getAnonymousUser());
+        }
+        return userPrincipal;
     }
 
 }
