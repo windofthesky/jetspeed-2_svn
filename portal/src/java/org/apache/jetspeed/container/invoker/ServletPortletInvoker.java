@@ -181,7 +181,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         {
             String message = "Failed to find Servlet context for Portlet Application: " + portletApplicationName;
             log.error(message);
-            throw new PortletException();
+            throw new PortletException(message);
         }
 
         RequestDispatcher dispatcher = appContext.getRequestDispatcher(servletMappingName);
