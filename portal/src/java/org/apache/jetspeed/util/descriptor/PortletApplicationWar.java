@@ -510,6 +510,12 @@ public class PortletApplicationWar
                 webXmlWriter.flush();
 
             }
+            
+            if(rewriter.isPortletTaglibAdded())
+            {
+                //add portlet tag lib to war
+                //warStruct.
+            }
 
         }
         catch (Exception e)
