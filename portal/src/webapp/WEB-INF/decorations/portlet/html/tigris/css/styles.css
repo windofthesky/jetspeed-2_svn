@@ -1,0 +1,359 @@
+/*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+
+.portlet-tigris .PTitleLeft
+{
+}
+
+.portlet-tigris .PTitle
+{
+    padding: 8px;
+    border: 1px solid #999999;
+    color: #990000;
+    background-color: #dddddd;
+
+    /**
+    Specify the height of the image used
+    else it will use the text height    
+    **/
+    height:10px;    
+    font-weight:bold;
+}
+ 
+.portlet-tigris .PTitleRight
+{
+}
+
+.portlet-tigris .PContentLeft
+{
+}
+
+.portlet-tigris .PContent
+{
+    padding: 2px;
+    overflow : scroll;
+
+}
+
+.portlet-tigris .PContentRight
+{
+}
+
+.portlet-tigris .PBottomLeft
+{
+}
+
+.portlet-tigris .PBottom
+{
+}
+
+.portlet-tigris .PBottomRight
+{
+}
+
+
+/* --------------------------------- */
+
+
+/* --------------------------------- */
+/* PLT.C.1 Links (Anchor)            */
+/* --------------------------------- */
+
+.portlet-tigris A:link, 
+.portlet-tigris A:visited {
+    text-decoration: none;
+}
+
+.portlet-tigris A:hover, 
+.portlet-tigris A:active {
+    text-decoration: underline;
+}
+
+
+
+/* --------------------------------- */
+/* PLT.C.2 Fonts                     */
+/* --------------------------------- */
+
+.portlet-tigris .portlet-font {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+    color: black;
+}
+.portlet-tigris .portlet-font-dim {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+    color: gray;
+}
+
+
+
+
+/* --------------------------------- */
+/* PLT.C.3 Messages                  */
+/* --------------------------------- */
+.portlet-tigris .portlet-msg-status {
+    /* TODO create status icon */
+    /*background: url(content/tigris/images/icon_status_sml.gif) no-repeat;*/
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.portlet-tigris .portlet-msg-info {
+    background: url(content/tigris/images/icon_info_sml.gif) no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.portlet-tigris .portlet-msg-error {
+    background: url(content/tigris/images/icon_error_sml.gif) no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.portlet-tigris .portlet-msg-alert {
+    background: url(content/tigris/images/icon_warning_sml.gif) no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.portlet-tigris .portlet-msg-success {
+    background: url(content/tigris/images/icon_success_sml.gif) no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+/* --------------------------------- */
+/* PLT.C.4 Sections                  */
+/* --------------------------------- */
+.portlet-tigris .portlet-section-header {
+    background-image: url(content/tigris/images/nw_maj_rond.gif);
+    background-repeat: no-repeat;
+    color: #fff;
+    background-color: #036;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: small;*/
+    padding: 5px;
+    margin-right: 2px;
+    margin-left: 2px;
+    clear: both;
+}
+
+.portlet-tigris .portlet-section-body {
+    background: #efefef;
+    border: none;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+}
+
+.portlet-tigris .portlet-section-alternate {
+    background: #ddd;
+    border: none;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+}
+
+.portlet-tigris .portlet-section-selected {
+    /* TODO : ex. change color */
+    background: #ffe;
+    border: none;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+    font-weight:bold;
+}
+
+.portlet-tigris .portlet-section-subheader {
+    background-image: url(content/tigris/images/nw_maj_rond.gif);
+    background-repeat: no-repeat;
+    color: #fff;
+    background-color: #888;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: small;*/
+    padding: 5px;
+    margin-right: 2px;
+    margin-left: 2px;
+    clear: both;
+}
+
+.portlet-tigris .portlet-section-footer {
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    background-color: #ddd;
+    background-image: url(content/tigris/images/sw_med_rond.gif);
+    color: #000;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    padding: 5px;
+    margin: .67em 2px;
+    margin-top: 0;
+}
+
+.portlet-tigris .portlet-section-text {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: small;*/
+    padding: 1em;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+/* --------------------------------- */
+/* PLT.C.5 Forms                     */
+/* --------------------------------- */
+.portlet-tigris .portlet-form-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-form-input-field {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-form-button {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-icon-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-dlg-icon-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-form-field-label {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-form-field {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus                     */
+/* --------------------------------- */
+.portlet-tigris .portlet-menu {
+    background: #efefef;
+    margin-bottom: 6px;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+.portlet-tigris .portlet-menu-item {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: blue;
+}
+
+.portlet-tigris .portlet-menu-item-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: blue;
+}
+
+.portlet-tigris .portlet-menu-item-hover {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #f30 !important;
+}
+
+.portlet-tigris .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.portlet-tigris .portlet-menu-cascade-item {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+}
+
+.portlet-tigris .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.portlet-tigris .portlet-menu-description {
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+    background: #ddd;
+    color: #555;
+    padding: 4px;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
