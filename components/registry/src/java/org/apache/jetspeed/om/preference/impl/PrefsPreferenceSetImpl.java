@@ -113,6 +113,11 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
                 return null;
             }
         }
+        catch (IllegalStateException ise)
+        {
+            // node has been removed
+            return null;
+        }        
         catch (BackingStoreException e)
         {
             String msg = "Preference backing store failed: " + e.toString();
