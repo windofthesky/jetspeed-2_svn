@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>Portlet Application Manager</title>
-  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="pam-2" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="13" type="portlet" name="pam::PortletApplicationBrowser" decorator="minty-blue">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

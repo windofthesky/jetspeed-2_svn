@@ -20,7 +20,7 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>Welcome to Jetspeed 2</title>
-  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="dp-1" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

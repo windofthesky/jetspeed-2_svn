@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="jetspeed"
   />
   <title>Locale Selector</title>
-  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="ls-2" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="ls-1" type="portlet" name="localeselector::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

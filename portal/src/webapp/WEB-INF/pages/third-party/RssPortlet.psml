@@ -22,7 +22,7 @@ limitations under the License.
   />
   
    <title>Plumtree RSS Portlet</title>
-  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="rss-2" type="layout" name="jetspeed::VelocityTwoColumns">
      <fragment id="rrsPortlet1" type="portlet" name="RssPortlet::RssPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />

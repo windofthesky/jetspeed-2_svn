@@ -21,7 +21,7 @@ limitations under the License.
   />
 
   <title>Test Suite Page</title>
-  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="ts-0" type="layout" name="jetspeed::VelocityTwoColumns">
     <fragment id="ts-1" type="portlet" name="testsuite::TestPortlet1">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
