@@ -78,8 +78,11 @@ limitations under the License.
        #foreach($f in $entry)       
         <tr>
          <td width="100%">
-            #set($row = $f.getPropertyValue($layoutType, "row") + 0)
-            #set($col = $f.getPropertyValue($layoutType, "column") + 0)
+            #set($row = $f.getPropertyValue($layoutType, "row"))
+            #set($col = $f.getPropertyValue($layoutType, "column"))
+            #set($temp = 0) ##create temp Integer to parse strings
+	        #set($row = $temp.parseInt($row))
+            #set($col = $temp.parseInt($col))
             #if($editing)<div id="_$f.id">        
             <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
               <div id="_$f.id_toolBox"  >
