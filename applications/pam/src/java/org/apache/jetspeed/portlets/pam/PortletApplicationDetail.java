@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -46,6 +47,9 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.pluto.om.common.SecurityRoleRef;
+import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * This portlet is a browser over all the portlet applications in the system.
@@ -222,6 +226,10 @@ public class PortletApplicationDetail extends ServletPortlet
                 else if(action.endsWith("security"))
                 {
                     processSecurity(actionRequest, actionResponse, pa, pdef, action);
+                }
+                else if(action.endsWith("content_type"))
+                {
+                    processContentType(actionRequest, actionResponse, pa, pdef, action);
                 }
             }
         }
@@ -736,7 +744,14 @@ public class PortletApplicationDetail extends ServletPortlet
             String[] securityIds = actionRequest.getParameterValues("security_remove_id");
             if(securityIds != null)
             {
-                Iterator securityIter = portlet.getInitSecurityRoleRefSet().iterator();
+                for(int i=0; i<securityIds.length; i++)
+                {
+                    String id = securityIds[i];
+                    SecurityRoleRef secRef = portlet.getInitSecurityRoleRefSet().get(id);
+                    portlet.getInitSecurityRoleRefSet().remove(secRef);
+                }
+                /*
+                Iterator securityIter = portlet.getInitSecurityRoleRefSet()..iterator();
                 while (securityIter.hasNext())
                 {
                     SecurityRoleRefComposite secRef = (SecurityRoleRefComposite) securityIter.next();
@@ -750,9 +765,84 @@ public class PortletApplicationDetail extends ServletPortlet
                         }
                     }
                 }
+                */
             }
             
             registry.getPersistenceStore().getTransaction().commit();
+        }
+    }
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param pdef
+     * @param action
+     */
+    private void processContentType(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    {
+        if(action.equals("add_content_type"))
+        {
+            String contentType = actionRequest.getParameter("content_type");
+            if(contentType != null)
+            {
+	            registry.getPersistenceStore().getTransaction().begin();
+	            
+	            ContentTypeImpl contentTypeImpl = new ContentTypeImpl();
+	            contentTypeImpl.setContentType(contentType);
+	            
+	            String[] modes = actionRequest.getParameterValues("mode");
+	            if(modes != null)
+	            {
+	                for(int i=0; i<modes.length; i++)
+	                {
+	                    String mode = modes[i];
+	                    contentTypeImpl.addPortletMode(mode);
+	                }
+	            }
+	            
+	            
+	            String customModes = actionRequest.getParameter("custom_modes");
+	            StringTokenizer tok = new StringTokenizer(customModes, ",");
+	            while (tok.hasMoreTokens())
+	            {
+	                contentTypeImpl.addPortletMode(tok.nextToken());
+	            }
+	            
+	            portlet.addContentType(contentTypeImpl);
+	            
+	            registry.getPersistenceStore().getTransaction().commit();
+            }
+        }
+        else if(action.equals("edit_content_type"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("remove_content_type"))
+        {
+            String[] contentIds = actionRequest.getParameterValues("content_type_remove_id");
+            if(contentIds != null)
+            {
+                registry.getPersistenceStore().getTransaction().begin();
+                
+                Iterator contentIter = portlet.getContentTypeSet().iterator();
+                while (contentIter.hasNext())
+                {
+                    ContentType contentType = (ContentType) contentIter.next();
+                    for(int i=0; i<contentIds.length; i++)
+                    {
+                        String id = contentIds[i];
+	                    if(contentType.getContentType().equals(id))
+	                    {
+	                        contentIter.remove();
+	                        break;
+	                    }
+                    }
+                }
+                
+                registry.getPersistenceStore().getTransaction().commit();
+            }
         }
     }
 }

@@ -386,7 +386,7 @@ limitations under the License.
 			<tr>
 				<th>&nbsp;</th>
 				<th><fmt:message key="pam.details.role_name"/></th>
-				<th><fmt:message key="pam.details_role_link"/></th>
+				<th><fmt:message key="pam.details.role_link"/></th>
 			</tr>
 		<c:forEach var="therole" items="${roleSet.innerCollection}">
 			<tr>
@@ -443,13 +443,85 @@ limitations under the License.
 
 <c:if test="${selectedPortletTab.id == 'pd_content_type'}">
 	<c:set var="contentTypeSet" value="${selectedPDef.contentTypeSet}"/>
-	<c:forEach var="contentType" items="${contentTypeSet.innerCollection}">
-		<c:out value="${contentType.contentType}"/> | 
-		
-		<c:forEach var="mode" items="${contentType.portletModes}">
-			<c:out value="${mode}"/>, 
+	
+	<portlet:actionURL var="edit_content_type_link" >
+    </portlet:actionURL>
+
+	<c:if test="${! empty contentTypeSet.innerCollection}">
+	<form action="<c:out value="${edit_content_type_link}"/>">
+		<input type="hidden" name="portlet_action" value=""/>
+		<table border="1">
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="pam.details.content_type"/></th>
+				<td><fmt:message key="pam.details.modes"/></th>
+			</tr>
+		<c:forEach var="contentType" items="${contentTypeSet.innerCollection}">
+			<tr>
+				<td>
+					<input type="checkbox" name="content_type_remove_id" value="<c:out value="${contentType.contentType}"/>"/>
+				</td>
+				<td>
+					
+					<c:out value="${contentType.contentType}"/>
+				</td>
+				<td>			
+					<c:forEach var="mode" items="${contentType.portletModes}">
+						<c:out value="${mode}"/>, 
+					</c:forEach>
+				</td>			
+			</tr>
 		</c:forEach>
+		</table>
 		
-		<br />
-	</c:forEach>
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet.edit_content_type'"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_content_type'"/>
+	</form>
+	</c:if>
+	
+	<form action="<c:out value="${edit_content_type_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.add_content_type"/>
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.content_type"/>
+				</td>
+				<td>
+					<%--TODO:  this could be a select box--%>
+					<input type="text" name="content_type" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.content_type.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.portlet_mode"/>
+				</td>
+				<td>
+					<select name="mode" multiple="true">
+						<option value="view"><fmt:message key="pam.details.porltet_mode.view"/></option>
+						<option value="edit"><fmt:message key="pam.details.porltet_mode.edit"/></option>
+						<option value="help"><fmt:message key="pam.details.porltet_mode.help"/></option>
+					</select>
+				</td>
+				<td>
+					<fmt:message key="pam.details.portlet_mode.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.custom_mode"/>
+				</td>
+				<td>
+					<%--TODO:  this could be a select box--%>
+					<input type="text" name="custom_modes" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.custom_modes.description"/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="pam.details.add_content_type"/>"/>
+	</form>
 </c:if>
