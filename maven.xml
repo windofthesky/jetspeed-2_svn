@@ -57,6 +57,13 @@ limitations under the License.
 
     <!-- Build jars -->
     <maven:reactor
+               basedir="${basedir}/jetspeed-api"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the portlet commons services jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/portlet-api"
                includes="project.xml"
                goals="jar:install"
