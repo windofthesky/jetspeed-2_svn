@@ -126,163 +126,37 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}"
                includes="**/project.xml"
-               excludes="maven-plugin/**,cornerstone-jmx/**,cornerstone-jmx-demo/**"
+               excludes="maven-plugin/**,cornerstone-jmx/**,cornerstone-jmx-demo/**,layout-portlets/**,applications/**,applications/**/**"
                goals="jar:install"
                banner="Build and Install all Jetspeed 2 jars"
                postProcessing="false"
                ignoreFailures="false"/>
   </goal>
   
+  <goal name ="jetspeed2:war:install">
+    <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml,applications/**/project.xml,layout-portlets/project.xml"
+               excludes="applications/project.xml"
+               goals="war:install"
+               banner="Build and Install all Jetspeed 2 wars"
+               postProcessing="false"
+               ignoreFailures="false"/>
+  </goal>
   
+      
    <goal name="allBuild"
         description="Build all jars and war">
+        
     <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
   	<attainGoal name="db.create.test"/>
   	
-    <!-- Build jars -->
-    <maven:reactor
-               basedir="${basedir}/portlet-api"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Portlet API jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/portals-bridges/common"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Portals Bridges common jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/portals-bridges/struts"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Portals Bridges Struts jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/portals-bridges/myfaces"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the Portals Bridges MyFaces jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/jetspeed-api"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the portlet commons services jar"
-               postProcessing="false"
-               ignoreFailures="false"/>               
-    <maven:reactor
-               basedir="${basedir}/commons"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the common jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
-               basedir="${basedir}/content-server"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the content server jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
+    <!-- Build jars files-->
+    <attainGoal name="jetspeed2:jar:install"/>  
 
-    <maven:reactor
-               basedir="${basedir}"
-               includes="components/**/project.xml"
-               goals="jar:install"
-               banner="Build and Install the Misc. Components jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
-    <maven:reactor
-               basedir="${basedir}/cps"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the portlet commons services jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-     <maven:reactor
-               basedir="${basedir}/taglibs"
-               includes="project.xml"
-               goals="allBuild"
-               banner="Build and Install the Portlet Taglibs"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    
-
-     <!-- Build war files -->
-     <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="war:install"
-               banner="Build and Install the Portlet WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
-     <maven:reactor
-               basedir="${basedir}/applications/demo"
-               includes="project.xml"
-               excludes="applications/project.xml"
-               goals="war:install"
-               banner="Build and Install the Demo application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
-     <maven:reactor
-               basedir="${basedir}/applications/struts-demo"
-               includes="project.xml"
-               goals="war:install"
-               banner="Build and Install the Struts Demo application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-               
-     <maven:reactor
-               basedir="${basedir}/applications/jsf-demo"
-               includes="project.xml"
-               goals="war:install"
-               banner="Build and Install the JSF Demo application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-     
-     <maven:reactor
-               basedir="${basedir}/applications/security"
-               includes="project.xml"
-               goals="war:install"
-               banner="Build and Install the Security application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
-
-     <maven:reactor
-               basedir="${basedir}/applications/pam"
-               includes="project.xml"
-               excludes="applications/project.xml"
-               goals="war:install"
-               banner="Build and Install the PAM application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>               
-                     
-     <maven:reactor
-               basedir="${basedir}/layout-portlets"
-               includes="project.xml"
-               goals="war"
-               banner="Building layout portlets WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
-
-     <maven:reactor
-               basedir="${basedir}/applications/localeselector"
-               includes="project.xml"
-               excludes="applications/project.xml"
-               goals="war:install"
-               banner="Build and Install the Locale Selector WAR"
-               postProcessing="false"
-               ignoreFailures="false"/>
+    <!-- Build war files -->
+    <attainGoal name="jetspeed2:war:install"/>  
      
     <!-- build jetspeed 2 plugin -->
     <maven:reactor
@@ -293,27 +167,9 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
                
-    <maven:reactor
-               basedir="${basedir}/applications/php"
-               includes="project.xml"
-               excludes="applications/project.xml"
-               goals="war:install"
-               banner="Build and Install the PHP application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/> 
-               
-    <maven:reactor
-               basedir="${basedir}/applications/perl"
-               includes="project.xml"
-               excludes="applications/project.xml"
-               goals="war:install"
-               banner="Build and Install the PERL application WAR"
-               postProcessing="false"
-               ignoreFailures="false"/> 
-               
-
-          <attainGoal name="copy.shared.deps" />
-          <attainGoal name="check.patch.tomcat5.jaas.realm"/>
+     <!-- Dependency copying -->
+     <attainGoal name="copy.shared.deps" />
+     <attainGoal name="check.patch.tomcat5.jaas.realm"/>
   </goal>
 
   <goal name="copy.shared.deps">
