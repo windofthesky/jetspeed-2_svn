@@ -35,7 +35,7 @@ import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer;
-import org.apache.jetspeed.prefs.PreferencesComponent;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
@@ -120,7 +120,7 @@ public class PreferencesImpl extends AbstractPreferences
 
         if (log.isDebugEnabled())
             log.debug("Constructing node: " + nodeName);
-        PreferencesComponent prefComponent = PreferencesComponentImpl.prefComponent;
+        PreferencesProvider prefComponent = PreferencesProviderImpl.prefComponent;
         this.storeContainer = prefComponent.getStoreContainer();
         this.jetspeedStoreName = prefComponent.getStoreKeyName();
         this.commonQueries = new CommonQueries(storeContainer, jetspeedStoreName);

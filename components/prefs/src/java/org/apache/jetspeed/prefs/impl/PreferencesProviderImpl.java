@@ -14,18 +14,18 @@
  */
 package org.apache.jetspeed.prefs.impl;
 
-import org.apache.jetspeed.prefs.PreferencesComponent;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
-public class PreferencesComponentImpl implements PreferencesComponent
+public class PreferencesProviderImpl implements PreferencesProvider
 {
 
     /** The {@link PreferencesComponent} instance. */
-    static PreferencesComponent prefComponent;
+    static PreferencesProvider prefComponent;
     
     /** The persistence store container. */
     private PersistenceStoreContainer storeContainer;
@@ -35,13 +35,14 @@ public class PreferencesComponentImpl implements PreferencesComponent
 
     /**
      * <p>Constructor providing the {@link PersistenceStoreContainer} 
-     * and store key name.</p>
+     * and store key name and the {@link java.util.prefs.PreferencesFactory}.</p>
      */
-    public PreferencesComponentImpl(PersistenceStoreContainer storeContainer, String storeKeyName)
+    public PreferencesProviderImpl(PersistenceStoreContainer storeContainer, String storeKeyName, String prefsFactoryImpl)
     {
         this.storeKeyName = storeKeyName;
         this.storeContainer = storeContainer;
-        PreferencesComponentImpl.prefComponent = this;
+        System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
+        PreferencesProviderImpl.prefComponent = this;
 
     }
 

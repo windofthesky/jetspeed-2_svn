@@ -19,8 +19,8 @@ import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
 
 import org.apache.jetspeed.prefs.PropertyManager
 import org.apache.jetspeed.prefs.impl.PropertyManagerImpl
-import org.apache.jetspeed.prefs.PreferencesComponent
-import org.apache.jetspeed.prefs.impl.PreferencesComponentImpl
+import org.apache.jetspeed.prefs.PreferencesProvider
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
 
 import java.io.File
 
@@ -61,7 +61,7 @@ pContainer.registerComponent(ca)
 
 container.registerComponentInstance(PersistenceStoreContainer, pContainer);
 
-container.registerComponentInstance(PreferencesComponent, new PreferencesComponentImpl(pContainer, "jetspeed"))
+container.registerComponentInstance(PreferencesProvider, new PreferencesProviderImpl(pContainer, "jetspeed", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"))
 
 //
 // Property Manager
