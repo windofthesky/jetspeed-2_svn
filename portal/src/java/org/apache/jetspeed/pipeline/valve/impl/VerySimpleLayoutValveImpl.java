@@ -53,9 +53,12 @@
  */
 package org.apache.jetspeed.pipeline.valve.impl;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Stack;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -106,7 +109,28 @@ public class VerySimpleLayoutValveImpl extends AbstractValve implements LayoutVa
         }
         catch (Exception e)
         {
-            log.error("VerySimpleLayout: Unable to include layout header.  Layout not processed", e);
+            try
+            {
+                log.error("VerySimpleLayout: Unable to include layout header.  Layout not processed", e);
+                PrintWriter pw = request.getResponse().getWriter();
+                pw.write("VerySimpleLayoutFailed failed to include servlet resources. (details below) <br/>");
+                pw.write("Exception: " + e.getClass().getName() + " <br/>");
+                pw.write("Message: " + e.getMessage() + " <br/>");
+                writeStackTrace(e.getStackTrace(), pw);
+
+                if (e instanceof ServletException && ((ServletException) e).getRootCause() != null)
+                {
+                    Throwable rootCause = ((ServletException) e).getRootCause();
+                    pw.write("Root Cause: " + rootCause.getClass().getName() + " <br/>");
+                    pw.write("Message: " + rootCause.getMessage() + " <br/>");
+                    writeStackTrace(rootCause.getStackTrace(), pw);
+                }
+            }
+            catch (IOException e1)
+            {
+                // don't worry
+            }
+
         }
         finally
         {
@@ -121,6 +145,15 @@ public class VerySimpleLayoutValveImpl extends AbstractValve implements LayoutVa
     public String toString()
     {
         return "VerySimpleLayoutValveImpl";
+    }
+
+    protected static final void writeStackTrace(StackTraceElement[] traceArray, PrintWriter pw)
+    {
+        pw.write("<p>Stack Trace: </p>");
+        for (int i = 0; i < traceArray.length; i++)
+        {
+            pw.write("&nbsp;&nbsp;&nbsp;" + traceArray[i].toString() + "<br />");
+        }
     }
 
 }
