@@ -35,14 +35,19 @@ container = new DefaultPicoContainer()
 
 
 //
-// Navigational State component
+// Navigational State component: Pluto Path
 //
 // navigationKeys: prefix, action, mode, state, renderparam, pid, prev_mode, prev_state, key_delim
-// navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
-navigationKeys = "_,a,m,s,r,i,pm,ps,:"
+navigationKeys = "_,ac,md,st,rp,pid,pm,ps,:"
+navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
+urlClass = "org.apache.jetspeed.container.url.impl.PathPortalURL"
+container.registerComponentImplementation("PathNavs", JetspeedNavigationalStateComponent,
+               new Parameter[] {new ConstantParameter(navStateClass), 
+                                new ConstantParameter(urlClass), 
+                                new ConstantParameter(navigationKeys)} )
 
-// navStateClass = "org.apache.jetspeed.container.session.impl.PathNavigationalState"
-// urlClass = "org.apache.jetspeed.container.url.impl.PathPortalURL"
+
+navigationKeys = "_,a,m,s,r,i,pm,ps,:"
 navStateClass = "org.apache.jetspeed.container.session.impl.SessionNavigationalState"
 urlClass = "org.apache.jetspeed.container.url.impl.SessionPortalURL"
 container.registerComponentImplementation(NavigationalStateComponent, JetspeedNavigationalStateComponent,
@@ -57,6 +62,12 @@ requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
 container.registerComponentImplementation(RequestContextComponent, JetspeedRequestContextComponent, 
     new Parameter[] {new ComponentParameter(NavigationalStateComponent),
                      new ConstantParameter(requestContextClass)} )
+
+requestContextClass = "org.apache.jetspeed.request.JetspeedRequestContext"
+container.registerComponentImplementation("PlutoRC", JetspeedRequestContextComponent, 
+    new Parameter[] {new ComponentParameter("PathNavs"),
+                     new ConstantParameter(requestContextClass)} )
+
 
 return container
 

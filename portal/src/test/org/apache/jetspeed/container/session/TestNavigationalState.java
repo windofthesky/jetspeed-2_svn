@@ -28,6 +28,7 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -51,8 +52,10 @@ import com.mockrunner.mock.web.MockServletConfig;
 public class TestNavigationalState extends AbstractComponentAwareTestCase 
 {
     private MutablePicoContainer container;
-    private NavigationalStateComponent navState;
-    private RequestContextComponent rcc;
+    private NavigationalStateComponent navSession;
+    private NavigationalStateComponent navPluto;    
+    private RequestContextComponent rcSession;
+    private RequestContextComponent rcPluto;
     
     /**
      * Defines the testcase name for JUnit.
@@ -79,8 +82,12 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         super.setUp();
         container = (MutablePicoContainer) getContainer();
         assertNotNull("container is null", container);
-        navState = (NavigationalStateComponent) container.getComponentInstance(NavigationalStateComponent.class);        
-        rcc = (RequestContextComponent) container.getComponentInstance(RequestContextComponent.class);        
+        navSession = (NavigationalStateComponent) container.getComponentInstance(NavigationalStateComponent.class);
+        navPluto = (NavigationalStateComponent) container.getComponentInstance("PathNavs");        
+        
+        rcSession = (RequestContextComponent) container.getComponentInstance(RequestContextComponent.class);
+        rcPluto = (RequestContextComponent) container.getComponentInstance("PlutoRC");        
+        
     }
 
     /**
@@ -96,100 +103,95 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
         return suite;
     }
 
-    public void xtestModeAndState()
+    public void testAllComponents()
+        throws Exception
     {        
         System.out.println("Starting Navs Mode and State test");
-        assertNotNull("nav state component is null", navState);
-        assertNotNull("request context component is null", rcc);
+        assertNotNull("nav state component is null", navPluto);
+        assertNotNull("pluto nav state component is null", navPluto);        
+        assertNotNull("request context component is null", rcSession);
+        assertNotNull("pathrequest context component is null", rcPluto);
 
+        // general navigational state test
+        navigationTest(navSession, rcSession);
+        navigationTest(navPluto, rcPluto);
+        
+        // URL tests
+        String result = urlTest(navPluto, rcPluto);
+        assertEquals("Session URL not equal", "http://www.sporteportal.com/jetspeed/portal/_st_33/minimized/_ac_33/AC/_rp_33_test/1_one/_md_33/edit", result);
+        result = urlTest(navSession, rcSession);
+        assertEquals("Session URL not equal", "http://www.sporteportal.com/jetspeed/portal/_a_33/A/_s_33/minimized/_m_33/edit/_r_33_test/1_one", result);
+        
+        System.out.println("Ending Navs Mode and State test");
+    }
+
+    private void navigationTest(NavigationalStateComponent component, RequestContextComponent rc)
+    throws Exception
+    {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpSession session = new MockHttpSession();
         HttpServletResponse response = new MockHttpServletResponse();        
         ServletConfig config = new MockServletConfig();
         request.setSession(session);
         request.setPathInfo("/stuff/");
-        RequestContext context = rcc.create(
-                                                (HttpServletRequest)request, 
-                                                response, 
-                                                config);
+        RequestContext context = rc.create(
+                                           (HttpServletRequest)request, 
+                                            response, 
+                                            config);
                 
-        PortletWindow window = new PortletWindowImpl("33");
+        PortletWindow window = new PortletWindowImpl("111");
         PortletWindow window2 = new PortletWindowImpl("222");
+        PortletWindow window3 = new PortletWindowImpl("333");
         
-        NavigationalState nav = navState.create(context);
+        NavigationalState nav = component.create(context);
         nav.setState(window, WindowState.MAXIMIZED);
         nav.setMode(window, PortletMode.HELP);
+        nav.setMode(window2, PortletMode.EDIT);
         
+        // TODO: test prev mode, prev state
+                
         // Check that they come out correctly
         assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.HELP));
         assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
-        assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.VIEW));
-        System.out.println("Ending Navs Mode and State test");
+        assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.EDIT));
+        assertTrue("window mode is not set", nav.getMode(window3).equals(PortletMode.VIEW));
+        
     }
-
-    public void testNavParams()
+    public String urlTest(NavigationalStateComponent component, RequestContextComponent rc)
+    throws Exception
     {        
-        System.out.println("Starting Nav Params test");
+        String [] values = 
+        {
+                "one"
+        };
+        
         MockServletConfig config = new MockServletConfig();
-        //config.
-        
-        /*
-        assertNotNull("nav state component is null", navState);
-        assertNotNull("request context component is null", rcc);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpSession session = new MockHttpSession();
-        HttpServletResponse response = new MockHttpServletResponse();        
-        ServletConfig config = new MockServletConfig();
-        request.setSession(session);
-        RequestContext context = rcc.create(
-                                                (HttpServletRequest)request, 
-                                                response, 
-                                                config);
-        request.setPathInfo(buildPath(context, window)));
-                
-        PortletWindow window = new PortletWindowImpl("33");
-        PortletWindow window2 = new PortletWindowImpl("222");
-        
-        NavigationalState nav = navState.create(context);
-        nav.setState(window, WindowState.MAXIMIZED);
-        nav.setMode(window, PortletMode.HELP);
-        
-        // Check that they come out correctly
-        assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.HELP));
-        assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
-        assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.VIEW));
-        */
-        
-        System.out.println("Ending nav state test");
-        //String result = buildPath(config);
-        //System.out.println("result = " + result);
-    }
-    
-    private String buildPath(ServletConfig config)
-    {       
-        Map params = new HashMap();
-        params.put("parm-1", "value-1");
-        params.put("parm-2", "value-2");
         
         MockHttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
         request.setServerName("www.sporteportal.com");
         request.setScheme("http");
-        RequestContext context = rcc.create(
+        request.setContextPath("/jetspeed");
+        request.setServletPath("/portal");
+        
+        RequestContext context = rc.create(
                 (HttpServletRequest)request, 
                 response, 
                 config);
-        NavigationalState nav = navState.create(context);
-        assertNotNull("nav is null", nav);
+        PortalURL url = component.createURL(context);
+        assertNotNull("URL is null", url);
         
         PortletWindow window = new PortletWindowImpl("33");
+        url.setAction(window);
+        url.setMode(window, PortletMode.EDIT);
+        url.setState(window, WindowState.MINIMIZED);
+        url.setRenderParam(window, "test", values);
         
-        PortletURLProvider provider = new PortletURLProviderImpl(context, nav, window);
-        provider.setAction();
-        provider.setPortletMode(PortletMode.EDIT);
-        provider.setWindowState(WindowState.MINIMIZED);
-        provider.setParameters(params);
-        return provider.toString();
+        // CANT TEST WITHOUT SETTING UP DATABASE
+        // PortletWindow target = url.getPortletWindowOfAction();
+        //assertNotNull("target window is null", target);
+        //assertEquals("target window should equal window 33", target.getId(), "33");
+        System.out.println("URL = " + url.toString());
+        return url.toString();        
     }
 }
