@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jdo SYSTEM "file:/javax/jdo/jdo.dtd">
+<jdo>
+  <package name="org.apache.jetspeed.om.preference.impl">
+    <class name="AbstractPreference">
+      <field name="log" persistence-modifier="persistent"/>
+      <field name="name" persistence-modifier="persistent">
+        <extension vendor-name="jpox" key="length" value="max 64"/>
+        <extension vendor-name="jpox" key="column-name" value="NAME"/>
+      </field>
+      <field name="readOnly" persistence-modifier="persistent">
+        <extension vendor-name="jpox" key="column-name" value="READ_ONLY"/>
+      </field>
+      <field name="id" primary-key="true" persistence-modifier="persistent">
+        <extension vendor-name="jpox" key="column-name" value="ID"/>
+      </field>
+      <field name="values" persistence-modifier="persistent">
+        <collection element-type="org.apache.jetspeed.om.common.preference.PreferenceValue"/>
+        <extension vendor-name="jpox" key="clear-on-delete" value="true"/>
+      </field>
+      <field name="descriptions" persistence-modifier="persistent">
+        <collection element-type="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"/>
+        <extension vendor-name="jpox" key="clear-on-delete" value="true"/>
+      </field>
+      <field name="descCollWrapper" persistence-modifier="persistent"/>
+      <extension vendor-name="jpox" key="table-name" value="PORTLET_PREFERENCE"/>
+    </class>
+    <class name="DefaultPreferenceImpl" persistence-capable-superclass="org.apache.jetspeed.om.preference.impl.AbstractPreference">
+      <field name="CLASS_NAME" persistence-modifier="persistent"/>
+      <field name="ojbConcreteClass" persistence-modifier="persistent"/>
+    </class>
+    <class name="PreferenceValueImpl">
+      <field name="value" persistence-modifier="persistent">
+        <extension vendor-name="jpox" key="length" value="max 128"/>
+        <extension vendor-name="jpox" key="column-name" value="VALUE"/>
+      </field>
+      <field name="id" primary-key="true" persistence-modifier="persistent">
+        <extension vendor-name="jpox" key="column-name" value="ID"/>
+      </field>
+    </class>
+  </package>
+</jdo>
