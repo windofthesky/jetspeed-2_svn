@@ -27,8 +27,39 @@ import org.apache.portals.bridges.struts.StrutsPortletURL;
  */
 public class LinkTag extends org.apache.struts.taglib.html.LinkTag 
 {
+    /**
+     * Boolean attribute indicating of a RenderURL or ActionURL must be generated.
+     * Default (null) or true generates a RenderURL, otherwise an ActionURL.
+     */
+    protected String renderURL = null;
+        
+    public String getRenderURL()
+    {
+        return renderURL;
+    }
+    public void setRenderURL(String renderURL)
+    {
+        this.renderURL = renderURL;
+    }
+    
     protected String calculateURL() throws JspException 
     {
-    	return StrutsPortletURL.createActionURL(pageContext.getRequest(),super.calculateURL()).toString();
+        if ( renderURL == null || !renderURL.equalsIgnoreCase("true") )
+        {
+            return StrutsPortletURL.createActionURL(pageContext.getRequest(),super.calculateURL()).toString();
+        }
+        else
+        {
+            return StrutsPortletURL.createRenderURL(pageContext.getRequest(),super.calculateURL()).toString();
+        }
+    }
+    
+    /**
+     * Release any acquired resources.
+     */
+    public void release() {
+
+        super.release();
+        renderURL = null;
     }
 }
