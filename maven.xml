@@ -41,8 +41,8 @@ limitations under the License.
         >
     <maven:reactor
                basedir="${basedir}"
-               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml,layout-portlets/project.xml,*maven-plugin/project.xml"
-               excludes="applications/project.xml,cornerstone-demo/project.xml,maven-plugin/project.xml"
+               includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,struts-portlet/*/project.xml,layout-portlets/project.xml,maven-plugin/project.xml"
+               excludes="applications/project.xml,cornerstone-demo/project.xml"
                goals="clean"
                banner="Cleaning"
                ignoreFailures="true"/>
@@ -235,7 +235,7 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
      
-         <!-- build jetspeed 2 plugin -->
+    <!-- build jetspeed 2 plugin -->
     <maven:reactor
                basedir="${basedir}/maven-plugin"
                includes="project.xml"
