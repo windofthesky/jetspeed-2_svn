@@ -23,6 +23,12 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <display-name>Jetspeed Container</display-name>
+    <description>MVC Servlet for Jetspeed Portlet Applications</description>
+    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
        <servlet-name>
@@ -40,6 +46,16 @@
          /jetspeed/*
        </url-pattern>
     </servlet-mapping>    
+
+    <servlet-mapping>
+        <servlet-name>JetspeedContainer</servlet-name>
+        <url-pattern>/container/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>JetspeedContainer</servlet-name>
+        <url-pattern>/container/*</url-pattern>
+    </servlet-mapping>
 
   <!-- The Usual Welcome File List -->
   <welcome-file-list>

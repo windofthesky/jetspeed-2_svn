@@ -173,6 +173,8 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
         }
 
         Fragment root = page.getRootFragment();
+        render(container, root, request);
+        
         for (Iterator fit = root.getFragments().iterator(); fit.hasNext();)
         {
             Fragment fragment = (Fragment)fit.next();
@@ -180,9 +182,27 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             if (fragment.getType().equals(Fragment.LAYOUT))
             {
                 // skip layouts for now
-                continue;
+                // continue;
             }
+            render(container, fragment, request);
+        }
+    }
 
+    /**
+     * Render a portlet by calling the container's renderPortlet.
+     * 
+     * @param container
+     * @param fragment
+     * @param request
+     */
+    private void render(PortletContainer container, Fragment fragment, RequestContext request)
+    {
+
+        //
+        // create the portlet window and render the portlet
+        //
+        try
+        {
             // 
             // Load Portlet from registry
             // 
@@ -192,29 +212,22 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             {
                 throw new JetspeedException("Failed to load: " + fragment.getName() + " from registry");
             }
+            
+            PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
 
-            //
-            // create the portlet window and render the portlet
-            //
-            try
-            {
-                PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, fragment.getName());
+            HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
+            HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
 
-                HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
-                HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
+            PortalControlParameter control = new PortalControlParameter(request.getRequestedPortalURL());
+            WindowState windowState = control.getState(portletWindow);
 
-                PortalControlParameter control = new PortalControlParameter(request.getRequestedPortalURL());
-                WindowState windowState = control.getState(portletWindow);
-
-                container.renderPortlet(portletWindow, servletRequest, servletResponse);
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-                log.error("Failed to service portlet, portlet exception: " + t);
-                break;
-            }
+            container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            log.error("Failed to service portlet, portlet exception: " + t);
+        }
+        
     }
-
 }

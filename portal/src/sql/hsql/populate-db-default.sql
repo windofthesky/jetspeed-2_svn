@@ -1,4 +1,12 @@
 ------------------------------------------
+-- The Jetspeed Internal Portlet App
+------------------------------------------
+INSERT INTO WEB_APPLICATION VALUES(1,'/jetspeed');
+INSERT INTO PORTLET_APPLICATION VALUES (1, 'jetspeed', 'jetspeed', '1.0', NULL, 1);
+INSERT INTO PORTLET_DEFINITION VALUES(1, 'Layout',
+ 'org.apache.jetspeed.portlets.layout.GenericLayoutPortlet',1,'Layout','-1',NULL);
+
+------------------------------------------
 -- Add seed data for Capability
 ------------------------------------------
 INSERT INTO CAPABILITY (CAPABILITY_ID, CAPABILITY) VALUES(0,'HTML_3_2');
