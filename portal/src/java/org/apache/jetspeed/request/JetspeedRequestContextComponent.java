@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -100,12 +101,29 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
      */
     public RequestContext getRequestContext(HttpServletRequest request)
     {
-        return (RequestContext) request.getAttribute(RequestContext.REQUEST_PORTALENV);
+        RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if(rc != null)
+        {
+            return rc;
+        }
+        else
+        {
+            throw new IllegalStateException("Cannot call getRequestContext(HttpServletRequest request) before it has been created and set for this thread.");
+        }
     }
     
     public RequestContext getRequestContext()
     {
-        return (RequestContext) tlRequestContext.get();        
+        RequestContext rc =  (RequestContext) tlRequestContext.get();        
+        
+        if(rc != null)
+        {
+            return rc;
+        }
+        else
+        {
+            throw new IllegalStateException("Cannot call getRequestContext() before it has been created and set for this thread.");
+        }
     }
 
 }
