@@ -668,9 +668,8 @@
       <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+         auto-delete="true" auto-update = "true"
+      	 auto-retrieve = "true"
 
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
@@ -680,14 +679,10 @@
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.impl.PreferenceDescriptionImpl"
-       	  auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
+       	 auto-delete="true" auto-update = "true" auto-retrieve = "true"
 
-      >         
-
-         <inverse-foreignkey field-ref="parentId"/>
-   
+      >
+         <inverse-foreignkey field-ref="parentId"/>   
       </collection-descriptor>  
     </class-descriptor>
    
@@ -733,10 +728,7 @@
       <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-          auto-delete="true"
-      	  auto-update = "true"
-      	  auto-retrieve = "true"
-
+         auto-delete="true" auto-update = "true" auto-retrieve = "true"
       >         
          <inverse-foreignkey field-ref="preferenceId"/>
         
