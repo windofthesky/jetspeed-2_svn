@@ -25,7 +25,6 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4jFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -123,10 +122,6 @@ public abstract class AbstractEngine implements Engine
             p.setProperty(APPLICATION_ROOT_KEY, context.getApplicationRoot());
             PropertyConfigurator.configure(p);
             log.info("Configured log4j from " + log4jFile);
-    
-            // Set up Commons Logging to use the Log4J Logging
-            System.getProperties().setProperty(LogFactory.class.getName(),
-                    Log4jFactory.class.getName());
     
             // patch up OJB
             ClassLoader ploader2 = this.getClass().getClassLoader();
