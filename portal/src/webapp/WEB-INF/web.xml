@@ -108,6 +108,31 @@ limitations under the License.
 		<load-on-startup>10</load-on-startup>
 	</servlet>
 
+  <servlet>
+    <servlet-name>LoginProxyServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.login.LoginProxyServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.login.LoginServlet</servlet-class>
+  </servlet>
+    
+  <servlet>
+    <servlet-name>LoginErrorServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.login.LoginErrorServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>LoginRedirectorServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.login.LoginRedirectorServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.login.LogoutServlet</servlet-class>
+  </servlet>
+
   <servlet-mapping>
        <servlet-name>
           jetspeed
@@ -146,6 +171,31 @@ limitations under the License.
         <url-pattern>/container/*</url-pattern>
     </servlet-mapping>
     
+    <servlet-mapping>
+        <servlet-name>LoginProxyServlet</servlet-name>
+        <url-pattern>/login/proxy</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login/login</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>LoginErrorServlet</servlet-name>
+        <url-pattern>/login/error</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>LoginRedirectorServlet</servlet-name>
+        <url-pattern>/login/redirector</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/login/logout</url-pattern>
+    </servlet-mapping>
+
   <!-- The Usual Welcome File List -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
@@ -163,7 +213,7 @@ limitations under the License.
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Login</web-resource-name>
-      <url-pattern>/LogInRedirector.jsp</url-pattern>
+      <url-pattern>/login/redirector</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>
@@ -175,8 +225,8 @@ limitations under the License.
     <auth-method>FORM</auth-method>
     <realm-name>Intranet</realm-name>
     <form-login-config>
-      <form-login-page>/login.jsp</form-login-page>
-      <form-error-page>/error.jsp</form-error-page>
+      <form-login-page>/login/login</form-login-page>
+      <form-error-page>/login/error</form-error-page>
     </form-login-config>
   </login-config>
 
