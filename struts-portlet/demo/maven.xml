@@ -1,0 +1,117 @@
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project default="war:war"
+         xmlns:j="jelly:core"
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+  <postGoal name="war:webapp">
+          <copy todir="${maven.war.webapp.dir}/WEB-INF/classes">
+            <fileset dir="${basedir}/src/java" excludes="**/*.java"/>
+          </copy>
+  </postGoal>
+
+ <goal name="deploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement location="${jetspeed.webapp}/WEB-INF/classes"/>
+            <fileset dir="${jetspeed.webapp}/WEB-INF/lib"/>
+            <fileset dir="${catalina.shared.lib}"/>
+          </classpath>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="${portlet.app.name}" />
+            <arg value="-warfilename" />
+            <arg value="target/${portlet.war.name}.war" />
+            <arg value="-webappDir" />
+            <arg value="${deploy.war.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
+
+  <goal name="undeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement location="${jetspeed.webapp}/WEB-INF/classes"/>
+            <fileset dir="${jetspeed.webapp}/WEB-INF/lib"/>
+            <fileset dir="${catalina.shared.lib}"/>
+          </classpath>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <arg value="-action" />
+            <arg value="undeploy" />
+            <arg value="-PortletAppName" />
+            <arg value="${portlet.app.name}" />
+            <arg value="-webappDir" />
+            <arg value="${deploy.war.dir}" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
+
+  <preGoal name="deploy">
+   <attainGoal name= "java:compile"/>
+   <attainGoal name= "war:war"/>
+  </preGoal>
+
+  <postGoal name="undeploy">
+    <attainGoal name="db.remove"/>
+  </postGoal>
+
+  <postGoal name="deploy">
+    <attainGoal name="db.create"/>
+  </postGoal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE a DB SCRIPT                                              -->
+  <!-- ================================================================ -->
+  <goal name="db.execute">
+    <sql driver="${org.apache.jetspeed.database.driver}"
+         classpathref="maven.dependency.classpath"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
+         src="${database.arg.script}">
+    </sql>
+  </goal>
+
+  <goal name="db.create">
+      <j:set var="database.arg.script" value="sql/create-entities.sql" />
+      <attainGoal name="db.execute" />
+  </goal>
+  <goal name="db.remove">
+      <j:set var="database.arg.script" value="sql/remove-entities.sql" />
+      <attainGoal name="db.execute" />
+  </goal>
+
+
+</project>
