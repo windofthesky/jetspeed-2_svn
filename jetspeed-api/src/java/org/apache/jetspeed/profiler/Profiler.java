@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -132,6 +133,15 @@ public interface Profiler
     String[] getLocatorNamesForPrincipal(Principal principal);
 
     /**
+     * For a given principal, find all supported locators and return a 
+     * collection of principal rules.
+     * 
+     * @param principal The given principal.
+     * @return collection of PrincipalRules
+     */
+    Collection getRulesForPrincipal(Principal principal);
+    
+    /**
      * Gets all supported locators for a principal.
      *  
      * @param context
@@ -154,6 +164,20 @@ public interface Profiler
      * 
      */    
     void deleteProfilingRule(ProfilingRule rule)
+    throws ProfilerException;
+
+    /*
+     * Persist a principal rule to the persistent store.
+     * 
+     */
+    void storePrincipalRule(PrincipalRule rule)
+    throws ProfilerException;
+    
+    /*
+     * Deletes a principal rule from the persistent store.
+     * 
+     */    
+    void deletePrincipalRule(PrincipalRule rule)
     throws ProfilerException;
     
 }
