@@ -135,12 +135,11 @@ Step #1 below is optional if you are NOT using the default Hypersonic database.
 <li>1. If you are using the Hypersonic SQL database, start the production Hypersonic database by typing 
        <br/><br/><b>maven start.production.server</b><br/><br/>
 </li>
-<li>2. (in seperate window/terminal session) <br/><br/><b>cd ${jetspeed-2-home}</b><br/><br/>
+<li>2. (in seperate window/terminal session) <br></br><br></br><b>cd ${jetspeed-2-home}</b><br></br><br></br>
+       <b>maven quickStart</b><br></br><br></br> This will recreate the DB to deploy into.  
+       WARNING This will drop all the tables and data in the production database.<br></br><br></br>
 </li>
-<li>3. <b>maven quickStart</b><br/><br/> This will recreate the DB to deploy into.  
-       WARNING This will drop all the tables and data in the production database.<br/><br/>
-</li>
-<li>4. Start up Tomcat. With a browser, go to: <br/><br/><b>http://localhost:8080/jetspeed</b><br/>
+<li>3. Start up Tomcat. With a browser, go to: <br/><br/><b>http://localhost:8080/jetspeed</b><br/>
 </li>
 </ul>
 </section>
