@@ -257,6 +257,7 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
 
         log.info("Removing portlet application " + ((MutablePortletApplication) app).getName());
         plugin.prepareForDelete(app);
+        plugin.invalidateObject(app);
     }
 
     /**
