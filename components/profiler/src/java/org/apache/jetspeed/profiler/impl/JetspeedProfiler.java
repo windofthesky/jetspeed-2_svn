@@ -377,4 +377,17 @@ public class JetspeedProfiler implements Profiler
         return names;
     }
     
+    public Map getProfileLocators(RequestContext context, Principal principal)
+    throws ProfilerException
+    {
+        Map locators = new HashMap();
+        String locatorNames[] = getLocatorNamesForPrincipal(principal);
+        
+        for (int ix = 0; (ix < locatorNames.length); ix++)
+        {
+            locators.put(locatorNames[ix], getProfile(context, locatorNames[ix]));   
+        }
+        return locators;
+    }
+    
 }

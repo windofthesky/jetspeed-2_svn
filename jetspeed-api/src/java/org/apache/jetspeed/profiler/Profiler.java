@@ -17,6 +17,7 @@ package org.apache.jetspeed.profiler;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
@@ -129,5 +130,16 @@ public interface Profiler
      * @return array of String locator names
      */
     String[] getLocatorNamesForPrincipal(Principal principal);
-	
+
+    /**
+     * Gets all supported locators for a principal.
+     *  
+     * @param context
+     * @param principal
+     * @return
+     * @throws ProfilerException
+     */
+    public Map getProfileLocators(RequestContext context, Principal principal)
+    throws ProfilerException;
+    
 }
