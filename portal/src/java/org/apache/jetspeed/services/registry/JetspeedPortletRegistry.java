@@ -185,7 +185,7 @@ public class JetspeedPortletRegistry
         getService().registerPortletApplication(newApp);
 
     }
-    
+
     /**
       * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition, java.lang.String)
       */
@@ -234,7 +234,7 @@ public class JetspeedPortletRegistry
      */
     public static boolean portletApplicationExists(String appIentity)
     {
-        return portletApplicationExists(appIentity);
+        return getService().portletApplicationExists(appIentity);
     }
 
     /**
@@ -242,7 +242,7 @@ public class JetspeedPortletRegistry
      */
     public static boolean portletDefinitionExists(String portletIndentity)
     {
-        return portletDefinitionExists(portletIndentity);
+        return getService().portletDefinitionExists(portletIndentity);
     }
 
     /**
@@ -258,10 +258,10 @@ public class JetspeedPortletRegistry
         return (PortletRegistryService) ServiceUtil.getServiceByName(
             PortletRegistryService.SERVICE_NAME);
     }
-    
+
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#setDeploymentSystem(java.lang.String, java.lang.String)
-     * 
+     *
      */
     public static void setDeploymentSystem(String system, String alias)
     {
