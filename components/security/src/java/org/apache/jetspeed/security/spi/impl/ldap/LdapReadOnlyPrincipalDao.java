@@ -19,21 +19,22 @@ import org.apache.jetspeed.security.SecurityException;
 
 /**
  * <p>
- * Dao for querying users in ldap.
+ * Interface for read only principals.
  * </p>
  * 
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
-public interface LdapUserDao
+public interface LdapReadOnlyPrincipalDao
 {
     /**
      * <p>
-     * Searches the LDAP server for the user with the specified userid (uid
-     * attribute).
+     * Searches the LDAP server for the user with the specified principal id
+     * (uid attribute).
      * </p>
      * 
-     * @return the user's DN
+     * @return The principal's uid value
+     * @throws SecurityException A {@link SecurityException}.
      */
-    String lookupByUid(final String uid) throws SecurityException;
+    String lookupByUid(final String principalUid) throws SecurityException;
 
 }

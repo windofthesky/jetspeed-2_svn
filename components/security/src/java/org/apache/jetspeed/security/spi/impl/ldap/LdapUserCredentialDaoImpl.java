@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.security.spi.impl.ldap;
 
-import javax.naming.Name;
-import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -46,8 +44,11 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * <p>
      * Default constructor.
      * </p>
+     *
+     * @throws NamingException A {@link NamingException}.
+     * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserCredentialDaoImpl()
+    public LdapUserCredentialDaoImpl() throws NamingException, SecurityException
     {
         super();
     }
@@ -62,9 +63,12 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      * @param rootPassword The root password.
      * @param rootContext The root context.
      * @param defaultDnSuffix The default suffix.
+     * 
+     * @throws NamingException A {@link NamingException}.
+     * @throws SecurityException A {@link SecurityException}.
      */
     public LdapUserCredentialDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix)
+            String defaultDnSuffix) throws NamingException, SecurityException
     {
         super(ldapServerName, rootDn, rootPassword, rootContext, defaultDnSuffix);
     }
@@ -103,23 +107,10 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      */
     public boolean authenticate(final String uid, final String password) throws SecurityException
     {
-        try
-        {
-            validateUid(uid);
-            validatePassword(password);
-
-            String userDn = lookupByUid(uid);
-
-            return isAuthenticatedUser(password, userDn);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new SecurityException(e);
-        }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
+        validateUid(uid);
+        validatePassword(password);
+        String savedPassword = String.valueOf(getPassword(uid));
+        return (savedPassword.equals(password));
     }
 
     /**
@@ -127,11 +118,11 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
      */
     public char[] getPassword(final String uid) throws SecurityException
     {
+        validateUid(uid);
         try
         {
-            bindToServer(this.rootDn, this.rootPassword);
             SearchControls cons = setSearchControls();
-            NamingEnumeration results = searchByExplicitUid(uid, cons);
+            NamingEnumeration results = searchByWildcardedUid(uid, cons);
 
             return getPassword(results, uid);
         }
@@ -139,7 +130,6 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
         {
             throw new SecurityException(e);
         }
-
     }
 
     /**
@@ -158,72 +148,6 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
         attrs.put("userPassword", password);
         ctx.modifyAttributes(rdn, DirContext.REPLACE_ATTRIBUTE, attrs);
-    }
-
-    /**
-     * <p>
-     * Get the sub context name.
-     * </p>
-     * 
-     * @param dn The domain name.
-     * @return The sub context name.
-     * @throws NamingException Throws a {@link NamingException}.
-     */
-    private String getSubcontextName(final String dn) throws NamingException
-    {
-        NameParser parser = ctx.getNameParser("");
-        Name name = parser.parse(dn);
-        String rootStr = ctx.getNameInNamespace();
-        Name root = parser.parse(rootStr);
-
-        if (name.startsWith(root))
-        {
-            Name rname = name.getSuffix(root.size());
-
-            return rname.toString();
-        }
-
-        return dn;
-    }
-
-    /**
-     * <p>
-     * Whether the user is authenticated.
-     * </p>
-     * 
-     * @param password The password.
-     * @param userDn The user.
-     * @return Whether the user is authenticated.
-     * @throws NamingException Throws a {@link NamingException}.
-     */
-    private boolean isAuthenticatedUser(final String password, String userDn) throws NamingException
-    {
-        if (userDn == null)
-        {
-            return false;
-        }
-
-        login(userDn, password);
-
-        return true;
-    }
-
-    /**
-     * <p>
-     * Login the user.
-     * </p>
-     * 
-     * @param userDn The user.
-     * @param password The passord.
-     * @throws NamingException Throws a {@link NamingException}.
-     */
-    private void login(final String userDn, final String password) throws NamingException
-    {
-        validateDn(userDn);
-        validatePassword(password);
-        bindToServer(userDn, password);
-
-        ctx.getResponseControls();
     }
 
     /**
@@ -323,18 +247,13 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
 
     /**
      * <p>
-     * Search by explicit uid.
+     * A template method that returns the LDAP object class of the concrete DAO.
      * </p>
      * 
-     * @param uid The uid.
-     * @param cons The {@link SearchControls}.
-     * @return The {@link NamingEnumeration}. 
-     * @throws NamingException Throws a {@link NamingEnumeration}
+     * @return A String containing the LDAP object class name.
      */
-    private NamingEnumeration searchByExplicitUid(final String uid, SearchControls cons) throws NamingException
+    protected String getObjectClass()
     {
-        NamingEnumeration results = ((DirContext) ctx).search("", "uid=" + uid, cons);
-
-        return results;
+        return "jetspeed-2-user";
     }
 }

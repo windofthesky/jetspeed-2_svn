@@ -32,6 +32,27 @@ to replace the default datastore configured.
 3 files are involved when configuring Jetspeed 2 security SPI.  All the SPI configuration files are
 located under <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>.
 </p>
+<subsection name="security-atn.xml">
+<p>
+This configuration file provides the login module configuration.  Not everyone
+needs this, as some application may decide to use another login module other than the one provided.
+</p>
+</subsection>
+<subsection name="security-atz.xml">
+<p>
+This configuration file configures the authorization policy, in J2's case RDBMSPolicy.
+</p>
+</subsection>
+<subsection name="security-managers.xml">
+<p>
+This configuration file configures all the managers for security purpose.
+</p>
+</subsection>
+<subsection name="security-providers.xml">
+<p>
+This configuration file configures the various providers and weaves the SPI together.
+</p>
+</subsection>
 <subsection name="security-spi.xml">
 <p>
 This configuration file contains configuration that are common to the authentication and authorization SPIs.
@@ -75,7 +96,7 @@ This configuratio file contains all the configurations for configuring the authe
 </subsection>
 <subsection name="security-spi-atz.xml">
 <p>
-This configuratio file contains all the configurations for configuring the authorization SPI.
+This configuration file contains all the configurations for configuring the authorization SPI.
 </p>
 <table>
 	<tr>

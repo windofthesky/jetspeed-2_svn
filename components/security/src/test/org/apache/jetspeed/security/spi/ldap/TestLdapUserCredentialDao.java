@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapUserCredentialDaoImpl;
-import org.apache.jetspeed.security.spi.ldap.AbstractLdapTest;
 
 /**
  * <p>
@@ -71,7 +70,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      */
     public void testGoodLogin() throws SecurityException
     {
-        assertTrue("The login failed for user.", ldap.authenticate(uid, password));
+        assertTrue("The login failed for user.", ldap.authenticate(uid1, password));
     }
 
     /**
@@ -106,7 +105,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
     {
         try
         {
-            ldap.authenticate(uid + metaCharacter, password);
+            ldap.authenticate(uid1 + metaCharacter, password);
             fail("Should have thrown an IllegalArgumentException because the uid contained a regular expression meta-character.");
         }
         catch (Exception e)
@@ -126,18 +125,19 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
     {
         try
         {
-            ldap.authenticate(uid, "");
+            ldap.authenticate(uid1, "");
             fail("Should have thrown an SecurityException.");
         }
         catch (Exception e)
         {
             log.debug(e);
-            assertTrue("Should have thrown an SecurityException.", e instanceof SecurityException);
+            assertTrue("Should have thrown an SecurityException. Instead it threw:" + e.getClass().getName(),
+                    e instanceof SecurityException);
         }
 
         try
         {
-            ldap.authenticate(uid, null);
+            ldap.authenticate(uid1, null);
             fail("Should have thrown an SecurityException.");
         }
         catch (Exception e)
@@ -155,7 +155,18 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      */
     public void testBadUID() throws SecurityException
     {
-        assertFalse("The login should have failed for user.", ldap.authenticate(uid + "123", password));
+
+        try
+        {
+            ldap.authenticate(uid1 + "123", password);
+            fail("Should have thrown an exception for a non-existant user.");
+        }
+        catch (Exception e)
+        {
+            assertTrue("Should have thrown a SecurityException for a non-existant user.",
+                    e instanceof SecurityException);
+        }
+
     }
 
     /**
@@ -165,17 +176,9 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * 
      * @throws NamingException A {@link NamingException}.
      */
-    public void testBadPassword() throws NamingException
+    public void testBadPassword() throws SecurityException
     {
-        try
-        {
-            ldap.authenticate(uid, password + "123");
-            fail("Should have thrown a SecurityException.");
-        }
-        catch (Exception e)
-        {
-            assertTrue("Should have thrown a SecurityException.", e instanceof SecurityException);
-        }
+        assertFalse("Should not have authenticated with bad password.", ldap.authenticate(uid1, password + "123"));
     }
 
     /**
@@ -185,7 +188,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
      * 
      * @throws InterruptedException A {@link InterruptedException}.
      */
-    public void testConcurrentLogins() throws InterruptedException
+    public void testConcurrentLogins() throws InterruptedException, SecurityException, NamingException
     {
         for (int i = 0; i < NUMBER_OF_LOGIN_THREADS; i++)
         {
@@ -258,7 +261,12 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
         private LoginThreadStatus status = new LoginThreadStatus();
 
         /** The {@link LdapUserCredentialDao}. */
-        private LdapUserCredentialDao threadLdap = new LdapUserCredentialDaoImpl();
+        private LdapUserCredentialDao threadLdap;
+
+        public LoginThread() throws NamingException, SecurityException
+        {
+            threadLdap = new LdapUserCredentialDaoImpl();
+        }
 
         /**
          * @see java.lang.Runnable#run()
@@ -269,7 +277,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
             {
                 try
                 {
-                    assertTrue("The login failed for user.", threadLdap.authenticate(uid, password));
+                    assertTrue("The login failed for user.", threadLdap.authenticate(uid1, password));
                     status.incrementNumberOfSuccessfulLogins();
                 }
                 catch (Exception e)
@@ -288,6 +296,7 @@ public class TestLdapUserCredentialDao extends AbstractLdapTest
  * The Login thread status.
  * </p>
  */
+
 class LoginThreadStatus
 {
     private int numberOfSuccessfulLogins;

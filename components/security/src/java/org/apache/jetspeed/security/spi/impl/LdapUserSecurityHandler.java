@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.naming.NamingException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,8 +28,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.spi.UserSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDaoImpl;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
 
 /**
  * @see org.apache.jetspeed.security.spi.UserSecurityHandler
@@ -38,13 +40,13 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     /** The logger. */
     private static final Log LOG = LogFactory.getLog(LdapUserSecurityHandler.class);
 
-    /** The {@link LdapUserSecurityDao}. */
-    private LdapUserSecurityDao ldap;
+    /** The {@link LdapPrincipalDao}. */
+    private LdapPrincipalDao ldap;
 
     /**
      * @param ldap The {@link LdapUserSecurityDao}.
      */
-    public LdapUserSecurityHandler(LdapUserSecurityDao ldap)
+    public LdapUserSecurityHandler(LdapPrincipalDao ldap)
     {
         this.ldap = ldap;
     }
@@ -54,9 +56,9 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
      * Default constructor.
      * </p>
      */
-    public LdapUserSecurityHandler()
+    public LdapUserSecurityHandler() throws NamingException, SecurityException
     {
-        this(new LdapUserSecurityDaoImpl());
+        this(new LdapUserPrincipalDaoImpl());
     }
 
     /**

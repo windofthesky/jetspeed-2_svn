@@ -17,6 +17,8 @@ package org.apache.jetspeed.security.spi.impl.ldap;
 import java.util.Properties;
 
 import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -63,7 +65,7 @@ public abstract class AbstractLdapDao
     public AbstractLdapDao()
     {
     }
-    
+
     /**
      * <p>
      * Initializes the dao.
@@ -76,15 +78,16 @@ public abstract class AbstractLdapDao
      * @param defaultDnSuffix The default suffix.
      */
     public AbstractLdapDao(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix)
+            String defaultDnSuffix) throws SecurityException, NamingException
     {
         this.ldapServerName = ldapServerName;
         this.rootDn = rootDn;
         this.rootPassword = rootPassword;
         this.rootContext = rootContext;
         this.defaultDnSuffix = defaultDnSuffix;
+        bindToServer(rootDn, rootPassword);
     }
-    
+
     /**
      * <p>
      * Binds to the ldap server.
@@ -94,19 +97,46 @@ public abstract class AbstractLdapDao
      * @param password
      * @throws NamingException
      */
-    protected void bindToServer(final String userDn, final String password) throws NamingException
+    protected void bindToServer(String rootDn, String rootPassword) throws SecurityException,
+    		NamingException
     {
-        validateDn(userDn);
-        validatePassword(password);
+        validateDn(rootDn);
+        validatePassword(rootPassword);
 
         Properties env = new Properties();
 
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://" + this.ldapServerName + "/" + this.rootContext);
-        env.put(Context.SECURITY_PRINCIPAL, userDn);
-        env.put(Context.SECURITY_CREDENTIALS, password);
+        env.put(Context.SECURITY_PRINCIPAL, rootDn);
+        env.put(Context.SECURITY_CREDENTIALS, rootPassword);
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         ctx = new InitialLdapContext(env, null);
+    }
+    
+    /**
+     * <p>
+     * Gets the sub context name.
+     * </p>
+     * 
+     * @param dn The domain name.
+     * @return The sub context name.
+     * @throws NamingException
+     */
+    protected String getSubcontextName(final String dn) throws NamingException
+    {
+        NameParser parser = ctx.getNameParser("");
+        Name name = parser.parse(dn);
+        String rootStr = ctx.getNameInNamespace();
+        Name root = parser.parse(rootStr);
+
+        if (name.startsWith(root))
+        {
+            Name rname = name.getSuffix(root.size());
+
+            return rname.toString();
+        }
+
+        return dn;
     }
 
     /**
@@ -167,8 +197,6 @@ public abstract class AbstractLdapDao
 
         try
         {
-            bindToServer(this.rootDn, this.rootPassword);
-
             SearchControls cons = setSearchControls();
             NamingEnumeration searchResults = searchByWildcardedUid(uid, cons);
 
@@ -234,9 +262,18 @@ public abstract class AbstractLdapDao
      */
     protected NamingEnumeration searchByWildcardedUid(final String filter, SearchControls cons) throws NamingException
     {
-        NamingEnumeration searchResults = ((DirContext) ctx).search("", "uid="
-                + (StringUtils.isEmpty(filter) ? "*" : filter), cons);
+        NamingEnumeration searchResults = ((DirContext) ctx).search("", "(&(uid="
+                + (StringUtils.isEmpty(filter) ? "*" : filter) + ") (objectclass=" + getObjectClass() + "))", cons);
 
         return searchResults;
     }
+
+    /**
+     * <p>
+     * A template method that returns the LDAP object class of the concrete DAO.
+     * </p>
+     * 
+     * @return a String containing the LDAP object class name.
+     */
+    protected abstract String getObjectClass();
 }

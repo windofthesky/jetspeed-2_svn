@@ -17,6 +17,8 @@ package org.apache.jetspeed.security.spi.impl;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.naming.NamingException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,12 +46,21 @@ public class LdapCredentialHandler implements CredentialHandler
      * Default constructor.
      * </p>
      */
-    public LdapCredentialHandler()
+    public LdapCredentialHandler() throws NamingException, SecurityException
     {
         this(new LdapUserCredentialDaoImpl());
     }
 
-    public LdapCredentialHandler(LdapUserCredentialDao ldap)
+    /**
+     * <p>
+     * Constructor given a {@link LdapUserCredentialDao}.
+     * </p>
+     * 
+     * @param ldap The {@link LdapUserCredentialDao}.
+     * @throws NamingException A {@link NamingException}.
+     * @throws SecurityException A {@link SecurityException}.
+     */
+    public LdapCredentialHandler(LdapUserCredentialDao ldap) throws NamingException, SecurityException
     {
         this.ldap = ldap;
     }

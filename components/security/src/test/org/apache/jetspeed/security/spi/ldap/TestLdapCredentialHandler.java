@@ -25,10 +25,11 @@ import java.util.Set;
 
 /**
  * <p>
- * Test {@link LdapCredentialHandler} implementation of the SPI <code>CredentialHandler</code>.
+ * Test {@link LdapCredentialHandler}implementation of the SPI
+ * <code>CredentialHandler</code>.
  * </p>
  * 
- * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>  
+ * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
 public class TestLdapCredentialHandler extends AbstractLdapTest
 {
@@ -53,9 +54,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      */
     public void testGetPrivateCredentials() throws SecurityException
     {
-        Set credentials = crHandler.getPrivateCredentials(uid);
+        Set credentials = crHandler.getPrivateCredentials(uid1);
 
-        assertTrue("getPrivateCredentials found no credentials for user:" + uid, credentials.size() > 0);
+        assertTrue("getPrivateCredentials found no credentials for user:" + uid1, credentials.size() > 0);
 
         PasswordCredential cred = (PasswordCredential) credentials.iterator().next();
 
@@ -87,9 +88,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      */
     public void testSetPassword() throws SecurityException
     {
-        crHandler.setPassword(uid, password, "freddie");
-        assertTrue("Failed to change the password.", crHandler.authenticate(uid, "freddie"));
-        crHandler.setPassword(uid, "freddie", password);
+        crHandler.setPassword(uid1, password, "freddie");
+        assertTrue("Failed to change the password.", crHandler.authenticate(uid1, "freddie"));
+        crHandler.setPassword(uid1, "freddie", password);
     }
 
     /**
@@ -101,7 +102,7 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      */
     public void testVerifyNullSetPassword() throws SecurityException
     {
-        crHandler.setPassword(uid, null, password);
+        crHandler.setPassword(uid1, null, password);
     }
 
     /**
@@ -113,7 +114,7 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      */
     public void testGoodLogin() throws SecurityException
     {
-        assertTrue("The login failed for user.", crHandler.authenticate(uid, password));
+        assertTrue("The login failed for user.", crHandler.authenticate(uid1, password));
     }
 
     /**
@@ -127,7 +128,7 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
     {
         try
         {
-            crHandler.authenticate(uid, "");
+            crHandler.authenticate(uid1, "");
             fail("Should have thrown a SecurityException.");
         }
         catch (Exception e)
@@ -147,7 +148,16 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
     {
         String nonExistantUser = Integer.toString(rand.nextInt());
 
-        assertFalse("The login should have failed for user.", crHandler.authenticate(nonExistantUser, password));
+        try
+        {
+            crHandler.authenticate(nonExistantUser, password);
+            fail("Should have thrown an exception for a non-existant user.");
+        }
+        catch (Exception e)
+        {
+            assertTrue("Should have thrown a SecurityException for a non-existant user.",
+                    e instanceof SecurityException);
+        }
     }
 
     /**
@@ -157,16 +167,9 @@ public class TestLdapCredentialHandler extends AbstractLdapTest
      * 
      * @throws SecurityException A {@link SecurityException}.
      */
-    public void testBadPassword()
+    public void testBadPassword() throws SecurityException
     {
-        try
-        {
-            crHandler.authenticate(uid, password + "123");
-            fail("Should have thrown an SecurityException.");
-        }
-        catch (Exception e)
-        {
-            assertTrue("Should have thrown an SecurityException.", e instanceof SecurityException);
-        }
+        assertFalse("Should not have authenticated with a bad password.", crHandler
+                .authenticate(uid1, password + "123"));
     }
 }

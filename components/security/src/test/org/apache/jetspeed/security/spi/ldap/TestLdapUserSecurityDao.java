@@ -19,9 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDaoImpl;
-import org.apache.jetspeed.security.spi.ldap.AbstractLdapTest;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapUserPrincipalDaoImpl;
 
 /**
  * <p>
@@ -29,7 +28,6 @@ import org.apache.jetspeed.security.spi.ldap.AbstractLdapTest;
  * </p>
  * 
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
- *  
  */
 public class TestLdapUserSecurityDao extends AbstractLdapTest
 {
@@ -37,7 +35,7 @@ public class TestLdapUserSecurityDao extends AbstractLdapTest
     private static final Log log = LogFactory.getLog(TestLdapUserSecurityDao.class);
 
     /** The {@link LdapUserSecurityDao}. */
-    private LdapUserSecurityDao ldap;
+    private LdapPrincipalDao ldap;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -45,7 +43,7 @@ public class TestLdapUserSecurityDao extends AbstractLdapTest
     protected void setUp() throws Exception
     {
         super.setUp();
-        ldap = new LdapUserSecurityDaoImpl();
+        ldap = new LdapUserPrincipalDaoImpl();
     }
 
     /**
@@ -57,7 +55,7 @@ public class TestLdapUserSecurityDao extends AbstractLdapTest
      */
     public void testLookupByGoodUID() throws SecurityException
     {
-        assertFalse("The loookup failed for user.", StringUtils.isEmpty(ldap.lookupByUid(uid)));
+        assertFalse("The loookup failed for user.", StringUtils.isEmpty(ldap.lookupByUid(uid1)));
     }
 
     /**
@@ -69,7 +67,7 @@ public class TestLdapUserSecurityDao extends AbstractLdapTest
      */
     public void testLookupByBadUID() throws SecurityException
     {
-        assertTrue("The lookup should have failed for user:" + uid + "123", StringUtils.isEmpty(ldap.lookupByUid(uid
+        assertTrue("The lookup should have failed for user:" + uid1 + "123", StringUtils.isEmpty(ldap.lookupByUid(uid1
                 + "123")));
     }
 }

@@ -23,7 +23,7 @@ import org.apache.jetspeed.security.SecurityException;
  * 
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
-public interface LdapUserCredentialDao extends LdapUserDao
+public interface LdapUserCredentialDao extends LdapReadOnlyPrincipalDao
 {
     /**
      * <p>

@@ -19,14 +19,10 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.naming.Name;
-import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -34,26 +30,29 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
- * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao
+ * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao
+ * 
  * @author <a href="mailto:mike.long@dataline.com">Mike Long </a>
  */
-public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUserSecurityDao
+public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements LdapPrincipalDao
 {
     /** The logger. */
-    private static final Log LOG = LogFactory.getLog(LdapUserSecurityDaoImpl.class);
+    private static final Log LOG = LogFactory.getLog(LdapPrincipalDaoImpl.class);
 
     /** The uid attribute name. */
-    private static final String UID_ATTR_NAME = "uid";
-
+    protected static final String UID_ATTR_NAME = "uid";
+    
     /**
      * <p>
      * Default constructor.
      * </p>
+     * 
+     * @throws NamingException A {@link NamingException}.
+     * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserSecurityDaoImpl()
+    public LdapPrincipalDaoImpl() throws NamingException, SecurityException
     {
         super();
     }
@@ -68,34 +67,47 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
      * @param rootPassword The root password.
      * @param rootContext The root context.
      * @param defaultDnSuffix The default suffix.
+     * 
+     * @throws NamingException A {@link NamingException}.
+     * @throws SecurityException A {@link SecurityException}.
      */
-    public LdapUserSecurityDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
-            String defaultDnSuffix)
+    public LdapPrincipalDaoImpl(String ldapServerName, String rootDn, String rootPassword, String rootContext,
+            String defaultDnSuffix) throws NamingException, SecurityException
     {
         super(ldapServerName, rootDn, rootPassword, rootContext, defaultDnSuffix);
     }
-    
-    /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao#create(java.lang.String)
-     */
-    public void create(final String uid) throws SecurityException
-    {
-        Attributes attrs = new BasicAttributes(true);
-        BasicAttribute classes = new BasicAttribute("objectclass");
 
-        classes.add("top");
-        classes.add("person");
-        classes.add("uidObject");
-        classes.add("organizationalPerson");
-        classes.add("inetorgperson");
-        attrs.put(classes);
-        attrs.put("cn", uid);
-        attrs.put("uid", uid);
-        attrs.put("sn", uid);
+    /**
+     * <p>
+     * A template method for creating a concrete principal object.
+     * </p>
+     * 
+     * @param principalUid The principal uid.
+     * @return A concrete principal object.
+     */
+    protected abstract Principal makePrincipal(String principalUid);
+
+    /**
+     * <p>
+     * A template method for defining the attributes for a particular LDAP
+     * class.
+     * </p>
+     * 
+     * @param principalUid The principal uid.
+     * @return The LDAP attributes object for the particular class.
+     */
+    protected abstract Attributes defineLdapAttributes(final String principalUid);
+
+    /**
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#create(java.lang.String)
+     */
+    public void create(final String principalUid) throws SecurityException
+    {
+        Attributes attrs = defineLdapAttributes(principalUid);
 
         try
         {
-            ctx.createSubcontext("uid=" + uid + this.defaultDnSuffix, attrs);
+            ctx.createSubcontext("uid=" + principalUid + super.defaultDnSuffix, attrs);
         }
         catch (NamingException e)
         {
@@ -104,11 +116,11 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao#delete(java.lang.String)
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#delete(java.lang.String)
      */
-    public void delete(final String uid) throws SecurityException
+    public void delete(final String principalUid) throws SecurityException
     {
-        String dn = lookupByUid(uid);
+        String dn = lookupByUid(principalUid);
 
         if (dn == null)
         {
@@ -128,21 +140,45 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapUserSecurityDao#find(java.lang.String)
+     * <p>
+     * Converts the uid to an ldap acceptable name.
+     * </p>
+     * 
+     * @param uid The uid.
+     * @return The converted name.
      */
-    public Principal[] find(final String uid) throws SecurityException
+    protected String convertUidToLdapAcceptableName(String uid)
+    {
+        return uid.replaceAll("/", "&");
+    }
+
+    /**
+     * <p>
+     * Convert the uid back from the ldap acceptable name.
+     * </p>
+     * 
+     * @param uid The uid.
+     * @return The converted back name.
+     */
+    protected String convertUidFromLdapAcceptableName(String uid)
+    {
+        return uid.replaceAll("&", "/");
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao#find(java.lang.String)
+     */
+    public Principal[] find(final String principalUid) throws SecurityException
     {
         try
         {
-            bindToServer(this.rootDn, this.rootPassword);
-
             SearchControls cons = setSearchControls();
-            NamingEnumeration searchResults = searchByWildcardedUid(uid, cons);
-            Collection userPrincipals = new ArrayList();
+            NamingEnumeration searchResults = searchByWildcardedUid(convertUidToLdapAcceptableName(principalUid), cons);
+            Collection principals = new ArrayList();
 
-            enumerateOverSearchResults(searchResults, userPrincipals);
+            enumerateOverSearchResults(searchResults, principals);
 
-            return convertPrincipalListToArray(userPrincipals);
+            return convertPrincipalListToArray(principals);
         }
         catch (NamingException e)
         {
@@ -158,9 +194,9 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
      * @param userPrincipals The list of principals.
      * @return The array of principals.
      */
-    private Principal[] convertPrincipalListToArray(Collection userPrincipals)
+    private Principal[] convertPrincipalListToArray(Collection principals)
     {
-        return (Principal[]) userPrincipals.toArray(new Principal[userPrincipals.size()]);
+        return (Principal[]) principals.toArray(new Principal[principals.size()]);
     }
 
     /**
@@ -172,32 +208,32 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
      * @param userPrincipals The collection of user principals.
      * @throws NamingException Throws a {@link NamingException}.
      */
-    private void enumerateOverSearchResults(NamingEnumeration searchResults, Collection userPrincipals)
+    private void enumerateOverSearchResults(NamingEnumeration searchResults, Collection principals)
             throws NamingException
     {
         while (searchResults.hasMore())
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
 
-            buildUserPrincipal(userPrincipals, searchResult);
+            buildPrincipal(principals, searchResult);
         }
     }
 
     /**
-     * @param userPrincipals The collection of user principals.
+     * @param principals The collection of principals.
      * @param searchResult The {@link SearchResult}
      * @throws NamingException Throws a {@link NamingException}.
      */
-    private void buildUserPrincipal(Collection userPrincipals, SearchResult searchResult) throws NamingException
+    private void buildPrincipal(Collection principals, SearchResult searchResult) throws NamingException
     {
         if (searchResult.getObject() instanceof DirContext)
         {
             Attributes atts = searchResult.getAttributes();
 
             String uid = (String) getAttribute(UID_ATTR_NAME, atts).getAll().next();
-            Principal userPrincipal = new UserPrincipalImpl(uid);
+            Principal principal = makePrincipal(uid);
 
-            userPrincipals.add(userPrincipal);
+            principals.add(principal);
         }
     }
 
@@ -207,7 +243,7 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
      * @return The {@link Attribute}.
      * @throws NamingException Throws a {@link NamingException}.
      */
-    private Attribute getAttribute(String attributeName, Attributes userAttributes) throws NamingException
+    protected Attribute getAttribute(String attributeName, Attributes userAttributes) throws NamingException
     {
         for (NamingEnumeration ae = userAttributes.getAll(); ae.hasMore();)
         {
@@ -221,25 +257,4 @@ public class LdapUserSecurityDaoImpl extends AbstractLdapDao implements LdapUser
         return null;
     }
 
-    /**
-     * @param dn
-     * @return
-     * @throws NamingException
-     */
-    private String getSubcontextName(final String dn) throws NamingException
-    {
-        NameParser parser = ctx.getNameParser("");
-        Name name = parser.parse(dn);
-        String rootStr = ctx.getNameInNamespace();
-        Name root = parser.parse(rootStr);
-
-        if (name.startsWith(root))
-        {
-            Name rname = name.getSuffix(root.size());
-
-            return rname.toString();
-        }
-
-        return dn;
-    }
 }
