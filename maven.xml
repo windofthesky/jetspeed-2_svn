@@ -156,4 +156,16 @@
   	<echo message="maven.repo.local = ${maven.repo.local}" />
   </goal>
 
+  <goal name="start.test.server">
+         <java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-database" />          
+            <arg value="./portal/test/db/hsql/Registry" />
+        </java>  
+  </goal>
+  
+  
 </project>

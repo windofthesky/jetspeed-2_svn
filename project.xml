@@ -109,6 +109,7 @@
 
   <build>
     <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
+    <sourceDirectory>src/java</sourceDirectory>
 
 
   </build>

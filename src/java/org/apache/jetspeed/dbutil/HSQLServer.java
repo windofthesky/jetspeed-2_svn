@@ -1,8 +1,17 @@
 /*
- * Created on Feb 24, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.jetspeed.dbutil;
 
@@ -33,8 +42,11 @@ public class HSQLServer
         
         try
         {
-            new HSQLServerThread(args).start();
-            Thread.sleep(3000);
+            System.out.println("Starting server: " + args[1]);
+            Thread hsql = new HSQLServerThread(args);
+            hsql.start();
+            System.out.println("Exiting HSQL");
+            
         }
         catch (InterruptedException e)
         {
@@ -81,7 +93,7 @@ class HSQLServerThread extends Thread
      */
     public void run()
     {
-        System.out.println("Starting HSQLDB server on localhost: " + args);
+        System.out.println("Starting HSQLDB server");
         Server.main(args);
         
     }
