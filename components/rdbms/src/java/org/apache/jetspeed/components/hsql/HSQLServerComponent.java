@@ -54,6 +54,8 @@
 package org.apache.jetspeed.components.hsql;
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -85,6 +87,8 @@ public class HSQLServerComponent implements Startable
     private boolean trace;
     private String user;
     private String fqPath;
+    private HSQLServer HSQLthread;
+
     public HSQLServerComponent(int port, String user, String password, String dbScriptPath, boolean trace, 
     boolean silent)
     throws IOException
@@ -118,9 +122,23 @@ public class HSQLServerComponent implements Startable
      */
     public void start()
     {
-        HSQLServer serverThread = new HSQLServer(port, fqPath);
-        serverThread.start();
-        // verify
+        HSQLthread = new HSQLServer(port, fqPath);
+        boolean started = false;
+        int startCount = 0;
+        while(!started && startCount < 5)
+        {
+            try
+            {
+                startCount++;
+                HSQLthread.start();
+                started = true;
+            } 
+            catch (Exception e1)
+            {
+               
+            }
+        }
+
 
         try
         {
@@ -176,6 +194,7 @@ public class HSQLServerComponent implements Startable
     {
         try
         {
+            log.info("====== SHUTTING DOWN HSQL Server ========");
             Class.forName("org.hsqldb.jdbcDriver");
             String url = "jdbc:hsqldb:hsql://127.0.0.1:" + port;
             Connection con = DriverManager.getConnection(url, user, password);
@@ -183,20 +202,19 @@ public class HSQLServerComponent implements Startable
             Statement stmt = con.createStatement();
             stmt.executeUpdate(sql);
             stmt.close();
+
+            // block while shutting down
+            Socket socket = null;
             try
             {
-                // block while shutting down
-                while (!con.isClosed())
+                while (socket == null || socket.isConnected())
                 {
-                    stmt = con.createStatement();
-                    stmt.executeUpdate(sql);
-                    stmt.close();
+                    socket = new Socket("127.0.0.1", port);
+                   // Thread.sleep(2000);
                 }
-            } 
-            //SQLException signifies a "broken" connection
-            catch (SQLException e1)
+            } catch (ConnectException e1)
             {
-               
+                log.info("HSQL Socket successfully closed.");
             }
         }
         catch (Exception e)
@@ -207,6 +225,7 @@ public class HSQLServerComponent implements Startable
     class HSQLServer extends Thread
     {
         private String[] args;
+
         HSQLServer(int port, String dbPath)
         {
             args = 
@@ -222,6 +241,7 @@ public class HSQLServerComponent implements Startable
             "-trace", 
             String.valueOf(trace)};
             setName("Jetspeed HSQLDB Thread");
+            setDaemon(true);
         }
 
         /**
