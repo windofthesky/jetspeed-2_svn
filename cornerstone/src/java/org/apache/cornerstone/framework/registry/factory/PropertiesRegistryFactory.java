@@ -50,9 +50,9 @@ public class PropertiesRegistryFactory extends BaseFactory
         throw new CreationException("please use the other signature to pass in registryParentPath");
     }        
 
-    public Object createInstance(Object registryParentPath) throws CreationException
+    public Object createInstance(Object runtimeHomeDir) throws CreationException
     {
-        String registryPath = registryParentPath + File.separator + REG_DIR_NAME;        
+        String registryPath = runtimeHomeDir + File.separator + REG_DIR_NAME;        
                 
         // create the Registry
         IRegistry registry = BaseRegistry.getSingleton();
