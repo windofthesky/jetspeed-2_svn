@@ -86,6 +86,9 @@ public class PreferencesImpl extends AbstractPreferences
     protected PersistenceStore persistenceStore;
 
     protected PreferencesProvider prefProvider;
+    
+    static PreferencesImpl systemRoot = new PreferencesImpl(null, "", PreferencesImpl.SYSTEM_NODE_TYPE);  
+    static PreferencesImpl userRoot =  new PreferencesImpl(null, "", PreferencesImpl.USER_NODE_TYPE); 
 
     /**
      * <p>Constructs a root node in the underlying

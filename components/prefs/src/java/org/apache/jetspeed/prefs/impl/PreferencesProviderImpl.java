@@ -45,20 +45,20 @@ public class PreferencesProviderImpl implements PreferencesProvider, Startable
      */
     public PreferencesProviderImpl(PersistenceStore persistenceStore, String prefsFactoryImpl,  boolean enablePropertyManager)
     {
-        if (log.isDebugEnabled()) log.debug("Constructing PreferencesProviderImpl...");
-        this.persistenceStore = persistenceStore;
-        System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
-        PreferencesProviderImpl.prefProvider = this;
-        this.enablePropertyManager = enablePropertyManager;
-//        if(ignoredPathes != null)
-//        {
-//            this.ignoredPathes = Arrays.asList(ignoredPathes);
-//        }
-//        else
-//        {
-//            this.ignoredPathes = new ArrayList(0);
-//        }
-        
+        try
+        {
+            if (log.isDebugEnabled()) log.debug("Constructing PreferencesProviderImpl...");
+            this.persistenceStore = persistenceStore;
+            Class.forName(prefsFactoryImpl);
+            System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
+            PreferencesProviderImpl.prefProvider = this;
+            this.enablePropertyManager = enablePropertyManager;
+        }
+        catch (ClassNotFoundException e)
+        {
+            log.error("Unable to load PreferenceFactory "+prefsFactoryImpl, e);
+        }        
+
  
     }
     
@@ -100,7 +100,24 @@ public class PreferencesProviderImpl implements PreferencesProvider, Startable
     public void start()
     {
         // This will make sure that we are loaded into the vm immediately
-
+        log.debug("Loading prefernces api into classloader...");
+       // ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try
+        {
+         //   Thread.currentThread().setContextClassLoader(PreferencesFactoryImpl.class.getClassLoader());
+            new PreferencesFactoryImpl().systemRoot();
+            new PreferencesFactoryImpl().userRoot();
+        }
+        catch(Throwable e)
+        {
+            log.fatal("Failed to initialize prefs api.  "+e.toString(), e);
+            throw new RuntimeException("Failed to initialize prefs api.  "+e.toString());
+        }
+        finally
+        {
+        //    Thread.currentThread().setContextClassLoader(cl);
+        }
+    
     }
     /**
      * <p>

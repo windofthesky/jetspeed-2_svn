@@ -25,26 +25,16 @@ import java.util.prefs.PreferencesFactory;
  */
 public class PreferencesFactoryImpl implements PreferencesFactory
 {
-     static Preferences userRoot;
+  
      
-     static Preferences systemRoot;
-     
-     public PreferencesFactoryImpl()
-     {
-         systemRoot();
-         userRoot();
-     }
+   
 
     /**
      * @see java.util.prefs.PreferencesFactory#systemRoot()
      */
     public Preferences systemRoot()
     {
-        if(systemRoot == null)
-        {
-            systemRoot = new PreferencesImpl(null, "", PreferencesImpl.SYSTEM_NODE_TYPE);            
-        }
-        return systemRoot;
+      return  PreferencesImpl.systemRoot;
     }
 
     /**
@@ -52,17 +42,7 @@ public class PreferencesFactoryImpl implements PreferencesFactory
      */
     public Preferences userRoot()
     {
-        if(userRoot == null)
-        {
-            userRoot =  new PreferencesImpl(null, "", PreferencesImpl.USER_NODE_TYPE);            
-        }
-        return userRoot;
-    }
-    
-    public void reset()
-    {
-        systemRoot = new PreferencesImpl(null, "", PreferencesImpl.SYSTEM_NODE_TYPE);
-        userRoot = new PreferencesImpl(null, "", PreferencesImpl.USER_NODE_TYPE);        
+        return  PreferencesImpl.userRoot;
     }
 
 }
