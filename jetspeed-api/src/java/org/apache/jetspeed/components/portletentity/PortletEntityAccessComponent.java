@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
+import java.util.Collection;
+
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.pluto.om.common.ObjectID;
@@ -147,5 +149,27 @@ public interface PortletEntityAccessComponent
      * @throws PortletEntityNotStoredException
      */
 	void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException;
+	
+	/**
+	 * 
+	 * <p>
+	 * getPortletEntities
+	 * </p>
+	 *
+	 * @param portletDefinition
+	 * @return
+	 */
+	Collection getPortletEntities(PortletDefinition portletDefinition);
+	
+	/**
+	 * 
+	 * <p>
+	 * removePortletEntities
+	 * </p>
+	 *
+	 * @param portletDefinition
+	 * @throws PortletEntityNotDeletedException
+	 */
+	void removePortletEntities(PortletDefinition portletDefinition) throws PortletEntityNotDeletedException;
 
 }
