@@ -276,14 +276,6 @@ limitations under the License.
     
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     <unitTest>
-       <includes>
-        <include>**/TestRegistryDirect*.java</include>
-      </includes>
-       <excludes>
-           <exclude>**/TestRegistry.java</exclude>
-           <exclude>**/TestRegistryDirectOTM*.java</exclude>
-      </excludes>
-
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>
