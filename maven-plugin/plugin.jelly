@@ -21,307 +21,27 @@ limitations under the License.
          xmlns:ant="jelly:ant">
 
   <goal name="jetspeed2:deploy">
-  
-<!-- 	
-	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
- 	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
---> 	              
- 	<attainGoal name="pam.template.deploy"/>
-  </goal>
-
-	<goal name="pam.template.deploy">
-		<echo>Deploying App ${pam.app.name}</echo>
-			
-		<echo>${pam.webapps.dir}</echo>
-		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
-		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-			<classpath>
-				<pathelement path="${plugin.getDependencyPath('commons-configuration')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-commons')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-rdbms')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-persistence')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-prefs')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-security')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-registry')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-id-generator')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-file-cache')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-locator')}"/>				
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-capability')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-page-manager')}"/>
-				<pathelement path="${plugin.getDependencyPath('picocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('nanocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('groovy')}"/>
-				<pathelement path="${plugin.getDependencyPath('asm')}"/>
-				<pathelement path="${plugin.getDependencyPath('pluto')}"/>
-				<pathelement path="${plugin.getDependencyPath('castor')}"/>				
-				<pathelement path="${plugin.getDependencyPath('commons-beanutils')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-betwixt')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-digester')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-collections')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-httpclient')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-io')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-logging')}"/>
-				<pathelement path="${plugin.getDependencyPath('fulcrum')}"/>
-				<pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
-				<pathelement path="${plugin.getDependencyPath('ojb:db-ojb')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-pool')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-dbcp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdbc-se')}"/>
-				<pathelement path="${plugin.getDependencyPath('jta')}"/>
-				<pathelement path="${plugin.getDependencyPath('log4j')}"/>
-				<pathelement path="${plugin.getDependencyPath('portlet-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('servletapi')}"/>
-				<pathelement path="${plugin.getDependencyPath('tyrex')}"/>
-				<pathelement path="${plugin.getDependencyPath('xalan')}"/>
-				<pathelement path="${plugin.getDependencyPath('xerces')}"/>
-				<pathelement path="${plugin.getDependencyPath('xml-apis')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdom')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-modeler')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-jmx')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-tools')}"/>
-				<pathelement path="${plugin.getDependencyPath('regexp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cps')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cm')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:content-server')}"/>								
-				<pathelement path="${maven.build.dest}"/>
-			</classpath>
-			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
-			<sysproperty key="portal.use.internal.jndi" value="true"/>
-            <sysproperty key="pam.jetspeed.properties" value="${pam.jetspeed.properties}"/>
-            <sysproperty key="pam.deploy.dir" value="${org.apache.jetspeed.deploy.war.dir}"/>			
-			
-			<arg value="-Action"/>
-			<arg value="deploy"/>
-
-			<arg value="-PortalName"/>
-			<arg value="${pam.portal.name}"/>
-
-			<arg value="-PortletAppName"/>
-			<arg value="${pam.app.name}"/>
-
-			<arg value="-webappDir"/>
-			<arg value="${pam.webapps.dir}/"/>
-						
-			<arg value="-ApplicationType"/>
-			<arg value="${pam.app.type}"/>
-																
-			<arg value="-WarFileName"/>
-			<arg value="${pam.app.war}"/>
-
-			<arg value="-Impl"/>
-			<arg value="${pam.impl}"/>
-					
-		</java>
-	</goal>
-	
-	<goal name="pam.template.register">
-		<echo>Performing action ${pam.action} with App ${pam.app.name}</echo>
-		
-		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
-		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-			<classpath>
-				<pathelement path="${plugin.getDependencyPath('commons-configuration')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-commons')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-rdbms')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-persistence')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-prefs')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-security')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-registry')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-id-generator')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-file-cache')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-locator')}"/>				
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-capability')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-page-manager')}"/>
-				<pathelement path="${plugin.getDependencyPath('picocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('nanocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('groovy')}"/>
-				<pathelement path="${plugin.getDependencyPath('asm')}"/>
-				<pathelement path="${plugin.getDependencyPath('pluto')}"/>
-				<pathelement path="${plugin.getDependencyPath('castor')}"/>				
-				<pathelement path="${plugin.getDependencyPath('commons-beanutils')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-betwixt')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-digester')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-collections')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-httpclient')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-io')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-logging')}"/>
-				<pathelement path="${plugin.getDependencyPath('fulcrum')}"/>
-				<pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
-				<pathelement path="${plugin.getDependencyPath('ojb:db-ojb')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-pool')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-dbcp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdbc-se')}"/>
-				<pathelement path="${plugin.getDependencyPath('jta')}"/>
-				<pathelement path="${plugin.getDependencyPath('log4j')}"/>
-				<pathelement path="${plugin.getDependencyPath('portlet-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('servletapi')}"/>
-				<pathelement path="${plugin.getDependencyPath('tyrex')}"/>
-				<pathelement path="${plugin.getDependencyPath('xalan')}"/>
-				<pathelement path="${plugin.getDependencyPath('xerces')}"/>
-				<pathelement path="${plugin.getDependencyPath('xml-apis')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdom')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-modeler')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-jmx')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-tools')}"/>
-				<pathelement path="${plugin.getDependencyPath('regexp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cps')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cm')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:content-server')}"/>
-				<pathelement path="${maven.build.dest}"/>
-				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-			</classpath>
-			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-			<sysproperty key="portal.use.internal.jndi" value="true"/>
-
-			<arg value="-Action"/>
-			<arg value="${pam.action}"/>
-			
-			<arg value="-PortletAppName"/>
-			<arg value="${pam.app.name}"/>
-			
-			<arg value="-PortalName"/>
-			<arg value="jetspeed"/>
-	
-			<arg value="-warfilename"/>
-			<arg value="${pam.app.war}"/>
-
-			<arg value="-Impl"/>
-			arg value="${pam.impl}"/>
-			
-			<arg value="-webappDir"/>
-			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>			
-
-	
-		</java>
-	</goal>
-	
-	<goal name="pam.template.undeploy">
-		<echo>Undeploying App ${pam.app.name}</echo>
-		<j:if test="$pam.app.war}">
-			<echo>Using war ${pam.app.war}</echo>
-		</j:if>
-		
-		<echo>${org.apache.jetspeed.deploy.war.dir}</echo>
-		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-			<classpath>
-				<pathelement path="${plugin.getDependencyPath('commons-configuration')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-commons')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-rdbms')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-persistence')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-prefs')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-security')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-registry')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-id-generator')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-file-cache')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-locator')}"/>				
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-capability')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-page-manager')}"/>
-				<pathelement path="${plugin.getDependencyPath('picocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('nanocontainer')}"/>
-				<pathelement path="${plugin.getDependencyPath('groovy')}"/>
-				<pathelement path="${plugin.getDependencyPath('asm')}"/>
-				<pathelement path="${plugin.getDependencyPath('pluto')}"/>
-				<pathelement path="${plugin.getDependencyPath('castor')}"/>				
-				<pathelement path="${plugin.getDependencyPath('commons-beanutils')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-betwixt')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-digester')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-collections')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-httpclient')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-io')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-lang')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-logging')}"/>
-				<pathelement path="${plugin.getDependencyPath('fulcrum')}"/>
-				<pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
-				<pathelement path="${plugin.getDependencyPath('ojb:db-ojb')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-pool')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-dbcp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdbc-se')}"/>
-				<pathelement path="${plugin.getDependencyPath('jta')}"/>
-				<pathelement path="${plugin.getDependencyPath('log4j')}"/>
-				<pathelement path="${plugin.getDependencyPath('portlet-api')}"/>
-				<pathelement path="${plugin.getDependencyPath('servletapi')}"/>
-				<pathelement path="${plugin.getDependencyPath('tyrex')}"/>
-				<pathelement path="${plugin.getDependencyPath('xalan')}"/>
-				<pathelement path="${plugin.getDependencyPath('xerces')}"/>
-				<pathelement path="${plugin.getDependencyPath('xml-apis')}"/>
-				<pathelement path="${plugin.getDependencyPath('jdom')}"/>
-				<pathelement path="${plugin.getDependencyPath('commons-modeler')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-jmx')}"/>
-				<pathelement path="${plugin.getDependencyPath('mx4j-tools')}"/>
-				<pathelement path="${plugin.getDependencyPath('regexp')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cps')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:jetspeed-cm')}"/>
-				<pathelement path="${plugin.getDependencyPath('jetspeed2:content-server')}"/>
-				<pathelement path="${maven.build.dest}"/>
-				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-			</classpath>
-			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
-			<sysproperty key="portal.use.internal.jndi" value="true"/>
-            <sysproperty key="pam.jetspeed.properties" value="${pam.jetspeed.properties}"/>
-			
-						
-			<arg value="-Action"/>
-			<arg value="undeploy"/>
-                 
-			<arg value="-PortletAppName"/>
-			<arg value="${pam.app.name}"/>
-			
-			<arg value="-PortalName"/>
-			<arg value="${pam.portal.name}"/>
-			
-			<arg value="-ApplicationType"/>
-			<arg value="${pam.app.type}"/>
-			
-			<arg value="-Impl"/>
-			arg value="${pam.impl}"/>
-			
-			<arg value="-webappDir"/>
-			<arg value="${org.apache.jetspeed.deploy.war.dir}/"/>
-	
-		
-		</java>
-	</goal>
-	
+ 	 <copy file="${maven.build.dir}/${maven.war.final.name}" todir="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy" overwrite="true" failonerror="true" />
+  </goal>	
 
   <goal name="jetspeed2:register">
-  	<j:set var="pam.action" value="register"/>
- 	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
- 	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
- 	<attainGoal name="pam.template.register"/>
+  	<j:if test="${!maven.war.final.name.startsWith('jetspeed-')}">
+  		<echo>Register requires that the WAR be prefixed with "jetspeed-".  Appending prefix now.</echo>  	 	
+  	 	<copy file="${maven.build.dir}/${maven.war.final.name}" tofile="${maven.build.dir}/jetspeed-${maven.war.final.name}" overwrite="true" failonerror="true"/>
+  	 	<j:set var="maven.war.final.name" value="jetspeed-${maven.war.final.name}"/>	
+     </j:if>  	
+     <attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="jetspeed2:unregister">
-  	<j:set var="pam.action" value="unregister"/>
- 	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
- 	<j:set var="pam.app.war" value="${org.apache.jetspeed.portlet.war}"/>
- 	<attainGoal name="pam.template.register"/>
+  	 	<j:if test="${!maven.war.final.name.startsWith('jetspeed-')}">
+  	 		<j:set var="maven.war.final.name" value="jetspeed-${maven.war.final.name}"/>
+        </j:if>  	
+  	    <attainGoal name="jetspeed2:undeploy" />
   </goal>
 
-
   <goal name="jetspeed2:undeploy">
- 	<j:set var="pam.app.name" value="${org.apache.jetspeed.portlet.app.name}"/>
- 	<j:set var="pam.app.type" value="webapp"/>
- 	<attainGoal name="pam.template.undeploy"/>
+ 	 <delete file="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}"/>
   </goal>
 
   <goal name="jetspeed2:start.hsql">
@@ -452,19 +172,17 @@ limitations under the License.
      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      
-      <!--<attainGoal name="jetspeed2:unregister.core.pa" />-->
-     <j:set var="pam.action" value="register"/>
- 	 <j:set var="pam.app.name" value="jetspeed"/>
- 	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
- 	 <attainGoal name="pam.template.register"/>
+
   </goal>
   
+  <!--
   <goal name="jetspeed2:unregister.core.pa">
   	  <j:set var="pam.action" value="unregister"/>
  	 <j:set var="pam.app.name" value="jetspeed"/>
  	 <j:set var="pam.app.war" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}"/>
  	 <attainGoal name="pam.template.register"/>
   </goal>
+-->
 
 <goal name="jetspeed2:copy.context">    
 
@@ -478,24 +196,11 @@ limitations under the License.
 	    </j:otherwise>
   	</j:choose>
   		
-	<!-- careful there in jexl land, don't use dot notation as it don't evaluate in jexl test -->	
-	<j:set var="fileName" value="org.apache.jetspeed.context.file.name"/>	
-	<j:set var="fileSource" value="org.apache.jetspeed.context.file.source"/>	
 	
 	<!-- context file destination -->  	
-    <j:choose>	
-	    <j:when test="${fileName == null}" >
-			<j:set var="destinationFile" value="${catDir}/jetspeed.xml"/>
-	  	</j:when>
-	    <j:otherwise>	    
-	        <j:set var="destinationFile" value="${catDir}/${org.apache.jetspeed.context.file.name}"/>	    
-	    </j:otherwise>
-	</j:choose>
-	              
-    <j:if test="${fileSource == null}" >
-		<j:set var="org.apache.jetspeed.context.file.source" value="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed.xml"/>
-  	</j:if>
-	
+    <j:set var="destinationFile" value="${catDir}/${org.apache.jetspeed.context.file.name}"/>	    
+
+	 <echo>Copy ${org.apache.jetspeed.context.file.source} to ${destinationFile}</echo>
      <copy file="${org.apache.jetspeed.context.file.source}" tofile="${destinationFile}" overwrite="true">
         <filterset begintoken="@" endtoken="@">
           <filter token="USERNAME" value="${org.apache.jetspeed.database.user}"/>
