@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.jetspeed.prefs.impl.PropertyException;
 
 /**
  * <p>Service used to manage property and property set definition.<p>
