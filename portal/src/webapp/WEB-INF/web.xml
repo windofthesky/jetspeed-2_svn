@@ -61,6 +61,10 @@ limitations under the License.
     <filter-name>ContentServer</filter-name>
     <url-pattern>*.html</url-pattern>    
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.ico</url-pattern>    
+ </filter-mapping>
  <filter-mapping>
     <filter-name>ContentServer</filter-name>
     <url-pattern>*.css</url-pattern>    
