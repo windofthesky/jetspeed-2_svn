@@ -21,22 +21,24 @@ limitations under the License.
 
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 
+<c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}" value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
-    <a href='<c:url value="/portal/my-account.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}" value="/portal/my-account.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
     <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
-    <c:if test="${retryCount != null}">
+    <c:if test="${not empty retryCount}">
       <br>
       <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
       <br>
     </c:if>
-    <form method="POST" action='<c:url value="/login/proxy"/>'>
+    <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="/login/proxy"/>'>
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>

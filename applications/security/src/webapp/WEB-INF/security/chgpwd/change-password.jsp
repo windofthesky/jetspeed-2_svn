@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
+<%@page import="org.apache.jetspeed.request.RequestContext"%>
 <%@page import="org.apache.jetspeed.portlets.security.ChangePasswordPortlet"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet"%>
 <%@taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
@@ -81,7 +82,8 @@ limitations under the License.
               </c:when>
               <c:otherwise>
                 <br/><br/>
-                <a href='<c:url value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
+                <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+                <a href='<c:url context="${requestContext.request.contextPath}" value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
               </c:otherwise>
             </c:choose>
           </c:if>
