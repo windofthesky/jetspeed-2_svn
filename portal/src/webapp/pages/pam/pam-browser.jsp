@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
-<%@ page language="java" import="javax.portlet.*, java.util.List" session="true" %>
+<%@ page language="java" import="javax.portlet.*, java.util.List, java.util.Iterator, org.apache.jetspeed.om.common.portlet.MutablePortletApplication" session="true" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
@@ -42,7 +42,16 @@ limitations under the License.
 
 <br>
 
-
-
+<table>
+<%
+ List apps = (List) renderRequest.getAttribute("apps");
+ for (Iterator i = apps.iterator(); i.hasNext();)
+ {
+   MutablePortletApplication pa = (MutablePortletApplication) i.next();
+   out.println("<tr><td>" + pa.getName() + "</td>");
+   out.println("<td>" + pa.getDescription() + "</td></tr>"); 
+ }
+%>
+</table>
 
 
