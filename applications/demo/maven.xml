@@ -14,7 +14,7 @@
         </fileset>
     </copy>
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/">
-      <fileset dir="./src">
+      <fileset dir="./src/webapp">
       </fileset>
     </copy>
   </goal>
