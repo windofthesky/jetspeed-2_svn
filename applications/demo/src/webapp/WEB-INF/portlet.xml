@@ -472,14 +472,6 @@ limitations under the License.
 				<name>sso.type</name>
 				<value>url</value>
 			</preference>			
-			<preference>
-				<name>sso.url.Principal</name>
-				<value>sso-principal</value>
-			</preference>			
-			<preference>
-				<name>sso.url.Credential</name>
-				<value>sso-credential</value>
-			</preference>						
         </portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
@@ -577,15 +569,7 @@ limitations under the License.
                 <name>SRC</name>
 				<value>http://www.apache.org</value>
             </preference>
-			<preference>
-				<name>sso.url.Principal</name>
-				<value>sso-principal</value>
-			</preference>			
-			<preference>
-				<name>sso.url.Credential</name>
-				<value>sso-credential</value>
-			</preference>									
-        </portlet-preferences>
+			</portlet-preferences>
         <supported-locale>en</supported-locale>
         <portlet-info>
             <title>WebContent Prototype Portlet</title>
