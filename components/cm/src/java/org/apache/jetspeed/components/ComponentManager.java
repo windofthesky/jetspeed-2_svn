@@ -55,7 +55,7 @@ public class ComponentManager implements ComponentManagement, ContainerManagemen
     public ComponentManager( File assemblyFile, PicoContainer parent, String scope) throws IOException, ClassNotFoundException 
     {
         rootContainerRef = new SimpleReference();
-        NanoContainer nano = new NanoContainer(assemblyFile);
+        NanoContainer nano = new NanoContainer(assemblyFile, this.getClass().getClassLoader());
         ObjectReference parentRef = null;
         if(parent != null)
         {
