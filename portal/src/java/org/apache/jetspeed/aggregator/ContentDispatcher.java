@@ -78,4 +78,13 @@ public interface ContentDispatcher
      * hold until it's completely rendered.
      */
     public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp);
+    
+    /**
+     * Include in the provided PortletResponse output stream the rendered content
+     * of the request fragment.
+     * If the fragment rendered content is not yet available, the method will
+     * hold until it's completely rendered.
+     */
+    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp);
+    
 }

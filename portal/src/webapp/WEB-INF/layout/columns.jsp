@@ -6,8 +6,10 @@
 <portlet:defineObjects/>
 
 <% 
+
 List[] table = (List[])renderRequest.getAttribute("columns");
 Page myPage = (Page)renderRequest.getAttribute("page");
+
 Fragment myFragment = (Fragment)renderRequest.getAttribute("fragment");
 ContentDispatcher dispatcher = (ContentDispatcher)renderRequest.getAttribute("dispatcher");  
 org.apache.pluto.om.entity.PortletEntity portletEntity = 
@@ -86,7 +88,7 @@ renderRequest.setAttribute("entity",portletEntity);
            out.flush();
            if (!"hidden".equals(f.getState()))
            {
-                dispatcher.include(f,(javax.portlet.RenderRequest)renderRequest,renderResponse);
+                dispatcher.include(f,(javax.portlet.RenderRequest)renderRequest, (javax.portlet.RenderResponse)renderResponse);
            }
       %>
      <%

@@ -99,7 +99,6 @@ public class PortletInvokerFactoryImpl
 {
     private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
 
-
     /** The servlet configuration for the Jetspeed portal */
     private ServletConfig servletConfig;
     
