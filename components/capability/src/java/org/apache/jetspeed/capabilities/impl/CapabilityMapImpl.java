@@ -214,7 +214,7 @@ class CapabilityMapImpl implements CapabilityMap
      * Return true if this CapabilityMap supports the given media type
      *
      * @param media the name of a media type registered in the
-     * MediaType regsitry
+     * MediaType registry
      *
      * @return true is the capabilities of this agent at least match those
      * required by the media type

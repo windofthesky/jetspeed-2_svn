@@ -52,9 +52,9 @@ public class StaticInformationProviderImpl implements StaticInformationProvider
      */
     public PortletDefinition getPortletDefinition(String uniqueId)
     {
-        PortletRegistry regsitry =
+        PortletRegistry registry =
             (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        return regsitry.getPortletDefinitionByIdentifier(uniqueId);
+        return registry.getPortletDefinitionByIdentifier(uniqueId);
     }
 
     /** 
