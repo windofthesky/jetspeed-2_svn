@@ -148,7 +148,7 @@ public class PBStore implements PersistenceStore
         {
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             return pb.getCollectionByQuery((Query) query);
         }
@@ -177,7 +177,7 @@ public class PBStore implements PersistenceStore
         {
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             return pb.getObjectByQuery((Query) query);
         }
@@ -205,7 +205,7 @@ public class PBStore implements PersistenceStore
         {
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             return pb.getObjectByIdentity(new Identity(object, pb));
         }
@@ -231,7 +231,7 @@ public class PBStore implements PersistenceStore
     {
         if (pb.isClosed())
         {
-            PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
         }
         return pb.getCount((Query) query);
        
@@ -247,7 +247,7 @@ public class PBStore implements PersistenceStore
         {
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             return pb.getIteratorByQuery((Query) query);
         }
@@ -345,7 +345,7 @@ public class PBStore implements PersistenceStore
             invoker.beforeMakePersistent();
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             pb.store(obj);
             invoker.afterMakePersistent();
@@ -383,7 +383,7 @@ public class PBStore implements PersistenceStore
         {
             if(pb.isClosed())
             {
-                PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
             }
             return pb.getCollectionByQuery(QueryFactory.newQuery(clazz, new Criteria()));
         }
@@ -407,7 +407,7 @@ public class PBStore implements PersistenceStore
     {
         if(pb.isClosed())
         {
-            PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
         }
         pb.clearCache();
     }
