@@ -38,9 +38,9 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
     </supports>
     <portlet-info>
       <title>TwoColumns</title>
@@ -75,9 +75,9 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-       <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
     </supports>
     <portlet-info>
       <title>VelocityTwoColumns</title>
@@ -108,8 +108,9 @@ limitations under the License.
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
     </supports>
     <portlet-info>
       <title>VelocityThreeColumns</title>

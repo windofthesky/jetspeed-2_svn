@@ -833,6 +833,14 @@ public class JetspeedPowerTool implements ViewTool
                     // nothing has changed
                     return actionState.getActions();
                 }                
+                else
+                {
+                    actionState.setPortletMode(mode);                    
+                }
+            }
+            else
+            {
+                actionState.setWindowState(state);
             }
             // something has changed, rebuild the list
         }
@@ -866,6 +874,90 @@ public class JetspeedPowerTool implements ViewTool
             createAction(actions, JetspeedActions.INDEX_NORMAL, portlet);                        
         }
         
+        if (mode.equals(PortletMode.VIEW.toString()))
+        {
+            if (content.supportsPortletMode(PortletMode.EDIT))
+            {
+                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+            }
+            if (content.supportsPortletMode(PortletMode.HELP))
+            {            
+                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+            }
+        }
+        else if (mode.equals(PortletMode.EDIT.toString()))
+        {
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+            if (content.supportsPortletMode(PortletMode.HELP))
+            {                        
+                createAction(actions, JetspeedActions.INDEX_HELP, portlet);
+            }
+        }
+        else // help
+        {
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet);
+            if (content.supportsPortletMode(PortletMode.EDIT))
+            {            
+                createAction(actions, JetspeedActions.INDEX_EDIT, portlet);
+            }
+        }
+        return actions;
+    }
+
+    /**
+     * Gets the list of decorator actions for a page.
+     * Each page has its own collection of actions associated with it.
+     * The creation of the decorator action list per page will only be called once per session.
+     * This optimization is to avoid the expensive operation of security checks and action object creation and logic
+     * on a per request basis. 
+     * 
+     * @return A list of actions available to the current window, filtered by securty access and current state.
+     * @throws Exception
+     */
+    public List getPageDecoratorActions() throws Exception
+    {
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        String key = getPage().getId();
+        Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
+        if (null == sessionActions)
+        {
+            sessionActions = new HashMap();
+            context.setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
+        }        
+        PortletWindowActionState actionState = (PortletWindowActionState)sessionActions.get(key);
+        
+        String state = getWindowState().toString();        
+        String mode = getPortletMode().toString();
+
+        if (null == actionState)
+        {
+            actionState = new PortletWindowActionState(state, mode);   
+            sessionActions.put(key, actionState);
+        }
+        else
+        {
+            if (actionState.getPortletMode().equals(mode))
+            {
+                // nothing has changed
+                return actionState.getActions();
+            }                
+            // something has changed, rebuild the list
+            actionState.setPortletMode(mode);
+        }
+        
+                        
+        List actions = actionState.getActions();
+        actions.clear();
+     
+        PortletDefinitionComposite portlet = 
+            (PortletDefinitionComposite) getCurrentPortletEntity().getPortletDefinition();
+        if (null == portlet)
+        {
+            return actions; // allow nothing
+        }        
+                
+        ContentTypeSet content = portlet.getContentTypeSet();
+                
         if (mode.equals(PortletMode.VIEW.toString()))
         {
             if (content.supportsPortletMode(PortletMode.EDIT))

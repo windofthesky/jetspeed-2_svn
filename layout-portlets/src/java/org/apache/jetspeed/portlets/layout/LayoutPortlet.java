@@ -49,6 +49,45 @@ public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         super.init(config);
     }
 
+    public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        response.setContentType("text/html");
+        JetspeedPowerTool jpt = new JetspeedPowerTool(request, response, getPortletConfig());
+        PortletPreferences prefs = request.getPreferences();
+        String absHelpPage = "";
+        
+        request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY, getPage(request));
+        request.setAttribute("fragment", getFragment(request, false));
+        request.setAttribute("dispatcher", getDispatcher(request));
+        
+        if (prefs != null)
+        {
+        
+            try
+            {
+                String helpPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
+        
+                // TODO: Need to retreive layout.properties instead of hard-coding ".vm" 
+                absHelpPage = jpt.getTemplate(helpPage+"/"+JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE+"-help.vm", 
+                                      JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+                log.debug("Path to help page for LayoutPortlet " + absHelpPage);
+                request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);                
+            }
+            catch (TemplateLocatorException e)
+            {
+                throw new PortletException("Unable to locate view page " + absHelpPage, e);
+            }            
+        }
+        super.doView(request, response);
+        
+        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+        request.removeAttribute("fragment");        
+        request.removeAttribute("layout");
+        request.removeAttribute("dispatcher");
+        
+        
+    }
+    
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         response.setContentType("text/html");

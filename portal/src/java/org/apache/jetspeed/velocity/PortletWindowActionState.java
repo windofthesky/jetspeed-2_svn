@@ -52,6 +52,12 @@ public class PortletWindowActionState implements Serializable
     {
         return portletMode;
     }
+    
+    public void setPortletMode(String mode)
+    {
+        this.portletMode = mode;
+    }
+    
     /**
      * @return Returns the windowState.
      */
@@ -59,4 +65,10 @@ public class PortletWindowActionState implements Serializable
     {
         return windowState;
     }
+    
+    public void setWindowState(String state)
+    {
+        this.windowState = state;
+    }
+    
 }
