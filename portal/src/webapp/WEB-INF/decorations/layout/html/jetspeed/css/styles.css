@@ -19,6 +19,13 @@ BODY.layout-Jetspeed  {
 
 }
 
+#rootLinks
+{
+	padding-right:2px; 
+	
+}
+
+
 .layout-Jetspeed .LTabLeftLow
 {
 	/**
@@ -75,3 +82,4 @@ BODY.layout-Jetspeed  {
 	width:10px;
 	background:url(content/jetspeed/images/tabright.gif);
 }
+
