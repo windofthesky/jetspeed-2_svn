@@ -142,6 +142,75 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+
+<!-- MyFaces -->    
+    <dependency>
+      <groupId>myfaces</groupId>
+      <artifactId>myfaces-jsf-api</artifactId>
+      <version>1.0.7-PATCHED</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>myfaces</groupId>
+      <artifactId>myfaces</artifactId>
+      <version>1.0.7-PATCHED</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>myfaces</groupId>
+      <artifactId>myfaces-components</artifactId>
+      <version>1.0.7-PATCHED</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>portals-bridges</groupId>
+      <artifactId>portals-bridges-myfaces</artifactId>
+      <version>0.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <version>1.0</version>
+      <url>http://jakarta.apache.org/commons/el/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>jspapi</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.0-20040521</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>         
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.5</version>
+      <url>http://jakarta.apache.org/commons/digester.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.6.1</version>
+      <url>http://jakarta.apache.org/commons/beanutils.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
     
    </dependencies>
 
