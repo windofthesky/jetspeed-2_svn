@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.cps.discovery.TestCPSDiscovery'/>  
+  <property name='testcase' value='org.apache.jetspeed.cps.TestPico'/>  
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
