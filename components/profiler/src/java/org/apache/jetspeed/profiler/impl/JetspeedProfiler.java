@@ -304,14 +304,14 @@ public class JetspeedProfiler implements Profiler
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(org.apache.jetspeed.profiler.ProfileLocator,org.apache.jetspeed.om.page.Page)
+     * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(java.util.Map)
      */
-    public ProfiledPageContext createProfiledPageContext(ProfileLocator locator)
+    public ProfiledPageContext createProfiledPageContext(Map locators)
     {
         try
         {
             ProfiledPageContext pageContext = (ProfiledPageContext) profiledPageContextClass.newInstance();
-            pageContext.init(this, locator);
+            pageContext.init(this, locators);
             return pageContext;
         }
         catch (Exception e)
