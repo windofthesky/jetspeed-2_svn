@@ -1,0 +1,52 @@
+--------------------------  
+ Jetspeed 2.0-M1 Release
+--------------------------
+
+
+Installation Instructions
+--------------------------
+
+1. Download jetspeed-2.0-M1.tar.gz 
+   Download jetspeed-2.0-M1.zip (windows)
+2. Expand jetspeed-2.0-M1.tar.gz into a clean Tomcat installation **
+   
+
+   tar xfz jetspeed-2.0-M1.tar.gz -C tomcat   # where 'tomcat' is your tomcat home directory
+
+   For Windows:
+
+   unzip jetspeed-2.0-M1.zip directly into your tomcat home directory (overlay)
+
+3. cd $TOMCAT_HOME/jetspeed-database
+
+4. start-database.sh (.bat)
+  
+5. startup Tomcat
+
+6. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+
+
+Configuring another database
+-----------------------------
+
+1. cd $TOMCAT_HOME/jetspeed-database/scripts
+2. edit the build.properties, set the properties for your database connection, save.
+3. create a database schema/catalog to hold your database tables 
+4. type 'ant' to run the database population scripts
+5. edit the jetspeed.xml properties 
+    - Tomcat4 - $TOMCAT_HOME/webapps/jetspeed.xml
+    - Tomcat5 - $TOMCAT_HOME/conf/Catalina/localhost/jetspeed.xml
+   
+    and set your database connection
+
+6. copy your database driver into Tomcat's common/endorsed directory
+
+7. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+
+**    NOTE: if you are installing into a Tomcat instance which had Jetspeed installed previously, remember to delete these files :
+        $TOMCAT_HOME/shared/lib/jetspeed*.jar
+        $TOMCAT_HOME/shared/lib/pluto*.jar
+        $TOMCAT_HOME/shared/lib/portlet-api*.jar
+        $TOMCAT_HOME/shared/lib/portals-bridges*.jar
+        $TOMCAT_HOME/webapps/jetspeed
+
