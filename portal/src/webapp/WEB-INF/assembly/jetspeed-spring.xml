@@ -35,7 +35,7 @@ limitations under the License.
   	   	  	<ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" />
   	   	  </entry>
   	   	  <entry key="PAM">
-  	   	  	<ref bean="org.apache.jetspeed.tools.pamanager.ApplicationServerPAM" />
+  	   	  	<ref bean="PAM" />
   	   	  </entry>		  
   	   	</map>
   	   </constructor-arg>
