@@ -28,7 +28,10 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
+import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -94,7 +97,7 @@ public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
         return new TestSuite(TestPortletDescriptor.class);
 
     }
-
+    
     /*
      * Overrides the database properties
      */
@@ -105,6 +108,9 @@ public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
 
     public void testLoadPortletApplicationTree() throws Exception
     {
+        PortletCache portletCache = new PortletCache();
+        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+        
         System.out.println("Testing loadPortletApplicationTree");
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
         MutablePortletApplication app = pad.createPortletApplication();

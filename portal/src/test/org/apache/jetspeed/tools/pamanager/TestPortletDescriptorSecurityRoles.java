@@ -22,6 +22,9 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
+import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
@@ -79,6 +82,14 @@ public class TestPortletDescriptorSecurityRoles extends AbstractPrefsSupportedTe
         return new TestSuite(TestPortletDescriptorSecurityRoles.class);
     }
 
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        
+        PortletCache portletCache = new PortletCache();
+        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
+    }
+    
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");

@@ -25,6 +25,9 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
+import org.apache.jetspeed.cache.PortletCache;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.prefs.PropertyException;
@@ -82,6 +85,9 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
     public void setUp() throws Exception
     {
         super.setUp();
+        
+        PortletCache portletCache = new PortletCache();
+        new JetspeedPortletFactoryProxy(new JetspeedPortletFactory(portletCache));
         
         ums = new UserManagerImpl(persistenceStore);
         gms = new GroupManagerImpl(persistenceStore);
