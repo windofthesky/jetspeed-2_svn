@@ -52,6 +52,8 @@ WHEREAS, the Board of Directors deems it to be in
   Jetspeed, Pluto, WSRP4J subprojects; and be it further
 
   RESOLVED, that all responsibility pertaining to the Jakarta
-  Jetspeed, Jakarta Pluto, and WSRP4J sub-projects and encumbered 
-  upon the Jakarta PMC are hereafter discharged. 
+  Jetspeed, Jakarta Pluto sub-projects and encumbered 
+  upon the Jakarta PMC, and the responsibility pertaining to the
+  WSRP4J sub-project and encumbered upon the Webservices PMC 
+  are hereafter discharged. 
 
