@@ -15,6 +15,8 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
@@ -24,7 +26,12 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
+import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
+import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 
 /**
  * <p>Unit testing for {@link UserManager}.</p>
@@ -170,6 +177,41 @@ public class TestUserManager extends AbstractSecurityTestcase
         }
     }
 
+    public void testGetUsers()
+    throws Exception
+    {
+        ums.addUser("one", "one-pw");
+        ums.addUser("two", "two-pw");
+        ums.addUser("three", "three-pw");
+        int count = 0;
+        Iterator it = ums.getUsers("");
+        while (it.hasNext())
+        {            
+            User user = (User)it.next();
+            Iterator principals = user.getSubject().getPrincipals().iterator();
+            while (principals.hasNext())
+            {
+                Principal principal = (Principal)principals.next();
+                System.out.println("principal = " + principal.getName());
+                if (principal.getName().equals("one"))
+                {
+                    count++;
+                }
+                else if (principal.getName().equals("two"))
+                {
+                    count++;
+                }
+                else if (principal.getName().equals("three"))
+                {
+                    count++;
+                }                                
+            }
+        }
+        assertTrue("user count should be 3", count == 3);
+        ums.removeUser("one");
+        ums.removeUser("two");
+        ums.removeUser("three");
+    }
     /**
      * <p>Destroy user test object.</p>
      */
