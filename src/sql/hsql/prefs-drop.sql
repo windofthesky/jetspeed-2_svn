@@ -1,5 +1,5 @@
-DROP TABLE pref_property_value IF EXISTS;
-DROP TABLE pref_property_key IF EXISTS;
-DROP TABLE pref_node IF EXISTS;
-DROP TABLE pref_property_set_def IF EXISTS;
+drop table PREFS_PROPERTY_VALUE if exists;
+drop table PREFS_NODE_PROPERTY_KEY if exists;
+drop table PREFS_PROPERTY_KEY if exists;
+drop table PREFS_NODE if exists;
 
