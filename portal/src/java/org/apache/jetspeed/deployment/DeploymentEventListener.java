@@ -26,6 +26,7 @@ package org.apache.jetspeed.deployment;
  */
 public interface DeploymentEventListener
 {
-	public void invoke(DeploymentEvent event) throws DeploymentException;
+	public void invokeDeploy(DeploymentEvent event) throws DeploymentException;
 	
+	public void invokeUndeploy(DeploymentEvent event) throws DeploymentException;	
 }
