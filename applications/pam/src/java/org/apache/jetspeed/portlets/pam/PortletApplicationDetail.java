@@ -15,10 +15,14 @@
  */
 package org.apache.jetspeed.portlets.pam;
 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -33,6 +37,7 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
@@ -110,12 +115,14 @@ public class PortletApplicationDetail extends ServletPortlet
     }
     
     public void doView(RenderRequest request, RenderResponse response)
+
     throws PortletException, IOException
+
     {
         response.setContentType("text/html");
         
         String paName = (String)
-        	request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+            request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
                                              PortletSession.APPLICATION_SCOPE);
         
         MutablePortletApplication pa = registry.getPortletApplication(paName);
@@ -152,22 +159,23 @@ public class PortletApplicationDetail extends ServletPortlet
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
             
         }
+
         super.doView(request, response);
+
     }
+
     
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
-	{
+    {
         //System.out.println("PorletApplicationDetail: processAction()");
         String paName = (String)
-    	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+        actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
                                              PortletSession.APPLICATION_SCOPE);
-        
-        MutablePortletApplication pa = registry.getPortletApplication(paName);
-        
+                
         String selectedPortlet = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_PORTLET);
         if(selectedPortlet != null)
         {
-	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, selectedPortlet, PortletSession.APPLICATION_SCOPE);
+            actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, selectedPortlet, PortletSession.APPLICATION_SCOPE);
         }
         
         String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
@@ -194,17 +202,24 @@ public class PortletApplicationDetail extends ServletPortlet
                 
                 if(action.endsWith("metadata"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                    
                     processMetadataAction(actionRequest, actionResponse, pa.getMetadata(), action);
                 }
                 else if(action.endsWith("user_attribute"))
                 {
-                    processUserAttributeAction(actionRequest, actionResponse, pa, action);
+                    processUserAttributeAction(actionRequest, actionResponse, paName, action);
                 }
             }
             else if(isPortletAction(action))
             {
+                // TODO: move this into tx
+                MutablePortletApplication pa = registry.getPortletApplication(paName);                    
+                
                 action = getAction(PORTLET_ACTION_PREFIX, action);
                 String pdefName = (String) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+                
+                // TODO: move this into tx
                 PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
                 
                 if(action.endsWith("metadata"))
@@ -237,8 +252,8 @@ public class PortletApplicationDetail extends ServletPortlet
                 }
             }
         }
-	}
-
+    }
+    
     private boolean isAppAction(String action)
     {
         return action.startsWith(PORTLET_APP_ACTION_PREFIX);
@@ -260,24 +275,48 @@ public class PortletApplicationDetail extends ServletPortlet
      * @param pa
      * @param action
      */
-    private void processUserAttributeAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, String action) throws PortletException, IOException
+    private void processUserAttributeAction(ActionRequest actionRequest, ActionResponse actionResponse, String paName, String action) 
+    throws PortletException, IOException
     {
+        
         if(action.equals("edit_user_attribute"))
         {
-            Iterator userAttrIter = pa.getUserAttributes().iterator();
-            while (userAttrIter.hasNext())
+            String userAttrName = "";
+            try
             {
-                UserAttribute userAttr = (UserAttribute) userAttrIter.next();
-                
-                String userAttrName = userAttr.getName();
-                String description = actionRequest.getParameter(userAttrName + ":description");
-                if(!userAttr.getDescription().equals(description))
+                Transaction tx = registry.getPersistenceStore().getTransaction();
+                tx.begin();
+                MutablePortletApplication mpa = registry.getPortletApplication(paName);
+                boolean modified = false;
+                Iterator userAttrIter = mpa.getUserAttributes().iterator();
+                while (userAttrIter.hasNext())
                 {
-                    userAttr.setDescription(description);
+                    UserAttribute userAttr = (UserAttribute) userAttrIter.next();
+                    
+                    userAttrName = userAttr.getName();
+                    String description = actionRequest.getParameter(userAttrName + ":description");
+                    if(!userAttr.getDescription().equals(description))
+                    {
+                        userAttr.setDescription(description);
+                        modified = true;
+                    }
+                }
+    
+                if (modified)
+                {
+                    registry.getPersistenceStore().lockForWrite(mpa);
+                    tx.commit();
+                }
+                else
+                {
+                    tx.rollback();
                 }
             }
-            
-            registry.getPersistenceStore().getTransaction().commit();
+            catch (LockFailedException e)
+            {
+                throw new PortletException("Failed update user attribute: " + userAttrName, e);
+                
+            }
         }
         else if(action.equals("add_user_attribute"))
         {
@@ -289,13 +328,14 @@ public class PortletApplicationDetail extends ServletPortlet
                 {
                     Transaction tx = registry.getPersistenceStore().getTransaction();
                     tx.begin();
-                    registry.getPersistenceStore().lockForWrite(pa);
-                    pa.addUserAttribute(userAttrName, userAttrDesc);	            
-    	            tx.commit();
+                    MutablePortletApplication mpa = registry.getPortletApplication(paName);
+                    registry.getPersistenceStore().lockForWrite(mpa);
+                    mpa.addUserAttribute(userAttrName, userAttrDesc);                
+                    tx.commit();
                 }
-                catch (Exception e)
+                catch (LockFailedException e)
                 {
-                    e.printStackTrace();
+                    throw new PortletException("Failed add user attribute: " + userAttrName, e);
                     
                 }
             }
@@ -303,25 +343,55 @@ public class PortletApplicationDetail extends ServletPortlet
         else if(action.equals("remove_user_attribute"))
         {
             String[] userAttrNames = actionRequest.getParameterValues("user_attr_id");
-
+            
             if(userAttrNames != null)
             {
-	            Iterator userAttrIter = pa.getUserAttributes().iterator();
-	            while (userAttrIter.hasNext())
-	            {
-	                UserAttribute userAttr = (UserAttribute) userAttrIter.next();
-	                for(int i=0; i<userAttrNames.length; i++)
-	                {
-	                    String userAttrName = userAttrNames[i];
-	                    if(userAttr.getName().equals(userAttrName))
-	                    {
-	                        userAttrIter.remove();
-	                        break;
-	                    }
-	                }
-	            }
-	            
-	            registry.getPersistenceStore().getTransaction().commit();
+                String userAttrName = "";
+                try
+                {
+                    Transaction tx = registry.getPersistenceStore().getTransaction();
+                    tx.begin();
+                    MutablePortletApplication mpa = registry.getPortletApplication(paName);
+                    Collection attribs = new LinkedList();
+                    Iterator userAttrIter = mpa.getUserAttributes().iterator();
+                    while (userAttrIter.hasNext())
+                    {
+                        boolean found = false;
+                        UserAttribute userAttr = (UserAttribute) userAttrIter.next();
+                        for(int ix = 0; ix < userAttrNames.length; ix++)
+                        {
+                            userAttrName = userAttrNames[ix];
+                            if(userAttr.getName().equals(userAttrName))
+                            {
+                                found = true;
+                                System.out.println("Removing " + userAttrName);
+                                registry.getPersistenceStore().deletePersistent(userAttr); 
+                                userAttrIter.remove();
+                                System.out.println("Removed from iter " + userAttrName);                                
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            attribs.add(userAttr);
+                        }
+                    }
+                    
+                    if (attribs.size() > 0)
+                    {
+                        registry.getPersistenceStore().lockForWrite(mpa);
+                        tx.commit();
+                    }
+                    else
+                    {
+                        tx.rollback();
+                    }
+                }
+                catch (LockFailedException e)
+                {
+                    throw new PortletException("Failed remove user attribute: " + userAttrName, e);
+                    
+                }                
             }
         }
     }
@@ -334,8 +404,13 @@ public class PortletApplicationDetail extends ServletPortlet
      * @throws PortletException
      * @throws IOException
      */
-    private void processMetadataAction(ActionRequest actionRequest, ActionResponse actionResponse, GenericMetadata md, String action) throws PortletException, IOException
+    private void processMetadataAction(ActionRequest actionRequest, 
+                                       ActionResponse actionResponse, 
+                                       GenericMetadata md, 
+                                       String action) 
+    throws PortletException, IOException
     {
+        
         if(action.equals("edit_metadata"))
         {
             Iterator fieldsIter = md.getFields().iterator();
@@ -363,10 +438,10 @@ public class PortletApplicationDetail extends ServletPortlet
             
             if(ids != null)
             {
-	            while (fieldsIter.hasNext())
-	            {
-	                LocalizedField field = (LocalizedField) fieldsIter.next();
-	                String id = field.getId().toString();
+                while (fieldsIter.hasNext())
+                {
+                    LocalizedField field = (LocalizedField) fieldsIter.next();
+                    String id = field.getId().toString();
 
                     for(int i=0; i<ids.length; i++)
                     {
@@ -405,27 +480,27 @@ public class PortletApplicationDetail extends ServletPortlet
             String displayNameParam = actionRequest.getParameter("display_name");
             if(displayNameParam == null)
             {            
-	            int index = 0;
-	            Iterator displayNameIter = portlet.getDisplayNameSet().iterator();
-	            while (displayNameIter.hasNext())
-	            {
-	                MutableDisplayName displayName = (MutableDisplayName) displayNameIter.next();
-	                displayNameParam = actionRequest.getParameter("display_name:" + index);
-	                
-	                //this should never happen
-	                if(displayNameParam != null)
-	                {
-	                    if(displayNameParam.length() == 0)
-	                    {
-	                        displayNameIter.remove();
-	                    }
-	                    else if(!displayNameParam.equals(displayName.getDisplayName()))
-	                    {
-	                        displayName.setDisplayName(displayNameParam);
-	                    }
-	                }
-	                index++;
-	            }
+                int index = 0;
+                Iterator displayNameIter = portlet.getDisplayNameSet().iterator();
+                while (displayNameIter.hasNext())
+                {
+                    MutableDisplayName displayName = (MutableDisplayName) displayNameIter.next();
+                    displayNameParam = actionRequest.getParameter("display_name:" + index);
+                    
+                    //this should never happen
+                    if(displayNameParam != null)
+                    {
+                        if(displayNameParam.length() == 0)
+                        {
+                            displayNameIter.remove();
+                        }
+                        else if(!displayNameParam.equals(displayName.getDisplayName()))
+                        {
+                            displayName.setDisplayName(displayNameParam);
+                        }
+                    }
+                    index++;
+                }
             }
             else
             {
@@ -563,7 +638,7 @@ public class PortletApplicationDetail extends ServletPortlet
                  }
 
                  registry.getPersistenceStore().getTransaction().commit();
-	         }
+             }
          }
          else if(action.equals("edit_language"))
          {
@@ -634,20 +709,20 @@ public class PortletApplicationDetail extends ServletPortlet
             if(name != null)
             {
                 String description = actionRequest.getParameter("description");
-	            String locale = actionRequest.getParameter("locale");
-	            
+                String locale = actionRequest.getParameter("locale");
+                
                 ParameterComposite parameter = (ParameterComposite)portlet.getInitParameterSet().get(name);
                 if(parameter == null)
                 {
-		            String value = actionRequest.getParameter("value");
-		            parameter = portlet.addInitParameter(name, value, description, new Locale(locale));
+                    String value = actionRequest.getParameter("value");
+                    parameter = portlet.addInitParameter(name, value, description, new Locale(locale));
                 }
                 else
                 {
                     parameter.addDescription(new Locale(locale), description);
                 }
-	            
-	            registry.getPersistenceStore().getTransaction().commit();
+                
+                registry.getPersistenceStore().getTransaction().commit();
             }
         }
         else if(action.equals("edit_parameter"))
@@ -698,21 +773,21 @@ public class PortletApplicationDetail extends ServletPortlet
             
             if(paramIds != null)
             {
-	            Iterator paramIter = portlet.getInitParameterSet().iterator();
-	            while (paramIter.hasNext())
-	            {
-	                ParameterComposite param = (ParameterComposite) paramIter.next();
-	                
-	                for(int i=0; i<paramIds.length; i++)
-	                {
-	                    String paramId = paramIds[i];
-	                    if(param.getName().equals(paramId))
-	                    {
-	                        paramIter.remove();
-	                        break;
-	                    }
-	                }
-	            }
+                Iterator paramIter = portlet.getInitParameterSet().iterator();
+                while (paramIter.hasNext())
+                {
+                    ParameterComposite param = (ParameterComposite) paramIter.next();
+                    
+                    for(int i=0; i<paramIds.length; i++)
+                    {
+                        String paramId = paramIds[i];
+                        if(param.getName().equals(paramId))
+                        {
+                            paramIter.remove();
+                            break;
+                        }
+                    }
+                }
             }
             
             registry.getPersistenceStore().getTransaction().commit();
@@ -735,27 +810,27 @@ public class PortletApplicationDetail extends ServletPortlet
             if(name != null)
             {
                 String link = actionRequest.getParameter("link");
-	            
-	            SecurityRoleRefComposite securityRoleRef = (SecurityRoleRefComposite) portlet.getInitSecurityRoleRefSet().get(name);
-	            if(securityRoleRef == null && link != null)
-	            {
-	                securityRoleRef = (SecurityRoleRefComposite) portlet.addSecurityRoleRef(name, link);
-	            }
-	            
-	            if(securityRoleRef != null)
-	            {
-		            String description = actionRequest.getParameter("description");
-		            if(description != null && description.length() > 0)
-		            {
-			            String locale = actionRequest.getParameter("locale");
-			            if(locale == null)
-			            {
-			                locale = "en";
-			            }
-			            securityRoleRef.addDescription(new Locale(locale), description);
-		            }
-	            }
-	            registry.getPersistenceStore().getTransaction().commit();
+                
+                SecurityRoleRefComposite securityRoleRef = (SecurityRoleRefComposite) portlet.getInitSecurityRoleRefSet().get(name);
+                if(securityRoleRef == null && link != null)
+                {
+                    securityRoleRef = (SecurityRoleRefComposite) portlet.addSecurityRoleRef(name, link);
+                }
+                
+                if(securityRoleRef != null)
+                {
+                    String description = actionRequest.getParameter("description");
+                    if(description != null && description.length() > 0)
+                    {
+                        String locale = actionRequest.getParameter("locale");
+                        if(locale == null)
+                        {
+                            locale = "en";
+                        }
+                        securityRoleRef.addDescription(new Locale(locale), description);
+                    }
+                }
+                registry.getPersistenceStore().getTransaction().commit();
             }
         }
         else if(action.equals("edit_security"))
@@ -848,31 +923,31 @@ public class PortletApplicationDetail extends ServletPortlet
             String contentType = actionRequest.getParameter("content_type");
             if(contentType != null)
             {
-	            ArrayList allModes = new ArrayList();
-	            
-	            
-	            String[] modes = actionRequest.getParameterValues("mode");
-	            if(modes != null)
-	            {
-	                for(int i=0; i<modes.length; i++)
-	                {
-	                    String mode = modes[i];
-	                    //contentTypeImpl.addPortletMode(mode);
-	                    allModes.add(mode);
-	                }
-	            }
+                ArrayList allModes = new ArrayList();
+                
+                
+                String[] modes = actionRequest.getParameterValues("mode");
+                if(modes != null)
+                {
+                    for(int i=0; i<modes.length; i++)
+                    {
+                        String mode = modes[i];
+                        //contentTypeImpl.addPortletMode(mode);
+                        allModes.add(mode);
+                    }
+                }
 
-	            String customModes = actionRequest.getParameter("custom_modes");
-	            StringTokenizer tok = new StringTokenizer(customModes, ",");
-	            while (tok.hasMoreTokens())
-	            {
-	                //contentTypeImpl.addPortletMode(tok.nextToken());
-	                allModes.add(tok.nextToken());
-	            }
-	            
-	            portlet.addContentType(contentType, allModes);
-	            
-	            registry.getPersistenceStore().getTransaction().commit();
+                String customModes = actionRequest.getParameter("custom_modes");
+                StringTokenizer tok = new StringTokenizer(customModes, ",");
+                while (tok.hasMoreTokens())
+                {
+                    //contentTypeImpl.addPortletMode(tok.nextToken());
+                    allModes.add(tok.nextToken());
+                }
+                
+                portlet.addContentType(contentType, allModes);
+                
+                registry.getPersistenceStore().getTransaction().commit();
             }
         }
         else if(action.equals("edit_content_type"))
@@ -891,11 +966,11 @@ public class PortletApplicationDetail extends ServletPortlet
                     for(int i=0; i<contentIds.length; i++)
                     {
                         String id = contentIds[i];
-	                    if(contentType.getContentType().equals(id))
-	                    {
-	                        contentIter.remove();
-	                        break;
-	                    }
+                        if(contentType.getContentType().equals(id))
+                        {
+                            contentIter.remove();
+                            break;
+                        }
                     }
                 }
                 
@@ -903,4 +978,5 @@ public class PortletApplicationDetail extends ServletPortlet
             }
         }
     }
+
 }
