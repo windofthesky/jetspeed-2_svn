@@ -30,7 +30,7 @@
   <!-- Merge OJB desriptor with Jetspeed main OJB descriptor            -->
   <!-- ================================================================ -->
   <goal name="ojb.registry">
-    <copy  file="./src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./../../portal/src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>
+    <copy  file="./src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./../../portal/target/classes/repository_security.xml"/>
   </goal>
 
 
