@@ -120,7 +120,7 @@ public class PortletApplicationDetail extends ServletPortlet
             request.setAttribute("tabs", paTabMap.values());
             request.setAttribute("portlet_tabs", pdTabMap.values());
             
-            TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute("selected_tab");
+            TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, PortletSession.APPLICATION_SCOPE);
             if(selectedTab == null)
             {
                 selectedTab = (TabBean) paTabMap.values().iterator().next();
@@ -137,7 +137,7 @@ public class PortletApplicationDetail extends ServletPortlet
                 request.setAttribute("selected_portlet_tab", selectedPortletTab);
             }
             
-            request.setAttribute("selected_tab", selectedTab);
+            request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
             
         }
         super.doView(request, response);
@@ -157,11 +157,11 @@ public class PortletApplicationDetail extends ServletPortlet
 	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef, PortletSession.APPLICATION_SCOPE);
         }
         
-        String selectedTab = actionRequest.getParameter("selected_tab");
+        String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
         if(selectedTab != null)
         {
             TabBean tab = (TabBean) paTabMap.get(selectedTab);
-            actionRequest.getPortletSession().setAttribute("selected_tab", tab);
+            actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, tab, PortletSession.APPLICATION_SCOPE);
         }
         
         String selectedPortletTab = actionRequest.getParameter("selected_portlet_tab");
