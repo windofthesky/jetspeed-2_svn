@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.jetspeed.cache.file.TestFileCache"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.jetspeed.components.TestChildAwareContainer"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jakarta-jetspeed-2"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.apache.jetspeed.file_cache.scan_rate=10 &#10;-Dorg.apache.jetspeed.file_cache.cache_size=20"/>
 <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="jakarta-jetspeed-2/components/file-cache"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.jdt.debug.ui.javaSourceLocator"/>
 </launchConfiguration>
