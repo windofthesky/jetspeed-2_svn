@@ -80,6 +80,7 @@ limitations under the License.
   
   <goal name="allTest"
         description="Test all components" >
+        <j:set var="maven.test.skip" value="false" scope="parent"/>
          <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml,components/*/project.xml"
