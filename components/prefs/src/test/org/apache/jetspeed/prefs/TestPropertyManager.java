@@ -42,7 +42,7 @@ import org.picocontainer.MutablePicoContainer;
 /**
  * <p>Unit testing for {@link PropertyManager}.</p>
  *
- * @author <a href="dlestrat@yahoo.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class TestPropertyManager extends AbstractComponentAwareTestCase
 {
@@ -77,15 +77,10 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
+        System.out.println("_________ SET UP ___________");
+        System.setProperty("java.util.prefs.PreferencesFactory", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-        try
-        {
-            destroyPropertySetDefTestObject(true);
-        }
-        catch (PropertyException exc)
-        {
-        }
     }
 
     /**
@@ -94,13 +89,8 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public void tearDown() throws Exception
     {
         super.tearDown();
-        try
-        {
-            destroyPropertySetDefTestObject(true);
-        }
-        catch (PropertyException exc)
-        {
-        }
+        System.out.println("_________ CLEAN ___________");
+        clean();
     }
 
     /**
@@ -124,285 +114,131 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     }
 
     /**
-     * <p>Test add property set definition.</p>
+     * <p>Test add property keys to a {@link Preferences} node.</p>
      */
-    public void testAddPropertySetDef() throws PropertyException
+    public void testAddPropertyKeys() throws PropertyException
     {
+        System.out.println("___1");
+        Map propertyKeys = initPropertyKeysMap();
+        System.out.println("___2");
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1"); 
+        System.out.println("___3"); 
         try
         {
-            pms.addPropertySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
+            pms.addPropertyKeys(pref, propertyKeys);
         }
         catch (PropertyException pex)
         {
-            // Property set defintion already exists.
-            assertTrue("property set definition already exists. exception caught: " + pex, false);
+            assertTrue("could not add property keys to node: " + pex, false);
         }
-
-        destroyPropertySetDefTestObject(false);
     }
 
     /**
-     * <p>Test update the property set definition.</p>
+     * <p>Test get property key.</p>
      */
-    public void testUpdatePropertySetDef() throws PropertyException
+    public void testGetPropertyKeys()
     {
-        try
-        {
-            initPropertySetDefTestObject(false);
-        }
-        catch (PropertyException pex)
-        {
-            assertTrue("could not initialize property set definition. exception caught: " + pex, false);
-        }
-
-        try
-        {
-            pms.updatePropertySetDef("propertysetupdate0", "propertyset0", USER_PROPERTY_SET_TYPE);
-            Collection propertySetsByType = pms.getAllPropertySetsByType(USER_PROPERTY_SET_TYPE);
-            //updatedPropertySetDefId = pms.getPropertySetDefIdByType("propertysetupdate0", USER_PROPERTY_SET_TYPE);
-            assertTrue(
-                "should contain property set definition named propertysetupdate0.",
-                propertySetsByType.contains("propertysetupdate0"));
-            pms.updatePropertySetDef("propertyset0", "propertysetupdate0", USER_PROPERTY_SET_TYPE);
-        }
-        catch (PropertyException pex)
-        {
-            assertTrue("could not get property set definition id. exception caught: " + pex, false);
-        }
-
-        destroyPropertySetDefTestObject(false);
+        initPropertyKeys();
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+        Map propertyKeys = pms.getPropertyKeys(pref);
+        assertEquals("should have 4 keys, " + propertyKeys.size(), 4, propertyKeys.size());
     }
-    
-        /**
-         * <p>Test get all property sets by types.</p>
-         */
-        public void testGetAllPropertySetByType() throws PropertyException
-        {
-            try
-            {
-                initPropertySetDefTestObject(true);
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not initialize property set definition. exception caught: " + pex, false);
-            }
-    
-            try
-            {
-                Collection propertySetsByType = pms.getAllPropertySetsByType(USER_PROPERTY_SET_TYPE);
-                assertTrue("property set should contain: propertyset0, ", propertySetsByType.contains("propertyset0"));
-                assertTrue("property set should contain: propertyset1, ", propertySetsByType.contains("propertyset1"));
-                assertTrue("property set should contain: propertyset2, ", propertySetsByType.contains("propertyset2"));
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not get property set map: " + pex, false);
-            }
-    
-            destroyPropertySetDefTestObject(true);
-        }
-    
-        /**
-         * <p>Test remove property set definition.</p>
-         */
-        public void testRemovePropertySetDef()
-        {
-            try
-            {
-                initPropertySetDefTestObject(false);
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not initialize property set definition. exception caught: " + pex, false);
-            }
-    
-            try
-            {
-                pms.removePropertySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not remove property set definition. exception caught: " + pex, false);
-            }
-    
-            try
-            {
-                Collection propertySetsByType = pms.getAllPropertySetsByType(USER_PROPERTY_SET_TYPE);
-                assertFalse("property set not should contain: propertyset0, ", propertySetsByType.contains("propertyset0"));
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not find property set type. exception caught: " + pex, false);
-            }
-        }
-    
-        /**
-         * <p>Test add property keys to a set.</p>
-         */
-        public void testAddUpdatePropertyKeys() throws PropertyException
-        {
-            try
-            {
-                initPropertySetDefTestObject(true);
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not initialize property set definition. exception caught: " + pex, false);
-            }
-    
-            try
-            {
-                pms.updatePropertyKey("propertyNameUpdate0", "propertyName0", "propertyset0", USER_PROPERTY_SET_TYPE);
-                Collection updatedPropertyKeys = pms.getPropertyKeysBySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
-                assertTrue(
-                    "updated property set map should contain: propertyNameUpdate0.",
-                    updatedPropertyKeys.contains("propertyNameUpdate0"));
-            }
-            catch (PropertyException pex)
-            {
-                assertTrue("could not get updated property set map: " + pex, false);
-            }
-    
-            destroyPropertySetDefTestObject(true);
-        }
-    
-//        /**
-//         * <p>Test remove property keys.</p>
-//         */
-//        public void testRemovePropertyKeys()
-//        {
-//            String userNodeName = "user";
-//            String principalNodeName = "principal";
-//            String propertySetNodeName = "propertyset1";
-//            String fullPropertySetPath = "/" + userNodeName + "/" + principalNodeName + "/" + propertySetNodeName;
-//            int[] propertySetDefs = new int[1];
-//    
-//            try
-//            {
-//                // Create a node.
-//                Preferences prefs1 = Preferences.userRoot().node(fullPropertySetPath);
-//                // Create the set definition.
-//                pms.addPropertySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
-//    
-//                // Build a few property keys.
-//                Collection propertyKeys = new ArrayList(1);
-//    
-//                Map propertyKey0 = new HashMap();
-//                propertyKey0.put(PropertyManager.PROPERTYKEY_NAME, "propertyName0");
-//                propertyKey0.put(PropertyManager.PROPERTYKEY_TYPE, new Short("0"));
-//    
-//                propertyKeys.add(propertyKey0);
-//                pms.addPropertyKeys("propertyset0", USER_PROPERTY_SET_TYPE, propertyKeys);
-//    
-//                prefs1.put("propertyName0", "true");
-//            }
-//            catch (PropertyException pex)
-//            {
-//                assertTrue("could not add property keys: " + pex, false);
-//            }
-//    
-//            // Now let's remove the keys.
-//            try
-//            {
-//                for (Iterator i = (pms.getPropertyKeysBySetDef(propertySetDefs[0]).keySet()).iterator(); i.hasNext();)
-//                {
-//                    pms.removePropertyKey(((Integer) i.next()).intValue());
-//                }
-//            }
-//            catch (PropertyException pex)
-//            {
-//                assertTrue("could not remove property keys: " + pex, false);
-//            }
-//    
-//            // Let's verify it was removed.
-//            try
-//            {
-//                Map propKeysCol = pms.getPropertyKeysBySetDef(propertySetDefs[0]);
-//                assertEquals("expected property key map size == 0, ", 0, propKeysCol.size());
-//            }
-//            catch (PropertyException pex)
-//            {
-//                assertTrue("could not get property keys: " + pex, false);
-//            }
-//    
-//            // Clean up everything else.
-//            try
-//            {
-//                Preferences prefs2 = Preferences.userRoot().node("/" + userNodeName);
-//                prefs2.removeNode();
-//            }
-//            catch (BackingStoreException bse)
-//            {
-//                assertTrue("backing store exception: " + bse, false);
-//            }
-//            try
-//            {
-//                pms.removePropertySetDef(propertySetDefs[0]);
-//            }
-//            catch (PropertyException pex)
-//            {
-//                assertTrue("could not remove property set definition: " + pex, false);
-//            }
-//    
-//        }
 
     /**
-     * <p>Init property set definition object.</p>
+     * <p>Test update property key.</p>
      */
-    protected void initPropertySetDefTestObject(boolean isAll) throws PropertyException
+    public void testUpdatePropertyKey() throws PropertyException
     {
-        // Create the set definition.
-        pms.addPropertySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
-
-        if (isAll)
+        initPropertyKeys();
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+        try
         {
-            pms.addPropertySetDef("propertyset1", USER_PROPERTY_SET_TYPE);
-            pms.addPropertySetDef("propertyset2", USER_PROPERTY_SET_TYPE);
-            pms.addPropertySetDef("propertyset3", SYSTEM_PROPERTY_SET_TYPE);
+            // New key
+            HashMap newKey = new HashMap(1);
+            newKey.put("newPropertyName0", new Short("0"));
+            pms.updatePropertyKey("propertyName0", pref, newKey);
+            Map propKeys = pms.getPropertyKeys(pref);
+            assertTrue("should contain newPropertyName0", propKeys.containsKey("newPropertyName0"));
+            HashMap oldKey = new HashMap(1);
+            oldKey.put("propertyName0", new Short("0"));
+            pms.updatePropertyKey("NewPropertyName0", pref, oldKey);
         }
+        catch (PropertyException pex)
+        {
+            assertTrue("could not update property key. exception caught: " + pex, false);
+        }
+    }
 
+    /**
+     * <p>Test remove property keys.</p>
+     */
+    public void testRemovePropertyKeys() throws PropertyException
+    {
+        initPropertyKeys();
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+        try
+        {
+            Map propertyKeys = pms.getPropertyKeys(pref);
+            pms.removePropertyKeys(pref, propertyKeys.keySet());
+            propertyKeys = pms.getPropertyKeys(pref);
+            assertEquals("should have 0 keys, " + propertyKeys.size(), 0, propertyKeys.size());
+        }
+        catch (PropertyException pex)
+        {
+            assertTrue("could not delete property keys. exception caught: " + pex, false);
+        }
+    }
+
+    /**
+     * <p>Init property property keys map.</p>
+     */
+    protected Map initPropertyKeysMap()
+    {
         // Build a few property keys.
-        Collection propertyKeys = new ArrayList();
+        Map propertyKeys = new HashMap();
+        propertyKeys.put("propertyName0", new Short("0"));
+        propertyKeys.put("propertyName1", new Short("1"));
+        propertyKeys.put("propertyName2", new Short("2"));
+        propertyKeys.put("propertyName3", new Short("3"));
 
-        Map propertyKey0 = new HashMap();
-        propertyKey0.put(PropertyManager.PROPERTYKEY_NAME, "propertyName0");
-        propertyKey0.put(PropertyManager.PROPERTYKEY_TYPE, new Short("0"));
-
-        propertyKeys.add(propertyKey0);
-
-        Map propertyKey1 = new HashMap();
-        propertyKey1.put(PropertyManager.PROPERTYKEY_NAME, "propertyName1");
-        propertyKey1.put(PropertyManager.PROPERTYKEY_TYPE, new Short("1"));
-
-        propertyKeys.add(propertyKey1);
-
-        Map propertyKey2 = new HashMap();
-        propertyKey2.put(PropertyManager.PROPERTYKEY_NAME, "propertyName2");
-        propertyKey2.put(PropertyManager.PROPERTYKEY_TYPE, new Short("2"));
-
-        propertyKeys.add(propertyKey2);
-
-        Map propertyKey3 = new HashMap();
-        propertyKey3.put(PropertyManager.PROPERTYKEY_NAME, "propertyName3");
-        propertyKey3.put(PropertyManager.PROPERTYKEY_TYPE, new Short("3"));
-
-        propertyKeys.add(propertyKey3);
-
-        pms.addPropertyKeys("propertyset0", USER_PROPERTY_SET_TYPE, propertyKeys);
+        return propertyKeys;
     }
 
     /**
-     * <p>Destroy profile test object.</p>
+     * <p>Init property property keys.</p>
      */
-    protected void destroyPropertySetDefTestObject(boolean isAll) throws PropertyException
+    protected void initPropertyKeys()
     {
-        pms.removePropertySetDef("propertyset0", USER_PROPERTY_SET_TYPE);
+        Map propertyKeys = initPropertyKeysMap();
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
 
-        if (isAll)
+        try
         {
-            pms.removePropertySetDef("propertyset1", USER_PROPERTY_SET_TYPE);
-            pms.removePropertySetDef("propertyset2", USER_PROPERTY_SET_TYPE);
-            pms.removePropertySetDef("propertyset3", SYSTEM_PROPERTY_SET_TYPE);
+            pms.addPropertyKeys(pref, propertyKeys);
+        }
+        catch (PropertyException pex)
+        {
+        }
+    }
+
+    /**
+     * <p>Clean properties.</p>
+     */
+    protected void clean()
+    {
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+        try
+        {
+            Map propertyKeys = pms.getPropertyKeys(pref);
+            pms.removePropertyKeys(pref, propertyKeys.keySet());
+            Preferences.userRoot().node("/user").removeNode();
+        }
+        catch (PropertyException pex)
+        {
+        }
+        catch (BackingStoreException bse)
+        {
+            System.out.println("BackingStoreException" + bse);
         }
     }
 

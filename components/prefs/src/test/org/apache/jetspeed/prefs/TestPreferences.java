@@ -25,6 +25,7 @@ import javax.naming.NameAlreadyBoundException;
 
 import junit.framework.Test;
 
+//import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
@@ -75,10 +76,10 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
+        System.setProperty("java.util.prefs.PreferencesFactory", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        System.out.println("java.util.prefs.PreferencesFactory:" + System.getProperty("java.util.prefs.PreferencesFactory"));
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
-        //destroyRootNodes();
-        //destroyPropertySetDefTestObject();
     }
 
     /**
@@ -87,7 +88,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     public void tearDown() throws Exception
     {
         super.tearDown();
-        //destroyPropertySetDefTestObject();
+        clean();
     }
 
     /**
@@ -142,222 +143,156 @@ public class TestPreferences extends AbstractComponentAwareTestCase
         }
     }
 
-//    /**
-//     * <p>Test children names.</p>
-//     */
-//    public void testChildrenNames()
-//    {
-//        Preferences prefs = Preferences.userRoot();
-//        // Test without children.
-//        try
-//        {
-//            String[] childrenNames = prefs.childrenNames();
-//            if (childrenNames.length > 0)
-//            {
-//                assertTrue("expected no children, " + childrenNames.length + ", " + childrenNames[0], childrenNames.length == 0);
-//            }
-//        }
-//        catch (BackingStoreException bse)
-//        {
-//            assertTrue("backing store exception: " + bse, false);
-//        }
-//
-//        // TODO Test with children.
-//    }
-//
-//    /**
-//     * <p>Test node.</p>
-//     */
-//    public void testNode()
-//    {
-//        String testRelNodeName = "rn1/srn1";
-//        String testAbsNodeName0 = "/an1";
-//        String testAbsNodeName1 = "/san1";
-//        String testAbsNodeName = testAbsNodeName0 + testAbsNodeName1;
-//
-//        // Absolute path.
-//        // 1. The node does not exist. Create it.
-//        Preferences prefs0 = Preferences.userRoot().node(testAbsNodeName);
-//        if (null != prefs0)
-//        {
-//            assertTrue(
-//                "expected node == '" + testAbsNodeName + "', " + prefs0.absolutePath(),
-//                prefs0.absolutePath().equals(testAbsNodeName));
-//        }
-//        else
-//        {
-//            assertTrue("expected node == '" + testAbsNodeName + "', " + prefs0, false);
-//        }
-//
-//        // 2. If node exists. Get it.
-//        Preferences prefs1 = Preferences.userRoot().node(testAbsNodeName);
-//        if (null != prefs1)
-//        {
-//            assertTrue(
-//                "expected node == '" + testAbsNodeName + "', " + prefs1.absolutePath(),
-//                prefs1.absolutePath().equals(testAbsNodeName));
-//        }
-//        else
-//        {
-//            assertTrue("expected node == '" + testAbsNodeName + "', " + prefs1, false);
-//        }
-//
-//        //Relative path.
-//        Preferences prefs3 = Preferences.userRoot().node(testAbsNodeName0);
-//        Preferences prefs4 = prefs3.node(testRelNodeName);
-//        if (null != prefs4)
-//        {
-//            assertTrue(
-//                "expected node == '" + testAbsNodeName0 + "/" + testRelNodeName + "', " + prefs4.absolutePath(),
-//                prefs4.absolutePath().equals(testAbsNodeName0 + "/" + testRelNodeName));
-//        }
-//        else
-//        {
-//            assertTrue("expected node == '" + testAbsNodeName0 + "/" + testRelNodeName + "', " + prefs4, false);
-//        }
-//
-//        // Remove all nodes.
-//        try
-//        {
-//            prefs3.removeNode();
-//        }
-//        catch (BackingStoreException bse)
-//        {
-//            assertTrue("backing store exception: " + bse, false);
-//        }
-//    }
-//
-//    /**
-//     * <p>Test adding properties to a property set node.</p>
-//     */
-//    public void testProperty()
-//    {
-//        String userNodeName = "user";
-//        String principalNodeName = "principal";
-//        String propertySetNodeName = "propertyset1";
-//        String fullPropertySetPath = "/" + userNodeName + "/" + principalNodeName + "/" + propertySetNodeName;
-//        int[] propertySetDefIds = new int[2];
-//
-//        try
-//        {
-//            initPropertySetDefTestObject();
-//        }
-//        catch (PropertyException pe)
-//        {
-//            assertTrue(false);
-//        }
-//
-//        // 1. Current node is not defined as property set.
-//        Preferences prefs0 = Preferences.userRoot();
-//        prefs0.put("propertyName00", "true");
-//        String prop0 = prefs0.get("propertyName00", null);
-//        if (null != prop0)
-//        {
-//            assertTrue(false);
-//        }
-//
-//        // 2. Current node is defined as property set.
-//        Preferences prefs1 = Preferences.userRoot().node(fullPropertySetPath);
-//        prefs1.put("propertyName00", "true");
-//        String prop1 = prefs1.get("propertyName00", null);
-//        assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
-//
-//        // Test remove property.
-//        prefs1.remove("propertyName00");
-//        prop1 = prefs1.get("propertyName00", null);
-//        if (null != prop1)
-//        {
-//            assertTrue(false);
-//        }
-//
-//        // Remove all nodes with properties assigned to property sets.
-//        prefs1.put("propertyName00", "true");
-//        prop1 = prefs1.get("propertyName00", null);
-//        if (!prop1.equals("true"))
-//        {
-//            assertTrue(false);
-//        }
-//
-//        try
-//        {
-//            Preferences prefs2 = Preferences.userRoot().node("/" + userNodeName);
-//            prefs2.removeNode();
-//        }
-//        catch (BackingStoreException bse)
-//        {
-//            assertTrue("backing store exception: " + bse, false);
-//        }
-//    }
-//
-//    /**
-//     * <p>Init property set definition object.</p>
-//     */
-//    protected void initPropertySetDefTestObject() throws PropertyException
-//    {
-//        // Create the set definition.
-//        pms.addPropertySetDef("propertyset1", USER_PROPERTY_SET_TYPE);
-//        // Build a few property keys.
-//        Collection propertyKeys = new ArrayList();
-//        Map propertyKey00 = new HashMap();
-//        propertyKey00.put(PropertyManager.PROPERTYKEY_NAME, "propertyName00");
-//        propertyKey00.put(PropertyManager.PROPERTYKEY_TYPE, new Short("0"));
-//        propertyKeys.add(propertyKey00);
-//        Map propertyKey01 = new HashMap();
-//        propertyKey01.put(PropertyManager.PROPERTYKEY_NAME, "propertyName01");
-//        propertyKey01.put(PropertyManager.PROPERTYKEY_TYPE, new Short("1"));
-//        propertyKeys.add(propertyKey01);
-//        Map propertyKey02 = new HashMap();
-//        propertyKey02.put(PropertyManager.PROPERTYKEY_NAME, "propertyName02");
-//        propertyKey02.put(PropertyManager.PROPERTYKEY_TYPE, new Short("2"));
-//        propertyKeys.add(propertyKey02);
-//        Map propertyKey03 = new HashMap();
-//        propertyKey03.put(PropertyManager.PROPERTYKEY_NAME, "propertyName03");
-//        propertyKey03.put(PropertyManager.PROPERTYKEY_TYPE, new Short("3"));
-//        propertyKeys.add(propertyKey03);
-//        pms.addPropertyKeys("propertyset1", USER_PROPERTY_SET_TYPE, propertyKeys);
-//        // Add another set.
-//        // Create the set definition.
-//        pms.addPropertySetDef("propertyset2", USER_PROPERTY_SET_TYPE);
-//        // Build a few property keys.
-//        Collection propertyKeys1 = new ArrayList();
-//        Map propertyKey10 = new HashMap();
-//        propertyKey10.put(PropertyManager.PROPERTYKEY_NAME, "propertyName10");
-//        propertyKey10.put(PropertyManager.PROPERTYKEY_TYPE, new Short("0"));
-//        propertyKeys1.add(propertyKey10);
-//        Map propertyKey11 = new HashMap();
-//        propertyKey11.put(PropertyManager.PROPERTYKEY_NAME, "propertyName11");
-//        propertyKey11.put(PropertyManager.PROPERTYKEY_TYPE, new Short("1"));
-//        propertyKeys1.add(propertyKey11);
-//        pms.addPropertyKeys("propertyset2", USER_PROPERTY_SET_TYPE, propertyKeys1);
-//    }
-//
-//    /**
-//     * <p>Destroy profile test object.</p>
-//     */
-//    protected void destroyPropertySetDefTestObject()
-//    {
-//        try
-//        {
-//            pms.removePropertySetDef("propertyset1", USER_PROPERTY_SET_TYPE);
-//            pms.removePropertySetDef("propertyset2", USER_PROPERTY_SET_TYPE);
-//        }
-//        catch (PropertyException pex)
-//        {
-//        }
-//    }
-//
-//    /**
-//     * <p>Destroy possible existing root nodes.</p>
-//     */
-//    protected void destroyRootNodes() throws Exception
-//    {
-//        // Remove user, group and role root nodes.
-//        Preferences groupRootPrefs = Preferences.userRoot().node("/group");
-//        groupRootPrefs.removeNode();
-//        Preferences roleRootPrefs = Preferences.userRoot().node("/role");
-//        roleRootPrefs.removeNode();
-//        Preferences userRootPrefs = Preferences.userRoot().node("/user");
-//        userRootPrefs.removeNode();
-//    }
+    /**
+     * <p>Test children names.</p>
+     */
+    public void testChildrenNames()
+    {
+        Preferences prefs = Preferences.userRoot();
+        // Test without children.
+        try
+        {
+            String[] childrenNames = prefs.childrenNames();
+            if (childrenNames.length > 0)
+            {
+                assertTrue("expected no children, " + childrenNames.length + ", " + childrenNames[0], childrenNames.length == 0);
+            }
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
+
+        // TODO Test with children.
+    }
+
+    /**
+     * <p>Test node.</p>
+     */
+    public void testNode()
+    {
+        // Absolute path.
+        // 1. The node does not exist. Create it.
+        Preferences prefs0 = Preferences.userRoot().node("/an1/san1");
+        assertNotNull("should not be null", prefs0);
+        assertTrue("expected node == /an1/san1, " + prefs0.absolutePath(), prefs0.absolutePath().equals("/an1/san1"));
+
+        // 2. If node exists. Get it.
+        Preferences prefs1 = Preferences.userRoot().node("/an1/san1");
+        assertNotNull("should not be null", prefs1);
+        assertTrue("expected node == /an1/san1, " + prefs1.absolutePath(), prefs1.absolutePath().equals("/an1/san1"));
+
+        //Relative path.
+        Preferences prefs3 = Preferences.userRoot().node("/an1");
+        Preferences prefs4 = prefs3.node("rn1/srn1");
+        assertNotNull("should not be null", prefs4);
+        assertTrue("expected node == /an1/rn1/srn1, " + prefs4.absolutePath(), prefs4.absolutePath().equals("/an1/rn1/srn1"));
+
+        // Remove all nodes.
+        try
+        {
+            prefs3.removeNode();
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
+    }
+
+    /**
+     * <p>Test adding properties to a property set node.</p>
+     */
+    public void testProperty()
+    {
+
+        // 1. Current node does not have any property associated to it.
+        Preferences pref0 = Preferences.userRoot();
+        pref0.put("propertyName0", "true");
+        String prop = pref0.get("propertyName0", null);
+        assertNull("should be null.", prop);
+
+        // 2. Current node has properties associated to it.
+        initPropertyKeys();
+        Preferences pref1 = Preferences.userRoot().node("/user/principal1/propertyset1");
+        pref1.put("propertyName0", "true");
+        String prop1 = pref1.get("propertyName0", null);
+        assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
+
+        // Test remove property.
+        pref1.remove("propertyName0");
+        prop1 = pref1.get("propertyName0", null);
+        assertNull("should be null.", prop);
+
+        // Remove all nodes with properties assigned to property sets.
+        pref1.put("propertyName0", "true");
+        prop1 = pref1.get("propertyName0", null);
+        assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
+
+        try
+        {
+            Preferences pref2 = Preferences.userRoot().node("/user");
+            pref2.removeNode();
+        }
+        catch (BackingStoreException bse)
+        {
+            assertTrue("backing store exception: " + bse, false);
+        }
+    }
+
+    /**
+     * <p>Init property property keys map.</p>
+     */
+    protected Map initPropertyKeysMap()
+    {
+        // Build a few property keys.
+        Map propertyKeys = new HashMap();
+        propertyKeys.put("propertyName0", new Short("0"));
+        propertyKeys.put("propertyName1", new Short("1"));
+        propertyKeys.put("propertyName2", new Short("2"));
+        propertyKeys.put("propertyName3", new Short("3"));
+
+        return propertyKeys;
+    }
+
+    /**
+     * <p>Init property property keys.</p>
+     */
+    protected void initPropertyKeys()
+    {
+        Map propertyKeys = initPropertyKeysMap();
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+
+        try
+        {
+            pms.addPropertyKeys(pref, propertyKeys);
+        }
+        catch (PropertyException pex)
+        {
+        }
+    }
+
+    /**
+     * <p>Clean properties.</p>
+     */
+    protected void clean()
+    {
+        Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1");
+        try
+        {
+            Map propertyKeys = pms.getPropertyKeys(pref);
+            pms.removePropertyKeys(pref, propertyKeys.keySet());
+            Preferences.userRoot().node("/user").removeNode();
+            Preferences.userRoot().node("/an1").removeNode();
+            Preferences.userRoot().node("/rn1").removeNode();
+        }
+        catch (PropertyException pex)
+        {
+            System.out.println("PropertyException" + pex);
+        }
+        catch (BackingStoreException bse)
+        {
+            System.out.println("BackingStoreException" + bse);
+        }
+    }
 
 }
