@@ -11,7 +11,7 @@
     #elseif($node.type == ".ds")
       <div class="pagetitle" title="$node.getTitle($preferedLocale)">${node.getShortTitle($preferedLocale)}</div>
       #set($__nodePrefix = "${_nodePrefix}${node.url}")
-      #set($__nodeSet = $profiledPageContext.getDocumentSetNodes($__nodePrefix))
+      #set($__nodeSet = $site.getDocumentSetNodes($__nodePrefix))
       #includeNestedLinksWithIconNavigation($__nodeSet $__nodePrefix)
     #else
       <div><a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a></div>

@@ -15,6 +15,38 @@ limitations under the License.
 -->
 
 <portlet-app id="jetspeed" version="1.0">
+    <portlet id="TwoColumns">
+    <portlet-name>TwoColumns</portlet-name>
+    <display-name>Two Columns Layout</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/layout/columns.jsp</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>50%,50%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>TwoColumns</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+      <portlet-mode>edit</portlet-mode>
+      <portlet-mode>help</portlet-mode>      
+    </supports>
+    <portlet-info>
+      <title>TwoColumns</title>
+      <short-title>TwoColumns</short-title>
+    </portlet-info>
+</portlet>
 
 <portlet id="VelocityOneColumn">
     <portlet-name>VelocityOneColumn</portlet-name>

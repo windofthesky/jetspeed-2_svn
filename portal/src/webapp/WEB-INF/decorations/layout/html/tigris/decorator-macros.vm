@@ -27,7 +27,7 @@
       <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder" title="$node.getTitle($preferedLocale)">$node.getShortTitle($preferedLocale)</a>	
     #elseif($node.type == ".ds")
       #set($__nodePrefix = "${_nodePrefix}${node.url}")
-      #set($__nodeSet = $profiledPageContext.getDocumentSetNodes($__nodePrefix))
+      #set($__nodeSet = $site.getDocumentSetNodes($__nodePrefix))
       #includeNestedLinksWithIconNavigation($__nodeSet $__nodePrefix $_orientation)
     #else
       <a href="$node.url" title="$node.getTitle()">$node.getShortTitle()</a>	

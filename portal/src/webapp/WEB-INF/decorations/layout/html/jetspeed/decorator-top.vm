@@ -25,21 +25,21 @@ limitations under the License.
     <title>$jetspeed.page.getTitle($preferedLocale)</title>
     #includeStyleSheets()
 </head>
-<body class="${_layouyBaseCssClass}">
+<body class="${_layoutBaseCssClass}">
 
 #set($myF = $jetspeed.currentFragment)
 
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 
-<div id="layout-${myF.id}" class="${_layouyBaseCssClass}" >
+<div id="layout-${myF.id}" class="${_layoutBaseCssClass}" >
 <p>
 <img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
 </p>
 
-#set($profiledPageContext = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
+#set($site = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
 
 <p>
-	#set($parentFolder = $profiledPageContext.parentFolder)
+	#set($parentFolder = $site.parentFolder)
 	
 	#if($parentFolder)
 	 <p style="font-style:italic">	
@@ -47,10 +47,10 @@ limitations under the License.
 	 </p>
 	#end
 	
-  #includeFoldersNavigation($profiledPageContext.siblingFolders)
+  #includeFoldersNavigation($site.siblingFolders)
 </p>
   <p>
-  #includeTabsNavigation($profiledPageContext.siblingPages)
+  #includeTabsNavigation($site.siblingPages)
   </p>
 </p>
 	
@@ -58,17 +58,17 @@ limitations under the License.
 <tr>
   <td valign="top">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
-    #if($profiledPageContext.rootLinks)
+    #if($site.rootLinks)
     <tr>
       <td nowrap>  
         <br>Additional Links:
-        #includeLinksWithIconNavigation($profiledPageContext.rootLinks)
+        #includeLinksWithIconNavigation($site.rootLinks)
       </td>
     </tr>
     #end
-    #foreach($docSetName in $profiledPageContext.documentSetNames)
-      #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
-      #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
+    #foreach($docSetName in $site.documentSetNames)
+      #set($docSet = $site.getDocumentSet($docSetName))
+      #set($docSetNodes = $site.getDocumentSetNodes($docSetName))
       <tr>
         <td nowrap>    
           <br><span title="$docSet.getTitle($preferedLocale)">${docSet.getShortTitle($preferedLocale)}</span>:

@@ -36,8 +36,8 @@ limitations under the License.
   <body marginwidth="0" marginheight="0" class="layout-tigris">
 
 #set($myF = $jetspeed.currentFragment)
-#set($profiledPageContext = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
-#set($parentFolder = $profiledPageContext.parentFolder)
+#set($site = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
+#set($parentFolder = $site.parentFolder)
 
 <!--  BEGIN: layout/html/tigris/decorator.vm -->
 
@@ -59,7 +59,7 @@ limitations under the License.
       </div>
 <!-- Top Tabs -->
       <div class="tabs">
-#includeTabsNavigation($profiledPageContext.siblingPages $LEFT_TO_RIGHT)
+#includeTabsNavigation($site.siblingPages $LEFT_TO_RIGHT)
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
@@ -81,11 +81,11 @@ limitations under the License.
           フォルダ＆ページ
         </div>
         <div class="body">
-#includeFoldersNavigation($profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
+#includeFoldersNavigation($site.siblingFolders $TOP_TO_BOTTOM)
 
-#foreach($docSetName in $profiledPageContext.documentSetNames)
-  #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
-  #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
+#foreach($docSetName in $site.documentSetNames)
+  #set($docSet = $site.getDocumentSet($docSetName))
+  #set($docSetNodes = $site.getDocumentSetNodes($docSetName))
           <div>
             <div class="pagetitle" title="$docSet.getTitle($preferedLocale)">
             ${docSet.getShortTitle($preferedLocale)}
@@ -97,7 +97,7 @@ limitations under the License.
       </div>
     </td>
   </tr>
-#if($profiledPageContext.rootLinks)
+#if($site.rootLinks)
   <tr>
     <td>  
       <div class="toolgroup">
@@ -105,7 +105,7 @@ limitations under the License.
           追加リンク
         </div>
         <div class="body">
-#includeLinksWithIconNavigation($profiledPageContext.rootLinks $TOP_TO_BOTTOM)
+#includeLinksWithIconNavigation($site.rootLinks $TOP_TO_BOTTOM)
         </div>
       </div>
     </td>
