@@ -51,76 +51,76 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.pipeline;
+package org.apache.jetspeed.pipeline.valve.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Stack;
 
-import org.apache.jetspeed.pipeline.valve.Valve;
-import org.apache.jetspeed.test.JetspeedTest;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.pipeline.valve.AbstractValve;
+import org.apache.jetspeed.pipeline.valve.LayoutValve;
+import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * TestPipeline
- *
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
+ * <p>
+ * VerySimpleLayoutValveImpl
+ * </p>
+ * 
+ * Like the descriptions said this is a <b><i>very</i></b> simple
+ * layout valve and should not be used in production.
+ * 
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class TestPipeline extends JetspeedTest
+public class VerySimpleLayoutValveImpl extends AbstractValve implements LayoutValve
 {
+    private static final Log log = LogFactory.getLog(VerySimpleLayoutValveImpl.class);
 
     /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public TestPipeline(String name)
+    public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
-        super(name);
-    }
+        try
+        {
+            log.info("Invoking the VerySimpleLayoutValve...");
+            HttpServletRequest httpRequest = request.getRequest();
+            RequestDispatcher rd = httpRequest.getRequestDispatcher("/pages/SimpleLayoutHeader.jsp");
+            rd.include(httpRequest, request.getResponse());
 
-    /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
-     */
-    public static void main(String args[])
-    {
-        junit.awtui.TestRunner.main(new String[] { TestPipeline.class.getName()});
-    }
+            Stack renderStack = (Stack) httpRequest.getAttribute(CleanupValveImpl.RENDER_STACK_ATTR);
+            if (renderStack == null)
+            {
+                renderStack = new Stack();
+                httpRequest.setAttribute(CleanupValveImpl.RENDER_STACK_ATTR, renderStack);
+            }
+            renderStack.push("/pages/SimpleLayoutFooter.jsp");
 
-    public void setup()
-    {
-    }
+        }
+        catch (Exception e)
+        {
+            log.error("VerySimpleLayout: Unable to include layout header.  Layout not processed", e);
+        }
+        finally
+        {
+            context.invokeNext(request);
+        }
 
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPipeline.class);
     }
 
     /**
-     * Tests
-     *
-     * @throws Exception
+     * @see java.lang.Object#toString()
      */
-    public void testPipeline() throws Exception
+    public String toString()
     {
-        assertNotNull(engine);
-        Pipeline pipeline = engine.getPipeline();
-        assertNotNull(pipeline);
-        Valve[] valves = pipeline.getValves();
-        assertTrue(valves[0].toString().equals("CapabilityValveImpl"));
-        assertTrue(valves[1].toString().equals("ContainerValve"));
-        assertTrue(valves[2].toString().equals("ProfilerValve"));
-        assertTrue(valves[3].toString().equals("ActionValveImpl"));
-        assertTrue(valves[4].toString().equals("VerySimpleLayoutValveImpl"));
-        assertTrue(valves[5].toString().equals("AggregatorValve"));
-        assertTrue(valves[6].toString().equals("CleanupValveImpl"));
+        return "VerySimpleLayoutValveImpl";
     }
+
 }

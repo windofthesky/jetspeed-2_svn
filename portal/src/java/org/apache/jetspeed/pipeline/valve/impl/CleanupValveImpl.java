@@ -51,76 +51,81 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.pipeline;
+package org.apache.jetspeed.pipeline.valve.impl;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Stack;
 
-import org.apache.jetspeed.pipeline.valve.Valve;
-import org.apache.jetspeed.test.JetspeedTest;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.pipeline.valve.AbstractValve;
+import org.apache.jetspeed.pipeline.valve.CleanupValve;
+import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * TestPipeline
- *
- * @author <a href="taylor@apache.org">David Sean Taylor</a>
+ * <p>
+ * CleanupValveImpl
+ * </p>
+ * 
+ * All this valve does right now is look for JSP pages that were
+ * pushed onto the <code>org.apache.jetspeed.renderStack</code>
+ * request attribute, and attempts to includde them.
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class TestPipeline extends JetspeedTest
+public class CleanupValveImpl extends AbstractValve implements CleanupValve
 {
 
+    public static final String RENDER_STACK_ATTR = "org.apache.jetspeed.renderStack";
+
+    private static final Log log = LogFactory.getLog(CleanupValveImpl.class);
+
     /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public TestPipeline(String name)
+    public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
-        super(name);
+
+        // Complete any renderings that are on the rendering stack 
+
+        // TODO: we should abstract the rendering as we will
+        // wnat to eventually support other types of templates
+        // other than JSPs.
+        HttpServletRequest httpRequest = request.getRequest();
+        Stack renderStack = (Stack) httpRequest.getAttribute(RENDER_STACK_ATTR);
+        String fragment = null;
+        try
+        {
+            if (renderStack != null)
+            {
+                while (!renderStack.empty())
+                {
+                    fragment = (String) renderStack.pop();
+                    RequestDispatcher rd = httpRequest.getRequestDispatcher(fragment);
+                    rd.include(httpRequest, request.getResponse());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("CleanupValveImpl: failed while trying to render fragment " + fragment);
+            log.error("CleanupValveImpl: Unable to complete all renderings", e);
+        }
+
     }
 
     /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
+     * @see java.lang.Object#toString()
      */
-    public static void main(String args[])
+    public String toString()
     {
-        junit.awtui.TestRunner.main(new String[] { TestPipeline.class.getName()});
+        return "CleanupValveImpl";
     }
 
-    public void setup()
-    {
-    }
-
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPipeline.class);
-    }
-
-    /**
-     * Tests
-     *
-     * @throws Exception
-     */
-    public void testPipeline() throws Exception
-    {
-        assertNotNull(engine);
-        Pipeline pipeline = engine.getPipeline();
-        assertNotNull(pipeline);
-        Valve[] valves = pipeline.getValves();
-        assertTrue(valves[0].toString().equals("CapabilityValveImpl"));
-        assertTrue(valves[1].toString().equals("ContainerValve"));
-        assertTrue(valves[2].toString().equals("ProfilerValve"));
-        assertTrue(valves[3].toString().equals("ActionValveImpl"));
-        assertTrue(valves[4].toString().equals("VerySimpleLayoutValveImpl"));
-        assertTrue(valves[5].toString().equals("AggregatorValve"));
-        assertTrue(valves[6].toString().equals("CleanupValveImpl"));
-    }
 }
