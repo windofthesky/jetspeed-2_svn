@@ -162,7 +162,7 @@ limitations under the License.
         </java>
   </goal>
 
- <goal name="pam.strutsdeploy">
+  <goal name="pam.strutsdeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
@@ -179,6 +179,30 @@ limitations under the License.
             <arg value="struts-demo" />
             <arg value="-warfilename" />
             <arg value="../struts-portlet/demo/target/struts-demo.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+        </java>
+  </goal>
+  
+  <goal name="pam.securitydeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+          </classpath>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="security" />
+            <arg value="-warfilename" />
+            <arg value="../applications/security/target/security.war" />
             <arg value="-webappDir" />
             <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
@@ -258,6 +282,30 @@ limitations under the License.
             <arg value="webapp" />
         </java>
   </goal>
+  
+  <goal name="pam.securityundeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+          </classpath>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+            <arg value="-action" />
+            <arg value="undeploy" />
+            <arg value="-PortletAppName" />
+            <arg value="security" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />
+            <arg value="-ApplicationType" />
+            <arg value="webapp" />
+        </java>
+  </goal>
 
   <!-- ================================================================ -->
   <!-- Deploy to Catalina and Expand                                    -->
@@ -265,7 +313,6 @@ limitations under the License.
   <goal name="deploy">
      <echo message="Deploying ${pom.id}, ${pom.name}"/>
       <delete dir="${deploy.war.dir}/${webapp.name}"/>
-      <!-- <copy  file="./target/jetspeed-2.0-a1-dev.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>-->
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
 
@@ -308,6 +355,7 @@ limitations under the License.
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
      <attainGoal name="pam.strutsdeploy" />
+     <attainGoal name="pam.securitydeploy" />
      <attainGoal name="db.entities" />
   </goal>
 

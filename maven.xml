@@ -166,6 +166,14 @@ limitations under the License.
                banner="Build and Install the Demo application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
+     
+     <maven:reactor
+               basedir="${basedir}/applications/security"
+               includes="project.xml"
+               goals="war:install"
+               banner="Build and Install the Security application WAR"
+               postProcessing="false"
+               ignoreFailures="false"/>
 
           <attainGoal name="copy.shared.deps" />
   </goal>

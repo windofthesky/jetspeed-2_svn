@@ -25,7 +25,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="12" type="portlet" name="HW_App::LoginPortlet">
+    <fragment id="12" type="portlet" name="security::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
