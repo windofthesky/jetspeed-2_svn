@@ -15,24 +15,54 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <portlet-app id="security" version="1.0">
-	<portlet id="LoginPortlet">
-    	<init-param>
-      		<name>ViewPage</name>
-      		<value>/WEB-INF/security/login/login.jsp</value>
-		</init-param>
-    	<portlet-name>LoginPortlet</portlet-name>
-    	<display-name>Login Portlet</display-name>
-    	<portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
-	    <expiration-cache>-1</expiration-cache>
-    	<supports>
-	      <mime-type>text/html</mime-type>
-    	  <portlet-mode>VIEW</portlet-mode>
-    	</supports>
-		<portlet-info>
-			<title>Login Portlet</title>
-			<short-title>Login Portlet</short-title>
-    	</portlet-info>
-  	</portlet>
+
+<portlet id="PortletApplicationBrowser">
+    <init-param>
+    	<description>This parameter sets the template used in view mode.</description>
+		<name>ViewPage</name>
+			<value>/WEB-INF/view/pam-browser.jsp</value>
+     </init-param>   
+    <portlet-name>PortletApplicationBrowser</portlet-name>
+    <display-name>Portlet Application Browser</display-name>
+    <description>The PAM (Portlet Application Manager) Portlet Application Browser displays a list of portlet applications deployed to this portal. From here you can add, edit, and delete portlet applications.</description>
+    <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationBrowser</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portlet Application Browser</title>
+      <short-title>Apps</short-title>
+      <keywords>applications,apps,PAM</keywords>
+    </portlet-info>
+</portlet>
+
+<portlet id="PortletApplicationDetail">
+    <init-param>
+      <description>This parameter sets the template used in view mode.</description>
+      <name>ViewPage</name>
+      <value>//WEB-INF/view/pam-detail.jsp</value>
+    </init-param>   
+    <portlet-name>PortletApplicationDetail</portlet-name>
+    <display-name>Portlet Application Detail</display-name>
+    <description>The PAM (Portlet Application Manager) Portlet Application Detail displays a specific portlet application deployed to this portal. From here you can add, edit, and delete this portlet application.</description>
+    <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationDetail</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portlet Application Detail</title>
+      <short-title>PAD</short-title>
+      <keywords>applications,apps,PAM</keywords>
+    </portlet-info>
+  </portlet>
 
 </portlet-app>
 

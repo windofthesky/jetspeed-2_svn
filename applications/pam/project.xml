@@ -4,17 +4,32 @@
 -->
 <project>
   <extend>${basedir}/./../project.xml</extend>
-  <id>demo</id>
-  <name>Jetspeed-2 Demo Portlet Application</name>
-  <description>Demo Portlets Container</description>
-  <shortDescription>Demo Portlets Container</shortDescription>
+  <id>pam</id>
+  <name>Jetspeed-2 Portlet Application Manager</name>
+  <description>Jetspeed-2 Portlet Application Manager Default Package</description>
+  <shortDescription>Portlet Application Manager</shortDescription>
 
   <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/demo</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/demo/</url>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/pam</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/pam/</url>
   </repository>
 
-  <dependencies>      
+  <dependencies>
+     <dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>        
+    <dependency>
+      <id>pluto</id>
+      <version>1.0.1-SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+      
       <dependency>
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>

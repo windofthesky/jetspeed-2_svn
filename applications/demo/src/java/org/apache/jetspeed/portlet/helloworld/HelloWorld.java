@@ -26,6 +26,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+
 /**
  *  This example portlet will display text <pre>This is a test from hello.jsp</pre>
  *
@@ -60,7 +61,7 @@ public class HelloWorld extends GenericPortlet
     throws PortletException 
     {
         System.out.println("HelloWorldPortlet: initializing portlet, config = " + config.getPortletName());
-        super.init(config);
+        super.init(config);        
     }
     
     /*
