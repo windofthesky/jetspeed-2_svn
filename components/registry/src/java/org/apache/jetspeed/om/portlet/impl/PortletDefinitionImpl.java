@@ -104,8 +104,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private String expirationCache;
     
     /** Metadata property */
-    private GenericMetadata metadata = new PortletDefinitionMetadataImpl();
-    
     private Collection metadataFields = null;
     
     public PortletDefinitionImpl()
@@ -670,14 +668,13 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public GenericMetadata getMetadata()
     {
-        if(metadata.getFields() == null)
+    	if(metadataFields == null)
         {
-            if(metadataFields == null)
-            {
-                metadataFields = new ArrayList();
-            }
-            metadata.setFields(metadataFields);
+            metadataFields = new ArrayList();
         }
+    	
+        GenericMetadata metadata = new PortletDefinitionMetadataImpl();
+        metadata.setFields(metadataFields);
         
         return metadata;
     }
@@ -687,14 +684,13 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public void setMetadata(GenericMetadata metadata)
     {
-        this.metadata = metadata;
         this.metadataFields = metadata.getFields();     
     }
 
     /**
      * @return
      */
-    public Collection getMetadataFields()
+    protected Collection getMetadataFields()
     {
         return metadataFields;
     }
@@ -702,10 +698,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     /**
      * @param collection
      */
-    public void setMetadataFields(Collection metadataFields)
+    protected void setMetadataFields(Collection metadataFields)
     {
         this.metadataFields = metadataFields;
-        metadata.setFields(metadataFields);
     }
-
 }

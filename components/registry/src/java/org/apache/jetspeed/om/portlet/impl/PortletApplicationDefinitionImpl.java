@@ -60,8 +60,6 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     protected long webApplicationId;
     
     /** Metadata property */
-    private GenericMetadata metadata = new PortletApplicationMetadataImpl();
-    
     private Collection metadataFields = null;
     
     /** Description */
@@ -244,14 +242,13 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public GenericMetadata getMetadata()
     {
-        if(metadata.getFields() == null)
+    	if(metadataFields == null)
         {
-            if(metadataFields == null)
-            {
-                metadataFields = new ArrayList();
-            }
-            metadata.setFields(metadataFields);
+            metadataFields = new ArrayList();
         }
+    	
+    	GenericMetadata metadata = new PortletApplicationMetadataImpl();
+    	metadata.setFields(metadataFields);
         
         return metadata;
     }
@@ -261,14 +258,13 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
      */
     public void setMetadata(GenericMetadata metadata)
     {
-        this.metadata = metadata;
         this.metadataFields = metadata.getFields();     
     }
 
     /**
      * @return
      */
-    public Collection getMetadataFields()
+    protected Collection getMetadataFields()
     {
         return metadataFields;
     }
@@ -276,10 +272,9 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     /**
      * @param collection
      */
-    public void setMetadataFields(Collection metadataFields)
+    protected void setMetadataFields(Collection metadataFields)
     {
         this.metadataFields = metadataFields;
-        metadata.setFields(metadataFields);
     }
 
 }
