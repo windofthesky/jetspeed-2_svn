@@ -55,8 +55,8 @@ public class FacesPortlet extends GenericPortlet
     /** The Log instance for this class. */
     private static final Log log = LogFactory.getLog(FacesPortlet.class);
 
-    /** The VIEW_ID used to keep track of action between the action request and the render request. */
-    public static final String VIEW_ID = "org.apache.portals.bridges.myfaces.VIEW_ID";
+    /** The VIEW_ROOT used to keep track of action between the action request and the render request. */
+    public static final String VIEW_ROOT = "org.apache.portals.bridges.myfaces.VIEW_ROOT";
     
     /** 
      * The REQUEST_SERVLET_PATH used for externalContext.getRequestServletPath(). externalContext.getRequestServletPath()
@@ -65,7 +65,6 @@ public class FacesPortlet extends GenericPortlet
     public static final String REQUEST_SERVLET_PATH = "org.apache.portals.bridges.myfaces.REQUEST_SERVLET_PATH";
 
     /** The JSF_VIEW_ID used to maintain the state of the view action. */
-    // TODO Is this myfaces specific?
     public static final String JSF_VIEW_ID = "jsf_viewid";
 
     /** Name of portlet preference for Action page. */
@@ -377,6 +376,9 @@ public class FacesPortlet extends GenericPortlet
     {
         boolean actionRequest = (request instanceof ActionRequest);
         boolean renderRequest = (request instanceof RenderRequest);
+        
+        String defaultView = defaultPage;
+        
         if (actionRequest)
         {
             log.trace("Begin FacesPortlet.processAction()");
@@ -386,6 +388,7 @@ public class FacesPortlet extends GenericPortlet
         FacesContext context = getFacesContextFactory().getFacesContext(portletConfig.getPortletContext(), request,
                 response, getLifecycle());
 
+        // Restore view if available.
         setDefaultView(context, defaultPage);
         if (log.isTraceEnabled())
         {
@@ -402,10 +405,12 @@ public class FacesPortlet extends GenericPortlet
                 {
                     log.trace("End Executing phases");
                 }
-                setDefaultView(context, defaultPage);
+                // The view should have been restore.
+                // Pass it to the render request.
+                request.getPortletSession().setAttribute(VIEW_ROOT, context.getViewRoot());
             }
             else if (renderRequest)
-            {
+            { 
                 getLifecycle().render(context);
                 if (log.isTraceEnabled())
                 {
@@ -458,17 +463,12 @@ public class FacesPortlet extends GenericPortlet
      * 
      * @param context The {@link FacesContext}for the current request.
      * @param defaultView The default view identifier.
+     * @return The default view.
      */
     private void setDefaultView(FacesContext facesContext, String defaultView)
     {
         // Need to be able to transport viewId between actionRequest and
         // renderRequest.
-        // If actionRequest, the view id is obtained from the navigation, we
-        // need to be able to keep that
-        // value and not have it overwritten by the default view id. Putting
-        // that value in the portletRequest does not
-        // work. Need to use actionResponse.setRenderParameter...
-        // Default the action view id to the view id state.
         PortletRequest portletRequest = (PortletRequest) facesContext.getExternalContext().getRequest();
         if (portletRequest instanceof ActionRequest)
         {
@@ -480,35 +480,24 @@ public class FacesPortlet extends GenericPortlet
             {
                 defaultView = portletRequest.getParameter(JSF_VIEW_ID);
             }
-            ((ActionResponse) facesContext.getExternalContext().getResponse()).setRenderParameter(FacesPortlet.VIEW_ID,
-                    defaultView);
-            portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView);
         }
         else if (portletRequest instanceof RenderRequest)
         {
             if (null == facesContext.getViewRoot())
             {
-                facesContext.setViewRoot(new UIViewRoot());
-                if (log.isDebugEnabled())
+                if (null != portletRequest.getPortletSession().getAttribute(VIEW_ROOT))
                 {
-                    log.debug("Created new ViewRoot" + facesContext.getViewRoot());
+                    facesContext.setViewRoot((UIViewRoot) portletRequest.getPortletSession().getAttribute(VIEW_ROOT));
+                    defaultView = facesContext.getViewRoot().getViewId();
                 }
-                facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+                else
+                {
+                    facesContext.setViewRoot(new UIViewRoot());
+                    facesContext.getViewRoot().setViewId(defaultView);
+                    facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+                }                	
             }
-            
-            // Check if the portlet request is a render request to be process.
-            // First check if we have a post action request processing view id.
-            if (null != portletRequest.getParameter(FacesPortlet.VIEW_ID))
-            {
-                defaultView = portletRequest.getParameter(FacesPortlet.VIEW_ID);
-            }
-            else if (null == facesContext.getViewRoot().getViewId())
-            {                
-                facesContext.getViewRoot().setViewId(defaultView);                
-            }
-            String viewId = defaultView.replaceAll(".jsp", ".jsf");
-            facesContext.getViewRoot().setViewId(viewId);
-            portletRequest.setAttribute(REQUEST_SERVLET_PATH, viewId);   
         }
+        portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView.replaceAll(".jsp", ".jsf"));
     }
 }
