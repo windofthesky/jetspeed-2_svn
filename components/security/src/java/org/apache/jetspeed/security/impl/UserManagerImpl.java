@@ -38,6 +38,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * <p>Implementation for managing users and provides access
  * to the {@link User}.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public class UserManagerImpl extends BaseSecurityImpl implements UserManager
 {
@@ -52,6 +53,16 @@ public class UserManagerImpl extends BaseSecurityImpl implements UserManager
         super(persistenceStore);
 
     }
+
+    /**
+     * @param persistenceStore
+     */
+    public UserManagerImpl( PersistenceStore persistenceStore , HierarchyResolver roleHierarchyResolver,HierarchyResolver groupHierarchyResolver)
+    {
+        super(persistenceStore,roleHierarchyResolver,groupHierarchyResolver);
+
+    }
+    
     /**
      * @see org.apache.jetspeed.security.UserManager#authenticate(java.lang.String, java.lang.String)
      */

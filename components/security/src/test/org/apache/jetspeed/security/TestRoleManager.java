@@ -14,12 +14,8 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.prefs.Preferences;
-
-import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -30,6 +26,7 @@ import org.apache.jetspeed.security.impl.RolePrincipalImpl;
  * <p>Unit testing for {@link RoleManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public class TestRoleManager extends AbstractSecurityTestcase
 {
@@ -121,15 +118,11 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             rms.addRoleToUser("anonuser1", "testusertorole1.role1");
+          
             Collection principals = ums.getUser("anonuser1").getSubject().getPrincipals();
-            Principal found =
-                SecurityHelper.getPrincipal(
-                    new Subject(false, new HashSet(principals), new HashSet(), new HashSet()),
-                    RolePrincipal.class);
-            assertNotNull("found principal is null", found);
             assertTrue(
-                "found principal should be testusertorole1.role1, " + found.getName(),
-                found.getName().equals("testusertorole1.role1"));
+                "anonuser1 should contain testusertorole1.role1",
+                principals.contains(new RolePrincipalImpl("testusertorole1.role1")));
         }
         catch (SecurityException sex)
         {
@@ -207,10 +200,12 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             rms.removeRole("testrole1.role1");
             Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
-            assertEquals(
-                "principal size should be == 3 after removing testrole1.role1, for principals: " + principals.toString(),
-                3,
-                principals.size());
+            // because of hierarchical roles
+            //
+            // assertEquals(
+            //     "principal size should be == 3 after removing testrole1.role1, for principals: " + principals.toString(),
+            //     3,
+            //     principals.size());
             assertFalse(
                 "anonuser2 should not contain testrole1.role1",
                 principals.contains(new RolePrincipalImpl("testrole1.role1")));
@@ -636,6 +631,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             rms.removeRole("testgetrole");
             rms.removeRole("testuserrolemapping");
             gms.removeGroup("testrolegroupmapping");
+            rms.removeRole("testusertorole1");
         }
         catch (SecurityException sex)
         {

@@ -6,6 +6,13 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.security.impl.GroupManagerImpl;
 import org.apache.jetspeed.security.impl.PermissionManagerImpl;
@@ -16,6 +23,7 @@ import org.apache.jetspeed.security.impl.UserManagerImpl;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
+ * @version $Id$
  *
  */
 public class AbstractSecurityTestcase extends PersistenceSupportedTestCase
@@ -53,6 +61,25 @@ public class AbstractSecurityTestcase extends PersistenceSupportedTestCase
     public AbstractSecurityTestcase( String arg0 )
     {
         super(arg0);
+    }
+    
+    /**
+     * Returns subject's principals of type claz 
+     * 
+     * @param subject
+     * @param claz
+     * @return Returns subject's principals of type claz
+     */
+    protected Collection getPrincipals( Subject subject, Class claz){
+        List principals=new ArrayList();
+        for (Iterator iter = subject.getPrincipals().iterator(); iter.hasNext();)
+        {
+            Object element = iter.next();
+            if ( claz.isInstance(element) ) 
+                principals.add(element);
+            
+        }
+        return principals;
     }
 
 }

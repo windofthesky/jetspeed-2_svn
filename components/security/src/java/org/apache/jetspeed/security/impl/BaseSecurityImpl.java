@@ -41,11 +41,15 @@ import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 /**
  * <p>Base class for the security services.</p> 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public class BaseSecurityImpl
 {
 
     PersistenceStore persistenceStore;
+    
+    HierarchyResolver roleHierarchyResolver=new GeneralizationHierarchyResolver();
+    HierarchyResolver groupHierarchyResolver=new GeneralizationHierarchyResolver();
 
     /**
      * <p>Constructor providing access to the persistence component.</p>
@@ -58,6 +62,16 @@ public class BaseSecurityImpl
         }
         
        this.persistenceStore = persistenceStore;
+    }
+    
+    /**
+     * <p>Constructor providing access to the persistence component and role/group hierarchy resolvers</p>
+     */
+    public BaseSecurityImpl(PersistenceStore persistenceStore, HierarchyResolver roleHierarchyResolver,HierarchyResolver groupHierarchyResolver)
+    {
+        this(persistenceStore);
+        this.roleHierarchyResolver=roleHierarchyResolver;
+        this.groupHierarchyResolver=groupHierarchyResolver;
     }
 
     /**
@@ -294,7 +308,12 @@ public class BaseSecurityImpl
             while (omRolesIter.hasNext())
             {
                 JetspeedRolePrincipal omRole = (JetspeedRolePrincipal) omRolesIter.next();
-                rolePrincipals.add(new RolePrincipalImpl(RolePrincipalImpl.getPrincipalNameFromFullPath(omRole.getFullPath())));
+                Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
+                String [] fullPaths=roleHierarchyResolver.resolve(preferences);
+                for (int i = 0; i < fullPaths.length; i++)
+                {
+                    rolePrincipals.add(new RolePrincipalImpl(RolePrincipalImpl.getPrincipalNameFromFullPath(fullPaths[i])));    
+                }
             }
         }
         return rolePrincipals;
@@ -316,7 +335,13 @@ public class BaseSecurityImpl
             while (omGroupsIter.hasNext())
             {
                 JetspeedGroupPrincipal omGroup = (JetspeedGroupPrincipal) omGroupsIter.next();
-                groupPrincipals.add(new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(omGroup.getFullPath())));
+                
+                Preferences preferences = Preferences.userRoot().node(omGroup.getFullPath());
+                String [] fullPaths=groupHierarchyResolver.resolve(preferences);
+                for (int i = 0; i < fullPaths.length; i++)
+                {
+                    groupPrincipals.add(new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPaths[i])));   
+                }
             }
         }
         return groupPrincipals;
