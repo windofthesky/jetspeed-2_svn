@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.factory;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -39,6 +43,8 @@ public abstract class JetspeedPortletFactory
 {
 
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
+    
+    private static final ArrayList classLoaders = new ArrayList();
     
     /**
      * Gets a portlet by either creating it or returning a handle to it from the portlet 'cache'
@@ -65,7 +71,13 @@ public abstract class JetspeedPortletFactory
                 return portlet;
             }
             
-            portlet = (Portlet)Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();            
+            portlet = loadPortletClass(className);
+            
+            if(portlet == null)
+            {
+                throw new FileNotFoundException("Could not located portlet "+className+" in any classloader.");
+            }
+            
             ServletContext servletContext = servletConfig.getServletContext();
             PortletContext portletContext = 
                         PortalAccessor.createPortletContext(servletContext, 
@@ -84,6 +96,66 @@ public abstract class JetspeedPortletFactory
         }
 
         return portlet;
+    }
+    
+    /**
+     * <p>
+     * loadPortletClass
+     * </p>
+     * Loads a Portlet class by first checking Thread.currentThread().getContextClassLoader()
+     * then by checking all of the ClassLoaders in <code>classLoaders</code> until the
+     * class is located or returns <code>null</code> if the Portlet class could not be found.
+     *
+     * @param className
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static Portlet loadPortletClass( String className ) throws InstantiationException, IllegalAccessException
+    {
+        Portlet portlet = null;
+        try
+        {
+            portlet = (Portlet)Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
+        }
+        catch (ClassNotFoundException e)
+        {
+            synchronized(classLoaders)
+            {
+                Iterator itr = classLoaders.iterator();
+                while(itr.hasNext() && portlet == null)
+                {
+                    ClassLoader cl = (ClassLoader) itr.next();
+                    try
+                    {                        
+                        portlet = (Portlet) cl.loadClass(className).newInstance();
+                    }
+                    catch (ClassNotFoundException e1)
+                    {
+                        // move along
+                    }
+                }
+            }
+        }
+        return portlet;
+    }
+    
+    /**
+     * 
+     * <p>
+     * addClassLoader
+     * </p>
+     * 
+     * Adds a ClassLoader to the search path, <code>classLoaders</code>, of the JetspeedPortletFactory.
+     *
+     * @param cl
+     */
+    public static void addClassLoader(ClassLoader cl)
+    {
+        synchronized(classLoaders)
+        {
+            classLoaders.add(cl);
+        }
     }
 
 }
