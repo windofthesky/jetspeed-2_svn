@@ -17,7 +17,6 @@ package org.apache.jetspeed.container;
 
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
@@ -29,7 +28,6 @@ import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
-import org.apache.jetspeed.container.namespace.NamespaceMapper;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
@@ -116,15 +114,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
             PortletServices services = JetspeedPortletServices.getSingleton();
             return services.getService(serviceName);
         }
-        String attributeName = NamespaceMapper.encode(application.getId().toString(), name);
-        Object attribute = servletContext.getAttribute(attributeName);
-
-        if (attribute == null)
-        {
-            // TBD, not sure, if this should be done for all attributes or only javax.servlet.
-            attribute = servletContext.getAttribute(name);
-        }
-        return attribute;
+        return servletContext.getAttribute(name);
     }
 
     public void log(java.lang.String msg)
@@ -151,23 +141,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public Enumeration getAttributeNames()
     {
-        Enumeration attributes = servletContext.getAttributeNames();
-
-        Vector portletAttributes = new Vector();
-
-        while (attributes.hasMoreElements())
-        {
-            String attribute = (String) attributes.nextElement();
-
-            String portletAttribute = NamespaceMapper.encode(application.getId().toString(), attribute);
-
-            if (portletAttribute != null) // it is in the portlet's namespace
-            {
-                portletAttributes.add(portletAttribute);
-            }
-        }
-
-        return portletAttributes.elements();
+        return servletContext.getAttributeNames();
     }
 
     public java.lang.String getInitParameter(java.lang.String name)
@@ -182,12 +156,21 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public void removeAttribute(java.lang.String name)
     {
-        servletContext.removeAttribute(NamespaceMapper.encode(application.getId().toString(), name));
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Attribute name == null");
+        }
+
+        servletContext.removeAttribute(name);
     }
 
     public void setAttribute(java.lang.String name, java.lang.Object object)
     {
-        servletContext.setAttribute(NamespaceMapper.encode(application.getId().toString(), name), object);
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Attribute name == null");
+        }
+        servletContext.setAttribute(name, object);
     }
 
     public String getServerInfo()
