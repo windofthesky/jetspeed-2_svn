@@ -605,7 +605,6 @@ limitations under the License.
     <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
       <filterset begintoken="@" endtoken="@">
         <filter token="AUTODEPLOYMENT_SERVER" value="${org.apache.jetspeed.services.autodeployment.server}"/>
-        <filter token="AUTODEPLOYMENT_PORT" value="${org.apache.jetspeed.services.autodeployment.port}"/>
         <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
         <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
       </filterset>
@@ -615,6 +614,9 @@ limitations under the License.
       -->
       <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
         <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
+      </filterset>
+      <filterset begintoken="autodeployment.port" endtoken="8080">
+        <filter token="=" value="autodeployment.port=${org.apache.jetspeed.services.autodeployment.port}"/>
       </filterset>
     </copy>
   </postGoal>
