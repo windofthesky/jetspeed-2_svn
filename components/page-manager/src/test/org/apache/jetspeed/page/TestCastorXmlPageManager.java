@@ -361,4 +361,16 @@ public class TestCastorXmlPageManager extends TestCase
         assertNotNull(metaData);
         assertEquals("Default Title for Folder 1", metaData.getTitle(Locale.GERMAN));
     }
+    
+    public void testPageMetaData() throws Exception
+    {	
+        Page page = pageManager.getPage("default-page.psml");
+        assertNotNull(page);
+        String frenchTitle = page.getTitle(Locale.FRENCH);
+        assertNotNull(frenchTitle);
+        assertEquals("Ma Premiere Page de PSML", frenchTitle);
+        String defaultTitle = page.getTitle(Locale.GERMAN);
+        assertNotNull(defaultTitle);
+        assertEquals("My First PSML Page", defaultTitle);
+    }
 }

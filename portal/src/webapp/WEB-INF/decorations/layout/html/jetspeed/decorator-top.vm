@@ -57,7 +57,7 @@ limitations under the License.
 	#end
 	
 	#foreach($childPage in $folder.pages.iterator())		
-		<a href="${appRoot}/portal${childPage.id}">$childPage.title</a> &nbsp;
+		<a href="${appRoot}/portal${childPage.id}">$childPage.getTitle($preferedLocal)</a> &nbsp;
 	#end
 	
 </p>

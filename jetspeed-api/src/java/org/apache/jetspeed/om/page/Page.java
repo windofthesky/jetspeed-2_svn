@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.om.page;
 
+import java.util.Locale;
+
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.ChildNode;
 
@@ -26,6 +28,18 @@ import org.apache.jetspeed.om.folder.ChildNode;
  */
 public interface Page extends BaseElement, java.io.Serializable, Cloneable, ChildNode
 {
+    
+    /**
+     * 
+     * <p>
+     * getTitle
+     * </p>
+     * 
+     * @param locale
+     * @return Title for the specified Locale
+     */
+    String getTitle(Locale locale);
+    
 	public GenericMetadata getMetadata();
 	
 	public void setMetadata(GenericMetadata metadata);

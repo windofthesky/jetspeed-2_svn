@@ -18,10 +18,14 @@ package org.apache.jetspeed.om.page.psml;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Stack;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -40,10 +44,13 @@ public class PageImpl extends AbstractBaseElement implements Page
     private int hashCode;
 
     private Folder parent;
+    
+    private Map localizedTitles;
 
     public PageImpl()
     {
         // empty constructor
+        this.localizedTitles = new HashMap();
     }
 
     /**
@@ -59,6 +66,7 @@ public class PageImpl extends AbstractBaseElement implements Page
         // Cheaper to generate the hash code now then every call to hashCode()
         hashCode = (Page.class.getName()+":"+id).hashCode();
         super.setId(id);
+        
     }
     /**
      * <p>
@@ -249,6 +257,15 @@ public class PageImpl extends AbstractBaseElement implements Page
     public void setMetadataFields( Collection metadataFields )
     {
         this.metadataFields = metadataFields;
+        Iterator fieldsItr = metadataFields.iterator();
+        while(fieldsItr.hasNext())
+        {
+            LocalizedField field = (LocalizedField) fieldsItr.next();
+            if(field.getName().equals("title"))
+            {
+                localizedTitles.put(field.getLocale(), field);
+            }
+        }
     }
     /**
      * <p>
@@ -261,6 +278,26 @@ public class PageImpl extends AbstractBaseElement implements Page
     public String getName()
     {
         return getId();
+    }
+    /**
+     * <p>
+     * getTitle
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.Page#getTitle(java.util.Locale)
+     * @param locale
+     * @return
+     */
+    public String getTitle( Locale locale )
+    {
+        if(localizedTitles.containsKey(locale))
+        {            
+            return ((LocalizedField)localizedTitles.get(locale)).getValue().trim();
+        }
+        else
+        {
+            return getTitle();
+        }
     }
 }
 

@@ -458,8 +458,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             mapping = new Mapping();
 
             InputSource is = new InputSource(stream);
+           
             is.setSystemId(mapFileResource);
-
             mapping.loadMapping(is);
         }
         catch (Exception e)
