@@ -16,8 +16,6 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 //import java.io.InputStream;
 
@@ -31,7 +29,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.portlet.ServletPortlet;
 
 //import org.apache.jetspeed.cps.util.Streams;
