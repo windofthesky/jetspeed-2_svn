@@ -36,6 +36,9 @@ limitations under the License.
         <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
+        <unique name="UIX_SECURITY_PRINCIPAL">
+          <unique-column name="FULL_PATH" />
+        </unique>        
     </table>
 
     <!--
