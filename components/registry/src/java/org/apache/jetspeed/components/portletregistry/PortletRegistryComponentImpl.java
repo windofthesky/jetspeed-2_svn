@@ -30,6 +30,7 @@ import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
@@ -437,6 +438,11 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 store.deleteAll(store.newQuery(DefaultPreferenceImpl.class, filter));
                 store.getTransaction().checkpoint();
 
+                filter = store.newFilter();
+                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
+                store.deleteAll(store.newQuery(UserAttributeImpl.class, filter));
+                store.getTransaction().checkpoint();
+                
                 filter = store.newFilter();
                 filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
