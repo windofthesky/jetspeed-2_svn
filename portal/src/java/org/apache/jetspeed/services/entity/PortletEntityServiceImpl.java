@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.services.entity;
 
+import java.util.HashMap;
+
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.om.common.entity.PortletEntityImpl;
@@ -72,6 +74,9 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class PortletEntityServiceImpl extends BaseService implements PortletEntityService
 {
+
+    // TODO: this should eventually use a system cach like JCS
+    private HashMap entityCache = new HashMap();
 
     /**
      * @see org.apache.fulcrum.Service#init()
@@ -99,11 +104,20 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
      */
     public PortletEntity getPortletEntity(RequestContext request, PortletDefinition portletDefinition, String portletName)
     {
+        PortletEntityImpl portletEntity = new PortletEntityImpl(portletDefinition, portletName);
 
-        // TODO This will change as the ID will be generated from the DB
-        PortletEntityImpl portletEntity = new PortletEntityImpl(portletDefinition);
-        portletEntity.setId(portletName);
-        return portletEntity;
+        if (entityCache.containsKey(portletEntity.getId()))
+        {
+            // Speed GC object reclaimation.
+            portletEntity = null;
+            return (PortletEntity) entityCache.get(portletEntity.getId());
+        }
+        else
+        {
+            entityCache.put(portletEntity.getId(), portletEntity);
+            return portletEntity;
+        }
+
     }
 
     /**
