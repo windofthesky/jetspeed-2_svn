@@ -16,12 +16,14 @@
 package org.apache.portals.bridges.velocity;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -30,13 +32,12 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
 
-
 /**
  * <p>
- * Generic Velocity Portlet emulating basic functionality provided in the Portlet API (for JSPs) 
- * to Velocity portlets and templates. Provides the following Velocity context variables emulating
- * PLT.22 JSP request variables:
- * * <ul>
+ * Generic Velocity Portlet emulating basic functionality provided in the
+ * Portlet API (for JSPs) to Velocity portlets and templates. Provides the
+ * following Velocity context variables emulating PLT.22 JSP request variables: *
+ * <ul>
  * <li>$renderRequest
  * <li>$renderResponse
  * <li>$portletConfig
@@ -49,115 +50,116 @@ import org.apache.velocity.context.Context;
  * <li>$renderURL -- use renderResponse.createRenderURL()
  * <li>$namespace -- use rennderResponse.getNamespace() (Namespace)
  * </ul>
- *  Beware that Param tags cannot be added incrementally i.e. $renderURL.setParameter("name","value").setParameter("name","value")
- *  since the portlet api returns void on setParameter (or setWindowState, setPortletMode)
- *  Thus it is required to set each param or state on a single line:
- * </p>
- * <p>   
- *    #set($max = $renderResponse.createRenderURL())
- *    $max.setWindowState($STATE_MAX)
- *    $max.setParameter("bush", "war")
+ * Beware that Param tags cannot be added incrementally i.e.
+ * $renderURL.setParameter("name","value").setParameter("name","value") since
+ * the portlet api returns void on setParameter (or setWindowState,
+ * setPortletMode) Thus it is required to set each param or state on a single
+ * line:
  * </p>
  * <p>
- * Constants: 
- * $MODE_EDIT, $MODE_HELP, $MODE_VIEW, $STATE_NORMAL, $STATE_MIN, $STATE_MAX
+ * #set($max = $renderResponse.createRenderURL())
+ * $max.setWindowState($STATE_MAX) $max.setParameter("bush", "war")
+ * </p>
+ * <p>
+ * Constants: $MODE_EDIT, $MODE_HELP, $MODE_VIEW, $STATE_NORMAL, $STATE_MIN,
+ * $STATE_MAX
  * 
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @version $Id: GenericVelocityPortlet.java,v 1.1 2004/10/29 01:29:50 taylor
+ *          Exp $
  */
 public class GenericVelocityPortlet extends GenericServletPortlet
 {
-    public final static String PORTLET_BRIDGE_CONTEXT = "portals.bridges.velocity.context"; 
-    
+
+    public final static String PORTLET_BRIDGE_CONTEXT = "portals.bridges.velocity.context";
+
     public GenericVelocityPortlet()
     {
     }
 
-    public void init(PortletConfig config)
-    throws PortletException
+    public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
     }
-    
+
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_ACTION_PAGE.  The value
-     * if the parameter is a relative URL, i.e. /actionPage.jsp will execute the
-     * JSP editPage.jsp in the portlet application's web app.  The action should
-     * not generate any content.  The content will be generate by doCustom(),
-     * doHelp() , doEdit(), or doView().
-     *
+     * Execute the servlet as define by the init parameter or preference
+     * PARAM_ACTION_PAGE. The value if the parameter is a relative URL, i.e.
+     * /actionPage.jsp will execute the JSP editPage.jsp in the portlet
+     * application's web app. The action should not generate any content. The
+     * content will be generate by doCustom(), doHelp() , doEdit(), or doView().
+     * 
      * See section PLT.16.2 of the JSR 168 Portlet Spec for more information
      * around executing a servlet or JSP in processAction()
-     *
+     * 
      * @see javax.portlet.GenericPortlet#processAction
-     *
+     * 
      * @task Need to be able to execute a servlet for the action
      */
-    public void processAction(ActionRequest request, ActionResponse actionResponse)
-    throws PortletException, IOException
+    public void processAction(ActionRequest request, ActionResponse actionResponse) throws PortletException,
+            IOException
     {
         super.processAction(request, actionResponse);
     }
-    
+
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_EDIT_PAGE.  The value
-     * if the parameter is a relative URL, i.e. /editPage.jsp will execute the
-     * JSP editPage.jsp in the portlet application's web app.
-     *
+     * Execute the servlet as define by the init parameter or preference
+     * PARAM_EDIT_PAGE. The value if the parameter is a relative URL, i.e.
+     * /editPage.jsp will execute the JSP editPage.jsp in the portlet
+     * application's web app.
+     * 
      * @see javax.portlet.GenericPortlet#doCustom
      */
-    public void doCustom(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doCustom(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         super.doCustom(request, response);
     }
-    
+
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_EDIT_PAGE.
-     * The value if the parameter is a relative URL, i.e. /editPage.jsp will execute the
-     * JSP editPage.jsp in the portlet application's web app.
-     *
+     * Execute the servlet as define by the init parameter or preference
+     * PARAM_EDIT_PAGE. The value if the parameter is a relative URL, i.e.
+     * /editPage.jsp will execute the JSP editPage.jsp in the portlet
+     * application's web app.
+     * 
      * @see javax.portlet.GenericPortlet#doEdit
      */
-    public void doEdit(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         super.doEdit(request, response);
     }
-    
+
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_HELP_PAGE.
-     * The value if the parameter is a relative URL, i.e. /helpPage.jsp will exeute the
-     * JSP helpPage.jsp in the portlet application's web app.
-     *
+     * Execute the servlet as define by the init parameter or preference
+     * PARAM_HELP_PAGE. The value if the parameter is a relative URL, i.e.
+     * /helpPage.jsp will exeute the JSP helpPage.jsp in the portlet
+     * application's web app.
+     * 
      * @see javax.portlet.GenericPortlet#doView
      */
-    public void doHelp(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         super.doHelp(request, response);
     }
 
     /**
-     * Execute the servlet as define by the init parameter or preference PARAM_VIEW_PAGE.
-     * The value if the parameter is a relative URL, i.e. /viewPage.jsp will execute the
-     * JSP viewPage.jsp in the portlet application's web app.
-     *
+     * Execute the servlet as define by the init parameter or preference
+     * PARAM_VIEW_PAGE. The value if the parameter is a relative URL, i.e.
+     * /viewPage.jsp will execute the JSP viewPage.jsp in the portlet
+     * application's web app.
+     * 
      * @see javax.portlet.GenericPortlet#doView
      */
-    public void doView(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         super.doView(request, response);
     }
-    
-    public void render(RenderRequest request, RenderResponse response)
-    throws PortletException, java.io.IOException    
+
+    public void render(RenderRequest request, RenderResponse response) throws PortletException, java.io.IOException
     {
         createPortletVelocityContext(request, response);
         super.render(request, response);
     }
-    
+
     private Context createPortletVelocityContext(RenderRequest request, RenderResponse response)
     {
         Context ctx = new VelocityContext();
@@ -175,12 +177,19 @@ public class GenericVelocityPortlet extends GenericServletPortlet
         ctx.put("MODE_HELP", PortletMode.HELP);
         return ctx;
     }
-    
+
     public Context getContext(RenderRequest request)
     {
-        return (Context)request.getAttribute(PORTLET_BRIDGE_CONTEXT);
+        return (Context) request.getAttribute(PORTLET_BRIDGE_CONTEXT);
     }
-    
-    
-    
+
+    public void doPreferencesEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        Context context = getContext(request);
+        PortletPreferences prefs = request.getPreferences();
+        Iterator it = prefs.getMap().entrySet().iterator();
+        context.put("prefs", it);
+        super.doEdit(request, response);
+    }
+
 }

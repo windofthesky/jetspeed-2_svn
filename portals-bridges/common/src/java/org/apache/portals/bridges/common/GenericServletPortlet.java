@@ -23,10 +23,13 @@ import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import org.apache.portals.bridges.util.PreferencesHelper;
 
 /**
  * ServletPortlet will call a server, as defined by a xxxPage preference, for
@@ -443,4 +446,16 @@ public class GenericServletPortlet extends GenericPortlet
         this.defaultActionPage = defaultActionPage;
     }
 
+    /**
+     * Save the prefs
+     */
+    public void processPreferencesAction(ActionRequest request, ActionResponse actionResponse)
+    throws PortletException, IOException
+    {
+        PortletPreferences prefs = request.getPreferences();
+        PreferencesHelper.requestParamsToPreferences(request);
+        prefs.store();
+        actionResponse.setPortletMode(PortletMode.VIEW);
+    }
+    
 }

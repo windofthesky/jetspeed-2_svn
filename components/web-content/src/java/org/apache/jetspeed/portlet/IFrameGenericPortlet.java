@@ -17,24 +17,18 @@ package org.apache.jetspeed.portlet;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
-import org.apache.velocity.context.Context;
-
-import org.apache.portals.bridges.util.PreferencesHelper;
-
 
 /**
  * IFrameGenericPortlet
@@ -116,11 +110,8 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
 
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        Context context = getContext(request);
-        PortletPreferences prefs = request.getPreferences();
-        Iterator it = prefs.getMap().entrySet().iterator();
-        context.put("prefs", it);
-        super.doEdit(request, response);
+        response.setContentType("text/html");        
+        doPreferencesEdit(request, response);        
     }
     
     /**
@@ -170,10 +161,7 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
     public void processAction(ActionRequest request, ActionResponse actionResponse)
     throws PortletException, IOException
     {
-        PortletPreferences prefs = request.getPreferences();
-        PreferencesHelper.requestParamsToPreferences(request);
-        prefs.store();
-        actionResponse.setPortletMode(PortletMode.VIEW);
+        processPreferencesAction(request, actionResponse);
     }
     
 }
