@@ -26,13 +26,21 @@ limitations under the License.
   				String tabid = ((TabBean)pageContext.getAttribute("tab")).getId(); 
   				String paramName = (String)pageContext.getAttribute("url_param_name");
   	         %>
-  	         <portlet:actionURL var="select_portlet_tab_link" >
-  	             <portlet:param name="<%= paramName %>" value="<%= tabid %>" />
-  	         </portlet:actionURL>
-		                     
-  	        <a href="<c:out value="${select_portlet_tab_link}"/>">
-  				<fmt:message>pam.details.tabs.<c:out value="${tab.id}"/></fmt:message>
-  	        </a>
+  	         
+  	         <c:choose>
+  	          <c:when test="${tab != currentTab}">
+  	           <portlet:actionURL var="select_portlet_tab_link" >
+  	               <portlet:param name="<%= paramName %>" value="<%= tabid %>" />
+  	           </portlet:actionURL>
+              		                     
+  	           <a href="<c:out value="${select_portlet_tab_link}"/>">
+  				 <fmt:message>pam.details.tabs.<c:out value="${tab.id}"/></fmt:message>
+  	           </a>
+  	          </c:when>
+  	          <c:otherwise>
+  	            <fmt:message>pam.details.tabs.<c:out value="${tab.id}"/></fmt:message>
+  	          </c:otherwise>  
+  	        </c:choose>
   	    </td>
   	    <td <c:if test="${tab == currentTab}"> class="LTabRight" </c:if>
   	        <c:if test="${tab != currentTab}"> class="LTabRightLow" </c:if> 
