@@ -58,6 +58,13 @@ public class WebDescriptorUtilities {
             // http://www.onjava.com/pub/a/onjava/2002/10/23/digester.html?page=3
             Digester digester = new Digester();
             digester.setValidating(false);
+
+            digester.register
+            ("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN",
+                      WebDescriptorUtilities.class.getResource("web-app_2_2.dtd").toString());                      
+            digester.register
+              ("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN",
+                      WebDescriptorUtilities.class.getResource("web-app_2_3.dtd").toString());                      
             digester.addObjectCreate("web-app", WebApplicationDefinitionImpl.class);
 
             digester.addObjectCreate("web-app/security-role", SecurityRoleImpl.class);
