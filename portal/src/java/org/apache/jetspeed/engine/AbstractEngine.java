@@ -25,6 +25,7 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -33,6 +34,7 @@ import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
@@ -65,7 +67,6 @@ public abstract class AbstractEngine implements Engine
         private static final Log log = LogFactory.getLog(AbstractEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
-    private ThreadLocal tlRequestContext = new ThreadLocal();
     protected boolean useInternalJNDI;
     protected String defaultPipelineName;
 
@@ -238,7 +239,7 @@ public abstract class AbstractEngine implements Engine
             {                
                 targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
             }
-            tlRequestContext.set(context);
+            // tlRequestContext.set(context);
             Pipeline pipeline = getPipeline();
             if (targetPipeline != null)
             {
@@ -337,7 +338,10 @@ public abstract class AbstractEngine implements Engine
      */
     public RequestContext getCurrentRequestContext()
     {
-        return (RequestContext) tlRequestContext.get();
+        RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
+            .getComponent(RequestContextComponent.class);
+        return contextComponent.getRequestContext();
+        //return (RequestContext) tlRequestContext.get();
     }
 
     public ComponentManager getComponentManager()

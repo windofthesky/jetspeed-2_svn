@@ -53,5 +53,6 @@ public interface RequestContextComponent
      * @return RequestContext
      */
     RequestContext getRequestContext(HttpServletRequest request);    
+    RequestContext getRequestContext();    
     
 }

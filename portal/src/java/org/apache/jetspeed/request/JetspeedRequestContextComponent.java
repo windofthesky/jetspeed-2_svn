@@ -38,15 +38,16 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     private Class contextClass = null;
     /** The user info manager. */
     private UserInfoManager userInfoMgr;
+    private ThreadLocal tlRequestContext = new ThreadLocal();
 
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
     public JetspeedRequestContextComponent(String contextClassName)
     {
-        this(contextClassName, null);
     }
 
-    public JetspeedRequestContextComponent(String contextClassName, UserInfoManager userInfoMgr)
+    public JetspeedRequestContextComponent(String contextClassName, 
+                                           UserInfoManager userInfoMgr)
     {
         this.contextClassName = contextClassName;
         this.userInfoMgr = userInfoMgr;
@@ -80,11 +81,14 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
             log.error(msg);
         }
 
+        tlRequestContext.set(context);
+        
         return context;
     }
 
     public void release(RequestContext context)
     {
+        tlRequestContext.set(null);
     }
 
     /**
@@ -97,6 +101,11 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     public RequestContext getRequestContext(HttpServletRequest request)
     {
         return (RequestContext) request.getAttribute(RequestContext.REQUEST_PORTALENV);
+    }
+    
+    public RequestContext getRequestContext()
+    {
+        return (RequestContext) tlRequestContext.get();        
     }
 
 }
