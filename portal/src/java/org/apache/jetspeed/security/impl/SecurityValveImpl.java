@@ -23,12 +23,16 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * SecurityValve
@@ -36,53 +40,59 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SecurityValveImpl
-    extends AbstractValve
-    implements org.apache.jetspeed.pipeline.valve.SecurityValve
+public class SecurityValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.SecurityValve
 {
-    private static final Log log = LogFactory.getLog( SecurityValveImpl.class );
-     
-    /* (non-Javadoc)
+    private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
+
+    /**
      * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public void invoke(RequestContext request, ValveContext context)
-        throws PipelineException
+    public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
         try
-        {        
-            Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
-            
-            // simple place holder, waiting on security service impl       
+        {
+            Profiler profiler = (Profiler) Jetspeed.getComponentManager().getComponent(Profiler.class);
+            UserManager userMgr = (UserManager) Jetspeed.getComponentManager().getComponent(UserManager.class);
+
             Principal principal = request.getRequest().getUserPrincipal();
-            Subject subject = (Subject)
-                request.getRequest().getSession().getAttribute(this.getClass().toString() + ".subject");
+            Subject subject = (Subject) request.getRequest().getSession().getAttribute(this.getClass().toString() + ".subject");
+            if (null == principal)
+            {
+                principal = new UserPrincipalImpl(profiler.getAnonymousUser());
+            }
             if (null == subject)
             {
                 Set principals = new HashSet();
-                if (principal == null)
-                {
-                    principal = new UserPrincipalImpl(profiler.getAnonymousUser());
-                }                
                 principals.add(principal);
                 subject = new Subject(true, principals, new HashSet(), new HashSet());
                 request.getRequest().getSession().setAttribute(this.getClass().toString() + ".subject", subject);
+            }
+            else
+            {
+                Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+                if ((userPrincipal.getName()).equals(profiler.getAnonymousUser())
+                    && (!(principal.getName()).equals(profiler.getAnonymousUser())))
+                {
+                    subject = userMgr.getUser(principal.getName()).getSubject();
+                    request.getRequest().getSession().setAttribute(this.getClass().toString() + ".subject", subject);
+                }
             }
             request.setSubject(subject);
         }
         catch (Throwable t)
         {
             // TODO: valve exception handling formalized
-            t.printStackTrace();            
+            t.printStackTrace();
         }
-            
+
         // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
-        
+        context.invokeNext(request);
+
     }
 
     public String toString()
     {
         return "SecurityValve";
     }
-    
+
 }
