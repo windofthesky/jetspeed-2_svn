@@ -81,7 +81,6 @@ public class LanguageImpl implements MutableLanguage, Serializable
     public LanguageImpl( Locale locale, ResourceBundle bundle, String defaultTitle, String defaultShortTitle,
             String defaultKeyWords )
     {
-
         HashMap defaults = new HashMap(3);
         defaults.put(JAVAX_PORTLET_TITLE, defaultTitle);
         defaults.put(JAVAX_PORTLET_SHORT_TITLE, defaultShortTitle);
@@ -89,9 +88,6 @@ public class LanguageImpl implements MutableLanguage, Serializable
         this.resourceBundle = new DefaultsResourceBundle(bundle, defaults);
 
         this.locale = locale;
-        setTitle(this.resourceBundle.getString(JAVAX_PORTLET_TITLE));
-        setShortTitle(this.resourceBundle.getString(JAVAX_PORTLET_SHORT_TITLE));
-        setKeywords(this.resourceBundle.getString(JAVAX_PORTLET_KEYWORDS));
     }
 
     public LanguageImpl( Locale locale, ResourceBundle bundle )
@@ -113,6 +109,11 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public String getTitle()
     {
+        if(title == null)
+        {
+            title = resourceBundle.getString(JAVAX_PORTLET_TITLE);
+        }
+        
         return title;
     }
 
@@ -121,7 +122,12 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public String getShortTitle()
     {
-        return shortTitle;
+        if(shortTitle == null)
+        {
+            shortTitle = resourceBundle.getString(JAVAX_PORTLET_SHORT_TITLE);
+        }
+        
+        return shortTitle;        
     }
 
     /**
@@ -129,13 +135,12 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public Iterator getKeywords()
     {
-        if (keywords != null)
+        if (keywords == null)
         {
-            return keywords.iterator();
+            setKeywords(resourceBundle.getString(JAVAX_PORTLET_KEYWORDS));
         }
 
-        return null;
-
+        return keywords.iterator();
     }
 
     /**
