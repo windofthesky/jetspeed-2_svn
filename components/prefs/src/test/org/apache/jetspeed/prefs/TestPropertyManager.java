@@ -63,7 +63,7 @@ public class TestPropertyManager extends PersistenceSupportedTestCase
     {
         super.setUp();
         pms =new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         // Class.forName("org.apache.jetspeed.prefs.impl.PreferencesImpl");
     }
 

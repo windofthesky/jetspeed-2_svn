@@ -62,7 +62,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
     {
         super.setUp();
         pms = new PropertyManagerImpl(persistenceStore);
-        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
     }
 
     /**
@@ -85,6 +85,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testUserRoot()
     {
+        pms = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.userRoot();
         if (null != prefs)
         {
@@ -95,12 +97,27 @@ public class TestPreferences extends PersistenceSupportedTestCase
             assertTrue("expected user root == '/', " + prefs, false);
         }
     }
+    
+    public void testSansPropertyManager()
+    {
+        pms = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
+        Preferences pref0 = Preferences.userRoot();
+        // Test that the property manager is off
+        Preferences pref1 = pref0.node("testOpenNode");
+        pref1.put("0", "I am 0 key");
+        
+        assertNotNull(pref1.get("0", null));
+        
+    }
 
     /**
      * <p>Test system root.</p>
      */
     public void testSystemRoot()
     {
+        pms = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.systemRoot();
         if (null != prefs)
         {
@@ -117,6 +134,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testNodeAndChildrenNames()
     {
+        pms = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
         Preferences prefs = Preferences.userRoot();
         // Test without children.
         try
@@ -168,6 +187,9 @@ public class TestPreferences extends PersistenceSupportedTestCase
         {
             assertTrue("backing store exception: " + bse, false);
         }
+        
+     
+        
     }
 
     /**
@@ -176,6 +198,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
      */
     public void testPropertyAndPropertyKeys()
     {
+        pms = new PropertyManagerImpl(persistenceStore);
+        provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
 
         // 1. Current node does not have any property associated to it.
         // No property has been defined nor added to the node.  There should be
@@ -235,6 +259,8 @@ public class TestPreferences extends PersistenceSupportedTestCase
         {
             assertTrue("backing store exception: " + bse, false);
         }
+        
+        
     }
 
     /**
@@ -282,6 +308,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
             Preferences.userRoot().node("/user").removeNode();
             Preferences.userRoot().node("/an1").removeNode();
             Preferences.userRoot().node("/rn1").removeNode();
+            Preferences.userRoot().node("/testOpenNode").removeNode();
         }
         catch (PropertyException pex)
         {
@@ -292,5 +319,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
             System.out.println("BackingStoreException" + bse);
         }
     }
+    
+    
 
 }

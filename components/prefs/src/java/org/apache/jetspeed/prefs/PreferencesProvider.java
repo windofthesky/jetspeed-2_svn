@@ -26,6 +26,8 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
  */
 public interface PreferencesProvider
 {
-      PersistenceStore getPersistenceStore();
+    PersistenceStore getPersistenceStore();
+
+    boolean isPropertyManagerEnabled();
     
 }

@@ -24,7 +24,6 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
@@ -32,6 +31,7 @@ import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
+import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
 
 /**
  * <p>{@link Preferences} implementation relying on Jetspeed
@@ -43,13 +43,11 @@ public class PreferencesImpl extends AbstractPreferences
 {
 
     /** User <tt>Preferences<tt> node type. */
-    private static final int USER_NODE_TYPE = 0;
+    public static final int USER_NODE_TYPE = 0;
 
     /** System <tt>Preferences</tt> node type. */
-    private static final int SYSTEM_NODE_TYPE = 1;
+    public static final int SYSTEM_NODE_TYPE = 1;
 
-    /** The component manager. */
-    private ComponentManager cm;
 
 
     /** Common queries. **/
@@ -84,13 +82,10 @@ public class PreferencesImpl extends AbstractPreferences
     private static final int ERROR_NODE_CREATION_FAILED = 3;
     private static final int ERROR_PARENT_NOT_FOUND = 4;
 
-    /** User root node. */
-    static Preferences userRoot = new PreferencesImpl(null, "", USER_NODE_TYPE);
-
-    /** System root node. */
-    static Preferences systemRoot = new PreferencesImpl(null, "", SYSTEM_NODE_TYPE);
-
+  
     protected PersistenceStore persistenceStore;
+
+    protected PreferencesProvider prefProvider;
 
     /**
      * <p>Constructs a root node in the underlying
@@ -107,7 +102,7 @@ public class PreferencesImpl extends AbstractPreferences
 
         if (log.isDebugEnabled())
             log.debug("Constructing node: " + nodeName);
-        PreferencesProvider prefProvider = PreferencesProviderImpl.prefProvider;
+        prefProvider = PreferencesProviderImpl.prefProvider;
         persistenceStore = prefProvider.getPersistenceStore();
         this.commonQueries = new CommonQueries(persistenceStore);
 
@@ -418,7 +413,7 @@ public class PreferencesImpl extends AbstractPreferences
             log.error("Could not retrieve node property: [key: " + key + ", value:" + value + "]");
             return;
         }
-        ArrayList newProperties = new ArrayList(properties.size() + 1);
+
         boolean foundProp = false;
         boolean foundKey = false;
         // First if the property exists, update its value.
@@ -435,11 +430,11 @@ public class PreferencesImpl extends AbstractPreferences
                 curProp.setPropertyValue(curProp.getPropertyKey().getPropertyKeyType(), value);
                 curProp.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             }
-            newProperties.add(curProp);
+           
         }
         // The property does not already exist.  Create a new property, if
         // the property key exits and is associated to this node.
-        if (!foundProp)
+        if (prefProvider.isPropertyManagerEnabled() && !foundProp)
         {
             for (Iterator i = nodeKeys.iterator(); i.hasNext();)
             {
@@ -450,11 +445,20 @@ public class PreferencesImpl extends AbstractPreferences
                     if (log.isDebugEnabled())
                         log.debug("New property value: [" + key + ", " + value + "]");
 
-                    newProperties.add(
+                    properties.add(
                         new PropertyImpl(nodeObj.getNodeId(), curpk.getPropertyKeyId(), curpk, curpk.getPropertyKeyType(), value));
                 }
             }
         }
+        else if (!prefProvider.isPropertyManagerEnabled() && !foundProp)
+        {
+            foundKey = true;
+            PropertyKey pKey = new PropertyKeyImpl(key, Property.STRING_TYPE);
+            properties.add(
+                    new PropertyImpl(nodeObj.getNodeId(), pKey.getPropertyKeyId(), pKey, pKey.getPropertyKeyType(), value));
+            
+        }
+        
         if (!foundKey)
         {
             if (log.isWarnEnabled())
@@ -464,15 +468,12 @@ public class PreferencesImpl extends AbstractPreferences
         // Update node.
         PersistenceStore store = getPersistenceStore();
         if (log.isDebugEnabled())
-            log.debug("Updated properties: " + newProperties.size());
-        // What's going on.
-        if (newProperties.size() > 0)
-            log.debug("Properties: " + ((Property) newProperties.get(0)).toString());
-
+            log.debug("Updated properties: " + properties.size());
+   
         try
         {
             store.lockForWrite(nodeObj);
-            nodeObj.setNodeProperties(newProperties);
+
             nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             if (log.isDebugEnabled())
                 log.debug("Node for update: " + nodeObj.toString());
@@ -538,13 +539,14 @@ public class PreferencesImpl extends AbstractPreferences
         // Get the property set def.
         Node nodeObj = (Node) nodeResult[NODE];
         Collection properties = nodeObj.getNodeProperties();
-        ArrayList newProperties = new ArrayList(properties.size());
+
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
-            if (!(curProp.getPropertyKey().getPropertyKeyName().equals(key)))
+
+            if ((curProp.getPropertyKey().getPropertyKeyName().equals(key)))
             {
-                newProperties.add(curProp);
+                i.remove();
             }
         }
         // Update node.
@@ -552,7 +554,6 @@ public class PreferencesImpl extends AbstractPreferences
         try
         {
             store.lockForWrite(nodeObj);
-            nodeObj.setNodeProperties(newProperties);
             nodeObj.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             store.getTransaction().checkpoint();
         }

@@ -18,12 +18,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.PreferencesProvider;
+import org.picocontainer.Startable;
 
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
-public class PreferencesProviderImpl implements PreferencesProvider
+public class PreferencesProviderImpl implements PreferencesProvider, Startable
 {
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesProviderImpl.class);
@@ -33,19 +34,35 @@ public class PreferencesProviderImpl implements PreferencesProvider
 
 
     private PersistenceStore persistenceStore;
+    
+    private boolean enablePropertyManager;
+    
+   // private List ignoredPathes;
 
     /**
      * <p>Constructor providing the {@link PersistenceStore} 
      * and store key name and the {@link java.util.prefs.PreferencesFactory}.</p>
      */
-    public PreferencesProviderImpl(PersistenceStore persistenceStore, String prefsFactoryImpl)
+    public PreferencesProviderImpl(PersistenceStore persistenceStore, String prefsFactoryImpl,  boolean enablePropertyManager)
     {
         if (log.isDebugEnabled()) log.debug("Constructing PreferencesProviderImpl...");
         this.persistenceStore = persistenceStore;
         System.setProperty("java.util.prefs.PreferencesFactory", prefsFactoryImpl);
         PreferencesProviderImpl.prefProvider = this;
-
+        this.enablePropertyManager = enablePropertyManager;
+//        if(ignoredPathes != null)
+//        {
+//            this.ignoredPathes = Arrays.asList(ignoredPathes);
+//        }
+//        else
+//        {
+//            this.ignoredPathes = new ArrayList(0);
+//        }
+        
+ 
     }
+    
+    
 
    
 
@@ -55,5 +72,47 @@ public class PreferencesProviderImpl implements PreferencesProvider
     public PersistenceStore getPersistenceStore()
     {
         return persistenceStore;
+    }
+
+
+
+    
+    /**
+     * <p>
+     * isPropertyManagerEnabled
+     * </p>
+     *
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#isPropertyManagerEnabled()
+     * @return
+     */
+    public boolean isPropertyManagerEnabled()
+    {      
+        return enablePropertyManager;
+    }
+    /**
+     * <p>
+     * start
+     * </p>
+     *
+     * @see org.picocontainer.Startable#start()
+     * 
+     */
+    public void start()
+    {
+        // This will make sure that we are loaded into the vm immediately
+
+    }
+    /**
+     * <p>
+     * stop
+     * </p>
+     *
+     * @see org.picocontainer.Startable#stop()
+     * 
+     */
+    public void stop()
+    {
+       
+
     }
 }

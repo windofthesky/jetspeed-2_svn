@@ -54,6 +54,8 @@ public class PropertyManagerImpl implements PropertyManager
     private CommonQueries commonQueries;
 
     private PersistenceStore persistenceStore;
+    
+
 
     /**
      * <p>
@@ -66,6 +68,8 @@ public class PropertyManagerImpl implements PropertyManager
         {
             throw new IllegalArgumentException("persistenceStore cannot be null for PropertyManagerImpl");
         }
+        
+        
 
         this.persistenceStore = persistenceStore;
         this.commonQueries = new CommonQueries(persistenceStore);
@@ -309,5 +313,4 @@ public class PropertyManagerImpl implements PropertyManager
             throw new PropertyException(PropertyException.NODE_NOT_FOUND);
         }
     }
-
 }
