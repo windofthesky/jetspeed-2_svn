@@ -30,18 +30,18 @@ limitations under the License.
 >
     <h:column>
        <f:facet name="header">
-         <h:outputText value="Last Name"
+         <h:outputText value="User"
             style="font-weight: bold"/>
        </f:facet>
         <h:outputText value='#{user.last}'/>
-        <f:verbatim>,</f:verbatim>
     </h:column>
     <h:column>
-       <f:facet name="header">
-         <h:outputText value="First Name"
-            style="font-weight: bold"/>
-       </f:facet>
-        <h:outputText value='#{user.first}'/>
+        <f:verbatim>
+        ...
+       </f:verbatim>        
+    </h:column>    
+    <h:column>
+        <h:selectBooleanCheckbox value="false"/>
     </h:column>
 </h:dataTable>
 </h:panelGroup>

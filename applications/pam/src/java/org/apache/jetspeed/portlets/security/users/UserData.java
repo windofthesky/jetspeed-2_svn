@@ -38,7 +38,7 @@ public class UserData
             {
                 return xusers;
             }
-            UserBean[] xu = new UserBean[10];
+            UserBean[] xu = new UserBean[8];
             Iterator it = userManager.getUsers("");
             int ix = 0;
             while (it.hasNext())
