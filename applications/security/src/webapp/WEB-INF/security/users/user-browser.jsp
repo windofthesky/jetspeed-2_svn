@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ page language="java" import="javax.portlet.*, java.util.List, java.util.Iterator, org.apache.jetspeed.om.common.portlet.MutablePortletApplication" session="true" %>
-<%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-<%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
+<%@ taglib uri="/WEB-INF/jetspeed-tree.tld" prefix="pam" %>
 <portlet:defineObjects/>
 
 <portlet:actionURL var="nodeLink" >

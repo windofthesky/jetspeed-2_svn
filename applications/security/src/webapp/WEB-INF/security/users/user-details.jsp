@@ -18,7 +18,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
 
-<%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 
@@ -48,9 +48,8 @@ limitations under the License.
 	<c:set var="tab_items" value="${tabs}"/>
 	<c:set var="currentTab" value="${selectedTab}"/>
 	<c:set var="url_param_name" value="selected_tab"/>
-	<%@ include file="tabs.jsp"%>
+	<%@ include file="/WEB-INF/view/tabs.jsp"%>
 </div>
-
 
 <%--Beginning of User Attributes tab data--%>
 <%--TODO:  switch to c:choose --%>
