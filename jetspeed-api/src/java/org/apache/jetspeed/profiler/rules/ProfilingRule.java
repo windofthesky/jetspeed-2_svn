@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.io.Serializable;
 import java.util.Collection;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
@@ -34,7 +35,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface ProfilingRule
+public interface ProfilingRule extends Serializable
 {
     
     /**

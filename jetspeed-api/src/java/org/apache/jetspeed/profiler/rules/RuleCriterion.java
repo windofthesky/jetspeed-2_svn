@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.io.Serializable;
+
 /**
  * A RuleCriterion specifies one criterion in a list of profiling rule criteria.
  * This list is used to build normalized profiling locator and then 
@@ -23,7 +25,7 @@ package org.apache.jetspeed.profiler.rules;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface RuleCriterion 
+public interface RuleCriterion extends Serializable
 {
     public static final int FALLBACK_CONTINUE = 1;
     public static final int FALLBACK_STOP = 0;

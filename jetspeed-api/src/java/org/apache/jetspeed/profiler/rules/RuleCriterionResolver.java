@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -25,7 +27,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface RuleCriterionResolver
+public interface RuleCriterionResolver extends Serializable
 {    
     /** resolve the parameter via the request parameter, then value */        
     public static final String REQUEST = "request";

@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
+import java.io.Serializable;
+
 /**
  * PrincipalRule is a paired association from principal to rule.
  * This pair is unique in that there can only be a one entry for a principal which maps to a rule.
@@ -24,7 +26,7 @@ package org.apache.jetspeed.profiler.rules;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PrincipalRule
+public interface PrincipalRule extends Serializable
 {
     /**
      * Gets the name of the principal in this principal/rule/locator pair association.
