@@ -22,8 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -40,6 +43,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
+    public static final String SLASH = "/";
     protected Log log = LogFactory.getLog(ProfilerValveImpl.class);
     private Profiler profiler;
     static final String LOCATOR_KEY = "org.apache.jetpeed.profileLocator";
@@ -67,14 +71,14 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             ProfileLocator locator = null;
             Folder folder = getFolder(request);
             httpRequest.setAttribute(FOLDER_ATTR_KEY, folder);
-            request.setPage(pageManager.getPage(getPageName(request, folder)));
+            request.setPage(folder.getPage(getPageName(request, folder)));
 
             locator = profiler.getProfile(request);
             request.setProfileLocator(locator);
             // request.setPage(profiler.getPage(locator));
             context.invokeNext(request);
 
-        }       
+        }
         catch (PageNotFoundException e)
         {
             log.error(e.getMessage(), e);
@@ -93,8 +97,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
     }
 
-
-    protected Folder getFolder( RequestContext request ) throws IOException
+    protected Folder getFolder( RequestContext request ) throws FolderNotFoundException, NodeException
     {
         HttpServletRequest httpRequest = request.getRequest();
         String folderInRequest = getFolderPath(request);
@@ -114,7 +117,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             selectedFolder = (Folder) httpRequest.getAttribute(FOLDER_ATTR_KEY);
             if (selectedFolder == null)
             {
-                selectedFolder = pageManager.getFolder("/");
+                selectedFolder = pageManager.getFolder(SLASH);
             }
         }
 
@@ -124,21 +127,29 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
 
     protected String getFolderPath( RequestContext request )
     {
-        String pathInfo = request.getPath();  
-        
+        String pathInfo = request.getPath();
+
         String folder = null;
         if (pathInfo != null)
         {
-            if (pathInfo.endsWith(PageManager.PAGE_SUFFIX))
+            if (pathInfo.endsWith(Page.DOCUMENT_TYPE))
             {
-                int lastSlash = pathInfo.lastIndexOf("/");
-                if(lastSlash > -1)
+                int lastSlash = pathInfo.lastIndexOf(SLASH);
+                if (lastSlash > -1)
                 {
-                    return pathInfo.substring(0, lastSlash);
+                    String folderPath = pathInfo.substring(0, lastSlash);
+                    if (folderPath.length() > 0)
+                    {
+                        return folderPath;
+                    }
+                    else
+                    {
+                        return SLASH;
+                    }
                 }
                 else
                 {
-                    return "/";
+                    return SLASH;
                 }
             }
             else
@@ -148,7 +159,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         else
         {
-            return "/";
+            return SLASH;
         }
     }
 
@@ -163,7 +174,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         {
             return pathInfo;
         }
-    }    
+    }
 
     public String toString()
     {
