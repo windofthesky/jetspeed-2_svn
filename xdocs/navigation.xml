@@ -24,13 +24,14 @@ limitations under the License.
 
  <body>
    <menu name="Essentials">
-      <item name="Getting Started" href="getting-started.html.html"/>
+      <item name="Overview" href="index.html"/>
+      <item name="Getting Started" href="getting-started.html"/>
       <item name="Database" href="database.html"/>
       <item name="Goals" href="js2-goals.html"/>
       <item name="Tasks" href="tasks.html"/>
       <item name="Sub Projects" href="projects-overview.html"/>
     </menu>
-    <menu>
+    <menu name="Support">
       <item name="Mailing List" href="mail-lists.html"/>
       <item name="Bug Database" href="issue-tracking.html"/>
       <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2"/>
