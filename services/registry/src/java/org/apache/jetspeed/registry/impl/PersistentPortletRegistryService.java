@@ -486,7 +486,7 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
             Object newInstance = implClazz.newInstance();
             if (persistent)
             {
-                plugin.makePersistent(newInstance);
+                // plugin.makePersistent(newInstance);
             }
             return newInstance;
         }
