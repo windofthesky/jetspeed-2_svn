@@ -51,6 +51,13 @@
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}"
+               includes="plugin/project.xml"
+               goals="jar:install"
+               banner="Build and Install the Plugin jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
                includes="commons/project.xml"
                goals="jar:install"
                banner="Build and Install the common jar"
