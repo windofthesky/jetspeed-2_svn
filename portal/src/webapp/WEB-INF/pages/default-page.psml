@@ -5,24 +5,24 @@
      portlet-decorator="portletstd"
   />
   <title>My First PSML Page</title>
-  <fragment id="f001" type="layout" name="VelocityTwoColumns">
-    <fragment id="pe001" type="portlet" name="HelloPortlet">
+  <fragment id="f001" type="layout" name="jetspeed::VelocityTwoColumns">
+    <fragment id="pe001" type="portlet" name="HW_App::HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="pe002" type="portlet" name="JMXPortlet">
+    <fragment id="pe002" type="portlet" name="HW_App::JMXPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe003" type="portlet" name="PreferencePortlet">
+    <fragment id="pe003" type="portlet" name="HW_App::PreferencePortlet">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pe004" type="portlet" name="CustomerList">
+    <fragment id="pe004" type="portlet" name="HW_App::CustomerList">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="pe005" type="portlet" name="PortletApplicationBrowser">
+    <fragment id="pe005" type="portlet" name="PAM::PortletApplicationBrowser">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="2" />
     </fragment>
