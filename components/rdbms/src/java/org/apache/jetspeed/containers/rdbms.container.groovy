@@ -20,7 +20,7 @@ import java.io.File
 
 
 
-container = new DefaultPicoContainer()
+container = new DefaultPicoContainer(parent)
 
 // This JNDI component helps us publish the datasource
 Class jndiClass = JNDIComponent
@@ -28,13 +28,15 @@ JNDIComponent jndiImpl = new TyrexJNDIComponent()
 container.registerComponentInstance(jndiClass, jndiImpl)
 
 // Create a datasource based on the HSQL server we just created
-Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
 String url = System.getProperty("org.apache.jetspeed.database.url")
 String driver = System.getProperty("org.apache.jetspeed.database.driver")
 String user = System.getProperty("org.apache.jetspeed.database.user")
 String password = System.getProperty("org.apache.jetspeed.database.password")
 
-container.registerComponentInstance(dsClass, new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndiImpl))
+if(url != null)
+{
+	container.registerComponentInstance(DatasourceComponent, new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndiImpl))
+}
 
 
 
