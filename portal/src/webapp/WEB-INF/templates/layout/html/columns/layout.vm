@@ -52,7 +52,8 @@ limitations under the License.
 	<a href="$editUrl">Customize</a>
 #end	
 
-<table id="portal-layout-${myPage.id}" width="100%" cellspacing="0" cellpadding="0" class="portal-layout">
+<div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout">
+<table  width="100%" cellspacing="0" cellpadding="0" >
   <tr>
 
      #foreach($entry in $table)
@@ -64,6 +65,7 @@ limitations under the License.
 		    #set($row = $f.getProperties($layoutType).get(0).intValue)
 			#set($col = $f.getProperties($layoutType).get(1).intValue)
 		#if($editing)<div id="_$f.id"> 
+				
 		
 		  <div style="position:relative; top:10px; left:0; width:100%; height:100%;">
 			<div id="_$f.id_toolBox"  >
@@ -142,6 +144,7 @@ limitations under the License.
    #end
   </tr>
 </table>
+</div>
 
 #if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
    #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
