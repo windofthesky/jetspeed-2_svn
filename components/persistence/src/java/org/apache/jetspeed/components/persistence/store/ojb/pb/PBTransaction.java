@@ -20,18 +20,17 @@ import java.util.List;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.persistence.store.TransactionEventListener;
 import org.apache.jetspeed.components.persistence.store.impl.TransactionEventInvoker;
-import org.apache.ojb.broker.PersistenceBroker;
 public class PBTransaction implements Transaction
 {
 
     private List eventListeners;
     private TransactionEventInvoker invoker;
-    private PersistenceBroker pb;
+    
     private PBStore store;
 
-    public PBTransaction(PersistenceBroker pb, PBStore store)
+    public PBTransaction(PBStore store)
     {
-        this.pb = pb;
+        
         this.store = store;
         eventListeners = new ArrayList();
         invoker = new TransactionEventInvoker(eventListeners, store);
@@ -43,12 +42,11 @@ public class PBTransaction implements Transaction
      * @see org.apache.jetspeed.components.persistence.store.Transaction#begin()
      */
     public void begin()
-    {
-        store.checkBroker();
-        if (!pb.isInTransaction())
+    {        
+        if (!store.getBroker().isInTransaction())
         {
             invoker.beforeBegin();
-            pb.beginTransaction();
+            store.getBroker().beginTransaction();
             invoker.afterBegin();
         }
     }
@@ -59,15 +57,14 @@ public class PBTransaction implements Transaction
      * @see org.apache.jetspeed.components.persistence.store.Transaction#commit()
      */
     public void commit()
-    {
-        store.checkBroker();
+    {        
         invoker.beforeCommit();
         Iterator itr = store.toBeStored.iterator();
         while(itr.hasNext())
         {
             store.store(itr.next());
         }
-        pb.commitTransaction();
+        store.getBroker().commitTransaction();
         invoker.afterCommit();
     }
 
@@ -77,10 +74,9 @@ public class PBTransaction implements Transaction
      * @see org.apache.jetspeed.components.persistence.store.Transaction#rollback()
      */
     public void rollback()
-    {
-        store.checkBroker();
+    {        
         invoker.beforeRollback();
-        pb.abortTransaction();
+        store.getBroker().abortTransaction();
         invoker.afterRollback();
     }
 
@@ -106,9 +102,8 @@ public class PBTransaction implements Transaction
      * @see org.apache.jetspeed.components.persistence.store.Transaction#isOpen()
      */
     public boolean isOpen()
-    {
-        store.checkBroker();
-        return pb.isInTransaction();
+    {        
+        return store.getBroker().isInTransaction();
     }
 
     /*
@@ -118,7 +113,7 @@ public class PBTransaction implements Transaction
      */
     public Object getWrappedTransaction()
     {
-        return pb;
+        return store.getBroker();
     }
 
     /*

@@ -165,10 +165,24 @@ public class PBStore implements PersistenceStore
      */
     protected void checkBroker()
     {
-        if(pb.isClosed())
+        try
         {
+            if (pb.isClosed())
+            {
+                pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
+            }
+        } 
+        catch (IllegalStateException e)
+        {
+            // This happens sometimes when we check pb.isClosed()
             pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);
         }
+    }
+    
+    protected PersistenceBroker getBroker()
+    {
+        checkBroker();
+        return pb;
     }
 
     /* (non-Javadoc)
@@ -279,7 +293,7 @@ public class PBStore implements PersistenceStore
      */
     public Transaction getTransaction()
     {
-        return new PBTransaction(pb, this);
+        return new PBTransaction(this);
     }
 
     /* (non-Javadoc)
