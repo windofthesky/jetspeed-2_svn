@@ -60,6 +60,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
@@ -75,6 +77,8 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
 {
     private static final String DELIM = ",";
     private static final String QUOTE = "\"";
+    
+    private static final Log log = LogFactory.getLog(CSVtoCollectionFieldConversion.class);
     
     /**
      * @see org.apache.ojb.broker.accesslayer.conversions.FieldConversion#javaToSql(java.lang.Object)
@@ -107,13 +111,13 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
                 {
                 //  FieldConversionLog.LOG.error("The string '" + value + 
                 // "' contains embeded '\"'.  It will not be converted to a CSV correctly.");
-                  System.out.println("In CSVtoCollectionFieldConversion() - The string '" + value + 
+                  log.warn("In CSVtoCollectionFieldConversion() - The string '" + value + 
                         "' contains embeded '\"'.  It will not be converted to a CSV correctly.");
                 }
                 buffer.append(value);
                 // End of FIXME:
                 buffer.append(QUOTE);
-                System.out.println("String encoded ");
+                
                 if (itr.hasNext())
                 {
                     buffer.append(DELIM);
@@ -147,13 +151,13 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
                 while (st.nextToken() != StreamTokenizer.TT_EOF)
                 {
                     list.add(createObject(st.sval));
-                    System.out.println("Parsed token value: "+st.sval);
+                    log.debug("Parsed token value: "+st.sval);
                 }
             }
             catch (IOException e)
             {
                 String message = "CSV parsing failed during field conversion.";
-             //    FieldConversionLog.LOG.error(message, e);
+                log.error(message, e);
                 throw new ConversionException("CSV parsing failed during field conversion.", e);
             } 
 
