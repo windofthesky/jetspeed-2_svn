@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.cps.template.TestTemplateLocatorComponent'/> 
+  <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
@@ -12,23 +12,4 @@
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
 
-  <!-- ================================================================ -->
-  <!-- Set System properties for junit                                  -->
-  <!-- ================================================================ -->
-  <preGoal name="test:single">
-  	<attainGoal name="why.doesnt.maven.do.this"/>
-  </preGoal>
- 
-  <preGoal name="test:test">
-  	<attainGoal name="why.doesnt.maven.do.this"/>
-  </preGoal>
-
-  <goal name='why.doesnt.maven.do.this'>
-      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
-		<copy todir="./target/classes/org/apache/jetspeed/components/">
-            <fileset dir="./src/test/org/apache/jetspeed/components/">
-              <include name="**/*.bsh"/>
-            </fileset>
-		</copy>
-  </goal>
 </project>

@@ -167,6 +167,14 @@
          <exclude>org/apache/jetspeed/cps/rewriter/UnitTestRewriter.java</exclude>
          <exclude>org/apache/jetspeed/cps/components/TestHSQL.java</exclude>
       </excludes>
+      <resources>
+        <resource>
+          <directory>${basedir}/src/test</directory>
+          <excludes>
+           <exclude>**/*.java</exclude>
+          </excludes>
+        </resource>
+      </resources>
     </unitTest>
     
   </build>
