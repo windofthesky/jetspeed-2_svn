@@ -16,7 +16,6 @@
 package org.apache.jetspeed.components;
 
 import java.io.File;
-
 import org.picocontainer.defaults.ObjectReference;
 import org.picocontainer.defaults.SimpleReference;
 
@@ -82,7 +81,7 @@ public abstract class ComponentAssemblyTestCase extends TestCase
     
     public void setUp()
     throws Exception
-    {
+    {                
         String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
         File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
         assertTrue(containerAssembler.exists());
