@@ -151,6 +151,7 @@ public class PageAggregator extends BaseCommonService implements Aggregator
 */
         //DEBUG CODE: use this to test a specific page
         Page page = org.apache.jetspeed.services.page.PageManager.getPage("p001");
+        context.setPage(page);
 
         //Set default acl
         String acl = page.getAcl();
@@ -224,11 +225,11 @@ public class PageAggregator extends BaseCommonService implements Aggregator
 
 
             // Now synchronously trigger the rendering of the whole page
-//            renderer.renderNow(page.getRootFragment(),context);
+            renderer.renderNow(page.getRootFragment(), context);
 
             // DEBUG Testing: Use ContentDispatcher to display all children
             // of root fragment
-
+/*
             for(Iterator i = page.getRootFragment().getFragments().iterator(); i.hasNext();)
             {
                 Fragment fragment = (Fragment)i.next();
@@ -238,6 +239,7 @@ public class PageAggregator extends BaseCommonService implements Aggregator
                     dispatcher.include(fragment, context.getRequest(), context.getResponse());
                 }
             }
+*/            
         }
         else
         {
