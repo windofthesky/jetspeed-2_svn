@@ -60,7 +60,7 @@ public class TestRDBMS extends DatasourceTestCase
 
         InitialContext context = new InitialContext();
         //look up from jndi
-        assertNotNull(context.lookup("java:comp/env/jdbc/jetspeed"));
+        assertNotNull(context.lookup("java:/jdbc/jetspeed"));
         assertNotNull(datasourceComponent);
         DataSource ds = datasourceComponent.getDatasource();
         assertNotNull(ds);
@@ -73,8 +73,8 @@ public class TestRDBMS extends DatasourceTestCase
         
         try
         {
-            context.lookup("java:comp/env/jdbc/jetspeed");
-            assertNotNull("java:comp/env/jdbc/jetspeed was not unbound", null);
+            context.lookup("java:/jdbc/jetspeed");
+            assertNotNull("java:/jdbc/jetspeed was not unbound", null);
         }
         catch (NamingException e)
         {
