@@ -34,12 +34,30 @@ public interface SecurityMappingHandler
     
     /**
      * <p>
+     * Gets the {@link HierarchyResolver} to be used for resolving role hierarchy.
+     * </p>
+     * 
+     * @return The role {@link HierarchyResolver}.
+     */
+    HierarchyResolver getRoleHierarchyResolver();
+    
+    /**
+     * <p>
      * Sets the {@link HierarchyResolver} to be used for resolving role hierachy.
      * </p>
      * 
      * @param roleHierarchyResolver The role {@link HierarchyResolver}.
      */
     void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver);
+    
+    /**
+     * <p>
+     * Gets the {@link HierarchyResolver} to be used for resolving group hierarchy.
+     * </p>
+     * 
+     * @return The role {@link HierarchyResolver}.
+     */
+    HierarchyResolver getGroupHierarchyResolver();
     
     /**
      * <p>
@@ -60,6 +78,17 @@ public interface SecurityMappingHandler
      * @return A set of <code>Principal</p>
      */
     Set getRolePrincipals(String username);
+    
+    /**
+     * <p>
+     * Sets the roles principals on a given user.  The provided set replaces
+     * any set that may already have been set on the user.
+     * </p>
+     * 
+     * @param username The user to add the roles principals to.
+     * @param rolePrincipals The roles principals to add.
+     */
+    void setRolePrincipals(String username, Set rolePrincipals);
     
     /**
      * <p>

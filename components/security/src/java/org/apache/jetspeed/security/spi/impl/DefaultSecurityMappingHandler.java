@@ -76,15 +76,31 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             this.groupHierarchyResolver = groupHierarchyResolver;
         }
     }
-
+    
+    /**
+     * @return Returns the roleHierarchyResolver.
+     */
+    public HierarchyResolver getRoleHierarchyResolver()
+    {
+        return roleHierarchyResolver;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRoleHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
      */
     public void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver)
     {
         this.roleHierarchyResolver = roleHierarchyResolver;
+    }    
+    
+    /**
+     * @return Returns the groupHierarchyResolver.
+     */
+    public HierarchyResolver getGroupHierarchyResolver()
+    {
+        return groupHierarchyResolver;
     }
-
+    
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setGroupHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
      */
@@ -126,6 +142,15 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         return rolePrincipals;
     }
 
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipals(java.lang.String, java.util.Set)
+     */
+    public void setRolePrincipals(String username, Set rolePrincipals)
+    {
+        // TODO Auto-generated method stub
+
+    }
+    
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipalsInGroup(java.lang.String)
      */

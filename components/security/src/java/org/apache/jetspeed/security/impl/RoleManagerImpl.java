@@ -25,7 +25,6 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
@@ -35,7 +34,6 @@ import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
@@ -146,73 +144,35 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
                 "removeRole(java.lang.String)");
 
-        InternalRolePrincipal omParentRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null != omParentRole)
+        // Resolve the role hierarchy.
+        Preferences prefs = Preferences.userRoot().node(
+                RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName));
+        String[] roles = securityMappingHandler.getRoleHierarchyResolver().resolveChildren(prefs);
+        for (int i = 0; i < roles.length; i++)
         {
-            PersistenceStore store = getPersistenceStore();
-            Filter filter = store.newFilter();
-            filter.addLike((Object) new String("fullPath"), (Object) (omParentRole.getFullPath() + "/*"));
-            Object query = store.newQuery(InternalRolePrincipalImpl.class, filter);
-            Collection omRoles = store.getCollectionByQuery(query);
-            if (null == omRoles)
+            try
             {
-                omRoles = new ArrayList();
+                roleSecurityHandler.removeRolePrincipal(new RolePrincipalImpl(RolePrincipalImpl
+                        .getPrincipalNameFromFullPath((String) roles[i])));
             }
-            omRoles.add(omParentRole);
-            // Remove each role in the collection.
-            Iterator omRolesIterator = omRoles.iterator();
-            while (omRolesIterator.hasNext())
+            catch (Exception e)
             {
-                InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIterator.next();
-                // TODO This should be managed in a transaction.
-                Collection omUsers = omRole.getUserPrincipals();
-                if (null != omUsers)
-                {
-                    omUsers.clear();
-                }
-                Collection omGroups = omRole.getGroupPrincipals();
-                if (null != omGroups)
-                {
-                    omGroups.clear();
-                }
-                Collection omPermissions = omRole.getPermissions();
-                if (null != omPermissions)
-                {
-                    omPermissions.clear();
-                }
-
-                try
-                {
-                    // TODO Can this be done in one shot?
-                    // Remove dependencies.
-                    store.lockForWrite(omRole);
-                    omRole.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                    omRole.setUserPrincipals(omUsers);
-                    omRole.setGroupPrincipals(omGroups);
-                    omRole.setPermissions(omPermissions);
-                    store.getTransaction().checkpoint();
-
-                    // Remove role.
-                    store.deletePersistent(omRole);
-                    store.getTransaction().checkpoint();
-                }
-                catch (Exception e)
-                {
-                    String msg = "Unable to lock Role for update.";
-                    log.error(msg, e);
-                    store.getTransaction().rollback();
-                    throw new SecurityException(msg, e);
-                }
-                // Remove preferences
-                Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
-                try
-                {
-                    preferences.removeNode();
-                }
-                catch (BackingStoreException bse)
-                {
-                    bse.printStackTrace();
-                }
+                String msg = "Unable to remove role: "
+                        + RolePrincipalImpl.getPrincipalNameFromFullPath((String) roles[i]);
+                log.error(msg, e);
+                throw new SecurityException(msg, e);
+            }
+            // Remove preferences
+            Preferences rolePref = Preferences.userRoot().node((String) roles[i]);
+            try
+            {
+                rolePref.removeNode();
+            }
+            catch (BackingStoreException bse)
+            {
+                String msg = "Unable to remove role preferences: " + roles[i];
+                log.error(msg, bse);
+                throw new SecurityException(msg, bse);
             }
         }
     }
@@ -500,20 +460,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
 
         boolean isGroupInRole = false;
 
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
+        Set rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupFullPathName);
+        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
+        if (rolePrincipals.contains(rolePrincipal))
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+            isGroupInRole = true;
         }
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null != omRole)
-        {
-            Collection omRoles = omGroup.getRolePrincipals();
-            if ((null != omRoles) && (omRoles.contains(omRole)))
-            {
-                isGroupInRole = true;
-            }
-        }
+        
         return isGroupInRole;
     }
 

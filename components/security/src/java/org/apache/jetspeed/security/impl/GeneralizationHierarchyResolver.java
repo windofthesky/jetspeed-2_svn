@@ -32,12 +32,13 @@ import org.apache.jetspeed.util.ArgUtil;
  * <li>/role/roleA/roleB</li>
  * <li>/role/roleA/roleB/roleC</li>
  * </ul>
+ * </p>
  * 
  * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
  * @version $Id: GeneralizationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
  *          dlestrat Exp $
  */
-public class GeneralizationHierarchyResolver implements HierarchyResolver
+public class GeneralizationHierarchyResolver extends BaseHierarchyResolver implements HierarchyResolver
 {
 
     /**

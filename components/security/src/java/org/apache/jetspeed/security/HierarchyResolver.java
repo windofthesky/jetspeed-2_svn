@@ -17,18 +17,35 @@ package org.apache.jetspeed.security;
 import java.util.prefs.Preferences;
 
 /**
- * <p>This class allows to implement different types of groups/roles hierarchy.</p>
- * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein</a>
+ * <p>
+ * This class allows to implement different types of groups/roles hierarchy.
+ * </p>
+ * 
+ * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
  * @version $Id$
  */
 public interface HierarchyResolver 
 {
     
     /**
-     * <p>Returns absolute path names of the dependcy roles/groups.</p>  
+     * <p>
+     * Returns absolute path names of the hierarchy roles/groups.
+     * </p>
+     * 
      * @param prefs Preferences for the role/group
      * @return Returns absolute path names of the dependcy roles/groups.
      */
-    public String[] resolve( Preferences prefs );
+    public String[] resolve(Preferences prefs);
+    
+    /**
+     * <p>
+     * Returns the absolute path names of the children of the given hierarchy
+     * roles/groups node.
+     * </p>
+     * 
+     * @param prefs Preferences for the role/group
+     * @return Returns absolute path names of the children roles/groups.
+     */
+    public String[] resolveChildren(Preferences prefs);
         
 }

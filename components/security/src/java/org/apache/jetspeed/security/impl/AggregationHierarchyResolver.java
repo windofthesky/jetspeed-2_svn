@@ -14,9 +14,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
@@ -40,12 +37,13 @@ import org.apache.jetspeed.util.ArgUtil;
  * <li>/role/roleA/roleB</li>
  * <li>/role/roleA/roleB/roleC</li>
  * </ul>
+ * </p>
  * 
  * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
  * @version $Id: AggregationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
  *          dlestrat Exp $
  */
-public class AggregationHierarchyResolver implements HierarchyResolver
+public class AggregationHierarchyResolver extends BaseHierarchyResolver implements HierarchyResolver
 {
     private static final Log log = LogFactory.getLog(AggregationHierarchyResolver.class);
 
@@ -56,37 +54,7 @@ public class AggregationHierarchyResolver implements HierarchyResolver
     {
         ArgUtil.notNull(new Object[] { prefs }, new String[] { "preferences" }, "resolve(java.util.prefs.Preferences)");
 
-        List list = new ArrayList();
-        processPreferences(prefs, list);
-        return (String[]) list.toArray(new String[0]);
-    }
-
-    /**
-     * <p>
-     * Recursively processes the preferences.
-     * </p>
-     * 
-     * @param prefs The preferences.
-     * @param list The list to add the preferences to.
-     */
-    protected void processPreferences(Preferences prefs, List list)
-    {
-        if (!list.contains(prefs.absolutePath()))
-        {
-            list.add(prefs.absolutePath());
-        }
-        try
-        {
-            String[] names = prefs.childrenNames();
-            for (int i = 0; i < names.length; i++)
-            {
-                processPreferences(prefs.node(names[i]), list);
-            }
-        }
-        catch (BackingStoreException bse)
-        {
-            log.warn("can't find children of " + prefs.absolutePath(), bse);
-        }
+        return resolveChildren(prefs);
     }
 
 }
