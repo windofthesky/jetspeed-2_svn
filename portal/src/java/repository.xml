@@ -31,7 +31,4 @@
     &security;
     -->
 
-    <!-- include jetspeed defined mappings here -->
-    &preferences;
-
 </descriptor-repository>
