@@ -16,6 +16,11 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import java.security.AccessControlContext;
+import java.security.PrivilegedAction;
+
+import javax.security.auth.Subject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,6 +46,9 @@ public class Worker extends Thread
 
     /** Job to process */
     private Runnable job = null;
+
+    /** Context to process job within */
+    private AccessControlContext context = null;
 
     /** Monitor for this Worker */
     private WorkerMonitor monitor = null;
@@ -94,11 +102,21 @@ public class Worker extends Thread
     }
 
     /**
+     * Sets the job to execute in security context
+     */
+    public void setJob(Runnable job, AccessControlContext context)
+    {
+        this.job = job;
+        this.context = context;
+    }
+
+    /**
      * Sets the job to execute
      */
     public void setJob(Runnable job)
     {
         this.job = job;
+        this.context = null;
     }
 
     /**
@@ -136,14 +154,40 @@ public class Worker extends Thread
             // process it
             if (this.job != null)
             {
-                try
+                log.debug("Processing job for window :" + ((RenderingJob)job).getWindow().getId());
+                Subject subject = null;
+                if (this.context != null)
                 {
-                    log.debug("Processing job for window :" + ((RenderingJob)job).getWindow().getId());
-                    this.job.run();
+                    subject = Subject.getSubject(this.context);
                 }
-                catch (Throwable t)
+                if (subject != null)
                 {
-                    log.error("Thread error", t);
+                    Subject.doAsPrivileged(subject, new PrivilegedAction()
+                        {
+                            public Object run()
+                            {
+                                try 
+                                {
+                                    Worker.this.job.run();
+                                }
+                                catch (Throwable t)
+                                {                        
+                                    log.error("Thread error", t);
+                                }
+                                return null;                    
+                            }
+                        }, this.context);
+                }
+                else
+                {
+                    try
+                    {
+                        this.job.run();
+                    }
+                    catch (Throwable t)
+                    {
+                        log.error("Thread error", t);
+                    }
                 }
             }
 

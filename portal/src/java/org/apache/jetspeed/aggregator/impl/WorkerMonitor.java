@@ -16,6 +16,8 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
+import java.security.AccessControlContext;
+import java.security.AccessController;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
@@ -134,9 +136,11 @@ public class WorkerMonitor
     {
         Worker worker = this.getWorker();
 
+        AccessControlContext context = AccessController.getContext();
         if (worker==null)
         {
             queue.push(job);
+            queue.push(context);
         }
         else
         {
@@ -144,7 +148,7 @@ public class WorkerMonitor
             {
                 synchronized (worker)
                 {
-                    worker.setJob(job);
+                    worker.setJob(job, context);
                     worker.notify();
                 }
             }
@@ -169,7 +173,9 @@ public class WorkerMonitor
         {
             if ((worker.getJobCount()<this.maxJobsPerWorker)&&(queue.size()>0))
             {
-                worker.setJob((RenderingJob)queue.pop());
+                RenderingJob job = (RenderingJob)queue.pop();
+                AccessControlContext context = (AccessControlContext)queue.pop();
+                worker.setJob(job, context);
                 return;
             }
             else
