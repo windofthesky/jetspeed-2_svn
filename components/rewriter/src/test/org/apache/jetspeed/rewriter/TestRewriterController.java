@@ -256,14 +256,6 @@ public class TestRewriterController extends AbstractComponentAwareTestCase
         String cwd = System.getProperty("user.dir");
         String path;
         return new FileWriter(getApplicationRoot() + "/rewriter/" + filename);
-    }
-
-    /**
-     * @return
-     */
-    protected String getApplicationRoot()
-    {
-        return System.getProperty("org.apache.jetspeed.application_root", "./");
-    }
+    }  
         
 }
