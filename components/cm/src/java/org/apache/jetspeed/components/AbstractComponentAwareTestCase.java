@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.components;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 import org.apache.commons.logging.LogFactory;
@@ -96,7 +97,13 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
         Properties p = new Properties();
         try
         {
-            p.load(new FileInputStream(log4jFile));
+            File baseDir = new File(System.getProperty("basedir"));
+            if(baseDir.exists())
+            {
+                System.out.println("Finding logfile from basedir " + baseDir);
+                File logFile = new File(baseDir, log4jFile);
+                p.load(new FileInputStream(logFile));
+            }
         }
         catch (Exception e)
         {
