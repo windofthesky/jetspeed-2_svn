@@ -59,7 +59,8 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.services.persistence.PathResolver;
+import org.apache.jetspeed.services.plugin.PathResolver;
+
 
 /**
  * PathResolver implementation that is backed  by
