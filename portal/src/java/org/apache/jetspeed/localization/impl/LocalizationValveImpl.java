@@ -18,6 +18,7 @@ package org.apache.jetspeed.localization.impl;
 import java.util.Enumeration;
 import java.util.Locale;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
@@ -44,7 +45,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         // TODO Get the prefered locale from user's persistent storage if not anon user
 
         Locale locale =
-            (Locale) request.getSessionAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+            (Locale) request.getSessionAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
         if (locale == null)
         {
@@ -66,8 +67,8 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         }
 
         request.setLocale(locale);
-        request.getRequest().setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
-        request.getRequest().getSession().setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
+        request.getRequest().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
+        request.getRequest().getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
        
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);

@@ -18,6 +18,7 @@ package org.apache.jetspeed.request;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -28,15 +29,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.userinfo.UserInfoManager;
+import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ObjectID;
@@ -75,6 +80,10 @@ public class JetspeedRequestContext implements RequestContext
     private UserInfoManager userInfoMgr;
     private Map requestsForWindows;
     private Map responsesForWindows;
+    
+    private Fragment rootFragment;
+    private Map fragments;
+    private JetspeedPowerTool jpt;
 
     /**
      * Create a new Request Context
@@ -93,17 +102,15 @@ public class JetspeedRequestContext implements RequestContext
         this.userInfoMgr = userInfoMgr;
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
+        this.fragments = new LinkedHashMap();
 
         // set context in Request for later use
         if (null != this.request)
         {
-            this.request.setAttribute(RequestContext.REQUEST_PORTALENV, this);
+            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
         }
     }
 
-    private JetspeedRequestContext()
-    {
-    }
 
     public HttpServletRequest getRequest()
     {
@@ -158,16 +165,6 @@ public class JetspeedRequestContext implements RequestContext
     public void setContentDispatcher( ContentDispatcher dispatcher )
     {
         this.dispatcher = dispatcher;
-    }
-
-    /**
-     * Set the capabilityMap. Used by the CapabilityValve
-     * 
-     * @param capabilityMap
-     */
-    public void setCapabilityMap( CapabilityMap map )
-    {
-        this.capabilityMap = map;
     }
 
     /**
@@ -237,6 +234,17 @@ public class JetspeedRequestContext implements RequestContext
         this.actionWindow = portletWindow;
     }
 
+
+    /**
+     * Set the capabilityMap. Used by the CapabilityValve
+     * 
+     * @param capabilityMap
+     */
+    public void setCapabilityMap( CapabilityMap map )
+    {
+        this.capabilityMap = map;
+    }
+
     /**
      * get the character encoding
      * 
@@ -254,11 +262,11 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setCharacterEncoding( String enc )
     {
-        String preferedEnc = (String) request.getSession().getAttribute(RequestContext.PREFERED_CHARACTERENCODING_KEY);
+        String preferedEnc = (String) request.getSession().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
 
         if (preferedEnc == null || !enc.equals(preferedEnc))
         {
-            request.setAttribute(RequestContext.PREFERED_CHARACTERENCODING_KEY, enc);
+            request.setAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE, enc);
         }
 
         this.encoding = enc;
@@ -301,13 +309,25 @@ public class JetspeedRequestContext implements RequestContext
      */
     public HttpServletResponse getResponseForWindow( PortletWindow window )
     {
+        HttpServletResponse wrappedResponse = null;
+
         if (!responsesForWindows.containsKey(window.getId()))
         {
-            ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(
-                    HttpServletResponse.class);
-            HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
+            if (getContentDispatcher() != null)
+            {
+                wrappedResponse = ((ContentDispatcherCtrl) getContentDispatcher()).getResponseForWindow(window, this);
+            }
+            else
+            {
+                ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(
+                        HttpServletResponse.class);
+                wrappedResponse = rspFac.getServletResponse(this.response);
+
+            }
+
             responsesForWindows.put(window.getId(), wrappedResponse);
             return wrappedResponse;
+
         }
         else
         {
@@ -344,13 +364,13 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setLocale( Locale locale )
     {
-        Locale preferedLocale = (Locale) request.getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
+        Locale preferedLocale = (Locale) request.getSession().getAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
         if (preferedLocale == null || !locale.equals(preferedLocale))
         {
-            request.getSession().setAttribute(RequestContext.PREFERED_LANGUAGE_SESSION_KEY, new WeakHashMap());
-            request.getSession().setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
-            request.setAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY, locale);
+            request.getSession().setAttribute(PortalReservedParameters.PREFERED_LANGUAGE_ATTRIBUTE, new WeakHashMap());
+            request.getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
+            request.setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         }
 
         this.locale = locale;
@@ -516,4 +536,6 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.requestPath = path;
     }
+    
+
 }

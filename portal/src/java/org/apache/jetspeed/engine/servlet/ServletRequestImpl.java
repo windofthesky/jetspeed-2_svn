@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -170,7 +171,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         Object value = super.getAttribute(name);
         if (name.equals(PortletRequest.USER_INFO))
         {
-            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute(RequestContext.REQUEST_PORTALENV);
+            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             if (null != context)
             {
                 String entityID = "--NULL--";
@@ -218,7 +219,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     public Locale getLocale()
     {
         //Locale preferedLocale = (Locale) getSession().getAttribute(RequestContext.PREFERED_LOCALE_SESSION_KEY);
-        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(RequestContext.REQUEST_PORTALENV);
+        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         Locale preferedLocale = requestContext.getLocale();
         if (preferedLocale != null)
         {
@@ -233,7 +234,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public Enumeration getLocales()
     {
-        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(RequestContext.REQUEST_PORTALENV);
+        RequestContext requestContext = (RequestContext) _getHttpServletRequest().getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         Locale preferedLocale = requestContext.getLocale();
         if (preferedLocale != null)
         {
@@ -322,8 +323,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
             else
             {
+                String encodedKey = nameSpaceMapper.encode(portletWindow.getId(), name);
                 this._getHttpServletRequest().setAttribute(
-                        nameSpaceMapper.encode(portletWindow.getId(), name), value);
+                        encodedKey, value);
             }
         }
         super.setAttribute(name, value);

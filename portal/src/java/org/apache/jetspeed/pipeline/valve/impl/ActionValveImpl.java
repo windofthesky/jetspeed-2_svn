@@ -71,7 +71,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             {
                 HttpServletResponse response = request.getResponseForWindow(actionWindow);
                 HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
-                requestForWindow.setAttribute(RequestContext.REQUEST_PORTALENV, request);
+                requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
                 container.processPortletAction(
                     actionWindow,
                     requestForWindow,

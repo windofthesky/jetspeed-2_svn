@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -56,7 +57,7 @@ public class ServletRequestFactoryImpl
         HttpServletRequest servletRequest = createRequest(request, window);
         
         // Set page encoding in order to parse the form data correctly        
-        String preferedEnc = (String) request.getAttribute(RequestContext.PREFERED_CHARACTERENCODING_KEY);
+        String preferedEnc = (String) request.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
         if (preferedEnc != null)
         {
             try
