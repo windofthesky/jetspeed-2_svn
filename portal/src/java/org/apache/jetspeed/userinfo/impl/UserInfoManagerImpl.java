@@ -28,7 +28,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
@@ -68,7 +68,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     UserManager userMgr;
 
     /** The portlet registry. */
-    PortletRegistryComponent registry;
+    PortletRegistry registry;
 
     /** The object id of the portlet application being processed. */
     String oid;
@@ -81,7 +81,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * @param userMgr The user manager.
      * @param registry The portlet registry component.
      */
-    public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry)
+    public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry)
     {
         this.userMgr = userMgr;
         this.registry = registry;
@@ -100,7 +100,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * @param userInfoPropertySet The user information property set.
      *  
      */
-    public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry, String userInfoPropertySet)
+    public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry, String userInfoPropertySet)
     {
         this.userMgr = userMgr;
         this.registry = registry;
