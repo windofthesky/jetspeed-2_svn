@@ -53,7 +53,20 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.exception.RegistryException;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.persistence.TransactionStateException;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
+import org.apache.jetspeed.util.DirectoryUtils;
 
 /**
  * This is the catalina specific implemenation for deplyment of Portlet Applications.
@@ -62,11 +75,13 @@ import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
   * @version $Id$
  */
 
-public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
+//public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
+public class CatalinaPAM implements Deployment, Lifecycle
 {
     // Implementaion of deplyment interface
 
     private TomcatManager tomcatManager;
+    protected static final Log log = LogFactory.getLog("deployment");
 
     public CatalinaPAM(String server, int port, String user, String password) throws PortletApplicationException
     {
@@ -84,10 +99,16 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     // Interface not supported by this implementation 
     public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
     {
-        super.deploy(webAppsDir, warFile, paName);
+        //super.deploy(webAppsDir, warFile, paName);
         try
         {
-            checkResponse(tomcatManager.install(warFile, paName));
+            sysDeploy(webAppsDir, warFile, paName, 0);
+            //checkResponse(tomcatManager.install(warFile, paName));
+            checkResponse(tomcatManager.install(webAppsDir + "/" + paName, paName));
+        }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
         }
         catch (Exception e)
         {
@@ -107,10 +128,14 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
 
     public void deploy(String warFile, String paName) throws PortletApplicationException
     {
-        super.deploy(warFile, paName);
+        //super.deploy(warFile, paName);
         try
         {
             checkResponse(tomcatManager.install(warFile, paName));
+        }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
         }
         catch (Exception e)
         {
@@ -130,7 +155,7 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         try
         {
             checkResponse(tomcatManager.remove(paName));
-            super.undeploy(paName);
+            //super.undeploy(paName);
         }
         catch (UnsupportedOperationException usoe)
         {
@@ -154,7 +179,11 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         try
         {
             checkResponse(tomcatManager.remove(paName));
-            super.undeploy(webAppsDir, paName);
+            //super.undeploy(webAppsDir, paName);
+        }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
         }
         catch (Exception e)
         {
@@ -176,6 +205,10 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         {
             checkResponse(tomcatManager.start(paName));
         }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
+        }
         catch (Exception e)
         {
             throw new PortletApplicationException(e);
@@ -196,6 +229,10 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         {
             checkResponse(tomcatManager.stop(paName));
         }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
+        }
         catch (Exception e)
         {
             throw new PortletApplicationException(e);
@@ -215,22 +252,35 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
         {
             checkResponse(tomcatManager.reload(paName));
         }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
+        }
         catch (Exception e)
         {
             throw new PortletApplicationException(e);
         }
     }
-	
-	/**
-	 * 
-	 * @param response
-	 * @throws PortletApplicationException
-	 */
+
+    /**
+     * 
+     * @param response
+     * @throws PortletApplicationException
+     */
     private void checkResponse(String response) throws PortletApplicationException
     {
         if (response == null || !response.startsWith("OK"))
         {
+            if (response == null)
+            {
+                response = "null response";
+            }
+
             throw new PortletApplicationException("Catalina container action failed, \"" + response + "\"");
+        }
+        else
+        {
+            log.info("Catalina deployment response: " + response);
         }
     }
 
@@ -240,16 +290,202 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
     public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState)
         throws PortletApplicationException
     {
+
+        //super.deploy((String) webAppsDir, (String) warFile, (String) paName, (String) deploymentDbAlias, (int)startState);		
+        try
+        {
+            checkResponse(tomcatManager.install(warFile, paName));
+        }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
+    }
+
+    protected void sysDeploy(String webAppsDir, String warFile, String paName, int startState) throws PortletApplicationException
+    {
+
+        // Call into DeplyUtilities class
+        DeployUtilities util = new DeployUtilities();
+
+        // State of deployment -- use integer to signal the state
+        // 0 Initial state
+        // 1 Archive deployed
+        // 2 WEB XML updated
+        // 3 Registry updated
+        //
+        int nState = 0; //Initialize
+        MutablePortletApplication app = null;
+
+        try
+        {
+            if (startState <= nState)
+            {
+                // prepend a slash if need be
+                if (paName.indexOf('/') != 0)
+                {
+                    paName = "/" + paName;
+                }
+                util.deployArchive(webAppsDir, warFile, paName);
+            }
+
+            nState = 1;
+
+            if (startState <= nState)
+            {
+                util.processWebXML(util.getWebXMLPath(webAppsDir, warFile, paName), paName);
+            }
+
+            nState = 2;
+
+            if (startState <= nState)
+            {
+                registerApplication(webAppsDir, paName);
+            }
+
+            nState = 3;
+
+            // DONE
+            log.info("FileSystem deployment done.");
+
+        }
+        catch (PortletApplicationException pae)
+        {
+            log.error(
+                "PortletApplicationException encountered deploying portlet application: "
+                    + pae.toString()
+                    + " attempting rollback...",
+                pae);
+            rollback(nState, webAppsDir, paName, app);
+            throw pae;
+        }
+        catch (Throwable t)
+        {
+            log.error("Unexpected exception deploying portlet application: " + t.toString() + " attempting rollback...", t);
+            rollback(nState, webAppsDir, paName, app);
+            throw new PortletApplicationException(t);
+        }
+
+    }
+    protected void registerApplication(String webAppsDir, String paName)
+        throws PortletApplicationException, RegistryException
+    {
+        MutablePortletApplication app;
+        // Application is deployed -- populate the registry with the portlet.xml
+        String portletXMLPath = webAppsDir + paName + "/WEB-INF/portlet.xml";
         
-        super.deploy(webAppsDir, warFile, paName, deploymentDbAlias, startState);		
-		try
-		{
-			checkResponse(tomcatManager.install(warFile, paName));
-		}
-		catch (Exception e)
-		{
-			throw new PortletApplicationException(e);
-		}
+        // load the portlet.xml
+        log.info("Loading " + portletXMLPath + " into memory....");
+        app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
+        
+        if (app == null)
+        {
+            String msg = "Error loading: " + portletXMLPath;
+            log.error(msg);
+            throw new PortletApplicationException(msg);
+        }
+        
+        if (webAppsDir.indexOf(JetspeedPortletContext.LOCAL_PA_ROOT) > -1)
+        {
+            app.setApplicationType(MutablePortletApplication.LOCAL);
+        }
+        else
+        {
+            app.setApplicationType(MutablePortletApplication.WEBAPP);
+        }
+        //					// create the web application
+        MutableWebApplication webapp = new WebApplicationDefinitionImpl();
+        if (paName.startsWith("/"))
+        {
+            webapp.setContextRoot(paName);
+        }
+        else
+        {
+            webapp.setContextRoot("/" + paName);
+        }
+        webapp.addDisplayName(Jetspeed.getDefaultLocale(), paName);
+        app.setWebApplicationDefinition(webapp);
+        
+        // save it to the registry
+        log.info("Saving the portlet.xml in the registry...");
+        
+        JetspeedPortletRegistry.registerPortletApplication(app);
+       // return app;
+    }
+
+    protected void rollback(int nState, String webAppsDir, String paName, MutablePortletApplication app)
+    {
+        log.info("Exception in deploy. Rollback of application deployment...");
+        if (nState >= 2 && app != null)
+        {
+            rollbackRegistry(app);
+        }
+
+        if (nState >= 1)
+        {
+            rollbackFileSystem(webAppsDir, paName);
+        }
+    }
+    
+    protected void rollbackFileSystem(String webAppsDir, String paName)
+    {
+        try
+        {
+        
+            // Remove the webapps directory
+            log.info("Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
+        
+            // Call into DeplyUtilities class
+            DeployUtilities util = new DeployUtilities();
+            if (DirectoryUtils.rmdir(new File(webAppsDir + paName)) == false)
+            {
+                log.error(
+                    "Rollback: Failed to delete web app directory "
+                        + webAppsDir
+                        + " .Make sure the application is no longer running.");
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Error removing file system deployment artifacts: " + e.toString(), e);
+        }
+    }
+    
+    /**
+     * Roles back any registry changes that have been made
+     * @param app
+     */
+    protected void rollbackRegistry(MutablePortletApplication app)
+    {
+        try
+        {
+
+            // remove entries from the registry
+            // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
+            log.info("Saving the portlet.xml in the registry...");
+
+            JetspeedPortletRegistry.beginTransaction();
+            JetspeedPortletRegistry.removeApplication(app);
+            JetspeedPortletRegistry.commitTransaction();
+        }
+
+        catch (Exception e1)
+        {
+            try
+            {
+                log.error("Error processing rollback.  Attempting to rollback registry transaction.", e1);
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e2)
+            {
+                log.error("Error processing tranasction: " + e2.toString(), e2);               
+            }
+
+        }
     }
 
 }
