@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<js:folder xmlns:dc="http://www.purl.org/dc"
-	       xmlns:js="http://portals.apache.org/jetspeed" 
->
-  <dc:title >Root Folder</dc:title>
-  <dc:title xml:lang="fr" >"Répertoire racine</dc:title>
-
-</js:folder>
+<folder>
+  <title >Root Folder</title>  
+  <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
+  <documentOrder>Jetspeed2.link</documentOrder>
+  <documentOrder>Jetspeed2Wiki.link</documentOrder>
+  <documentOrder>apache_portals.link</documentOrder>
+  <documentOrder>apache.link</documentOrder>
+</folder>
