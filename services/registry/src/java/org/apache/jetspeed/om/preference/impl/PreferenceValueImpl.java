@@ -73,6 +73,9 @@ public class PreferenceValueImpl implements Serializable, PreferenceValue
 {
 
     private String value;
+    
+    protected long id;
+    protected long preferenceId;
 
     public PreferenceValueImpl()
     {
