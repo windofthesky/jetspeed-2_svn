@@ -746,5 +746,19 @@ public class JetspeedPowerTool implements ViewTool
         return action;
         
     }
+    /**
+     * 
+     * <p>
+     * getTitle
+     * </p>
+     * Returns the appropriate for the title based on
+     * locale prferences
+     * @param entity
+     * @return
+     */
+    public String getTitle(PortletEntity entity)
+    {
+        return Jetspeed.getCurrentRequestContext().getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+    }
     
 }
