@@ -26,6 +26,10 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.prefs.PropertyManager;
@@ -61,6 +65,12 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
 
     /** The user manager. */
     private UserManager ums;
+    
+    /** The portlet registry. */
+    private static PortletRegistryComponent registry;
+    
+    /** The persistence store. */
+    private PersistenceStore store;
 
     /**
      * <p>Defines the testcase name for JUnit.</p>
@@ -82,6 +92,8 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
         uim = (UserInfoManager) container.getComponentInstance(UserInfoManager.class);
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
         ums = (UserManager) container.getComponentInstance(UserManager.class);
+        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
+        store = registry.getPersistenceStore();
     }
 
     /**
@@ -120,22 +132,29 @@ public class TestUserInfoManager extends AbstractComponentAwareTestCase
             PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
         assertNotNull("App is null", app);
 
+        store.getTransaction().begin();
+        store.makePersistent(app);
+        store.getTransaction().commit();
+
         RequestContext request = initRequestContext("anon");
 
         // There are no preferences associated to the user profile.
-        request = uim.setUserInfoMap(app, request);
-        assertNull(PortletRequest.USER_INFO + " is null", (Map) request.getAttribute(PortletRequest.USER_INFO));
+        Map userInfo = uim.getUserInfoMap(app.getId(), request);
+        assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
         initUser();
         request = initRequestContext("test");
-        request = uim.setUserInfoMap(app, request);
-        Map userInfo = (Map) request.getAttribute(PortletRequest.USER_INFO);
+        userInfo = uim.getUserInfoMap(app.getId(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
         assertEquals("should contain user.name.given", "Test Dude", (String) userInfo.get("user.name.given"));
         assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
 
+        store.getTransaction().begin();
+        store.deletePersistent(app);
+        store.getTransaction().commit();
+                
         destroyUser();
     }
 
