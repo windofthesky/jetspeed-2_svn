@@ -193,6 +193,20 @@ public class TestRegistry extends JetspeedTest
             dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 1");
             dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 2");
             dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 3");
+            dc.addContributor(Jetspeed.getDefaultLocale(), "Contrib 1");
+            dc.addCoverage(Jetspeed.getDefaultLocale(), "Coverage 1");
+            dc.addCoverage(Jetspeed.getDefaultLocale(), "Coverage 2");
+            dc.addCreator(Jetspeed.getDefaultLocale(), "Creator 1");
+            dc.addDescription(Jetspeed.getDefaultLocale(), "Description 1");
+            dc.addFormat(Jetspeed.getDefaultLocale(), "Format 1");
+            dc.addIdentifier(Jetspeed.getDefaultLocale(), "Identifier 1");
+            dc.addLanguage(Jetspeed.getDefaultLocale(), "Language 1");
+            dc.addPublisher(Jetspeed.getDefaultLocale(), "Publisher 1");
+            dc.addRelation(Jetspeed.getDefaultLocale(), "Relation 1");
+            dc.addRight(Jetspeed.getDefaultLocale(), "Right 1");
+            dc.addSource(Jetspeed.getDefaultLocale(), "Source 1");
+            dc.addSubject(Jetspeed.getDefaultLocale(), "Subject 1");
+            dc.addType(Jetspeed.getDefaultLocale(), "Type 1");
 
             wac.setContextRoot("/root");
             wac.addDescription(Jetspeed.getDefaultLocale(), "This is an english desrcitpion");
@@ -300,6 +314,20 @@ public class TestRegistry extends JetspeedTest
             DublinCore dc = appExists.getDublinCore();
             
             assertEquals(dc.getTitles().size(), 3);
+            assertEquals(dc.getContributors().size(), 1);
+            assertEquals(dc.getCoverages().size(), 2);
+            assertEquals(dc.getCreators().size(), 1);
+            assertEquals(dc.getDescriptions().size(), 1);
+            assertEquals(dc.getFormats().size(), 1);
+            assertEquals(dc.getIdentifiers().size(), 1);
+            assertEquals(dc.getLanguages().size(), 1);
+            assertEquals(dc.getPublishers().size(), 1);
+            assertEquals(dc.getRelations().size(), 1);
+            assertEquals(dc.getRights().size(), 1);
+            assertEquals(dc.getSources().size(), 1);
+            assertEquals(dc.getSubjects().size(), 1);
+            assertEquals(dc.getTypes().size(), 1);
+            
             
             JetspeedPortletRegistry.commitTransaction();
         }
