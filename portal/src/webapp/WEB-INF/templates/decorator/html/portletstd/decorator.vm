@@ -20,7 +20,9 @@
 </tr>
 <tr>
   <td width="100%" valign="top">
-     $jetspeed.include($myF)
+    #if (!$jetspeed.isHidden($myF))
+      $jetspeed.include($myF)
+    #end
   </td>
 </tr>
 </table>

@@ -1,0 +1,45 @@
+#set($table = $jetspeed.columns)
+
+#set($myPage = $jetspeed.page)
+
+#set($myFragment = $jetspeed.currentFragment)
+
+#set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
+
+  
+ #if($myFragment.getDecorator())
+        #set($decorator = $myFragment.getDecorator())
+  #end
+
+  #if ($decorator)
+        #set($decoTop = "${decorator}-top.vm")
+        #set($decoBottom = "${decorator}-bottom.vm")
+  #end
+
+<!-- Decorator  $decorator  ${decoTop}.vm-${decoBottom}.vm-->
+
+  #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))
+      #parse($jetspeed.getTemplate($decoTop).appRelativePath)
+  #end
+
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+
+     #foreach($entry in $table)
+    <td valign="top">
+       <table width="100%">
+       #foreach($f in $entry)       
+        <tr>
+       	   	<td width="100%">
+                ## get the decorated Portlet content
+               $jetspeed.decorateAndInclude($f)                
+     </td></tr>
+      #end
+     </table></td>
+   #end
+  </tr>
+</table>
+
+#if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
+   #parse($jetspeed.getTemplate($decoBottom).appRelativePath)
+#end

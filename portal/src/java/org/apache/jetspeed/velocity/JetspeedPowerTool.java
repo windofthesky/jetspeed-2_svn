@@ -54,22 +54,27 @@
 package org.apache.jetspeed.velocity;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
+import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.cps.template.Template;
 import org.apache.jetspeed.cps.template.TemplateLocator;
@@ -78,7 +83,7 @@ import org.apache.jetspeed.cps.template.TemplateLocatorService;
 import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -119,6 +124,9 @@ import org.apache.velocity.tools.view.tools.ViewTool;
  */
 public class JetspeedPowerTool implements ViewTool
 {
+    protected static final String PORTLET_CONFIG_ATTR = "portletConfig";
+    protected static final String RENDER_RESPONSE_ATTR = "renderResponse";
+    protected static final String RENDER_REQUEST_ATTR = "renderRequest";
     public static final String DISPATCHER_ATTR = "dispatcher";
     private static final String COLUMNS_ATTR = "columns";
     public static final String PAGE_ATTR = "page";
@@ -137,10 +145,16 @@ public class JetspeedPowerTool implements ViewTool
 
     private ViewContext viewCtx;
 
+    private Writer templateWriter;
+
     private Stack fragmentStack;
 
     private static final Log log = LogFactory.getLog(JetspeedPowerTool.class);
 
+    private CapabilityMap capabilityMap;
+    private Locale locale;
+    private TemplateLocator templateLocator;
+    private TemplateLocatorService locatorService;
     /**
      * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
      * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
@@ -152,9 +166,11 @@ public class JetspeedPowerTool implements ViewTool
     }
 
     /**
-     * This is here to make this tool easily useable in any
-     * templating environment including JSPs
-     * @param request Current PortletRequest
+      * This is here to make this tool easily useable in 
+      * within standard java classes.
+     * @param request
+     * @param resp
+     * @param config
      */
     public JetspeedPowerTool(RenderRequest request, RenderResponse resp, PortletConfig config)
     {
@@ -162,7 +178,33 @@ public class JetspeedPowerTool implements ViewTool
         renderRequest = request;
         renderResponse = resp;
         portletConfig = config;
+        try
+        {
+            // I am not sure that this will produce the required result.
+            templateWriter = renderResponse.getWriter();
+        }
+        catch (IOException e)
+        {
+            log.error("Unable to retreive Writer from the RenderResponse: " + e.toString(), e);
+        }
         fragmentStack = new Stack();
+		clientSetup(Jetspeed.getCurrentRequestContext());
+    }
+
+    /**
+     * Use this constructor when using the JetspeedPowerTool within JSP
+     * pages or custom tags.
+     * @param jspContext
+     */
+    public JetspeedPowerTool(PageContext jspContext)
+    {
+        this();
+        renderRequest = (RenderRequest) jspContext.getAttribute(RENDER_REQUEST_ATTR);
+        renderResponse = (RenderResponse) jspContext.getAttribute(RENDER_RESPONSE_ATTR);
+        portletConfig = (PortletConfig) jspContext.getAttribute(PORTLET_CONFIG_ATTR);
+        templateWriter = jspContext.getOut();
+        fragmentStack = new Stack();
+		clientSetup(Jetspeed.getCurrentRequestContext());
     }
 
     /**
@@ -176,7 +218,8 @@ public class JetspeedPowerTool implements ViewTool
             ViewContext viewContext = (ViewContext) obj;
             this.viewCtx = viewContext;
             ctx = viewContext.getVelocityContext();
-            setRequest((RenderRequest) ctx.get("renderRequest"));
+            setRequest((RenderRequest) ctx.get(RENDER_REQUEST_ATTR));
+           
         }
         else if (obj instanceof PortletRequest)
         {
@@ -193,6 +236,7 @@ public class JetspeedPowerTool implements ViewTool
         renderResponse = (RenderResponse) ctx.get(Constants.PORTLET_RESPONSE);
         portletConfig = (PortletConfig) ctx.get(Constants.PORTLET_CONFIG);
         fragmentStack = new Stack();
+        clientSetup(Jetspeed.getCurrentRequestContext());
 
     }
 
@@ -320,11 +364,11 @@ public class JetspeedPowerTool implements ViewTool
         }
         try
         {
-            TemplateLocatorService tls =
-                (TemplateLocatorService) CommonPortletServices.getPortalService(TemplateLocatorService.SERVICE_NAME);
-            TemplateLocator locator = tls.createLocator(templateType);
-            locator.setName(path);
-            Template template = tls.locateTemplate(locator);
+        	
+			templateLocator.setName(path);
+			templateLocator.setType(templateType);
+			
+            Template template = locatorService.locateTemplate(templateLocator);
             return template;
         }
         catch (TemplateLocatorException e)
@@ -359,6 +403,26 @@ public class JetspeedPowerTool implements ViewTool
         getContentDispatcher().include(f, renderRequest, renderResponse);
 
     }
+    
+    public void  includeTemplate(String template, String templateType) throws IOException
+    {
+    	checkState();    	
+    	try
+        {
+			flush();
+            PortletRequestDispatcher pDispatcher = portletConfig.getPortletContext().getRequestDispatcher(getTemplate(template, templateType).getAppRelativePath());
+            pDispatcher.include(renderRequest, renderResponse);
+        }
+        catch (Exception e)
+        {            
+            PrintWriter directError = new PrintWriter(renderResponse.getWriter());
+			directError.write("Error occured process includeTemplate(): "+e.toString()+"\n\n");
+            e.printStackTrace(directError);
+            directError.close();            
+        }    	
+    }
+    
+
 
     /**
      * 
@@ -366,10 +430,14 @@ public class JetspeedPowerTool implements ViewTool
     public void flush() throws IOException
     {
         checkState();
-        if (viewCtx != null)
+        if (templateWriter != null)
         {
-            VelocityWriter vw = (VelocityWriter) viewCtx.getVelocityContext().get(JetspeedVelocityViewServlet.VELOCITY_WRITER_ATTR);
-            vw.flush();
+            templateWriter.flush();
+        }
+        else if(viewCtx != null)
+        {
+			templateWriter = (VelocityWriter) viewCtx.getVelocityContext().get(JetspeedVelocityViewServlet.VELOCITY_WRITER_ATTR);
+			templateWriter.flush();
         }
     }
 
@@ -443,15 +511,13 @@ public class JetspeedPowerTool implements ViewTool
         }
     }
 
-   
-
     /**
      * 
      * 
      * @throws java.lang.IllegalStateException if the <code>PortletConfig</code>, <code>RenderRequest</code> or
      * <code>RenderReponse</code> is null.
      */
-    private void checkState()
+    protected void checkState()
     {
         if (portletConfig == null || renderRequest == null || renderResponse == null)
         {
@@ -460,6 +526,25 @@ public class JetspeedPowerTool implements ViewTool
                     + ""
                     + "The JetspeedPowerTool generally only usuable during the rendering phase of  "
                     + "internal portlet applications.");
+        }
+    }
+
+    protected void clientSetup(RequestContext requestContext) 
+    {
+        locatorService = (TemplateLocatorService) CommonPortletServices.getPortalService(TemplateLocatorService.SERVICE_NAME);
+        // By using null, we create a re-useable locator    
+        try
+        {
+            templateLocator = locatorService.createLocator(null);        
+            capabilityMap = requestContext.getCapabilityMap();
+            templateLocator.setMediaType(capabilityMap.getPreferredMediaType().getName());
+            locale = requestContext.getLocale();
+            templateLocator.setCountry(locale.getCountry());
+            templateLocator.setLanguage(locale.getLanguage());       
+        }
+        catch (Exception e)
+        {
+           log.error("Unable to perform client setup: "+e.toString(), e);
         }
     }
 
