@@ -1,5 +1,0 @@
-<!-- Project dependencies -->
-<!ENTITY myfaces-deps SYSTEM "file:../../etc/project-dependencies/myfaces-deps.xml">
-
-<!-- Project reports -->
-<!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

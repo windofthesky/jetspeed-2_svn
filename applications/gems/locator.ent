@@ -1,4 +1,0 @@
-<!-- Project dependencies -->
-
-<!-- Project reports -->
-<!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">
