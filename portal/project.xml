@@ -439,9 +439,7 @@ limitations under the License.
         <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
         <exclude>org/apache/jetspeed/services/jmx/TestJMX</exclude>
-        <!-- Excluded for now - db script issue -->
-        <exclude>org/apache/jetspeed/userinfo/TestUserInfoManager.java</exclude>
-       </excludes>
+      </excludes>
       <includes>
         <include>**/Test*.java</include>
       </includes>
