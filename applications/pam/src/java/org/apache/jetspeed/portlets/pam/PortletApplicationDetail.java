@@ -16,6 +16,9 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -25,6 +28,8 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
+import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
+import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -42,6 +47,7 @@ public class PortletApplicationDetail extends ServletPortlet
 
     private PortletContext context;
     private PortletRegistryComponent registry;
+    private HashMap tabMap = new HashMap();
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -52,7 +58,15 @@ public class PortletApplicationDetail extends ServletPortlet
         if (null == registry)
         {
             throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
-        }        
+        }
+        
+        TabBean tb1 = new TabBean("Details", "Details");
+        TabBean tb2 = new TabBean("Metadata", "Metadata");
+        TabBean tb3 = new TabBean("Portlets", "Portlets");
+        
+        tabMap.put(tb1.getId(), tb1);
+        tabMap.put(tb2.getId(), tb2);
+        tabMap.put(tb3.getId(), tb3);
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -72,6 +86,14 @@ public class PortletApplicationDetail extends ServletPortlet
             
             request.setAttribute(VIEW_PD, pdef);
             
+            request.setAttribute("tabs", tabMap.values());
+            
+            TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute("selected_tab");
+            if(selectedTab == null) {
+                selectedTab = (TabBean) tabMap.values().iterator().next();
+            }
+            request.setAttribute("selected_tab", selectedTab);
+            
         }
         super.doView(request, response);
     }
@@ -81,11 +103,21 @@ public class PortletApplicationDetail extends ServletPortlet
         System.out.println("PorletApplicationDetail: processAction()");
         
         String selectedPortlet = actionRequest.getParameter("select_portlet");
-        MutablePortletApplication pa = (MutablePortletApplication)
-        	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
-                                                 PortletSession.APPLICATION_SCOPE);
+        if(selectedPortlet != null)
+        {
+	        MutablePortletApplication pa = (MutablePortletApplication)
+	        	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+	                                                 PortletSession.APPLICATION_SCOPE);
+	        
+	        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
+	        actionRequest.getPortletSession().setAttribute("select_portlet", pdef);
+        }
         
-        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
-        actionRequest.getPortletSession().setAttribute("select_portlet", pdef);
+        String selectedTab = actionRequest.getParameter("selected_tab");
+        if(selectedTab != null)
+        {
+            TabBean tab = (TabBean) tabMap.get(selectedTab);
+            actionRequest.getPortletSession().setAttribute("selected_tab", tab);
+        }
 	}
 }
