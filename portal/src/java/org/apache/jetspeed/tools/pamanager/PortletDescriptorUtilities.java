@@ -242,8 +242,8 @@ public class PortletDescriptorUtilities
 
     /**
      * Validate a PortletApplicationDefinition tree AFTER its
-     * WebApplicationDefinition has been loaded. Currently, only the security role
-     * references of the portlet definitions are validated:
+     * WebApplicationDefinition has been loaded. Currently, only the security
+     * role references of the portlet definitions are validated:
      * <ul>
      * <li>A security role reference should reference a security role through a
      * roleLink. A warning message is logged if a direct reference is used.
@@ -256,32 +256,37 @@ public class PortletDescriptorUtilities
      *            The PortletApplicationDefinition to validate
      * @throws PortletApplicationException
      */
-     public static void validate(MutablePortletApplication app) throws PortletApplicationException 
-     {
-         SecurityRoleSet roles = app.getWebApplicationDefinition().getSecurityRoles();
-         Collection portlets = app.getPortletDefinitions();
-         Iterator portletIterator = portlets.iterator();
-         while ( portletIterator.hasNext() ) 
-         {
-             PortletDefinition portlet = (PortletDefinition)portletIterator.next();
-             SecurityRoleRefSet securityRoleRefs = portlet.getInitSecurityRoleRefSet();
-             Iterator roleRefsIterator = securityRoleRefs.iterator();
-             while ( roleRefsIterator.hasNext() ) 
-             {
-                 SecurityRoleRef roleRef = (SecurityRoleRef)roleRefsIterator.next();
-                 String roleName = roleRef.getRoleLink();
-                 if ( roleName == null ) 
-                 {
-                     log.warn("No role link specified for portlet " +portlet.getName()+" security role reference "+ roleRef.getRoleName());
-                     roleName = roleRef.getRoleName();
-                 }
-                 if ( roles.get(roleName) == null ) 
-                 {
-                     String errorMsg = "Undefined security role " +roleName+ " referenced from portlet " + portlet.getName();                    
-                     log.error(errorMsg);
-                     throw new PortletApplicationException(errorMsg);
-                 }
-             }
-         }           
-     }    
+    public static void validate(MutablePortletApplication app)
+            throws PortletApplicationException
+    {
+        SecurityRoleSet roles = app.getWebApplicationDefinition()
+                .getSecurityRoles();
+        Collection portlets = app.getPortletDefinitions();
+        Iterator portletIterator = portlets.iterator();
+        while (portletIterator.hasNext())
+        {
+            PortletDefinition portlet = (PortletDefinition) portletIterator
+                    .next();
+            SecurityRoleRefSet securityRoleRefs = portlet
+                    .getInitSecurityRoleRefSet();
+            Iterator roleRefsIterator = securityRoleRefs.iterator();
+            while (roleRefsIterator.hasNext())
+            {
+                SecurityRoleRef roleRef = (SecurityRoleRef) roleRefsIterator
+                        .next();
+                String roleName = roleRef.getRoleLink();
+                if (roleName == null || roleName.length() == 0)
+                {
+                    roleName = roleRef.getRoleName();
+                }
+                if (roles.get(roleName) == null)
+                {
+                    String errorMsg = "Undefined security role " + roleName
+                            + " referenced from portlet " + portlet.getName();
+                    log.error(errorMsg);
+                    throw new PortletApplicationException(errorMsg);
+                }
+            }
+        }
+    }
 }
