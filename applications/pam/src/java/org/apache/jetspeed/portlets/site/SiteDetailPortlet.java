@@ -37,7 +37,7 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
-import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.portals.bridges.beans.TabBean;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**

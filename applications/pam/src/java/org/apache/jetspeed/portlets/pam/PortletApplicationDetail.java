@@ -49,10 +49,10 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
-import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
+import org.apache.portals.bridges.beans.TabBean;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**

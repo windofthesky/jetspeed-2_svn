@@ -36,56 +36,48 @@ import org.apache.portals.bridges.myfaces.FacesPortlet;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class UserManagerPortlet extends FacesPortlet
-{
-    private UserManager userManager;
+public class UserManagerPortlet extends FacesPortlet {
+	private UserManager userManager;
 
-    public void init(PortletConfig config) throws PortletException
-    {
-        super.init(config);
-        userManager = (UserManager) getPortletContext().getAttribute(
-                PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
-        if (null == userManager)
-        {
-            throw new PortletException("Failed to find the User Manager on portlet initialization");
-        }
-        System.out.println("user manager = " + userManager);
-        try
-        {
-            Iterator users = userManager.getUsers("");
-            while (users.hasNext())
-            {
-                User user = (User) users.next();
-                System.out.println("++++ User = " + user);
-                Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);
-                System.out.println("principal = " + principal.getName());
-            }
-        }
-        catch (SecurityException se)
-        {
-            throw new PortletException(se);
-        }
-    }
+	public void init(PortletConfig config) throws PortletException {
+		super.init(config);
+		userManager = (UserManager) getPortletContext().getAttribute(
+				PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
+		if (null == userManager) {
+			throw new PortletException(
+					"Failed to find the User Manager on portlet initialization");
+		}
+		System.out.println("user manager = " + userManager);
+		try {
+			Iterator users = userManager.getUsers("");
+			while (users.hasNext()) {
+				User user = (User) users.next();
+				System.out.println("++++ User = " + user);
+				Principal principal = getPrincipal(user.getSubject(),
+						UserPrincipal.class);
+				System.out.println("principal = " + principal.getName());
+			}
+		} catch (SecurityException se) {
+			throw new PortletException(se);
+		}
+	}
 
-    protected void preProcessFaces(FacesContext context)    
-    {
-        System.out.println("*** pre processing faces for user manager: " + context);
-    }
-    
-    public Principal getPrincipal(Subject subject, Class classe)
-    {
-        Principal principal = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext())
-        {
-            Principal p = (Principal) principals.next();
-            if (classe.isInstance(p))
-            {
-                principal = p;
-                break;
-            }
-        }
-        return principal;
-    }
+	protected void preProcessFaces(FacesContext context) {
+		System.out.println("*** pre processing faces for user manager: "
+				+ context);
+	}
+
+	public Principal getPrincipal(Subject subject, Class classe) {
+		Principal principal = null;
+		Iterator principals = subject.getPrincipals().iterator();
+		while (principals.hasNext()) {
+			Principal p = (Principal) principals.next();
+			if (classe.isInstance(p)) {
+				principal = p;
+				break;
+			}
+		}
+		return principal;
+	}
 
 }

@@ -196,9 +196,9 @@ limitations under the License.
 
 <portlet id="JetspeedUserAdmin">
     <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/view/user-admin.jsp</value>
+        <description>This parameter sets the template used in view mode.</description>
+                <name>ViewPage</name>
+                        <value>/WEB-INF/view/user-admin.jsp</value>
      </init-param>   
     <portlet-name>JetspeedUserAdmin</portlet-name>
     <display-name>User Administration</display-name>
@@ -217,58 +217,6 @@ limitations under the License.
       <keywords>admin,security,users</keywords>
     </portlet-info>
 </portlet>
-
-<portlet id="UserBrowserPortlet">
-    <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/view/user-browser.jsp</value>
-     </init-param>   
-    <portlet-name>UserBrowserPortlet</portlet-name>
-    <display-name>User Browser</display-name>
-    <description>The User Browser displays a list of users managed in this portal. From here you can add, edit, and users.</description>
-    <portlet-class>org.apache.jetspeed.portlets.security.UserBrowserPortlet</portlet-class>
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
-    </supports>
-    <supported-locale>en</supported-locale>
-    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
-    <portlet-info>
-      <title>User Browser</title>
-      <short-title>Users</short-title>
-      <keywords>admin,security,users</keywords>
-    </portlet-info>
-  </portlet>
-
-<portlet id="UserDetailsPortlet">
-    <init-param>
-    	<description>This parameter sets the template used in view mode.</description>
-		<name>ViewPage</name>
-			<value>/WEB-INF/view/user-details.jsp</value>
-     </init-param>   
-    <portlet-name>UserDetailsPortlet</portlet-name>
-    <display-name>User Information</display-name>
-    <description>The User Details portlet displays a users details in a tabbed view. From here you can add, edit, and user information.</description>
-    <portlet-class>org.apache.jetspeed.portlets.security.UserDetailsPortlet</portlet-class>
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>EDIT</portlet-mode>
-      <portlet-mode>VIEW</portlet-mode>
-      <portlet-mode>HELP</portlet-mode>
-    </supports>
-    <supported-locale>en</supported-locale>
-    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
-    <portlet-info>
-      <title>User Detail Information</title>
-      <short-title>User</short-title>
-      <keywords>admin,security,users</keywords>
-    </portlet-info>
-  </portlet>
 
 </portlet-app>
 
