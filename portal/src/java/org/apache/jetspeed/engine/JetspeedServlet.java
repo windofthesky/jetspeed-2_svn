@@ -39,8 +39,8 @@ import org.apache.jetspeed.request.RequestContextComponent;
 
 /**
  * Jetspeed Servlet entry point.
- *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor </a>
  * @version $Id$
  */
 public class JetspeedServlet extends HttpServlet implements JetspeedEngineConstants
@@ -50,8 +50,8 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
 
     /**
      * In certain situations the init() method is called more than once,
-     * somtimes even concurrently. This causes bad things to happen,
-     * so we use this flag to prevent it.
+     * somtimes even concurrently. This causes bad things to happen, so we use
+     * this flag to prevent it.
      */
     private static boolean firstInit = true;
 
@@ -61,8 +61,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
     private static Throwable initFailure = null;
 
     /**
-     * Should initialization activities be performed during doGet()
-     * execution?
+     * Should initialization activities be performed during doGet() execution?
      */
     private static boolean firstDoGet = true;
 
@@ -82,7 +81,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
     /**
      * Intialize Servlet.
      */
-    public final void init(ServletConfig config) throws ServletException
+    public final void init( ServletConfig config ) throws ServletException
     {
         synchronized (this.getClass())
         {
@@ -105,11 +104,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
 
                 ServletContext context = config.getServletContext();
 
-                String propertiesFilename =
-                    ServletHelper.findInitParameter(context, config, JETSPEED_PROPERTIES_KEY, JETSPEED_PROPERTIES_DEFAULT);
+                String propertiesFilename = ServletHelper.findInitParameter(context, config, JETSPEED_PROPERTIES_KEY,
+                        JETSPEED_PROPERTIES_DEFAULT);
 
-                String applicationRoot =
-                    ServletHelper.findInitParameter(context, config, APPLICATION_ROOT_KEY, APPLICATION_ROOT_DEFAULT);
+                String applicationRoot = ServletHelper.findInitParameter(context, config, APPLICATION_ROOT_KEY,
+                        APPLICATION_ROOT_DEFAULT);
 
                 console.info("JetspeedServlet identifying web application root...");
                 webappRoot = config.getServletContext().getRealPath("/");
@@ -120,20 +119,21 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                     applicationRoot = webappRoot;
                 }
 
-                Configuration properties =
-                    (Configuration) new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
+                Configuration properties = (Configuration) new PropertiesConfiguration(ServletHelper.getRealPath(
+                        config, propertiesFilename));
 
                 properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
 
                 console.info("JetspeedServlet attempting to create the  portlet engine...");
                 String engineClassName = config.getInitParameter("engine");
-                if(engineClassName == null)
+                if (engineClassName == null)
                 {
-                    throw new IllegalStateException("You must define the engine init-parameter org.apache.jetspeed.engine.JetspeedServlet servlet.");
+                    throw new IllegalStateException(
+                            "You must define the engine init-parameter org.apache.jetspeed.engine.JetspeedServlet servlet.");
                 }
                 Class engineClass = Class.forName(engineClassName);
-                
+
                 engine = Jetspeed.createEngine(properties, applicationRoot, config, engineClass);
                 if (engine != null)
                 {
@@ -164,12 +164,13 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
     }
 
     /**
-     * Initializes the services which need <code>RunData</code> to
-     * initialize themselves (post startup).
-     *
-     * @param data The first <code>GET</code> request.
+     * Initializes the services which need <code>RunData</code> to initialize
+     * themselves (post startup).
+     * 
+     * @param data
+     *            The first <code>GET</code> request.
      */
-    public final void init(HttpServletRequest request, HttpServletResponse response)
+    public final void init( HttpServletRequest request, HttpServletResponse response )
     {
         synchronized (JetspeedServlet.class)
         {
@@ -182,18 +183,22 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
     }
 
     // -------------------------------------------------------------------
-    // R E Q U E S T  P R O C E S S I N G
+    // R E Q U E S T P R O C E S S I N G
     // -------------------------------------------------------------------
 
     /**
      * The primary method invoked when the Jetspeed servlet is executed.
-     *
-     * @param req Servlet request.
-     * @param res Servlet response.
-     * @exception IOException a servlet exception.
-     * @exception ServletException a servlet exception.
+     * 
+     * @param req
+     *            Servlet request.
+     * @param res
+     *            Servlet response.
+     * @exception IOException
+     *                a servlet exception.
+     * @exception ServletException
+     *                a servlet exception.
      */
-    public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
+    public final void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
     {
         try
         {
@@ -203,20 +208,29 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 throw initFailure;
             }
 
-            // If this is the first invocation, perform some late initialization.
+            // If this is the first invocation, perform some late
+            // initialization.
             if (firstDoGet)
             {
                 init(req, res);
             }
 
-            RequestContextComponent contextComponent = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
-            RequestContext context = contextComponent.create(req, res, getServletConfig());
-            engine.service(context);
-            contextComponent.release(context);
+            //If we already passed though the content filter DON'T send it to the
+            // engine.  This is a crappy hack until we find a better solution.
+            String wasFiltered = (String) req.getAttribute("org.apache.jetspeed.content.filtered");
+            if (wasFiltered == null || !wasFiltered.equals("true"))
+            {
+
+                RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
+                        .getComponent(RequestContextComponent.class);
+                RequestContext context = contextComponent.create(req, res, getServletConfig());
+                engine.service(context);
+                contextComponent.release(context);
+            }
 
         }
         catch (Throwable t)
-        {            
+        {
             t.printStackTrace();
             //handleException(data, req, res, t);
         }
@@ -224,24 +238,28 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
 
     /**
      * In this application doGet and doPost are the same thing.
-     *
-     * @param req Servlet request.
-     * @param res Servlet response.
-     * @exception IOException a servlet exception.
-     * @exception ServletException a servlet exception.
+     * 
+     * @param req
+     *            Servlet request.
+     * @param res
+     *            Servlet response.
+     * @exception IOException
+     *                a servlet exception.
+     * @exception ServletException
+     *                a servlet exception.
      */
-    public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
+    public final void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
     {
         doGet(req, res);
     }
 
     // -------------------------------------------------------------------
-    // S E R V L E T  S H U T D O W N
+    // S E R V L E T S H U T D O W N
     // -------------------------------------------------------------------
 
     /**
-     * The <code>Servlet</code> destroy method. Invokes <code>ServiceBroker</code>
-     * tear down method.
+     * The <code>Servlet</code> destroy method. Invokes
+     * <code>ServiceBroker</code> tear down method.
      */
     public final void destroy()
     {
@@ -261,7 +279,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
         log.info("Done shutting down!");
     }
 
-    private void debugHeaders(HttpServletRequest req)
+    private void debugHeaders( HttpServletRequest req )
     {
         java.util.Enumeration e = req.getHeaderNames();
         while (e.hasMoreElements())
