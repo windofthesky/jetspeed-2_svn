@@ -22,13 +22,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -47,24 +47,6 @@ public class TestJetspeedPortletDescriptor
     private static final String PORTLET_02 = "Display the Portlet Request Information";
     private static final String PORTLET_03 = "Pick a number game";
     private static final String PORTLET_04 = "Attribute Scope Demo";
-    
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestJetspeedPortletDescriptor(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * @param arg0
-     * @param log4jFile
-     */
-    public TestJetspeedPortletDescriptor(String arg0, String log4jFile) {
-        super(arg0);
-    }
     
     /**
      * Start the tests.

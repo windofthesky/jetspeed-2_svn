@@ -27,9 +27,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.cache.PortletCache;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -66,18 +65,8 @@ import org.xml.sax.SAXException;
  *
  * @version $Id$
  */
-public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
+public class TestPortletDescriptor extends RegistrySupportedTestCase
 {
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestPortletDescriptor(String name)
-    {
-        super(name);
-    }
-
     /**
      * Start the tests.
      *
@@ -313,14 +302,13 @@ public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
 
     public void testWritingToDB() throws Exception
     {
-        PersistenceStore store = portletRegistry.getPersistenceStore();
-        store.getTransaction().begin();
+        
+        
         MutablePortletApplication app = portletRegistry.getPortletApplication("HW_App");
         if (app != null)
         {
             portletRegistry.removeApplication(app);
-            store.getTransaction().commit();
-            store.getTransaction().begin();
+          
         }
 
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet2.xml"), "HW_App");
@@ -328,14 +316,14 @@ public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
 
         app.setName("HW_App");
 
-        store.getTransaction().begin();
+ 
         portletRegistry.registerPortletApplication(app);
-        store.getTransaction().commit();
+  
         // store.invalidateAll();
 
-        store.getTransaction().begin();
+   
         PortletDefinition pd = portletRegistry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
-        store.getTransaction().commit();
+
         assertNotNull(pd);
 
         assertNotNull(pd.getPreferenceSet());
@@ -354,14 +342,14 @@ public class TestPortletDescriptor extends AbstractPrefsSupportedTestCase
 
         assertTrue(count > 0);
 
-        store.getTransaction().begin();
+    
         pd = portletRegistry.getPortletDefinitionByUniqueName("HW_App::PickANumberPortlet");
-        store.getTransaction().commit();
+        
         assertNotNull(pd);
 
-        store.getTransaction().begin();
+        
         portletRegistry.removeApplication(app);
-        store.getTransaction().commit();
+        
 
     }
 
