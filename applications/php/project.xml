@@ -24,13 +24,6 @@
       <jar>phpportlet.jar</jar>
     </dependency>
     <dependency>
-      <id>php</id>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-      <jar>phpsrvlt.jar</jar>
-    </dependency>
-    <dependency>
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>
       <version>1.0</version>
