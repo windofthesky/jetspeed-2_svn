@@ -39,6 +39,8 @@ limitations under the License.
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
     </supports>
     <portlet-info>
       <title>TwoColumns</title>
@@ -74,6 +76,8 @@ limitations under the License.
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
+       <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
     </supports>
     <portlet-info>
       <title>VelocityTwoColumns</title>

@@ -11,8 +11,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -64,6 +66,12 @@ public class JetspeedVelocityViewServlet extends VelocityViewServlet
         ctx.put("renderRequest", renderRequest);
         ctx.put("renderResponse", renderResponse);
         ctx.put("portletConfig", portletConfig);
+        ctx.put("portletModeView", PortletMode.VIEW);
+        ctx.put("portletModeEdit", PortletMode.EDIT);
+        ctx.put("portletModeHelp", PortletMode.HELP);
+        ctx.put("windowStateNormal", WindowState.NORMAL);
+        ctx.put("windowStateMinimized", WindowState.MINIMIZED);
+        ctx.put("windowStateMaximized", WindowState.MAXIMIZED);
         return super.handleRequest(request, response, ctx);
     }
 
