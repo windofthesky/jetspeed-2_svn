@@ -16,6 +16,7 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import junit.framework.Test;
@@ -461,6 +462,35 @@ public class TestGroupManager extends AbstractSecurityTestcase
         }
     }
 
+    /**
+     * <p>
+     * Test get groups.
+     * </p>
+     * 
+     * @throws Exception Throws an exception.
+     */
+    public void testGetGroups() throws Exception
+    {
+        ums.addUser("notme", "one-pw");
+        gms.addGroup("g1");
+        gms.addGroup("g2");
+        gms.addGroup("g3");
+        int count = 0;
+        Iterator it = gms.getGroups("");
+        while (it.hasNext())
+        {
+            Group group = (Group) it.next();
+            System.out.println("Group is " + group);
+            count++;
+        }
+        ums.removeUser("notme");
+        gms.removeGroup("g1");
+        gms.removeGroup("g2");
+        gms.removeGroup("g3");
+        assertTrue("group count should be 3", count == 3);
+               
+    }
+    
     /**
      * <p>
      * Destroy group test objects.

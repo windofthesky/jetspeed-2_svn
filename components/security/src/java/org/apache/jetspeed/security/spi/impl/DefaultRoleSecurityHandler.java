@@ -15,6 +15,9 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
@@ -27,9 +30,11 @@ import org.apache.jetspeed.security.spi.SecurityAccess;
 /**
  * @see org.apache.jetspeed.security.spi.RoleSecurityHandler
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  */
 public class DefaultRoleSecurityHandler implements RoleSecurityHandler
 {
+
     /** Common queries. */
     private SecurityAccess commonQueries = null;
 
@@ -49,12 +54,13 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     public Principal getRolePrincipal(String roleFullPathName)
     {
         RolePrincipal rolePrincipal = null;
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
-                .getFullPathFromPrincipalName(roleFullPathName));
+        InternalRolePrincipal internalRole = commonQueries
+                .getInternalRolePrincipal(RolePrincipalImpl
+                        .getFullPathFromPrincipalName(roleFullPathName));
         if (null != internalRole)
         {
-            rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl.getPrincipalNameFromFullPath(internalRole
-                    .getFullPath()));
+            rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
+                    .getPrincipalNameFromFullPath(internalRole.getFullPath()));
         }
         return rolePrincipal;
     }
@@ -62,22 +68,48 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#setRolePrincipal(org.apache.jetspeed.security.RolePrincipal)
      */
-    public void setRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException
+    public void setRolePrincipal(RolePrincipal rolePrincipal)
+            throws SecurityException
     {
         String fullPath = rolePrincipal.getFullPath();
-        InternalRolePrincipal internalRole = new InternalRolePrincipalImpl(fullPath);
-        commonQueries.setInternalRolePrincipal(internalRole, false);   
+        InternalRolePrincipal internalRole = new InternalRolePrincipalImpl(
+                fullPath);
+        commonQueries.setInternalRolePrincipal(internalRole, false);
     }
-    
+
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#removeRolePrincipal(org.apache.jetspeed.security.RolePrincipal)
      */
-    public void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException
+    public void removeRolePrincipal(RolePrincipal rolePrincipal)
+            throws SecurityException
     {
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(rolePrincipal.getFullPath());
+        InternalRolePrincipal internalRole = commonQueries
+                .getInternalRolePrincipal(rolePrincipal.getFullPath());
         if (null != internalRole)
         {
             commonQueries.removeInternalRolePrincipal(internalRole);
         }
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#getRolePrincipals(java.lang.String)
+     */
+    public List getRolePrincipals(String filter)
+    {
+        List rolePrincipals = new LinkedList();
+        Iterator result = commonQueries.getInternalRolePrincipals(filter);
+        while (result.hasNext())
+        {
+            InternalRolePrincipal internalRole = (InternalRolePrincipal) result
+                    .next();
+            String path = internalRole.getFullPath();
+            if (path == null)
+            {
+                continue;
+            }
+            rolePrincipals.add(new RolePrincipalImpl(RolePrincipalImpl
+                    .getPrincipalNameFromFullPath(internalRole.getFullPath())));
+        }
+        return rolePrincipals;
     }
 }

@@ -16,6 +16,7 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import junit.framework.Test;
@@ -594,4 +595,34 @@ public class TestRoleManager extends AbstractSecurityTestcase
         }
     }
 
+    /**
+     * <p>
+     * Test get roles.
+     * </p>
+     * 
+     * @throws Exception Throws an exception.
+     */
+    public void testGetRoles() throws Exception
+    {
+        ums.addUser("notme", "one-pw");
+        gms.addGroup("g1");
+        rms.addRole("r1");
+        rms.addRole("r2");
+        rms.addRole("r3");
+        int count = 0;
+        Iterator it = rms.getRoles("");
+        while (it.hasNext())
+        {
+            Role role = (Role) it.next();
+            count++;
+        }
+        ums.removeUser("notme");
+        gms.removeGroup("g1");
+        rms.removeRole("r1");
+        rms.removeRole("r2");
+        rms.removeRole("r3");
+        assertTrue("role count should be 3", count == 3);
+               
+    }
+   
 }

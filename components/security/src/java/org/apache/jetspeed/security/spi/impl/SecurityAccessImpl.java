@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
@@ -38,6 +39,7 @@ import org.apache.ojb.broker.query.QueryFactory;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  */
 public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport implements SecurityAccess
 {
@@ -125,6 +127,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_USER_ROOT + "%");
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, queryCriteria);
         Iterator result = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         return result;
@@ -334,4 +337,25 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         
     }
 
+    public Iterator getInternalRolePrincipals(String filter)
+    {
+        Criteria queryCriteria = new Criteria();
+        queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_ROLE_ROOT + "%");
+        Query query = QueryFactory.newQuery(InternalRolePrincipalImpl.class, queryCriteria);
+        Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        return c.iterator();
+    }
+
+    public Iterator getInternalGroupPrincipals(String filter)
+    {
+      
+        Criteria queryCriteria = new Criteria();
+        queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_GROUP_ROOT + "%");        
+        Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, queryCriteria);
+        Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        return c.iterator();
+    }
+    
 }

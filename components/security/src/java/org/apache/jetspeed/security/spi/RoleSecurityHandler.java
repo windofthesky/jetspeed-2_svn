@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.spi;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
@@ -68,4 +69,14 @@ public interface RoleSecurityHandler
      */
     void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException;
 
-}
+    /**
+     * <p>
+     * Gets the an iterator of role principals for a given filter.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @return The list of <code>Principal</code>
+     */
+    List getRolePrincipals(String filter);
+   
+}  

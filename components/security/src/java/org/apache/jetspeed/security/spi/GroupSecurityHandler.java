@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.spi;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
@@ -67,4 +68,14 @@ public interface GroupSecurityHandler
      */
     void removeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException;
 
+    /**
+     * <p>
+     * Gets the an iterator of group principals for a given filter.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @return The list of <code>Principal</code>
+     */
+    List getGroupPrincipals(String filter);
+   
 }

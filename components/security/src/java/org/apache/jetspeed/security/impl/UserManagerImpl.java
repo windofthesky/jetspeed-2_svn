@@ -49,6 +49,7 @@ import org.apache.jetspeed.util.ArgUtil;
  */
 public class UserManagerImpl implements UserManager
 {
+
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     /** The authenticatino provider proxy. */
@@ -60,56 +61,81 @@ public class UserManagerImpl implements UserManager
     private String anonymousUser = "guest";
 
     /**
-     * @param securityProvider The security provider.
+     * @param securityProvider
+     *            The security provider.
      */
     public UserManagerImpl(SecurityProvider securityProvider)
     {
-        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
-        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+        this.atnProviderProxy = securityProvider
+                .getAuthenticationProviderProxy();
+        this.securityMappingHandler = securityProvider
+                .getSecurityMappingHandler();
     }
 
     /**
-     * @param securityProvider The security provider.
-     * @param anonymousUser    The anonymous user name
+     * @param securityProvider
+     *            The security provider.
+     * @param anonymousUser
+     *            The anonymous user name
      */
-    public UserManagerImpl(SecurityProvider securityProvider, String anonymousUser)
+    public UserManagerImpl(SecurityProvider securityProvider,
+            String anonymousUser)
     {
-        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
-        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
-        if ( anonymousUser != null )
+        this.atnProviderProxy = securityProvider
+                .getAuthenticationProviderProxy();
+        this.securityMappingHandler = securityProvider
+                .getSecurityMappingHandler();
+        if (anonymousUser != null)
         {
             this.anonymousUser = anonymousUser;
         }
     }
 
     /**
-     * @param securityProvider The security provider.
-     * @param roleHierarchyResolver The role hierachy resolver.
-     * @param groupHierarchyResolver The group hierarchy resolver.
+     * @param securityProvider
+     *            The security provider.
+     * @param roleHierarchyResolver
+     *            The role hierachy resolver.
+     * @param groupHierarchyResolver
+     *            The group hierarchy resolver.
      */
-    public UserManagerImpl(SecurityProvider securityProvider, HierarchyResolver roleHierarchyResolver,
+    public UserManagerImpl(SecurityProvider securityProvider,
+            HierarchyResolver roleHierarchyResolver,
             HierarchyResolver groupHierarchyResolver)
     {
-        securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(roleHierarchyResolver);
-        securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(groupHierarchyResolver);
-        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
-        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+        securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(
+                roleHierarchyResolver);
+        securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(
+                groupHierarchyResolver);
+        this.atnProviderProxy = securityProvider
+                .getAuthenticationProviderProxy();
+        this.securityMappingHandler = securityProvider
+                .getSecurityMappingHandler();
     }
 
     /**
-     * @param securityProvider The security provider.
-     * @param roleHierarchyResolver The role hierachy resolver.
-     * @param groupHierarchyResolver The group hierarchy resolver.
-     * @param anonymousUser    The anonymous user name
+     * @param securityProvider
+     *            The security provider.
+     * @param roleHierarchyResolver
+     *            The role hierachy resolver.
+     * @param groupHierarchyResolver
+     *            The group hierarchy resolver.
+     * @param anonymousUser
+     *            The anonymous user name
      */
-    public UserManagerImpl(SecurityProvider securityProvider, HierarchyResolver roleHierarchyResolver,
+    public UserManagerImpl(SecurityProvider securityProvider,
+            HierarchyResolver roleHierarchyResolver,
             HierarchyResolver groupHierarchyResolver, String anonymousUser)
     {
-        securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(roleHierarchyResolver);
-        securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(groupHierarchyResolver);
-        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
-        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
-        if ( anonymousUser != null )
+        securityProvider.getSecurityMappingHandler().setRoleHierarchyResolver(
+                roleHierarchyResolver);
+        securityProvider.getSecurityMappingHandler().setGroupHierarchyResolver(
+                groupHierarchyResolver);
+        this.atnProviderProxy = securityProvider
+                .getAuthenticationProviderProxy();
+        this.securityMappingHandler = securityProvider
+                .getSecurityMappingHandler();
+        if (anonymousUser != null)
         {
             this.anonymousUser = anonymousUser;
         }
@@ -131,23 +157,24 @@ public class UserManagerImpl implements UserManager
      */
     public boolean authenticate(String username, String password)
     {
-        ArgUtil.notNull(new Object[] { username, password }, new String[] { "username", "password" },
+        ArgUtil.notNull(new Object[]
+        { username, password}, new String[]
+        { "username", "password"},
                 "authenticate(java.lang.String, java.lang.String)");
 
-        
         boolean authenticated = false;
         try
         {
-            if ( !getAnonymousUser().equals(username) )
+            if (!getAnonymousUser().equals(username))
             {
-                authenticated = atnProviderProxy.authenticate(username, password);
+                authenticated = atnProviderProxy.authenticate(username,
+                        password);
                 if (authenticated && log.isDebugEnabled())
                 {
                     log.debug("Authenticated user: " + username);
                 }
             }
-        }
-        catch (SecurityException e)
+        } catch (SecurityException e)
         {
             // ignore: not authenticated
         }
@@ -158,33 +185,36 @@ public class UserManagerImpl implements UserManager
      * @see org.apache.jetspeed.security.UserManager#addUser(java.lang.String,
      *      java.lang.String)
      */
-    public void addUser(String username, String password) throws SecurityException
+    public void addUser(String username, String password)
+            throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username }, new String[] { "username" },
-                "addUser(java.lang.String, java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "addUser(java.lang.String, java.lang.String)");
 
-        addUser(username, password, atnProviderProxy.getDefaultAuthenticationProvider());
+        addUser(username, password, atnProviderProxy
+                .getDefaultAuthenticationProvider());
     }
 
     /**
      * @see org.apache.jetspeed.security.UserManager#addUser(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
-    public void addUser(String username, String password, String atnProviderName) throws SecurityException
+    public void addUser(String username, String password, String atnProviderName)
+            throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, atnProviderName }, new String[] { "username", "atnProviderName"},
-                "addUser(java.lang.String, java.lang.String, java.lang.String)");
+        ArgUtil
+                .notNull(new Object[]
+                { username, atnProviderName}, new String[]
+                { "username", "atnProviderName"},
+                        "addUser(java.lang.String, java.lang.String, java.lang.String)");
 
-        if (getAnonymousUser().equals(username))
-        {
-            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED);
-        }
-        
+        if (getAnonymousUser().equals(username)) { throw new SecurityException(
+                SecurityException.ANONYMOUS_USER_PROTECTED); }
+
         // Check if user already exists.
-        if (userExists(username))
-        {
-            throw new SecurityException(SecurityException.USER_ALREADY_EXISTS + " " + username);
-        }
+        if (userExists(username)) { throw new SecurityException(
+                SecurityException.USER_ALREADY_EXISTS + " " + username); }
 
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
@@ -196,22 +226,23 @@ public class UserManagerImpl implements UserManager
         }
         try
         {
-            if ((null != preferences) && preferences.absolutePath().equals(fullPath))
+            if ((null != preferences)
+                    && preferences.absolutePath().equals(fullPath))
             {
                 // Add user principal.
                 atnProviderProxy.addUserPrincipal(userPrincipal);
-                if ( password != null )
+                if (password != null)
                 {
                     // Set private password credential
-                    atnProviderProxy.setPassword(username, null, password, atnProviderName);
+                    atnProviderProxy.setPassword(username, null, password,
+                            atnProviderName);
                 }
                 if (log.isDebugEnabled())
                 {
                     log.debug("Added user: " + fullPath);
                 }
             }
-        }
-        catch (SecurityException se)
+        } catch (SecurityException se)
         {
             String msg = "Unable to create the user.";
             log.error(msg, se);
@@ -220,8 +251,7 @@ public class UserManagerImpl implements UserManager
             try
             {
                 preferences.removeNode();
-            }
-            catch (BackingStoreException bse)
+            } catch (BackingStoreException bse)
             {
                 bse.printStackTrace();
             }
@@ -236,12 +266,12 @@ public class UserManagerImpl implements UserManager
      */
     public void removeUser(String username) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "removeUser(java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "removeUser(java.lang.String)");
 
-        if ( getAnonymousUser().equals(username) )
-        {
-            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED);
-        }
+        if (getAnonymousUser().equals(username)) { throw new SecurityException(
+                SecurityException.ANONYMOUS_USER_PROTECTED); }
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
         atnProviderProxy.removeUserPrincipal(userPrincipal);
@@ -250,8 +280,7 @@ public class UserManagerImpl implements UserManager
         try
         {
             preferences.removeNode();
-        }
-        catch (BackingStoreException bse)
+        } catch (BackingStoreException bse)
         {
             bse.printStackTrace();
         }
@@ -262,7 +291,9 @@ public class UserManagerImpl implements UserManager
      */
     public boolean userExists(String username)
     {
-        ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "userExists(java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "userExists(java.lang.String)");
 
         return atnProviderProxy.getUserPrincipal(username) != null;
     }
@@ -272,16 +303,16 @@ public class UserManagerImpl implements UserManager
      */
     public User getUser(String username) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "getUser(java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { username}, new String[]
+        { "username"}, "getUser(java.lang.String)");
 
         Set principals = new HashSet();
         String fullPath = (new UserPrincipalImpl(username)).getFullPath();
 
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
-        if (null == userPrincipal)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
+        if (null == userPrincipal) { throw new SecurityException(
+                SecurityException.USER_DOES_NOT_EXIST + " " + username); }
 
         principals.add(userPrincipal);
         principals.addAll(securityMappingHandler.getRolePrincipals(username));
@@ -290,12 +321,13 @@ public class UserManagerImpl implements UserManager
         Subject subject = null;
         if (getAnonymousUser().equals(username))
         {
-            subject = new Subject(true, principals, new HashSet(), new HashSet());
-        }
-        else
+            subject = new Subject(true, principals, new HashSet(),
+                    new HashSet());
+        } else
         {
-            subject = new Subject(true, principals, atnProviderProxy.getPublicCredentials(username),
-                    atnProviderProxy.getPrivateCredentials(username));
+            subject = new Subject(true, principals, atnProviderProxy
+                    .getPublicCredentials(username), atnProviderProxy
+                    .getPrivateCredentials(username));
         }
         Preferences preferences = Preferences.userRoot().node(fullPath);
         User user = new UserImpl(subject, preferences);
@@ -309,7 +341,8 @@ public class UserManagerImpl implements UserManager
     public Iterator getUsers(String filter) throws SecurityException
     {
         List users = new LinkedList();
-        Iterator userPrincipals = atnProviderProxy.getUserPrincipals(filter).iterator();
+        Iterator userPrincipals = atnProviderProxy.getUserPrincipals(filter)
+                .iterator();
         while (userPrincipals.hasNext())
         {
             String username = ((Principal) userPrincipals.next()).getName();
@@ -322,14 +355,17 @@ public class UserManagerImpl implements UserManager
     /**
      * @see org.apache.jetspeed.security.UserManager#getUsersInRole(java.lang.String)
      */
-    public Collection getUsersInRole(String roleFullPathName) throws SecurityException
+    public Collection getUsersInRole(String roleFullPathName)
+            throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-                "getUsersInRole(java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { roleFullPathName}, new String[]
+        { "roleFullPathName"}, "getUsersInRole(java.lang.String)");
 
         Collection users = new ArrayList();
 
-        Set userPrincipals = securityMappingHandler.getUserPrincipalsInRole(roleFullPathName);
+        Set userPrincipals = securityMappingHandler
+                .getUserPrincipalsInRole(roleFullPathName);
         Iterator userPrincipalsIter = userPrincipals.iterator();
         while (userPrincipalsIter.hasNext())
         {
@@ -342,14 +378,17 @@ public class UserManagerImpl implements UserManager
     /**
      * @see org.apache.jetspeed.security.UserManager#getUsersInGroup(java.lang.String)
      */
-    public Collection getUsersInGroup(String groupFullPathName) throws SecurityException
+    public Collection getUsersInGroup(String groupFullPathName)
+            throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
-                "getUsersInGroup(java.lang.String)");
+        ArgUtil.notNull(new Object[]
+        { groupFullPathName}, new String[]
+        { "groupFullPathName"}, "getUsersInGroup(java.lang.String)");
 
         Collection users = new ArrayList();
 
-        Set userPrincipals = securityMappingHandler.getUserPrincipalsInGroup(groupFullPathName);
+        Set userPrincipals = securityMappingHandler
+                .getUserPrincipalsInGroup(groupFullPathName);
         Iterator userPrincipalsIter = userPrincipals.iterator();
         while (userPrincipalsIter.hasNext())
         {
@@ -365,45 +404,49 @@ public class UserManagerImpl implements UserManager
      * 
      * TODO Enforce that only administrators can do this.
      */
-    public void setPassword(String username, String oldPassword, String newPassword) throws SecurityException
+    public void setPassword(String username, String oldPassword,
+            String newPassword) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, newPassword }, new String[] { "username", 
-                "newPassword" }, "setPassword(java.lang.String, java.lang.String, java.lang.String)");
-        
-        if ( getAnonymousUser().equals(username) )
-        {
-            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED);
-        }
+        ArgUtil
+                .notNull(new Object[]
+                { username, newPassword}, new String[]
+                { "username", "newPassword"},
+                        "setPassword(java.lang.String, java.lang.String, java.lang.String)");
+
+        if (getAnonymousUser().equals(username)) { throw new SecurityException(
+                SecurityException.ANONYMOUS_USER_PROTECTED); }
         atnProviderProxy.setPassword(username, oldPassword, newPassword);
     }
 
-    
     /**
-     * @see org.apache.jetspeed.security.UserManager#setPasswordEnabled(java.lang.String, boolean)
+     * @see org.apache.jetspeed.security.UserManager#setPasswordEnabled(java.lang.String,
+     *      boolean)
      */
-    public void setPasswordEnabled(String userName, boolean enabled) throws SecurityException
+    public void setPasswordEnabled(String userName, boolean enabled)
+            throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { userName,  }, new String[] { "userName" }, 
-                "setPasswordEnabled(java.lang.String, boolean)");
+        ArgUtil.notNull(new Object[]
+        { userName,}, new String[]
+        { "userName"}, "setPasswordEnabled(java.lang.String, boolean)");
 
-        if ( getAnonymousUser().equals(userName) )
-        {
-            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED);
-        }
+        if (getAnonymousUser().equals(userName)) { throw new SecurityException(
+                SecurityException.ANONYMOUS_USER_PROTECTED); }
         atnProviderProxy.setPasswordEnabled(userName, enabled);
     }
-    /**
-     * @see org.apache.jetspeed.security.UserManager#setPasswordUpdateRequired(java.lang.String, boolean)
-     */
-    public void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException
-    {
-        ArgUtil.notNull(new Object[] { userName,  }, new String[] { "userName" }, 
-            "setPasswordUpdateRequired(java.lang.String, boolean)");
 
-        if ( getAnonymousUser().equals(userName) )
-        {
-            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED);
-        }
+    /**
+     * @see org.apache.jetspeed.security.UserManager#setPasswordUpdateRequired(java.lang.String,
+     *      boolean)
+     */
+    public void setPasswordUpdateRequired(String userName,
+            boolean updateRequired) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[]
+        { userName,}, new String[]
+        { "userName"}, "setPasswordUpdateRequired(java.lang.String, boolean)");
+
+        if (getAnonymousUser().equals(userName)) { throw new SecurityException(
+                SecurityException.ANONYMOUS_USER_PROTECTED); }
         atnProviderProxy.setPasswordUpdateRequired(userName, updateRequired);
     }
 }

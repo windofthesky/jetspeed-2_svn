@@ -18,6 +18,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -50,6 +52,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  */
 public class RoleManagerImpl implements RoleManager
 {
@@ -376,6 +379,22 @@ public class RoleManagerImpl implements RoleManager
         }
 
         return isGroupInRole;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.RoleManager#getRoles(java.lang.String)
+     */
+    public Iterator getRoles(String filter) throws SecurityException
+    {
+        List roles = new LinkedList();
+        Iterator rolePrincipals = roleSecurityHandler.getRolePrincipals(filter).iterator();
+        while (rolePrincipals.hasNext())
+        {
+            String roleName = ((Principal) rolePrincipals.next()).getName();
+            Role role = getRole(roleName);
+            roles.add(role);
+        }
+        return roles.iterator();
     }
 
 }

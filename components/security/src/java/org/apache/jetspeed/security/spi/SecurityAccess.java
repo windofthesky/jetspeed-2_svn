@@ -159,4 +159,25 @@ public interface SecurityAccess
      * @throws SecurityException Throws a {@link SecurityException}.
      */
     void removeInternalGroupPrincipal( InternalGroupPrincipal internalGroup ) throws SecurityException;
+
+    /**
+     * <p>
+     * Returns a collection of Role {@link Principal} given the filter.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @return Collection of {@link InternalRolePrincipal}.
+     */    
+    Iterator getInternalRolePrincipals(String filter);
+    
+    /**
+     * <p>
+     * Returns a collection of Group {@link Principal} given the filter.
+     * </p>
+     * 
+     * @param filter The filter.
+     * @return Collection of {@link InternalGroupPrincipal}.
+     */    
+    Iterator getInternalGroupPrincipals(String filter);
+
 }

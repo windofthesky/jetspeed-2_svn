@@ -77,7 +77,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
         {
             InternalUserPrincipal internalUser = (InternalUserPrincipal) result.next();
             String path = internalUser.getFullPath();
-            if (path == null || !path.startsWith(UserPrincipal.PREFS_USER_ROOT)) // TODO: FIXME: the extend shouldn't return roles!
+            if (path == null)
             {
                 continue;
             }

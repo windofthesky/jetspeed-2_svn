@@ -62,7 +62,7 @@ public interface UserSecurityHandler
      * </p>
      * 
      * @param filter The filter.
-     * @return The list of <code>Principal</p>
+     * @return The list of <code>Principal</code>
      */
     List getUserPrincipals(String filter);
     
