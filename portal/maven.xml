@@ -173,7 +173,7 @@ limitations under the License.
             <arg value="-PortletAppName" />
             <arg value="HW_App" />
             <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}" />
+            <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
             <arg value="jetspeed" />
             <arg value="-ApplicationType" />
@@ -197,7 +197,7 @@ limitations under the License.
             <arg value="-PortletAppName" />
             <arg value="testsuite" />
             <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}" />
+            <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
             <arg value="jetspeed" />
             <arg value="-ApplicationType" />
