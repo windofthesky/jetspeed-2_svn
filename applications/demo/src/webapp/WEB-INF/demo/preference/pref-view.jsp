@@ -6,9 +6,13 @@
 
 <h3>Preference List</h3>
 
-<portlet:renderURL>
-	  <portlet:param name="foo" value="bar" />
-</portlet:renderURL>
+<p>
+<a href="<portlet:renderURL windowState="normal" portletMode="view" />">View Me!!!</a>
+</p>
+
+<p>
+<a href="<portlet:actionURL windowState="normal" portletMode="view" />">Invoke My Action!!!</a>
+</p>
 <vel:velocity>
 
 #set($preferences = $renderRequest.Preferences)
