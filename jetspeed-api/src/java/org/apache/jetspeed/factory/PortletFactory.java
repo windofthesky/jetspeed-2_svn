@@ -40,5 +40,7 @@ public interface PortletFactory
     Portlet loadPortletClass( String className ) throws InstantiationException, IllegalAccessException;
 
     Portlet getPortlet( ServletConfig servletConfig, PortletDefinition portletDefinition ) throws PortletException;
+    
+    ClassLoader getPortletClassLoader(PortletDefinition portletDef);
 
 }

@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.container.PortalAccessor;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
 
@@ -201,6 +202,19 @@ public class JetspeedPortletFactory implements PortletFactory
         }
 
         return portlet;
+    }
+    
+    public ClassLoader getPortletClassLoader(PortletDefinition portletDef)
+    {
+        String appId = portletDef.getPortletApplicationDefinition().getId().toString();
+        if(classLoaderMap.containsKey(appId))
+        {
+            return (ClassLoader) classLoaderMap.get(appId);
+        }
+        else
+        {
+            throw new IllegalStateException("No classloader has been defined for portlet application "+appId);
+        }
     }
 
 }

@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -42,16 +43,18 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     private ThreadLocal tlRequestContext = new ThreadLocal();
 
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
+    private PortletFactory portletFactory;
 
     public JetspeedRequestContextComponent(String contextClassName)
     {
     }
 
     public JetspeedRequestContextComponent(String contextClassName, 
-                                           UserInfoManager userInfoMgr)
+                                           UserInfoManager userInfoMgr, PortletFactory portletFactory)
     {
         this.contextClassName = contextClassName;
         this.userInfoMgr = userInfoMgr;
+        this.portletFactory = portletFactory;
     }
 
     public RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config)
@@ -72,8 +75,9 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
                         HttpServletRequest.class,
                         HttpServletResponse.class,
                         ServletConfig.class,
-                        UserInfoManager.class });
-            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr });
+                        UserInfoManager.class,
+                        PortletFactory.class});
+            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr, portletFactory });
 
         }
         catch (Exception e)

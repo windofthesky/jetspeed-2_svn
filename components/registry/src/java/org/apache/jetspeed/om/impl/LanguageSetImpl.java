@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -36,15 +35,15 @@ import org.apache.pluto.om.common.LanguageSet;
  * 
  * LanguageSetImpl
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
- *
+ *  
  */
 public class LanguageSetImpl implements LanguageSet, Serializable, Support
 {
 
     private ClassLoader classLoader = null;
-    
+
     private String resources;
     protected Collection innerCollection;
 
@@ -52,7 +51,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * 
      * @param wrappedSet
      */
-    public LanguageSetImpl(Collection collection)
+    public LanguageSetImpl( Collection collection )
     {
         super();
         this.innerCollection = collection;
@@ -91,29 +90,25 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     /**
      * @see org.apache.pluto.om.common.LanguageSet#get(java.util.Locale)
      */
-    public Language get(Locale locale)
+    public Language get( Locale locale )
     {
-		Language fallBack = null;
+        Language fallBack = null;
         Iterator searchItr = innerCollection.iterator();
         while (searchItr.hasNext())
         {
-			Language lang = (Language) searchItr.next();
-            
+            Language lang = (Language) searchItr.next();
+
             if (lang.getLocale().equals(locale))
             {
                 if (resources != null)
                 {
-                    return createLanguage(
-                        lang.getLocale(),
-                        loadResourceBundle(lang.getLocale()),
-                        lang.getTitle(),
-                        lang.getShortTitle(),
-                        StringUtils.join(lang.getKeywords(), ","));
+                    return createLanguage(lang.getLocale(), loadResourceBundle(lang.getLocale()), lang.getTitle(), lang
+                            .getShortTitle(), StringUtils.join(lang.getKeywords(), ","));
                 }
                 else
                 {
-                return lang;
-            }
+                    return lang;
+                }
             }
             else if (lang.getLocale().getLanguage().equals(locale.getLanguage()))
             {
@@ -124,13 +119,8 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
 
         if (fallBack != null && resources != null)
         {
-            fallBack =
-                createLanguage(
-                    fallBack.getLocale(),
-                    loadResourceBundle(fallBack.getLocale()),
-                    fallBack.getTitle(),
-                    fallBack.getShortTitle(),
-                    StringUtils.join(fallBack.getKeywords(), ","));
+            fallBack = createLanguage(fallBack.getLocale(), loadResourceBundle(fallBack.getLocale()), fallBack
+                    .getTitle(), fallBack.getShortTitle(), StringUtils.join(fallBack.getKeywords(), ","));
         }
 
         if (fallBack == null)
@@ -152,23 +142,23 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     /**
      * @see java.util.Collection#add(java.lang.Object)
      */
-    public boolean add(Object o)
+    public boolean add( Object o )
     {
         Language language = (Language) o;
         if (language.getLocale() == null)
         {
             ((MutableLanguage) o).setLocale(JetspeedLocale.getDefaultLocale());
         }
-        
+
         return innerCollection.add(o);
     }
 
     /**
      * @see java.util.Collection#remove(java.lang.Object)
      */
-    public boolean remove(Object o)
+    public boolean remove( Object o )
     {
-        Language language = (Language) o;        
+        Language language = (Language) o;
         return innerCollection.remove(language);
     }
 
@@ -183,28 +173,30 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
     /**
      * @param collection
      */
-    public void setInnerCollection(Collection collection)
+    public void setInnerCollection( Collection collection )
     {
         innerCollection = collection;
     }
-    
+
     public int size()
     {
-    	return innerCollection.size();
+        return innerCollection.size();
     }
 
     /**
      * @param string
      */
-    public void setResources(String string)
+    public void setResources( String string )
     {
         resources = string;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.om.common.Support#postLoad(java.lang.Object)
      */
-    public void postLoad(Object parameter) throws Exception
+    public void postLoad( Object parameter ) throws Exception
     {
         Iterator iter = ((Collection) parameter).iterator();
         while (iter.hasNext())
@@ -216,7 +208,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         }
     }
 
-    protected ResourceBundle loadResourceBundle(Locale locale)
+    protected ResourceBundle loadResourceBundle( Locale locale )
     {
         ResourceBundle resourceBundle = null;
         try
@@ -225,11 +217,12 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
             {
                 if (classLoader != null)
                 {
-                    resourceBundle=ResourceBundle.getBundle(resources, locale, classLoader);
+                    resourceBundle = ResourceBundle.getBundle(resources, locale, classLoader);
                 }
                 else
                 {
-                    resourceBundle=ResourceBundle.getBundle(resources, locale, Thread.currentThread().getContextClassLoader());
+                    resourceBundle = ResourceBundle.getBundle(resources, locale, Thread.currentThread()
+                            .getContextClassLoader());
                 }
             }
         }
@@ -246,7 +239,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * 
      * @param loader
      */
-    public void setClassLoader(ClassLoader loader)
+    public void setClassLoader( ClassLoader loader )
     {
         classLoader = loader;
     }
@@ -258,7 +251,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * @param bundle
      * @return
      */
-    private Language createLanguage(Locale locale, ResourceBundle bundle)
+    private Language createLanguage( Locale locale, ResourceBundle bundle )
     {
         String title = "";
         String shortTitle = "";
@@ -273,7 +266,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         }
         return createLanguage(locale, bundle, title, shortTitle, keywords);
     }
-    
+
     /**
      * Creates Language instance.
      * 
@@ -284,13 +277,31 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * @param keywords
      * @return
      */
-    private Language createLanguage(
-        Locale locale,
-        ResourceBundle bundle,
-        String title,
-        String shortTitle,
-        String keywords)
+    private Language createLanguage( Locale locale, ResourceBundle bundle, String title, String shortTitle,
+            String keywords )
     {
+        if (!locale.equals(getDefaultLocale()))
+        {
+            Language defaultLang = get(getDefaultLocale());
+
+            if (defaultLang != null)
+            {
+                if (title == null || title.length() < 1)
+                {
+                    title = defaultLang.getTitle();
+                }
+
+                if (shortTitle == null || shortTitle.length() < 1)
+                {
+                    shortTitle = defaultLang.getShortTitle();
+                }
+
+                if (keywords == null || keywords.length() < 1)
+                {
+                    keywords = StringUtils.join(defaultLang.getKeywords(), ",");
+                }
+            }
+        }
         LanguageImpl lang = new LanguageImpl(locale, bundle, title, shortTitle, keywords);
         return (Language) lang;
     }
