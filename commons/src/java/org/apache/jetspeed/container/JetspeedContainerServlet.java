@@ -209,6 +209,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
      */
     public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
+    	String portletName = null;
         try
         {
             // Check to make sure that we started up properly.
@@ -227,7 +228,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
 
             PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
             Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
-
+			portletName = portletDefinition.getName();
             Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
@@ -258,7 +259,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         catch (Throwable t)
         {
 
-            log.error("Error rendering portlet: " + t.toString(), t);
+            log.error("Error rendering portlet \""+portletName+"\": " + t.toString(), t);
             try
             {
                 String errorTemplate = getInitParameter("portal.error.page");
