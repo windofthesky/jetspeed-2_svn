@@ -361,5 +361,15 @@ public class TestProfiler extends PersistenceSupportedTestCase
         System.out.println("locator = " + path);
         assertTrue("locator path: " + path, path.equals("path:/football/nfl/chiefs"));
     }
-    
+ 
+    public void testGetLocatorNames() throws Exception
+    {
+        assertNotNull("profiler service is null", profiler);
+        String[] result = profiler.getLocatorNamesForPrincipal(new UserPrincipalImpl("guest"));
+        for (int ix = 0; ix < result.length; ix++)
+        {
+            System.out.println("$$$ result = " + result[ix]);
+            assertTrue("locator name = " + result[ix], result[ix].equals("page"));
+        }
+    }
 }

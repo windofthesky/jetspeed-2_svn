@@ -120,5 +120,14 @@ public interface Profiler
      * @return
      */
     String getAnonymousUser();
+    
+    /**
+     * For a given principal, find all supported locators and return a string array of 
+     * locator names.
+     * 
+     * @param principal The given principal.
+     * @return array of String locator names
+     */
+    String[] getLocatorNamesForPrincipal(Principal principal);
 	
 }

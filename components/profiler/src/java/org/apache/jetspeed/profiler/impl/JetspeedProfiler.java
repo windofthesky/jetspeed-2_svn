@@ -18,6 +18,7 @@ package org.apache.jetspeed.profiler.impl;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -231,9 +232,14 @@ public class JetspeedProfiler implements Profiler
             // TODO: throw appropriate exception
         }
         persistentStore.getTransaction().commit();
-        principalRules.put(principal.getName(), pr);
+        principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
     }
 
+    private String makePrincipalRuleKey(String principal, String locator)
+    {
+        return principal + ":" + locator;
+    }
+    
     /**
      * Helper function to lookup principal rule associations by principal
      * 
@@ -244,7 +250,7 @@ public class JetspeedProfiler implements Profiler
      */
     private PrincipalRule lookupPrincipalRule(String principal, String locatorName)
     {
-        PrincipalRule pr = (PrincipalRule) principalRules.get(principal);
+        PrincipalRule pr = (PrincipalRule) principalRules.get(makePrincipalRuleKey(principal, locatorName));
         if (pr != null)
         {
             return pr;
@@ -254,7 +260,7 @@ public class JetspeedProfiler implements Profiler
         filter.addEqualTo("locatorName", locatorName);        
         Object query = persistentStore.newQuery(principalRuleClass, filter);
         pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
-        principalRules.put(principal, pr);
+        principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
         return pr;
     }
 
@@ -349,4 +355,26 @@ public class JetspeedProfiler implements Profiler
         return this.anonymousUser;
     }
 
+    public String[] getLocatorNamesForPrincipal(Principal principal)
+    {
+        Filter filter = persistentStore.newFilter();        
+        filter.addEqualTo("principalName", principal);
+        Object query = persistentStore.newQuery(principalRuleClass, filter);
+        Collection result = persistentStore.getCollectionByQuery(query);
+        if (result.size() == 0)
+        {
+            return new String[]{};
+        }
+        String [] names = new String[result.size()];
+        Iterator it = result.iterator();
+        int ix = 0;
+        while (it.hasNext())
+        {
+            PrincipalRule pr = (PrincipalRule)it.next();
+            names[ix] = pr.getLocatorName();
+            ix++;
+        }
+        return names;
+    }
+    
 }
