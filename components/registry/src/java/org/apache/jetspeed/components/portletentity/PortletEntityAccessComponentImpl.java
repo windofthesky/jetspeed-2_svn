@@ -62,6 +62,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
@@ -150,7 +151,14 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     public StoreablePortletEntityDelegate newPortletEntityInstance(PortletDefinition portletDefinition)
     {
         PortletEntityCtrl portletEntity = new PortletEntityImpl();
-        portletEntity.setPortletDefinition(portletDefinition);
+        if (portletDefinition instanceof StoreablePortletDefinitionDelegate)
+        {
+            portletEntity.setPortletDefinition(((StoreablePortletDefinitionDelegate) portletDefinition).getPortlet());
+        } 
+        else
+        {
+            portletEntity.setPortletDefinition(portletDefinition);
+        }
         return wrapEntity((PortletEntityImpl)  portletEntity);
 
     }
@@ -204,7 +212,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             
 			if (portletEntity instanceof StoreablePortletEntityDelegate)
 			{
-				store.lockForWrite(((StoreablePortletEntityDelegate)portletEntity).getPortletEntity());
+			    PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
+				store.lockForWrite(realEntity);
 			}            
 			else
 			{

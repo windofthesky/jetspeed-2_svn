@@ -753,4 +753,11 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
 
     }
 
+    /**
+     * @return Returns the portlet.
+     */
+    public PortletDefinitionComposite getPortlet()
+    {
+        return portlet;
+    }
 }

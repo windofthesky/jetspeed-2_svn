@@ -62,6 +62,8 @@ import java.util.Locale;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.AbstractPreference;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.pluto.om.common.Description;
@@ -108,6 +110,12 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
         List originalPreferences,
 	    PersistenceStore store)
     {
+        
+        if(entity instanceof StoreablePortletEntityDelegate)
+        {
+            throw new IllegalArgumentException("The \"entity\" argument of the StoreablePortletEntityDelegate cannot be"+
+                                               " another StoreablePortletEntityDelegate.");
+        }
         this.entity = entity;
         this.control = control;
         this.store = store;
@@ -152,7 +160,14 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
      */
     public PortletDefinition getPortletDefinition()
     {
-        return entity.getPortletDefinition();
+        if(entity.getPortletDefinition() instanceof StoreablePortletDefinitionDelegate)
+        {
+            return entity.getPortletDefinition();
+        }
+        else
+        {
+            return new StoreablePortletDefinitionDelegate((PortletDefinitionComposite)entity.getPortletDefinition(), store);
+        }        
     }
 
     /** 
@@ -219,7 +234,14 @@ public class StoreablePortletEntityDelegate implements PortletEntity, PortletEnt
      */
     public void setPortletDefinition(PortletDefinition portletDefinition)
     {
-        setPortletDefinition(portletDefinition);
+        if(entity.getPortletDefinition() instanceof StoreablePortletDefinitionDelegate)
+        {
+            control.setPortletDefinition(((StoreablePortletDefinitionDelegate)portletDefinition).getPortlet());
+        }
+        else
+        {
+            control.setPortletDefinition(portletDefinition);
+        }  
 
     }
 
