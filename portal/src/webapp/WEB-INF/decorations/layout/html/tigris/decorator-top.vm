@@ -1,0 +1,120 @@
+#*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*#
+
+#* Add all template constants to the current context *#
+#defineConstants()
+#* Add the current layouts configuration values to the context *#
+#defineLayoutObjects()
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    #includeStyleSheets()
+    <title>$jetspeed.page.getTitle($preferedLocale)</title>
+    <meta http-equiv="Content-type" content="text/html" />
+    <meta http-equiv="Content-style-type" content="text/css" />
+
+    <meta name="version" content="/* $Id$" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="$jetspeed.page.getTitle($preferedLocale)" />
+  </head>
+  <body marginwidth="0" marginheight="0" class="layout-tigris">
+
+#set($myF = $jetspeed.currentFragment)
+#set($profiledPageContext = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
+#set($parentFolder = $profiledPageContext.parentFolder)
+
+<!--  BEGIN: layout/html/tigris/decorator.vm -->
+
+    <div class="layout-tigris">
+<!-- Banner -->
+      <div id="banner">
+        <table border="0" cellspacing="0" cellpadding="8" width="100%">
+          <tr>
+            <td>
+              <h1><img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0"/></h1>
+            </td>
+            <td>
+              <div align="right" id="login">
+                &nbsp;
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+<!-- Top Tabs -->
+      <div class="tabs">
+#includeNavigation("tabs" $profiledPageContext.siblingPages $LEFT_TO_RIGHT)
+      </div>
+      <div id="breadcrumbs">
+#if($parentFolder)
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)">Back to $parentFolder.metaData.getTitle($preferedLocale)</a>
+#end
+        &nbsp;
+      </div>
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
+        <tr>
+          <td valign="top" id="leftcol" width="20%">
+            <div id="navcolumn">
+
+<!-- Navigation Column -->
+<table cellpadding="0" cellspacing="4" border="0" width="100%">
+  <tr>
+    <td>
+      <div class="toolgroup">    
+        <div class="label">
+          Folders and Pages
+        </div>
+        <div class="body">
+#includeNavigation("folders" $profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
+
+#foreach($docSetName in $profiledPageContext.documentSetNames)
+  #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
+  #set($docSetNodes = $profiledPageContext.getDocumentSetNodes($docSetName))
+          <div class="pagetitle">
+          ${docSet.getTitle($preferedLocale)}
+          </div>
+#includeNavigation("linksWithIcon1" $docSetNodes $TOP_TO_BOTTOM)
+#end
+        </div>
+      </div>
+    </td>
+  </tr>
+#if($profiledPageContext.rootLinks)
+  <tr>
+    <td>  
+      <div class="toolgroup">
+        <div class="label">
+          Additional Links
+        </div>
+        <div class="body">
+#includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
+        </div>
+      </div>
+    </td>
+  </tr>
+#end
+</table>
+
+            </div>
+          </td>
+          <td nowrap valign="top">
+  
+## $jetspeed.include($jetspeed.currentFragment)
+
+<!--  END: layout/html/tigris/decorator.vm -->
