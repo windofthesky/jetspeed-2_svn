@@ -90,7 +90,9 @@ public class PortalControlParameterImpl implements PortalControlParameter
 
     public PortletWindow getPortletWindowOfAction() 
     {
-        Iterator iterator = getStateFullControlParameter().keySet().iterator();
+        // Iterator iterator = getStateFullControlParameter().keySet().iterator();
+        Iterator iterator = getStateLessControlParameter().keySet().iterator();
+
         PortletWindow portletWindow = null;
         while (iterator.hasNext())
         {
