@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class JetspeedPortletServices implements PortletServices
 {
-    private Map services = new HashMap();
+    private Map services;
     private static PortletServices singleton = null;
     
     /**
@@ -41,7 +41,13 @@ public class JetspeedPortletServices implements PortletServices
     
     public JetspeedPortletServices()
     {
+        this(new HashMap());
+    }
+    
+    public JetspeedPortletServices(Map services)
+    {
         singleton = this;
+        this.services = services;
     }
     
     /* (non-Javadoc)
