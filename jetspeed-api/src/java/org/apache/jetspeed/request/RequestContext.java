@@ -50,8 +50,6 @@ public interface RequestContext
      * being processed by the portlet container.
      *
      * @return HttpServletRequest
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     public HttpServletRequest getRequest();
 
@@ -61,8 +59,6 @@ public interface RequestContext
      * be wrapped using <code>getPortletResponseForWindow()</code> before
      * being processed by the portlet container.
      * @return HttpServletResponse
-     * * @throws IllegalStateException if <code>response</code>
-     * has not been set or is null.
      */
     public HttpServletResponse getResponse();
 
@@ -70,8 +66,6 @@ public interface RequestContext
      * Gets the HTTP Servlet Config
      *
      * @return ServletConfig
-     * @throws IllegalStateException if <code>servletConfig</code>
-     * has not been set or is null.
      */
     public ServletConfig getConfig();
 
@@ -79,8 +73,6 @@ public interface RequestContext
      * Gets the profile locator for this request
      *
      * @return Profile
-     * @throws IllegalStateException if <code>Profile</code>
-     * has not been set or is null.
      */
     public ProfileLocator getProfileLocator();
 
@@ -95,8 +87,6 @@ public interface RequestContext
      * Gets the target page for this request
      *
      * @return Page
-     * @throws IllegalStateException if <code>Page</code>
-     * has not been set or is null.
      */
     public Page getPage();
 
@@ -111,8 +101,6 @@ public interface RequestContext
      * Gets the content dispatcher for this request
      *
      * @return ContentDispatcher
-     * @throws IllegalStateException if <code>ContentDispatcher</code>
-     * has not been set or is null.
      */
     public ContentDispatcher getContentDispatcher();
 
@@ -131,14 +119,8 @@ public interface RequestContext
     public void setCapabilityMap(CapabilityMap map);
 
     /**
-     * 
-     * <p>
-     * getCapabilityMap
-     * </p>
+     * Get the Capability Map
      *
-     * @return CapabilityMap
-     * @throws IllegalStateException if <code>CapabilityMap</code>
-     * has not been set or is null.
      */
     public CapabilityMap getCapabilityMap();
 
@@ -150,14 +132,8 @@ public interface RequestContext
     public void setMimeType(String mimeType);
 
     /**
-     * 
-     * <p>
-     * getMimeType
-     * </p>
+     * Get the mimeType for the request
      *
-     * @return MimeType
-     * @throws IllegalStateException if <code>MimeType</code>
-     * has not been set or is null.
      */
     public String getMimeType();
 
@@ -169,14 +145,8 @@ public interface RequestContext
     public void setMediaType(String mediaType);
 
     /**
-     * 
-     * <p>
-     * getMediaType
-     * </p>
+     * get the Media Type
      *
-     * @return MediaType
-     * @throws IllegalStateException if <code>MediaType</code>
-     * has not been set or is null.
      */
     public String getMediaType();
 
@@ -194,7 +164,7 @@ public interface RequestContext
      * @return The Portal URL object for the current request.  This method will never
      * return a <code>null</code> value.
      * @throws IllegalStateException if <code>portalUrl</code>
-     * has not been set or is null.
+     * if has not been set.
      */
     public PortalURL getPortalURL();
     
@@ -223,9 +193,6 @@ public interface RequestContext
      * set character encoding
      *
      * @param enc
-     * @return CharacterEncoding
-     * @throws IllegalStateException if <code>CharacterEncoding</code>
-     * has not been set or is null.
      */
     public void setCharacterEncoding(String enc);
 
@@ -304,8 +271,6 @@ public interface RequestContext
      *
      * @param key The parameter unique key
      * @return The object associated with the uniqu
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     String getRequestParameter(String key);
 
@@ -316,8 +281,6 @@ public interface RequestContext
      * in that case it simply passes through to the servlet request.
      *
      * @return
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     Map getParameterMap();
 
@@ -330,8 +293,6 @@ public interface RequestContext
      *
      * @param key The key of the attribute
      * @return The value of the attribute
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     Object getSessionAttribute(String key);
 
@@ -343,8 +304,6 @@ public interface RequestContext
      *
      * @param key The key of the session attribute
      * @param value The value of the session attribute
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     void setSessionAttribute(String key, Object value);
 
@@ -353,8 +312,6 @@ public interface RequestContext
      *
      * @param key The key of the request attribute
      * @return The value of the request attribute
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     Object getAttribute(String key);
 
@@ -366,8 +323,6 @@ public interface RequestContext
      *
      * @param key The key of the request attribute
      * @param value The value of the request attribute
-     * @throws IllegalStateException if <code>request</code>
-     * has not been set or is null.
      */
     void setAttribute(String key, Object value);
 

@@ -129,19 +129,19 @@ public class JetspeedRequestContext implements RequestContext
 
     public HttpServletResponse getResponse()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getResponse()", "response");
+        ArgUtil.assertPropertyNotNull(response, this, "getResponse()", "response");
         return response;
     }
 
     public ServletConfig getConfig()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getConfig()", "config");
+        ArgUtil.assertPropertyNotNull(config, this, "getConfig()", "config");
         return config;
     }
 
     public ProfileLocator getProfileLocator()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getProfileLocator()", "locator");
+        ArgUtil.assertPropertyNotNull(locator, this, "getProfileLocator()", "locator");
         return locator;
     }
 
@@ -152,7 +152,7 @@ public class JetspeedRequestContext implements RequestContext
 
     public Page getPage()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getPage()", "page");
+        ArgUtil.assertPropertyNotNull(page, this, "getPage()", "page");
         return this.page;
     }
 
@@ -172,9 +172,32 @@ public class JetspeedRequestContext implements RequestContext
         this.portletDefinition = portletDefinition;
     }
 
+    /**
+     * <p>
+     * isContnetDispatcherSet
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#isContentDispatcherSet()
+     * @return <code>true</code> if the ContentDispatcher for request has been set,
+     * otherwise, returns <code>false</code>
+     */
+    public boolean isContentDispatcherSet()
+    {
+        return dispatcher != null;
+    }
+    
+    /**
+     * 
+     * <p>
+     * getContentDispatcher
+     * </p>
+     *
+     * @see org.apache.jetspeed.request.RequestContext#getContentDispatcher()
+     * @return
+     */
     public ContentDispatcher getContentDispatcher()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getContentDispatcher()", "dispatcher");
+        ArgUtil.assertPropertyNotNull(dispatcher, this, "getContentDispatcher()", "dispatcher");
         return dispatcher;
     }
 
@@ -199,7 +222,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public CapabilityMap getCapabilityMap()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getCapabilityMap()", "capabilityMap");
+        ArgUtil.assertPropertyNotNull(capabilityMap, this, "getCapabilityMap()", "capabilityMap");
         return this.capabilityMap;
     }
 
@@ -219,7 +242,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getMimeType()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getMimeType()", "mimeType");
+        ArgUtil.assertPropertyNotNull(mimeType, this, "getMimeType()", "mimeType");
         return this.mimeType;
     }
 
@@ -239,7 +262,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getMediaType()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getMediaType()", "mediaType");
+        ArgUtil.assertPropertyNotNull(mediaType, this, "getMediaType()", "mediaType");
         return this.mediaType;
     }
 
@@ -275,7 +298,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getCharacterEncoding()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getMediaType()", "mediaType"); 
+        ArgUtil.assertPropertyNotNull(encoding, this, "getMediaType()", "mediaType"); 
         return this.encoding;
     }
 
@@ -355,7 +378,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public Locale getLocale()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getLocale()", "locale"); 
+        ArgUtil.assertPropertyNotNull(locale, this, "getLocale()", "locale"); 
         return this.locale;
     }
 
@@ -488,7 +511,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public PortalURL getPortalURL()
     {
-        ArgUtil.assertPropertyNotNull(request, this, "getPortalURL()", "url"); 
+        ArgUtil.assertPropertyNotNull(url, this, "getPortalURL()", "url"); 
         return url;
     }
 
