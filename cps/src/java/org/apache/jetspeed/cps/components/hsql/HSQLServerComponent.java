@@ -57,11 +57,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.Server;
+import org.hsqldb.jdbcDriver;
 import org.picocontainer.Startable;
 
 /**
@@ -130,6 +132,54 @@ public class HSQLServerComponent implements Startable
     {
         HSQLServer serverThread = new HSQLServer(port, fqPath);
         serverThread.start();
+        // verify
+        
+		try
+        {
+            Class.forName(jdbcDriver.class.getName());
+        }
+        catch (ClassNotFoundException e)
+        {
+            // this SHOULD NOT happen
+            e.printStackTrace();
+        }
+		
+		boolean connected = false;
+		int retries = 5;
+		int attempt = 0;
+		
+		log.info("Verifying HSQL server is up will try 5 times then give up.");
+		while(!connected && attempt < retries)
+		{
+			try
+            {
+            	attempt++;
+            	log.info("Attempt "+attempt+".");     	
+                Connection conn = DriverManager.getConnection("jdbc:hsqldb:hsql://127.0.0.1",user, password);
+                connected = true;
+                log.info("Attempt "+attempt+" successful!");
+            }
+            catch (SQLException e1)
+            {
+                connected = false;
+				log.info("Attempt "+attempt+" failed!");
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e2)
+                {
+                    
+                }
+            }
+		}       
+		
+		if(!connected)
+		{
+			log.warn("Unable to successfuly verify HSQL was successfuly started.");
+		}
+		
+        
     }
 
     /** 
