@@ -69,6 +69,8 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
 import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.DublinCore;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -240,10 +242,12 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             pac.setName(APP_1_NAME);
             pac.setDescription("This is a Registry Test Portlet.");
             pac.setVersion("1.0");
-            DublinCore dc = pac.getDublinCore();
+            GenericMetadata md = pac.getMetadata();
+            DublinCore dc = new DublinCoreImpl(md);
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 2");
             dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 3");
+            
             dc.addContributor(JetspeedLocale.getDefaultLocale(), "Contrib 1");
             dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 1");
             dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 2");
@@ -258,6 +262,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             dc.addSource(JetspeedLocale.getDefaultLocale(), "Source 1");
             dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
             dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
+            
             wac.setContextRoot("/root");
             wac.addDescription(JetspeedLocale.getDefaultLocale(), "This is an english desrcitpion");
             wac.addDisplayName(JetspeedLocale.getDefaultLocale(), "This is an english display name");
@@ -326,8 +331,9 @@ public class TestRegistry extends AbstractComponentAwareTestCase
     {
         MutablePortletApplication appExists = registry.getPortletApplication(APP_1_NAME);
         assertNotNull(appExists);
-        DublinCore dc = appExists.getDublinCore();
+        DublinCore dc = new DublinCoreImpl(appExists.getMetadata());
         assertEquals(dc.getTitles().size(), 3);
+        
         assertEquals(dc.getContributors().size(), 1);
         assertEquals(dc.getCoverages().size(), 2);
         assertEquals(dc.getCreators().size(), 1);
@@ -341,6 +347,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         assertEquals(dc.getSources().size(), 1);
         assertEquals(dc.getSubjects().size(), 1);
         assertEquals(dc.getTypes().size(), 1);
+        
     }
 
     public void testAddingPortlet() throws Throwable
