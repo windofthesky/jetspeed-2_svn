@@ -26,7 +26,7 @@ package org.apache.jetspeed.util;
  * @version $Id$
  *
  */
-public class ArgUtil
+public final class ArgUtil
 {
     private static final String MSG_1 = "Argument \"";
     private static final String MSG_2 = "\" cannot be null for method ";
@@ -72,11 +72,19 @@ public class ArgUtil
      * @param thisObject
      * @throws IllegalArgumentException
      */
-    public static void assertNotNull(Class nonNullClass, Object nonNullObject, Object thisObject) throws IllegalArgumentException
+    public static final void assertNotNull(Class nonNullClass, Object nonNullObject, Object thisObject) throws IllegalArgumentException
     {
         if(nonNullObject == null)
         {
             throw new IllegalArgumentException(thisObject.getClass().getName()+" requires a non-null "+nonNullClass.getName()+" as an argument.");
+        }
+    }
+    
+    public static final void assertNotNull(Class nonNullClass, Object nonNullObject, Object thisObject, String methodName) throws IllegalArgumentException
+    {
+        if(nonNullObject == null)
+        {
+            throw new IllegalArgumentException(thisObject.getClass().getName()+"."+methodName+" requires a non-null "+nonNullClass.getName()+" as an argument.");
         }
     }
 }
