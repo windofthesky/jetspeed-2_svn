@@ -141,17 +141,53 @@ limitations under the License.
       </j:if>
        <!-- END OF TO BE REMOVED -->
     </j:forEach>
-   
-  	copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-a1-dev.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
+   <echo>Copying Jetspeed 2 portal files...</echo>
+  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-a1-dev.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
   	<copy todir="${maven.war.webapp.dir}" failonerror="true" overwrite="false">
          <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />            	       	       
      </copy>	  
-     <!--
-     <touch >
-            <fileset dir="${basedir}/src/webapp"/>
-       </touch>
-       -->
+     
+     <echo>Copying custom portal files...</echo>
+     <copy todir="${maven.war.webapp.dir}" failonerror="true" overwrite="true">
+         <fileset dir="${basedir}/src/webapp"/>
+     </copy>
+          	
      <attainGoal name="war:war" />
+     
+     <copy file="${maven.war.src}/WEB-INF/conf/jetspeed.properties" tofile="${maven.war.webapp.dir}/WEB-INF/conf/jetspeed.properties" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+      </filterset>
+    </copy>
+  </goal>
+  
+  <goal name="jetspeed2:build.portal.debug" >
+  	
+     <copy todir="${basedir}/etc/project-dependencies" overwrite="true" failonerror="true">
+         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/etc/project-dependencies" />            	       	       
+     </copy>
+     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/locator.ent" tofile="${basedir}/locator.ent" overwrite="true" failonerror="true"/> 
+  	
+	
+    <echo>Copying Jetspeed 2 portal files...</echo>
+  	<copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-2.0-a1-dev.jar" todir="${webapp.build.lib}" failonerror="true" overwrite="true"/>
+  	<copy todir="${basedir}/target/debug" failonerror="true" overwrite="false">
+         <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/webapp" />            	       	       
+     </copy>	  
+     
+     <echo>Copying custom portal files...</echo>
+     <copy todir="${basedir}/target/debug" failonerror="true" overwrite="true">
+         <fileset dir="${basedir}/src/webapp"/>
+     </copy>
+     
+     <copy file="${basedir}/src/webapp/WEB-INF/conf/jetspeed.properties" tofile="${basedir}/target/debug/WEB-INF/conf/jetspeed.properties" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="AUTODEPLOYMENT_USER" value="${org.apache.jetspeed.services.autodeployment.user}"/>
+        <filter token="AUTODEPLOYMENT_PASSWORD" value="${org.apache.jetspeed.services.autodeployment.password}"/>
+      </filterset>
+    </copy>
+  	
   </goal>
   
   <goal name='jetspeed2:deploy.shared'>
