@@ -157,7 +157,7 @@ public class PageAggregatorImpl implements PageAggregator
             if (null != window)
             {
                 Fragment fragment = page.getFragmentById(window.getId().toString());
-                if (checkAccess(context, (fragment.getAcl() != null) ? fragment.getAcl() : acl, "render"))
+                if (fragment != null && checkAccess(context, (fragment.getAcl() != null) ? fragment.getAcl() : acl, "render"))
                 {
                     context.getRequest().setAttribute("org.apache.jetspeed.maximized.Fragment", fragment);
                     context.getRequest().setAttribute("org.apache.jetspeed.maximized.Layout", page.getRootFragment());
