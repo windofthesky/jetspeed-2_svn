@@ -18,9 +18,11 @@ package org.apache.jetspeed.page;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.impl.DatabasePageManager;
 
 /**
  * TestPageService
@@ -28,7 +30,7 @@ import org.apache.jetspeed.om.page.Page;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestDatabasePageManager extends PortalComponentAssemblyTestCase
+public class TestDatabasePageManager extends PersistenceSupportedTestCase
 {
     private PageManager service = null;
     
@@ -72,8 +74,7 @@ public class TestDatabasePageManager extends PortalComponentAssemblyTestCase
     
     public void testBuildBasePage()
     {
-        PageManager pm = (PageManager)componentManager.getComponent("DatabasePageManager");
-        assertNotNull("page manager is null", pm);            
+        PageManager pm = new DatabasePageManager(persistenceStore, new JetspeedIdGenerator(10,"Page",""));
         
         Page page = pm.newPage();
         page.setTitle("TEST");

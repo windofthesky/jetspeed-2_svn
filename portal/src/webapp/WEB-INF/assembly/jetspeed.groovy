@@ -66,8 +66,6 @@ import org.apache.commons.pool.impl.GenericObjectPool
 
 // Persistence Store
 import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
-import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStore
 
 // Portlet Registry and Entity
@@ -213,23 +211,9 @@ if(Boolean.getBoolean("portal.use.internal.jndi"))
                )
 }
 
-/* **********************************************************
- *  Persistence Store Container                                                        *
- * ******************************************************** */
-pContainer = new DefaultPersistenceStoreContainer(15000, 10000)
-container.registerComponentInstance(PersistenceStoreContainer, pContainer)
-pContainer.registerComponent( new ConstructorComponentAdapter(
-											  "jetspeed", 
-                                              PBStore, 
-                                              doParams([cstParam("jetspeed")])
-                                        )
-)
-
-
 
 /* **********************************************************
  * Persistence Store: as a thread safe per thread component           *
- * (will replace PersistenceStoreContainer above)                            *
  * ******************************************************** */
 
 container.registerComponent(makeThreadLocalAdapter(PersistenceStore, PBStore,  new Parameter[]{new ConstantParameter("jetspeed")}))
@@ -268,7 +252,7 @@ container.registerComponentImplementation(
 container.registerComponentImplementation(
                       Capabilities, 
                       JetspeedCapabilities, 
-                      doParams([cmpParam(PersistenceStoreContainer)])
+                      doParams([cmpParam(PersistenceStore)])
 )
 
 /* **********************************************************
