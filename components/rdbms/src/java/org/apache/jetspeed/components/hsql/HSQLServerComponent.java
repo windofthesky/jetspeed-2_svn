@@ -60,6 +60,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.Server;
@@ -77,6 +78,7 @@ import org.picocontainer.Startable;
  */
 public class HSQLServerComponent implements Startable
 {
+
     public static final String KEY_USE_JNDI_DS = "use.jndi.datasource";
     public static final String SERVICE_NAME = "HSQLDBServer";
     public static final String NAMING_ROOT = "java:comp/env/";
@@ -88,6 +90,7 @@ public class HSQLServerComponent implements Startable
     private String user;
     private String fqPath;
     private HSQLServer HSQLthread;
+    private boolean serverStarted;
 
     public HSQLServerComponent(int port, String user, String password, String dbScriptPath, boolean trace, 
     boolean silent)
@@ -122,24 +125,28 @@ public class HSQLServerComponent implements Startable
      */
     public void start()
     {
+        // if socket in use warn and skip
+        if (socketInUse())
+        {
+            log.warn("HSQL server port " + port + " is already in use.  Server not started.");
+            serverStarted = false;
+            return;
+        }
         HSQLthread = new HSQLServer(port, fqPath);
         boolean started = false;
         int startCount = 0;
-        while(!started && startCount < 5)
+        while (!started && startCount < 5)
         {
             try
             {
                 startCount++;
                 HSQLthread.start();
                 started = true;
-            } 
+            }
             catch (Exception e1)
             {
-               
             }
         }
-
-
         try
         {
             Class.forName(jdbcDriver.class.getName());
@@ -180,6 +187,7 @@ public class HSQLServerComponent implements Startable
         {
             log.warn("Unable to successfuly verify HSQL was successfuly started.");
         }
+        serverStarted = true;
     }
 
     /**
@@ -192,6 +200,11 @@ public class HSQLServerComponent implements Startable
      */
     public void stop()
     {
+        if (!serverStarted)
+        {
+            // we never started so just return
+            return;
+        }
         try
         {
             log.info("====== SHUTTING DOWN HSQL Server ========");
@@ -204,26 +217,39 @@ public class HSQLServerComponent implements Startable
             stmt.close();
 
             // block while shutting down
-            Socket socket = null;
-            try
-            {
-                while (socket == null || socket.isConnected())
-                {
-                    socket = new Socket("127.0.0.1", port);
-                   // Thread.sleep(2000);
-                }
-            } catch (ConnectException e1)
-            {
-                log.info("HSQL Socket successfully closed.");
+            while (socketInUse())
+            {                
+               Thread.sleep(1000);
             }
+            log.info("HSQL Socket successfully closed.");
         }
         catch (Exception e)
         {
             log.error("Unable to safely shutdown HSQLDB Server: " + e.toString(), e);
         }
     }
+
+    protected boolean socketInUse()
+    {
+        try
+        {
+            Socket socket;
+            socket = new Socket("127.0.0.1", port);
+            socket.close();
+            return true;
+        }
+        catch (ConnectException e)
+        {
+            return false;
+        }
+        catch (IOException e1)
+        {
+            return false;
+        }
+    }
     class HSQLServer extends Thread
     {
+
         private String[] args;
 
         HSQLServer(int port, String dbPath)
