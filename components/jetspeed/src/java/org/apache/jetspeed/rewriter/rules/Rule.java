@@ -51,87 +51,69 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
-
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+package org.apache.jetspeed.rewriter.rules;
 
 /**
- * ComponentAssemblyTestCase
+ * Rule
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public interface Rule extends Identified
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
+    /**
+     * Flag indicating whether to use the Base URL for this rewriter.
+     * The default setting is true, use the rewriter's Base URL.
+     * 
+     * @return true if this rule uses the Base URL
+     */
+    boolean getUseBase();
     
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
+    /**
+     * Flag indicating whether to use the Base URL for this rewriter.
+     * The default setting is true, use the rewriter's Base URL.
+     * 
+     * @param true if this rule uses the Base URL
+     */    
+    void setUseBase(boolean flag);
     
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
+    /**
+     * Suffix string to append to the rewritten URL.
+     * 
+     * @return the value of the suffix string.
+     */
+    String getSuffix();
     
-    public abstract String getBaseProject();
+    /**
+     * Suffix string to append to the rewritten URL.
+     * 
+     * @param the value of the suffix string.
+     */    
+    void setSuffix(String suffix);
+    
+    /**
+     * Flag indicating whether to rewrite links as popups.
+     * The default setting is false, do not rewrite as a popup.
+     * 
+     * @return true if this rule rewrites links as popups
+     */
+    boolean getPopup();
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
+    /**
+     * Flag indicating whether to rewrite links as popups.
+     * The default setting is false, do not rewrite as a popup.
+     * 
+     * @param true if this rule rewrites links as popups
+     */    
+    void setPopup(boolean flag);
     
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
+    /**
+     * Checks to see if a URL should be rewritten or not.
+     * 
+     * @param url
+     */    
+    boolean shouldRewrite(String url);
     
     
+                        
 }

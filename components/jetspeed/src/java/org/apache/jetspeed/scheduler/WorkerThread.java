@@ -51,87 +51,92 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.scheduler;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
 
 /**
- * ComponentAssemblyTestCase
+ * Wrapper for a <code>JobEntry</code> to actually perform the job's action.
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:mbryson@mont.mindspring.com">Dave Bryson</a>
+ * @author <a href="mailto:dlr@finemaltcoding.com">Daniel Rall</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class WorkerThread
+    implements Runnable
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+    /**
+     * The <code>JobEntry</code> to run.
+     */
+    private JobEntry je = null;
 
-    public String getRelativePath()
+    /**
+     * The {@link org.apache.fulcrum.logging.Logger} facility to use.
+     */
+
+    /**
+     * Creates a new worker to run the specified <code>JobEntry</code>.
+     *
+     * @param je The <code>JobEntry</code> to create a worker for.
+     */
+    public WorkerThread(JobEntry je)
     {
-        return "test";
+        this.je = je;
     }
-        
-    public String getApplicationRoot()
+
+    /**
+     * Run the job.
+     */
+    public void run()
     {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
+        if (je == null || je.isActive())
         {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
+            return;
+        }
+
+        try
+        {
+            if (! je.isActive())
             {
-                applicationRoot = testPath.getAbsolutePath();
+                je.setActive(true);
+                logStateChange("started");
+
+                // We should have a set of job packages and
+                // search through them like the module
+                // loader does. This right here requires the
+                // getTask() method to return a class name.
+                String className = je.getTask();
+
+                //If a FactoryService is registered, use it. Otherwise,
+                //instantiate the ScheduledJob directly.
+                ScheduledJob sc = (ScheduledJob)Class.forName(className).newInstance();
+                sc.execute(je);
             }
         }
-        return applicationRoot;
+        catch (Exception e)
+        {
+            //!! use the service for logging
+            //Log.error("Error in WorkerThread for sheduled job #" +
+            //             je.getPrimaryKey() + ", task: " + je.getTask(), e);
+        }
+        finally
+        {
+            if (je.isActive())
+            {
+                je.setActive(false);
+                logStateChange("completed");
+            }
+        }
     }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
+
+    /**
+     * Macro to log <code>JobEntry</code> status information.
+     *
+     * @param state The new state of the <code>JobEntry</code>.
+     */
+    private final void logStateChange(String state)
     {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
+        //!! use the service to log.
+        //Log.debug("Scheduled job #" + je.getPrimaryKey() + ' ' + state +
+        //    ", task: " + je.getTask());
     }
-    
-    
 }

@@ -51,87 +51,61 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.scheduler;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.util.List;
 
 /**
- * ComponentAssemblyTestCase
+ * ScheduleService interface.
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:mbryson@mont.mindspring.com">Dave Bryson</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public interface Scheduler
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+    public static final String SERVICE_NAME = "scheduler";
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
-    
+    /**
+     * Get a specific Job from Storage.
+     *
+     * @param oid The int id for the job.
+     * @return A JobEntry.
+     * @exception Exception, a generic exception.
+     */
+    public JobEntry getJob(int oid)
+        throws Exception;
+
+    /**
+     * Add a new job to the queue.
+     *
+     * @param je A JobEntry with the job to add.
+     * @exception Exception, a generic exception.
+     */
+    public void addJob(JobEntry je)
+        throws Exception;
+
+    /**
+     * Modify a Job.
+     *
+     * @param je A JobEntry with the job to modify
+     * @exception Exception, a generic exception.
+     */
+    public void updateJob(JobEntry je)
+        throws Exception;
+
+    /**
+     * Remove a job from the queue.
+     *
+     * @param je A JobEntry with the job to remove.
+     * @exception Exception, a generic exception.
+     */
+    public void removeJob(JobEntry je)
+        throws Exception;
+
+    /**
+     * List jobs in the queue.  This is used by the scheduler UI.
+     *
+     * @return A List of jobs.
+     */
+    public List listJobs();
 }

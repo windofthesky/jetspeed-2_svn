@@ -51,86 +51,59 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * ComponentAssemblyTestCase
+ * TestRewriter
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
-{
-    public ComponentAssemblyTestCase(String name) 
+public class UnitTestRewriter extends BasicRewriter
+{    
+    private Map anchors = new HashMap();
+    private String paragraph = null;
+    private boolean inParagraph = false;
+    
+    public String getAnchorValue(String name)
     {
-        super( name );
+        return (String)anchors.get(name);
     }
     
-    public String getAssemblyScriptType()
+    public String getParagraph()
     {
-        return ".groovy";
+        return paragraph;
     }
     
-    public String getTestName()
+    public boolean enterStartTagEvent(String tag, MutableAttributes attrs)
     {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
+        if (tag.equalsIgnoreCase("a"))
         {
-            className = className.substring(ix + 1);
+            anchors.put(attrs.getValue("name"), attrs.getValue("href"));
         }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
-
-    public String getRelativePath()
-    {
-        return "test";
+        if (tag.equalsIgnoreCase("p"))
+        {
+            inParagraph = true;
+        }
+        return true;
     }
         
-    public String getApplicationRoot()
+    public boolean enterText(char[] values, int param)
     {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
+        if (inParagraph)
         {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
+            paragraph = new String(values);
         }
-        return applicationRoot;
+        return true;
     }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
             
+    public String exitEndTagEvent(String tag)
+    {
+        inParagraph = false;
+        return "";
     }
     
     

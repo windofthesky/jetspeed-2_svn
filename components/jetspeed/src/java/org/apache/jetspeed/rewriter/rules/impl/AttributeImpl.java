@@ -51,87 +51,67 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter.rules.impl;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import org.apache.jetspeed.rewriter.rules.Attribute;
+import org.apache.jetspeed.rewriter.rules.Rule;
 
 /**
- * ComponentAssemblyTestCase
+ * Attribute
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class AttributeImpl extends IdentifiedImpl implements Attribute
 {
-    public ComponentAssemblyTestCase(String name) 
+    private Rule rule;
+    private String ruleId;
+        
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Ruleset#setId(java.lang.String)
+     */
+    public void setId(String id)
     {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
+        if (id != null)
         {
-            className = className.substring(ix + 1);
+            this.id = id.toUpperCase();
         }
-        return className;        
     }
     
-    public abstract String getBaseProject();
-
-    public String getRelativePath()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Attribute#getRule()
+     */
+    public Rule getRule()
     {
-        return "test";
+        return this.rule;
     }
         
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Attribute#setRule(org.apache.jetspeed.cps.rewriter.rules.Rule)
+     */
+    public void setRule(Rule rule)
+    {        
+        this.rule = rule;
     }
     
-    public static String getApplicationRoot(String baseProject, String relativePath)
+    /**
+     * Castor setter to set the rule id.
+     * 
+     * @param ruleId The rule identifier.
+     */
+    public void setRuleId(String ruleId)
     {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
+        this.ruleId = ruleId;
     }
     
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
+    /**
+     * Castor accessor to get the rule id.
+     * 
+     * @return The rule identifier.
+     */
+    public String getRuleId()
     {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
+        return this.ruleId;
+    }
         
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
-    
 }

@@ -51,87 +51,121 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter.rules.impl;
 
-import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import org.apache.jetspeed.rewriter.rules.Rule;
 
 /**
- * ComponentAssemblyTestCase
+ * Rule
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class RuleImpl extends IdentifiedImpl implements Rule
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
-
-    public String getRelativePath()
-    {
-        return "test";
-    }
+    private boolean useBase = true;
+    private boolean popup = false;
+    private String suffix = null;
+    private String prefixes = null;
+    private List ignorePrefixes = null; 
         
-    public String getApplicationRoot()
+    public String toString()
     {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
+        return id;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#getPopup()
+     */
+    public boolean getPopup()
+    {
+        return popup;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#getSuffix()
+     */
+    public String getSuffix()
+    {
+        return suffix;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#getUseBase()
+     */
+    public boolean getUseBase()
+    {
+        return useBase;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#setPopup(boolean)
+     */
+    public void setPopup(boolean b)
+    {
+        popup = b;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#setSuffix(java.lang.String)
+     */
+    public void setSuffix(String string)
+    {
+        suffix = string;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Rule#setUseBase(boolean)
+     */
+    public void setUseBase(boolean b)
+    {
+        useBase = b;
+    }
+                    
+    public void setIgnorePrefixes(String prefixes)
+    {      
+        this.prefixes = prefixes;                          
+    }
+
+    public String getIgnorePrefixes()
+    {
+        return this.prefixes;        
     }
     
-    public static String getApplicationRoot(String baseProject, String relativePath)
+    public boolean shouldRewrite(String url)
     {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
+        if (prefixes == null)
         {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
+            return true;
+        }
+        if (ignorePrefixes == null)
+        {
+            ignorePrefixes = new ArrayList();
+            StringTokenizer tokenizer = new StringTokenizer(prefixes, ",");
+            while (tokenizer.hasMoreTokens())
             {
-                applicationRoot = testPath.getAbsolutePath();
+                String token = (String)tokenizer.nextToken();
+                ignorePrefixes.add(token);
+            }            
+            
+        }
+        
+        Iterator list = ignorePrefixes.iterator();
+        while (list.hasNext())
+        {
+            String prefix = (String)list.next();
+            if (url.startsWith(prefix))
+            {
+                return false;
             }
         }
-        return applicationRoot;
+        return true;         
     }
     
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
         
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
-    
 }

@@ -51,87 +51,58 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
-
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+package org.apache.jetspeed.rewriter;
 
 /**
- * ComponentAssemblyTestCase
+ * RewriterException
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class RewriterException extends Exception
 {
-    public ComponentAssemblyTestCase(String name) 
+    /**
+     * Constructs a new <code>RewriterException</code> without specified detail
+     * message.
+     */
+    public RewriterException()
     {
-        super( name );
     }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
 
-    public String getRelativePath()
+    /**
+     * Constructs a new <code>RewriterException</code> with specified detail
+     * message.
+     *
+     * @param msg the error message.
+     */
+    public RewriterException(String msg)
     {
-        return "test";
+        super(msg);
     }
-        
-    public String getApplicationRoot()
+
+    /**
+     * Constructs a new <code>RewriterException</code> with specified nested
+     * <code>Throwable</code>.
+     *
+     * @param nested the exception or error that caused this exception
+     *               to be thrown.
+     */
+    public RewriterException(Throwable nested)
     {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
+        super(nested);
     }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
+
+    /**
+     * Constructs a new <code>RewriterException</code> with specified detail
+     * message and nested <code>Throwable</code>.
+     *
+     * @param msg the error message.
+     * @param nested the exception or error that caused this exception
+     *               to be thrown.
+     */
+    public RewriterException(String msg, Throwable nested)
     {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
+        super(msg, nested);
     }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
     
 }

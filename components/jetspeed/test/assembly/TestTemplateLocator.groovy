@@ -10,7 +10,7 @@ applicationRoot = ComponentAssemblyTestCase.getApplicationRoot("components/jetsp
 container = new DefaultPicoContainer()
 
 //
-// Template Locator component assembly JetspeedTemplateLocator.class.toString()
+// Template Locator component assembly 
 //
 
 roots = [ applicationRoot + "/WEB-INF/templates" ]

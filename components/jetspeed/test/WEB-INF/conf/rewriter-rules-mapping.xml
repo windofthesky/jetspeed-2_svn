@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <mapping>
-  <class name="org.apache.jetspeed.cps.rewriter.rules.impl.RulesetImpl">
+  <class name="org.apache.jetspeed.rewriter.rules.impl.RulesetImpl">
     <map-to xml="ruleset"/>
 
     <field name="id" type="java.lang.String">
@@ -12,20 +12,20 @@
     </field>
                                    
     <field name="tags"
-           type="org.apache.jetspeed.cps.rewriter.rules.impl.TagImpl"
+           type="org.apache.jetspeed.rewriter.rules.impl.TagImpl"
            collection="collection">
       <bind-xml name="tag"/>
     </field>
 
     <field name="rules"
-           type="org.apache.jetspeed.cps.rewriter.rules.impl.RuleImpl"
+           type="org.apache.jetspeed.rewriter.rules.impl.RuleImpl"
            collection="collection">
       <bind-xml name="rule"/>
     </field>
 
   </class>
 
-  <class name="org.apache.jetspeed.cps.rewriter.rules.impl.TagImpl">
+  <class name="org.apache.jetspeed.rewriter.rules.impl.TagImpl">
     <map-to xml="tag"/>
                                    
     <field name="id" type="java.lang.String">
@@ -41,14 +41,14 @@
     </field>
 
     <field name="attributes"
-           type="org.apache.jetspeed.cps.rewriter.rules.impl.AttributeImpl"
+           type="org.apache.jetspeed.rewriter.rules.impl.AttributeImpl"
            collection="collection">
       <bind-xml name="attribute"/>
     </field>
 
   </class>
 
-  <class name="org.apache.jetspeed.cps.rewriter.rules.impl.RuleImpl">
+  <class name="org.apache.jetspeed.rewriter.rules.impl.RuleImpl">
     <map-to xml="rule"/>
                                    
     <field name="id" type="java.lang.String">
@@ -73,7 +73,7 @@
 
   </class>
 
-  <class name="org.apache.jetspeed.cps.rewriter.rules.impl.AttributeImpl">
+  <class name="org.apache.jetspeed.rewriter.rules.impl.AttributeImpl">
     <map-to xml="attribute"/>
                                    
     <field name="id" type="java.lang.String">

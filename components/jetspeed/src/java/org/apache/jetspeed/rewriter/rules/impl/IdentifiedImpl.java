@@ -51,87 +51,35 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
-
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+package org.apache.jetspeed.rewriter.rules.impl;
 
 /**
- * ComponentAssemblyTestCase
+ * IdentifiedImpl
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class IdentifiedImpl
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
+    protected String id;
     
-    public String getAssemblyScriptType()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Ruleset#getId()
+     */
+    public String getId()
     {
-        return ".groovy";
+        return id;
     }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
 
-    public String getRelativePath()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.rules.Ruleset#setId(java.lang.String)
+     */
+    public void setId(String id)
     {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
+        if (id != null)
         {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
+            this.id = id; 
         }
-        return applicationRoot;
     }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
     
 }

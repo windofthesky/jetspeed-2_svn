@@ -51,87 +51,83 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter;
 
-import java.io.File;
+import java.net.URL;
 
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
 
 /**
- * ComponentAssemblyTestCase
+ * BasicRewriter
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class BasicRewriter extends AbstractRewriter implements Rewriter
 {
-    public ComponentAssemblyTestCase(String name) 
+    /*    
+     * This callback is called by the ParserAdaptor implementation to write
+     * back all rewritten URLs to point to the proxy server.
+     * Given the targetURL, rewrites the link as a link back to the proxy server.
+     *
+     * @return the rewritten URL to the proxy server.
+     *
+     */
+    public String rewriteUrl(
+        String url,
+        String tag,
+        String attribute)
     {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
+        String fullPath = "";
+        try
         {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
-
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
+            String baseUrl = super.getBaseUrl();
+            if (baseUrl != null)
             {
-                applicationRoot = testPath.getAbsolutePath();
+                URL full = new URL(new URL(baseUrl), url);
+                fullPath = full.toString();
+            }
+            else
+            {
+                return url; // leave as is
             }
         }
-        return applicationRoot;
+        catch (Exception e)
+        {
+            System.err.println(e);
+        }
+        return fullPath;
     }
     
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.Rewriter#shouldRemoveTag(java.lang.String)
+     */
+    public boolean shouldRemoveTag(String tag)
     {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
+        if (tag.equalsIgnoreCase("html"))
+        {
+            return true;
+        }
+        return false;
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.Rewriter#shouldStripTag(java.lang.String)
+     */
+    public boolean shouldStripTag(String tag)
+    {
+        if (tag.equalsIgnoreCase("head"))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.cps.rewriter.Rewriter#shouldRemoveComments()
+     */
+    public boolean shouldRemoveComments()
+    {
+        return true;
+    }
     
 }

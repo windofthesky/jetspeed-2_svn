@@ -51,87 +51,67 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter.rules;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.util.Collection;
 
 /**
- * ComponentAssemblyTestCase
+ * Ruleset
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
-{
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+public interface Ruleset extends Identified
+{                
+    /**
+     * Get the remove comments flag for removing comments from the markup source.
+     * 
+     * @return true True if comments should be removed.
+     */
+    public boolean getRemoveComments();
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
+    /**
+     * Set the remove comments flag for removing comments from the markup source.
+     * 
+     * @param flag True if comments should be removed.
+     */    
+    public void setRemoveComments(boolean flag);
+
+    /**
+     * Given a tag identifier, lookup and return a tag object.
+     * 
+     * @param tagId the unique tag identifier
+     * @return the tag object for the given identifier
+     */
+    Tag getTag(String tagId);
         
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
+    /**
+     * Given a rule identifier, lookup and return a rule object.
+     * 
+     * @param ruleId the unique rule identifier
+     * @return the rule object for the given identifier
+     */        
+    Rule getRule(String ruleId);        
+
+
+    /**
+     * Get a collection of rules for this rule set.
+     * 
+     * @return A collection of rules.
+     */
+    Collection getRules();    
+
+    /**
+     * Get a collection of markup tags for this rule set.
+     * 
+     * @return A collection of markup tags.
+     */
+    public Collection getTags();
+
+    /**
+     * Synchronize the Ruleset
+     * 
+     */
+    void sync();
     
 }

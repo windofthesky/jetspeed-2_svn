@@ -51,87 +51,60 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter.rules;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.util.Collection;
 
 /**
- * ComponentAssemblyTestCase
+ * Tag
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public interface Tag extends Identified
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
+    /**
+     * Get a collection of attributes for the given Tag.
+     * 
+     * @return A collection of attributes.
+     */
+    Collection getAttributes();
     
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
     
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+    /**
+     * Represents whether this tag is to be removed during rewrite phase.
+     * Removing a tag only removes the tag but not the contents in 
+     * between the start and end tag.
+     * 
+     * @return true if this tag should be removed
+     */
+    public boolean getRemove();
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
+    /**
+     * Represents whether this tag is to be removed during rewrite phase.
+     * Removing a tag only removes the tag but not the contents in 
+     * between the start and end tag.
+     * 
+     * @param flag true if this tag should be removed
+     */    
+    public void setRemove(boolean flag);
+
+    /**
+     * Represents whether this tag is to be removed during rewrite phase.
+     * Stripping tags removes the start and end tag, plus all tags
+     * and content in between the start and end tag.
+     * 
+     * @return true if this tag should be stripped.
+     */
+    public boolean getStrip();
+
+    /**
+     * Represents whether this tag is to be removed during rewrite phase.
+     * Stripping tags removes the start and end tag, plus all tags
+     * and content in between the start and end tag.
+     * 
+     * @param flag true if this tag should be stripped.
+     */    
+    public void setStrip(boolean flag);
     
 }

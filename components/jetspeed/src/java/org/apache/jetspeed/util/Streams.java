@@ -51,87 +51,130 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.util;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.io.InputStreamReader;
 
 /**
- * ComponentAssemblyTestCase
+ * Utility functions related to Streams.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public class Streams
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+  static final int BLOCK_SIZE=4096;
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
+  public static void drain(InputStream r,OutputStream w) throws IOException
+  {
+      byte[] bytes=new byte[BLOCK_SIZE];
+      try
+      {
+        int length=r.read(bytes);
+        while(length!=-1)
         {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
+            if(length!=0)
+                {
+                    w.write(bytes,0,length);
+                }
+            length=r.read(bytes);
         }
-        return applicationRoot;
     }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
+    finally
     {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
+      bytes=null;
     }
-    
-    
+
+  }
+
+  public static void drain(Reader r,Writer w) throws IOException
+  {
+    char[] bytes=new char[BLOCK_SIZE];
+    try
+    {
+        int length=r.read(bytes);
+        while(length!=-1)
+        {
+            if(length!=0)
+            {
+                w.write(bytes,0,length);
+            }
+            length=r.read(bytes);
+        }
+    }
+    finally
+    {
+        bytes=null;
+    }
+
+  }
+
+  public static void drain(Reader r,OutputStream os) throws IOException
+  {
+        Writer w=new OutputStreamWriter(os);
+        drain(r,w);
+        w.flush();
+  }
+
+  public static void drain(InputStream is, Writer w) throws IOException
+  {
+      Reader r = new InputStreamReader(is);
+      drain(r,w);
+      w.flush();
+  }
+
+  public static byte[] drain(InputStream r) throws IOException
+  {
+        ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+        drain(r,bytes);
+        return bytes.toByteArray();
+  }
+
+  public static String getAsString(InputStream is)
+  {
+      int c=0;
+      char lineBuffer[]=new char[128], buf[]=lineBuffer;
+      int room= buf.length, offset=0;
+      try
+      {
+          loop: while (true)
+          {
+            // read chars into a buffer which grows as needed
+                switch (c = is.read() )
+                {
+                    case -1: break loop;
+
+                    default: if (--room < 0)
+                             {
+                                 buf = new char[offset + 128];
+                                 room = buf.length - offset - 1;
+                                 System.arraycopy(lineBuffer, 0,
+                                          buf, 0, offset);
+                                 lineBuffer = buf;
+                             }
+                             buf[offset++] = (char) c;
+                             break;
+                }
+          }
+      }
+      catch(IOException ioe)
+      {
+          ioe.printStackTrace();
+      }
+      if ((c == -1) && (offset == 0))
+      {
+          return null;
+      }
+      return String.copyValueOf(buf, 0, offset);
+  }
+
+
+
 }

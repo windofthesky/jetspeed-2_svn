@@ -51,87 +51,39 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter;
 
-import java.io.File;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import java.io.Reader;
+import java.io.Writer;
 
 /**
- * ComponentAssemblyTestCase
- *
+ * Interface for HTML Parser Adaptors.
+ * Adaptors normalize the interface over HTML and XML adaptor implementations.
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public interface ParserAdaptor
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+    /**
+     * Parses a document from the reader, without actually rewriting URLs.
+     * During parsing the events are called back on the given rewriter to handle the normalized events.
+     *
+     * @param reader the input stream over the content to be parsed.
+     * @exception RewriteException when a parsing error occurs or unexpected content is found.
+     */        
+    void parse(Rewriter rewriter, Reader reader)
+            throws RewriterException;
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
-    
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
-    
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
+    /**
+     * Parses and rewrites a document from the reader, rewriting URLs via the rewriter's events to the writer.
+     * During parsing the rewriter events are called on the given rewriter to handle the rewriting.
+     *
+     * @param reader the input stream over the content to be parsed.
+     * @param writer the output stream where content is rewritten to.
+     * @exception RewriteException when a parsing error occurs or unexpected content is found.
+     */            
+    void rewrite(Rewriter rewriter, Reader reader, Writer writer)
+        throws RewriterException;
     
 }

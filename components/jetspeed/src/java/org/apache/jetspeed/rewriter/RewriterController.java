@@ -51,87 +51,68 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.rewriter;
 
-import java.io.File;
+import java.io.Reader;
 
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
-
-import junit.framework.TestCase;
+import org.apache.jetspeed.rewriter.rules.Ruleset;
 
 /**
- * ComponentAssemblyTestCase
+ * RewriterService
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class ComponentAssemblyTestCase extends TestCase
+public interface RewriterController 
 {
-    public ComponentAssemblyTestCase(String name) 
-    {
-        super( name );
-    }
-    
-    public String getAssemblyScriptType()
-    {
-        return ".groovy";
-    }
-    
-    public String getTestName()
-    {
-        String className = this.getClass().getName();
-        int ix = className.lastIndexOf(".");
-        if (ix > -1)
-        {
-            className = className.substring(ix + 1);
-        }
-        return className;        
-    }
-    
-    public abstract String getBaseProject();
+    public String SERVICE_NAME = "rewriter";
 
-    public String getRelativePath()
-    {
-        return "test";
-    }
-        
-    public String getApplicationRoot()
-    {
-        return getApplicationRoot(getBaseProject(), getRelativePath());        
-    }
+    /**
+     * Creates a basic rewriter that does not support rulesets configurations.
+     * The Rewriter implementation is configured in the service configuration.
+     *  
+     * @return A new rewriter that does not support rulesets.
+     */
+    Rewriter createRewriter()
+        throws RewriterException;
+
+    /**
+     * Creates a rewriter that supports rulesets configurations.
+     * The rewriter uses the rulesets configuration to control rewriting.
+     * The Rewriter implementation is configured in the service configuration.
+     * 
+     * @param ruleset The ruleset configuration to control the rewriter.
+     * @return A new rewriter that supports rulesets.
+     */
+    RulesetRewriter createRewriter(Ruleset ruleset)
+        throws RewriterException;
     
-    public static String getApplicationRoot(String baseProject, String relativePath)
-    {
-        String applicationRoot = relativePath;
-        File testPath = new File(applicationRoot);
-        if (!testPath.exists())
-        {
-            testPath = new File( baseProject + File.separator + applicationRoot);
-            if (testPath.exists())
-            {
-                applicationRoot = testPath.getAbsolutePath();
-            }
-        }
-        return applicationRoot;
-    }
+
+    /**
+     * Creates a Parser Adaptor for the given mime type
+     * The Parser Adaptor implementation is configured in the service configuration.
+     * Only MimeTypes of "text/html" and "text/xml" are currently supported.
+     * 
+     * @param mimeType The mimetype to create a parser adaptor for.
+     * @return A new parser adaptor
+     */
+    ParserAdaptor createParserAdaptor(String mimeType)
+        throws RewriterException;
     
-    protected ComponentManager componentManager = null;
-    
-    public void setUp()
-    throws Exception
-    {
-        String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
-        File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
-        assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
-        
-        assertNotNull(rootContainerRef.get());
-            
-    }
-    
+    /**
+     * Loads a XML-based Rewriter Ruleset given a stream to the XML configuration.
+     * 
+     * @param reader The stream to the XML configuration.
+     * @return A Ruleset configuration tree.
+     */
+    Ruleset loadRuleset(Reader reader);
+       
+    /**
+     * Lookup a Ruleset given a ruleset identifier.
+     * 
+     * @param id The identifier for the Ruleset.
+     * @return A Ruleset configuration tree.
+     */
+    Ruleset lookupRuleset(String id);
     
 }
