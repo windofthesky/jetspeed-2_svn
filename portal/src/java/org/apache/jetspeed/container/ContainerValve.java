@@ -45,6 +45,9 @@ public class ContainerValve
     {
         try
         {  
+            // create a session if not already created, necessary for Tomcat 5
+            request.getRequest().getSession(true);
+            
             //PortletContainerServices.prepare();
             NavigationalState state = request.getNavigationalState();
             if (state != null)
