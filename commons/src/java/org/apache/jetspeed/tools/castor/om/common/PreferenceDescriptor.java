@@ -55,6 +55,7 @@ package org.apache.jetspeed.tools.castor.om.common;
 
 import java.util.Collection;
 
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 
 /**
@@ -65,14 +66,19 @@ import org.apache.jetspeed.om.common.preference.PreferenceImpl;
  */
 public class PreferenceDescriptor extends PreferenceImpl
 {
-    public Collection getCastorValues() 
+    public PreferenceDescriptor()
     {
-        return this.values;    
+        setType(PreferenceComposite.TYPE_DEFAULT);
     }
 
-    public void setCastorValues(Collection value) 
+    public Collection getCastorValues()
+    {
+        return this.values;
+    }
+
+    public void setCastorValues(Collection value)
     {
         setValues(value);
     }
-    
+
 }
