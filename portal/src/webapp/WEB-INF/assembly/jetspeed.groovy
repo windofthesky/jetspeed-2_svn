@@ -244,7 +244,7 @@ services.addPortletService("PortletRegistryComponent", container.getComponentIns
 container.registerComponentImplementation(
                            PortletEntityAccessComponent, 
                            PortletEntityAccessComponentImpl,
-                           doParams([cmpParam(PersistenceStore)])
+                           doParams([cmpParam(PersistenceStore), cmpParam(PortletRegistryComponent)])
 )
 
 /* **********************************************************
