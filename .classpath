@@ -16,7 +16,6 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/jsf-demo/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="applications/localeselector/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
@@ -94,7 +93,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-context-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-jsf-api-1.0.8.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.8.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-extensions-1.0.8.jar"/>
