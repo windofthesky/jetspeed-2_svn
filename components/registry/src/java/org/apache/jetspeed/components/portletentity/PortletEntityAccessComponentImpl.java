@@ -176,13 +176,13 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
                 PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
 				store.lockForWrite(realEntity);
                 store.getTransaction().checkpoint();                
-                autoCreateEntityId(realEntity, store);
+               // autoCreateEntityId(realEntity, store);
 			}            
 			else
 			{
 				store.lockForWrite(portletEntity);
                 store.getTransaction().checkpoint();
-                autoCreateEntityId(portletEntity, store);                
+              //  autoCreateEntityId(portletEntity, store);                
 			}
                         
         }
