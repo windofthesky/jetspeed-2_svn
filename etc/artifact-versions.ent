@@ -1,9 +1,9 @@
-<!ENTITY jetspeed-version "2.0-M2-dev">
+<!ENTITY jetspeed-version "2.0-M2">
 <!ENTITY pluto-version "1.0.1-rc2-PATCHED">
-<!ENTITY portals-bridges-common-version "0.1">
-<!ENTITY portals-bridges-frameworks-version "0.1">
-<!ENTITY portals-bridges-jsf-version "0.1">
-<!ENTITY portals-bridges-perl-version "0.1">
-<!ENTITY portals-bridges-php-version "0.1">
+<!ENTITY portals-bridges-common-version "0.2">
+<!ENTITY portals-bridges-frameworks-version "0.2">
+<!ENTITY portals-bridges-jsf-version "0.2">
+<!ENTITY portals-bridges-perl-version "0.2">
+<!ENTITY portals-bridges-php-version "0.2">
 <!ENTITY portals-bridges-struts-version "0.2">
-<!ENTITY portals-bridges-velocity-version "0.1">
+<!ENTITY portals-bridges-velocity-version "0.2">
