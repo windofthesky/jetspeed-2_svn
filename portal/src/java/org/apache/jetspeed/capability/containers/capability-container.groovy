@@ -7,7 +7,7 @@ import org.picocontainer.defaults.ComponentParameter
 import org.hsqldb.jdbcDriver
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
-import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
+import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent
 import org.apache.jetspeed.components.datasource.DatasourceComponent
 import org.apache.commons.pool.impl.GenericObjectPool
 import org.apache.jetspeed.components.persistence.store.ojb.OJBTypeIntializer
@@ -25,11 +25,11 @@ import java.util.Properties
 container = new DefaultPicoContainer()
 
 // This JNDI component helps us publish the datasource
-Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
-Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
-container.registerComponentImplementation(jndiClass, tyrexJndiClass)
+Class jndiClass = JNDIComponent
+JNDIComponent jndiImpl = new TyrexJNDIComponent()
+container.registerComponentInstance(jndiClass, jndiImpl)
 
-Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
+Class dsClass = DatasourceComponent
 String url = System.getProperty("org.apache.jetspeed.database.url")
 String driver = System.getProperty("org.apache.jetspeed.database.driver")
 String user = System.getProperty("org.apache.jetspeed.database.user")
@@ -37,7 +37,7 @@ String password = System.getProperty("org.apache.jetspeed.database.password")
 
 if(url != null)
 {
-	container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+	container.registerComponentInstance(dsClass, new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndiImpl))
 }
 
 //
