@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -552,14 +556,14 @@ limitations under the License.
   <goal name="catalina:base-shared"
         description="Copy all base jars necessary for common container">
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-rc2.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-&pluto-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-&portals-bridges-common-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
-    <copy file="../commons/target/jetspeed-commons-2.0-M2-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="../jetspeed-api/target/jetspeed-api-2.0-M2-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../commons/target/jetspeed-commons-&jetspeed-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="../jetspeed-api/target/jetspeed-api-&jetspeed-version;.jar" todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 

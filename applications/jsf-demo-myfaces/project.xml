@@ -20,7 +20,7 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/./../project.xml</extend>
+  <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jsf-demo-myfaces</id>
   <name>JSF Portlet Demo - MyFaces Portlet Support</name>

@@ -1,6 +1,2 @@
-<!-- Project dependencies -->
-<!ENTITY spring-deps SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
-<!ENTITY commons-config-dep SYSTEM "file:../../etc/project-dependencies/commons-config-dep.xml">
-
-<!-- Project reports -->
-<!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">
+<!-- derive locator.ent from parent -->
+<!ENTITY % locator-ent SYSTEM "file:../../locator.ent"> %locator-ent;

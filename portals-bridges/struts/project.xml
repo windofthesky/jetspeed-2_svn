@@ -25,7 +25,7 @@ limitations under the License.
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-struts</id>
   <name>Apache Portals Struts Bridge</name>
-  <currentVersion>0.2</currentVersion>
+  <currentVersion>&portals-bridges-struts-version;</currentVersion>
   <package>org.apache.portals.bridges.struts</package>
   <description>
     Apache Portals Struts Bridge
@@ -83,7 +83,7 @@ limitations under the License.
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
-      <version>0.1</version>
+      <version>&portals-bridges-common-version;</version>
     </dependency>
   </dependencies>
   <build>

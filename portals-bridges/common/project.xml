@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -22,7 +25,7 @@ limitations under the License.
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-common</id>
   <name>Apache Portals Bridges common utilities and interfaces</name>
-  <currentVersion>0.1</currentVersion>
+  <currentVersion>&portals-bridges-common-version;</currentVersion>
   <package>org.apache.portals.bridges.common</package>
   <description>
 	  Apache Portals Bridges common utilties and interfaces

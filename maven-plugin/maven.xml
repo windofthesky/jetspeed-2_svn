@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -12,6 +16,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+  $Id$
 -->
 <project default="java:jar"
          xmlns:j="jelly:core"
@@ -21,6 +27,7 @@ limitations under the License.
          xmlns:util="jelly:util">
          
  <preGoal name="java:jar-resources">
+   <copy file="../etc/artifact-versions.ent" tofile="${basedir}/target/classes/plugin-resources/etc/artifact-versions.ent" overwrite="true" failonerror="true"/> 
  	 <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
          <fileset dir="../etc/project-dependencies" />
      </copy>
@@ -31,9 +38,15 @@ limitations under the License.
          <fileset dir="../etc/project-reports" />   
      </copy>
      <copy file="../locator.ent" tofile="${basedir}/target/classes/plugin-resources/locator.ent" overwrite="true" failonerror="true"/> 
+     <copy file="../locator.path" tofile="${basedir}/target/classes/plugin-resources/locator.path" overwrite="true" failonerror="true"/> 
  	 <attainGoal name="copyDb" />
  	 <attainGoal name="copyPortlaWebApp" />
      <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
+     <copy file="plugin.properties" tofile="${basedir}/target/classes/plugin.properties" overwrite="true" failonerror="true">
+       <filterset begintoken="@" endtoken="@">
+          <filter token="JETSPEED_VERSION" value="&jetspeed-version;"/>
+        </filterset>
+     </copy> 
       
  </preGoal>        
  

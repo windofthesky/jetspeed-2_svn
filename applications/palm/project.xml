@@ -16,6 +16,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+  $Id$
 -->
 <project>
     <extend>${basedir}/./../project.xml</extend>
@@ -69,7 +71,7 @@ limitations under the License.
       <dependency>
           <groupId>jetspeed2</groupId>
           <artifactId>jetspeed-api</artifactId>
-          <version>2.0-M2-dev</version>
+          <version>&jetspeed-version;</version>
           <type>jar</type>
           <properties>
               <war.bundle>false</war.bundle>
@@ -78,7 +80,7 @@ limitations under the License.
       <dependency>
           <groupId>jetspeed2</groupId>
           <artifactId>jetspeed-commons</artifactId>
-          <version>2.0-M2-dev</version>
+          <version>&jetspeed-version;</version>
           <type>jar</type>
           <properties>
               <war.bundle>false</war.bundle>
@@ -87,7 +89,7 @@ limitations under the License.
       <dependency>
         <groupId>portals-gems</groupId>
         <artifactId>portals-gems</artifactId>
-        <version>2.0-M2-dev</version>
+        <version>&jetspeed-version;</version>
         <type>jar</type>
         <properties>
           <war.bundle>true</war.bundle>
@@ -96,7 +98,7 @@ limitations under the License.
       <dependency>
         <groupId>portals-bridges</groupId>
         <artifactId>portals-bridges-common</artifactId>
-        <version>0.1</version>
+        <version>&portals-bridges-common-version;</version>
         <properties>
           <war.bundle>true</war.bundle>
         </properties>

@@ -26,7 +26,7 @@ limitations under the License.
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-jsf</id>
   <name>Apache Portals JSF Bridge</name>
-  <currentVersion>0.1</currentVersion>
+  <currentVersion>&portals-bridges-jsf-version;</currentVersion>
   <package>org.apache.portals.bridges.jsf</package>
   <description>
     Apache Portals JSF Bridge
@@ -76,7 +76,7 @@ limitations under the License.
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
-      <version>0.1</version>
+      <version>&portals-bridges-common-version;</version>
     </dependency>
   </dependencies>
   <build>

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -22,7 +25,7 @@ limitations under the License.
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-frameworks</id>
   <name>Apache Portals Bridges Frameworks</name>
-  <currentVersion>0.1</currentVersion>
+  <currentVersion>&portals-bridges-frameworks-version;</currentVersion>
   <package>org.apache.portals.bridges.frameworks</package>
   <description>
     Apache Portals Bridges Frameworks
@@ -81,13 +84,13 @@ limitations under the License.
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
-      <version>0.1</version>
+      <version>&portals-bridges-common-version;</version>
     </dependency>
     
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-velocity</artifactId>
-      <version>0.1</version>
+      <version>&portals-bridges-velocity-version;</version>
     </dependency>
     
   </dependencies>

@@ -20,7 +20,7 @@ limitations under the License.
   $Id$
 -->
 <project>
-  <extend>${basedir}/./../project.xml</extend>
+  <extend>${basedir}/../../project.xml</extend>
   <pomVersion>3</pomVersion>
   <id>jpetstore</id>
   <name>iBATIS JPetstore Demo Portlet</name>
@@ -214,7 +214,7 @@ limitations under the License.
     <dependency>
       <groupId>portals-bridges</groupId>
       <artifactId>portals-bridges-struts</artifactId>
-      <version>0.2</version>
+      <version>&portals-bridges-struts-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

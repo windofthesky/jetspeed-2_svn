@@ -1,7 +1,7 @@
 <dependency>
     <groupId>portals-bridges</groupId>
     <artifactId>portals-bridges-jsf</artifactId>
-    <version>0.1</version>
+    <version>&portals-bridges-jsf-version;</version>
     <properties>
 		<war.bundle>true</war.bundle>
     </properties>

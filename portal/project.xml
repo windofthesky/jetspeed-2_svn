@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project [
-  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;	
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
 ]>
 <!--
 Copyright 2004 The Apache Software Foundation
@@ -16,6 +16,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+  $Id$
 -->
 <project>
   <extend>${basedir}/../project.xml</extend>
@@ -45,7 +47,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -53,7 +55,7 @@ limitations under the License.
      <dependency>
       <id>content-server</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -61,7 +63,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-components</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -69,7 +71,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-deploy-tools</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -77,7 +79,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-rdbms</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -85,7 +87,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-persistence</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -93,7 +95,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-prefs</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -101,7 +103,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-search</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -109,7 +111,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-security</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -117,70 +119,70 @@ limitations under the License.
     <dependency>
       <id>jetspeed-registry</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-id-generator</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
     <dependency>
       <id>jetspeed2:jetspeed-file-cache</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-api</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
     </dependency>
      <dependency>
       <id>jetspeed2:jetspeed-locator</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-capability</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
     <dependency>
       <id>jetspeed2:jetspeed-profiler</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-page-manager</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>jetspeed2:jetspeed-portlet-factory</id>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>    
     <dependency>
       <id>portals-bridges:portals-bridges-common</id>
-      <version>0.1</version>
+      <version>&portals-bridges-common-version;</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
@@ -188,7 +190,7 @@ limitations under the License.
     <dependency>
       <id>portals-bridges-velocity</id>
       <groupId>portals-bridges</groupId>
-      <version>0.1</version>
+      <version>&portals-bridges-velocity-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -298,7 +300,7 @@ limitations under the License.
     <dependency>
       <id>jetspeed-commons</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
@@ -454,7 +456,7 @@ limitations under the License.
      <dependency>
       <id>jetspeed-sso</id>
       <groupId>jetspeed2</groupId>
-      <version>2.0-M2-dev</version>
+      <version>&jetspeed-version;</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

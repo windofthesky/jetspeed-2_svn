@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -13,11 +16,12 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+  $Id$
 -->
 <project>
   <extend>${basedir}/../project.xml</extend>
   <pomVersion>3</pomVersion>
-  <currentVersion>2.0-M2-dev</currentVersion>
   <id>maven-jetspeed2-plugin</id>
   <groupId>jetspeed2</groupId>
   <name>Jetspeed 2 Maven Plugin</name>
