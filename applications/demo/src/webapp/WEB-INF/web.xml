@@ -41,6 +41,18 @@ limitations under the License.
 		</init-param>
 		<load-on-startup>10</load-on-startup>
 	</servlet>
+
+  <servlet>
+    <servlet-name>SSODemo</servlet-name>
+    <display-name>SSODemo Servlet</display-name>
+    <description>Servlet for Testing SSO</description>
+    <servlet-class>org.apache.jetspeed.demo.servlet.SSODemoServlet</servlet-class>
+  </servlet>       
+
+	<servlet-mapping>
+		<servlet-name>SSODemo</servlet-name>
+		<url-pattern>/sso-demo</url-pattern>
+	</servlet-mapping>	
 	
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>

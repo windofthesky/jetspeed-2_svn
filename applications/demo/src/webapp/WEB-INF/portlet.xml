@@ -424,6 +424,71 @@ limitations under the License.
         </portlet-info>
     </portlet>
 
+    <portlet id="SSOIFrame">
+        <portlet-name>SSOIFramePortlet</portlet-name>
+        <display-name>SSO IFrame Portlet</display-name>
+        <description>
+            Example of using the SSO IFRAME portlet
+        </description>
+		<init-param>
+		<name>EditPage</name>
+		  <value>/WEB-INF/view/edit-prefs.vm</value>
+		</init-param>
+		<init-param>
+		<name>HelpPage</name>
+		  <value>/WEB-INF/view/iframe-help.html</value>
+		</init-param>
+		
+        <portlet-class>org.apache.jetspeed.portlet.SSOIFramePortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-preferences>
+            <preference>
+                <name>SRC</name>
+				<value>/demo/sso-demo</value>
+            </preference>
+			<preference>
+				<name>HEIGHT</name>
+				<value>100%</value>
+			</preference>
+			<preference>
+				<name>WIDTH</name>
+				<value>100%</value>
+			</preference>
+			<preference>
+				<name>MAX-HEIGHT</name>
+				<value>800</value>
+			</preference>
+			<preference>
+				<name>MAX-WIDTH</name>
+				<value>100%</value>
+			</preference>			
+			<preference>
+				<name>sso.type</name>
+				<value>url</value>
+			</preference>			
+			<preference>
+				<name>sso.url.param.username</name>
+				<value>ssouser</value>
+			</preference>			
+			<preference>
+				<name>sso.url.param.password</name>
+				<value>ssopw</value>
+			</preference>						
+        </portlet-preferences>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>SSO IFrame Portlet</title>
+            <short-title>SSOIFrame</short-title>
+            <keywords>single-signon,SSO,iframe,frame</keywords>
+        </portlet-info>
+    </portlet>
+
   <portlet id="CSSDemoPortlet">
     <init-param>
       <name>ViewPage</name>
