@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -268,11 +269,11 @@ public class PerlPortlet extends GenericPortlet {
     	// Open the perl script and extract the perl executable path. It's the same way as apache HTTP executes PERL
     	String perlExecutable = null;
     	
-    	String pathTranslated = ((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getPathTranslated();
-    	String contextPath =   request.getContextPath();
-    	
-    	contextPath = pathTranslated.substring(0, pathTranslated.indexOf("webapps") + 7) + contextPath + "/";
-    	contextPath += scriptPath;
+     	PortletContext portletApplication = getPortletContext(); 
+        String path = portletApplication.getRealPath("/WEB-INF");
+        String contextPath = path + "/";
+ 
+        contextPath += scriptPath;
     
     	// Build full path to scripts
     	if (perlScript.startsWith("/") == false )

@@ -23,6 +23,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
@@ -273,8 +274,9 @@ public class PHPApplicationPortlet extends GenericPortlet {
         
          // Build the context path
         String contextPath =		request.getContextPath();
-        String pathTranslated = 	((HttpServletRequest)((HttpServletRequestWrapper) request).getRequest()).getPathTranslated();
-        String rootContextPath = pathTranslated.substring(0, pathTranslated.indexOf("webapps") + 7) + contextPath + "/";
+        PortletContext portletApplication = getPortletContext(); 
+        String path = portletApplication.getRealPath("/WEB-INF");
+        String rootContextPath = path + "/";
         
         /*
          * At this point we have all the information to run the PHP servlet:
