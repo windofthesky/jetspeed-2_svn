@@ -52,7 +52,6 @@ limitations under the License.
 
   <goal name="allBuild"
         description="Build all jars and war">
-    <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
   	<attainGoal name="db.create.test"/>
 
@@ -192,7 +191,6 @@ limitations under the License.
                ignoreFailures="false"/>
 
           <attainGoal name="copy.shared.deps" />
-          <attainGoal name="check.patch.tomcat5.jaas.realm"/>
   </goal>
 
   <goal name="copy.shared.deps">
@@ -466,7 +464,15 @@ limitations under the License.
    <!-- this will be inherited into all sub-projects to assists in
    	    setting jdbc test connecitons--> 
    <preGoal name="test:test">
-   	<j:set var="maven.junit.sysproperties" value="${maven.junit.sysproperties} org.apache.jetspeed.database.url org.apache.jetspeed.database.driver org.apache.jetspeed.database.user org.apache.jetspeed.database.password p6.home" />
+   	 <attainGoal name="dbSetup" />
+  </preGoal>
+  
+  <preGoal name="test:single">
+   	 <attainGoal name="dbSetup" />
+  </preGoal>
+  
+  <goal name="dbSetup">
+  	 <j:set var="maven.junit.sysproperties" value="${maven.junit.sysproperties} org.apache.jetspeed.database.url org.apache.jetspeed.database.driver org.apache.jetspeed.database.user org.apache.jetspeed.database.password p6.home" />
     <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
     <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
     <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
@@ -490,30 +496,6 @@ limitations under the License.
 
     <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
     <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
-  </preGoal>
-
-  <goal name="check.required.properties"
-        description="Check if the required properties are defined">
-    <fail message="Required property catalina.home undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.home"/>
-    <fail message="Required property catalina.version.major undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.version.major"/>
-    <fail message="Required property catalina.shared.lib undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="catalina.shared.lib"/>
-    <fail message="Required property deploy.war.dir undefined. See http://portals.apache.org/jetspeed-2/getting-started.html." unless="deploy.war.dir"/>
-  </goal>  
-
-  <goal name="check.patch.tomcat5.jaas.realm"
-        description="Check if the Tomcat5 JAASRealm patch is needed">
-    <j:set var="catalina_version_major" value="${catalina.version.major}"/>
-    <j:if test="${catalina_version_major == '5'}">
-      <mkdir dir="${catalina.home}/server/classes"/>
-      <javac srcdir="src/tomcat5-jaas-patch" destdir="${catalina.home}/server/classes">
-        <classpath>
-          <path refid="maven.dependency.classpath"/>
-          <fileset dir="${catalina.home}/server/lib">
-            <include name="**/*.jar"/>
-          </fileset>
-        </classpath>
-      </javac>
-    </j:if>
   </goal>
   
 </project>
