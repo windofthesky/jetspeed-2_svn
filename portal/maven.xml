@@ -4,7 +4,9 @@
          xmlns:reactor="reactor"
          xmlns:maven="jelly:maven">
 
-  
+  <!-- Target of maven test:single test -->
+<property name='testcase' value='org.apache.jetspeed.tools.pamanager.TestPortletDescriptor'/> 
+                                                  
  <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
   	<echo message="        Copying OJB Metadata        " />  	

@@ -27,7 +27,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -63,6 +62,8 @@ public class JetspeedProfiler implements Profiler, Startable
     private PersistenceStoreContainer pContainer;
     private String storeName = "jetspeed";
     
+    PageManager pageManager; 
+        
     /** The default locator class implementation */
     private Class locatorClass = JetspeedProfileLocator.class;
     /** The default principalRule association class implementation */
@@ -75,12 +76,12 @@ public class JetspeedProfiler implements Profiler, Startable
 
     private String anonymousUser = "anon";
     
-    public JetspeedProfiler(PersistenceStoreContainer pContainer, String storeName)
+    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, String storeName)
 	{
         this.pContainer = pContainer;
+        this.pageManager = pageManager;
         this.storeName = storeName;
     }
-
     
     /**
      * Create a JetspeedProfiler with properties. Expected properties are:
@@ -95,17 +96,19 @@ public class JetspeedProfiler implements Profiler, Startable
      * @param pContainer  The persistence store container
      * @param properties  Properties for this component described above
      */
-    public JetspeedProfiler(PersistenceStoreContainer pContainer, Properties properties)
+    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager, Properties properties)
 	{
         this.pContainer = pContainer;
+        this.pageManager = pageManager;        
         this.storeName = properties.getProperty("storeName", "jetspeed");        
         this.defaultRule = properties.getProperty("defaultRule", "j1");
         this.anonymousUser = properties.getProperty("anonymousUser", "anon");
-        initModelClasses(properties);
+        initModelClasses(properties); // TODO: move this to start()
     }
 
-    public JetspeedProfiler(PersistenceStoreContainer pContainer)
+    public JetspeedProfiler(PersistenceStoreContainer pContainer, PageManager pageManager)
 	{
+        this.pageManager = pageManager;        
         this.pContainer = pContainer;
 	}
     
@@ -134,7 +137,7 @@ public class JetspeedProfiler implements Profiler, Startable
     }
     
     public void start()
-	{
+	{                
 	}
     
     public void stop()
@@ -276,9 +279,7 @@ public class JetspeedProfiler implements Profiler, Startable
     {
         // TODO: under construction, for now use the name
         
-        // TODO: NEXT load the page manager as a dependency when i make the profiler a service
-        PageManager pm = (PageManager)Jetspeed.getComponentManager().getComponent("CastorXmlPageManager");
-        return pm.getPage(locator);
+        return pageManager.getPage(locator);
         
         /*
         Page page = null;

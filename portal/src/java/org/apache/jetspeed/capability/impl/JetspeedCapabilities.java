@@ -348,14 +348,11 @@ public class JetspeedCapabilities implements Capabilities, Startable
 
         if (co.isEmpty())
         {
-            System.out.println("collection is empty");
             MediaType mt = getMediaType("html");
             Vector v = new Vector();
             v.add(mt);
             return v;
         }
-        System.out.println("collection is NOT empty");
-
         return co;
     }
 

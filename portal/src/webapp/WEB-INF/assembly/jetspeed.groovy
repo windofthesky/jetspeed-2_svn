@@ -5,14 +5,12 @@ import org.picocontainer.defaults.ConstructorComponentAdapter
 import org.picocontainer.Parameter
 import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
-import org.hsqldb.jdbcDriver
 import org.apache.jetspeed.locator.JetspeedTemplateLocator
 import org.apache.jetspeed.components.ComponentAssemblyTestCase
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
+import org.apache.jetspeed.page.PageManager
 import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.Jetspeed
-import org.apache.jetspeed.components.hsql.HSQLServerComponent
-import org.apache.jetspeed.components.hsql.HSQLServerComponent
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
@@ -76,8 +74,8 @@ root = applicationRoot + "/WEB-INF/pages"
 Long scanRate = 120
 cacheSize = 100
 fileCache = new FileCache(scanRate, cacheSize)
-container.registerComponentInstance("CastorXmlPageManager", 
-                                     new CastorXmlPageManager(idgenerator, fileCache, root))
+pageManager = new CastorXmlPageManager(idgenerator, fileCache, root)
+container.registerComponentInstance(PageManager, pageManager)
 
 // This JNDI component helps us publish the datasource
 Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
@@ -135,7 +133,7 @@ container.registerComponentImplementation(eaClass, eaImplClass, new Parameter[] 
 //
 // Profiler
 //
-container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer))
+container.registerComponentInstance(Profiler, new JetspeedProfiler(pContainer, pageManager))
 
 //
 // Capabilities

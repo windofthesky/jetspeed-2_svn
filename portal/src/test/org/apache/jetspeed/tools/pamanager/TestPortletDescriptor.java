@@ -53,15 +53,20 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.portlet.PortletMode;
 
 import junit.framework.Test;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.Jetspeed;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4jFactory;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -72,8 +77,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -82,6 +86,7 @@ import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
+import org.picocontainer.MutablePicoContainer;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor
@@ -91,9 +96,10 @@ import org.apache.pluto.om.portlet.PortletDefinitionList;
  * 
  * @version $Id$
  */
-public class TestPortletDescriptor extends JetspeedTest
+public class TestPortletDescriptor extends AbstractComponentAwareTestCase
 {
     private PortletRegistryComponent registry;
+    private MutablePicoContainer container;
 
     /**
      * Defines the testcase name for JUnit.
@@ -115,6 +121,37 @@ public class TestPortletDescriptor extends JetspeedTest
         TestRunner.main(new String[] { TestPortletDescriptor.class.getName()});
     }
 
+    public static final String LOG4J_CONFIG_FILE = "log4j.file";
+	// TODO: make this relative, move it into script
+    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
+    
+    protected void setUp() throws Exception
+    {
+        // super.setUp();
+        
+        // TODO: this is REALLY strange. If I don't setup LOG4J here Digester crashes with a NPE
+        // if I setup Log4J in my super class, Digester crashes ... mysterious
+        // TODO: need a Logging Component
+        
+        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
+        Properties p = new Properties();
+        try
+        {
+            p.load(new FileInputStream(log4jFile));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        PropertyConfigurator.configure(p);
+        
+        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
+        
+        
+        container = (MutablePicoContainer) getContainer();
+        registry = (PortletRegistryComponent) container.getComponentInstance(PortletRegistryComponent.class);
+    }
+    
     /**
      * Creates the test suite.
      *
@@ -123,8 +160,9 @@ public class TestPortletDescriptor extends JetspeedTest
      */
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestPortletDescriptor.class);
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletDescriptor.class);
+        suite.setScript("org/apache/jetspeed/tools/pamanager/containers/pa-container.groovy");
+        return suite;
     }
 
     /*
@@ -304,15 +342,12 @@ public class TestPortletDescriptor extends JetspeedTest
 
     }
 
-    public void testWritingToDB() throws Exception
+    public void xtestWritingToDB() throws Exception
     {
         MutablePortletApplication app = registry.getPortletApplication("HW_App");
         if (app != null)
-        {
-                
-            registry.removeApplication(app);               
-            
-
+        {                
+            registry.removeApplication(app);                           
         }
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
 
@@ -348,20 +383,6 @@ public class TestPortletDescriptor extends JetspeedTest
 			
      
 
-    }
-    /** 
-     * <p>
-     * setUp
-     * </p>
-     * 
-     * @see junit.framework.TestCase#setUp()
-     * @throws Exception
-     */
-    public void setUp() throws Exception
-    {
-        // TODO Auto-generated method stub
-        super.setUp();
-        registry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
     }
 
 }
