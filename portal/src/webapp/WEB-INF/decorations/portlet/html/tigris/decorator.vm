@@ -34,23 +34,23 @@ limitations under the License.
   <tr>
     <td class="PTitle">
 
-      <table  border="0" cellpadding="0" cellspacing="0" width="100%"
-      <tr>
-    <td align="left" valign="middle" class="PTitleContent">
-       $jetspeed.getTitle($myPE, $myF)
-    </td>
-    <td align="right" valign="middle" >
-      <table border="0" cellpadding="0" cellspacing="0" >
-      <tr>       
-      #foreach ($action in $actions)
-      <td align="right" valign="middle" >
-      <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
-      </td>
-      #end
-      </tr>  
-      </table>
-    </td>
-      </tr>
+      <table  border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td align="left" valign="middle" class="PTitleContent">
+            $jetspeed.getTitle($myPE, $myF)
+          </td>
+          <td align="right" valign="middle" >
+            <table border="0" cellpadding="0" cellspacing="0" >
+              <tr>       
+#foreach ($action in $actions)
+                <td align="right" valign="middle" >
+                  <a href="${action.Action}" title="${action.Name}" ><img src="${action.Link}" alt="${action.Alt}" border="0"></a>
+                </td>
+#end
+              </tr>  
+            </table>
+          </td>
+        </tr>
       </table>
     </td>
     
