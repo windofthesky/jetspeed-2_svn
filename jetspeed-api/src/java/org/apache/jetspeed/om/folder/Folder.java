@@ -17,7 +17,6 @@ package org.apache.jetspeed.om.folder;
 
 
 import org.apache.jetspeed.om.folder.DocumentSet;
-import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
