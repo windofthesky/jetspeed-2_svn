@@ -151,9 +151,7 @@ public class PBStore implements PersistenceStore
         while(itr.hasNext())
         {
             Object obj = itr.next();
-            invoker.beforeDeletePersistent(obj);  
-            pb.delete(obj);
-            invoker.afterDeletePersistent(obj);
+            deletePersistent(obj);
         }
 
     }
