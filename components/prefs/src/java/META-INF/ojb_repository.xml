@@ -16,7 +16,7 @@ limitations under the License.
 <!--
    - N O D E
 -->	
-
+<descriptor-repository version="1.0" isolation-level="read-uncommitted">
 <class-descriptor
     class="org.apache.jetspeed.prefs.om.impl.NodeImpl"
     table="PREFS_NODE"
@@ -237,3 +237,4 @@ limitations under the License.
         <foreignkey field-ref="propertyKeyId"/>
     </reference-descriptor>
 </class-descriptor>
+</descriptor-repository>
