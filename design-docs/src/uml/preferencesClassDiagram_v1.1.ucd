@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" id="DLSWORKDavidLeStratjakartajetspeed21245" metadata="nsuml-1.4" initialized="true" showWireOptions="3" scrolledX="2" scrolledY="923">
+  <children xsi:type="editmodel:PackageEditModel" location="20,37" size="637,598" id="DLSWORKDavidLeStratjakartajetspeed21246">
+    <children xsi:type="editmodel:InterfaceEditModel" location="23,39" size="141,383" stereotype="interface" targetConnections="//@children.2/@children.1/@sourceConnections.1" id="DLSWORKDavidLeStratjakartajetspeed21247" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21258;DLSWORKDavidLeStratjakartajetspeed21263;DLSWORKDavidLeStratjakartajetspeed21251;DLSWORKDavidLeStratjakartajetspeed21278;DLSWORKDavidLeStratjakartajetspeed21256;DLSWORKDavidLeStratjakartajetspeed21271;DLSWORKDavidLeStratjakartajetspeed21280;DLSWORKDavidLeStratjakartajetspeed21266;DLSWORKDavidLeStratjakartajetspeed21261;DLSWORKDavidLeStratjakartajetspeed21283;DLSWORKDavidLeStratjakartajetspeed21288;DLSWORKDavidLeStratjakartajetspeed21300;DLSWORKDavidLeStratjakartajetspeed21290;DLSWORKDavidLeStratjakartajetspeed21298;DLSWORKDavidLeStratjakartajetspeed21268;DLSWORKDavidLeStratjakartajetspeed21293;DLSWORKDavidLeStratjakartajetspeed21253;DLSWORKDavidLeStratjakartajetspeed21295;DLSWORKDavidLeStratjakartajetspeed21275;DLSWORKDavidLeStratjakartajetspeed21285">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="118,320">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21293"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21288"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21298"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21251"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21278"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21283"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21256"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21261"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21271"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21266"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21295"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21290"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21300"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21253"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21280"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21285"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21258"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21263"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21275"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21268"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" location="207,38" size="167,447" stereotype="interface" id="DLSWORKDavidLeStratjakartajetspeed21398" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21421;DLSWORKDavidLeStratjakartajetspeed21436;DLSWORKDavidLeStratjakartajetspeed21451;DLSWORKDavidLeStratjakartajetspeed21414;DLSWORKDavidLeStratjakartajetspeed21407;DLSWORKDavidLeStratjakartajetspeed21409;DLSWORKDavidLeStratjakartajetspeed21458;DLSWORKDavidLeStratjakartajetspeed21433;DLSWORKDavidLeStratjakartajetspeed21443;DLSWORKDavidLeStratjakartajetspeed21461;DLSWORKDavidLeStratjakartajetspeed21453;DLSWORKDavidLeStratjakartajetspeed21402;DLSWORKDavidLeStratjakartajetspeed21456;DLSWORKDavidLeStratjakartajetspeed21448;DLSWORKDavidLeStratjakartajetspeed21438;DLSWORKDavidLeStratjakartajetspeed21417;DLSWORKDavidLeStratjakartajetspeed21424;DLSWORKDavidLeStratjakartajetspeed21446;DLSWORKDavidLeStratjakartajetspeed21404;DLSWORKDavidLeStratjakartajetspeed21463;DLSWORKDavidLeStratjakartajetspeed21412;DLSWORKDavidLeStratjakartajetspeed21427;DLSWORKDavidLeStratjakartajetspeed21431;DLSWORKDavidLeStratjakartajetspeed21441">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="144,384">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21431"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21456"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21436"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21446"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21441"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21461"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21407"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21417"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21412"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21424"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21402"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21451"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21433"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21458"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21438"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21448"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21443"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21463"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21409"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21421"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21414"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21427"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21404"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21453"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" location="410,38" size="146,255" stereotype="interface" id="DLSWORKDavidLeStratjakartajetspeed21418" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21587;DLSWORKDavidLeStratjakartajetspeed21592;DLSWORKDavidLeStratjakartajetspeed21585;DLSWORKDavidLeStratjakartajetspeed21565;DLSWORKDavidLeStratjakartajetspeed21577;DLSWORKDavidLeStratjakartajetspeed21582;DLSWORKDavidLeStratjakartajetspeed21567;DLSWORKDavidLeStratjakartajetspeed21580;DLSWORKDavidLeStratjakartajetspeed21575;DLSWORKDavidLeStratjakartajetspeed21572;DLSWORKDavidLeStratjakartajetspeed21590;DLSWORKDavidLeStratjakartajetspeed21570">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="123,192">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21585"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21590"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21565"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21575"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21580"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21570"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21587"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21592"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21567"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21577"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21582"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21572"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" location="408,330" size="143,255" stereotype="interface" id="DLSWORKDavidLeStratjakartajetspeed21272" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21653;DLSWORKDavidLeStratjakartajetspeed21658;DLSWORKDavidLeStratjakartajetspeed21678;DLSWORKDavidLeStratjakartajetspeed21676;DLSWORKDavidLeStratjakartajetspeed21661;DLSWORKDavidLeStratjakartajetspeed21656;DLSWORKDavidLeStratjakartajetspeed21671;DLSWORKDavidLeStratjakartajetspeed21673;DLSWORKDavidLeStratjakartajetspeed21663;DLSWORKDavidLeStratjakartajetspeed21651;DLSWORKDavidLeStratjakartajetspeed21668;DLSWORKDavidLeStratjakartajetspeed21666">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="120,192">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21671"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21676"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21666"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21651"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21656"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21661"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21673"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21678"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21668"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21653"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21658"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21663"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <children xsi:type="editmodel:PackageEditModel" location="18,633" size="634,347" id="DLSWORKDavidLeStratjakartajetspeed21740">
+    <children xsi:type="editmodel:InterfaceEditModel" location="163,126" size="130,111" stereotype="interface" targetConnections="//@children.2/@children.2/@sourceConnections.0" id="DLSWORKDavidLeStratjakartajetspeed21741" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21754;DLSWORKDavidLeStratjakartajetspeed21756;DLSWORKDavidLeStratjakartajetspeed21750;DLSWORKDavidLeStratjakartajetspeed21744;DLSWORKDavidLeStratjakartajetspeed21746;DLSWORKDavidLeStratjakartajetspeed21748">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="57,48">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21750"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21754"/>
+        <children xsi:type="editmodel:MethodEditModel" location="141,185" id="DLSWORKDavidLeStratjakartajetspeed21756"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:ClassEditModel" location="158,51" size="146,29" id="DLSWORKDavidLeStratjakartajetspeed21791" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21806;DLSWORKDavidLeStratjakartajetspeed21821;DLSWORKDavidLeStratjakartajetspeed21814;DLSWORKDavidLeStratjakartajetspeed21802;DLSWORKDavidLeStratjakartajetspeed21817;DLSWORKDavidLeStratjakartajetspeed21792;DLSWORKDavidLeStratjakartajetspeed21794;DLSWORKDavidLeStratjakartajetspeed21830;DLSWORKDavidLeStratjakartajetspeed21827;DLSWORKDavidLeStratjakartajetspeed21809;DLSWORKDavidLeStratjakartajetspeed21824;DLSWORKDavidLeStratjakartajetspeed21798">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" location="325,52" size="194,223" stereotype="interface" targetConnections="//@children.2/@children.1/@sourceConnections.0 //@children.2/@children.4/@sourceConnections.0" id="DLSWORKDavidLeStratjakartajetspeed21795" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21855;DLSWORKDavidLeStratjakartajetspeed21866;DLSWORKDavidLeStratjakartajetspeed21851;DLSWORKDavidLeStratjakartajetspeed21849;DLSWORKDavidLeStratjakartajetspeed21874;DLSWORKDavidLeStratjakartajetspeed21884;DLSWORKDavidLeStratjakartajetspeed21863;DLSWORKDavidLeStratjakartajetspeed21859;DLSWORKDavidLeStratjakartajetspeed21887;DLSWORKDavidLeStratjakartajetspeed21881;DLSWORKDavidLeStratjakartajetspeed21878;DLSWORKDavidLeStratjakartajetspeed21853;DLSWORKDavidLeStratjakartajetspeed21871">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="169,160">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21874"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21855"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21871"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21881"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21859"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21884"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21878"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21863"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21887"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21866"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <children xsi:type="editmodel:PackageEditModel" location="18,992" size="636,576" id="DLSWORKDavidLeStratjakartajetspeed21765">
+    <children xsi:type="editmodel:ClassEditModel" location="18,403" size="187,81" id="DLSWORKDavidLeStratjakartajetspeed22003" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed22008;DLSWORKDavidLeStratjakartajetspeed22005">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="78,32">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22005"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22008"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:ClassEditModel" location="20,50" size="140,193" id="DLSWORKDavidLeStratjakartajetspeed22021" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed22130;DLSWORKDavidLeStratjakartajetspeed22023;DLSWORKDavidLeStratjakartajetspeed22029;DLSWORKDavidLeStratjakartajetspeed22063;DLSWORKDavidLeStratjakartajetspeed22071;DLSWORKDavidLeStratjakartajetspeed22082;DLSWORKDavidLeStratjakartajetspeed22041;DLSWORKDavidLeStratjakartajetspeed22089;DLSWORKDavidLeStratjakartajetspeed22065;DLSWORKDavidLeStratjakartajetspeed22043;DLSWORKDavidLeStratjakartajetspeed22110;DLSWORKDavidLeStratjakartajetspeed22057;DLSWORKDavidLeStratjakartajetspeed22035;DLSWORKDavidLeStratjakartajetspeed22132;DLSWORKDavidLeStratjakartajetspeed22051;DLSWORKDavidLeStratjakartajetspeed22073;DLSWORKDavidLeStratjakartajetspeed22047;DLSWORKDavidLeStratjakartajetspeed22077;DLSWORKDavidLeStratjakartajetspeed22025;DLSWORKDavidLeStratjakartajetspeed22059;DLSWORKDavidLeStratjakartajetspeed22055;DLSWORKDavidLeStratjakartajetspeed22033;DLSWORKDavidLeStratjakartajetspeed22105;DLSWORKDavidLeStratjakartajetspeed22069;DLSWORKDavidLeStratjakartajetspeed22099;DLSWORKDavidLeStratjakartajetspeed22127;DLSWORKDavidLeStratjakartajetspeed22027;DLSWORKDavidLeStratjakartajetspeed22135;DLSWORKDavidLeStratjakartajetspeed22117;DLSWORKDavidLeStratjakartajetspeed22113;DLSWORKDavidLeStratjakartajetspeed22124;DLSWORKDavidLeStratjakartajetspeed22075;DLSWORKDavidLeStratjakartajetspeed22061;DLSWORKDavidLeStratjakartajetspeed22031;DLSWORKDavidLeStratjakartajetspeed22102;DLSWORKDavidLeStratjakartajetspeed22094;DLSWORKDavidLeStratjakartajetspeed22053;DLSWORKDavidLeStratjakartajetspeed22037;DLSWORKDavidLeStratjakartajetspeed22039;DLSWORKDavidLeStratjakartajetspeed22107;DLSWORKDavidLeStratjakartajetspeed22045;DLSWORKDavidLeStratjakartajetspeed22049;DLSWORKDavidLeStratjakartajetspeed22067">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="107,144">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22102"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22099"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22105"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22107"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22110"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22113"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22130"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22132"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22135"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:AssociationEditModel" id="DLSWORKDavidLeStratjakartajetspeed22027" connectionRouterKind="Manhattan" source="//@children.2/@children.1" target="//@children.1/@children.2" targetEnd="//@children.2/@children.1/@sourceConnections.0/@children.0" sourceEnd="//@children.2/@children.1/@sourceConnections.0/@children.1">
+        <children xsi:type="editmodel:AssociationEndEditModel" id="DLSWORKDavidLeStratjakartajetspeed22027" navigable="true" flags="2" multiplicityLabel="//@children.2/@children.1/@sourceConnections.0/@children.0/@children.1" roleLabel="//@children.2/@children.1/@sourceConnections.0/@children.0/@children.0">
+          <children xsi:type="editmodel:LabelEditModel" size="28,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+          <children xsi:type="editmodel:LabelEditModel" size="19,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        </children>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="32,0" attachSource="true"/>
+      </sourceConnections>
+      <sourceConnections xsi:type="editmodel:AssociationEditModel" id="DLSWORKDavidLeStratjakartajetspeed22033" connectionRouterKind="Manhattan" source="//@children.2/@children.1" target="//@children.0/@children.0" targetEnd="//@children.2/@children.1/@sourceConnections.1/@children.0" sourceEnd="//@children.2/@children.1/@sourceConnections.1/@children.1">
+        <children xsi:type="editmodel:AssociationEndEditModel" id="DLSWORKDavidLeStratjakartajetspeed22033" navigable="true" flags="2" multiplicityLabel="//@children.2/@children.1/@sourceConnections.1/@children.0/@children.1" roleLabel="//@children.2/@children.1/@sourceConnections.1/@children.0/@children.0">
+          <children xsi:type="editmodel:LabelEditModel" size="32,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+          <children xsi:type="editmodel:LabelEditModel" size="19,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        </children>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="0,51" attachSource="true"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:ClassEditModel" location="18,263" size="158,113" id="DLSWORKDavidLeStratjakartajetspeed21764" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21769;DLSWORKDavidLeStratjakartajetspeed21771;DLSWORKDavidLeStratjakartajetspeed21777;DLSWORKDavidLeStratjakartajetspeed21767;DLSWORKDavidLeStratjakartajetspeed21775">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="111,64">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21769"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21771"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21775"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21777"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="DLSWORKDavidLeStratjakartajetspeed21766" connectionRouterKind="Manual" source="//@children.2/@children.2" target="//@children.1/@children.0" targetEnd="//@children.2/@children.2/@sourceConnections.0/@children.1" sourceEnd="//@children.2/@children.2/@sourceConnections.0/@children.0">
+        <children xsi:type="editmodel:AssociationEndEditModel" location="2,0" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:ClassEditModel" location="195,105" size="153,113" id="DLSWORKDavidLeStratjakartajetspeed21975" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed22529;DLSWORKDavidLeStratjakartajetspeed22535;DLSWORKDavidLeStratjakartajetspeed22540;DLSWORKDavidLeStratjakartajetspeed22537;DLSWORKDavidLeStratjakartajetspeed22533;DLSWORKDavidLeStratjakartajetspeed22544;DLSWORKDavidLeStratjakartajetspeed22531;DLSWORKDavidLeStratjakartajetspeed22527">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="109,64">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22537"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22544"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22535"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed22540"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:ClassEditModel" location="318,238" size="222,241" id="DLSWORKDavidLeStratjakartajetspeed21899" runTimeClassModel="DLSWORKDavidLeStratjakartajetspeed21903;DLSWORKDavidLeStratjakartajetspeed21928;DLSWORKDavidLeStratjakartajetspeed21935;DLSWORKDavidLeStratjakartajetspeed21938;DLSWORKDavidLeStratjakartajetspeed21910;DLSWORKDavidLeStratjakartajetspeed21916;DLSWORKDavidLeStratjakartajetspeed21908;DLSWORKDavidLeStratjakartajetspeed21941;DLSWORKDavidLeStratjakartajetspeed21944;DLSWORKDavidLeStratjakartajetspeed21931;DLSWORKDavidLeStratjakartajetspeed21923;DLSWORKDavidLeStratjakartajetspeed21902;DLSWORKDavidLeStratjakartajetspeed21912;DLSWORKDavidLeStratjakartajetspeed21920">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="169,192">
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21908"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21931"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21912"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21928"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21938"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21916"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21910"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21941"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21935"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21920"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21944"/>
+        <children xsi:type="editmodel:MethodEditModel" id="DLSWORKDavidLeStratjakartajetspeed21923"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="DLSWORKDavidLeStratjakartajetspeed21901" connectionRouterKind="Manual" source="//@children.2/@children.4" target="//@children.1/@children.2" targetEnd="//@children.2/@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.2/@children.4/@sourceConnections.0/@children.0">
+        <children xsi:type="editmodel:AssociationEndEditModel" location="52,0" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showPackageMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showInterfaceStereotype="true" showClassStereotype="true" showPackageStereotype="true"/>
+</editmodel:ClassDiagramEditModel>
