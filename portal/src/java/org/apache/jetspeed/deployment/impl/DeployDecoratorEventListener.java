@@ -14,17 +14,13 @@ import java.io.InputStream;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.provider.local.LocalFileSystem;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.simpleregistry.Entry;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
+import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
 
 /**
  * <p>
@@ -40,14 +36,11 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
 {
     protected SimpleRegistry registry;
     protected static final Log log = LogFactory.getLog("deployment");
-    protected FileSystemManager fsManager;
     protected String deployToDir;
 
     public DeployDecoratorEventListener( SimpleRegistry registry, String deployToDir ) throws IOException
     {
         this.registry = registry;
-
-        fsManager = VFS.getManager();
 
         File checkFile = new File(deployToDir);
         if (checkFile.exists())
@@ -113,20 +106,21 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
             if (!registry.isRegistered(entry))
             {
                 log.info("Deploying decorator " + id);
-                FileObject sourceObject = null;
-                FileObject deployObject = null;
+                FileSystemHelper sourceObject = null;
+                FileSystemHelper deployObject = null;
                 try
                 {
 
                     String mediaType = conf.getString("media.type", "html");
                     log.info("Decorator " + id + " supports media type \"" + mediaType + "\"");
                     String deployPath = deployToDir + File.separator + mediaType + File.separator + id;
-                    log.info("Deploying decorator " + id + " to " + deployPath);                    
+                    log.info("Deploying decorator " + id + " to " + deployPath);
                     sourceObject = event.getDeploymentObject().getFileObject();
-                    
-                    deployObject = fsManager.resolveFile(deployPath);
-                    deployObject.createFolder();
-                    deployObject.copyFrom(sourceObject, new AllFileSelector());
+
+                    File deployPathFile = new File(deployPath);
+                    deployPathFile.mkdirs();
+                    deployObject = new DirectoryHelper(deployPathFile);
+                    deployObject.copyFrom(sourceObject.getRootDirectory());
 
                     registry.register(entry);
                     log.info("Registering decorator " + deployToDir + "/" + id);
@@ -150,7 +144,7 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
                             deployObject.close();
                         }
                     }
-                    catch (FileSystemException e2)
+                    catch (IOException e2)
                     {
 
                     }
@@ -176,6 +170,21 @@ public class DeployDecoratorEventListener implements DeploymentEventListener
      * @throws DeploymentException
      */
     public void invokeUndeploy( DeploymentEvent event ) throws DeploymentException
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * <p>
+     * invokeRedeploy
+     * </p>
+     * 
+     * @see org.apache.jetspeed.deployment.DeploymentEventListener#invokeRedeploy(org.apache.jetspeed.deployment.DeploymentEvent)
+     * @param event
+     * @throws DeploymentException
+     */
+    public void invokeRedeploy( DeploymentEvent event ) throws DeploymentException
     {
         // TODO Auto-generated method stub
 

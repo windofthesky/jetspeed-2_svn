@@ -28,12 +28,16 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.VFS;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.deployment.impl.FileNotDeployableException;
+import org.apache.jetspeed.deployment.impl.StandardDeploymentObject;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
+import org.apache.jetspeed.util.JarHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 /**
@@ -434,16 +438,20 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
      * @throws IOException
+     * @throws FileNotDeployableException
      */
 
     public static void register(Registration registrator,                                
                                 String portletApplicationName,
                                 String warFile)
-    throws PortletApplicationException, IOException
+    throws PortletApplicationException, FileNotDeployableException, IOException
     {
-        System.out.println("Registering Portlet Application [" + portletApplicationName + "]...");
-        registrator.register(new PortletApplicationWar(warFile,  portletApplicationName, "/"+portletApplicationName, VFS.getManager()) );
-        System.out.println("...PAM Register done");        
+        System.out.println("Registering Portlet Application [" + portletApplicationName + "]...");  
+              
+        StandardDeploymentObject deploymentObject = new StandardDeploymentObject(new File(warFile));
+        registrator.register(new PortletApplicationWar(deploymentObject.getFileObject(),  portletApplicationName, "/"+portletApplicationName ) );
+        System.out.println("...PAM Register done");   
+        deploymentObject.close();
     }
 
     /**
@@ -471,17 +479,22 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @param warFile The warFile containing the Portlet Application
      * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
+     * @throws IOException
+     * @throws FileNotDeployableException
      */
 
     public static void deploy(Deployment deployer,
                               String webAppsDir, 
                               String warFile,
                               String portletApplicationName)
-    throws PortletApplicationException, IOException        
+    throws PortletApplicationException, FileNotDeployableException, IOException        
     {
         System.out.println("Deploying Web Application [" + webAppsDir + "] to Portlet Application [" + portletApplicationName + "]...");
-        deployer.deploy(new PortletApplicationWar(warFile, portletApplicationName, "/"+portletApplicationName, VFS.getManager()));
-        System.out.println("...PAM Deploy done");        
+               
+        StandardDeploymentObject deploymentObject = new StandardDeploymentObject(new File(warFile));
+        deployer.deploy(new PortletApplicationWar(deploymentObject.getFileObject(), portletApplicationName, "/"+portletApplicationName));
+        System.out.println("...PAM Deploy done");   
+        deploymentObject.close();
     }
 
     /**
@@ -507,7 +520,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         System.out.println("Un-deploying Web Application [" + webApplicationName + "], Portlet Application [" + portletApplicationName + "]...");
         
         String webAppPath = deployer.getDeploymentPath(webApplicationName);
-        deployer.undeploy(new PortletApplicationWar(webAppPath, portletApplicationName, "/"+portletApplicationName, VFS.getManager() ));
+        File warFile = new File(webAppPath);
+        deployer.undeploy(new PortletApplicationWar(new DirectoryHelper(warFile), portletApplicationName, "/"+portletApplicationName));
         System.out.println("...PAM Undeploy done");                                
     }
 

@@ -15,13 +15,15 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileSystemManager;
+import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
@@ -29,15 +31,18 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * This is the catalina specific implemenation for deplyment of Portlet
- * Applications.
+ * This PAM is the base class for most other PAM implementations. Does most of
+ * the registry and file system clean for you.
  * 
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann </a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
@@ -58,23 +63,20 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     //private DeployUtilities util;
     protected PortletRegistryComponent registry;
-    private String vfsConfigUri = null;
     protected String webAppsDir;
-    protected FileSystemManager fsManager;
     protected PortletEntityAccessComponent entityAccess;
     protected PortletWindowAccessor windowAccess;
 
-    public FileSystemPAM( String webAppsDir, PortletRegistryComponent registry, FileSystemManager fsManager,
+    public FileSystemPAM( String webAppsDir, PortletRegistryComponent registry,
             PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess )
     {
         super();
         ArgUtil.assertNotNull(PortletRegistryComponent.class, registry, this);
-        ArgUtil.assertNotNull(FileSystemManager.class, fsManager, this);
         ArgUtil.assertNotNull(PortletEntityAccessComponent.class, entityAccess, this);
         this.registry = registry;
         this.entityAccess = entityAccess;
         this.webAppsDir = webAppsDir;
-        this.fsManager = fsManager;
+
         this.windowAccess = windowAccess;
     }
 
@@ -111,6 +113,20 @@ public class FileSystemPAM implements PortletApplicationManagement
 
     public void unregister( String paName ) throws PortletApplicationException
     {
+        doUnregister(paName, true);
+
+    }
+
+    /**
+     * <p>
+     * doUnregister
+     * </p>
+     * 
+     * @param paName
+     * @throws PortletApplicationException
+     */
+    protected void doUnregister( String paName, boolean purgeEntityInfo ) throws PortletApplicationException
+    {
         PersistenceStore store = registry.getPersistenceStore();
 
         try
@@ -124,20 +140,28 @@ public class FileSystemPAM implements PortletApplicationManagement
                 return;
             }
 
+            log.info("Removing a portlets from the PortletCache that belong to portlet application " + paName);
+            PortletCache.removeAll(app);
+
             // remove entries from the registry
             log.info("Remove all registry entries defined for portlet application " + paName);
-            
+
             Iterator portlets = app.getPortletDefinitions().iterator();
-            
-            while(portlets.hasNext())
-            {               
+
+            while (portlets.hasNext())
+            {
                 PortletDefinition portletDefinition = (PortletDefinition) portlets.next();
                 Iterator entities = entityAccess.getPortletEntities(portletDefinition).iterator();
-                while(entities.hasNext())
+                while (entities.hasNext())
                 {
                     PortletEntity entity = (PortletEntity) entities.next();
+                    if(purgeEntityInfo)
+                    {                      
+                      entityAccess.removePortletEntity(entity);                     
+                    }
+                    entityAccess.removeFromCache(entity);                    
                     windowAccess.removeWindows(entity);
-                    entityAccess.removePortletEntity(entity);
+                        
                 }
             }
 
@@ -152,7 +176,6 @@ public class FileSystemPAM implements PortletApplicationManagement
 
             throw new PortletApplicationException(re.getMessage());
         }
-
     }
 
     /**
@@ -365,13 +388,9 @@ public class FileSystemPAM implements PortletApplicationManagement
 
             log.info("Rollback: Remove " + portletAppDir + " and all sub-directories.");
 
-            paWar = new PortletApplicationWar(portletAppDir, paName, "/" + paName, this.fsManager);
-            paWar.removeWar();
+            DirectoryHelper dirHelper = new DirectoryHelper(new File(portletAppDir));
+            dirHelper.remove();
 
-        }
-        catch (FileNotFoundException fnfe)
-        {
-            log.warn(portletAppDir + " could not be found, skipping deletion.", fnfe);
         }
         catch (Exception e)
         {
@@ -439,6 +458,67 @@ public class FileSystemPAM implements PortletApplicationManagement
         else
         {
             return webAppsDir;
+        }
+    }
+
+    /**
+     * <p>
+     * clearPortletEntities
+     * </p>
+     * 
+     * @see org.apache.jetspeed.tools.pamanager.PortletApplicationManagement#clearPortletEntities(org.apache.pluto.om.portlet.PortletDefinition)
+     * @param portletDefinition
+     */
+    public void clearPortletEntities( PortletDefinition portletDefinition )
+    {
+
+        Iterator entities = entityAccess.getPortletEntities(portletDefinition).iterator();
+        while (entities.hasNext())
+        {
+            PortletEntity entity = (PortletEntity) entities.next();
+            try
+            {
+                windowAccess.removeWindows(entity);
+                entityAccess.removePortletEntity(entity);
+                String entityNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + entity.getId();
+                if (Preferences.userRoot().nodeExists(entityNodePath))
+                {
+                    Preferences.userRoot().node(entityNodePath).removeNode();
+                }
+            }
+            catch (Exception e)
+            {
+                log.warn("Failed to delete preference node for PortletEntity: " + entity.getId());
+            }
+
+        }
+    }
+
+    /**
+     * <p>
+     * reDeploy
+     * </p>
+     * 
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#redeploy(org.apache.jetspeed.util.descriptor.PortletApplicationWar)
+     * @param paWar
+     * @throws PortletApplicationException
+     */
+    public void redeploy( PortletApplicationWar paWar ) throws PortletApplicationException
+    {
+        try
+        {
+            doUnregister(paWar.getPortletApplicationName(), false);
+            String paName = paWar.getPortletApplicationName();
+            DirectoryHelper deployedDir = new DirectoryHelper(new File(webAppsDir + "/" + paName));
+            PortletApplicationWar existingWar = new PortletApplicationWar(deployedDir, paName, "/" + paName);
+
+            existingWar.removeWar();
+            existingWar.close();
+            sysDeploy(paWar, DEPLOY_WAR);
+        }
+        catch (IOException e)
+        {
+            throw new PortletApplicationException(e);
         }
     }
 }

@@ -50,6 +50,9 @@ public interface Deployment
     throws PortletApplicationException;
     
     String getDeploymentPath(String webAppName);
+    
+    public void redeploy(PortletApplicationWar paWar) 
+    throws PortletApplicationException;
 
 
 }

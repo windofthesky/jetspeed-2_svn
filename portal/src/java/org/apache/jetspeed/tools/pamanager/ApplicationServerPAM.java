@@ -17,7 +17,6 @@ package org.apache.jetspeed.tools.pamanager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileSystemManager;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
@@ -56,9 +55,9 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
      * @param entityAccess
      * @param appServerManager
      */
-    public ApplicationServerPAM( String webAppsDir, PortletRegistryComponent registry, FileSystemManager fsManager, PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, ApplicationServerManager appServerManager )
-    {
-        super(webAppsDir, registry, fsManager, entityAccess, windowAccess);
+    public ApplicationServerPAM( String webAppsDir, PortletRegistryComponent registry, PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess, ApplicationServerManager appServerManager )
+    {       
+        super(webAppsDir, registry, entityAccess, windowAccess);
         ArgUtil.assertNotNull(ApplicationServerManager.class, appServerManager, this);
         this.appServerManager = appServerManager;      
     }
@@ -248,5 +247,35 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
     private boolean isServerAvailable()
     {
         return appServerManager.isConnected();
+    }
+    /**
+     * <p>
+     * redeploy
+     * </p>
+     *
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#redeploy(org.apache.jetspeed.util.descriptor.PortletApplicationWar)
+     * @param paWar
+     * @throws PortletApplicationException
+     */
+    public void redeploy( PortletApplicationWar paWar ) throws PortletApplicationException
+    {
+        try
+        {
+            super.redeploy(paWar);
+            String paName = paWar.getPortletApplicationName();
+            if(isServerAvailable())
+            {
+                checkResponse(appServerManager.reload("/" + paName));
+            }
+
+        }
+        catch (PortletApplicationException pe)
+        {
+            throw pe;
+        }
+        catch (Exception e)
+        {
+            throw new PortletApplicationException(e);
+        }
     }
 }

@@ -15,8 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
@@ -25,6 +23,7 @@ import org.apache.jetspeed.deployment.DeploymentObject;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
+import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
@@ -50,7 +49,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private PortletApplicationManagement pam;
     private Map appNameToFile;
     protected PortletRegistryComponent registry;
-    protected FileSystemManager fsManager;
+
 
     /**
      * 
@@ -61,10 +60,10 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      *             the <code>webAppDir</code> directory does not exist.
      */
     public DeployPortletAppEventListener( String webAppDir, PortletApplicationManagement pam,
-            PortletRegistryComponent registry, FileSystemManager fsManager ) throws FileNotFoundException
+            PortletRegistryComponent registry  ) throws FileNotFoundException
     {
         File checkFile = new File(webAppDir);
-        this.fsManager = fsManager;
+   
 
         if (checkFile.exists())
         {
@@ -93,7 +92,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         String paName = null;
         try
         {
-           
+
             boolean isLocal = event.getName().startsWith("jetspeed-");
 
             String filePath = event.getPath();
@@ -112,8 +111,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
             if (pa != null)
             {
-                log.info("Removing a portlets from the PortletCache that belong to portlet application " + paName);
-                PortletCache.removeAll(pa);
                 webAppContextRoot = pa.getWebApplicationDefinition().getContextRoot();
             }
             else
@@ -121,7 +118,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 webAppContextRoot = "/" + paName;
             }
 
-            
             if (isLocal)
             {
                 log.info("Preparing to unregister portlet application \"" + paName + "\"");
@@ -130,8 +126,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             else
             {
                 log.info("Preparing to undeploy portlet application \"" + paName + "\"");
-
-                deployedWar = new PortletApplicationWar(webAppDir + "/" + paName, paName, webAppContextRoot, fsManager);
+                DirectoryHelper dir = new DirectoryHelper(new File(webAppDir + "/" + paName));
+                deployedWar = new PortletApplicationWar(dir, paName, webAppContextRoot );
                 pam.undeploy(deployedWar);
             }
 
@@ -165,6 +161,20 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      */
     public void invokeDeploy( DeploymentEvent event ) throws DeploymentException
     {
+        doDeploy(event);
+
+    }
+
+    /**
+     * <p>
+     * doDeploy
+     * </p>
+     * 
+     * @param event
+     * @throws DeploymentException
+     */
+    protected void doDeploy( DeploymentEvent event ) throws DeploymentException
+    {
         InputStream portletXmlStream = null;
         try
         {
@@ -175,7 +185,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 return;
             }
 
-            
             String fileName = deploymentObj.getName();
             boolean isLocal = fileName.startsWith("jetspeed-");
 
@@ -193,10 +202,10 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 log.info("Application id not defined in portlet.xml so using war name " + id);
             }
 
-            PortletApplicationWar paWar = new PortletApplicationWar(deploymentObj.getFileObject(), id, "/" + id,
-                    this.fsManager);
+            PortletApplicationWar paWar = new PortletApplicationWar(deploymentObj.getFileObject(), id, "/" + id );
 
-            if (registry.getPortletApplicationByIdentifier(id) != null)
+            if (registry.getPortletApplicationByIdentifier(id) != null
+                    && !event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
             {
                 log.info("Portlet application \"" + id + "\""
                         + " already been registered.  Skipping initial deployment.");
@@ -210,26 +219,44 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 return;
             }
 
-            log.info("Preparing to deploy portlet app \"" + id + "\"");
+            log.info("Preparing to (re) deploy portlet app \"" + id + "\"");
 
-            if (isLocal)
+            if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
             {
-                log.info(fileName + " will be registered as a local portlet applicaiton.");
-                pam.register(paWar);
-                JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+
+                if (isLocal)
+                {
+                    log.info(fileName + " will be registered as a local portlet applicaiton.");                    
+                    pam.register(paWar);
+                    JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+                }
+                else
+                {
+                    log.info("Deploying portlet applicaion WAR " + fileName);
+                    pam.deploy(paWar);
+                }
             }
-            else
+            else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
             {
-                log.info("Deploying portlet applicaion WAR " + fileName);
-                pam.deploy(paWar);
+                if (isLocal)
+                {
+                    //TODO: get this working
+                    
+                }
+                else
+                {
+                    log.info("Re-deploying portlet applicaion WAR " + fileName);
+                    pam.redeploy(paWar);
+                }
+                
             }
 
             appNameToFile.put(deploymentObj.getPath(), id);
-            log.info("Portlet app \"" + id + "\" " + "successfuly deployed.");
+            log.info("Portlet app \"" + id + "\" " + "successfuly (re)deployed.");
         }
         catch (Exception e)
         {
-            String msg = "Error deploying portlet app: " + e.toString();
+            String msg = "Error (re)deploying portlet app: " + e.toString();
             throw new DeploymentException(msg, e);
         }
         finally
@@ -246,7 +273,19 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 }
             }
         }
-
     }
 
+    /**
+     * <p>
+     * invokeRedeploy
+     * </p>
+     * 
+     * @see org.apache.jetspeed.deployment.DeploymentEventListener#invokeRedeploy(org.apache.jetspeed.deployment.DeploymentEvent)
+     * @param event
+     * @throws DeploymentException
+     */
+    public void invokeRedeploy( DeploymentEvent event ) throws DeploymentException
+    {
+        doDeploy(event);
+    }
 }

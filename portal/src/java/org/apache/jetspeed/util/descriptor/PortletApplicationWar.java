@@ -16,7 +16,9 @@
 package org.apache.jetspeed.util.descriptor;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,7 +26,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,18 +37,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.impl.VFSClassLoader;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
+import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
@@ -72,7 +72,8 @@ import org.xml.sax.SAXException;
  * 
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
  * @author <a href="mailto:mavery@einnovation.com">Matt Avery </a>
- * @version $Id$
+ * @version $Id: PortletApplicationWar.java,v 1.10 2004/07/06 16:56:19 weaver
+ *          Exp $
  */
 public class PortletApplicationWar
 {
@@ -87,10 +88,10 @@ public class PortletApplicationWar
 
     protected String paName;
     protected String webAppContextRoot;
-    protected FileObject warStruct;
-    protected FileSystemManager fsManager;
+    protected FileSystemHelper warStruct;
     private MutableWebApplication webApp;
     private MutablePortletApplication portletApp;
+    protected final List openedResources;
 
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
@@ -100,65 +101,25 @@ public class PortletApplicationWar
 
     /**
      * @param warFile
-     *            <code>org.apache.commons.vfs.FileObject</code> representing
-     *            the WAR file we are working with. This <code>FileObject</code>
-     *            can be an actual WAR file or a directory structure layed out
-     *            in a WAR-like fashion. name of the portlet application the
-     *            <code>warPath</code> contains
+     *            {@link org.apache.jetspeed.util.FileSystemHelper}representing
+     *            the WAR file we are working with. This
+     *            <code>FileSystemHelper</code> can be an actual WAR file or a
+     *            directory structure layed out in a WAR-like fashion. name of
+     *            the portlet application the <code>warPath</code> contains
      * @param webAppContextRoot
      *            context root relative to the servlet container of this app
-     * @param fsManager
-     *            org.apache.commons.vfs.FileSystemManager that will be used to
-     *            operate on the WAR file.
      * @throws IOException
      */
-    public PortletApplicationWar( FileObject warStruct, String paName, String webAppContextRoot,
-            FileSystemManager fsManager ) throws IOException
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot )
+            throws IOException
     {
         validatePortletApplicationName(paName);
 
-        if (fsManager != null)
-        {
-            this.fsManager = fsManager;
-        }
-        else
-        {
-            throw new IllegalArgumentException("PortletApplicationWar requires a non-null FileSystemManager instance.");
-        }
-        
-        if(warStruct.getType().equals(FileType.FOLDER))
-        {
-            this.warStruct = warStruct;
-        }
-        else
-        {
-            throw new IllegalArgumentException(warStruct.getURL()+" must be of type FileType.FOLDER, not "+warStruct.getType());
-        }
-        
-
         this.paName = paName;
         this.webAppContextRoot = webAppContextRoot;
-    }
+        this.openedResources = new ArrayList();
+        this.warStruct = warStruct;
 
-    /**
-     * 
-     * @param warPath
-     *            A path on the file system that points to a WAR file we are
-     *            working with. The <code>warPath</code> can be an actual WAR
-     *            file or a directory structure layed out in a WAR-like fashion.
-     *            name of the portlet application the <code>warPath</code>
-     *            contains
-     * @param webAppContextRoot
-     *            context root relative to the servlet container of this app
-     * @param fsManager
-     *            org.apache.commons.vfs.FileSystemManager that will be used to
-     *            operate on the WAR file.
-     * @throws IOException
-     */
-    public PortletApplicationWar( String warPath, String paName, String webAppContextRoot, FileSystemManager fsManager )
-            throws IOException
-    {
-        this(fsManager.toFileObject(new File(warPath)), paName, webAppContextRoot, fsManager);
     }
 
     /**
@@ -328,13 +289,15 @@ public class PortletApplicationWar
      */
     protected InputStream getInputStream( String path ) throws IOException
     {
-        FileObject child = warStruct.resolveFile(path);
-        if (child == null)
+        File child = new File(warStruct.getRootDirectory(), path);
+        if (child == null || !child.exists())
         {
             throw new FileNotFoundException("Unable to locate file or path " + child);
         }
 
-        return child.getContent().getInputStream();
+        FileInputStream fileInputStream = new FileInputStream(child);
+        openedResources.add(fileInputStream);
+        return fileInputStream;
     }
 
     /**
@@ -355,13 +318,15 @@ public class PortletApplicationWar
      */
     protected OutputStream getOutputStream( String path ) throws IOException
     {
-        FileObject child = warStruct.resolveFile(path);
-        if (child == null)
+        File child = new File(warStruct.getRootDirectory(), path);
+        if (child == null || !child.exists())
         {
             throw new FileNotFoundException("Unable to locate file or path " + child);
         }
 
-        return child.getContent().getOutputStream();
+        FileOutputStream fileOutputStream = new FileOutputStream(child);
+        openedResources.add(fileOutputStream);
+        return fileOutputStream;
     }
 
     protected Writer getWriter( String path ) throws IOException
@@ -386,16 +351,17 @@ public class PortletApplicationWar
      */
     public PortletApplicationWar copyWar( String targetAppRoot ) throws IOException
     {
-        FileObject target = fsManager.resolveFile(new File(targetAppRoot).getAbsolutePath());
-
+        // FileObject target = fsManager.resolveFile(new
+        // File(targetAppRoot).getAbsolutePath());
+        FileSystemHelper target = new DirectoryHelper(new File(targetAppRoot));
         try
-        {           
-            target.copyFrom(warStruct, new AllFileSelector());
+        {
+            target.copyFrom(warStruct.getRootDirectory());
 
-            return new PortletApplicationWar(target, paName, webAppContextRoot, fsManager);
+            return new PortletApplicationWar(target, paName, webAppContextRoot);
 
         }
-        catch (FileSystemException e)
+        catch (IOException e)
         {
             throw e;
         }
@@ -404,7 +370,6 @@ public class PortletApplicationWar
             target.close();
 
         }
-
     }
 
     /**
@@ -420,18 +385,14 @@ public class PortletApplicationWar
      */
     public void removeWar() throws IOException
     {
-        File checkFile = new File(warStruct.getURL().getFile());
-        if(checkFile.exists())
+        if (warStruct.getRootDirectory().exists())
         {
-          warStruct.delete(new AllFileSelector());
-          warStruct.delete();
-          checkFile.delete();         
-          fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
+            warStruct.remove();
         }
         else
         {
-            fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
-            throw new FileNotFoundException("PortletApplicationWar ,"+warStruct.getURL().getFile()+", does not exist.");
+            throw new FileNotFoundException("PortletApplicationWar ," + warStruct.getRootDirectory()
+                    + ", does not exist.");
         }
     }
 
@@ -668,10 +629,28 @@ public class PortletApplicationWar
      */
     public void close() throws IOException
     {
-        warStruct.close();
-        fsManager.getFilesCache().removeFile(warStruct.getFileSystem(), warStruct.getName());
-       
-        //fsManager.getFilesCache().clear(warStruct.getFileSystem());
+
+        Iterator resources = openedResources.iterator();
+        while (resources.hasNext())
+        {
+            try
+            {
+                Object res = resources.next();
+                if (res instanceof InputStream)
+                {
+                    ((InputStream) res).close();
+                }
+                else if (res instanceof OutputStream)
+                {
+                    ((OutputStream) res).close();
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
     }
 
     /**
@@ -693,40 +672,31 @@ public class PortletApplicationWar
      */
     public ClassLoader createClassloader( ClassLoader parent ) throws IOException
     {
-        ArrayList fileObjects = new ArrayList();
-        FileObject webInfClasses = null;
-        try
+        ArrayList urls = new ArrayList();
+        File webInfClasses = null;
+
+        webInfClasses = new File(warStruct.getRootDirectory(), ("WEB-INF/classes/"));
+        if (webInfClasses.exists())
         {
-            webInfClasses = warStruct.resolveFile("WEB-INF/classes/");
-            log.info("Adding " + webInfClasses.getURL() + " to class path.");
-            fileObjects.add(webInfClasses);
-        }
-        catch (FileSystemException e)
-        {
-            log.info("No class dependencies found");
+            log.info("Adding " + webInfClasses.toURL() + " to class path.");
+            urls.add(webInfClasses.toURL());
         }
 
-        try
+        File webInfLib = new File(warStruct.getRootDirectory(), "WEB-INF/lib");
+
+        if (webInfLib.exists())
         {
-            FileObject webInfLib = warStruct.resolveFile("WEB-INF/lib");
-            FileObject[] jars = webInfLib.getChildren();
-            URL[] jarUrls = new URL[jars.length];
+            File[] jars = webInfLib.listFiles();
+
             for (int i = 0; i < jars.length; i++)
             {
-                FileObject jar = jars[i];
-                log.info("Adding " + jar.getURL() + " to class path.");
-                fileObjects.add(jar);
+                File jar = jars[i];
+                log.info("Adding " + jar.toURL() + " to class path.");
+                urls.add(jar.toURL());
             }
-
-        }
-        catch (FileSystemException e)
-        {
-            log.info("No jar dependencies found");
         }
 
-        return new VFSClassLoader((FileObject[]) fileObjects.toArray(new FileObject[fileObjects.size()]), fsManager,
-                parent);
-
+        return new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]), parent);
     }
 
     /**
@@ -750,9 +720,9 @@ public class PortletApplicationWar
     {
         try
         {
-            return warStruct.getURL().toExternalForm();
+            return warStruct.getRootDirectory().toURL().toExternalForm();
         }
-        catch (FileSystemException e)
+        catch (MalformedURLException e)
         {
             return null;
         }
