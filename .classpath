@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
+	<classpathentry kind="src" path="jetspeed-api/src/java"/>
+	<classpathentry kind="src" path="components/locator/src/java"/>
+	<classpathentry kind="src" path="components/locator/src/test"/>
 	<classpathentry kind="src" path="components/file-cache/src/java"/>
 	<classpathentry kind="src" path="components/file-cache/src/test"/>
 	<classpathentry kind="src" path="components/id-generator/src/java"/>
