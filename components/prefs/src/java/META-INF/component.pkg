@@ -1,0 +1,11 @@
+package.id=Preferences
+
+component=org.apache.jetspeed.prefs.PreferencesProvider, org.apache.jetspeed.prefs.PropertyManager
+
+org.apache.jetspeed.prefs.PropertyManager.key.as.class=true
+org.apache.jetspeed.prefs.PropertyManager.is.singleton=true
+org.apache.jetspeed.prefs.PropertyManager.classname=org.apache.jetspeed.prefs.impl.PropertyManagerImpl
+
+org.apache.jetspeed.prefs.PreferencesProvider.key.as.class=true
+org.apache.jetspeed.prefs.PreferencesProvider.is.singleton=true
+org.apache.jetspeed.prefs.PreferencesProvider.classname=org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
