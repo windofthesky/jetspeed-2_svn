@@ -15,7 +15,6 @@
 package org.apache.jetspeed.userinfo.impl;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -31,9 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -51,8 +48,9 @@ import org.apache.pluto.om.common.ObjectID;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @version $Id$
  */
-public class UserInfoManagerImpl implements UserInfoManager
+public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements UserInfoManager
 {
 
     /** Logger */
@@ -226,65 +224,6 @@ public class UserInfoManagerImpl implements UserInfoManager
         return userInfoMap;
     }
 
-    /**
-     * <p>
-     * Return the linked attributes mapping portlet user attributes to portal
-     * user attributes.
-     * </p>
-     * 
-     * @param userAttributes
-     *            The declarative portlet user attributes.
-     * @param userAttributeRefs
-     *            The declarative jetspeed portlet extension user attributes
-     *            reference.
-     * @return The collection of linked attributes.
-     */
-    private Collection mapLinkedUserAttributes(Collection userAttributes, Collection userAttributeRefs)
-    {
-        Collection linkedUserAttributes = new ArrayList();
-        if ((null != userAttributeRefs) && (userAttributeRefs.size() > 0))
-        {
-            Iterator attrIter = userAttributes.iterator();
-            while (attrIter.hasNext())
-            {
-                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
-                boolean linkedAttribute = false;
-                if (null != currentAttribute)
-                {
-                    Iterator attrRefsIter = userAttributeRefs.iterator();
-                    while (attrRefsIter.hasNext())
-                    {
-                        UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
-                        if (null != currentAttributeRef)
-                        {
-                            if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
-                            {
-                                if (log.isDebugEnabled())
-                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
-                                            + "], [linked name, " + currentAttributeRef.getName() + "]]");
-                                linkedUserAttributes.add(currentAttributeRef);
-                                linkedAttribute = true;
-                            }
-                        }
-                    }
-                }
-                if (!linkedAttribute)
-                {
-                    linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
-                }
-            }
-        }
-        else
-        {
-            Iterator attrIter = userAttributes.iterator();
-            while (attrIter.hasNext())
-            {
-                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
-                linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
-            }
-        }
-        return linkedUserAttributes;
-    }
 
     /**
      * <p>
