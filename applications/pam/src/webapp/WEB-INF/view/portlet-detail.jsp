@@ -238,6 +238,9 @@ limitations under the License.
 				<td>
 					<input type="text" name="title" value=""/>
 				</td>
+				<td>
+					<fmt:message key="pam.details.title.description"/>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -245,6 +248,9 @@ limitations under the License.
 				</td>
 				<td>
 					<input type="text" name="short_title" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.short_title.description"/>
 				</td>
 			</tr>
 			<tr>
@@ -254,6 +260,9 @@ limitations under the License.
 				<td>
 					<input type="text" name="keyword" value=""/>
 				</td>
+				<td>
+					<fmt:message key="pam.details.keyword.description"/>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -261,6 +270,9 @@ limitations under the License.
 				</td>
 				<td>
 					<input type="text" name="locale" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.locale.description"/>
 				</td>
 			</tr>
 		</table>
@@ -272,13 +284,93 @@ limitations under the License.
 <c:if test="${selectedPortletTab.id == 'pd_parameters'}">
 	<c:set var="paramSet" value="${selectedPDef.initParameterSet}"/>
 	
+	<portlet:actionURL var="edit_parameter_link" >
+    </portlet:actionURL>
+	
 	<%--
 		TODO:  if needed, place iterator into page context
 		see prefs section
 	--%>
+	
+	<form action="<c:out value="${edit_parameter_link}"/>">
+		<input type="hidden" name="portlet_action" value=""/>
+	
+	<table>
 	<c:forEach var="theparam" items="${paramSet.innerCollection}">
-		<c:out value="${theparam.name}"/> | <c:out value="${theparam.value}"/> <br />
+		<tr>
+			<td>
+				<input type="checkbox" name="parameter_remove_id" value="<c:out value="${theparam.name}"/>" />
+			</td>
+			<td>
+				<input type="hidden" name="parameter_edit_id" value="<c:out value="${theparam.name}"/>" />
+				<c:out value="${theparam.name}"/>
+			</td>
+			<td>
+				<input type="text" name="<c:out value="${theparam.name}"/>:value" value="<c:out value="${theparam.value}"/>"/>
+			</td>
+			<%--
+				TODO handle descriptions
+			--%>
+		</tr>
 	</c:forEach>
+	</table>
+	
+		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet.edit_parameter'"/>
+		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet.remove_parameter'"/>
+	
+	</form>
+	
+	<form action="<c:out value="${edit_parameter_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.add_parameter"/>
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.name"/>
+				</td>
+				<td>
+					<input type="text" name="name" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.name.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.value"/>
+				</td>
+				<td>
+					<input type="text" name="value" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.value.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.description"/>
+				</td>
+				<td>
+					<input type="text" name="description" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.description.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.locale"/>
+				</td>
+				<td>
+					<input type="text" name="locale" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.locale.description"/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="pam.details.add_parameter"/>"/>
+	</form>
+	
 </c:if>
 <c:if test="${selectedPortletTab.id == 'pd_security'}">
 	<c:set var="roleSet" value="${selectedPDef.initSecurityRoleRefSet}"/>
@@ -299,3 +391,4 @@ limitations under the License.
 		<br />
 	</c:forEach>
 </c:if>
+

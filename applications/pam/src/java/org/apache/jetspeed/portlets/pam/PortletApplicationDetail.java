@@ -37,6 +37,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.MutableLanguage;
+import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -211,6 +212,10 @@ public class PortletApplicationDetail extends ServletPortlet
                 else if(action.endsWith("language"))
                 {
                     processLanguage(actionRequest, actionResponse, pa, pdef, action);
+                }
+                else if(action.endsWith("parameter"))
+                {
+                    processParameter(actionRequest, actionResponse, pa, pdef, action);
                 }
             }
         }
@@ -592,5 +597,79 @@ public class PortletApplicationDetail extends ServletPortlet
                  }
              }
          }
+    }
+    
+    /**
+     * @param actionRequest
+     * @param actionResponse
+     * @param pa
+     * @param pdef
+     * @param action
+     */
+    private void processParameter(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action)
+    {
+        if(action.equals("add_parameter"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String name = actionRequest.getParameter("name");
+            String value = actionRequest.getParameter("value");
+            String description = actionRequest.getParameter("description");
+            String locale = actionRequest.getParameter("locale");
+            
+            portlet.addInitParameter(name, value, description, new Locale(locale));
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("edit_parameter"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String[] paramIds = actionRequest.getParameterValues("parameter_edit_id");
+            
+            if(paramIds != null)
+            {
+                for(int i=0; i<paramIds.length; i++)
+                {
+                    String paramId = paramIds[i];
+                    ParameterComposite param = (ParameterComposite) portlet.getInitParameterSet().get(paramId);
+                    
+                    String value = actionRequest.getParameter(paramId + ":value");
+                    //String description[] = actionRequest.getParameterValues(paramId + ":description");
+                    
+                    
+                    param.setValue(value);
+                }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
+        else if(action.equals("remove_parameter"))
+        {
+            registry.getPersistenceStore().getTransaction().begin();
+            
+            String[] paramIds = actionRequest.getParameterValues("parameter_remove_id");
+            
+            if(paramIds != null)
+            {
+	            Iterator paramIter = portlet.getInitParameterSet().iterator();
+	            while (paramIter.hasNext())
+	            {
+	                ParameterComposite param = (ParameterComposite) paramIter.next();
+	                
+	                for(int i=0; i<paramIds.length; i++)
+	                {
+	                    String paramId = paramIds[i];
+	                    if(param.getName().equals(paramId))
+	                    {
+	                        paramIter.remove();
+	                        break;
+	                    }
+	                }
+	            }
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
+        }
     }
 }
