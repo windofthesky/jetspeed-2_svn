@@ -166,6 +166,43 @@
   <preGoal name="hotdeploy">
    <attainGoal name= "java:compile"/> 
   </preGoal>
+  
+  <goal name="deployClasses">
+  	<attainGoal name="java:compile"/>
+  	<attainGoal name="java:jar-resources"/> 
+  	<copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
+  		<fileset dir="${basedir}/target/classes" />
+    </copy>
+     <copy todir="${deploy.war.dir}/${webapp.name}">
+  		<fileset dir="${basedir}/src/webapp" />
+    </copy>
+  </goal>
+  
+  <goal name="debugWebapp">
+  	<copy todir="${debug.webapp.dir}/jetspeed">
+  		<fileset dir="${basedir}/src/webapp" />
+    </copy>
 
+     <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+       <classpath>
+       	  
+         <path refid="maven.dependency.classpath"/>
+         <pathelement path="${maven.build.dest}"/>
+        </classpath>
+         <arg value="-action" />
+         <arg value="deploy" />
+         <arg value="-PortletAppName" />
+         <arg value="HW_App" />
+         <arg value="-warfilename" />
+         <arg value="../applications/demo/target/demo.war" />
+         <arg value="-webappDir" />
+         <arg value="${debug.webapp.dir}/" />            
+         <arg value="-PortalName" />
+         <arg value="jetspeed" />
+         <arg value="-DbAlias" />
+         <arg value="${debug.webapp.dir}/jetspeed/WEB-INF/db/hsql/Registry" />            
+         
+      </java>
 
+  </goal>
 </project>
