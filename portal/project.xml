@@ -4,6 +4,7 @@
 <!--  <extend>${basedir}/../project.xml</extend> -->
   <pomVersion>3</pomVersion>
   <id>jetspeed</id>
+  <groupId>jetspeed2</groupId>
   <name>Jetspeed-2 Portal Engine</name>
   <currentVersion>2.0-a1-dev</currentVersion>
   <package>org.apache.jetspeed</package>

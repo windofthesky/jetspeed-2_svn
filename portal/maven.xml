@@ -310,7 +310,7 @@
         description="Copy all base jars necessary for common container">
     <echo>Copying from ${maven.repo.local} to ${catalina.shared.lib}...</echo>
     <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>-->
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.jar" todir="${catalina.shared.lib}"/>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0-SNAPSHOT.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
