@@ -21,7 +21,7 @@
       <properties>
         <war.bundle>false</war.bundle>
       </properties>
-    </dependency>        
+    </dependency>
     <dependency>
       <id>pluto</id>
       <version>1.0.1-SNAPSHOT</version>
@@ -95,6 +95,15 @@
       <version>2.0-a1-dev</version>
       <properties>
         <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    
+    <!--taglibs-->
+    <dependency>
+      <id>jetspeed2:jetspeed2-taglib-treecontrol</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
