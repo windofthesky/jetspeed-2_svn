@@ -92,32 +92,32 @@ public class JetspeedPowerTool
     protected static final String PORTLET_CONFIG_ATTR = "javax.portlet.config";
     protected static final String RENDER_RESPONSE_ATTR = "javax.portlet.response";
     protected static final String RENDER_REQUEST_ATTR = "javax.portlet.request";
-    private static final String COLUMNS_ATTR = "columns";
-    private static final String COLUMN_SIZES = "columnSizes";
+    protected static final String COLUMNS_ATTR = "columns";
+    protected static final String COLUMN_SIZES = "columnSizes";
 
-    private RenderRequest renderRequest;
+    protected RenderRequest renderRequest;
 
-    private RenderResponse renderResponse;
+    protected RenderResponse renderResponse;
 
-    private PortletConfig portletConfig;
+    protected PortletConfig portletConfig;
 
-    private Writer templateWriter;
+    protected Writer templateWriter;
 
-    private static final String POWER_TOOL_SESSION_ACTIONS = "org.apache.jetspeed.powertool.actions";
+    protected static final String POWER_TOOL_SESSION_ACTIONS = "org.apache.jetspeed.powertool.actions";
 
-    private static final Log log = LogFactory.getLog(JetspeedPowerTool.class);
+    protected static final Log log = LogFactory.getLog(JetspeedPowerTool.class);
 
-    private CapabilityMap capabilityMap;
-    private Locale locale;
-    private LocatorDescriptor templateLocatorDescriptor;
-    private TemplateLocator templateLocator;
-    private PortletEntityAccessComponent entityAccess;
-    private TemplateLocator decorationLocator;
-    private LocatorDescriptor decorationLocatorDescriptor;
-    private PortletWindowAccessor windowAccess;
+    protected CapabilityMap capabilityMap;
+    protected Locale locale;
+    protected LocatorDescriptor templateLocatorDescriptor;
+    protected TemplateLocator templateLocator;
+    protected PortletEntityAccessComponent entityAccess;
+    protected TemplateLocator decorationLocator;
+    protected LocatorDescriptor decorationLocatorDescriptor;
+    protected PortletWindowAccessor windowAccess;
 
-    private RequestContext requestContext;
-    private Context velocityContext;
+    protected RequestContext requestContext;
+    protected Context velocityContext;
     public static final String GENERIC_TEMPLATE_TYPE = "generic";
     public static final String FRAGMENT_PROCESSING_ERROR_PREFIX = "fragment.processing.error.";
     public static final String FRAGMENT_ATTR = "fragment";
@@ -505,7 +505,7 @@ public class JetspeedPowerTool
      *                  Portlet fragment to "decorate"
      * @throws Exception
      */
-    private String decorateAndIncludePortlet( Fragment f ) throws Exception
+    protected String decorateAndIncludePortlet( Fragment f ) throws Exception
     {
         // make sure that any previous content has been written to
         // preserve natural HTML rendering order
@@ -739,7 +739,7 @@ public class JetspeedPowerTool
         }
     }
 
-    private boolean checkAccess(String action)
+    protected boolean checkAccess(String action)
     {
         boolean access = true;
         try
@@ -874,7 +874,7 @@ public class JetspeedPowerTool
      *                  max, min...)
      * @return true if the action is allowed, false if it is not
      */
-    private boolean checkPermission( String resource, String action )
+    protected boolean checkPermission( String resource, String action )
     {
         try
         {
