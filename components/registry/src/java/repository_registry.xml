@@ -1,13 +1,52 @@
 <!--
  	- L O C A L I Z E D   F I E L D
 -->   
+<!--
    <class-descriptor class="org.apache.jetspeed.om.common.LocalizedField">
-      <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />         
+      <extent-class class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl" />
     </class-descriptor>
-   
+   -->
    <class-descriptor
-   	  class="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
-   	  table="METADATA_FIELDS"
+   	  class="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
+   	  table="PA_METADATA_FIELDS"
+   >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+      <field-descriptor
+         name="parentId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+   
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+    </class-descriptor>
+    
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl"
+   	  table="PD_METADATA_FIELDS"
    >
       <field-descriptor
          name="id"
@@ -113,7 +152,7 @@
       
       <collection-descriptor
          name="metadataFields"
-         element-class-ref="org.apache.jetspeed.om.common.impl.LocalizedFieldImpl"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
          auto-delete="true"
      	 auto-update = "true"
       	 auto-retrieve = "true"
@@ -254,7 +293,15 @@
          jdbc-type="VARCHAR"
       />
       
-      
+      <collection-descriptor
+         name="metadataFields"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl"
+         auto-delete="true"
+     	 auto-update = "true"
+      	 auto-retrieve = "true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
 
 
       <reference-descriptor 
