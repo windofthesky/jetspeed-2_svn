@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.userinfo;
 
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -43,9 +44,9 @@ import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
-import org.apache.jetspeed.tools.pamanager.JetspeedDescriptorUtilities;
-import org.apache.jetspeed.tools.pamanager.PortletDescriptorUtilities;
 import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
+import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
+import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
 /**
  * <p>Unit test for {@link UserInfoManager}</p>
@@ -115,8 +116,8 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
     /** Test set user info map. */
     public void testSetUserInfoMap() throws Exception
     {
-        MutablePortletApplication app =
-            PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
+        MutablePortletApplication app = pad.createPortletApplication();            
         assertNotNull("App is null", app);
 
         // persist the app
@@ -151,8 +152,8 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
         
         // With linked attributes
-        boolean isLoaded = JetspeedDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/jetspeed-portlet.xml", app);
-        assertTrue("should have loaded jetspeed-portlet.xml.", isLoaded);
+        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader("./test/testdata/deploy/jetspeed-portlet.xml"), app);
+        extMetaData.load();
         
         userInfo = uim.getUserInfoMap(app.getId(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);

@@ -32,7 +32,7 @@ import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
  */
 
 
-public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
+public class CatalinaPAM extends FileSystemPAM implements  Lifecycle
 {
     // Implementaion of deplyment interface
     public final static String PAM_PROPERTY_SERVER = "server";

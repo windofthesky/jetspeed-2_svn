@@ -32,7 +32,7 @@ public interface Registration
      * @param portletApplicationName The name of the portlet application to be registered. Can be same as web application.
      * @throws PortletApplicationException
      */
-    void register(String webApplicationName, String portletApplicationName) 
+    void register(String webApplicationName, String portletApplicationName, String warFile) 
         throws PortletApplicationException;
         
     /**

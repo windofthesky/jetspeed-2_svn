@@ -6,6 +6,7 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.FileReader;
 import java.util.Collection;
 
 import junit.framework.Test;
@@ -15,6 +16,9 @@ import junit.textui.TestRunner;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
+import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
+
 
 /**
  * @author jford
@@ -74,8 +78,8 @@ public class TestJetspeedPortletDescriptor
     public void testLoadPortletApplicationTree() throws Exception
     {
         System.out.println("Testing loadPortletApplicationTree");
-        MutablePortletApplication app =
-            PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
+        MutablePortletApplication app = pad.createPortletApplication();            
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));
@@ -83,10 +87,10 @@ public class TestJetspeedPortletDescriptor
         assertTrue(
                 "PA Identifier invalid: " + app.getApplicationIdentifier(),
                 app.getApplicationIdentifier().equals("TestRegistry"));
-
-        boolean result = JetspeedDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/jetspeed-portlet.xml", app);
-        assertTrue(result);
-        
+       
+       ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader("./test/testdata/deploy/jetspeed-portlet.xml"), app); 
+       md.load();
+       
         PortletDefinitionComposite def1 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_01);
         PortletDefinitionComposite def2 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_02);
         PortletDefinitionComposite def3 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_03);

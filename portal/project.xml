@@ -158,6 +158,13 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>commons-vfs</id>
+      <version>SNAPSHOT</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
      <dependency>
       <id>groovy</id>
      <version>1.0-beta-4-snapshot</version>
@@ -372,9 +379,23 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>saxpath</id>
+      <version>1.0-FCS</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+      <dependency>
+      <id>jaxen</id>
+      <version>1.0-FCS-full</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
      <dependency>
       <id>jdom</id>
-      <version>b8</version>
+      <version>b9</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>

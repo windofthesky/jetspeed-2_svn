@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.tools.pamanager;
+package org.apache.jetspeed.util.descriptor;
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.ParameterDescriptionImpl;
@@ -38,111 +35,48 @@ import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
+import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.xml.Unmarshaller;
-import org.xml.sax.InputSource;
 
 /**
- * Utilities for manipulating the Portlet.xml deployment descriptor
+ * 
+ * Object used to perform operation upon a portlet application descriptor,
+ * usually, portlet.xml.
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a> 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  *  
  * @version $Id$
  */
-public class PortletDescriptorUtilities
+public class PortletApplicationDescriptor
 {
-    protected final static Log log = LogFactory.getLog(PortletDescriptorUtilities.class);
+    protected final static Log log = LogFactory.getLog(PortletApplicationDescriptor.class);
+    protected Reader portletXmlReader;
+    private String appName;
 
-    public static final String XML_MAPPING_FILE = "deployment.descriptor.mapping.xml";
-
-    /**
-     * Load a portlet.xml file into a Portlet Application tree
-     * @deprecated use loadPortletDescriptor
-     * @param pathPortletXML The path to the portlet.xml file
-     * @return Application The Java object tree representing portlet.xml
-     */
-    public static MutablePortletApplication loadPortletApplicationTree(String pathPortletXML, String appName)
-        throws PortletApplicationException
+   
+    public PortletApplicationDescriptor(Reader portletXmlReader, String appName)
     {
-        try
-        {
-            Mapping mapping = loadMapping();
-            java.io.FileReader reader = new java.io.FileReader(pathPortletXML);
-
-            Unmarshaller unmarshaller = new Unmarshaller(mapping);
-
-            MutablePortletApplication app = (MutablePortletApplication) unmarshaller.unmarshal(reader);
-
-            // Post-Processing of the tree before it gets saved to the database
-
-            // 1) Set the URL for the application
-            //app.setUrl(appName + "/");
-            //((WebApplicationComposite)app.getWebApplicationDefinition()).setContextRoot(appName + "/");
-
-            // 2) The app ID in the portlet.xml is optional. Set it to the
-            //    application Name if it was not defined
-
-            app.setName(appName);
-
-            return app;
-        }
-        catch (Throwable t)
-        {
-            String msg = "Could not unmarshal: " + pathPortletXML + ", " + t.getLocalizedMessage();
-            log.error(msg, t);
-            throw new PortletApplicationException(msg, t);
-        }
+        this.portletXmlReader = portletXmlReader;
+        this.appName = appName;
     }
 
     /**
-     * Loads the Castor XML Mapping file from the configuration directory
-     * with instructions for mapping portlet.xml to Portlet Application tree
+     * Maps the content of the portlet application descriptor into
+     * a new <code>MutablePortletApplication object</code>
      * 
-     * @return Mapping The Castor mapping directives
+     * @return MutablePortletApplication newly created MutablePortletApplication with
+     * all values of the portlet application descriptor mapped into it.
      */
-    private static Mapping loadMapping() throws Exception
-    {
-        Mapping mapping = null;
-        PortalContext pc = Jetspeed.getContext();
-        String mappingFile = pc.getConfigurationProperty(XML_MAPPING_FILE);
-        String realPath = Jetspeed.getRealPath(mappingFile);
-
-        File map = new File(realPath);
-        if (map.exists() && map.isFile() && map.canRead())
-        {
-            mapping = new Mapping();
-            InputSource is = new InputSource(new FileReader(map));
-            is.setSystemId(mappingFile);
-            mapping.loadMapping(is);
-        }
-        else
-        {
-            String msg = "Mapping not found or not a file or unreadable: " + mappingFile;
-            throw new PortletApplicationException(msg);
-        }
-
-        return mapping;
-    }
-
-    /**
-     * Load a portlet.xml file into a Portlet Application tree
-     *
-     * @param pathPortletXML The path to the portlet.xml file
-     * @return Application The Java object tree representing portlet.xml
-     */
-    public static MutablePortletApplication loadPortletDescriptor(String pathPortletXML, String appName)
+    public MutablePortletApplication createPortletApplication()
         throws PortletApplicationException
     {
         try
         {
-
-            FileReader reader = new java.io.FileReader(pathPortletXML);
-
             // TODO move config to digester-rules.xml. Example: http://www.onjava.com/pub/a/onjava/2002/10/23/digester.html?page=3
             Digester digester = new Digester();
             digester.setValidating(false);
@@ -212,7 +146,7 @@ public class PortletDescriptorUtilities
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/description", "description");
             digester.addSetNext("portlet-app/portlet/security-role-ref/description", "addDescription");
 
-            PortletApplicationDefinitionImpl pd = (PortletApplicationDefinitionImpl) digester.parse(reader);
+            PortletApplicationDefinitionImpl pd = (PortletApplicationDefinitionImpl) digester.parse(portletXmlReader);
 
             pd.setName(appName);
             return pd;
@@ -221,11 +155,13 @@ public class PortletDescriptorUtilities
         catch (Throwable t)
         {
             t.printStackTrace();
-            String msg = "Could not unmarshal \"" + pathPortletXML + "\".  " + t.toString();
+            String msg = "Could not unmarshal portlet.xml. " + t.toString();
             log.error(msg, t);
             throw new PortletApplicationException(msg, t);
         }
     }
+    
+
 
     /**
      * Validate a PortletApplicationDefinition tree AFTER its
@@ -243,7 +179,7 @@ public class PortletDescriptorUtilities
      *            The PortletApplicationDefinition to validate
      * @throws PortletApplicationException
      */
-    public static void validate(MutablePortletApplication app)
+    public void validate(MutablePortletApplication app)
             throws PortletApplicationException
     {
         SecurityRoleSet roles = app.getWebApplicationDefinition()

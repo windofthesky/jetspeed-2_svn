@@ -15,8 +15,10 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.FileReader;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletMode;
@@ -34,6 +36,8 @@ import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
+import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -42,6 +46,10 @@ import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
 
 /**
  * TestPortletDescriptor - tests loading the portlet.xml deployment descriptor
@@ -90,8 +98,8 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
     public void testLoadPortletApplicationTree() throws Exception
     {
         System.out.println("Testing loadPortletApplicationTree");
-        MutablePortletApplication app =
-            PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet.xml", "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
+        MutablePortletApplication app = pad.createPortletApplication();
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));
@@ -300,7 +308,9 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
             store.getTransaction().commit();
             store.getTransaction().begin();
         }
-        app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
+        
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet2.xml"), "HW_App");
+        app = pad.createPortletApplication();
 
         app.setName("HW_App");
 
@@ -339,6 +349,55 @@ public class TestPortletDescriptor extends RegistrySupportedTestCase
         portletRegistry.removeApplication(app);
         store.getTransaction().commit();
 
+    }
+    
+    public void testInfusingWebXML() throws Exception
+    {
+        PortletApplicationWar paWar = new PortletApplicationWar("./test/testdata/deploy/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test");
+        
+        SAXBuilder builder = new SAXBuilder(false);
+        
+        FileReader srcReader = new FileReader("./test/testdata/deploy/webapp/WEB-INF/web.xml");
+        FileReader targetReader = null;
+        Document  doc = builder.build(srcReader);    
+      
+        Element root = doc.getRootElement();
+        
+        try
+        {
+            Object jetspeedServlet = XPath.selectSingleNode(root, PortletApplicationWar.JETSPEED_SERVLET_XPATH);
+            Object jetspeedServletMapping = XPath.selectSingleNode(root, PortletApplicationWar.JETSPEED_SERVLET_MAPPING_XPATH);
+            
+            assertNull(jetspeedServlet);
+            assertNull(jetspeedServletMapping);
+            
+            paWar.copyWar("./target/webapp");            
+            paWar.processWebXML("./target/webapp/WEB-INF/web.xml");
+            
+            targetReader = new FileReader("./target/webapp/WEB-INF/web.xml");
+            
+            builder = new SAXBuilder(false);
+            Document targetDoc = builder.build(targetReader);
+            Element targetRoot = targetDoc.getRootElement();
+            
+            jetspeedServlet = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_XPATH);
+            jetspeedServletMapping = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_MAPPING_XPATH);
+          
+           
+            assertNotNull(jetspeedServlet);
+            assertNotNull(jetspeedServletMapping);
+            
+        }
+        finally
+        {
+            srcReader.close();
+            paWar.close();          
+            targetReader.close();
+            PortletApplicationWar targetWar = new PortletApplicationWar("./target/webapp", "unit-test", "/",  Locale.getDefault(), "unit-test") ;
+            targetWar.removeWar();
+            targetWar.close();           
+        }
+        
     }
 
 }

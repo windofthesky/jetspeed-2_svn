@@ -300,7 +300,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                     shutdownAndExit(engine);                                
                 }
     
-                register(registrator, strWebAppDir, strPortletAppName); // [RUN]
+                register(registrator, strWebAppDir, strPortletAppName, strWarFileName); // [RUN]
             }
             else if (strAction.compareToIgnoreCase("unregister") == 0)
             {          
@@ -433,11 +433,12 @@ public class PortletApplicationManager implements JetspeedEngineConstants
 
     public static void register(Registration registrator,
                                 String webApplicationName, 
-                                String portletApplicationName)
+                                String portletApplicationName,
+                                String warFile)
     throws PortletApplicationException
     {
         System.out.println("Registering Web Application [" + webApplicationName + "] to Portlet Application [" + portletApplicationName + "]...");
-        registrator.register(webApplicationName, portletApplicationName);
+        registrator.register(webApplicationName, portletApplicationName, warFile);
         System.out.println("...PAM Register done");        
     }
 
