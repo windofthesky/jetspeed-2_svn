@@ -14,7 +14,6 @@
  * limitations under the License.
  * ========================================================================
  */
- 
 import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.jetspeed.components.SimpleComponent
 
