@@ -61,6 +61,7 @@ public class PrincipalRuleImpl implements PrincipalRule
     public void setProfilingRule(ProfilingRule rule)
     {
         this.profilingRule = rule;    
+        this.ruleId = rule.getId();
     }
     
 }

@@ -26,7 +26,9 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
@@ -35,6 +37,7 @@ import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
+import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -206,6 +209,37 @@ public class JetspeedProfiler implements Profiler
 
         // Now get the associated rule
         return pr.getProfilingRule();
+    }
+    
+    
+    public void setRuleForPrincipal(Principal principal, ProfilingRule rule)
+    {
+        Transaction tx = persistentStore.getTransaction();
+        tx.begin();
+  
+        Filter filter = persistentStore.newFilter();
+        filter.addEqualTo("principalName", principal);
+        Object query = persistentStore.newQuery(principalRuleClass, filter);
+        PrincipalRule pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
+        if (pr == null)
+        {
+            pr = new PrincipalRuleImpl(); // TODO: factory
+            pr.setPrincipalName(principal.getName());
+            pr.setProfilingRule(rule);
+        }
+        try
+        {
+            pr.setProfilingRule(rule);
+            persistentStore.lockForWrite(pr);
+        }
+        catch (LockFailedException e)
+        {
+            tx.rollback();
+            e.printStackTrace();
+            // TODO: throw appropriate exception
+        }
+        persistentStore.getTransaction().commit();
+        principalRules.put(principal.getName(), pr);
     }
 
     /**

@@ -83,7 +83,16 @@ public interface Profiler
      * @return The rule found or null if not found
      */
     ProfilingRule getRuleForPrincipal(Principal principal);
-      
+
+    /**
+     * For a given principal, associate a profiling rule to that principal name.
+     * TODO: this API should be secured and require admin role
+     * 
+     * @param principal Lookup the profiling rule based on this principal. 
+     * @param The rule used to find profiles for this user
+     */
+    void setRuleForPrincipal(Principal principal, ProfilingRule rule);
+    
     /**
      * Lookup the portal's default profiling rule.
      * 
