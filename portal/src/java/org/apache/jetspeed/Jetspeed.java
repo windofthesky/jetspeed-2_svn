@@ -18,12 +18,12 @@ package org.apache.jetspeed;
 import java.util.Locale;
 
 import javax.servlet.ServletConfig;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.engine.JetspeedEngine;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -50,7 +50,7 @@ public class Jetspeed
      * @return the newly created Engine
      * @throws JetspeedException
      */
-    public static Engine createEngine(Configuration configuration, String applicationRoot, ServletConfig config)
+    public static Engine createEngine(Configuration configuration, String applicationRoot, ServletConfig config, Class engineClass)
         throws JetspeedException
     {
         try
@@ -60,7 +60,7 @@ public class Jetspeed
                 if(engine == null)
                 {
                     log.info("Jetspeed environment attempting to initialize portal Engine...");
-                    engine = new JetspeedEngine();
+                    engine = (Engine) engineClass.newInstance();
                     engine.init(configuration, applicationRoot, config);
                     log.info("JetspeedEngine successfuly intialized.");
                     log.info("Jetspeed environment successfuly intialized.");
