@@ -189,13 +189,7 @@ limitations under the License.
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-      <dependency>
-      <id>fulcrum</id>
-      <version>3.0-b2-dev</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+
     <!-- This is only a test dependency -->
     <dependency>
       <id>hsqldb</id>
@@ -215,7 +209,7 @@ limitations under the License.
     <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.1-rc1</version>
       <properties>
         <war.bundle>false</war.bundle>
       </properties>

@@ -34,7 +34,7 @@ limitations under the License.
   <dependencies>
     <dependency>
       <id>pluto</id>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.1-rc1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

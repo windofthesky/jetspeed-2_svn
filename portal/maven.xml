@@ -487,7 +487,7 @@ limitations under the License.
   <goal name="catalina:base-shared"
         description="Copy all base jars necessary for common container">
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-rc1.jar" todir="${org.apache.jetspeed.server.shared}"/>
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>
   </goal>
 

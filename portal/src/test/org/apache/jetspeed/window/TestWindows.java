@@ -31,7 +31,9 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
 import org.jmock.Mock;
+import org.jmock.builder.InvocationMockerBuilder;
 import org.jmock.core.Invocation;
+import org.jmock.core.InvocationMocker;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.matcher.InvokeCountMatcher;
 import org.jmock.core.matcher.InvokeOnceMatcher;
@@ -89,6 +91,7 @@ public class TestWindows extends TestCase
 
         windowListMock.expects(new InvokeCountMatcher(4)).method("add").withAnyArguments().will(
                 new ListAppendStub(windows));
+        
 
         PortletWindow window = windowAccess.getPortletWindow(f1);
         assertNotNull(window);
@@ -136,7 +139,7 @@ public class TestWindows extends TestCase
 
     class ListAppendStub extends CustomStub
     {
-        StringBuffer buf = new StringBuffer();
+       
         List list;
 
         /**
@@ -161,7 +164,7 @@ public class TestWindows extends TestCase
         public Object invoke( Invocation invocation ) throws Throwable
         {
             list.add(invocation.parameterValues.get(0));
-            return buf.append("");
+            return null;
         }
     }
 

@@ -168,7 +168,7 @@ limitations under the License.
     <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.1-rc1</version>
      </dependency>
      <dependency>
       <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->

@@ -41,24 +41,7 @@ limitations under the License.
       <keywords>Test</keywords>
     </portlet-info>
   </portlet>
-
-   <portlet id="JMXPortlet">
-
-    <portlet-name>JMXPortlet</portlet-name>
-    <display-name>JMX Registry Access portlet</display-name>
-    <portlet-class>org.apache.jetspeed.demo.jmx.JMXPortlet</portlet-class>
-    <expiration-cache>-1</expiration-cache>
-    <supports>
-      <mime-type>text/html</mime-type>
-      <portlet-mode>VIEW</portlet-mode>
-    </supports>
-    <portlet-info>
-      <title>JMX Portal Console</title>
-      <short-title>JMX Portlet Console</short-title>
-      <keywords>JMX</keywords>
-    </portlet-info>
-  </portlet>
-
+  
   <portlet id="PreferencePortlet">
     <portlet-name>PreferencePortlet</portlet-name>
     <display-name>PreferencePortlet</display-name>

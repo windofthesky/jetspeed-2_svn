@@ -42,7 +42,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>pluto</id>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.1-rc1</version>
     </dependency>   
      <dependency>      
       <id>portlet-api</id>

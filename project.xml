@@ -1,201 +1,155 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright 2004 The Apache Software Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
 <project>
-  <pomVersion>3</pomVersion>
-  <id>jetspeed2</id>
-  <name>Jetspeed 2 Enterprise Portal</name>
-  <groupId>jetspeed2</groupId>
-  <currentVersion>2.0-a1-dev</currentVersion>
-
-  <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://portals.apache.org/</url>
-    <logo>http://portals.apache.org/images/apache-portals.gif</logo>
-  </organization>
-
-  <inceptionYear>1999</inceptionYear>
-  <package>org.apache.jetspeed</package>
-  <logo></logo>
-
-  <!-- Gump integration -->
-  <gumpRepositoryId></gumpRepositoryId>
-
-  <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
-  <shortDescription>Enterprise Information Portal</shortDescription>
-  <url>http://portals.apache.org/jetspeed-2</url>
-  <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
-  <siteAddress>portals.apache.org</siteAddress>
-  <siteDirectory>/www/portals.apache.org/jetspeed-2-generated</siteDirectory>
-  <distributionDirectory></distributionDirectory>
-
-  <repository>                 
-    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2</connection>
-    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/</url>
-  </repository>
-
-  <mailingLists>
-    <mailingList>
-      <name>Jetspeed 2 User List</name>
-      <subscribe>jetspeed-user-subscribe@jakarta.apache.org</subscribe>
-      <unsubscribe>jetspeed-user-unsubscribe@jakarta.apache.org</unsubscribe>
-    </mailingList>
-    <mailingList>
-      <name>Jetspeed 2 Developer List</name>
-      <subscribe>jetspeed-dev-subscribe@jakarta.apache.org</subscribe>
-      <unsubscribe>jetspeed-dev-unsubscribe@jakarta.apache.org</unsubscribe>
-    </mailingList>
-  </mailingLists>
-
-  <developers>
-    <developer>
-      <name>David Sean Taylor</name>
-      <id>taylor</id>
-      <email>taylor@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Raphael Luta</name>
-      <id>raphael</id>
-      <email>raphael@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Mark Orciuch</name>
-      <id>mark</id>
-      <email>mark_oriuch@nqsltd.com</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Paul Spencer</name>
-      <id>paulsp</id>
-      <email>paulsp@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Scott Weaver</name>
-      <id>weaver</id>
-      <email>Sweaver@rippe.com</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Roger Ruttimann</name>
-      <id>roger</id>
-      <email>roger.ruttimann@earthlink.net</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>David Le Strat</name>
-      <id>dls</id>
-      <email>dlestrat@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    
-    <developer>
-      <name>Jeremy Ford</name>
-      <id>jford</id>
-      <email>jford@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Ate Douma</name>
-      <id>ate</id>
-      <email>ate@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-
-    <developer>
-      <name>Shinsuke Sugaya</name>
-      <id>shinsuke</id>
-      <email>shinsuke@apache.org</email>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-
-    </developer>
-
+    <pomVersion>3</pomVersion>
+    <name>Jetspeed 2 Enterprise Portal</name>
+    <groupId>jetspeed2</groupId>
+    <currentVersion>2.0-a1-dev</currentVersion>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://portals.apache.org/</url>
+        <logo>http://portals.apache.org/images/apache-portals.gif</logo>
+    </organization>
+    <inceptionYear>1999</inceptionYear>
+    <package>org.apache.jetspeed</package>
+    <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
+    <shortDescription>Enterprise Information Portal</shortDescription>
+    <url>http://portals.apache.org/jetspeed-2</url>
+    <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
+    <siteAddress>portals.apache.org</siteAddress>
+    <siteDirectory>/www/portals.apache.org/jetspeed-2-generated</siteDirectory>
+    <repository>
+        <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2</connection>
+        <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/</url>
+    </repository>
+    <mailingLists>
+        <mailingList>
+            <name>Jetspeed 2 User List</name>
+            <subscribe>jetspeed-user-subscribe@jakarta.apache.org</subscribe>
+            <unsubscribe>jetspeed-user-unsubscribe@jakarta.apache.org</unsubscribe>
+        </mailingList>
+        <mailingList>
+            <name>Jetspeed 2 Developer List</name>
+            <subscribe>jetspeed-dev-subscribe@jakarta.apache.org</subscribe>
+            <unsubscribe>jetspeed-dev-unsubscribe@jakarta.apache.org</unsubscribe>
+        </mailingList>
+    </mailingLists>
+    <developers>
+        <developer>
+            <name>David Sean Taylor</name>
+            <id>taylor</id>
+            <email>taylor@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Raphael Luta</name>
+            <id>raphael</id>
+            <email>raphael@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Mark Orciuch</name>
+            <id>mark</id>
+            <email>mark_oriuch@nqsltd.com</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Paul Spencer</name>
+            <id>paulsp</id>
+            <email>paulsp@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Scott Weaver</name>
+            <id>weaver</id>
+            <email>Sweaver@rippe.com</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Roger Ruttimann</name>
+            <id>roger</id>
+            <email>roger.ruttimann@earthlink.net</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>David Le Strat</name>
+            <id>dls</id>
+            <email>dlestrat@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Jeremy Ford</name>
+            <id>jford</id>
+            <email>jford@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Ate Douma</name>
+            <id>ate</id>
+            <email>ate@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Shinsuke Sugaya</name>
+            <id>shinsuke</id>
+            <email>shinsuke@apache.org</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
     </developers>
-
-  <dependencies>
-   <!-- Used for pre-starting the DB prior to tests -->
-    <dependency>
-      <id>hsqldb</id>
-      <version>1.7.1</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>   	
-    <dependency>
-        <groupId>maven-plugins</groupId>
-        <artifactId>maven-torque-plugin</artifactId>
-        <version>3.2</version>
-        <type>plugin</type>
-    </dependency>
-    <!-- Needed for Tomcat 5 JAASRealm patch compilation -->
-    <dependency>
-      <id>commons-logging</id>
-      <version>1.0.3</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>mx4j</groupId>
-      <artifactId>mx4j-jmx</artifactId>
-      <version>1.1.1</version>
-      <properties>
-        <war.bundle>false</war.bundle>
-      </properties>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-    <sourceDirectory>src/java</sourceDirectory>
-  </build>
-  <reports>
-    <report>maven-dashboard-plugin</report>
-    <report>maven-multiproject-plugin</report>
-    <report>maven-multichanges-plugin</report>
-    <report>maven-tasklist-plugin</report>
-  </reports>
-
+    <dependencies>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.7.1</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>maven-plugins</groupId>
+            <artifactId>maven-torque-plugin</artifactId>
+            <version>3.2</version>
+            <type>plugin</type>
+            <properties/>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.3</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+    </dependencies>
+    <build>
+        <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
+        <sourceDirectory>src/java</sourceDirectory>
+    </build>
+    <reports>
+        <report>maven-dashboard-plugin</report>
+        <report>maven-multiproject-plugin</report>
+        <report>maven-multichanges-plugin</report>
+        <report>maven-tasklist-plugin</report>
+    </reports>
+    <properties/>
 </project>

@@ -60,27 +60,7 @@ limitations under the License.
         
     </portlet>
     
-    <portlet>
-        <portlet-name>JMXPortlet</portlet-name>
-        <dc:title>JMX Portal Console</dc:title>
-        <dc:creator>J2 Team</dc:creator>
-        <js:metadata name="display_name" xml:lang="en">JMX Registry Access portlet</js:metadata>
-        
-        <!--
-        <dc:subject xml:lang="sp"></dc:subject>
-        <dc:coverage></dc:coverage>
-        <dc:contributor></dc:contributor>
-        <dc:description></dc:description>
-        <dc:format></dc:format>
-        <dc:identifer></dc:identifer>
-        <dc:language></dc:language>
-        <dc:publisher></dc:publisher>
-        <dc:relation></dc:relation>
-        <dc:right></dc:right>
-        <dc:source></dc:source>
-        <dc:type></dc:type>
-        -->
-    </portlet>
+ 
     
     <portlet>
         <portlet-name>PreferencePortlet</portlet-name>

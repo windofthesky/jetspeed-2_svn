@@ -84,7 +84,7 @@ limitations under the License.
          <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml,components/*/project.xml"
-               excludes="applications/project.xml,cornerstone-demo/project.xml"
+               excludes="applications/project.xml"
                goals="test"
                banner="Testing..."
                ignoreFailures="false"/>
@@ -97,7 +97,7 @@ limitations under the License.
     <maven:reactor
        basedir="${basedir}"
        includes="*/project.xml,applications/*/project.xml,services/*/project.xml,components/*/project.xml,portals-bridges/*/project.xml"
-       excludes="applications/project.xml,cornerstone-demo/project.xml,taglibs/project.xml"
+       excludes="applications/project.taglibs/project.xml"
        goals="clean"
        banner="Cleaning"
        ignoreFailures="true"/>
@@ -115,7 +115,7 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}"
                includes="site/project.xml"
-               excludes="cornerstone-demo/project.xml,portlet-api/project.xml"
+               excludes="portlet-api/project.xml"
                goals="allSite"
                banner="Building Site"
                postProcessing="false"
@@ -445,7 +445,7 @@ limitations under the License.
    <goal name="dropdrops">
     <attainGoal name="java:compile"/>
     <attainGoal name="db.test.properties"/>
-    <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/cornerstonedemo-schema.sql" />
+   
     <attainGoal name="run.dropdrops" />
     <j:set var="dropstable" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
     <attainGoal name="run.dropdrops" />
