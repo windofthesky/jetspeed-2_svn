@@ -15,22 +15,23 @@
  */
 package org.apache.jetspeed.container.window.impl;
 
+import groovy.swing.impl.Startable;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import groovy.swing.impl.Startable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
 import org.apache.pluto.om.window.PortletWindowList;
@@ -95,22 +96,30 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
     private PortletWindow createPortletWindow(Fragment fragment, String principal)
     {
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
-        
-        PortletEntity portletEntity = entityAccessor.getPortletEntity(makeEntityKey(fragment, principal));
+                
+        MutablePortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment, principal);
         if (portletEntity == null)
         {
-            PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
-            if (pd == null)
+            log.info("No portlet entity defined for fragment ID "+fragment.getId()+" attempting to auto-generate...");
+            try
             {
-                log.error("Failed to retrieve Portlet Definition for " + fragment.getName());
-                return null;
+                portletEntity = entityAccessor.generateEntityFromFragment(fragment, principal);
+                entityAccessor.storePortletEntity(portletEntity);
             }
-            portletEntity = entityAccessor.newPortletEntityInstance(pd);
-            if (portletEntity == null)
+            catch (PortletEntityNotGeneratedException e)
             {
-                log.error("Failed to create Portlet Entity for " + fragment.getName());
-                return null;
-            }            
+                log.error("Error generating new PortletEntity: "+e.toString(), e);                
+            }
+            catch (PortletEntityNotStoredException e)
+            {
+                log.error("Error storing new PortletEntity: "+e.toString(), e);
+            }
+            
+            if(portletEntity == null)
+            {
+                throw new IllegalStateException("Unable to generate portlet entity.");
+            }
+            
         }
         ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
         PortletWindowList windowList = portletEntity.getPortletWindowList();
@@ -118,28 +127,9 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
         
         windows.put(fragment.getId(), portletWindow);
         
-        try
-        {
-            entityAccessor.storePortletEntity(portletEntity);
-        }
-        catch (Exception e)
-        {
-            log.error("Error persisting new portletEntity", e);
-        }
+        
         
         return portletWindow;
-    }
-    
-    private ObjectID makeEntityKey(Fragment fragment, String principal)
-    {
-        StringBuffer key = new StringBuffer();
-        if (principal != null && principal.length() > 0)
-        {
-            key.append(principal);
-            key.append("/");
-        }
-        key.append(fragment.getId());
-        return JetspeedObjectID.createFromString(key.toString());
     }
     
     private PortletWindow getWindowFromCache(Fragment fragment)
