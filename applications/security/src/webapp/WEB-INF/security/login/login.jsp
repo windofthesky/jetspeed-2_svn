@@ -13,32 +13,41 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
-<%@page import="org.apache.jetspeed.login.LoginConstants" %>
-<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@page import="org.apache.jetspeed.login.LoginConstants"%>
+<%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
+<%@taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 
-<html>
-  <title><fmt:message key="login.label.Login"/></title>
-  <body>
-  <% if ( request.getUserPrincipal() != null )
-  		{ %>
-  	<fmt:message key="login.label.Welcome"><fmt:param><%= request.getUserPrincipal().getName() %></fmt:param></fmt:message><br>
-  	<a href='<%= response.encodeURL(request.getContextPath()+"/login/logout") %>'><fmt:message key="login.label.Logout"/></a>
-  <% 	}
-    	else
-			{
-					Integer retryCount = (Integer)request.getSession().getAttribute(LoginConstants.RETRYCOUNT);
-					if ( retryCount != null )
-					{ %>
-		<br><i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param><%=retryCount%></fmt:param></fmt:message></i><br>
-		   <% } %>
-		<form method="POST" action='<%= response.encodeURL(request.getContextPath()+"/login/proxy")%>'>
-      <fmt:message key="login.label.Username"/> <input type="text" size="15" name="<%=LoginConstants.USERNAME%>">
+<c:choose>
+  <c:when test="${pageContext.request.userPrincipal != null}">
+    <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
+    <a href='<c:url value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
+    <br>
+    <a href='<c:url value="/portal/Administrative/change-password.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
+  </c:when>
+  <c:otherwise>
+    <c:set var="retryCountKey"><%=LoginConstants.RETRYCOUNT%></c:set>
+    <c:set var="retryCount" value="${sessionScope[retryCountKey]}"/>
+    <c:if test="${retryCount != null}">
       <br>
-      <fmt:message key="login.label.Password"/> <input type="password" size="15" name="<%=LoginConstants.PASSWORD%>">
-      <input type="submit" value="<fmt:message key="login.label.Login"/>">
+      <i><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></i>
+      <br>
+    </c:if>
+    <form method="POST" action='<c:url value="/login/proxy"/>'>
+      <table border="0">
+      <tr>
+        <td><fmt:message key="login.label.Username"/></td>
+        <td><input type="text" size="15" name="<%=LoginConstants.USERNAME%>"></td>
+      </tr>
+      <tr>
+        <td><fmt:message key="login.label.Password"/></td>
+        <td><input type="password" size="15" name="<%=LoginConstants.PASSWORD%>"></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="submit" value="<fmt:message key="login.label.Login"/>"></td>
+      </tr>
+      </table>
     </form>
-  <% } %>
-  </body>
-</html>
-
+  </c:otherwise>
+</c:choose>

@@ -28,8 +28,8 @@ limitations under the License.
 	      <mime-type>text/html</mime-type>
     	  <portlet-mode>VIEW</portlet-mode>
     	</supports>
-        <supported-locale>en</supported-locale>
-        <supported-locale>ja</supported-locale>
+      <supported-locale>en</supported-locale>
+      <supported-locale>ja</supported-locale>
 	    <resource-bundle>org.apache.jetspeed.portlets.security.resources.LoginResources</resource-bundle>
 		<portlet-info>
 			<title>Login Portlet</title>
@@ -58,6 +58,30 @@ limitations under the License.
 			<short-title>Add User Portlet</short-title>
     	</portlet-info>
   	</portlet>
+    <portlet id="ChangePasswordPortlet">
+      <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+        <value>/WEB-INF/security/chgpwd/change-password.jsp</value>
+      </init-param>   
+      <portlet-name>ChangePasswordPortlet</portlet-name>
+      <display-name>Change Password</display-name>
+      <description>Change current logged on user its password.</description>
+      <portlet-class>org.apache.jetspeed.portlets.security.ChangePasswordPortlet</portlet-class>
+      <expiration-cache>-1</expiration-cache>
+      <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+      </supports>
+      <supported-locale>en</supported-locale>
+      <supported-locale>nl</supported-locale>
+      <resource-bundle>org.apache.jetspeed.portlets.security.resources.ChgPwdResources</resource-bundle>
+      <portlet-info>
+        <title>Change Password</title>
+        <short-title>Change Password</short-title>
+        <keywords>security,user,password</keywords>
+      </portlet-info>
+    </portlet>
 
 </portlet-app>
 

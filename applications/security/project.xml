@@ -16,6 +16,15 @@
   </repository>
 
   <dependencies>
+  	<dependency>
+      <groupId>jetspeed2</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <version>2.0-a1-dev</version>
+      <type>jar</type>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+	</dependency>
     <dependency>
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>
