@@ -1,7 +1,7 @@
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2000-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2000-2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,11 @@
  *    if and wherever such third-party acknowledgments normally appear.
  *
  * 4. The names "Apache" and "Apache Software Foundation" and
- *     "Apache Jetspeed" must not be used to endorse or promote products
+ *    "Apache Jetspeed" must not be used to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" or
+ * 5. Products derived from this software may not be called "Apache",
  *    "Apache Jetspeed", nor may "Apache" appear in their name, without
  *    prior written permission of the Apache Software Foundation.
  *
@@ -51,68 +51,28 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence.impl;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.jetspeed.services.persistence.PathResolver;
+package org.apache.jetspeed.persistence;
 
 /**
- * PathResolver implementation that is backed  by
- * <code>org.apache.fulcrum.BaseService.getRealPath(String)</code>
+ * 
+ * NullTransaction
+ * Object that should be used by <code>PersistencePlugin</code> implementations
+ * that do not actually support transactions.
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @version $Id$
+ *
  */
-public class FulcrumServicePathResloverImpl implements PathResolver
+public class NullTransaction
 {
-	private BaseService service;
-	private static final Log log = LogFactory.getLog(FulcrumServicePathResloverImpl.class);
 
-    public FulcrumServicePathResloverImpl()
+    /**
+     * 
+     */
+    public NullTransaction()
     {
         super();
-    }
-
-    /**
-     * Uses the supplied Fulcrum service to resolve resource pathes.
-     * @param fulcrumService
-     */
-    	
-    public FulcrumServicePathResloverImpl(BaseService fulcrumService)
-    {
-		this();
-    	service = fulcrumService;        
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PathResolver#getRealPath(java.lang.String)
-     */
-    public String getRealPath(String path)
-    {        
-    	String path2 = null;
-        try
-        {
-            //path2 = new File(path1).getCanonicalPath();
-            path2 = new File(service.getRealPath(path)).getCanonicalPath();
-        }
-        catch (IOException e)
-        {            
-           log.error("Path resolution encountered an IOException when attempting to resolve the path, "+path, e);
-        }
-        return path2;
-    }
-    
-    /**
-     * Sets the Fulcrum service to use for path resolution;
-     * @param fulcrumService Fulcrum service to use for path resolution;
-     */
-    public void setBaseService(BaseService fulcrumService)
-    {
-    	service = fulcrumService;
+        
     }
 
 }

@@ -51,16 +51,15 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence.impl;
+package org.apache.jetspeed.persistence.impl;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.services.persistence.LookupCriteria;
-import org.apache.jetspeed.services.persistence.ODMGPersistencePlugin;
-
-import org.apache.jetspeed.services.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.LookupCriteria;
+import org.apache.jetspeed.persistence.ODMGPersistencePlugin;
+import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 
 import org.apache.ojb.broker.Identity;

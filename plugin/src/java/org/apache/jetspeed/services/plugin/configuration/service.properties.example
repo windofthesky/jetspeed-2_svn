@@ -1,9 +1,0 @@
-#--------------------------------------------------------------------
-# P E R S I S T E N C E    S E R V I C E
-#--------------------------------------------------------------------
-services.PersistenceService.classname=org.apache.jetspeed.services.persistence.JetspeedPersistenceService
-services.PersistenceService.plugin.file=org/apache/jetspeed/services/plugin/configuration/persistence-plugins.xml
-
-
-
-

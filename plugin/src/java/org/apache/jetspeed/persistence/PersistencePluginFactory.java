@@ -51,59 +51,24 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.plugin;
+package org.apache.jetspeed.persistence;
+
+import org.apache.jetspeed.commons.service.ServiceFactory;
 
 
 /**
- * 
- * PluginConfiguration
- * 
- * Configuration interface used with configuring <code>PersistencePlugins</code>
+ * PluginFactory
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PluginConfiguration
+public class PersistencePluginFactory
 {
-    String getName();
-
-    void setName(String name);
-
-    String getDescription();
-
-    void setDescription(String desc);
-
-    String getClassName();
-
-    void setClassName(String name);
-
-    String getProperty(String name);
-
-    String getProperty(String name, String defaultValue);
-
-    void setProperty(String name, String value);
-
-    boolean isDefault();
-
-    void setDefault(boolean bool);
-    
-    Object getFactory();
-    
-    void setFactory(Object factory);
-
-    /**
-     * 
-     * @return PathResolver implementation that will return absolute pathes
-     * usable with URLs and URLClassLaoders.
-     */
-    PathResolver getPathResolver();
-
-    /**
-     * 
-     * @param pathResolver PathResolver implementation that will format
-     * absolute pathes usable with <code>URLs</code> and ><code>URLClassLaoders</code>.
-     */
-    void setPathResolver(PathResolver pathResolver);
-
+    public static PersistencePlugin getPlugin(String name)
+    {
+        // PersistenceService pServ = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+        PersistenceService pServ = (PersistenceService) ServiceFactory.getInstance().getService(PersistenceService.SERVICE_NAME);
+        return pServ.getPersistencePlugin(name);
+    }
 }

@@ -51,59 +51,71 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.plugin;
+package org.apache.jetspeed.persistence;
 
+import org.apache.ojb.broker.query.Criteria;
 
 /**
  * 
- * PluginConfiguration
+ * LookupCriteria
  * 
- * Configuration interface used with configuring <code>PersistencePlugins</code>
- * 
+ * Provides a simple selection criteria based on the property values of a single object.
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PluginConfiguration
+public interface LookupCriteria
 {
-    String getName();
-
-    void setName(String name);
-
-    String getDescription();
-
-    void setDescription(String desc);
-
-    String getClassName();
-
-    void setClassName(String name);
-
-    String getProperty(String name);
-
-    String getProperty(String name, String defaultValue);
-
-    void setProperty(String name, String value);
-
-    boolean isDefault();
-
-    void setDefault(boolean bool);
-    
-    Object getFactory();
-    
-    void setFactory(Object factory);
-
     /**
-     * 
-     * @return PathResolver implementation that will return absolute pathes
-     * usable with URLs and URLClassLaoders.
+     * @see org.apache.ojb.broker.query.Criteria#addBetween(java.lang.String, java.lang.Object, java.lang.Object)
      */
-    PathResolver getPathResolver();
-
+    public abstract void addBetween(String arg0, Object arg1, Object arg2);
     /**
-     * 
-     * @param pathResolver PathResolver implementation that will format
-     * absolute pathes usable with <code>URLs</code> and ><code>URLClassLaoders</code>.
+     * @see org.apache.ojb.broker.query.Criteria#addEqualTo(java.lang.String, java.lang.Object)
      */
-    void setPathResolver(PathResolver pathResolver);
-
+    public abstract void addEqualTo(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addGreaterOrEqualThan(java.lang.String, java.lang.Object)
+     */
+    public abstract void addGreaterOrEqualThan(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addGreaterThan(java.lang.String, java.lang.Object)
+     */
+    public abstract void addGreaterThan(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addLessOrEqualThan(java.lang.String, java.lang.Object)
+     */
+    public abstract void addLessOrEqualThan(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addLike(java.lang.String, java.lang.Object)
+     */
+    public abstract void addLike(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addNotBetween(java.lang.String, java.lang.Object, java.lang.Object)
+     */
+    public abstract void addNotBetween(String arg0, Object arg1, Object arg2);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addNotEqualTo(java.lang.String, java.lang.Object)
+     */
+    public abstract void addNotEqualTo(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addNotLike(java.lang.String, java.lang.Object)
+     */
+    public abstract void addNotLike(String arg0, Object arg1);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addNotNull(java.lang.String)
+     */
+    public abstract void addNotNull(String arg0);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addOrCriteria(org.apache.ojb.broker.query.Criteria)
+     */
+    public abstract void addOrCriteria(Criteria arg0);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addOrderByAscending(java.lang.String)
+     */
+    public abstract void addOrderByAscending(String arg0);
+    /**
+     * @see org.apache.ojb.broker.query.Criteria#addOrderByDescending(java.lang.String)
+     */
+    public abstract void addOrderByDescending(String arg0);
 }

@@ -1,7 +1,7 @@
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2000-2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2000-2003 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,11 @@
  *    if and wherever such third-party acknowledgments normally appear.
  *
  * 4. The names "Apache" and "Apache Software Foundation" and
- *     "Apache Jetspeed" must not be used to endorse or promote products
+ *    "Apache Jetspeed" must not be used to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" or
+ * 5. Products derived from this software may not be called "Apache",
  *    "Apache Jetspeed", nor may "Apache" appear in their name, without
  *    prior written permission of the Apache Software Foundation.
  *
@@ -51,19 +51,14 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence.impl;
+package org.apache.jetspeed.persistence.impl;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.fulcrum.InitializationException;
 import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.TransactionAbortedException;
-import org.apache.ojb.broker.TransactionInProgressException;
-import org.apache.ojb.broker.TransactionNotInProgressException;
 
 /**
  * This plugin uses OJB with straight peristence broker to 
@@ -108,20 +103,20 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     public void commitTransaction(Object transaction)
     {
-        
+
         HashMap transactions = (HashMap) transaction;
-		PersistenceBroker pb = (PersistenceBroker)transactions.get("pb");
+        PersistenceBroker pb = (PersistenceBroker) transactions.get("pb");
         Iterator deletes = ((ArrayList) transactions.get("delete")).iterator();
         Iterator adds = ((ArrayList) transactions.get("add")).iterator();
         try
         {
-        	// process update/add operations
+            // process update/add operations
             while (adds.hasNext())
             {
                 pb.store(adds.next());
             }
-			
-			// process delete operations
+
+            // process delete operations
             while (deletes.hasNext())
             {
                 pb.delete(deletes.next());
@@ -158,13 +153,13 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
             transactions.put("delete", new ArrayList());
             PersistenceBroker pb = getBroker();
             pb.beginTransaction();
-            transactions.put("pb",pb);
+            transactions.put("pb", pb);
             return transactions;
         }
         catch (Exception e)
         {
-      		e.printStackTrace();
-      		throw new JetspeedOJBRuntimeException(e);
+            e.printStackTrace();
+            throw new JetspeedOJBRuntimeException(e);
         }
     }
 
@@ -173,7 +168,7 @@ public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
      */
     protected void postInit() throws InitializationException
     {
-		// nothing needs to be done
+        // nothing needs to be done
     }
 
 }

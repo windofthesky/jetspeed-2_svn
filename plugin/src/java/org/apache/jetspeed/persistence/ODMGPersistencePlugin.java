@@ -51,21 +51,21 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence;
+package org.apache.jetspeed.persistence;
+
+import org.odmg.OQLQuery;
+import org.odmg.Transaction;
 
 /**
- * 
- * PathResolver
- * 
- * Utility interface to to wrap a path reslover class for plugins.
+ * ODMGPersistencePlugin
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PathResolver
+public interface ODMGPersistencePlugin extends PersistencePlugin
 {
+    Transaction newODMGTransaction();
 
-    String getRealPath(String path);
-
+    OQLQuery newOQLQuery();
 }

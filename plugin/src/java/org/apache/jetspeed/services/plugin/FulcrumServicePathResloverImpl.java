@@ -53,57 +53,65 @@
  */
 package org.apache.jetspeed.services.plugin;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.fulcrum.BaseService;
 
 /**
- * 
- * PluginConfiguration
- * 
- * Configuration interface used with configuring <code>PersistencePlugins</code>
+ * PathResolver implementation that is backed  by
+ * <code>org.apache.fulcrum.BaseService.getRealPath(String)</code>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
  */
-public interface PluginConfiguration
+public class FulcrumServicePathResloverImpl implements PathResolver
 {
-    String getName();
+    private BaseService service;
+    private static final Log log = LogFactory.getLog(FulcrumServicePathResloverImpl.class);
 
-    void setName(String name);
-
-    String getDescription();
-
-    void setDescription(String desc);
-
-    String getClassName();
-
-    void setClassName(String name);
-
-    String getProperty(String name);
-
-    String getProperty(String name, String defaultValue);
-
-    void setProperty(String name, String value);
-
-    boolean isDefault();
-
-    void setDefault(boolean bool);
-    
-    Object getFactory();
-    
-    void setFactory(Object factory);
+    public FulcrumServicePathResloverImpl()
+    {
+        super();
+    }
 
     /**
-     * 
-     * @return PathResolver implementation that will return absolute pathes
-     * usable with URLs and URLClassLaoders.
+     * Uses the supplied Fulcrum service to resolve resource pathes.
+     * @param fulcrumService
      */
-    PathResolver getPathResolver();
+
+    public FulcrumServicePathResloverImpl(BaseService fulcrumService)
+    {
+        this();
+        service = fulcrumService;
+    }
 
     /**
-     * 
-     * @param pathResolver PathResolver implementation that will format
-     * absolute pathes usable with <code>URLs</code> and ><code>URLClassLaoders</code>.
+     * @see org.apache.jetspeed.services.perisistence.PathResolver#getRealPath(java.lang.String)
      */
-    void setPathResolver(PathResolver pathResolver);
+    public String getRealPath(String path)
+    {
+        String path2 = null;
+        try
+        {
+            //path2 = new File(path1).getCanonicalPath();
+            path2 = new File(service.getRealPath(path)).getCanonicalPath();
+        }
+        catch (IOException e)
+        {
+            log.error("Path resolution encountered an IOException when attempting to resolve the path, " + path, e);
+        }
+        return path2;
+    }
+
+    /**
+     * Sets the Fulcrum service to use for path resolution;
+     * @param fulcrumService Fulcrum service to use for path resolution;
+     */
+    public void setBaseService(BaseService fulcrumService)
+    {
+        service = fulcrumService;
+    }
 
 }

@@ -51,57 +51,53 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence;
+package org.apache.jetspeed.persistence;
 
-import org.apache.commons.lang.exception.NestableException;
+import org.apache.fulcrum.Service;
+import org.apache.jetspeed.services.plugin.PluginConfiguration;
+import org.apache.jetspeed.services.plugin.PluginInitializationException;
 
 
 /**
  * 
- * ObjectAlreadyPersistentException
+ * PersistenceService
  * 
- * Thrown when an object, that is already persistent, is attempted
- * make persistent again, i.e. primary key conflict
+ * Generic persistence service that uses a plug in architecture to support
+ * persistence operations.  It serves as a common gateway to retreive
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class ObjectAlreadyPersistentException extends NestableException
+public interface PersistenceService extends Service
 {
+    String SERVICE_NAME = "PersistenceService";
+
+    PersistencePlugin createPersistencePlugin(PluginConfiguration conf) throws PluginInitializationException;
 
     /**
      * 
+     * @return PersistencePlugin named as the default.  This is specified
+     * in the service configuration "services.PersistenceService.default.plugin"
      */
-    public ObjectAlreadyPersistentException()
-    {
-        super();
-        
-    }
+    PersistencePlugin getDefaultPersistencePlugin();
 
     /**
-     * @param message
+     * You can define multiple <code>PersistencePlugin</code> classes
+     * to be available through the PersistenceService.  This is done by specifing
+     * the class within the <code>PersistenceService</code> configuration:
+     * <br/>
+     * <code>
+     *   services.PersistenceService.plugin.define=myplugin
+     *   services.PersistenceService.plugin.myplugin.classname=MyPersistencePlugin.class</code>
+     * <br/>
+     * MyPersistencePlugin.class must implement the <code>PersistencePlugin</code> interface
+     * Optional initialization parameters can be passed <code>PersistencePlugin.init()</code>
+     * method in the form of:
+     * <code>services.PersistenceService.plugin.myplugin.someproperty=somevalue</code> 
+     * 
+     * @param name The name of the <code>PerisistencePlugin</code> to retreive.
+     * @return PersistencePlugin associated to the <code>name</code> argument.
      */
-    public ObjectAlreadyPersistentException(String message)
-    {
-        super(message);
-        
-    }
-
-    /**
-     * @param nested
-     */
-    public ObjectAlreadyPersistentException(Throwable nested)
-    {
-        super(nested);        
-    }
-
-    /**
-     * @param msg
-     * @param nested
-     */
-    public ObjectAlreadyPersistentException(String msg, Throwable nested)
-    {
-        super(msg, nested);        
-    }
+    PersistencePlugin getPersistencePlugin(String name);
 
 }

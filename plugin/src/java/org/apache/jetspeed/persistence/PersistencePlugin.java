@@ -51,13 +51,13 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence;
+package org.apache.jetspeed.persistence;
 
 import java.sql.Connection;
 import java.util.Collection;
 
-import org.apache.jetspeed.services.plugin.*;
 import org.apache.jetspeed.services.plugin.Plugin;
+import org.apache.jetspeed.services.plugin.PluginConfiguration;
 
 
 /**

@@ -56,7 +56,6 @@ package org.apache.jetspeed.services.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.jetspeed.services.persistence.PathResolver;
 
 /**
  *  Simple concrete implementation of PluginConfiguration

@@ -51,56 +51,54 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence;
+package org.apache.jetspeed.persistence.impl;
 
-import org.apache.fulcrum.Service;
-import org.apache.jetspeed.services.plugin.*;
+import org.apache.commons.lang.exception.NestableRuntimeException;
+
 
 /**
- * 
- * PersistenceService
- * 
- * Generic persistence service that uses a plug in architecture to support
- * persistence operations.  It serves as a common gateway to retreive
+ * Thrown when an unexpected error, unrelated to application 
+ * logic, happens while using OJB.
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
- *
  */
-public interface PersistenceService extends Service
+public class JetspeedOJBRuntimeException extends NestableRuntimeException
 {
-    String SERVICE_NAME = "PersistenceService";
-    
-	PersistencePlugin createPersistencePlugin(PluginConfiguration conf) throws PluginInitializationException;
 
+    /**
+     * 
+     */
+    public JetspeedOJBRuntimeException()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * 
-	 * @return PersistencePlugin named as the default.  This is specified
-	 * in the service configuration "services.PersistenceService.default.plugin"
-	 */
-	PersistencePlugin getDefaultPersistencePlugin();
+    /**
+     * @param arg0
+     */
+    public JetspeedOJBRuntimeException(String arg0)
+    {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
+    /**
+     * @param arg0
+     */
+    public JetspeedOJBRuntimeException(Throwable arg0)
+    {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * You can define multiple <code>PersistencePlugin</code> classes
-	 * to be available through the PersistenceService.  This is done by specifing
-	 * the class within the <code>PersistenceService</code> configuration:
-	 * <br/>
-	 * <code>
-	 *   services.PersistenceService.plugin.define=myplugin
-	 *   services.PersistenceService.plugin.myplugin.classname=MyPersistencePlugin.class</code>
-	 * <br/>
-	 * MyPersistencePlugin.class must implement the <code>PersistencePlugin</code> interface
-	 * Optional initialization parameters can be passed <code>PersistencePlugin.init()</code>
-	 * method in the form of:
-	 * <code>services.PersistenceService.plugin.myplugin.someproperty=somevalue</code> 
-	 * 
-	 * @param name The name of the <code>PerisistencePlugin</code> to retreive.
-	 * @return PersistencePlugin associated to the <code>name</code> argument.
-	 */
-	PersistencePlugin getPersistencePlugin(String name);
-
-
-
+    /**
+     * @param arg0
+     * @param arg1
+     */
+    public JetspeedOJBRuntimeException(String arg0, Throwable arg1)
+    {
+        super(arg0, arg1);
+        // TODO Auto-generated constructor stub
+    }
 
 }

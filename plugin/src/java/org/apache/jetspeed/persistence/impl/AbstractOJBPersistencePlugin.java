@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.persistence.impl;
+package org.apache.jetspeed.persistence.impl;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -66,8 +66,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.services.persistence.LookupCriteria;
-import org.apache.jetspeed.services.persistence.PersistencePlugin;
+
+import org.apache.jetspeed.persistence.LookupCriteria;
+import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 import org.apache.jetspeed.services.plugin.PluginInitializationException;
 import org.apache.ojb.broker.Identity;

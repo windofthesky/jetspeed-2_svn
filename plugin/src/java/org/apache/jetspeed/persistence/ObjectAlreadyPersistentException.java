@@ -51,61 +51,57 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.persistence;
 
-package org.apache.jetspeed.services.persistence;
+import org.apache.commons.lang.exception.NestableException;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.services.plugin.AbstractPluginFactory;
-import org.apache.jetspeed.services.plugin.Plugin;
-import org.apache.jetspeed.services.plugin.PluginConfiguration;
-import org.apache.jetspeed.services.plugin.PluginInitializationException;
 
 /**
  * 
- * JetspeedPersistenceService
+ * ObjectAlreadyPersistentException
  * 
+ * Thrown when an object, that is already persistent, is attempted
+ * make persistent again, i.e. primary key conflict
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class JetspeedPersistenceService extends AbstractPluginFactory implements PersistenceService
+public class ObjectAlreadyPersistentException extends NestableException
 {
-    private static final Log log = LogFactory.getLog(JetspeedPersistenceService.class);
-    public static final String PERSISTENCE_TYPE="persistence"; 
 
     /**
-     * @see org.apache.jetspeed.services.persistence.PersistenceService#createPersistencePlugin(org.apache.jetspeed.services.plugin.PluginConfiguration)
+     * 
      */
-    public PersistencePlugin createPersistencePlugin(PluginConfiguration conf) throws PluginInitializationException
-    {        
-        return (PersistencePlugin) createPersistencePlugin(conf);
+    public ObjectAlreadyPersistentException()
+    {
+        super();
+        
     }
 
     /**
-     * @see org.apache.jetspeed.services.persistence.PersistenceService#getDefaultPersistencePlugin()
+     * @param message
      */
-    public PersistencePlugin getDefaultPersistencePlugin()
-    {        
-        return (PersistencePlugin) getDefaultPlugin(PERSISTENCE_TYPE);
+    public ObjectAlreadyPersistentException(String message)
+    {
+        super(message);
+        
     }
 
     /**
-     * @see org.apache.jetspeed.services.persistence.PersistenceService#getPersistencePlugin(java.lang.String)
+     * @param nested
      */
-    public PersistencePlugin getPersistencePlugin(String name)
-    {        
-        return (PersistencePlugin) getPlugin(PERSISTENCE_TYPE, name);
+    public ObjectAlreadyPersistentException(Throwable nested)
+    {
+        super(nested);        
     }
 
     /**
-     * @see org.apache.jetspeed.services.plugin.AbstractPluginService#getType(org.apache.jetspeed.services.plugin.IPlugin)
+     * @param msg
+     * @param nested
      */
-    protected String getType(Plugin plugin)
-    {       
-        return PERSISTENCE_TYPE;
+    public ObjectAlreadyPersistentException(String msg, Throwable nested)
+    {
+        super(msg, nested);        
     }
 
 }
