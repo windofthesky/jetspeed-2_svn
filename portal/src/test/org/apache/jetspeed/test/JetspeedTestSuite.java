@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletConfig;
+
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
@@ -30,9 +32,10 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.engine.PicoEngine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.apache.jetspeed.engine.SpringEngine;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.jmock.Mock;
 
 /**
  * <p>
@@ -102,7 +105,8 @@ public class JetspeedTestSuite extends TestSuite
             properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             //properties.setProperty(WEBAPP_ROOT_KEY, null);
             initializeConfiguration(properties, applicationRoot);
-            engine = Jetspeed.createEngine(properties, applicationRoot, null, PicoEngine.class);
+            Mock servletConfigMock = new Mock(ServletConfig.class);
+            engine = Jetspeed.createEngine(properties, applicationRoot, (ServletConfig) servletConfigMock.proxy(), SpringEngine.class);
 
         }
         catch (Exception e)

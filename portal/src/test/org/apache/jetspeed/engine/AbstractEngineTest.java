@@ -8,11 +8,14 @@ package org.apache.jetspeed.engine;
 
 import java.io.FileInputStream;
 
+import javax.servlet.ServletConfig;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.ComponentManagement;
+import org.jmock.Mock;
 
 /**
  * <p>
@@ -61,7 +64,8 @@ public abstract class AbstractEngineTest extends TestCase
         System.setProperty("portal.use.internal.jndi", "true");
         PropertiesConfiguration config = new  PropertiesConfiguration();
         config.load(new FileInputStream("./src/webapp/WEB-INF/conf/jetspeed.properties")); 
-        engine = Jetspeed.createEngine(config, "./src/webapp", null, getEngineClass());
+        Mock servletConfigMock = new Mock(ServletConfig.class);
+        engine = Jetspeed.createEngine(config, "./src/webapp", (ServletConfig) servletConfigMock.proxy(), getEngineClass());
     
     }
     protected void tearDown() throws Exception

@@ -6,6 +6,8 @@
  */
 package org.apache.jetspeed.engine;
 
+import javax.servlet.ServletConfig;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -31,6 +33,7 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
+import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
  * <p>
@@ -55,7 +58,8 @@ public class TestSpringEngine extends AbstractEngineTest
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
                                      UserInfoManager.class, NavigationalStateComponent.class, RequestContextComponent.class, PortletWindowAccessor.class,
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, ApplicationServerManager.class, "PAM",
-                                     "deploymentManager"};
+                                     "deploymentManager", "portletCache", "portletFactory", "portletFactoryProxy", ServletConfig.class, 
+                                     StaticInformationProvider.class};
     }
     
     public static Test suite()
