@@ -4,6 +4,6 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.cps.template.TestTemplateLocatorService'/>  
+  <property name='testcase' value='org.apache.jetspeed.cps.rewriter.TestRewriterRules'/>  
 
 </project>

@@ -55,6 +55,14 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+     <dependency>
+      <id>castor</id>
+      <version>0.9.4.3</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>

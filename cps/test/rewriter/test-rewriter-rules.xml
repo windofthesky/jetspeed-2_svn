@@ -1,0 +1,15 @@
+<?xml version='1.0' ?>
+<ruleset id='test-set-101'>
+<rule id='merge' use-base='true' suffix='/web' popup='0' ignore-prefixes='javascript:,mailto:'/>
+<tag id='form'>
+    <attribute id='action' rule='merge'/>
+</tag>
+<tag id='input'>
+    <attribute id='source' rule='test'/>
+</tag>
+<tag id='link'>
+    <attribute id='href' rule='merge'/>
+</tag>
+<tag id='head' remove='true'/>
+<rule id='test' use-base='false' suffix='/whatever&amp;xxx=1' popup='1'/>
+</ruleset>

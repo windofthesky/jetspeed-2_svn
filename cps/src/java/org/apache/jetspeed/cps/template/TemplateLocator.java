@@ -65,10 +65,9 @@ public interface TemplateLocator
     public final static String PARAM_MEDIA_TYPE         = "media-type";
     public final static String PARAM_NAME               = "name";
     public final static String PARAM_LANGUAGE           = "language";
-    public final static String PARAM_COUNTRY            = "country";
-    
+    public final static String PARAM_COUNTRY            = "country";    
     public final static String TYPE_EMAIL               = "emails";
-    public final static String TYPE_PORTLET             = "portlet";
+    public final static String TYPE_PORTLET             = "portlets";
     
   
     /*
