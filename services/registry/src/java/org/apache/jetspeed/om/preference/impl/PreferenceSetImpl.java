@@ -55,15 +55,16 @@
 package org.apache.jetspeed.om.preference.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.portlet.PreferencesValidator;
 
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
-import org.apache.jetspeed.om.impl.AbstractSupportSet;
 import org.apache.pluto.om.common.Preference;
 
 /**
@@ -74,51 +75,23 @@ import org.apache.pluto.om.common.Preference;
  * @version $Id$
  *
  */
-public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceSetComposite, Serializable
+public class PreferenceSetImpl implements PreferenceSetComposite, Serializable
 {
-
-    protected HashMap prefMap = new HashMap();
 
     private String preferenceType;
 
     private PreferencesValidator validator;
 
-    /**
-     * @param wrappedSet
-     */
-    public PreferenceSetImpl(Set wrappedSet)
-    {
-        super(wrappedSet);
-    }
+    protected Collection innerCollection;
 
-    /**
-     * @param c
-     */
     public PreferenceSetImpl(Collection c)
     {
-        super(c);     
-    }
-
-    /**
-     * @param initialCapacity
-     * @param loadFactor
-     */
-    public PreferenceSetImpl(int initialCapacity, float loadFactor)
-    {
-        super(initialCapacity, loadFactor);        
-    }
-
-    /**
-     * @param initialCapacity
-     */
-    public PreferenceSetImpl(int initialCapacity)
-    {
-        super(initialCapacity);        
+        innerCollection = c;
     }
 
     public PreferenceSetImpl()
     {
-        super();
+        innerCollection = new ArrayList();
     }
 
     /**
@@ -126,7 +99,17 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
      */
     public Preference get(String name)
     {
-        return (Preference) prefMap.get(name);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            Preference p = (Preference) itr.next();
+            if (p.getName().equals(name))
+            {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -140,7 +123,7 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
 
         pref.setName(name);
         pref.setValues(values);
-        add(pref);
+        innerCollection.add(pref);
         return pref;
     }
 
@@ -149,8 +132,12 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
      */
     public Preference remove(String name)
     {
-        Preference pref = (Preference) prefMap.get(name);
-        remove(pref);
+        Preference pref = get(name);
+        if (pref != null)
+        {
+            remove(pref);
+        }
+
         return pref;
     }
 
@@ -174,8 +161,7 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
             preferenceType = pref.getType();
         }
 
-        prefMap.put(pref.getName(), pref);
-        return super.add(pref);
+        return innerCollection.add(pref);
     }
 
     /**
@@ -184,13 +170,21 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
     public boolean remove(Object o)
     {
         Preference pref = (Preference) o;
-        prefMap.remove(pref.getName());
-        return super.remove(o);
+
+        return innerCollection.remove(o);
     }
 
     public Set getNames()
     {
-        return prefMap.keySet();
+        HashSet nameSet = new HashSet();
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            Preference pref = (Preference) itr.next();
+            nameSet.add(pref.getName());
+        }
+
+        return nameSet;
     }
 
     /**
@@ -223,7 +217,7 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
             preferenceType = pref.getType();
         }
 
-        return super.addAll(c);
+        return innerCollection.addAll(c);
     }
 
     /** 
@@ -257,6 +251,38 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
         }
 
         this.validator = validator;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.preference.PreferenceSetComposite#size()
+     */
+    public int size()
+    {        
+        return innerCollection.size();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceSet#iterator()
+     */
+    public Iterator iterator()
+    {        
+        return innerCollection.iterator();
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }
