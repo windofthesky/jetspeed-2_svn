@@ -105,7 +105,7 @@ public interface Rewriter
      * @return The base URL for this rewriter
      */
     String getBaseUrl();
-
+    
     /**
      * Gets whether this rewriter require a proxy server.
      * 
