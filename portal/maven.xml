@@ -20,7 +20,7 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.capabilities.TestCapability'/>
+<property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
 
 <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
@@ -421,6 +421,7 @@ limitations under the License.
   <goal name="catalina:shared"
         description="Copy all jars necessary for common container">
     <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
+    <copy file="../jetspeed-api/target/jetspeed-api-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
   </goal>
 

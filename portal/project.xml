@@ -120,7 +120,7 @@ limitations under the License.
       <id>jetspeed2:jetspeed-api</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <war.bundle.jar>false</war.bundle.jar>
       </properties>
     </dependency>
      <dependency>
