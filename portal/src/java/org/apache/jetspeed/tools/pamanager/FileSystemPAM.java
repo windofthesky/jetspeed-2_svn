@@ -38,6 +38,7 @@ import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.ChecksumHelper;
@@ -81,6 +82,7 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
     protected PortletEntityAccessComponent entityAccess;
     protected PortletWindowAccessor windowAccess;
     private PortletCache portletCache;
+    private SearchEngine searchEngine;
 
     protected ApplicationServerManager appServerManager;
    
@@ -162,6 +164,12 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                 log.warn("Error retrieving Application from Registry Database. Application not found: " + paName);
                 return;
             }
+            
+            if(searchEngine != null)
+            {
+                searchEngine.remove(app);
+                searchEngine.remove(app.getPortletDefinitions());
+            }
 
             log.info("Removing a portlets from the PortletCache that belong to portlet application " + paName);
             portletCache.removeAll(app);
@@ -184,7 +192,6 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                     }
                     entityAccess.removeFromCache(entity);                    
                     windowAccess.removeWindows(entity);
-                        
                 }
             }
 
@@ -384,6 +391,12 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             registry.registerPortletApplication(app);
             log.info("Committing registry changes...");
             store.getTransaction().commit();
+            
+            if(searchEngine != null)
+            {
+                searchEngine.add(app);
+                searchEngine.add(app.getPortletDefinitions());
+            }
         }
         catch (Exception e)
         {
@@ -799,4 +812,11 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         }
     }
    
+    /**
+     * @param searchEngine The searchEngine to set.
+     */
+    public void setSearchEngine(SearchEngine searchEngine)
+    {
+        this.searchEngine = searchEngine;
+    }
 }
