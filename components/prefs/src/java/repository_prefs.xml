@@ -1,113 +1,30 @@
 <!--
-   - P R O P E R T Y  S E T  D E F I N I T I O N
--->	
-<class-descriptor
-    class="org.apache.jetspeed.prefs.om.impl.PropertySetDefImpl"
-    proxy="dynamic"
-    table="PREF_PROPERTY_SET_DEF"
->
-    <documentation>Represents a property set definition.</documentation>
-    <field-descriptor
-        name="propertySetDefId"
-        column="property_set_def_id"
-        jdbc-type="INTEGER"
-        primarykey="true"
-        indexed="true"
-        autoincrement="true"
-    >
-    </field-descriptor>
-    <field-descriptor
-        name="propertySetName"
-        column="property_set_name"
-        jdbc-type="VARCHAR"
-        nullable="false"
-        length="100"
-    >
-    </field-descriptor>
-    <field-descriptor
-        name="propertySetType"
-        column="property_set_type"
-        jdbc-type="SMALLINT"
-        nullable="false"
-        length="100"
-    >
-    </field-descriptor>
-    <field-descriptor
-        name="creationDate"
-        column="creation_date"
-        jdbc-type="TIMESTAMP"
-        nullable="false"
-    >
-    </field-descriptor>
-    <field-descriptor
-        name="modifiedDate"
-        column="modified_date"
-        jdbc-type="TIMESTAMP"
-        nullable="false"
-    >
-    </field-descriptor>
-    <collection-descriptor
-        name="nodes"
-        element-class-ref="org.apache.jetspeed.prefs.om.impl.NodeImpl"
-        proxy="true"
-        refresh="true"
-        auto-retrieve="true"
-        auto-update="false"
-        auto-delete="true"
-    >
-        <documentation>This is the reference to a set of nodes.</documentation>
-        <inverse-foreignkey field-ref="propertySetDefId"/>
-    </collection-descriptor>
-    <collection-descriptor
-        name="propertyKeys"
-        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-        proxy="true"
-        refresh="true"
-        auto-retrieve="true"
-        auto-update="true"
-        auto-delete="true"
-    >
-        <documentation>This is the reference to a set of property keys.</documentation>
-        <inverse-foreignkey field-ref="propertySetDefId"/>
-    </collection-descriptor>
-</class-descriptor>
-
-<!--
    - N O D E
 -->	
 
 <class-descriptor
     class="org.apache.jetspeed.prefs.om.impl.NodeImpl"
-    proxy="dynamic"
-    table="PREF_NODE"
+    table="PREFS_NODE"
 >
     <documentation>Represents a preferences node.</documentation>
     <field-descriptor
         name="nodeId"
-        column="node_id"
+        column="NODE_ID"
         jdbc-type="INTEGER"
         primarykey="true"
-        indexed="true"
         autoincrement="true"
     >
     </field-descriptor>
     <field-descriptor
         name="parentNodeId"
-        column="parent_node_id"
+        column="PARENT_NODE_ID"
         jdbc-type="INTEGER"
-        nullable="false"
-    >
-    </field-descriptor>
-    <field-descriptor
-        name="propertySetDefId"
-        column="property_set_def_id"
-        jdbc-type="INTEGER"
-        nullable="false"
+        nullable="true"
     >
     </field-descriptor>
     <field-descriptor
         name="nodeName"
-        column="node_name"
+        column="NODE_NAME"
         jdbc-type="VARCHAR"
         nullable="false"
         length="100"
@@ -115,14 +32,14 @@
     </field-descriptor>
     <field-descriptor
         name="nodeType"
-        column="node_type"
+        column="NODE_TYPE"
         jdbc-type="SMALLINT"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="fullPath"
-        column="full_path"
+        column="FULL_PATH"
         jdbc-type="VARCHAR"
         nullable="false"
         length="254"
@@ -130,37 +47,34 @@
     </field-descriptor>
     <field-descriptor
         name="creationDate"
-        column="creation_date"
+        column="CREATION_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="modifiedDate"
-        column="modified_date"
+        column="MODIFIED_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
     </field-descriptor>
-    <reference-descriptor
-        name="propertySetDef"
-        class-ref="org.apache.jetspeed.prefs.om.impl.PropertySetDefImpl"
-        proxy="true"
-        refresh="true"
-        auto-retrieve="true"
-        auto-update="false"
-     	auto-delete="false"
-    >
-        <documentation>This is the reference to a property set definition.</documentation>
-        <foreignkey field-ref="propertySetDefId"/>
-    </reference-descriptor>
     <collection-descriptor
-        name="properties"
-        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyImpl"
-        proxy="true"
-        refresh="true"
+        name="nodeKeys"
+        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
         auto-retrieve="true"
-        auto-delete="true"
+        auto-delete="false"
+        auto-update="true"
+        indirection-table="PREFS_NODE_PROPERTY_KEY"
+    >
+        <documentation>This is the reference to the property keys allowed for that node.</documentation>
+        <fk-pointing-to-this-class column="NODE_ID"/>
+        <fk-pointing-to-element-class column="PROPERTY_KEY_ID"/>
+    </collection-descriptor>
+    <collection-descriptor
+        name="nodeProperties"
+        element-class-ref="org.apache.jetspeed.prefs.om.impl.PropertyImpl"
+        otm-dependent="true"
     >
         <documentation>This is the reference to a node properties.</documentation>
         <inverse-foreignkey field-ref="nodeId"/>
@@ -173,29 +87,20 @@
 
 <class-descriptor
     class="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-    proxy="dynamic"
-    table="PREF_PROPERTY_KEY"
+    table="PREFS_PROPERTY_KEY"
 >
     <documentation>Represents a property key.</documentation>
     <field-descriptor
         name="propertyKeyId"
-        column="property_key_id"
+        column="PROPERTY_KEY_ID"
         jdbc-type="INTEGER"
         primarykey="true"
-        indexed="true"
         autoincrement="true"
     >
     </field-descriptor>
     <field-descriptor
-        name="propertySetDefId"
-        column="property_set_def_id"
-        jdbc-type="INTEGER"
-        nullable="false"
-    >
-    </field-descriptor>
-    <field-descriptor
         name="propertyKeyName"
-        column="property_name"
+        column="PROPERTY_NAME"
         jdbc-type="VARCHAR"
         nullable="false"
         length="100"
@@ -203,21 +108,21 @@
     </field-descriptor>
     <field-descriptor
         name="propertyKeyType"
-        column="property_type"
+        column="PROPERTY_TYPE"
         jdbc-type="SMALLINT"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="creationDate"
-        column="creation_date"
+        column="CREATION_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="modifiedDate"
-        column="modified_date"
+        column="MODIFIED_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
@@ -230,64 +135,62 @@
 
 <class-descriptor
     class="org.apache.jetspeed.prefs.om.impl.PropertyImpl"
-    proxy="dynamic"
-    table="PREF_PROPERTY_VALUE"
+    table="PREFS_PROPERTY_VALUE"
 >
     <documentation>Represents a property key/value pair.</documentation>
     <field-descriptor
         name="propertyValueId"
-        column="property_value_id"
+        column="PROPERTY_VALUE_ID"
         jdbc-type="INTEGER"
         primarykey="true"
-        indexed="true"
         autoincrement="true"
     >
     </field-descriptor>
     <field-descriptor
         name="nodeId"
-        column="node_id"
+        column="NODE_ID"
         jdbc-type="INTEGER"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="propertyKeyId"
-        column="property_key_id"
+        column="PROPERTY_KEY_ID"
         jdbc-type="INTEGER"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="booleanPropertyValue"
-        column="boolean_value"
+        column="BOOLEAN_VALUE"
         jdbc-type="BIT"
         nullable="true"
     >
     </field-descriptor>
     <field-descriptor
         name="datePropertyValue"
-        column="datetime_value"
+        column="DATETIME_VALUE"
         jdbc-type="TIMESTAMP"
         nullable="true"
     >
     </field-descriptor>
     <field-descriptor
         name="longPropertyValue"
-        column="long_value"
+        column="LONG_VALUE"
         jdbc-type="INTEGER"
         nullable="true"
     >
     </field-descriptor>
     <field-descriptor
         name="doublePropertyValue"
-        column="double_value"
+        column="DOUBLE_VALUE"
         jdbc-type="DOUBLE"
         nullable="true"
     >
     </field-descriptor>
     <field-descriptor
         name="textPropertyValue"
-        column="text_value"
+        column="TEXT_VALUE"
         jdbc-type="VARCHAR"
         nullable="true"
         length="254"
@@ -295,14 +198,14 @@
     </field-descriptor>
     <field-descriptor
         name="creationDate"
-        column="creation_date"
+        column="CREATION_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
     </field-descriptor>
     <field-descriptor
         name="modifiedDate"
-        column="modified_date"
+        column="MODIFIED_DATE"
         jdbc-type="TIMESTAMP"
         nullable="false"
     >
@@ -310,11 +213,10 @@
     <reference-descriptor
         name="propertyKey"
         class-ref="org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl"
-        proxy="true"
-        refreh="true"
-     	auto-retrieve="true"
-    	auto-update="false"
-     	auto-delete="false"
+        refresh="true"
+        auto-retrieve="true"
+        auto-delete="false"
+        auto-update="true"
     >
         <documentation>This is the reference to a property key.</documentation>
         <foreignkey field-ref="propertyKeyId"/>
