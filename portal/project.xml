@@ -71,6 +71,13 @@
       </properties>
     </dependency>
     <dependency>
+      <id>commons-httpclient</id>
+      <version>2.0-rc2</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
       <id>commons-io</id>
       <version>0.1</version>
       <properties>
