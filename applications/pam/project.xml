@@ -42,9 +42,15 @@
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
+    </dependency>   
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
     </dependency>
-      
-      <dependency>
+    <dependency>
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>
       <version>1.0</version>
