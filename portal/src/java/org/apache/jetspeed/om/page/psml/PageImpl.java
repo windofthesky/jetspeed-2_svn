@@ -16,8 +16,12 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Stack;
 import java.util.Iterator;
 
@@ -29,6 +33,8 @@ public class PageImpl extends AbstractBaseElement implements Page
     private Defaults defaults = new Defaults();
 
     private Fragment root = null;
+    
+    private Collection metadataFields = null;
 
     public PageImpl()
     {
@@ -116,5 +122,46 @@ public class PageImpl extends AbstractBaseElement implements Page
 
         return cloned;
     }
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.Page#getMetadata()
+	 */
+	public GenericMetadata getMetadata()
+	{
+		if(metadataFields == null)
+        {
+            metadataFields = new ArrayList();
+        }
+		
+		GenericMetadata metadata = new PageMetadataImpl();
+	    metadata.setFields(metadataFields);
+	    return metadata;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.Page#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+	 */
+	public void setMetadata(GenericMetadata metadata)
+	{
+        this.metadataFields = metadata.getFields();
+	}
+
+	/**
+	 * This should only be used during castor marshalling 
+	 * @see org.apache.jetspeed.om.page.Page#getMetadataFields()
+	 */
+	public Collection getMetadataFields()
+	{
+		return metadataFields;
+	}
+
+	/**
+	 * This should only be used during castor unmarshalling 
+	 * @see org.apache.jetspeed.om.page.Page#setMetadataFields(java.util.Collection)
+	 */
+	public void setMetadataFields(Collection metadataFields)
+	{
+		this.metadataFields = metadataFields;
+	}
 }
 
