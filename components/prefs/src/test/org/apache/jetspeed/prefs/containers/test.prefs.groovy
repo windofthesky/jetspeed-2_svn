@@ -1,8 +1,9 @@
 import org.picocontainer.defaults.DefaultPicoContainer
 
+import java.io.File
+
 import org.apache.jetspeed.components.util.NanoQuickAssembler
 import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl
-import java.io.File
 
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
