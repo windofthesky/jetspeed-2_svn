@@ -56,9 +56,24 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     //  ServletRequestWrapper overlay
 
     public String getParameter(String name)
-    {
-        return (String) this.getParameterMap().get(name);
-
+    {       
+        Object value = this.getParameterMap().get(name);
+        if (value == null)
+        {
+            return (null);
+        }
+        else if (value instanceof String[])
+        {
+            return (((String[]) value)[0]);
+        }
+        else if (value instanceof String)
+        {
+            return ((String) value);
+        }
+        else
+        {
+            return (value.toString());
+        }
     }
 
     public Map getParameterMap() 
