@@ -12,13 +12,15 @@ import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent
 import org.apache.jetspeed.components.datasource.DatasourceComponent
 import org.apache.commons.pool.impl.GenericObjectPool
 import org.apache.jetspeed.components.persistence.store.ojb.OJBTypeIntializer
-import org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl
+import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
 import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.components.util.system.FSSystemResourceUtilImpl
 
 import org.apache.jetspeed.prefs.PropertyManager
 import org.apache.jetspeed.prefs.impl.PropertyManagerImpl
+import org.apache.jetspeed.prefs.PreferencesComponent
+import org.apache.jetspeed.prefs.impl.PreferencesComponentImpl
 
 import java.io.File
 
@@ -51,13 +53,15 @@ if(url != null)
 
 //
 // Persistence
-PersistenceContainer pContainer = new DefaultPersistenceStoreContainer(300000, 10000)
+PersistenceStoreContainer pContainer = new DefaultPersistenceStoreContainer(300000, 10000)
 
-ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", OTMStoreImpl, new Parameter[] {new ConstantParameter("jetspeed")})
+ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", PBStore, new Parameter[] {new ConstantParameter("jetspeed")})
 
 pContainer.registerComponent(ca)
 
 container.registerComponentInstance(PersistenceStoreContainer, pContainer);
+
+container.registerComponentInstance(PreferencesComponent, new PreferencesComponentImpl(pContainer, "jetspeed"))
 
 //
 // Property Manager
