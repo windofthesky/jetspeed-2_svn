@@ -302,9 +302,12 @@ public class PortletTreeControlTag extends TreeControlTag
                     out.print("\"");
                 }
                 
-                out.print(" title=\"");
-                out.print(node.getLabel());
-                out.print("\"");
+                if(node.getTitle() != null)
+                {
+                    out.print(" title=\"");
+                    out.print(node.getTitle());
+                    out.print("\"");
+                }
                 
                 /* Invalid, not used, and not usefull
                 // to refresh the tree in the same 'self' frame

@@ -196,6 +196,20 @@ public class TreeControlNode implements Serializable {
     public String getLabel() {
         return (this.label);
     }
+    
+    /**
+     * The label that will be displayed when this node is visible.
+     */
+    protected String title = null;
+
+    public String getTitle() {
+        return (this.title);
+    }
+    
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
 
 
     /**

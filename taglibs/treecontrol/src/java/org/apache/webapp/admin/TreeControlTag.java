@@ -476,9 +476,12 @@ public class TreeControlTag extends TagSupport {
                     out.print("\"");
                 }
                 
-                out.print(" title=\"");
-                out.print(node.getLabel());
-                out.print("\"");
+                if(node.getTitle() != null)
+                {
+                    out.print(" title=\"");
+                    out.print(node.getTitle());
+                    out.print("\"");
+                }
                 
                 // to refresh the tree in the same 'self' frame
                 out.print(" onclick=\"");
