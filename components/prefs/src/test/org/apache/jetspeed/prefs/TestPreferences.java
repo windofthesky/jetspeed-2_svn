@@ -77,7 +77,6 @@ public class TestPreferences extends AbstractComponentAwareTestCase
     {
         super.setUp();
         System.setProperty("java.util.prefs.PreferencesFactory", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
-        System.out.println("java.util.prefs.PreferencesFactory:" + System.getProperty("java.util.prefs.PreferencesFactory"));
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
     }

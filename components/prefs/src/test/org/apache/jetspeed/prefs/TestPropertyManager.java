@@ -77,7 +77,6 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        System.out.println("_________ SET UP ___________");
         System.setProperty("java.util.prefs.PreferencesFactory", "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl");
         container = (MutablePicoContainer) getContainer();
         pms = (PropertyManager) container.getComponentInstance(PropertyManager.class);
@@ -89,7 +88,6 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
     public void tearDown() throws Exception
     {
         super.tearDown();
-        System.out.println("_________ CLEAN ___________");
         clean();
     }
 
@@ -118,11 +116,8 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
      */
     public void testAddPropertyKeys() throws PropertyException
     {
-        System.out.println("___1");
         Map propertyKeys = initPropertyKeysMap();
-        System.out.println("___2");
         Preferences pref = Preferences.userRoot().node("/user/principal1/propertyset1"); 
-        System.out.println("___3"); 
         try
         {
             pms.addPropertyKeys(pref, propertyKeys);
