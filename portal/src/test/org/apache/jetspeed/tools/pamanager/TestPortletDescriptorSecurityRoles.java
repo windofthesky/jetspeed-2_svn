@@ -21,7 +21,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
+import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
@@ -42,7 +42,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id: TestPortletDescriptorSecurityRoles.java,v 1.4 2004/05/27
  *                19:57:24 weaver Exp $
  */
-public class TestPortletDescriptorSecurityRoles extends RegistrySupportedTestCase
+public class TestPortletDescriptorSecurityRoles extends AbstractPrefsSupportedTestCase
 {
 
     /**
