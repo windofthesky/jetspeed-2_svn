@@ -27,11 +27,8 @@ import java.util.StringTokenizer;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.portlet.Portlet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
@@ -662,6 +659,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         }
         DNListWrapper.setInnerCollection(displayNames);
         DNListWrapper.addDisplayName(displayName);
+    }
+    
+    public DisplayNameSet getDisplayNameSet()
+    {
+        return DNListWrapper;
     }
 
     /**

@@ -366,6 +366,11 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
 		portlet.addDisplayName(locale, displayName);
 
     }
+    
+    public DisplayNameSet getDisplayNameSet()
+    {
+        return portlet.getDisplayNameSet();
+    }
 
     /** 
      * <p>

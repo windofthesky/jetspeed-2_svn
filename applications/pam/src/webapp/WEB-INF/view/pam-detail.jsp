@@ -16,6 +16,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.portlets.pam.beans.TabBean" %>
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
+<%@ page import="org.apache.jetspeed.om.common.portlet.*" %>
 
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>

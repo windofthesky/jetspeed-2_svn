@@ -27,6 +27,11 @@ limitations under the License.
 <br />
 
 <c:if test="${selectedPortletTab.id == 'pd_details'}">
+	<portlet:actionURL var="edit_portlet_link" >
+    </portlet:actionURL>
+	
+	<form action="<c:out value="${edit_portlet_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.edit_portlet"/>
 	<table>
 		<tr>
 			<td>
@@ -68,7 +73,59 @@ limitations under the License.
 				<c:out value="${selectedPDef.className}"/>
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<fmt:message key="pam.details.display_name"/>
+			</td>
+			<td>
+				<table>
+					<%
+						PortletDefinitionComposite portlet = (PortletDefinitionComposite)pageContext.findAttribute("selectedPDef");
+						pageContext.setAttribute("displayNameSet", portlet.getDisplayNameSet());
+					%>
+					<c:forEach var="displayName" items="${displayNameSet.innerCollection}" varStatus="displayNameStatus">
+						<tr>
+							
+							<td><c:out value="${displayName.locale}"/></td>
+							<td><input type="text" name="display_name:<c:out value="${displayNameStatus.index}"/>" value="<c:out value="${displayName.displayName}"/>"/></td>
+						</tr>
+					</c:forEach>
+				</table>
+			</td>
+		</tr>
 	</table>
+	
+		<input type="submit" value="<fmt:message key="pam.details.edit_display_name"/>"/>
+	</form>
+	
+	<form action="<c:out value="${edit_portlet_link}"/>">
+		<input type="hidden" name="portlet_action" value="portlet.edit_portlet"/>
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.display_name"/>
+				</td>
+				<td>
+					<input type="text" name="display_name" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.display_name.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.locale"/>
+				</td>
+				<td>
+					<input type="text" name="locale" value="" size="2"/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.locale.description"/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="pam.details.add_display_name"/>"/>
+	</form>
 </c:if>
 
 <c:if test="${selectedPortletTab.id == 'pd_metadata'}">

@@ -23,6 +23,7 @@ import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
+import org.apache.pluto.om.common.DisplayNameSet;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -170,6 +171,8 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
      *
      */
     void addDisplayName(DisplayName displayName);
+    
+    DisplayNameSet getDisplayNameSet();
 
     String getPreferenceValidatorClassname();
 

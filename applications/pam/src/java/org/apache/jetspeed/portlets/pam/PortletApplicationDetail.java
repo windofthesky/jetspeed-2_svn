@@ -37,6 +37,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.MutableDescription;
+import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
@@ -399,7 +400,38 @@ public class PortletApplicationDetail extends ServletPortlet
     {
         if(action.equals("edit_portlet"))
         {
-
+            String displayNameParam = actionRequest.getParameter("display_name");
+            if(displayNameParam == null)
+            {            
+	            int index = 0;
+	            Iterator displayNameIter = portlet.getDisplayNameSet().iterator();
+	            while (displayNameIter.hasNext())
+	            {
+	                MutableDisplayName displayName = (MutableDisplayName) displayNameIter.next();
+	                displayNameParam = actionRequest.getParameter("display_name:" + index);
+	                
+	                //this should never happen
+	                if(displayNameParam != null)
+	                {
+	                    if(displayNameParam.length() == 0)
+	                    {
+	                        displayNameIter.remove();
+	                    }
+	                    else if(!displayNameParam.equals(displayName.getDisplayName()))
+	                    {
+	                        displayName.setDisplayName(displayNameParam);
+	                    }
+	                }
+	                index++;
+	            }
+            }
+            else
+            {
+                String locale = actionRequest.getParameter("locale");
+                portlet.addDisplayName(new Locale(locale), displayNameParam);
+            }
+            
+            registry.getPersistenceStore().getTransaction().commit();
         }
         else if(action.equals("remove_portlet"))
         {
@@ -407,7 +439,7 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("add_portlet"))
         {
-            //TODO should this be allowed??
+            
         }
     }
     
