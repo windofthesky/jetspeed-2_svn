@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.jetspeed.rewriter.JetspeedRewriterController;
 import org.apache.jetspeed.rewriter.RewriterController;
 import org.apache.jetspeed.rewriter.RewriterException;
@@ -100,9 +102,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
     /** Default encoding */
     public String defaultEncoding = "iso-8859-1";
 
-    /* Internal Cache */
-    private String lastURL = null;
-
     /* SSO settings */
     boolean isSSOEnabled = false;
 
@@ -111,6 +110,10 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
     RewriterController rewriteController = null;
 
+    /* Internal Cache */
+    private String lastURL = null; // TODO: can't keep this here and have 1..n portlets
+    private byte[] cache = null; // TODO: can't keep this here and have 1..n portlets
+    
     public WebContentPortlet()
     {
         super();
@@ -159,7 +162,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
         {
             String sessionObj = new String(webContentParameter);
             actionRequest.getPortletSession().setAttribute(WebContentPortlet.SESSION_PARAMETER, sessionObj,
-                    PortletSession.APPLICATION_SCOPE);
+                    PortletSession.PORTLET_SCOPE);
         }
     }
 
@@ -171,12 +174,13 @@ public class WebContentPortlet extends GenericVelocityPortlet
     {
         // Find the source URL to execute
         String sourceURL = null;
-
+        boolean useCache = false;
+        
         // Check if the source was defined in the session
         try
         {
             sourceURL = (String) request.getPortletSession().getAttribute(WebContentPortlet.SESSION_PARAMETER,
-                    PortletSession.APPLICATION_SCOPE);
+                    PortletSession.PORTLET_SCOPE);
 
             // TODO: This is just a kludge. Filtering of bad uRL's should be
             // more sophisticated
@@ -192,14 +196,20 @@ public class WebContentPortlet extends GenericVelocityPortlet
         {
             // Use the cache
             sourceURL = lastURL;
+            useCache = true;
         }
-
+        
         if (sourceURL == null)
         {
             // Use the URL defined in the preferences
             sourceURL = defaultViewSource;
         }
 
+        if (lastURL != null && sourceURL.equals(lastURL))
+        {
+            useCache = true;
+        }
+        
         // If all above fails throw an error asking the user to define an URL in
         // edit mode
         if (sourceURL == null)
@@ -231,12 +241,26 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
         // Set the content type
         response.setContentType("text/html");
-        // Draw the content
-        byte[] content = doWebContent(request, sourceURL, response);
+        byte[] content;
+        if (useCache && cache != null)
+        {
+            System.out.println("USING CACHE");
+            content = cache;            
+        }
+        else
+        {
+            // Draw the content
+            System.out.println("***NOT*** USING CACHE");
+            
+            content = doWebContent(request, sourceURL, response);
+            cache = content;
+        }
+
+        // drain the stream to the portlet window
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
         drain(bais, response.getPortletOutputStream());
         bais.close();
-
+        
         // Done just save the last URL
         lastURL = sourceURL;
 
@@ -257,27 +281,23 @@ public class WebContentPortlet extends GenericVelocityPortlet
         // Initialization
         Writer htmlWriter = null;
 
-        // Rewriter
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-
-        Reader htmlReader = getReader(sourceAttr);
 
         try
         {
             htmlWriter = new OutputStreamWriter(byteOutputStream, this.defaultEncoding);
 
             // Set the action URL in the rewriter
-            ((WebContentRewriter) rewriter).setActionURL(response.createActionURL());
+           ((WebContentRewriter) rewriter).setActionURL(response.createActionURL());
 
             URL baseURL = new URL(sourceAttr);
             String baseurl = baseURL.getProtocol() + "://" + baseURL.getHost();
-            //          TODO: Remove debug
-            System.out.println("BaseURL: " + baseurl);
 
-            ((WebContentRewriter) rewriter).setBaseURL(baseurl);
+            rewriter.setBaseUrl(baseurl);
 
-            // drain(getReader(sourceAttr), byteOutputStream);
-            rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getReader(sourceAttr), htmlWriter);
+            rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), getRemoteReader(sourceAttr), htmlWriter);
+            htmlWriter.flush();
+            
         }
         catch (UnsupportedEncodingException ueex)
         {
@@ -313,6 +333,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
     {
         Class[] rewriterClasses = new Class[]
         { WebContentRewriter.class, WebContentRewriter.class};
+        
         Class[] adaptorClasses = new Class[]
         { SwingParserAdaptor.class, SaxParserAdaptor.class};
         RewriterController rwc = new JetspeedRewriterController(contextPath + "conf/rewriter-rules-mapping.xml", Arrays
@@ -463,4 +484,20 @@ public class WebContentPortlet extends GenericVelocityPortlet
         w.flush();
     }
 
+    private Reader getRemoteReader(String uri) throws PortletException
+    {
+        try
+        {
+            HttpClient client = new HttpClient();
+            GetMethod get = new GetMethod(uri);
+            int status = client.executeMethod(get);
+            InputStream is = get.getResponseBodyAsStream();
+            return new InputStreamReader(is);
+        }
+        catch (IOException e)
+        {
+            throw new PortletException(e);
+        }
+    }
+    
 }
