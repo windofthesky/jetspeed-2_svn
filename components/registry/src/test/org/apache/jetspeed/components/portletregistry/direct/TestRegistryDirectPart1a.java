@@ -57,15 +57,6 @@ import org.apache.pluto.om.common.PreferenceSetCtrl;
 public class TestRegistryDirectPart1a extends AbstractRegistryTest
 {
 
-    /**
-     *  
-     */
-    public TestRegistryDirectPart1a()
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -99,13 +90,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
         //  super.tearDown();
     }
 
-    /**
-     * @param testName
-     */
-    public TestRegistryDirectPart1a( String testName )
-    {
-        super(testName);
-    }
+ 
 
     /**
      * <p>
@@ -119,7 +104,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
     {
         // Create an Application and a Web app
 
-        persistenceStore.getTransaction().begin();
+        
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
@@ -177,8 +162,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
         portlet.addContentType(wml);
 
         app.setWebApplicationDefinition(webApp);
-        persistenceStore.makePersistent(app);
-        persistenceStore.getTransaction().commit();
+        registry.registerPortletApplication(app);
     }
 
     private void addDublinCore( GenericMetadata metadata )

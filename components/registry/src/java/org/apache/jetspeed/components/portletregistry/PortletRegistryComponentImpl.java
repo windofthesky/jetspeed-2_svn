@@ -68,7 +68,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $ $
  *  
  */
-public class PortletRegistryComponentImpl implements PortletRegistryComponent
+public class PortletRegistryComponentImpl implements PortletRegistry
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(PortletRegistryComponentImpl.class);
@@ -492,7 +492,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         return obj;
     }
 
-    public void savePortletDefinition( PortletDefinition portlet ) throws RegistryException
+    public void savePortletDefinition( PortletDefinition portlet ) throws FailedToStorePortletDefinitionException
     {
         try
         {
@@ -503,7 +503,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         }
         catch (LockFailedException e)
         {
-            throw new RegistryException("Unable to lock PortletDefintion for update: " + e.toString(), e);
+            throw new FailedToStorePortletDefinitionException(portlet, e);
         }
 
     }

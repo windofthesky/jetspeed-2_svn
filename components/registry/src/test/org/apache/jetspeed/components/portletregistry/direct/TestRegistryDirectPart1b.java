@@ -18,8 +18,6 @@ package org.apache.jetspeed.components.portletregistry.direct;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
@@ -33,14 +31,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
  */
 public class TestRegistryDirectPart1b extends AbstractRegistryTest
 {
-    /**
-     * 
-     */
-    public TestRegistryDirectPart1b()
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
     /*
      * (non-Javadoc)
      * 
@@ -61,14 +51,6 @@ public class TestRegistryDirectPart1b extends AbstractRegistryTest
        //  super.tearDown();
     }
 
-    /**
-     * @param testName
-     */
-    public TestRegistryDirectPart1b(String testName)
-    {
-        super(testName);
-    }
-
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
@@ -77,18 +59,14 @@ public class TestRegistryDirectPart1b extends AbstractRegistryTest
     
     public void testUpdates() throws Exception
     {
-        Transaction tx = persistenceStore.getTransaction();
-        tx.begin();
-        Filter filter = persistenceStore.newFilter();
+        
         PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
         assertNotNull("PA App_1 is NULL", app);
 
         app.addUserAttribute("user.pets.doggie", "Busby");
         
-        registry.getPersistenceStore().lockForWrite(app);
-        
-        tx.commit();
-                        
+        registry.updatePortletApplication(app);        
+                                
         System.out.println("PA update test complete");
     }
     

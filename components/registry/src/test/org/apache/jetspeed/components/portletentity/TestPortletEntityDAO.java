@@ -20,13 +20,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -36,8 +31,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -46,69 +39,49 @@ import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.stub.ReturnStub;
 
 /**
- * Test Portlet Entity Accessor
+ * <p>
+ * TestPortletEntityDAO
+ * </p>
+ * <p>
  *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * </p>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCase 
+public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 {
-    
-    private  PortletEntityAccessComponent entityAccess = null;
-    private  PortletRegistryComponent registry = null;
+
     private static final String TEST_APP = "EntityTestApp";
     private static final String TEST_PORTLET = "EntityTestPortlet";
     private static final String TEST_ENTITY = "user5/entity-9";
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
+    private PortletEntityAccessComponent entityAccess = null;
+    private PortletRegistry registry;   
+ 
     protected void setUp() throws Exception
-    {        
+    {      
         super.setUp();
-
-        registry = new PortletRegistryComponentImpl(persistenceStore);
-        entityAccess = new PortletEntityAccessComponentImpl(persistenceStore, registry);
-        
-        PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
-        PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
-        provider.start();
-        setupTestData();                   
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {                
+        this.entityAccess = (PortletEntityAccessComponent) ctx.getBean("portletEntityAccess");
+        this.registry = (PortletRegistry) ctx.getBean("portletRegistry");
         teardownTestData();
-       //super.tearDown();
-    }
-
-   public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPortletEntityAccessComponent.class);
+        setupTestData();
     }
     
-
-    /**
-     * @param testName
-     */
-    public TestPortletEntityAccessComponent(String testName)
+    protected void tearDown() throws Exception
     {
-        super(testName);
+        teardownTestData();
     }
-        
+    
+    public void test1() throws Exception
+    {
+        assertNotNull(this.entityAccess);
+        assertNotNull(this.registry);
+    }
+
     public void testEntities() throws Exception
     {
         
-        PersistenceStore store = registry.getPersistenceStore();
-        store.getTransaction().begin();
+       
         
         PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
         assertNotNull("Portlet Application", pa);
@@ -148,7 +121,7 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         
         // Add it back so we can test tole back
         prefs.add("pref1", Arrays.asList(new String[]{"1"}));
-
+    
         entityAccess.storePortletEntity(entity);
         
         prefs = (PreferenceSetComposite) entity.getPreferenceSet();
@@ -233,23 +206,61 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         entityAccess.storePortletEntity(entity5);
         System.out.println("store done: " + entity5.getId());  
         mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub( entity5.getId().toString()));
-
+    
         MutablePortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
         assertNotNull(entity6);
         System.out.println("reget : " + entity6.getId());        
         
         entityAccess.removePortletEntity(entity6);
         
-        store.getTransaction().commit();              
+                
     }
+
+    private void teardownTestData()
+    throws Exception
+    {   
         
+        
+        JetspeedObjectID objId = JetspeedObjectID.createFromString(TEST_ENTITY);
+        MutablePortletEntity entity = entityAccess.getPortletEntity(objId);
+        System.out.println("entity == " + entity);
+        
+        if (entity != null)
+        {
+            entityAccess.removePortletEntity(entity);
+        }
+        
+        PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
+        System.out.println("pa == " + pa);
+        if (pa != null)
+        {
+            registry.removeApplication(pa);
+        }
+        
+       
+        
+        if(Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
+        {
+            Preferences.systemRoot().node(MutablePortletApplication.PREFS_ROOT).removeNode();
+        }
+        
+        if(Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
+        {
+            Preferences.userRoot().node(PortletDefinitionComposite.PORTLETS_PREFS_ROOT).removeNode();
+        }        
+        
+        
+        if(Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
+        {
+            Preferences.userRoot().node(MutablePortletEntity.PORTLET_ENTITY_ROOT).removeNode();
+        }
+
+    }
+
     private void setupTestData()
     throws Exception
     {
-        // TODO: this should strictly use the registry api only         
-        PersistenceStore store = registry.getPersistenceStore();
-        store.getTransaction().begin();
-        
+                
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName(TEST_APP);
         app.setApplicationIdentifier(TEST_APP);
@@ -268,58 +279,17 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
                         
         app.addPortletDefinition(portlet);      
-  
+    
         app.setWebApplicationDefinition(webApp);
         
         PreferenceSetComposite prefSet = (PreferenceSetComposite) portlet.getPreferenceSet();
         prefSet.add("pref1", Arrays.asList(new String[]{"1"}));
         
-        store.makePersistent(app);
-        store.getTransaction().commit();              
+        registry.registerPortletApplication(app);           
     }
     
-    private void teardownTestData()
-    throws Exception
+    protected String[] getConfigurations()
     {
-        PersistenceStore store = registry.getPersistenceStore();
-        store.getTransaction().begin();
-        
-        PortletApplicationDefinition pa = registry.getPortletApplication(TEST_APP);
-        System.out.println("pa == " + pa);
-        if (pa != null)
-        {
-            registry.removeApplication(pa);
-        }
-        MutablePortletEntity entity = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(TEST_ENTITY));
-        System.out.println("entity == " + entity);
-        
-        if (entity != null)
-        {
-            entityAccess.removePortletEntity(entity);
-        }
-        
-        if(Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
-        {
-            Preferences.systemRoot().node(MutablePortletApplication.PREFS_ROOT).removeNode();
-        }
-        
-        if(Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
-        {
-            Preferences.userRoot().node(PortletDefinitionComposite.PORTLETS_PREFS_ROOT).removeNode();
-        }
-        
-        
-        
-        if(Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
-        {
-            Preferences.userRoot().node(MutablePortletEntity.PORTLET_ENTITY_ROOT).removeNode();
-        }
-        
-                
-        store.getTransaction().commit();              
-
+        return new String[] {"/META-INF/transaction.xml", "/META-INF/registry-dao.xml", "/META-INF/entity-dao.xml"};
     }
-    
-    
-    
 }

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,17 +23,19 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.Storeable;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -58,7 +61,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
     private PersistenceStore persistenceStore;
 
-    private PortletRegistryComponent registry;
+    private PortletRegistry registry;
 
     protected Principal principal;
 
@@ -67,10 +70,11 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * @param persistenceStore
      * @param registry
      */
-    public PortletEntityAccessComponentImpl( PersistenceStore persistenceStore, PortletRegistryComponent registry )
+    public PortletEntityAccessComponentImpl( PersistenceStore persistenceStore, PortletRegistry registry )
     {
         this.persistenceStore = persistenceStore;
         this.registry = registry;
+        PortletEntityImpl.pac = this;
 
     }
 
@@ -190,8 +194,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         if (entityCache.get(entityId) != null)
         {
-            PortletEntityImpl entity = (PortletEntityImpl) entityCache.get(entityId);
-            entity.setStore(persistenceStore);
+            PortletEntityImpl entity = (PortletEntityImpl) entityCache.get(entityId);            
             return entity;
         }
         else
@@ -202,14 +205,18 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             Filter filter = store.newFilter();
             filter.addEqualTo("id", entityId.toString());
             Object q = store.newQuery(PortletEntityImpl.class, filter);
-            PortletEntity portletEntity = (PortletEntity) store.getObjectByQuery(q);
+            MutablePortletEntity portletEntity = (MutablePortletEntity) store.getObjectByQuery(q);
             if (portletEntity == null)
             {
                 return null;
             }
             else
             {
-                ((Storeable) portletEntity).setStore(persistenceStore);
+                
+                String portletUniqueName = portletEntity.getPortletUniqueName();
+                PortletDefinitionComposite parentPortletDef = registry
+                        .getPortletDefinitionByUniqueName(portletUniqueName);
+                ((PortletEntityCtrl) portletEntity).setPortletDefinition(parentPortletDef);
                 entityCache.put(entityId, portletEntity);
                 return (PortletEntityImpl) portletEntity;
             }
@@ -225,10 +232,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
         portletEntity.setPortletDefinition(portletDefinition);
 
-        portletEntity.setStore(persistenceStore);
-
         return (PortletEntityImpl) portletEntity;
-
     }
 
     /**
@@ -352,4 +356,28 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         return persistenceStore;
     }
 
+    public void storePreferenceSet( PreferenceSet prefSet, PortletEntity entity ) throws IOException
+    {
+        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) prefSet;
+        try
+        {
+            prepareTransaction(persistenceStore);
+            persistenceStore.lockForWrite(entity);
+            if (preferenceSet != null)
+            {
+                preferenceSet.flush();
+            }
+            persistenceStore.getTransaction().checkpoint();
+
+        }
+        catch (Exception e)
+        {
+            String msg = "Failed to store portlet entity:" + e.toString();
+            IOException ioe = new IOException(msg);
+            ioe.initCause(e);
+            persistenceStore.getTransaction().rollback();
+            throw ioe;
+        }
+
+    }
 }

@@ -6,37 +6,23 @@
  */
 package org.apache.jetspeed.components.util;
 
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public class RegistrySupportedTestCase extends PersistenceSupportedTestCase
+public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTestCase
 {
 
-    protected PortletRegistryComponent portletRegistry;
+    protected PortletRegistry portletRegistry;
     protected PortletEntityAccessComponent entityAccess;
-
-    /**
-     * 
-     */
-    public RegistrySupportedTestCase()
-    {
-        super();
-    }
-
-    /**
-     * @param arg0
-     */
-    public RegistrySupportedTestCase( String arg0 )
-    {
-        super(arg0);
-    }
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -44,7 +30,16 @@ public class RegistrySupportedTestCase extends PersistenceSupportedTestCase
     protected void setUp() throws Exception
     {       
         super.setUp();
-        portletRegistry = new PortletRegistryComponentImpl(persistenceStore);
-        entityAccess = new PortletEntityAccessComponentImpl(persistenceStore, portletRegistry);
+        portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+        entityAccess = (PortletEntityAccessComponent) ctx.getBean("portletEntityAccess");
+    }   
+    
+    protected String[] getConfigurations()
+    {
+        String[] confs = super.getConfigurations();
+        List confList = new ArrayList(Arrays.asList(confs));
+        confList.add("META-INF/registry-dao.xml");
+        confList.add("META-INF/entity-dao.xml");
+        return (String[]) confList.toArray(new String[1]);
     }
 }

@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,6 +23,7 @@ import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -31,16 +31,13 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.ojb.broker.metadata.DescriptorRepository;
-import org.apache.ojb.broker.metadata.MetadataManager;
-import org.apache.ojb.broker.metadata.RepositoryPersistor;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.springframework.dao.DataAccessException;
 
 /**
  * <p>
@@ -54,15 +51,15 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  * @version $Id$
  *  
  */
-public class PersistenceStorePortletRegistry extends PersistenceBrokerDaoSupport implements PortletRegistry
+public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerDaoSupport implements PortletRegistry
 {
 
     /**
      *  
      */
-    public PersistenceStorePortletRegistry()
+    public PersistenceBrokerPortletRegistry(String repositoryPath)
     {
-        super();
+        super(repositoryPath);
         PortletDefinitionImpl.setPortletRegistry(this);
     }
 
@@ -270,30 +267,19 @@ public class PersistenceStorePortletRegistry extends PersistenceBrokerDaoSupport
 
     }
 
-    public void savePortletDefinition( PortletDefinition portlet )
+    public void savePortletDefinition( PortletDefinition portlet ) throws FailedToStorePortletDefinitionException
     {
-        getPersistenceBrokerTemplate().store(portlet);
+        try
+        {
+            getPersistenceBrokerTemplate().store(portlet);
+        }
+        catch (DataAccessException e)
+        {
+            
+           throw new FailedToStorePortletDefinitionException(portlet, e);
+        }
 
     }
     
-    /**
-     * 
-     * <p>
-     * initDao
-     * </p>
-     * Loads the correct repository descriptor for PortletRegistry
-     *
-     * @see org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport#initDao()
-     * @throws Exception
-     */
-    public void init() throws Exception
-    {
-        MetadataManager metaManager = MetadataManager.getInstance();
-        RepositoryPersistor persistor = new RepositoryPersistor();
-        URL descriptorUrl = getClass().getClassLoader().getResource("META-INF/registry_repository.xml");
-
-        //    log.info("Merging OJB respository: "+descriptorUrl);
-        DescriptorRepository repo = persistor.readDescriptorRepository(descriptorUrl.openStream());
-        metaManager.mergeDescriptorRepository(repo);
-    }
+    
 }

@@ -1,8 +1,17 @@
 /*
- * Created on Jun 16, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.jetspeed.components.portletregistry;
 
@@ -10,18 +19,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 
 /**
  * @author scott
@@ -29,7 +35,7 @@ import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Generation - Code and Comments
  */
-public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase 
+public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCase 
 {
     
     protected static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
@@ -43,25 +49,9 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
     protected static final String MODE_EDIT = "EDIT";
     public static final String APP_1_NAME = "RegistryTestPortlet";
 
-    protected PortletRegistryComponentImpl registry;
+    protected PortletRegistry registry;
     private static int testPasses = 0;
     
-
-    /**
-     *  
-     */
-    public AbstractRegistryTest()
-    {
-        super();
-    }
-
-    /**
-     * @param arg0
-     */
-    public AbstractRegistryTest( String arg0 )
-    {
-        super(arg0);
-    }
 
     /**
      * <p>
@@ -74,12 +64,8 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        registry = new PortletRegistryComponentImpl(persistenceStore);
-
-        PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
-        PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore,
-                "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
-        provider.start();
+        registry = (PortletRegistry) ctx.getBean("portletRegistry");
+       
         testPasses++;
     }
 
@@ -116,26 +102,24 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
         assertEquals(dc.getTypes().size(), 1);
     }
 
-    protected void invalidate( Object[] objs ) throws LockFailedException
-    {
-        persistenceStore.getTransaction().begin();
-        for (int i = 0; i < objs.length; i++)
-        {
-            persistenceStore.invalidate(objs[i]);
-        }
-        persistenceStore.getTransaction().commit();
-    }
+//    protected void invalidate( Object[] objs ) throws LockFailedException
+//    {
+//        persistenceStore.getTransaction().begin();
+//        for (int i = 0; i < objs.length; i++)
+//        {
+//            persistenceStore.invalidate(objs[i]);
+//        }
+//        persistenceStore.getTransaction().commit();
+//    }
 
     protected void verifyData(boolean afterUpdates) throws Exception
     {
-        PortletApplicationDefinitionImpl app;
+        MutablePortletApplication app;
         WebApplicationDefinitionImpl webApp;
         PortletDefinitionComposite portlet;
 
-        // Now makes sure everthing got persisted
-        persistenceStore.getTransaction().begin();
         app = null;
-        Filter filter = persistenceStore.newFilter();
+        
         app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
 
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
@@ -190,31 +174,29 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
         assertEquals("\"preference 1\" did not have 2 values.", 2, valueCount);
 
         // Pull out our Web app and add a Description to it
-        persistenceStore.getTransaction().begin();
+        
         webApp = null;
-        filter = persistenceStore.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app = (PortletApplicationDefinitionImpl) persistenceStore.getObjectByQuery(persistenceStore.newQuery(
-                PortletApplicationDefinitionImpl.class, filter));
-        persistenceStore.lockForWrite(app);
+        
+        app = registry.getPortletApplication("App_1");
+        
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         assertNotNull("Web app was not located by query.", webApp);
         webApp.addDescription(Locale.getDefault(), "Web app description");
 
-        persistenceStore.getTransaction().commit();
 
-        persistenceStore.getTransaction().begin();
         webApp = null;
-        filter = persistenceStore.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app = (PortletApplicationDefinitionImpl) persistenceStore.getObjectByQuery(persistenceStore.newQuery(
-                PortletApplicationDefinitionImpl.class, filter));
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
 
-        persistenceStore.getTransaction().commit();
+        app = registry.getPortletApplication("App_1");
+        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
+        
         assertNotNull("Web app was not located by query.", webApp);
         assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
 
+    }
+
+    protected String[] getConfigurations()
+    {
+        return new String[] {"/META-INF/transaction.xml", "/META-INF/registry-dao.xml"};
     }
 
    

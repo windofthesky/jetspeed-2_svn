@@ -28,17 +28,13 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.Storeable;
-import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
 import org.apache.jetspeed.components.persistence.store.RemovalAware;
-import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
@@ -59,7 +55,7 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
  */
-public class PortletEntityImpl implements MutablePortletEntity, Storeable, PrincipalAware, RemovalAware
+public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RemovalAware
 {
 
     private long oid;
@@ -68,7 +64,7 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
 
     private JetspeedObjectID id;
 
-    protected PersistenceStore store;
+    protected static PortletEntityAccessComponent pac;
 
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
@@ -97,19 +93,6 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
     protected ThreadLocal principalRef = new ThreadLocal();
 
     public static final String NO_PRINCIPAL = "no-principal";
-
-    /**
-     * <p>
-     * setPersistenceStore
-     * </p>
-     * 
-     * @see org.apache.jetspeed.components.persistence.Storeable#setStore(Object)
-     * @param store
-     */
-    public void setStore( Object store )
-    {
-        this.store = (PersistenceStore) store;
-    }
 
     public ObjectID getId()
     {
@@ -193,14 +176,14 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
 
     public PortletDefinition getPortletDefinition()
     {
-        if(portletDefinition == null)
-        {
-            Filter filter = store.newFilter();
-            filter.addEqualTo("app.name", appName);
-            filter.addEqualTo("name", portletName);
-            Object query = store.newQuery(PortletDefinitionImpl.class, filter);
-            this.portletDefinition = (PortletDefinitionComposite) store.getObjectByQuery(query);
-        }
+//        if(portletDefinition == null)
+//        {
+//            Filter filter = store.newFilter();
+//            filter.addEqualTo("app.name", appName);
+//            filter.addEqualTo("name", portletName);
+//            Object query = store.newQuery(PortletDefinitionImpl.class, filter);
+//            this.portletDefinition = (PortletDefinitionComposite) store.getObjectByQuery(query);
+//        }
         return this.portletDefinition;
     }
 
@@ -223,37 +206,19 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
      */
     public void store() throws IOException
     {
-        if (store == null)
+        if (pac == null)
         {
-            throw new IllegalStateException("You must call PortletEntityImpl.setStore() before "
+            throw new IllegalStateException("You must call PortletEntityImpl.setPorteltEntityDao() before "
                     + "invoking PortletEntityImpl.store().");
         }
 
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) preferenceSetRef.get();
-        try
+        PreferenceSet preferenceSet = (PreferenceSet)preferenceSetRef.get();
+        pac.storePreferenceSet(preferenceSet, this);
+        dirty = false;
+        if (preferenceSet != null)
         {
-            prepareTransaction(store);
-            store.lockForWrite(this);
-            if (preferenceSet != null)
-            {
-                preferenceSet.flush();
-            }
-            store.getTransaction().checkpoint();
-            dirty = false;
-            if (preferenceSet != null)
-            {
-                backupValues(preferenceSet);
-            }
+            backupValues(preferenceSet);
         }
-        catch (Exception e)
-        {
-            String msg = "Failed to store portlet entity:" + e.toString();
-            IOException ioe = new IOException(msg);
-            ioe.initCause(e);
-            store.getTransaction().rollback();
-            throw ioe;
-        }
-
     }
 
     /**
@@ -331,7 +296,14 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
         buffer.append("'");
         StringUtils.newLine(buffer, indent);
         buffer.append("definition-id='");
-        buffer.append(portletDefinition.getId().toString());
+        if(portletDefinition != null)
+        {
+            buffer.append(portletDefinition.getId().toString());
+        }
+        else
+        {
+            buffer.append("null");
+        }
         buffer.append("'");
 
         StringUtils.newLine(buffer, indent);
@@ -363,21 +335,6 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
         portletDefinition = (PortletDefinitionComposite) composite;
         this.appName = ((MutablePortletApplication)portletDefinition.getPortletApplicationDefinition()).getName();
         this.portletName = portletDefinition.getName();
-    }
-
-    /**
-     * Checks to see if the <code>store</code>'s current transaction needs to
-     * be started or not.
-     * 
-     * @param store
-     */
-    protected void prepareTransaction( PersistenceStore store )
-    {
-        Transaction tx = store.getTransaction();
-        if (!tx.isOpen())
-        {
-            tx.begin();
-        }
     }
 
     /**
@@ -513,5 +470,9 @@ public class PortletEntityImpl implements MutablePortletEntity, Storeable, Princ
             throw new PersistenceStoreRuntimeExcpetion(e.toString(), e);
         }        
 
+    }
+    public String getPortletUniqueName()
+    {
+        return this.appName+"::"+this.portletName;
     }
 }

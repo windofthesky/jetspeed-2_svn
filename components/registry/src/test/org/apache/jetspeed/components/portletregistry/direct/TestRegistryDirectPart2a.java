@@ -38,14 +38,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 public class TestRegistryDirectPart2a extends AbstractRegistryTest
 {
 
-    /**
-     * 
-     */
-    public TestRegistryDirectPart2a()
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
     /*
      * (non-Javadoc)
      * 
@@ -73,7 +65,7 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
     protected void tearDown() throws Exception
     {
         
-        persistenceStore.getTransaction().begin();
+        
         
         Iterator itr = registry.getPortletApplications().iterator();
         while(itr.hasNext())
@@ -81,7 +73,7 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
             registry.removeApplication((PortletApplicationDefinition)itr.next());
         }
         
-        persistenceStore.getTransaction().commit(); 
+        
         
         super.tearDown();
     }
@@ -92,14 +84,6 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
         return new TestSuite(TestRegistryDirectPart2a.class);
     }
 
-    /**
-     * @param testName
-     */
-    public TestRegistryDirectPart2a(String testName)
-    {
-        super(testName);
-    }
-    
     public void testData() throws Exception
     {
         verifyData(true);
