@@ -14,20 +14,14 @@ using the MetadataManager.
 -->
 
 
-    <!-- this connection was used as the default one within OJB -->
     <jdbc-connection-descriptor
         jcd-alias="jetspeed"
         platform="Hsqldb"
         default-connection="true"
         jdbc-level="2.0"
-        driver="org.hsqldb.jdbcDriver"
-        protocol="jdbc"
-        subprotocol="hsqldb"
-        dbalias="WEB-INF/db/hsql/Registry"
-        username="sa"
-        password=""
+         jndi-datasource-name="java:comp/env/jdbc/jetspeed"
         batch-mode="false"
-     >
+     >     
 
         <connection-pool
             maxActive="21"
@@ -40,59 +34,3 @@ using the MetadataManager.
             <attribute attribute-name="globalSequenceStart" attribute-value="10000"/>
         </sequence-manager>
    </jdbc-connection-descriptor>
-   
-   <jdbc-connection-descriptor
-        jcd-alias="jetspeed-test"
-        platform="Hsqldb"
-        jdbc-level="2.0"
-        driver="org.hsqldb.jdbcDriver"
-        protocol="jdbc"
-        subprotocol="hsqldb"
-        dbalias="test/db/hsql/Registry"
-        username="sa"
-        password=""
-        batch-mode="false"
-     >
-
-        <connection-pool
-            maxActive="21"
-            validationQuery="" />
-
-        <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">
-            <attribute attribute-name="grabSize" attribute-value="20"/>
-            <attribute attribute-name="autoNaming" attribute-value="true"/>
-            <attribute attribute-name="globalSequenceId" attribute-value="false"/>
-            <attribute attribute-name="globalSequenceStart" attribute-value="10000"/>
-        </sequence-manager>
-   </jdbc-connection-descriptor>
-
-    <!-- 
-    	- This connection should be used is deploying from the project directory.
-        - This is needed since using HSql in single user can get hairy due pathing
-        - realtive to where the deployment is being run.	 
-      -->
-    <jdbc-connection-descriptor
-        jcd-alias="jetspeed-deploy"
-        platform="Hsqldb"
-        jdbc-level="2.0"
-        driver="org.hsqldb.jdbcDriver"
-        protocol="jdbc"
-        subprotocol="hsqldb"
-        dbalias="src/webapp/WEB-INF/db/hsql/Registry"
-        username="sa"
-        password=""
-        batch-mode="false"
-     >
-
-        <connection-pool
-            maxActive="21"
-            validationQuery="" />
-
-        <sequence-manager className="org.apache.ojb.broker.util.sequence.SequenceManagerHighLowImpl">
-            <attribute attribute-name="grabSize" attribute-value="20"/>
-            <attribute attribute-name="autoNaming" attribute-value="true"/>
-            <attribute attribute-name="globalSequenceId" attribute-value="false"/>
-            <attribute attribute-name="globalSequenceStart" attribute-value="10000"/>
-        </sequence-manager>
-   </jdbc-connection-descriptor>
- 

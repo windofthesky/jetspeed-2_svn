@@ -5,7 +5,11 @@
    	  class="org.apache.ojb.broker.util.sequence.HighLowSequence"
    	  table="OJB_HL_SEQ"
    >
-      <field-descriptor
+
+       <object-cache class="org.apache.ojb.broker.cache.ObjectCacheEmptyImpl">
+       </object-cache>
+
+       <field-descriptor
          name="tableName"
          column="TABLENAME"
          jdbc-type="VARCHAR"
@@ -117,6 +121,63 @@
 <!-- THIS IS THE OJB DLIST ENTRY IMPLEMENTATION, DO NOT EDIT-->
    <class-descriptor
       class="org.apache.ojb.odmg.collections.DListEntry"
+      table="OJB_DLIST_ENTRIES"
+   >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+      <field-descriptor
+         name="dlistId"
+         column="DLIST_ID"
+         jdbc-type="INTEGER"
+      />
+      <field-descriptor
+         name="position"
+         column="POSITION_"
+         jdbc-type="INTEGER"
+      />
+      <field-descriptor
+         name="oid"
+         column="OID_"
+         jdbc-type="LONGVARBINARY"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Object2ByteArrFieldConversion"
+      />
+   </class-descriptor>
+
+   <!-- THIS IS THE OJB DLIST IMPLEMENTATION, DO NOT EDIT-->
+   <!-- alternative implementation of DList -->
+   <class-descriptor
+   	  class="org.apache.ojb.odmg.collections.DListImpl_2"
+   	  table="OJB_DLIST"
+   >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+      <field-descriptor
+         name="size"
+         column="SIZE_"
+         jdbc-type="INTEGER"
+      />
+      <collection-descriptor
+         name="elements"
+         element-class-ref="org.apache.ojb.odmg.collections.DListEntry_2"
+         auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="dlistId"/>
+      </collection-descriptor>
+   </class-descriptor>
+
+<!-- THIS IS THE OJB DLIST ENTRY IMPLEMENTATION, DO NOT EDIT-->
+   <class-descriptor
+      class="org.apache.ojb.odmg.collections.DListEntry_2"
       table="OJB_DLIST_ENTRIES"
    >
       <field-descriptor
@@ -280,6 +341,7 @@
          conversion="org.apache.ojb.broker.accesslayer.conversions.Object2ByteArrFieldConversion"
       />
    </class-descriptor>
+
 
 
    <!-- END OF OJB INTERNAL MAPPINGS-->
