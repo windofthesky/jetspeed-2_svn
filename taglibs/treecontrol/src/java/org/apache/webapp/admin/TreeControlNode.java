@@ -349,6 +349,18 @@ public class TreeControlNode implements Serializable {
 		this.CSSClass = CSSClass;
 	}
     
+    protected boolean expandWhenClicked = false;
+    
+    public boolean isExpandWhenClicked()
+    {
+        return expandWhenClicked;
+    }
+    
+    public void setExpandWhenClicked(boolean expandWhenClicked)
+    {
+        this.expandWhenClicked = expandWhenClicked;
+    }
+    
 
     // --------------------------------------------------------- Public Methods
 

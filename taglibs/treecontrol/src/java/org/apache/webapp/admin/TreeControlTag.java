@@ -360,6 +360,12 @@ public class TreeControlTag extends TagSupport {
             encodeURL(updateTreeAction);
 
         out.print("    <td>");
+        
+//      add an anchor so that we can return to this node
+        out.print("<a name=\"");
+        out.print(node.getName());
+        out.print("\">");
+        
         if ((action != null) && !node.isLeaf()) {
             out.print("<a href=\"");
             out.print(response.encodeURL(action));
@@ -394,14 +400,29 @@ public class TreeControlTag extends TagSupport {
 
         // Calculate the hyperlink for this node (if any)
         String hyperlink = null;
-        if (node.getAction() != null)
+        String nodeAction = node.getAction();
+        if(nodeAction == null && node.isExpandWhenClicked())
+        {
+            hyperlink = action;
+        }
+        if (nodeAction != null)
             hyperlink = ((HttpServletResponse) pageContext.getResponse()).
                 encodeURL(node.getAction());
 
         // Render the icon for this node (if any)
         out.print("    <td colspan=\"");
         out.print(width - level + 1);
-        out.print("\">");
+        out.print("\"");
+        
+        if(node.getLabel() != null)
+        {
+            //make sure text does not wrap
+            out.print(" style=\"");
+            out.print("white-space:nowrap;");
+            out.print("\"");
+        }
+        
+        out.print(">");
         if (node.getIcon() != null) {
             if (hyperlink != null) {
                 out.print("<a href=\"");
@@ -454,6 +475,11 @@ public class TreeControlTag extends TagSupport {
                     out.print(labelStyle);
                     out.print("\"");
                 }
+                
+                out.print(" title=\"");
+                out.print(node.getLabel());
+                out.print("\"");
+                
                 // to refresh the tree in the same 'self' frame
                 out.print(" onclick=\"");
                 out.print("self.location.href='" + updateTreeAction + "'");

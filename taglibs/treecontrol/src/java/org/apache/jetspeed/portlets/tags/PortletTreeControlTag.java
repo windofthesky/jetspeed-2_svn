@@ -213,7 +213,12 @@ public class PortletTreeControlTag extends TreeControlTag
 
         // Calculate the hyperlink for this node (if any)
         String hyperlink = null;
-        if (node.getAction() != null)
+        String nodeAction = node.getAction();
+        if(nodeAction == null && node.isExpandWhenClicked())
+        {
+            hyperlink = treeAction;
+        }
+        if (nodeAction != null)
         {
             if(node.getAction().equals("portlet_url"))
             {
