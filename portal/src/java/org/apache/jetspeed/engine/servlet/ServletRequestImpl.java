@@ -21,16 +21,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+
 import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -181,5 +186,34 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
             }
         }
         return false;
+    }
+    
+    /**
+     * @see javax.servlet.http.HttpServletRequest#getAttribute(java.lang.String)
+     */
+    public Object getAttribute(String name)
+    {
+        Object value = super.getAttribute(name);
+        if (name.equals(PortletRequest.USER_INFO))
+        {
+            JetspeedRequestContext context = (JetspeedRequestContext)
+                getAttribute("org.apache.jetspeed.request.RequestContext");
+            if (null != context)
+            { 
+                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity().getPortletApplicationEntity();
+                if (null != portletAppEntity)
+                {
+                    PortletApplicationDefinition portletAppDef = portletAppEntity.getPortletApplicationDefinition();
+                    value = context.getUserInfoMap(portletAppDef.getId()); 
+                    System.out.println("_____________HERE0: " + ((Map) value).size());
+                }
+                else
+                {
+                    System.out.println("_____________HERE1: Entity is null!!!!");
+                }
+                  
+            }
+        }
+        return value;
     }
 }
