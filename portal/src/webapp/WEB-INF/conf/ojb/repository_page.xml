@@ -3,20 +3,15 @@
 -->	
  
   <class-descriptor
-   	  class="org.apache.jetspeed.om.page.impl.ojb.PageImpl"
+   	  class="org.apache.jetspeed.om.page.impl.PageImpl"
    	  table="PAGE"
    >     
-      <field-descriptor
-         name="pageId"
-         column="PAGE_ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"         
-      />
       <field-descriptor
          name="id"
          column="ID"
          jdbc-type="VARCHAR"
+         primarykey="true"
+         autoincrement="false"         
       />
       <field-descriptor
          name="title"
@@ -45,7 +40,7 @@
       />              
       <collection-descriptor
       	  name="pageFragments" 
-          element-class-ref="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl" 
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl" 
           indirection-table="PAGE_FRAGMENTS">
           <fk-pointing-to-this-class column="PAGE_ID"/>
           <fk-pointing-to-element-class column="FRAGMENT_ID"/>
@@ -57,20 +52,15 @@
 -->	
  
   <class-descriptor
-   	  class="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl"
+   	  class="org.apache.jetspeed.om.page.impl.FragmentImpl"
    	  table="FRAGMENT"
    >     
-      <field-descriptor
-         name="fragmentId"
-         column="FRAGMENT_ID"
-         jdbc-type="INTEGER"
-         primarykey="true"
-         autoincrement="true"         
-      />
       <field-descriptor
          name="id"
          column="ID"
          jdbc-type="VARCHAR"
+         primarykey="true"
+         autoincrement="false"         
       />
       <field-descriptor
          name="title"
@@ -110,7 +100,7 @@
 
         <collection-descriptor
       	  name="subFragments" 
-          element-class-ref="org.apache.jetspeed.om.page.impl.ojb.FragmentImpl" 
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl" 
           indirection-table="FRAGMENTS">
           <fk-pointing-to-this-class column="FRAGMENT_ID"/>
           <fk-pointing-to-element-class column="SUB_FRAGMENT_ID"/>

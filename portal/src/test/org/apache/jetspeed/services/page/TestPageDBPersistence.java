@@ -51,108 +51,89 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.services.page;
 
-package org.apache.jetspeed.om.page.psml;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.page.Fragment;
-import java.util.Stack;
-import java.util.Iterator;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.test.JetspeedTest;
 
 /**
+ * TestPageService
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PageImpl extends AbstractBaseElement implements Page
+public class TestPageDBPersistence extends JetspeedTest
 {
-    private Defaults defaults = new Defaults();
-
-    private Fragment root = null;
-
-    public PageImpl()
+    private PageManagerService service = null;
+    
+    /**
+     * Defines the testcase name for JUnit.
+     *
+     * @param name the testcase's name.
+     */
+    public TestPageDBPersistence(String name)
     {
-        // empty constructor
+        super(name);
     }
 
-    public String getDefaultSkin()
+    /**
+     * Start the tests.
+     *
+     * @param args the arguments. Not used
+     */
+    public static void main(String args[])
     {
-        return this.defaults.getSkin();
+        junit.awtui.TestRunner.main(new String[] { TestPageDBPersistence.class.getName()});
     }
 
-    public void setDefaultSkin(String skinName)
+    public void setup()
     {
-        this.defaults.setSkin(skinName);
+        System.out.println("Setup: Testing Page Service");
     }
 
-    public String getDefaultDecorator(String fragmentType)
+    /**
+     * Creates the test suite.
+     *
+     * @return a test suite (<code>TestSuite</code>) that includes all methods
+     *         starting with "test"
+     */
+    public static Test suite()
     {
-        return this.defaults.getDecorator(fragmentType);
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPageDBPersistence.class);
     }
-
-    public void setDefaultDecorator(String decoratorName, String fragmentType)
+    
+    protected PageManagerService getService()
     {
-        this.defaults.setDecorator(decoratorName,fragmentType);
-    }
-
-    public Fragment getRootFragment()
-    {
-        return this.root;
-    }
-
-    public void setRootFragment(Fragment root)
-    {
-        this.root=root;
-    }
-
-    public Fragment getFragmentById(String id)
-    {
-        Stack stack = new Stack();
-        if (getRootFragment()!=null)
+        if (service == null)
         {
-            stack.push(getRootFragment());
+            service = (PageManagerService) CommonPortletServices.getPortalService("DB" + PageManagerService.SERVICE_NAME);
         }
-
-        Fragment f = (Fragment)stack.pop();
-
-        while ((f!=null)&&(!(f.getId().equals(id))))
-        {
-            Iterator i = f.getFragments().iterator();
-
-            while(i.hasNext())
-            {
-                stack.push(i.next());
-            }
-
-            if (stack.size()>0)
-            {
-                f = (Fragment)stack.pop();
-            }
-            else
-            {
-                f = null;
-            }
-        }
-
-        return f;
+        return service;
     }
 
-    public Defaults getDefaults()
+    public void testService()
     {
-        return this.defaults;
+        assertNotNull(getService());
     }
-
-    public void setDefaults(Defaults defaults)
+    
+    private Page buildBasePage(String name)
     {
-        this.defaults = defaults;
+        Page page = getService().newPage();
+        page.setTitle("TEST");
+
+        Fragment frag = getService().newFragment();
+        frag.setId("Frag1");
+        frag.setType(Fragment.LAYOUT);
+
+        page.setRootFragment(frag);
+
+        return page;
     }
-
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-
-        // TBD: clone the inner content
-
-        return cloned;
-    }
+    
 }
-

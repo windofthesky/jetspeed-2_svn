@@ -24,11 +24,11 @@
  *    if and wherever such third-party acknowledgments normally appear.
  *
  * 4. The names "Apache" and "Apache Software Foundation" and
- *     "Apache Jetspeed" must not be used to endorse or promote products
+ *    "Apache Jetspeed" must not be used to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" or
+ * 5. Products derived from this software may not be called "Apache",
  *    "Apache Jetspeed", nor may "Apache" appear in their name, without
  *    prior written permission of the Apache Software Foundation.
  *
@@ -51,7 +51,6 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
 package org.apache.jetspeed.om.page;
 
 /**
@@ -60,57 +59,8 @@ package org.apache.jetspeed.om.page;
  *
  * @version $Id$
  */
-public interface Page extends java.io.Serializable, Cloneable
+public interface Page extends BaseElement, java.io.Serializable, Cloneable
 {
-    /**
-     * Returns the unique Id of this page. This id is guaranteed to be unique
-     * from the complete portal and is suitable to be used as a unique key.
-     *
-     * @return the unique id of this page.
-     */
-    public String getId();
-
-    /**
-     * Modifies the id of this page. This id must not be null and must be unique
-     * for the portal.
-     *
-     * @param id the new id for this page
-     */
-    public void setId(String id);
-
-    /**
-     * Returns the Page title in the default Locale
-     *
-     * @return the page title
-     */
-    public String getTitle();
-
-    /**
-     * Sets the title for the default Locale
-     *
-     * @param title the new title
-     */
-    public void setTitle(String title);
-
-    /**
-     * Returns the name of the default ACL that applies to this
-     * page. This name should reference an entry in the Securtiy
-     * registry
-     *
-     * @return the page default acl
-     */
-    public String getAcl();
-
-    /**
-     * Modifies the default ACL for this page.
-     * This new acl must reference an entry in the Security
-     * registry.
-     * Additionnally, replacing the default ACL will not affect any
-     * children fragments with their own specific ACLs
-     *
-     * @param aclName the name of the new ACL for the page
-     */
-    public void setAcl(String aclName);
 
     /**
      * Returns the name of the default skin that applies to this
@@ -156,6 +106,14 @@ public interface Page extends java.io.Serializable, Cloneable
      * @return the base Fragment object for this page.
      */
     public Fragment getRootFragment();
+
+    /**
+     * Sets the top level fragment of this page. This Fragment should
+     * never be null.
+     *
+     * @return the base Fragment object for this page.
+     */    
+    public void setRootFragment(Fragment fragment);
 
     /**
      * Retrieves the fragment contained within this page, with the

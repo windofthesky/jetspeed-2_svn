@@ -179,7 +179,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 console.info("JetspeedServlet has successfuly initialized the portlet container...");
 
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 // save the exception to complain loudly later :-)
                 initFailure = e;

@@ -24,11 +24,11 @@
  *    if and wherever such third-party acknowledgments normally appear.
  *
  * 4. The names "Apache" and "Apache Software Foundation" and
- *     "Apache Jetspeed" must not be used to endorse or promote products
+ *    "Apache Jetspeed" must not be used to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" or
+ * 5. Products derived from this software may not be called "Apache",
  *    "Apache Jetspeed", nor may "Apache" appear in their name, without
  *    prior written permission of the Apache Software Foundation.
  *
@@ -51,7 +51,6 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
 package org.apache.jetspeed.om.page;
 
 /**

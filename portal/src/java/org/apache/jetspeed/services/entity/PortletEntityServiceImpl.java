@@ -55,10 +55,11 @@ package org.apache.jetspeed.services.entity;
 
 import java.util.HashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.om.entity.impl.PortletEntityImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
@@ -79,11 +80,13 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class PortletEntityServiceImpl extends BaseCommonService implements PortletEntityService
 {
+    protected final static Log log = LogFactory.getLog(PortletEntityServiceImpl.class);
 
     // TODO: this should eventually use a system cach like JCS
     private HashMap entityCache = new HashMap();
     private PersistencePlugin plugin;
     private boolean autoCreateNewEntities;
+    private Class entityClass = null;
 
     /**
      * @see org.apache.fulcrum.Service#init()
@@ -95,6 +98,7 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
             PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
             autoCreateNewEntities = getConfiguration().getBoolean("autocreate", false);
+            entityClass = this.loadModelClass("entity.impl");            
             plugin = ps.getPersistencePlugin(pluginName);
             setInit(true);
         }
@@ -115,8 +119,8 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
 
             LookupCriteria c = plugin.newLookupCriteria();
             c.addEqualTo("oid", entityId);
-            Object q = plugin.generateQuery(PortletEntityImpl.class, c);
-            PortletEntity portletEntity = (PortletEntity) plugin.getObjectByQuery(PortletEntityImpl.class, q);
+            Object q = plugin.generateQuery(entityClass, c);
+            PortletEntity portletEntity = (PortletEntity) plugin.getObjectByQuery(entityClass, q);
 
             entityCache.put(entityId, portletEntity);
             return portletEntity;
@@ -144,7 +148,6 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
     public void storePortletEntity(PortletEntity portletEntity)
     {
         plugin.update(portletEntity);
-
     }
 
     /**
@@ -152,6 +155,10 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
      */
     public void removePortletEntity(PortletEntity portletEntity)
     {
+        if (entityCache.containsKey(portletEntity.getId()))
+        {
+            entityCache.remove(entityCache.get(portletEntity.getId()));
+        }
         plugin.delete(portletEntity);
     }
 
@@ -160,10 +167,9 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
      */
     public PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition)
     {
-        // TODO: need to be made configurable
-        PortletEntityImpl portletEntity = new PortletEntityImpl();
+        PortletEntityCtrl portletEntity = (PortletEntityCtrl)this.createObject(entityClass);
         portletEntity.setPortletDefinition(portletDefinition);
-        return portletEntity;
+        return (PortletEntity)portletEntity;
     }
 
 }

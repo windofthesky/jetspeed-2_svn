@@ -53,134 +53,104 @@
  */
 package org.apache.jetspeed.services.page.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.persistence.LookupCriteria;
-import org.apache.jetspeed.persistence.PersistencePlugin;
-import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
 
 /**
- * DatabasePageManagerService
+ * AbstractPageManagerService
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DatabasePageManagerService
-    extends AbstractPageManagerService
-    implements PageManagerService
+public abstract class AbstractPageManagerService 
+    extends BaseCommonService
+    implements PageManagerService    
 {
-    protected final static Log log = LogFactory.getLog(DatabasePageManagerService.class);
-    
-    private PersistencePlugin plugin;
-
-    private PersistencePlugin originalPlugin;
-
-    private String originalAlias;
-    
-    // TODO: this should eventually use a system cach like JCS
-    private Map pageCache = new HashMap();
+    protected Class fragmentClass = null;
+    protected Class pageClass = null;
+    protected Class propertyClass = null;
     
     /* (non-Javadoc)
      * @see org.apache.fulcrum.Service#init()
      */
     public void init() throws CPSInitializationException
     {
-        if (!isInitialized())
-        {
-            super.init();
-            
-            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-            String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
-
-            plugin = ps.getPersistencePlugin(pluginName);
-            
-            setInit(true);
-        }
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
-     */
-    public Page getPage(String id)
-    {
-        if (pageCache.containsKey(id))
-        {
-            return (Page) pageCache.get(id);
-        }
-        else
-        {
-            LookupCriteria c = plugin.newLookupCriteria();
-            c.addEqualTo("id", id);
-            Object q = plugin.generateQuery(pageClass, c);
-            Page page = (Page) plugin.getObjectByQuery(pageClass, q);
-
-            pageCache.put(id, page);
-            return page;
-        }
+        pageClass = loadModelClass("page.impl");
+        fragmentClass = loadModelClass("fragment.impl");
+        propertyClass = loadModelClass("property.impl"); 
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
+     * @see org.apache.jetspeed.services.page.PageManagerService#newPage()
      */
-    public List listPages()
+    public Page newPage()
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
-     */
-    public void registerPage(Page page) throws JetspeedException
-    {
-        // sanity checks
-        if (page == null)
+        Page page = null;
+        try
         {
-            log.warn("Recieved null page to register");
-            return;
-        }
-
-        String id = page.getId();
-
-        if (id == null)
-        {
+            // factory create the page
+            page = (Page)createObject(this.pageClass);            
             page.setId(JetspeedIdGenerator.getNextPeid());
-            id = page.getId();
-            log.warn("Page with no Id, created new Id : " + id);
+            
+            // create the default fragment
+            Fragment fragment = (Fragment)createObject(this.fragmentClass);
+            fragment.setId(JetspeedIdGenerator.getNextPeid());
+            fragment.setType(Fragment.LAYOUT);
+            page.setRootFragment(fragment);            
         }
-        
-        
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
-     */
-    public void updatePage(Page page) throws JetspeedException
-    {
-        plugin.update(page);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
-     */
-    public void removePage(Page page)
-    {
-        if (pageCache.containsKey(page.getId()))
+        catch (ClassCastException e)
         {
-            pageCache.remove(pageCache.get(page.getId()));
+            String message = "Failed to create page object for " + this.pageClass;
+            log.error(message, e);
         }
-        plugin.delete(page);
+        return page;        
     }
-        
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.services.page.PageManagerService#newFragment()
+     */
+    public Fragment newFragment()
+    {
+        Fragment fragment = null;
+        try
+        {
+            fragment = (Fragment)createObject(this.fragmentClass);
+            fragment.setId(JetspeedIdGenerator.getNextPeid());
+            fragment.setType(Fragment.LAYOUT);
+            
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create page object for " + this.pageClass;
+            log.error(message, e);
+            // throw new JetspeedException(message, e);
+        }
+        return fragment;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.services.page.PageManagerService#newProperty()
+     */
+    public Property newProperty()
+    {
+        Property property = null;
+        try
+        {
+            property = (Property)createObject(this.propertyClass);
+            
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create fragment-property object for " + this.propertyClass;
+            log.error(message, e);
+            // throw new JetspeedException(message, e);
+        }
+        return property;        
+    }
+    
 }

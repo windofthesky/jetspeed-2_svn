@@ -51,108 +51,64 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
-package org.apache.jetspeed.om.page.psml;
-
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Fragment;
-import java.util.Stack;
-import java.util.Iterator;
+package org.apache.jetspeed.om.page;
 
 /**
+ * BaseElement
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PageImpl extends AbstractBaseElement implements Page
+public interface BaseElement
 {
-    private Defaults defaults = new Defaults();
+    /**
+     * Returns the unique Id of this element. This id is guaranteed to be unique
+     * from the complete portal and is suitable to be used as a unique key.
+     *
+     * @return the unique id of this element.
+     */
+    public String getId();
 
-    private Fragment root = null;
+    /**
+     * Modifies the id of this element. This id must not be null and must be unique
+     * for the portal.
+     *
+     * @param id the new id for this element
+     */
+    public void setId(String id);
 
-    public PageImpl()
-    {
-        // empty constructor
-    }
+    /**
+     * Returns the title in the default Locale
+     *
+     * @return the page title
+     */
+    public String getTitle();
 
-    public String getDefaultSkin()
-    {
-        return this.defaults.getSkin();
-    }
+    /**
+     * Sets the title for the default Locale
+     *
+     * @param title the new title
+     */
+    public void setTitle(String title);
 
-    public void setDefaultSkin(String skinName)
-    {
-        this.defaults.setSkin(skinName);
-    }
+    /**
+     * Returns the name of the default ACL that applies to this
+     * element. This name should reference an entry in the Securtiy
+     * registry
+     *
+     * @return the page default acl
+     */
+    public String getAcl();
 
-    public String getDefaultDecorator(String fragmentType)
-    {
-        return this.defaults.getDecorator(fragmentType);
-    }
-
-    public void setDefaultDecorator(String decoratorName, String fragmentType)
-    {
-        this.defaults.setDecorator(decoratorName,fragmentType);
-    }
-
-    public Fragment getRootFragment()
-    {
-        return this.root;
-    }
-
-    public void setRootFragment(Fragment root)
-    {
-        this.root=root;
-    }
-
-    public Fragment getFragmentById(String id)
-    {
-        Stack stack = new Stack();
-        if (getRootFragment()!=null)
-        {
-            stack.push(getRootFragment());
-        }
-
-        Fragment f = (Fragment)stack.pop();
-
-        while ((f!=null)&&(!(f.getId().equals(id))))
-        {
-            Iterator i = f.getFragments().iterator();
-
-            while(i.hasNext())
-            {
-                stack.push(i.next());
-            }
-
-            if (stack.size()>0)
-            {
-                f = (Fragment)stack.pop();
-            }
-            else
-            {
-                f = null;
-            }
-        }
-
-        return f;
-    }
-
-    public Defaults getDefaults()
-    {
-        return this.defaults;
-    }
-
-    public void setDefaults(Defaults defaults)
-    {
-        this.defaults = defaults;
-    }
-
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-
-        // TBD: clone the inner content
-
-        return cloned;
-    }
+    /**
+     * Modifies the default ACL for this element.
+     * This new acl must reference an entry in the Security
+     * registry.
+     * Additionnally, replacing the default ACL will not affect any
+     * children fragments with their own specific ACLs
+     *
+     * @param aclName the name of the new ACL for the element
+     */
+    public void setAcl(String aclName);
+        
 }
-

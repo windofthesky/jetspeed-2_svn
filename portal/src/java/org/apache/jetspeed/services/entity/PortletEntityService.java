@@ -75,12 +75,11 @@ public interface PortletEntityService extends CommonService
     PortletEntity getPortletEntity(ObjectID id);
 
     PortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
-
+       
     void storePortletEntity(PortletEntity portletEntity);
 
     void removePortletEntity(PortletEntity portletEntity);
 
     PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
-
 
 }

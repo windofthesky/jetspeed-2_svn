@@ -202,7 +202,7 @@ public class JetspeedEngine implements Engine
             //TODO !!! Pluto has changed this siganture There is now a container unique id string and Properties. WE need to figure what these are really for.
             container.init("jetspeed", config, environment, new Properties());
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             console.error("Unable to initalize Engine.", e);
             log.error("Unable to initalize Engine.", e);

@@ -2,7 +2,9 @@
 <projectDescription>
 	<name>jetspeed-2</name>
 	<comment></comment>
-
+	<projects>
+		<project>jakarta-pluto</project>
+	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</name>

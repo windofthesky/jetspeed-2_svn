@@ -24,11 +24,11 @@
  *    if and wherever such third-party acknowledgments normally appear.
  *
  * 4. The names "Apache" and "Apache Software Foundation" and
- *     "Apache Jetspeed" must not be used to endorse or promote products
+ *    "Apache Jetspeed" must not be used to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" or
+ * 5. Products derived from this software may not be called "Apache",
  *    "Apache Jetspeed", nor may "Apache" appear in their name, without
  *    prior written permission of the Apache Software Foundation.
  *
@@ -80,7 +80,7 @@ import java.util.List;
  *
  * @version $Id$
  */
-public interface Fragment extends Cloneable, java.io.Serializable
+public interface Fragment extends BaseElement, Cloneable, java.io.Serializable
 {
     /**
      * A fragment of type PORTLET is considered to be a compliant portlet
@@ -94,50 +94,6 @@ public interface Fragment extends Cloneable, java.io.Serializable
      * layout service.
      */
      public String LAYOUT = "layout";
-
-    /**
-     * Returns a unique id number for this Fragment. This ID unique
-     * number is guaranteed to be unique within the portal and can be
-     * used as a unique key for this Fragment.
-     *
-     * @return the id of the fragment as a String.
-     * This id may not be null.
-     */
-    public String getId();
-
-    /**
-     * Sets a new unique id for this Fragment. This id cannot be null and
-     * must be unique within the portal.
-     *
-     * @param id the new id for this Fragment.
-     */
-    public void setId(String id);
-
-    /**
-     * Returns the name of an ACL that governs access to the Fragment
-     * and some of the navigation/editing functionalities related to this
-     * fragment.
-     * The ACL should be a valid reference to a security policy in the
-     * portal security repository. If it's invalid or null, the portal must
-     * default to the parent fragment ACL, the page default ACL or the system
-     * default.
-     *
-     * @return the name of an ACL in the security repository.
-     */
-    public String getAcl();
-
-    /**
-     * Returns the name of an ACL that governs access to the Fragment
-     * and some of the navigation/editing functionalities related to this
-     * fragment.
-     * The ACL should be a valid reference to a security policy in the
-     * portal security repository. If it's invalid or null, the portal must
-     * default to the parent fragment ACL, the page default ACL or the system
-     * default.
-     *
-     * @return the name of an ACL in the security repository.
-     */
-    public void setAcl(String aclName);
 
     /**
      * Returns the administrative name of this fragment. This name should map
@@ -156,18 +112,6 @@ public interface Fragment extends Cloneable, java.io.Serializable
      * @param name the administrative name
      */
     public void setName(String name);
-
-    /**
-     * Defines the title for this fragment
-     *
-     * @param title the new fragment title
-     */
-    public void setTitle(String title);
-
-    /**
-     * Returns the title of this fragment
-     */
-    public String getTitle();
 
     /**
      * Returns the type of the class bound to this fragment

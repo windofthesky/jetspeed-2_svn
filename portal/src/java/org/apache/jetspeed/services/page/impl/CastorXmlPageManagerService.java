@@ -69,15 +69,9 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
-import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.om.page.psml.FragmentImpl;
-import org.apache.jetspeed.om.page.psml.PageImpl;
-import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
 import org.apache.xml.serialize.OutputFormat;
@@ -98,7 +92,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class CastorXmlPageManagerService extends BaseCommonService implements FileCacheEventListener, PageManagerService
+public class CastorXmlPageManagerService extends AbstractPageManagerService implements FileCacheEventListener, PageManagerService
 {
     // configuration keys
     protected final static String CONFIG_ROOT = "root";
@@ -149,6 +143,8 @@ public class CastorXmlPageManagerService extends BaseCommonService implements Fi
             return;
         }
 
+        super.init();
+        
         // get the PSML Root Directory
         this.root = getConfiguration().getString(CONFIG_ROOT, DEFAULT_ROOT);
         this.rootDir = new File(root);
@@ -208,41 +204,6 @@ public class CastorXmlPageManagerService extends BaseCommonService implements Fi
     public void shutdown()
     {
         pages.stopFileScanner();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newPage()
-     */
-    public Page newPage()
-    {
-        PageImpl p = new PageImpl();
-        p.setId(JetspeedIdGenerator.getNextPeid());
-        FragmentImpl f = new FragmentImpl();
-        f.setId(JetspeedIdGenerator.getNextPeid());
-        f.setType(Fragment.LAYOUT);
-        p.setRootFragment(f);
-
-        return p;
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newFragment()
-     */
-    public Fragment newFragment()
-    {
-        FragmentImpl f = new FragmentImpl();
-        f.setId(JetspeedIdGenerator.getNextPeid());
-        f.setType(Fragment.LAYOUT);
-
-        return f;
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newProperty()
-     */
-    public Property newProperty()
-    {
-        return new PropertyImpl();
     }
 
     /**
@@ -359,7 +320,7 @@ public class CastorXmlPageManagerService extends BaseCommonService implements Fi
      */
     public void registerPage(Page page) throws JetspeedException
     {
-        // snaity checks
+        // sanity checks
         if (page == null)
         {
             log.warn("Recieved null page to register");

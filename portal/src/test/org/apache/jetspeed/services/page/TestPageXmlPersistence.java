@@ -74,7 +74,7 @@ import org.apache.jetspeed.test.JetspeedTest;
 public class TestPageXmlPersistence extends JetspeedTest
 {
     private PageManagerService service = null;
-    private String test_id = "test002";
+    private String testId = "test002";
 
     /**
      * Defines the testcase name for JUnit.
@@ -215,8 +215,8 @@ public class TestPageXmlPersistence extends JetspeedTest
     {
         PageManagerService pms = getService();
         Page page = pms.newPage();
-        System.out.println("Retrieved test_id in register " + this.test_id);
-        page.setId(this.test_id);
+        System.out.println("Retrieved test_id in register " + this.testId);
+        page.setId(this.testId);
         page.setDefaultSkin("myskin");
         page.setTitle("Registered Page");
 
@@ -249,9 +249,9 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.test_id);
+        page = pms.getPage(this.testId);
         assertNotNull(page);
-        assertTrue(page.getId().equals(this.test_id));
+        assertTrue(page.getId().equals(this.testId));
         assertTrue(page.getTitle().equals("Registered Page"));
         assertNotNull(page.getRootFragment());
         assertTrue(page.getRootFragment().getName().equals("TestLayout"));
@@ -265,7 +265,7 @@ public class TestPageXmlPersistence extends JetspeedTest
     public void testUpdatePage() throws Exception
     {
         PageManagerService pms = getService();
-        Page page = pms.getPage(this.test_id);
+        Page page = pms.getPage(this.testId);
         page.setTitle("Updated Title");
 
         try
@@ -280,7 +280,7 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.test_id);
+        page = pms.getPage(this.testId);
         assertTrue(page.getTitle().equals("Updated Title"));
     }
 
@@ -289,14 +289,14 @@ public class TestPageXmlPersistence extends JetspeedTest
         PageManagerService pms = getService();
         List pages = pms.listPages();
         assertTrue(pages.size() == 2);
-        assertTrue(pages.contains(this.test_id));
+        assertTrue(pages.contains(this.testId));
         assertTrue(pages.contains("test001"));
     }
 
     public void testRemovePage() throws Exception
     {
         PageManagerService pms = getService();
-        Page page = pms.getPage(this.test_id);
+        Page page = pms.getPage(this.testId);
 
         try
         {
@@ -310,7 +310,7 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.test_id);
+        page = pms.getPage(this.testId);
         assertNull(page);
     }
 }

@@ -79,6 +79,6 @@ public interface FactoryManagementService
       ** @return   the service implementation
       **/
 
-     public Factory getFactory (Class aClass);
-    
+    public Factory getFactory (Class aClass);
+        
 }
