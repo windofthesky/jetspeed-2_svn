@@ -166,6 +166,11 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     }
     
     
+    public MutablePortletEntity getPortletEntity(String entityId)
+    {
+        ObjectID oid = JetspeedObjectID.createFromString(entityId);
+        return getPortletEntity(oid);
+    }
     
     
     /**
