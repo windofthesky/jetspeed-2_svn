@@ -1,3 +1,19 @@
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.cornerstone.framework.factory.ioc;
 
 import java.beans.PropertyDescriptor;
@@ -5,7 +21,9 @@ import java.util.Enumeration;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.cornerstone.framework.api.factory.CreationException;
 import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
+import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.bean.helper.BeanHelper;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.factory.BaseFactory;
@@ -115,7 +133,8 @@ public class InversionOfControlFactory extends BaseFactory
 
     protected Object createInstanceByFactoryClassName(String factoryClassName) throws CreationException
     {
-    	IFactory factory = (IFactory) Cornerstone.getSingletonManager().getSingleton(factoryClassName);
+    	ISingletonManager singletonManager = (ISingletonManager) Cornerstone.getImplementation(ISingletonManager.class);
+    	IFactory factory = (IFactory) singletonManager.getSingleton(factoryClassName);
         if (factory == null)
             throw new CreationException("singleton of class '" + factoryClassName + "' not found");
         Object product = factory.createInstance();
@@ -130,7 +149,8 @@ public class InversionOfControlFactory extends BaseFactory
             Class interfaceType = pd.getPropertyType();
             if (!interfaceType.isInterface())
                 throw new CreationException("property '" + propertyName + "' of class '" + product.getClass().getName() + "' should be an interface type");
-            Object propertyValue = Cornerstone.getImplementationManager().createImplementation(interfaceType, parentName);
+            IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+            Object propertyValue = implementationManager.createImplementation(interfaceType, parentName);
             return propertyValue;
         }
         catch (ImplementationException ie)
