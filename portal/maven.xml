@@ -1,7 +1,8 @@
 <project default="java:jar"
          xmlns:j="jelly:core"
          xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:reactor="reactor"
+         xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
 <property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager'/>
@@ -20,6 +21,19 @@
     <j:set var="applicationRoot" value="src/webapp"/>
     <j:set var="maven.junit.sysproperties">java.security.auth.login.config applicationRoot</j:set>
   </preGoal>
+  
+   
+ <preGoal name="java:prepare-filesystem">
+ 	<echo message="====================================" />
+  	<echo message="        Copying OJB Metadata        " />  	
+  	<echo message="====================================" />
+ 	<maven:reactor
+               basedir="${basedir}"
+               includes="services/security/project.xml,components/registry/project.xml"
+               goals="ojb.registry"
+               banner="Copying OJB Metadata for Registry and Security"
+               ignoreFailures="false"/>
+ </preGoal>
 
 <!--
   <goal name="jaxb:portlet"
