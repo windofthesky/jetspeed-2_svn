@@ -54,8 +54,7 @@
 package org.apache.jetspeed.services.entity;
 
 import org.apache.fulcrum.Service;
-import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
-import org.apache.jetspeed.request.RequestContext;
+
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -73,27 +72,15 @@ public interface PortletEntityService extends Service
 {
     String SERVICE_NAME = "PortletEntityService";
 
-    InitablePortletEntity getPortletEntity(ObjectID id);
+    PortletEntity getPortletEntity(ObjectID id);
 
-    InitablePortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
+    PortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
 
     void storePortletEntity(PortletEntity portletEntity);
 
     void removePortletEntity(PortletEntity portletEntity);
 
-    InitablePortletEntity newPortletEntityInstance();
+    PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
 
-    /**
-     * Provides the thread-safe servicing of a request for this <code>PortletEntity.</code>
-     * <br/>
-     * This should involve:
-     * <ul>
-     *  <li>Intializing the user preferences</li>
-     * </ul>
-     * 
-     * @param request The @link{org.apache.jetspeed.request.RequestContext RequestContext}
-     * that this PortletEntity will service.
-     */
-    void serviceRequest(InitablePortletEntity portletEntity, RequestContext request);
 
 }

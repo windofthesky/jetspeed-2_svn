@@ -57,13 +57,17 @@ import java.util.HashMap;
 
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
 import org.apache.jetspeed.om.entity.impl.PortletEntityImpl;
+import org.apache.jetspeed.persistence.LookupCriteria;
+import org.apache.jetspeed.persistence.PersistencePlugin;
+import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -80,6 +84,8 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
 
     // TODO: this should eventually use a system cach like JCS
     private HashMap entityCache = new HashMap();
+    private PersistencePlugin plugin;
+    private boolean autoCreateNewEntities;
 
     /**
      * @see org.apache.fulcrum.Service#init()
@@ -88,6 +94,10 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
     {
         if (!isInitialized())
         {
+            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
+            autoCreateNewEntities = getConfiguration().getBoolean("autocreate", false);
+            plugin = ps.getPersistencePlugin(pluginName);
             setInit(true);
         }
 
@@ -96,31 +106,38 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
     /**
      * @see org.apache.jetspeed.services.entity.PortletEntityService#getPortletEntity(org.apache.pluto.om.common.ObjectID)
      */
-    public InitablePortletEntity getPortletEntity(ObjectID id)
+    public PortletEntity getPortletEntity(ObjectID entityId)
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (entityCache.containsKey(entityId))
+        {
+            return (PortletEntity) entityCache.get(entityId);
+        }
+        else
+        {
+
+            LookupCriteria c = plugin.newLookupCriteria();
+            c.addEqualTo("oid", entityId);
+            Object q = plugin.generateQuery(PortletEntityImpl.class, c);
+            PortletEntity portletEntity = (PortletEntity) plugin.getObjectByQuery(PortletEntityImpl.class, q);
+
+            entityCache.put(entityId, portletEntity);
+            return portletEntity;
+        }
     }
 
     /**
      * @see org.apache.jetspeed.services.entity.PortletEntityService#getPortletEntity(org.apache.jetspeed.request.RequestContext)
      */
-    public InitablePortletEntity getPortletEntity(PortletDefinition portletDefinition, String instanceName)
+    public PortletEntity getPortletEntity(PortletDefinition portletDefinition, String entityName)
     {
-        ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, instanceName);
-
-        if (entityCache.containsKey(entityId))
+        ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, entityName);
+        PortletEntity portletEntity = getPortletEntity(entityId);
+        if (portletEntity == null)
         {
-            return (InitablePortletEntity) entityCache.get(entityId);
+            portletEntity = newPortletEntityInstance(portletDefinition);
+            ((PortletEntityCtrl) portletEntity).setId(entityId.toString());			
         }
-        else
-        {
-            InitablePortletEntity portletEntity = newPortletEntityInstance();
-            portletEntity.init(portletDefinition, instanceName);
-            entityCache.put(entityId, portletEntity);
-            return portletEntity;
-        }
-
+        return portletEntity;
     }
 
     /**
@@ -128,7 +145,7 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
      */
     public void storePortletEntity(PortletEntity portletEntity)
     {
-        // TODO Auto-generated method stub
+        plugin.update(portletEntity);
 
     }
 
@@ -137,22 +154,23 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
      */
     public void removePortletEntity(PortletEntity portletEntity)
     {
-        // TODO Auto-generated method stub
-
+        plugin.delete(portletEntity);
     }
 
     /**
      * @see org.apache.jetspeed.services.entity.PortletEntityService#newPortletEntityInstance()
      */
-    public InitablePortletEntity newPortletEntityInstance()
+    public PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition)
     {
         // TODO: need to be made configurable
-        return new PortletEntityImpl();
+        PortletEntityImpl portletEntity = new PortletEntityImpl();
+        portletEntity.setPortletDefinition(portletDefinition);
+        return portletEntity;
     }
 
-    public void serviceRequest(InitablePortletEntity portletEntity, RequestContext request)
+    public void serviceRequest(PortletEntity portletEntity, RequestContext request)
     {
-        ArgUtil.notNull(new Object[] { portletEntity, request }, new String[] { "portletEntity", "request" }, "serviceRequest()");        
+        ArgUtil.notNull(new Object[] { portletEntity, request }, new String[] { "portletEntity", "request" }, "serviceRequest()");
 
     }
 
