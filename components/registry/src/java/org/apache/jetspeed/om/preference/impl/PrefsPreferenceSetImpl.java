@@ -241,6 +241,11 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
         {
             return prefsRootNode.childrenNames().length;
         }
+        catch (IllegalStateException ise)
+        {
+            // node has been removed
+            return 0;
+        }
         catch (BackingStoreException e)
         {
             IllegalStateException ise = new IllegalStateException(e.toString());
