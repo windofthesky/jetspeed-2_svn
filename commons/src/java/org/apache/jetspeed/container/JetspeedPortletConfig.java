@@ -25,6 +25,9 @@ import javax.servlet.ServletConfig;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -38,6 +41,8 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class JetspeedPortletConfig implements PortletConfig, InternalPortletConfig
 {
+    private static final Log log = LogFactory.getLog(JetspeedPortletConfig.class);
+    
     private ServletConfig servletConfig;
     private PortletContext portletContext;
     private PortletDefinition portletDefinition;
@@ -68,12 +73,13 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public String getInitParameter(java.lang.String name)
     {
+        if (log.isDebugEnabled()) log.debug("Getting init parameter for: " + name);
         ParameterSet parameters = portletDefinition.getInitParameterSet();
-
         Parameter param = parameters.get(name);
 
         if (param != null)
         {
+            if (log.isDebugEnabled()) log.debug("Param: [[name," + name + "], [value, " + param.getValue() + "]]");
             return param.getValue();
         }
 
