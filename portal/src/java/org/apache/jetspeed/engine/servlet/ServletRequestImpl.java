@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -121,6 +122,21 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 String[] paramValues = (String[]) super.getParameterValues(paramName);
                 String[] values = (String[]) portletParameters.get(paramName);
 
+                if (getCharacterEncoding() != null)
+                {
+                    for (int i = 0; i < paramValues.length; i++)
+                    {
+                        try
+                        {
+                            paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), getCharacterEncoding());
+                        }
+                        catch (UnsupportedEncodingException e)
+                        {
+                            ;
+                        }
+                    }
+                }
+                
                 if (values != null)
                 {
                     String[] temp = new String[paramValues.length + values.length];

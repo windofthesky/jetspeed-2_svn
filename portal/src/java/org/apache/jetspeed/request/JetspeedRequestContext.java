@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.request;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
@@ -290,6 +291,18 @@ public class JetspeedRequestContext implements RequestContext
         ServletRequestFactory reqFac = (ServletRequestFactory) FactoryManager
                 .getFactory(javax.servlet.http.HttpServletRequest.class);
         HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
+        
+        if (getCharacterEncoding() != null)
+        {
+            try
+            {
+                requestWrapper.setCharacterEncoding(getCharacterEncoding());
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                ;
+            }
+        }                
         return requestWrapper;
     }
 
