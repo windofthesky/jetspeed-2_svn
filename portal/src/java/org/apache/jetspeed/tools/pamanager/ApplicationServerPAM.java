@@ -89,6 +89,18 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
         {
             throw pe;
         }
+        catch(ApplicationAlreadyDeployedException de)
+        {
+            stopPortletApplication(paWar.getPortletApplicationName());
+            try
+            {
+                Thread.sleep(3000);
+            }
+            catch (InterruptedException e1)
+            {
+            }
+            startPortletApplication(paWar.getPortletApplicationName());
+        }
         catch (Exception e)
         {
             throw new PortletApplicationException(e);
@@ -210,8 +222,9 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
      * 
      * @param response
      * @throws PortletApplicationException
+     * @throws DeploymentException
      */
-    private void checkResponse( String response ) throws PortletApplicationException
+    private void checkResponse( String response ) throws PortletApplicationException, DeploymentException
     {
         if (response == null
                 || (!response.startsWith("OK") && response.indexOf("Application already exists at path") == -1)
@@ -223,6 +236,10 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
             }
 
             throw new PortletApplicationException("Catalina container action failed, \"" + response + "\"");
+        }
+        else if(response.indexOf("Application already exists at path") > -1)
+        {
+            throw new ApplicationAlreadyDeployedException(response);
         }
         else
         {
@@ -240,7 +257,7 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
      */
     public void stop()
     {
-
+       
     }
 
     private boolean isServerAvailable()
@@ -260,6 +277,7 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, De
     {
         try
         {
+            stopPortletApplication(paWar.getPortletApplicationName());
             super.redeploy(paWar);
             String paName = paWar.getPortletApplicationName();
             if(isServerAvailable())
