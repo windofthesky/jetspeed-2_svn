@@ -146,7 +146,7 @@ public class NodeSetImpl implements NodeSet
      * subset
      * </p>
      * 
-     * @see org.apache.jetspeed.page.document.NodeSet#iteratorOverType(java.lang.String)
+     * @see org.apache.jetspeed.page.document.NodeSet#subset(java.lang.String)
      * @param type
      * @return
      */
@@ -155,12 +155,8 @@ public class NodeSetImpl implements NodeSet
         NodeSet subset = (NodeSet) subsets.get(type);
         if (subset == null)
         {
-
-            if (subset == null)
-            {
-                subset = new NodeSetImpl(resolveToPath, comparator);
-                subsets.put(type, subset);
-            }
+            subset = new NodeSetImpl(resolveToPath, comparator);
+            subsets.put(type, subset);
 
             Iterator nodeItr = nodes.values().iterator();
             while (nodeItr.hasNext())

@@ -16,6 +16,7 @@
 package org.apache.jetspeed.page.impl;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -76,11 +78,16 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.services.page.PageManager#getProfiledPageContext(org.apache.jetspeed.profiler.ProfileLocator)
+     * @see org.apache.jetspeed.services.page.PageManager#computeProfiledPageContext(org.apache.jetspeed.profiler.ProfiledPageContext)
      */
-    public ProfiledPageContext getProfiledPageContext( ProfileLocator locator ) throws PageNotFoundException, DocumentException, NodeException
+    public void computeProfiledPageContext(ProfiledPageContext pageContext)
+        throws PageNotFoundException, DocumentException, NodeException
     {
-        // profiling not implemented, return raw managed page context
+        // get page profile locator from session/principal profile locators
+        ProfileLocator locator = selectPageProfileLocator(pageContext.getLocators());
+
+        // profiling not implemented, return raw managed page context;
+        // document sets not supported
         Page page = getPage(locator.getValue("page"));
         Folder folder = (Folder) page.getParent();
         NodeSet siblingPages = folder.getPages();
@@ -90,35 +97,11 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         while (rootFolder.getParent() != null)
             rootFolder = (Folder) rootFolder.getParent();
         NodeSet rootLinks = rootFolder.getLinks();
+        NodeSet documentSets = null;
+        Map documentSetNodeSets = null;
 
-        // construct, initialize, and return new ProfiledPageContext instance
-        ProfiledPageContext pageContext = locator.createProfiledPageContext();
-        if (pageContext != null)
-        {
-            pageContext.setPage(page);
-            pageContext.setFolder(folder);
-            pageContext.setSiblingPages(siblingPages);
-            pageContext.setParentFolder(parentFolder);
-            pageContext.setSiblingFolders(siblingFolders);
-            pageContext.setRootLinks(rootLinks);
-            return pageContext;
-        }
-        else
-            log.error("getProfiledPageContext(): Failed to create profiled page context.");
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.services.page.PageManager#getPage(org.apache.jetspeed.profiler.ProfileLocator)
-     */
-    public Page getPage( ProfileLocator locator ) throws PageNotFoundException, DocumentException, NodeException
-    {
-        ProfiledPageContext pageContext = getProfiledPageContext(locator);
-        if (pageContext != null)
-            return pageContext.getPage();
-        return null;
+        // populate ProfiledPageContext instance
+        populateProfiledPageContext(pageContext, folder, page, siblingPages, parentFolder, siblingFolders, rootLinks, documentSets, documentSetNodeSets);
     }
 
     /*
@@ -256,6 +239,21 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
      *         DocumentNotFoundException
      */
     public Link getLink( String name ) throws DocumentNotFoundException
+    {
+        throw new UnsupportedOperationException("Not supported by DB impl yet");
+    }
+
+    /**
+     * <p>
+     * getDocumentSet
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getDocumentSet(java.lang.String)
+     * @param name
+     * @return @throws
+     *         DocumentNotFoundException
+     */
+    public DocumentSet getDocumentSet( String name ) throws DocumentNotFoundException
     {
         throw new UnsupportedOperationException("Not supported by DB impl yet");
     }

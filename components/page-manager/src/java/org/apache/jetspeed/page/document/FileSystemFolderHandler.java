@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.document;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -282,6 +283,21 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         return getChildrenNames(folderPath, new DocumentTypeFilter(documentType));
     }
 
+    /**
+     * <p>
+     * listAll
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.document.FolderHandler#listAll(java.lang.String)
+     * @param folderPath
+     * @return @throws
+     *         FolderNotFoundException
+     */
+    public String[] listAll( String folderPath ) throws FolderNotFoundException
+    {
+        return getChildrenNames(folderPath, null);
+    }
+
     protected String[] getChildrenNames( String path, FilenameFilter filter ) throws FolderNotFoundException
     {
         File parent = new File(documentRootDir, path);
@@ -302,6 +318,122 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             }
         }
     }
+
+    /**
+     * <p>
+     * getChildNodes
+     * </p>
+     *
+     * @see org.apache.jetspeed.page.document.FolderHandler#getNodes(java.lang.String,boolean,java.lang.String)
+     * @param path
+     * @param regexp
+     * @param documentType
+     * @return NodeSet
+     * @throws FolderNotFoundException
+     * @throws DocumentException
+     * @throws InvalidFolderException
+     * @throws NodeException
+     */
+    public NodeSet getNodes(String path, boolean regexp, String documentType)
+        throws FolderNotFoundException, InvalidFolderException, NodeException
+    {
+        // path must be valid absolute path
+        if ((path == null) || ! path.startsWith("/"))
+        {
+            throw new InvalidFolderException( "Invalid path specified " + path );
+        }
+
+        // traverse folders and parse path from root,
+        // accumualting matches in node set
+        Folder folder = getFolder("/");
+        NodeSetImpl matched = new NodeSetImpl(null);
+        getNodes(folder,path,regexp,matched);
+
+        // return matched nodes filtered by document type
+        if (documentType != null)
+            return matched.subset(documentType);
+        return matched;
+    }
+
+    private void getNodes(Folder folder, String path, boolean regexp, NodeSet matched)
+        throws FolderNotFoundException, InvalidFolderException, NodeException
+    {
+        // test for trivial folder match
+        if (path.equals("/"))
+        {
+            matched.add(folder);
+            return;
+        }
+
+        // remove leading separator
+        if (path.startsWith("/"))
+            path = path.substring(1);
+
+        // parse path for folder path match
+        int separatorIndex = path.indexOf("/");
+        if (separatorIndex != -1)
+        {
+            // match folder name
+            String folderName = path.substring(0,separatorIndex);
+            String folderPath = (folder.getPath().endsWith("/") ? folder.getPath() : folder.getPath() + "/") + folderName;
+            NodeSet matchedFolders = null;
+            if (regexp)
+            {
+                // get regexp matched folders
+                matchedFolders = folder.getFolders().inclusiveSubset(folderPath);
+            }
+            else
+            {
+                // get single matched folder
+                Folder matchedFolder = getFolder(folderPath);
+                if (matchedFolder != null)
+                {
+                    matchedFolders = new NodeSetImpl(folder.getPath());
+                    matchedFolders.add(matchedFolder);
+                }
+            }
+            if ((matchedFolders == null) || (matchedFolders.size() == 0))
+            {
+                throw new FolderNotFoundException("Cannot find folder" + folderName + " in " + folder.getPath());
+            }
+
+            // match recursively over matched folders
+            path = path.substring(separatorIndex);
+            Iterator matchedFoldersIter = matchedFolders.iterator();
+            while (matchedFoldersIter.hasNext())
+            {
+                Folder matchedFolder = (Folder) matchedFoldersIter.next();
+                getNodes(matchedFolder, path, regexp, matched);
+            }
+            return;
+        }
+
+        // match node name
+        String nodeName = path;
+        String nodePath = (folder.getPath().endsWith("/") ? folder.getPath() : folder.getPath() + "/") + nodeName;
+        if (regexp)
+        {
+            // get regexp matched nodes
+            Iterator addIter = folder.getAllNodes().inclusiveSubset(nodePath).iterator();
+            while (addIter.hasNext())
+                matched.add((Node) addIter.next());
+        }
+        else
+        {
+            // get single matched node
+            Iterator findIter = folder.getAllNodes().iterator();
+            while (findIter.hasNext())
+            {
+                Node addNode = (Node) findIter.next();
+                if (addNode.getPath().equals(nodePath))
+                {
+                    matched.add(addNode);
+                    break;
+                }
+            }
+        }
+    }
+
 
     /**
      * <p>
@@ -380,19 +512,4 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
     }
 
-    /**
-     * <p>
-     * listAll
-     * </p>
-     * 
-     * @see org.apache.jetspeed.page.document.FolderHandler#listAll(java.lang.String)
-     * @param folderPath
-     * @return @throws
-     *         FolderNotFoundException
-     */
-    public String[] listAll( String folderPath ) throws FolderNotFoundException
-    {
-        return getChildrenNames(folderPath, null);
-
-    }
 }

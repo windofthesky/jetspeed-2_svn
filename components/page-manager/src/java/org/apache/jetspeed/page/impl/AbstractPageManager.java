@@ -15,18 +15,27 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
+import org.apache.jetspeed.profiler.ProfileLocator;
 
 /**
  * AbstractPageManagerService
@@ -149,4 +158,130 @@ public abstract class AbstractPageManager
         return object;        
     }
     
+    protected void populateProfiledPageContext(ProfiledPageContext pageContext, Folder folder, Page page, NodeSet siblingPages, Folder parentFolder, NodeSet siblingFolders, NodeSet rootLinks, NodeSet documentSets, Map documentSetNodeSets)
+    {
+        // debug profiled page context elements
+        if (log.isDebugEnabled())
+        {
+            log.debug("populateProfiledPageContext(), folder = " + folder + ", url = " + folder.getUrl());
+            log.debug("populateProfiledPageContext(), page = " + page + ", url = " + page.getUrl());
+            if ((siblingPages != null) && (siblingPages.size() > 0))
+            {
+                Iterator debugIter = siblingPages.iterator();
+                while (debugIter.hasNext())
+                {
+                    Page debug = (Page) debugIter.next();
+                    log.debug("populateProfiledPageContext(), siblingPage = " + debug + ", url = " + debug.getUrl());
+                }
+            }
+            else
+                log.debug("populateProfiledPageContext(), siblingPages = null/empty");
+            log.debug("populateProfiledPageContext(), parentFolder = " + parentFolder + ", url = " + ((parentFolder != null) ? parentFolder.getUrl() : "null"));
+            if ((siblingFolders != null) && (siblingFolders.size() > 0))
+            {
+                Iterator debugIter = siblingFolders.iterator();
+                while (debugIter.hasNext())
+                {
+                    Folder debug = (Folder) debugIter.next();
+                    log.debug("populateProfiledPageContext(), siblingFolder = " + debug + ", url = " + debug.getUrl());
+                }
+            }
+            else
+                log.debug("populateProfiledPageContext(), siblingFolders = null/empty");
+            if ((rootLinks != null) && (rootLinks.size() > 0))
+            {
+                Iterator debugIter = rootLinks.iterator();
+                while (debugIter.hasNext())
+                {
+                    Link debug = (Link) debugIter.next();
+                    log.debug("populateProfiledPageContext(), rootLink = " + debug + ", url = " + debug.getUrl());
+                }
+            }
+            else
+                log.debug("populateProfiledPageContext(), rootLinks = null/empty");
+            if ((documentSets != null) && (documentSets.size() > 0) && (documentSetNodeSets != null) && (documentSetNodeSets.size() > 0))
+            {
+                Iterator debugIter = documentSets.iterator();
+                while (debugIter.hasNext())
+                {
+                    DocumentSet debug = (DocumentSet) debugIter.next();
+                    NodeSet debugNodes = (NodeSet) documentSetNodeSets.get(debug);
+                    String debugMessage = "document set " + debug.getDocumentSetName() + " = {";
+                    Iterator nodesIter = debugNodes.iterator();
+                    if (nodesIter.hasNext())
+                    {
+                        debugMessage += ((Node) nodesIter.next()).getUrl();
+                    }
+                    while (nodesIter.hasNext())
+                    {
+                        debugMessage += ", " + ((Node) nodesIter.next()).getUrl();
+                    }
+                    debugMessage += "}, url = " + debug.getUrl();
+                    log.debug("populateProfiledPageContext(), " + debugMessage);
+                }
+            }
+            else
+                log.debug("populateProfiledPageContext(), documentSets/documentSetNodeSets = null/empty");
+        }
+
+        // populate supplied page context object
+        pageContext.setPage(page);
+        pageContext.setFolder(folder);
+        pageContext.setSiblingPages(siblingPages);
+        pageContext.setParentFolder(parentFolder);
+        pageContext.setSiblingFolders(siblingFolders);
+        pageContext.setRootLinks(rootLinks);
+        if (documentSets != null)
+        {
+            Iterator documentSetIter = documentSets.iterator();
+            while (documentSetIter.hasNext())
+            {
+                DocumentSet documentSet = (DocumentSet) documentSetIter.next();
+                NodeSet documentSetNodes = (NodeSet) documentSetNodeSets.get(documentSet);
+                pageContext.setDocumentSet(documentSet.getDocumentSetName(), documentSet, documentSetNodes);
+            }
+        }
+    }
+
+    protected void copyProfiledPageContext(ProfiledPageContext from, ProfiledPageContext to)
+    {
+        // copy page context elements
+        to.setPage(from.getPage());
+        to.setFolder(from.getFolder());
+        to.setSiblingPages(from.getSiblingPages());
+        to.setParentFolder(from.getParentFolder());
+        to.setSiblingFolders(from.getSiblingFolders());
+        to.setRootLinks(from.getRootLinks());
+        Iterator documentSetNamesIter = from.getDocumentSetNames();
+        while (documentSetNamesIter.hasNext())
+        {
+            String documentSetName = (String) documentSetNamesIter.next();
+            to.setDocumentSet(documentSetName, from.getDocumentSet(documentSetName), from.getDocumentSetNodes(documentSetName));
+        }
+    }
+
+    protected ProfileLocator selectPageProfileLocator(Map profileLocators)
+    {
+        // select page profile locator from session/principal profile locators
+        return (ProfileLocator) profileLocators.get(ProfileLocator.PAGE_LOCATOR);
+    }
+
+    protected ProfileLocator selectNavigationProfileLocator(String profileLocatorName, Map profileLocators)
+    {
+        // select navigation profile locator from session/principal profile locators
+        ProfileLocator locator = null;
+        if (profileLocatorName != null)
+        {
+            locator = (ProfileLocator) profileLocators.get(profileLocatorName);
+        }
+        else
+        {
+            locator = (ProfileLocator) profileLocators.get(ProfileLocator.DOCSET_LOCATOR);
+            if (locator == null)
+            {
+                locator = (ProfileLocator) profileLocators.get(ProfileLocator.PAGE_LOCATOR);
+            }
+        }
+        return locator;
+    }
 }
