@@ -106,8 +106,7 @@ public class StrutsPortlet extends GenericPortlet
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
-        String contextProviderClassName = config
-                .getInitParameter(PARAM_SERVLET_CONTEXT_PROVIDER);
+        String contextProviderClassName = getContextProviderClassNameParameter(config);
         if (contextProviderClassName == null)
             throw new PortletException("Portlet " + config.getPortletName()
                     + " is incorrectly configured. Init parameter "
@@ -138,10 +137,10 @@ public class StrutsPortlet extends GenericPortlet
                     + " is incorrectly configured. Invalid init parameter "
                     + PARAM_SERVLET_CONTEXT_PROVIDER + " value "
                     + contextProviderClassName);
-        this.defaultActionPage = config.getInitParameter(PARAM_ACTION_PAGE);
-        this.defaultCustomPage = config.getInitParameter(PARAM_CUSTOM_PAGE);
-        this.defaultEditPage = config.getInitParameter(PARAM_EDIT_PAGE);
-        this.defaultViewPage = config.getInitParameter(PARAM_VIEW_PAGE);
+        this.defaultActionPage = getActionPageParameter(config);
+        this.defaultCustomPage = getCustomPageParameter(config);
+        this.defaultEditPage = getEditPageParameter(config);
+        this.defaultViewPage = getViewPageParameter(config);
         if (this.defaultViewPage == null)
         {
             // A Struts Portlet is required to have at least the
@@ -161,6 +160,32 @@ public class StrutsPortlet extends GenericPortlet
         if (defaultEditPage == null)
             defaultEditPage = defaultViewPage;
     }
+    
+    protected String getContextProviderClassNameParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_SERVLET_CONTEXT_PROVIDER);
+    }
+    
+    protected String getActionPageParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_ACTION_PAGE);
+    }
+    
+    protected String getCustomPageParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_CUSTOM_PAGE);
+    }
+
+    protected String getEditPageParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_EDIT_PAGE);
+    }
+
+    protected String getViewPageParameter(PortletConfig config)
+    {
+        return config.getInitParameter(PARAM_VIEW_PAGE);
+    }
+    
     public void doEdit(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
