@@ -88,6 +88,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
         resolvers.put(RuleCriterionResolver.REQUEST, new StandardResolver());
         resolvers.put(RuleCriterionResolver.REQUEST_SESSION, new RequestSessionResolver());
         resolvers.put(RuleCriterionResolver.PATH, new PathResolver());        
+        resolvers.put(RuleCriterionResolver.PATH_SESSION, new PathSessionResolver());                
         resolvers.put(RuleCriterionResolver.HARD_CODED, new HardCodedResolver());
         resolvers.put(RuleCriterionResolver.USER, new UserCriterionResolver());
         resolvers.put(RuleCriterionResolver.ROLE, new RoleCriterionResolver()); 

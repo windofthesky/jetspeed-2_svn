@@ -265,7 +265,7 @@ INSERT INTO MEDIATYPE_TO_MIMETYPE(MEDIATYPE_ID ,MIMETYPE_ID)VALUES(3,3);
 insert into PROFILING_RULE values ('j1', 
    'org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule',
    'The default profiling rule following the Jetspeed-1 hard-coded profiler fallback algorithm.');
-insert into RULE_CRITERION values (1, 'j1', 0, 'request.session', 'page', 'default-page', 0);
+insert into RULE_CRITERION values (1, 'j1', 0, 'path.session', 'page', 'default-page', 0);
 insert into RULE_CRITERION values (2, 'j1', 1, 'group.role.user', 'user', null, 0);
 insert into RULE_CRITERION values (3, 'j1', 2, 'mediatype', 'mediatype', null, 1);
 insert into RULE_CRITERION values (4, 'j1', 3, 'language', 'language', null, 1);

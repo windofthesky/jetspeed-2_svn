@@ -289,7 +289,7 @@ public class TestProfiler extends JetspeedTest
         assertNotNull("profiler service is null", service);
 
         PortalContext pc = Jetspeed.getContext();
-        RequestContext request = new MockRequestContext(pc);
+        RequestContext request = new MockRequestContext(pc, "default-other");
         
         request.setSubject(createSubject("anon"));
         request.setLocale(new Locale("en", "US"));        

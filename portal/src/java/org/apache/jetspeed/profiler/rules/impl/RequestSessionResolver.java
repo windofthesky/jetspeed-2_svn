@@ -73,8 +73,8 @@ public class RequestSessionResolver implements RuleCriterionResolver
         String value = context.getRequestParameter(criterion.getName());
         if (value == null)
         {
-            // TODO: this attribute needs to be prefixed to avoid collisions with other *portal* attributes
-            value = (String)context.getSessionAttribute(criterion.getName());
+            String key = this.getClass() + "." + criterion.getName();
+            value = (String)context.getSessionAttribute(key);
             if (value == null)
             {
                 value = criterion.getValue();

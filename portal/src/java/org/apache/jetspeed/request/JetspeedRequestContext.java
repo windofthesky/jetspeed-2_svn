@@ -55,6 +55,7 @@ package org.apache.jetspeed.request;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
@@ -103,7 +104,7 @@ public class JetspeedRequestContext implements RequestContext
     private PortalURL requestedPortalURL;
     private PortletWindow actionWindow;
     private String encoding;
-
+    
     public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
 
     /**
@@ -434,6 +435,35 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getPath()
     {
-        return request.getPathInfo();
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null)
+        {
+            return null;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
+        StringBuffer path = new StringBuffer();
+        int mode = 0; // 0=navigation, 1=control information
+        int count = 0;
+        String name = null;
+        while (tokenizer.hasMoreTokens())
+        {
+            String token = tokenizer.nextToken();
+            if (PortalControlParameter.isControlParameter(token))
+            {
+                break;            
+            }
+            if (count > 0)
+            {
+                path.append("/");
+            }            
+            path.append(token);
+            count++;
+        }
+        String result = path.toString();
+        if (result.equals("/") || result.trim().length() == 0)
+        {
+            return null;
+        }
+        return result;
     }
 }
