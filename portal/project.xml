@@ -326,7 +326,6 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
-      <!-- Why is this needed? -->
       <id>log4j</id>
       <version>1.2.8</version>
       <properties>
@@ -334,14 +333,6 @@ limitations under the License.
       </properties>
     </dependency>
     <dependency>
-      <id>mysql</id>
-      <jar>mysql-connector-java-2.0.14-bin.jar</jar>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
       <id>portlet-api</id>
       <version>1.0</version>
       <properties>
