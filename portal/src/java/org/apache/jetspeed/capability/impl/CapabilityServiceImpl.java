@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.capability.impl;
+package org.apache.jetspeed.capability.impl;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,14 +59,13 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.capability.CapabilityMap;
+import org.apache.jetspeed.capability.CapabilityService;
+import org.apache.jetspeed.capability.Client;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.om.registry.ClientEntry;
-import org.apache.jetspeed.om.registry.impl.ClientEntryImpl;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.services.capability.CapabilityService;
 import org.apache.regexp.RE;
 
 /**
@@ -153,7 +152,7 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
             userAgent = DEFAULT_AGENT;
         }
 
-        ClientEntry entry = findClient(userAgent);
+        Client entry = findClient(userAgent);
 
         if (entry == null)
         {
@@ -190,9 +189,9 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
      * @return the found client or null if the user-agent does not match any
      *  defined client
      */
-    public ClientEntry findClient(String userAgent)
+    public Client findClient(String userAgent)
     {
-        ClientEntry clientEntry = null;
+        Client clientEntry = null;
         Iterator clients = getClients();
 
         if (log.isDebugEnabled())
@@ -202,12 +201,12 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
 
         while (clients.hasNext())
         {
-            ClientEntry client = (ClientEntry) clients.next();
-            if (client.getUseragentpattern() != null)
+            Client client = (Client) clients.next();
+            if (client.getUserAgentPattern() != null)
             {
                 try
                 {
-                    RE r = new RE(client.getUseragentpattern());
+                    RE r = new RE(client.getUserAgentPattern());
                     r.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
 
                     if (r.match(userAgent))
@@ -215,7 +214,7 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
 
                         if (log.isDebugEnabled())
                         {
-                            log.debug("ClientRegistry: " + userAgent + " matches " + client.getUseragentpattern());
+                            log.debug("ClientRegistry: " + userAgent + " matches " + client.getUserAgentPattern());
                         }
 
                         return client;
@@ -224,7 +223,7 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
                     {
                         if (log.isDebugEnabled())
                         {
-                            log.debug("ClientRegistry: " + userAgent + " does not match " + client.getUseragentpattern());
+                            log.debug("ClientRegistry: " + userAgent + " does not match " + client.getUserAgentPattern());
                         }
                     }
                 }
@@ -232,7 +231,7 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
                 {
                     String message =
                         "ClientRegistryService: UserAgentPattern not valid : "
-                            + client.getUseragentpattern()
+                            + client.getUserAgentPattern()
                             + " : "
                             + e.getMessage();
                     log.error(message, e);
@@ -250,7 +249,7 @@ public class CapabilityServiceImpl extends BaseCommonService implements Capabili
     {
         if (null == clients)
         {
-            this.clients = plugin.getExtent(ClientEntryImpl.class);
+            this.clients = plugin.getExtent(ClientImpl.class);
         }
 
         return this.clients.iterator();

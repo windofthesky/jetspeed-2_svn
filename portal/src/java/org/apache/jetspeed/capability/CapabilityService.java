@@ -51,69 +51,31 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.registry;
+package org.apache.jetspeed.capability;
 
 import java.util.Iterator;
 
+import org.apache.jetspeed.cps.CommonService;
+
 /**
- * <P>
- * The <CODE>CapabilityMap</CODE> interface represents a list that
- * stores capabilities a client is capable of. It is accessed
- * by the portlet container to get information about the client's
- * capabilities.
- * </P>
- * <P>
- * The names of the capabilities are matched by the class variable names
- * of the class <CODE>Capability</CODE>. To add a capability use the
- * class variable name and <B>not</B> the internally used string value.
- * </P>
+ * CapabilityService
  *
- * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
- * @author <a href="raphael@apache.org">Raphaël Luta</a>
- * @see Capability
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public interface CapabilityMap
+public interface CapabilityService extends CommonService
 {
-
+    /** The name of this service */
+    public String SERVICE_NAME = "capability";
+    
     /**
-     * Returns an enumeration of all capabilities a client
-     * is capabale of.
-     *
-     * @return an enumeration of all capabilities
+     * @param userAgent
+     * @return
      */
-    public Iterator getCapabilities();
-
+    CapabilityMap getCapabilityMap(String userAgent);
+    
     /**
-     * Adds the given capability
-     *
-     * @param name   the name of the new capability
+     * @return
      */
-    public void addCapability(String name);
-
-    /**
-     * Removes the given capability
-     *
-     * @param name   the name of the capability to be removed
-     */
-    public void removeCapability(String name);
-
-    /**
-     * Checks if the argument capability is included in this map
-     *
-     * @param capabiltiy a capability descriptor
-     * @return true if the capability is supported
-     */
-    public boolean contains(String capability);
-
-    /**
-     * Checks if the all the elements of argument capability map
-     * are included in the current one
-     *
-     * @param map a CapabilityMap implementation to test
-     * @return true is all the elements the argument map are included in the
-     * current map.
-     */
-    public boolean containsAll(CapabilityMap map);
-
+    Iterator getClients();
 }

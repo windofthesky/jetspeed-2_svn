@@ -51,52 +51,124 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.registry;
+package org.apache.jetspeed.capability;
 
-import java.util.Iterator;
-import org.apache.jetspeed.util.MimeType;
+import java.util.Vector;
 
 /**
  * <P>
- * The <CODE>MimeTypeMap</CODE> interface represents a list that
- * stores all mimetypes a client supports. The mimetypes are stored
- * in decreasing order of importance. The very first mimetype is the
- * preferred mimetype of the client.
+ * The <CODE>ClientEntry</CODE> interface represents one client inside
+ * of the client registry. It is accessed by the portlet container
+ * to get information about the clients.
  * </P>
  *
  * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
  * @author <a href="raphael@apache.org">Raphaël Luta</a>
- * @version $Id$
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  */
-public interface MimetypeMap
+public interface Client 
 {
+    /**
+    * Set Client ID -- Assigns the Client ID
+    * @param id
+    */
+    public void setClientId(int id);
+ 
+    
+       /**
+    * Get Client ID
+    * @return Client ID
+    */
+    public int getClientId();
+       
+    /**
+     * Returns the pattern parameter of this client. The pattern is used
+     * to match a client to the user agent used to access the portal. If
+     * the pattern matches the user agent string, this client is recognized
+     * as the one the user is currently working with.
+     *
+     * @return the pattern of this client
+     */
+    public String getUserAgentPattern();
 
     /**
-     * Returns an enumeration of all mimetypes the client supports.
+     * Sets the pattern used to match the user agent.
      *
-     * @return an enumeration of all mimetypes
+     * @param useragentpattern
+     *               the new pattern
      */
-    public Iterator getMimetypes();
+    public void setUserAgentPattern(String useragentpattern);
 
     /**
-     * Returns the preferred mimetype of the client.
+     * Returns the manufacturer of this client
      *
-     * @return the preferred mimetype
+     * @return the manufacturer of this client
      */
-    public MimeType getPreferredMimetype();
+    public String getManufacturer();
 
     /**
-     * Adds the given mimetype
+     * Sets the new manufacturer of this client
      *
-     * @param name   the name of the mimetype
+     * @param name   the new manufacturer
      */
-    public void addMimetype(String name);
+    public void setManufacturer(String name);
 
     /**
-     * Removes the given mimetype
+     * Returns the model of this client
      *
-     * @param name   the mimetype to be removed
+     * @return the model of this client
      */
-    public void removeMimetype(String name);
+    public String getModel();
+
+    /**
+     * Sets the new model of this client
+     *
+     * @param name   the new model
+     */
+    public void setModel(String name);
+
+    /**
+     * Returns the version of this client
+     *
+     * @return the version of this client
+     */
+    public String getVersion();
+
+    /**
+     * Sets the new version of this client
+     *
+     * @param name   the new version
+     */
+    public void setVersion(String name);
+
+    /**
+     * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
+     * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
+     * order of importance.
+     *
+     * @return the MimeTypeMap
+     * @see MimeTypeMap
+     */
+    public Vector getMimetypes();
+    
+    /**
+     * Set MimeTypes
+     * @param mimetypes
+     */
+    public void setMimetypes(Vector mimetypes);
+
+    String getName();
+    void setName(String name);
+    
+    /**
+     * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
+     * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
+     * order.
+     *
+     * @return the CapabilityMap
+     * @see CapabilityMap
+     */
+    public Vector getCapabilities();
+    public void setCapabilities(Vector capabilities);
 
 }

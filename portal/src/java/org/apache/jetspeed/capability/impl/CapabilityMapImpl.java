@@ -51,44 +51,120 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.capability.impl;
 
+import org.apache.jetspeed.capability.CapabilityMap;
+import org.apache.jetspeed.capability.Client;
 
-package org.apache.jetspeed.om.registry;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.Iterator;
+
+import org.apache.jetspeed.capability.MimeType;
 
 /**
- * Capability class.
+ * IMplementation for capabilityMap interface
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public interface Capability
+class CapabilityMapImpl implements CapabilityMap
 {
-    /**
-     * Set CapabilityId
-     * 
-     * @param id
-     */
-    public void setCapabilityId(int id);
+    // Members
+    private String      useragent;        // User agent for request
+    private Hashtable    mimeTypeMap;    // supported Mimetypes for Agent
+    private Hashtable    capabiltyMap;    // supported Capabilities for Agent
+    private Hashtable    mediaTypeMap;    // supported MediaTypes for Agent
+    private Client    client;            // client for Agent
+
     
     /**
-     * Get CapabilityId
-     * 
-     * @return capabilityId
-     */
-    public int getCapabilityId();
-    
+    Returns the preferred MIME type for the current user-agent
+    */
+    public MimeType getPreferredType()
+    {
+        // Return first entry
+        Enumeration e = this.mimeTypeMap.elements();
+        return (MimeType)e.nextElement();
+    }
+
     /**
-     * Set Capability name
-     * 
-     * @param name
-     */
-    public void setName(String name);
-    
+    Returns the preferred media type for the current user-agent
+    */
+    public String getPreferredMediaType()
+    {
+        return null;
+    }
+
     /**
-     * Get CapabilityId
-     * 
-     * @return capability string
+     * Returns an ordered list of supported media-types, from most preferred
+     * to least preferred
      */
-    public String getName();
+    public Iterator listMediaTypes()
+    {
+        return null;        
+    }
+
+    /**
+    Returns the user-agent string
+    */
+    public String getAgent()
+    {
+        return this.useragent;
+    }
+
+    /**
+    Checks to see if the current agent has the specified capability
+    */
+    public boolean hasCapability(int capability)
+    {    
+        return false;
+    }
+
+    /**
+    Checks to see if the current agent has the specified capability
+    */
+    public boolean hasCapability(String capability)
+    {
+        return false;
+    }
+
+    /**
+    Get the mime types that this CapabilityMap supports.
+    */
+    public MimeType[] getMimeTypes()
+    {
+        return null;        
+    }
+
+    /**
+    Return true if this CapabilityMap supports the given MimeType
+    */
+    public boolean supportsMimeType(MimeType mimeType)
+    {
+        return false;
+    }
+
+    /**
+     * Return true if this CapabilityMap supports the given media type
+     *
+     * @param media the name of a media type registered in the
+     * MediaType regsitry
+     *
+     * @return true is the capabilities of this agent at least match those
+     * required by the media type
+     */
+    public boolean supportsMediaType(String media)
+    {
+        return false;
+    }
+
+    /**
+    Create a map -> string representation
+    */
+    public String toString()
+    {    
+        return "";
+    }
 
 }

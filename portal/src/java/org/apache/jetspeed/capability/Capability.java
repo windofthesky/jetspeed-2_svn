@@ -52,53 +52,43 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.registry.impl;
 
-import org.apache.jetspeed.om.registry.MimeType;
-
+package org.apache.jetspeed.capability;
 
 /**
- * Mimetype implementation class.
+ * Capability class.
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-
-public class MimeTypeImpl implements MimeType
+public interface Capability
 {
-    private int mimeTypeId;
-    private String name;
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#setMimetypeId(int)
+    /**
+     * Set CapabilityId
+     * 
+     * @param id
      */
-    public void setMimetypeId(int id)
-    {
-      this.mimeTypeId = id;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#getMimetypeId()
+    public void setCapabilityId(int id);
+    
+    /**
+     * Get CapabilityId
+     * 
+     * @return capabilityId
      */
-    public int getMimetypeId()
-    {
-        return this.mimeTypeId;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#setName(java.lang.String)
+    public int getCapabilityId();
+    
+    /**
+     * Set Capability name
+     * 
+     * @param name
      */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.registry.MimeType#getName()
+    public void setName(String name);
+    
+    /**
+     * Get CapabilityId
+     * 
+     * @return capability string
      */
-    public String getName()
-    {
-        return this.name;
-    }
+    public String getName();
 
 }

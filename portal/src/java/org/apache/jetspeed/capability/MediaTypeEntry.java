@@ -51,128 +51,85 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.registry.base;
+package org.apache.jetspeed.capability;
 
-import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.jetspeed.om.registry.MimetypeMap;
-import org.apache.jetspeed.util.MimeType;
 
 /**
- * Simple bean-like implementation of the CapabilityMap
+ * This entry describes all the properties that should be present in
+ * a RegistryEntry describing a MediaType
  *
- * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
+ * FIXME: we should add some additionnal attrbutes for separating 2 versions
+ * of the same mime type
+ *
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class BaseMimetypeMap implements MimetypeMap, java.io.Serializable
+public interface MediaTypeEntry 
 {
-    private Vector mimetypesVector = new Vector();
-
-    private transient Vector mimes;
-
-    public BaseMimetypeMap()
-    {
-    }
+    /**
+     * Set MediaType ID -- Assigns ID
+     * @param id
+     */
+    public void setMediatypeId(int id);
 
     /**
-     * Implements the equals operation so that 2 elements are equal if
-     * all their member values are equal.
+     * Get MediaType ID -- Return ID
+     * @return MediaTypeID
      */
-    public boolean equals(Object object)
-    {
-        if (object==null)
-        {
-            return false;
-        }
+    public int getMediatypeId();
+    
+    /** @return the character set associated with this MediaType */
+    public String getCharacterSet();
 
-        BaseMimetypeMap obj = (BaseMimetypeMap)object;
+    /** Sets the character set associated with this MediaType */
+    public void setCharacterSet( String charSet);
 
-        Iterator i = mimetypesVector.iterator();
-        Iterator i2 = obj.mimetypesVector.iterator();
-        while(i.hasNext())
-        {
-            String c1 = (String)i.next();
-            String c2 = null;
+    /**
+     * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
+     * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
+     * order.
+     *
+     * @return a vector of capabilities
+     * 
+     */
+    public Vector getCapabilities();
+    
+    /**
+     * Set the capabilities
+     * @param vector of capabilities
+     */
+    public void setCapabilities(Vector capabilities);
+    
+   /**
+   * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
+   * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
+   * order of importance.
+   *
+   * @return the MimeTypeMap
+   * @see MimeTypeMap
+   */
+  public Vector getMimetypes();
+  
+  /**
+   * Set mime types
+   * @param mimetypes
+   */
+  public void setMimetypes(Vector mimetypes);
+  
+  /**
+   *    removes the MimeType to the MimeType map 
+   * @param name
+   */
+  
+  public void removeMimetype(String name);
+  
+  /**
+   * removes the MimeType to the MimeType map 
+   * @param name
+   */
+  public void addMimetype(String name);
 
-            if (i2.hasNext())
-            {
-                c2 = (String)i2.next();
-            }
-            else
-            {
-                return false;
-            }
-
-            if (!c1.equals(c2))
-            {
-                return false;
-            }
-        }
-
-        if (i2.hasNext())
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public Iterator getMimetypes()
-    {
-        if (mimes == null)
-        {
-            buildMimetable();
-        }
-
-        return mimes.iterator();
-    }
-
-    public MimeType getPreferredMimetype()
-    {
-        if (mimes == null)
-        {
-            buildMimetable();
-        }
-
-        return (MimeType)mimes.get(0);
-    }
-
-    public void addMimetype(String name)
-    {
-        if (!mimetypesVector.contains(name))
-        {
-            mimetypesVector.add(name);
-            buildMimetable();
-        }
-    }
-
-    public void removeMimetype(String name)
-    {
-        mimetypesVector.remove(name);
-        buildMimetable();
-    }
-
-    protected void buildMimetable()
-    {
-        Vector types = new Vector();
-        Iterator i = mimetypesVector.iterator();
-
-        while(i.hasNext())
-        {
-            String mime = (String)i.next();
-            types.add(new MimeType(mime));
-        }
-
-        this.mimes = types;
-    }
-
-    // castor related method definitions
-
-    public Vector getMimetypesVector()
-    {
-        return mimetypesVector;
-    }
-
+    
 }

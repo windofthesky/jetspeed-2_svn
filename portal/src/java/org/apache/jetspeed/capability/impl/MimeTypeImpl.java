@@ -51,84 +51,54 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.registry;
 
-import java.util.Vector;
+package org.apache.jetspeed.capability.impl;
+
+import org.apache.jetspeed.capability.MimeType;
+
 
 /**
- * This entry describes all the properties that should be present in
- * a RegistryEntry describing a MediaType
+ * Mimetype implementation class.
  *
- * FIXME: we should add some additionnal attrbutes for separating 2 versions
- * of the same mime type
- *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public interface MediaTypeEntry extends RegistryEntry
+
+public class MimeTypeImpl implements MimeType
 {
-    /**
-     * Set MediaType ID -- Assigns ID
-     * @param id
-     */
-    public void setMediatypeId(int id);
+    private int mimeTypeId;
+    private String name;
 
-    /**
-     * Get MediaType ID -- Return ID
-     * @return MediaTypeID
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#setMimetypeId(int)
      */
-    public int getMediatypeId();
-    
-    /** @return the character set associated with this MediaType */
-    public String getCharacterSet();
+    public void setMimetypeId(int id)
+    {
+      this.mimeTypeId = id;
+    }
 
-    /** Sets the character set associated with this MediaType */
-    public void setCharacterSet( String charSet);
-
-    /**
-     * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
-     * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
-     * order.
-     *
-     * @return a vector of capabilities
-     * 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#getMimetypeId()
      */
-    public Vector getCapabilities();
-    
-    /**
-     * Set the capabilities
-     * @param vector of capabilities
-     */
-    public void setCapabilities(Vector capabilities);
-    
-   /**
-   * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
-   * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
-   * order of importance.
-   *
-   * @return the MimeTypeMap
-   * @see MimeTypeMap
-   */
-  public Vector getMimetypes();
-  
-  /**
-   * Set mime types
-   * @param mimetypes
-   */
-  public void setMimetypes(Vector mimetypes);
-  
-  /**
-   *    removes the MimeType to the MimeType map 
-   * @param name
-   */
-  
-  public void removeMimetype(String name);
-  
-  /**
-   * removes the MimeType to the MimeType map 
-   * @param name
-   */
-  public void addMimetype(String name);
+    public int getMimetypeId()
+    {
+        return this.mimeTypeId;
+    }
 
-    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#setName(java.lang.String)
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#getName()
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
 }

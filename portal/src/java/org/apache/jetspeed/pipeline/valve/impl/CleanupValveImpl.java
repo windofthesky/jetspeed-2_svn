@@ -95,7 +95,7 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
         // Complete any renderings that are on the rendering stack 
 
         // TODO: we should abstract the rendering as we will
-        // wnat to eventually support other types of templates
+        // want to eventually support other types of templates
         // other than JSPs.
         HttpServletRequest httpRequest = request.getRequest();
         Stack renderStack = (Stack) httpRequest.getAttribute(RENDER_STACK_ATTR);

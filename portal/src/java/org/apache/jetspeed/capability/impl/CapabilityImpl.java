@@ -51,23 +51,53 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.capability;
 
-import org.apache.jetspeed.capability.CapabilityMap;
-import org.apache.jetspeed.cps.CommonService;
+package org.apache.jetspeed.capability.impl;
+
+import org.apache.jetspeed.capability.Capability;
 
 /**
- * CapabilityService
+ * Capability implementation class.
  *
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public interface CapabilityService extends CommonService
+
+public class CapabilityImpl implements Capability
 {
-    /** The name of this service */
-    public String SERVICE_NAME = "capability";
-    
-    public CapabilityMap getCapabilityMap(String userAgent);
-    
-    
+    private int capabilityId;
+    private String name;
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.Capability#setCapabilityId(int)
+     */
+    public void setCapabilityId(int id)
+    {
+        this.capabilityId = id;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.Capability#getCapabilityId()
+     */
+    public int getCapabilityId()
+    {
+        return this.capabilityId;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.Capability#setName(java.lang.String)
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.Capability#getName()
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
 }

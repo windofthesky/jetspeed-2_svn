@@ -55,7 +55,6 @@ package org.apache.jetspeed.capability;
 
 import java.util.Iterator;
 
-import org.apache.jetspeed.util.MimeType;
 
 /**
  * This interface provides lookup features on the capabilities supported

@@ -802,12 +802,12 @@
    - M E D I A T Y P E
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.MediaTypeEntryImpl"
+   	  class="org.apache.jetspeed.capability.impl.MediaTypeEntryImpl"
    	  table="MEDIA_TYPE"
    >
       
         <field-descriptor
-         name="MediatypeId"
+         name="mediatypeId"
          column="MEDIATYPE_ID"
          jdbc-type="INTEGER"
          primarykey="true"
@@ -815,32 +815,32 @@
       />
       
       <field-descriptor
-         name="Name"
+         name="name"
          column="NAME"
          jdbc-type="VARCHAR"     
       />
            
       <field-descriptor
-         name="CharacterSet"
+         name="characterSet"
          column="CHARACTER_SET"
          jdbc-type="VARCHAR"
       />   
       
       <field-descriptor
-         name="Title"
+         name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
       />  
       
       <field-descriptor
-         name="Description"
+         name="description"
          column="DESCRIPTION"
          jdbc-type="VARCHAR"
       /> 
       
       <collection-descriptor
-          name="Capabilities"
-          element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+          name="capabilities"
+          element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
  
           indirection-table="MEDIATYPE_TO_CAPABILITY"
        >
@@ -849,8 +849,8 @@
        </collection-descriptor>
        
        <collection-descriptor
-          name="Mimetypes"
-          element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+          name="mimetypes"
+          element-class-ref="org.apache.jetspeed.capability.impl.MimeTypeImpl"
  
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
@@ -864,11 +864,11 @@
    - C L I E N T
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.ClientEntryImpl"
+   	  class="org.apache.jetspeed.capability.impl.ClientImpl"
    	  table="CLIENT"
    >
         <field-descriptor
-         name="ClientId"
+         name="clientId"
          column="CLIENT_ID"
          jdbc-type="INTEGER"
          primarykey="true"
@@ -876,38 +876,38 @@
        />
       
         <field-descriptor
-         name="Name"
+         name="name"
          column="NAME"
          jdbc-type="VARCHAR"     
       />
       
       <field-descriptor
-         name="Useragentpattern"
+         name="userAgentPattern"
          column="USER_AGENT_PATTERN"
          jdbc-type="VARCHAR"     
       />
       
       <field-descriptor
-         name="Manufacturer"
+         name="manufacturer"
          column="MANUFACTURER"
          jdbc-type="VARCHAR"     
       />
       
       <field-descriptor
-         name="Model"
+         name="model"
          column="MODEL"
          jdbc-type="VARCHAR"     
       />
       
       <field-descriptor
-         name="Version"
+         name="version"
          column="VERSION"
          jdbc-type="VARCHAR"     
       />
       
       <collection-descriptor
-          name="Capabilities"
-          element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+          name="capabilities"
+          element-class-ref="org.apache.jetspeed.capability.impl.CapabilityImpl"
  
           indirection-table="MEDIATYPE_TO_CAPABILITY"
        >
@@ -916,8 +916,8 @@
        </collection-descriptor>
        
        <collection-descriptor
-          name="Mimetypes"
-          element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+          name="mimetypes"
+          element-class-ref="org.apache.jetspeed.capability.impl.MimeTypeImpl"
  
           indirection-table="MEDIATYPE_TO_MIMETYPE"
        >
@@ -931,11 +931,11 @@
    - M I M E T Y P E 
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+   	  class="org.apache.jetspeed.capability.impl.MimeTypeImpl"
    	  table="MIMETYPE"
    >
         <field-descriptor
-         name="MimetypeId"
+         name="mimeTypeId"
          column="MIMETYPE_ID"
          jdbc-type="INTEGER"
          primarykey="true"
@@ -954,11 +954,11 @@
    - C A P A B I L I T Y
   -->
     <class-descriptor
-   	  class="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+   	  class="org.apache.jetspeed.capability.impl.CapabilityImpl"
    	  table="CAPABILITY"
    >
         <field-descriptor
-         name="CapabilityId"
+         name="capabilityId"
          column="CAPABILITY_ID"
          jdbc-type="INTEGER"
          primarykey="true"
@@ -966,7 +966,7 @@
       />
       
        <field-descriptor
-         name="Name"
+         name="name"
          column="CAPABILITY"
          jdbc-type="VARCHAR"     
       />

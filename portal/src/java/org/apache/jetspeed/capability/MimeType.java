@@ -51,31 +51,41 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
-package org.apache.jetspeed.om.registry;
-
-import java.util.Iterator;
-
-import org.apache.jetspeed.capability.CapabilityMap;
+package org.apache.jetspeed.capability;
 
 /**
-    Represents a media-type registry.
-
-    @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
-    @version $Id$
-*/
-
-public interface MediaTypeRegistry extends Registry
+ * MimeType
+ *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
+ */
+public interface MimeType
 {
-
-    /*
-     * Find media-types in this registry that match the CapabilityMap requirements
-     *
-     * @param category The category and optional subcategories.
-     * @return Iterator The result as an iterator.
+    /**
+     * Set MimetypeId
+     * 
+     * @param id
      */
-    public Iterator findForCapability(CapabilityMap cm);
-
+    public void setMimetypeId(int id);
+    
+    /**
+     * Get CapabilityId
+     * 
+     * @return capabilityId
+     */
+    public int getMimetypeId();
+    
+    /**
+     * Set Capability name
+     * 
+     * @param name
+     */
+    public void setName(String name);
+    
+    /**
+     * Get CapabilityId
+     * 
+     * @return capability string
+     */
+    public String getName();    
 }
-
-

@@ -51,38 +51,41 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.capability.impl;
 
-package org.apache.jetspeed.om.registry.impl;
-
-import org.apache.jetspeed.om.registry.ClientEntry;
-import org.apache.jetspeed.om.registry.base.BaseRegistryEntry;
+import org.apache.jetspeed.capability.MediaTypeEntry;
 import java.util.Vector;
 
 /**
- * Simple implementation of the ClientRegistry interface.
+ * Default bean like implementation of MediaTypeEntry interface
+ * suitable for serializing with Castor
  *
- * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
- * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class ClientEntryImpl extends BaseRegistryEntry
-    implements ClientEntry, java.io.Serializable
+public class MediaTypeEntryImpl 
+    implements MediaTypeEntry
 {
-    private String useragentpattern = "";
-    private String manufacturer = "";
-    private String model = "";
-    private String version = "";
-    private Vector mimetypes;
+    protected String characterSet;
     private Vector capabilities;
-    
-    private int clientId;
+    private Vector mimetypes;
+    private int mediatypeId;
 
-    public ClientEntryImpl()
+    public MediaTypeEntryImpl()
+    {}
+
+    public MediaTypeEntryImpl(long id,
+                              String name,
+                              int _hidden,
+                              String mimeType,
+                              String title,
+                              String description,
+                              String image,
+                               String role)
     {
+         this.mimetypes.add(mimeType);
     }
 
-    
     /**
      * Implements the equals operation so that 2 elements are equal if
      * all their member values are equal.
@@ -94,135 +97,63 @@ public class ClientEntryImpl extends BaseRegistryEntry
             return false;
         }
 
-        ClientEntryImpl obj = (ClientEntryImpl)object;
+        MediaTypeEntryImpl obj = (MediaTypeEntryImpl)object;
 
-        if (useragentpattern!=null)
+        if (mimetypes.isEmpty()!= true)
         {
-            if (!useragentpattern.equals(obj.useragentpattern))
+            if ( !mimetypes.contains(obj.getMimetypes().firstElement()) )
             {
                 return false;
             }
         }
         else
         {
-            if (obj.useragentpattern!=null)
+            if (obj.getMimetypes().isEmpty() == false)
             {
                 return false;
             }
         }
 
-        if (manufacturer!=null)
+        if (characterSet!=null)
         {
-            if (!manufacturer.equals(obj.manufacturer))
+            if (!characterSet.equals(obj.characterSet))
             {
                 return false;
             }
         }
         else
         {
-            if (obj.manufacturer!=null)
+            if (obj.characterSet!=null)
             {
                 return false;
             }
         }
 
-        if (model!=null)
-        {
-            if (!model.equals(obj.model))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (obj.model!=null)
-            {
-                return false;
-            }
-        }
-
-        if (version!=null)
-        {
-            if (!version.equals(obj.version))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (obj.version!=null)
-            {
-                return false;
-            }
-        }
-
-        if (!mimetypes.contains(obj.mimetypes))
-        {
-            return false;
-        }
-
-        if (!capabilities.contains(obj.capabilities))
+        if (!capabilities.equals(obj.capabilities))
         {
             return false;
         }
 
         return super.equals(object);
     }
-
-    public String getUseragentpattern()
+    
+ 
+    /** @return the character set associated with this MediaType */
+    public String getCharacterSet()
     {
-        return useragentpattern;
+        return this.characterSet;
     }
 
-    public void setUseragentpattern(String useragentpattern)
+    /** Sets the character set associated with this MediaType */
+    public void setCharacterSet( String charSet)
     {
-        this.useragentpattern = useragentpattern;
+        this.characterSet = charSet;
     }
 
-    public String getManufacturer()
-    {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String name)
-    {
-        manufacturer = name;
-    }
-
-    public String getModel()
-    {
-        return model;
-    }
-
-    public void setModel(String name)
-    {
-        model = name;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion(String name)
-    {
-        version = name;
-    }
-
-
-    public Vector getMimetypes()
-    {
-        return mimetypes;
-    }
-
-    public void setMimetypes(Vector mimetypes)
-    {
-        this.mimetypes = mimetypes;
-    }
-
+    
     public Vector getCapabilities()
     {
-        return capabilities;
+        return this.capabilities;
     }
 
     public void setCapabilities(Vector capabilities)
@@ -230,21 +161,45 @@ public class ClientEntryImpl extends BaseRegistryEntry
         this.capabilities = capabilities;
     }
     
-    /**
-     * Set Client ID -- Assigns the Client ID
-     * @param id
-     */
-    public void setClientId(int id)
+    public Vector getMimetypes()
     {
-        this.clientId = id;
+        return this.mimetypes;
+    }
+    
+    public void setMimetypes(Vector mimetypes)
+    {
+        this.mimetypes = mimetypes;
+    }
+    
+    public void addMimetype(String name)
+    {
+        if (!mimetypes.contains(name))
+        {
+            mimetypes.add(name);
+        }
+    }
+
+    public void removeMimetype(String name)
+    {
+        mimetypes.remove(name);
     }
     
     /**
-     * Get Client ID
-     * @return Client ID
+     * Set MediaType ID -- Assigns ID
+     * @param id
      */
-    public int getClientId()
+    public void setMediatypeId(int id)
     {
-        return this.clientId;
+        this.mediatypeId = id;
     }
+
+    /**
+     * Get MediaType ID -- Return ID
+     * @return MediaTypeID
+     */
+    public int getMediatypeId()
+    {
+        return this.mediatypeId;
+    }
+
 }

@@ -52,7 +52,7 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.capability;
+package org.apache.jetspeed.capability.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
