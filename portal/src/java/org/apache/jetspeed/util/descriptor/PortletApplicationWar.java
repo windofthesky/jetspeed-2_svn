@@ -292,13 +292,26 @@ public class PortletApplicationWar
     public void copyWar( String targetAppRoot ) throws IOException
     {
         FileObject target = fsManager.resolveFile(new File(targetAppRoot).getAbsolutePath());
-        if (!target.exists())
+        
+        try
         {
-            target.createFolder();
+            // fsManager.getFilesCache().clear(target.getFileSystem());
+           
+            target.createFolder();            
+            target.copyFrom(warStruct, new AllFileSelector());
+            
         }
-
-        target.copyFrom(warStruct, new AllFileSelector());
-        target.close();
+        catch (FileSystemException e)
+        {
+            throw e;
+        }
+        finally
+        {
+            target.close();
+            
+        }
+       
+        
 
     }
 
