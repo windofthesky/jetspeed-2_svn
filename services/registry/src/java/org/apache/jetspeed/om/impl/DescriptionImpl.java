@@ -70,19 +70,25 @@ import org.apache.jetspeed.om.common.MutableDescription;
  * @version $Id$
  *
  */
-public class DescriptionImpl implements MutableDescription
+public abstract class DescriptionImpl implements MutableDescription 
 {
 
     private String description;
     private Locale locale;
-    /** Denotes the type of Description this: Portlet, Application, etc. **/
-    protected String type;
-    /**
-     * Links this description to the object that it describes
-     */
-    //  protected long objectId;
+    
+	protected long parentId;
+    
+	protected long id;
 
-    // private long id;
+	/**
+	* Tells OJB which class to use to materialize.  
+	*/
+	protected String ojbConcreteClass = DescriptionImpl.class.getName();
+    
+ 
+
+
+
 
     public DescriptionImpl()
     {
@@ -91,12 +97,12 @@ public class DescriptionImpl implements MutableDescription
         locale = JetspeedLocale.getDefaultLocale();
     }
 
-    public DescriptionImpl(Locale locale, String description, String type)
+    public DescriptionImpl(Locale locale, String description)
     {
         this();
         this.locale = locale;
         this.description = description;
-        this.type = type;
+        
     }
 
     /**
@@ -136,28 +142,6 @@ public class DescriptionImpl implements MutableDescription
     public void setLanguage(String lang)
     {
         this.locale = new Locale(lang);
-    }
-
-    /**
-     * @return
-     */
-    public String getType()
-    {
-        return type;
-    }
-
-    /** 
-     * <p>
-     * setType
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.common.MutableDescription#setType(java.lang.String)
-     * @param type
-     * @return
-     */
-    public void setType(String type)
-    {        
-        this.type = type;
     }
 
 }

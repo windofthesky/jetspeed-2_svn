@@ -54,9 +54,9 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 //TODO: import org.apache.jetspeed.exception.JetspeedRuntimeException;
 import org.apache.jetspeed.om.common.ParameterComposite;
@@ -72,25 +72,23 @@ import org.apache.pluto.om.common.ParameterSetCtrl;
  * @version $Id$
  *
  */
-public abstract class ParameterSetImpl extends AbstractSupportSet implements ParameterSet, ParameterSetCtrl, Serializable
+public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl, Serializable
 {
-    private HashMap parameterMap;
-
-    protected abstract Class getParameterClass();
-
-    // TODO: protected abstract Log getLog();
+    protected Collection innerCollection;
 
     /**
      * @param wrappedSet
      */
-    public ParameterSetImpl(Set wrappedSet)
+    public ParameterSetImpl(Collection collection)
     {
-        super(wrappedSet);
+        super();
+        this.innerCollection = collection;
     }
 
     public ParameterSetImpl()
     {
-        parameterMap = new HashMap();
+        super();
+        this.innerCollection = new ArrayList();
     }
 
     /**
@@ -98,7 +96,7 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
      */
     public Iterator iterator()
     {
-        return super.iterator();
+        return innerCollection.iterator();
     }
 
     /**
@@ -106,7 +104,17 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
      */
     public Parameter get(String name)
     {
-        return (Parameter) parameterMap.get(name);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            Parameter p = (Parameter) itr.next();
+            if (p.getName().equals(name))
+            {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -114,14 +122,11 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
      */
     public Parameter add(String name, String value)
     {
-
-        ParameterComposite p = (ParameterComposite) newParameterInstance();
+        ParameterComposite p = newParameterInstance();
         p.setName(name);
         p.setValue(value);
         add(p);
-
-        return (Parameter) p;
-
+        return p;
     }
 
     /**
@@ -129,9 +134,24 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
      */
     public Parameter remove(String name)
     {
-        Parameter p = (Parameter) parameterMap.get(name);
-        remove(p);
-        return p;
+        Iterator itr = innerCollection.iterator();
+        Parameter removeMe = null;
+        while (itr.hasNext())
+        {
+            Parameter p = (Parameter) itr.next();
+            if (p.getName().equals(name))
+            {
+                removeMe = p;
+                break;
+            }
+        }
+
+        if (removeMe != null)
+        {
+            innerCollection.remove(removeMe);
+        }
+
+        return removeMe;
     }
 
     /**
@@ -152,8 +172,8 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
     public boolean add(Object o)
     {
         ParameterComposite p = (ParameterComposite) o;
-        parameterMap.put(p.getName(), p);
-        return super.add(p);
+
+        return innerCollection.add(p);
     }
 
     /**
@@ -162,27 +182,30 @@ public abstract class ParameterSetImpl extends AbstractSupportSet implements Par
     public boolean remove(Object o)
     {
         Parameter p = (Parameter) o;
-        parameterMap.remove(p.getName());
-        return super.remove(p);
+
+        return innerCollection.remove(p);
     }
 
     /**
      * Creates a Parameter class this Collection will be working with.
      * <br>
      */
-    protected ParameterComposite newParameterInstance()
+    protected abstract ParameterComposite newParameterInstance();
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
     {
-        try
-        {
-            return (ParameterComposite) getParameterClass().newInstance();
-        }
-        catch (Exception e)
-        {
-            // TODO:          getLog().error("Unable to instaniate new Parameter class.", e);
-            //            throw new JetspeedRuntimeException("Unable to instantiate new Parameter class.", e);
-            e.printStackTrace();
-        }
-        return null;
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }

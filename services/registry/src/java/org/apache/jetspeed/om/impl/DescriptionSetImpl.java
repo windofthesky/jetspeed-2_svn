@@ -53,10 +53,11 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.pluto.om.common.Description;
 
@@ -69,10 +70,31 @@ import org.apache.pluto.om.common.Description;
  * @version $Id$
  *
  */
-public class DescriptionSetImpl extends AbstractSupportSet implements MutableDescriptionSet
+public class DescriptionSetImpl  implements MutableDescriptionSet
 {
     /** Specifies the type Description we are storing */
     protected String descriptionType;
+    protected Collection innerCollection;
+
+    /**
+     * 
+     */
+    public DescriptionSetImpl()
+    {
+        super();
+		this.innerCollection = new ArrayList();        
+    }
+
+    /**
+     * @param c
+     */
+    public DescriptionSetImpl(Collection c)
+    {
+        this.innerCollection = c;  
+    }
+
+
+
 
     public DescriptionSetImpl(String descriptionType)
     {
@@ -114,10 +136,32 @@ public class DescriptionSetImpl extends AbstractSupportSet implements MutableDes
      * @see org.apache.jetspeed.om.common.MutableDescriptionSet#addDescription(java.lang.String)
      */
     public void addDescription(Description description)
-    {
-        ((MutableDescription) description).setType(descriptionType);
-        add(description);
+    {        
+        innerCollection.add(description);
+    }
 
+    /**
+     * @see org.apache.pluto.om.common.DescriptionSet#iterator()
+     */
+    public Iterator iterator()
+    {        
+        return innerCollection.iterator();
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }

@@ -55,11 +55,15 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -79,7 +83,10 @@ public class ParameterImpl implements ParameterComposite, Serializable
 
     protected long parentId;
 
-    private MutableDescriptionSet descriptions;
+    private Collection descriptions;
+    private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_PARAMETER);
+    
+    private static final Log log = LogFactory.getLog(ParameterImpl.class);
 
     /**
      * @see org.apache.pluto.om.common.Parameter#getName()
@@ -120,10 +127,12 @@ public class ParameterImpl implements ParameterComposite, Serializable
      */
     public boolean equals(Object obj)
     {
-        if (obj != null && obj instanceof Parameter)
+        if (obj != null && obj.getClass().equals(getClass()))
         {
-            Parameter p = (Parameter) obj;
-            return this.getName().equals(p.getName());
+            ParameterImpl p = (ParameterImpl) obj;            
+            boolean sameParent = (p.parentId == parentId);
+            boolean sameName  = (name != null && p.getName() != null && name.equals(p.getName()));
+            return sameParent && sameName;            
         }
 
         return false;
@@ -146,7 +155,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     {
         if (descriptions != null)
         {
-            return descriptions.get(arg0);
+            return new DescriptionSetImpl(descriptions).get(arg0);
         }
         return null;
 
@@ -157,7 +166,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
      */
     public void setDescriptionSet(DescriptionSet arg0)
     {
-        this.descriptions = (MutableDescriptionSet) arg0;
+        this.descriptions = ((DescriptionSetImpl) arg0).getInnerCollection();
     }
 
     /**
@@ -167,10 +176,23 @@ public class ParameterImpl implements ParameterComposite, Serializable
     {
         if (descriptions == null)
         {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PARAMETER);
+			descriptions = new ArrayList();
         }
-
-        descriptions.addDescription(new DescriptionImpl(locale, desc, MutableDescription.TYPE_PARAMETER));
+        descCollWrapper.setInnerCollection(descriptions);
+        try
+        {
+            MutableDescription descObj =
+                (MutableDescription) JetspeedPortletRegistry.getNewObjectInstance(MutableDescription.TYPE_PARAMETER, true);
+			descObj.setLocale(locale);
+			descObj.setDescription(desc);
+			descCollWrapper.addDescription(descObj);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to instantiate Description implementor, " + e.toString();
+            log.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
 
     }
 
@@ -178,11 +200,11 @@ public class ParameterImpl implements ParameterComposite, Serializable
     {
         if (descriptions == null)
         {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PARAMETER);
+            descriptions = new ArrayList();
         }
 
-        descriptions.addDescription(desc);
-
+        descCollWrapper.setInnerCollection(descriptions);
+        descCollWrapper.addDescription(desc);
     }
 
     /**

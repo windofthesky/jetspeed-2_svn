@@ -65,24 +65,25 @@ import org.apache.jetspeed.om.common.MutableDisplayName;
  * @version $Id$
  *
  */
-public class DisplayNameImpl implements MutableDisplayName
+public abstract class DisplayNameImpl implements MutableDisplayName
 {
-
     private String displayName;
     private Locale locale;
-    /** Denotes the type of Description this: Portlet, Application, etc. **/
-    protected String type;
-
-    /**
-     * Links this DisplayName to the object that it describes
-     */
-    //  protected long objectId;
-
+	/**
+	* Tells OJB which class to use to materialize.  
+	*/
+	protected String ojbConcreteClass = DisplayNameImpl.class.getName();
+	
+	protected long parentId;
+    
+	protected long id;
+    
+ 
     public DisplayNameImpl()
     {
         super();
         // always init to default locale
-        locale=JetspeedLocale.getDefaultLocale();
+        locale = JetspeedLocale.getDefaultLocale();
     }
 
     /**
@@ -90,12 +91,11 @@ public class DisplayNameImpl implements MutableDisplayName
      * @param locale Locale of this DisaplyName.
      * @param name The actual text of the display name.
      */
-    public DisplayNameImpl(Locale locale, String name, String type)
+    public DisplayNameImpl(Locale locale, String name)
     {
         this();
         this.locale = locale;
-        this.displayName = name;
-        this.type = type;
+        this.displayName = name;        
     }
 
     /**
@@ -133,28 +133,6 @@ public class DisplayNameImpl implements MutableDisplayName
     public void setLanguage(String lang)
     {
         this.locale = new Locale(lang);
-    }
-
-    /**
-     * @return
-     */
-    public String getType()
-    {
-        return type;
-    }
-
-    /** 
-     * <p>
-     * setType
-     * </p>
-     * 
-     * @see org.apache.jetspeed.om.common.MutableDisplayName#setType(java.lang.String)
-     * @param type
-     */
-    public void setType(String type)
-    {
-        this.type = type;
-
     }
 
 }

@@ -54,10 +54,12 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Set;
+
 
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.common.MutableLanguage;
@@ -72,24 +74,27 @@ import org.apache.pluto.om.common.LanguageSet;
  * @version $Id$
  *
  */
-public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, Serializable
+public class LanguageSetImpl implements LanguageSet, Serializable
 {
 
-    /** Contains all loaded langauges, keyed by <code>java.util.Locale</code> */
-    private HashMap languageMap = new HashMap();
+    
+
+    protected Collection innerCollection;
 
     /**
      * 
      * @param wrappedSet
      */
-    public LanguageSetImpl(Set wrappedSet)
+    public LanguageSetImpl(Collection collection)
     {
-        super(wrappedSet);
+        super();
+        this.innerCollection = collection;
     }
 
     public LanguageSetImpl()
     {
         super();
+        this.innerCollection = new ArrayList();
     }
 
     /**
@@ -97,7 +102,7 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
      */
     public Iterator iterator()
     {
-        return super.iterator();
+        return innerCollection.iterator();
     }
 
     /**
@@ -105,7 +110,15 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
      */
     public Iterator getLocales()
     {
-        return languageMap.keySet().iterator();
+        HashSet localSet = new HashSet();
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+            Language lang = (Language) itr.next();
+            localSet.add(lang.getLocale());
+        }
+
+        return localSet.iterator();
     }
 
     /**
@@ -113,7 +126,23 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
      */
     public Language get(Locale locale)
     {
-        return (Language) languageMap.get(locale);
+		Language fallBack = null;
+        Iterator searchItr = innerCollection.iterator();
+        while (searchItr.hasNext())
+        {
+			Language lang = (Language) searchItr.next();
+            if (lang.getLocale().equals(locale))
+            {
+                return lang;
+            }
+            else if (lang.getLocale().getLanguage().equals(locale.getLanguage()))
+            {
+                fallBack = lang;
+            }
+
+        }
+
+        return fallBack;
     }
 
     /**
@@ -134,8 +163,8 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
         {
             ((MutableLanguage) o).setLocale(JetspeedLocale.getDefaultLocale());
         }
-        languageMap.put(language.getLocale(), language);
-        return super.add(o);
+        
+        return innerCollection.add(o);
     }
 
     /**
@@ -143,9 +172,29 @@ public class LanguageSetImpl extends AbstractSupportSet implements LanguageSet, 
      */
     public boolean remove(Object o)
     {
-        Language language = (Language) o;
-        languageMap.remove(language.getLocale());
-        return super.remove(language);
+        Language language = (Language) o;        
+        return innerCollection.remove(language);
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
+    }
+    
+    public int size()
+    {
+    	return innerCollection.size();
     }
 
 }

@@ -53,8 +53,12 @@
  */
 package org.apache.jetspeed.om.impl;
 
-import java.util.Set;
+import java.util.Collection;
 
+import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 
 /**
  * 
@@ -68,11 +72,11 @@ public class PortletParameterSetImpl extends ParameterSetImpl
 {
 
     /**
-     * @param wrappedSet
+     * @param collection
      */
-    public PortletParameterSetImpl(Set wrappedSet)
+    public PortletParameterSetImpl(Collection collection)
     {
-        super(wrappedSet);
+        super(collection);
     }
 
     /**
@@ -86,17 +90,22 @@ public class PortletParameterSetImpl extends ParameterSetImpl
     /**
      * @see org.apache.jetspeed.om.common.ParameterSetImpl#getParameterClass()
      */
-    protected Class getParameterClass()
-    {
-        return PortletInitParameterImpl.class;
-    }
 
     /**
-     * @see org.apache.jetspeed.om.common.ParameterSetImpl#getLog()
-     *
-    protected Log getLog()
-    {        
-        return LogFactory.getLog(PortletParameterSetImpl.class);
+     * 
+     */
+    protected ParameterComposite newParameterInstance()
+    {
+        try
+        {
+            return (ParameterComposite) JetspeedPortletRegistry.getNewObjectInstance(
+                  ParameterComposite.TYPE_PORTLET,
+                true);
+        }
+        catch (Exception e)
+        {        	
+            throw new IllegalStateException("Instance class unable to be configured " + e.toString());
+        }
     }
-    */
+
 }

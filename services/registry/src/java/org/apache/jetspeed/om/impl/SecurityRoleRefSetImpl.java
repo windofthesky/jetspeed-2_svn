@@ -54,7 +54,9 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
@@ -69,14 +71,19 @@ import org.apache.pluto.om.common.SecurityRoleRefSetCtrl;
  * @version $Id$
  *
  */
-public class SecurityRoleRefSetImpl extends AbstractSupportSet implements SecurityRoleRefSet, SecurityRoleRefSetCtrl, Serializable
+public class SecurityRoleRefSetImpl implements SecurityRoleRefSet, SecurityRoleRefSetCtrl, Serializable
 {
 
-    private HashMap refMap = new HashMap();
+    protected Collection innerCollection;
 
     public SecurityRoleRefSetImpl()
     {
-        refMap = new HashMap();
+        innerCollection = new ArrayList();
+    }
+
+    public SecurityRoleRefSetImpl(Collection collection)
+    {
+        innerCollection = collection;
     }
 
     /**
@@ -84,7 +91,17 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
      */
     public SecurityRoleRef get(String name)
     {
-        return (SecurityRoleRef) refMap.get(name);
+        Iterator itr = innerCollection.iterator();
+        while (itr.hasNext())
+        {
+			SecurityRoleRef roleRef = (SecurityRoleRef) itr.next();
+            if (roleRef.getRoleName().equals(name))
+            {
+                return roleRef;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -106,7 +123,7 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
      */
     public SecurityRoleRef add(SecurityRoleRef securityRoleRef)
     {
-        add(securityRoleRef);
+        innerCollection.add(securityRoleRef);
         return securityRoleRef;
     }
 
@@ -115,8 +132,13 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
      */
     public SecurityRoleRef remove(String name)
     {
-        SecurityRoleRef ref = (SecurityRoleRef) refMap.get(name);
-        return ref;
+        SecurityRoleRef roleRef = get(name);
+        if(roleRef != null)
+        {
+        	innerCollection.remove(roleRef);
+        }
+        
+        return roleRef;
     }
 
     /**
@@ -124,7 +146,7 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
      */
     public void remove(SecurityRoleRef securityRoleRef)
     {
-        remove(securityRoleRef);
+        innerCollection.remove(securityRoleRef);
 
     }
 
@@ -134,8 +156,11 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
     public boolean add(Object o)
     {
         SecurityRoleRef ref = (SecurityRoleRef) o;
-        refMap.put(ref.getRoleName(), ref);
-        return super.add(o);
+        if(innerCollection.contains(o))
+        {
+        	remove(o);
+        }
+        return innerCollection.add(o);
     }
 
     /**
@@ -144,8 +169,8 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
     public boolean remove(Object o)
     {
         SecurityRoleRef ref = (SecurityRoleRef) o;
-        refMap.remove(ref.getRoleName());
-        return super.remove(o);
+        
+        return innerCollection.remove(o);
     }
 
     /**
@@ -159,6 +184,111 @@ public class SecurityRoleRefSetImpl extends AbstractSupportSet implements Securi
         newRef.setDescriptionSet(descriptions);
         add(newRef);
         return newRef;
+    }
+
+    /**
+     * @see java.util.Collection#addAll(java.util.Collection)
+     */
+    public boolean addAll(Collection c)
+    {        
+        return innerCollection.addAll(c);
+    }
+
+    /**
+     * @see java.util.Collection#clear()
+     */
+    public void clear()
+    {
+        innerCollection.clear();
+
+    }
+
+    /**
+     * @see java.util.Collection#contains(java.lang.Object)
+     */
+    public boolean contains(Object o)
+    {        
+        return innerCollection.contains(o);
+    }
+
+    /**
+     * @see java.util.Collection#containsAll(java.util.Collection)
+     */
+    public boolean containsAll(Collection c)
+    {        
+        return innerCollection.containsAll(c);
+    }
+
+    /**
+     * @see java.util.Collection#isEmpty()
+     */
+    public boolean isEmpty()
+    {        
+        return innerCollection.isEmpty();
+    }
+
+    /**
+     * @see java.util.Collection#iterator()
+     */
+    public Iterator iterator()
+    {        
+        return innerCollection.iterator();
+    }
+
+    /**
+     * @see java.util.Collection#removeAll(java.util.Collection)
+     */
+    public boolean removeAll(Collection c)
+    {        
+        return innerCollection.removeAll(c);
+    }
+
+    /**
+     * @see java.util.Collection#retainAll(java.util.Collection)
+     */
+    public boolean retainAll(Collection c)
+    {        
+        return innerCollection.retainAll(c);
+    }
+
+    /**
+     * @see java.util.Collection#size()
+     */
+    public int size()
+    {        
+        return innerCollection.size();
+    }
+
+    /**
+     * @see java.util.Collection#toArray()
+     */
+    public Object[] toArray()
+    {        
+        return innerCollection.toArray();
+    }
+
+    /**
+     * @see java.util.Collection#toArray(java.lang.Object[])
+     */
+    public Object[] toArray(Object[] a)
+    {        
+        return innerCollection.toArray(a);
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }

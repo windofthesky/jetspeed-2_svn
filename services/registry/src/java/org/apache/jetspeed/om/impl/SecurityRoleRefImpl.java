@@ -54,11 +54,14 @@
 package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
@@ -80,7 +83,10 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     protected long portletId;
     private String link;
     private String name;
-    private MutableDescriptionSet descriptions;
+    private Collection descriptions;
+    private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_SEC_ROLE_REF);
+    
+    private static final Log log = LogFactory.getLog(SecurityRoleRefImpl.class);
 
     /**
      * @see org.apache.pluto.om.common.SecurityRoleRef#getRoleLink()
@@ -146,7 +152,8 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     {
         if (descriptions != null)
         {
-            return descriptions.get(arg0);
+        	descCollWrapper.setInnerCollection(descriptions);
+            return descCollWrapper.get(arg0);
         }
         return null;
     }
@@ -158,9 +165,10 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     {
         if (descriptions == null)
         {
-            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_SEC_ROLE_REF);
+            descriptions = new ArrayList();
         }
-        descriptions.addDescription(description);
+        descCollWrapper.setInnerCollection(descriptions);
+		descCollWrapper.addDescription(description);
     }
 
     /**
@@ -168,7 +176,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
      */
     public void setDescriptionSet(DescriptionSet descriptions)
     {
-        this.descriptions = (MutableDescriptionSet) descriptions;
+        this.descriptions = ((DescriptionSetImpl) descriptions).getInnerCollection();
 
     }
 
@@ -181,7 +189,22 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
      */
     public void setDescription(String arg0)
     {
-       DescriptionImpl di = new DescriptionImpl(JetspeedLocale.getDefaultLocale(), arg0, MutableDescription.TYPE_SEC_ROLE_REF);
+		try
+		{
+			MutableDescription descObj =
+				(MutableDescription) JetspeedPortletRegistry.getNewObjectInstance(MutableDescription.TYPE_PORTLET, true);
+			// descObj.setLocale(Jetspeed.getDefaultLocale());
+			descObj.setLocale(Locale.getDefault());
+			descObj.setDescription(arg0);
+			
+		}
+		catch (Exception e)
+		{
+			String msg = "Unable to instantiate Description implementor, " + e.toString();
+			log.error(msg, e);
+			throw new IllegalStateException(msg);
+		}
+       
     }
 
 }

@@ -53,9 +53,10 @@
  */
 package org.apache.jetspeed.om.impl;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
@@ -67,40 +68,52 @@ import org.apache.pluto.om.common.DisplayName;
  * @version $Id$
  *
  */
-public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDisplayNameSet
+public class DisplayNameSetImpl  implements MutableDisplayNameSet
 {
-
-    private Map nameMap = new HashMap();
-
-    /** This is a fall back if language only Locales */
-    private Map langMap = new HashMap();
 
     /** Specifies the type Description we are storing */
     protected String displayNameType;
+    
+	protected Collection innerCollection;
 
-    public DisplayNameSetImpl(String type)
+
+
+
+    public DisplayNameSetImpl()
     {
-        super();
-        this.displayNameType = type;
+        super();        
+        this.innerCollection = new ArrayList();
     }
+    
+	public DisplayNameSetImpl(Collection collection)
+	{
+		super();		
+		this.innerCollection = collection;
+	}
 
     /**
      * @see org.apache.pluto.om.common.DisplayNameSet#get(java.util.Locale)
      */
     public DisplayName get(Locale arg0)
     {
-        if (arg0 == null)
-        {
-            throw new IllegalArgumentException("Locale argument cannot be null");
-        }
 
-        Object obj = nameMap.get(arg0);
-        if (obj == null)
+        DisplayName fallBack = null;
+        Iterator searchItr = innerCollection.iterator();
+        while(searchItr.hasNext())
         {
-            obj = langMap.get(arg0.getLanguage());
-        }
+        	DisplayName aDName = (DisplayName) searchItr.next();
+        	if(aDName.getLocale().equals(arg0))
+        	{
+        		return aDName;
+        	}
+        	else if(aDName.getLocale().getLanguage().equals(arg0.getLanguage()))
+        	{
+        		fallBack = aDName;
+        	}
+        	
+        }        
 
-        return (DisplayName) obj;
+        return fallBack;
     }
 
     public void addDisplayName(DisplayName name)
@@ -119,10 +132,8 @@ public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDis
     public boolean add(Object o)
     {
         MutableDisplayName name = (MutableDisplayName) o;
-        name.setType(displayNameType);
-        nameMap.put(name.getLocale(), name);
-        langMap.put(name.getLocale().getLanguage(), name);
-        return super.add(o);
+
+        return innerCollection.add(o);
     }
 
     /**
@@ -131,8 +142,32 @@ public class DisplayNameSetImpl extends AbstractSupportSet implements MutableDis
     public boolean remove(Object o)
     {
         DisplayName name = (DisplayName) o;
-        nameMap.remove(name.getLocale());
-        return super.remove(o);
+        
+        return innerCollection.remove(o);
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.DisplayNameSet#iterator()
+     */
+    public Iterator iterator()
+    {        
+        return this.innerCollection.iterator();
+    }
+
+    /**
+     * @return
+     */
+    public Collection getInnerCollection()
+    {
+        return innerCollection;
+    }
+
+    /**
+     * @param collection
+     */
+    public void setInnerCollection(Collection collection)
+    {
+        innerCollection = collection;
     }
 
 }

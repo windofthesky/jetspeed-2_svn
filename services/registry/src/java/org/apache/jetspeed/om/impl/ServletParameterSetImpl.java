@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 
 /**
  * 
@@ -73,20 +75,18 @@ public class ServletParameterSetImpl extends ParameterSetImpl
         super();
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.ParameterSetImpl#getParameterClass()
-     */
-    protected Class getParameterClass()
+    protected ParameterComposite newParameterInstance()
     {
-        return ServletInitParameterImpl.class;
+        try
+        {
+            return (ParameterComposite) JetspeedPortletRegistry.getNewObjectInstance(
+                ParameterComposite.TYPE_WEB_APP,
+                true);
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Instance class unable to be configured " + e.toString());
+        }
     }
-
-    /**
-     * @see org.apache.jetspeed.om.common.ParameterSetImpl#getLog()
-     */
-//TODO:    protected Log getLog()
-//    {
-//        return LogFactory.getLog(ServletParameterSetImpl.class);
-//    }
 
 }
