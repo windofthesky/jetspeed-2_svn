@@ -49,6 +49,11 @@ limitations under the License.
 
   <mailingLists>
     <mailingList>
+      <name>Jetspeed 2 User List</name>
+      <subscribe>jetspeed-user-subscribe@jakarta.apache.org</subscribe>
+      <unsubscribe>jetspeed-user-unsubscribe@jakarta.apache.org</unsubscribe>
+    </mailingList>
+    <mailingList>
       <name>Jetspeed 2 Developer List</name>
       <subscribe>jetspeed-dev-subscribe@jakarta.apache.org</subscribe>
       <unsubscribe>jetspeed-dev-unsubscribe@jakarta.apache.org</unsubscribe>
