@@ -79,7 +79,7 @@ limitations under the License.
      #foreach($entry in $table)
         #if ($sizes)
           #if ($sizeIndex < $sizes.size())
-             <td valign='top' name='alexi' width='$sizes.get($sizeIndex)'/>
+             <td valign='top' width='$sizes.get($sizeIndex)'/>
           #else
 	       <td valign="top">          
           #end
