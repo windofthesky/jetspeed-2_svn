@@ -544,4 +544,11 @@ limitations under the License.
     <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
   </preGoal>
 
+  <goal name='remove.wars'>
+    <delete dir="${deploy.war.dir}/${webapp.name}"/>
+    <delete file="${deploy.war.dir}/${webapp.name}.war"/>    
+    <delete dir="${deploy.war.dir}/HW_App"/>
+    <delete dir="${deploy.war.dir}/security"/>
+    <delete dir="${deploy.war.dir}/struts-demo"/>      
+  </goal>
 </project>
