@@ -13,8 +13,8 @@ limitations under the License.
 <page id="css-demo">
   <defaults
      skin="orange"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
   />
   <title>CSS Demo</title>
   <fragment id="css-2" type="layout" name="jetspeed::VelocityTwoColumns">
