@@ -17,6 +17,8 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -39,6 +41,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
 {
     protected Log log = LogFactory.getLog(ProfilerValveImpl.class);
     private Profiler profiler;
+    static final String LOCATOR_KEY = "org.apache.jetpeed.profileLocator";
 
     
     public ProfilerValveImpl(Profiler profiler)
@@ -55,9 +58,14 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
         try
-        {            
-
-            ProfileLocator locator = profiler.getProfile(request);
+        {  
+             
+            HttpServletRequest httpRequest = request.getRequest();
+            ProfileLocator locator = null;
+            String pathInfo = httpRequest.getPathInfo();
+            locator = profiler.getProfile(request);                 
+            httpRequest.getSession().setAttribute(LOCATOR_KEY, locator);             
+            
             request.setProfileLocator(locator);
             request.setPage(profiler.getPage(locator));
             context.invokeNext(request);
