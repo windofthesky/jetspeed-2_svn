@@ -31,10 +31,6 @@ import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.apache.jetspeed.container.services.JetspeedContainerServices;
-import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
-import org.apache.jetspeed.cps.CPSInitializationException;
-import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
@@ -45,7 +41,7 @@ import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.ContainerService;
 import org.apache.pluto.services.factory.FactoryManagerService;
-import org.apache.pluto.services.information.InformationProviderService;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 
 /**
@@ -67,7 +63,7 @@ public abstract class AbstractEngine implements Engine
     private PortalContext context;
     private ServletConfig config = null;
     private ComponentManager componentManager = null;
-        private static final Log log = LogFactory.getLog(PicoEngine.class);
+        private static final Log log = LogFactory.getLog(AbstractEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
     private ThreadLocal tlRequestContext = new ThreadLocal();
@@ -137,8 +133,6 @@ public abstract class AbstractEngine implements Engine
             //
             componentManager = initComponents(configuration, config);
             log.info("Components initialization complete");
-            initServices();
-            log.info("Service initialization complete");
     
             // patch up OJB
             ClassLoader ploader2 = this.getClass().getClassLoader();
@@ -188,15 +182,8 @@ public abstract class AbstractEngine implements Engine
         {
             PortletContainer container = (PortletContainer) componentManager
                     .getComponent(PortletContainer.class);
-            JetspeedContainerServices environment = new JetspeedContainerServices();
-            environment.addService(ContainerLogAdaptor.getService());
-            environment.addServiceForClass(FactoryManagerService.class, this);
-            environment.addServiceForClass(InformationProviderService.class,
-                    (ContainerService)getComponentManager().getComponent(InformationProviderService.class));
-            //TODO !!! Pluto has changed this siganture There is now a
-            // container unique id string and Properties.
-            // WE need to figure what these are really for.
-            container.init("jetspeed", config, environment, new Properties());
+
+            container.init("jetspeed", config, this, new Properties());
         }
         catch (Throwable e)
         {
@@ -214,8 +201,7 @@ public abstract class AbstractEngine implements Engine
     }
 
     public void shutdown() throws JetspeedException
-    {
-        CommonPortletServices.getInstance().shutdownServices();
+    {        
     
         try
         {
@@ -332,28 +318,6 @@ public abstract class AbstractEngine implements Engine
     protected abstract ComponentManager initComponents( Configuration configuration, ServletConfig servletConfig )
     throws IOException, ClassNotFoundException, NamingException;
 
-    private void initServices() throws CPSInitializationException
-    {
-        // Get the instance of the service manager
-        // ServiceManager serviceManager = JetspeedServices.getInstance();
-        CommonPortletServices cps = CommonPortletServices.getInstance();
-    
-        // Set the service managers application root. In our
-        // case it is the webapp context.
-        cps.init(this.getContext().getConfiguration(), context
-                .getApplicationRoot(), false);
-        //serviceManager.setApplicationRoot(context.getApplicationRoot());
-    
-        //serviceManager.setConfiguration(this.getContext().getConfiguration());
-    
-        // Initialize the service manager. Services
-        // that have its 'earlyInit' property set to
-        // a value of 'true' will be started when
-        // the service manager is initialized.
-        //serviceManager.init();
-    
-    }
-
     public Pipeline getPipeline( String pipelineName )
     {
         return (Pipeline) componentManager.getComponent(pipelineName);
@@ -388,5 +352,31 @@ public abstract class AbstractEngine implements Engine
     public Factory getFactory( Class theClass )
     {        
         return (Factory) getComponentManager().getComponent(theClass);
+    }
+    /**
+     * <p>
+     * getContainerService
+     * </p>
+     *
+     * @see org.apache.pluto.services.PortletContainerEnvironment#getContainerService(java.lang.Class)
+     * @param service
+     * @return
+     */
+    public ContainerService getContainerService( Class service )
+    {
+        if(service.equals(FactoryManagerService.class))
+        {
+            return this;
+        }
+
+        try
+        {
+            return (ContainerService) getComponentManager().getComponent(service);
+        }
+        catch (NoSuchBeanDefinitionException e)
+        {
+            log.warn("No ContainerService defined for "+service.getName());
+            return null;
+        }
     }
 }

@@ -24,6 +24,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.services.PortletContainerEnvironment;
 import org.apache.pluto.services.factory.FactoryManagerService;
 
 
@@ -33,7 +34,7 @@ import org.apache.pluto.services.factory.FactoryManagerService;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public interface Engine extends JetspeedEngineConstants, FactoryManagerService 
+public interface Engine extends JetspeedEngineConstants, FactoryManagerService, PortletContainerEnvironment 
 {
     /**
      * Initializes the engine with a commons configuration, starting all early initable services.
