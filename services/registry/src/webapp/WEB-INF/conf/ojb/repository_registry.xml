@@ -295,6 +295,15 @@
           />
         </query-customizer>
       </collection-descriptor>
+      
+      <collection-descriptor
+         name="portletEntities"
+         element-class-ref="org.apache.jetspeed.om.entity.impl.PortletEntityImpl"
+         collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList"
+         auto-delete="true"
+      >
+           <inverse-foreignkey field-ref="portletId"/>
+     </collection-descriptor>
        
    </class-descriptor>
    
