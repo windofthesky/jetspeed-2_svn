@@ -43,10 +43,10 @@ import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
 /**
- * 
- * 
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * This portlet is a tree browser user interface for viewing site resoures: pages and folders.
  *
+ * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
+ * @version $Id$
  */
 public class SiteBrowserPortlet extends ServletPortlet
 {

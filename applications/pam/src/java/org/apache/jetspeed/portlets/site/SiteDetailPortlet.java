@@ -35,8 +35,10 @@ import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 
 /**
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * This portlet is a tabbed editor user interface for editing site resoures: pages and folders.
  *
+ * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
+ * @version $Id$
  */
 public class SiteDetailPortlet extends ServletPortlet
 {
