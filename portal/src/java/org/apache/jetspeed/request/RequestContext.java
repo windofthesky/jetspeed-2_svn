@@ -53,6 +53,10 @@
  */
 package org.apache.jetspeed.request;
 
+import java.util.Locale;
+import java.util.Map;
+
+import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -236,5 +240,56 @@ public interface RequestContext
      *
      */
     HttpServletResponse getResponseForWindow(PortletWindow window);
+
+    /**
+     * Gets the subject associated with the authorized entity.
+     * This subject can be used to provide credentials and principals.
+     *  
+     * @return The JAAS subject on this request.
+     */
+    Subject getSubject();
     
+    /**
+     * Sets the subject associated with the authorized entity.
+     * This subject can be used to provide credentials and principals.
+     * 
+     * @param subject The JAAS subject on this request.
+     */
+    void setSubject(Subject subject);
+
+    /**
+     * Gets the locale associated with this request.
+     *  
+     * @return The locale associated with this request.
+     */
+    Locale getLocale();
+    
+    /**
+     * Sets the locale associated with this request.
+     *  
+     * @param The locale associated with this request.
+     */
+    void setLocale(Locale locale);
+
+    /**
+     * Use this method to get a request parameter on the generalized request, 
+     * decoupling request parameter manipulation from servlet API.
+     * This parameter could be on the Http Servlet request, 
+     * in that case it simply passes through to the servlet request.
+     * 
+     * @param key The parameter unique key 
+     * @return The object associated with the uniqu
+     */
+    String getRequestParameter(String key);
+
+    /**
+     * Use this method to get a map of request parameters on the generalized request, 
+     * decoupling request parameter manipulation from servlet API.
+     * The parameters returned could be on the Http Servlet request, 
+     * in that case it simply passes through to the servlet request.
+     * 
+     * @return
+     */
+    Map getParameterMap();
+        
 }

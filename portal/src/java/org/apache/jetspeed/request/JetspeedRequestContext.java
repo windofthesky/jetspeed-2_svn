@@ -53,6 +53,10 @@
  */
 package org.apache.jetspeed.request;
 
+import java.util.Locale;
+import java.util.Map;
+
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
@@ -86,7 +90,9 @@ public class JetspeedRequestContext implements RequestContext
     private ServletConfig config;
     private Profile profile;
     private PortletDefinition portletDefinition;
-
+    private Subject subject;
+    private Locale locale;
+    
     private CapabilityMap capabilityMap;
     private String mimeType;
     private String mediaType;
@@ -310,4 +316,54 @@ public class JetspeedRequestContext implements RequestContext
         return wrappedResponse;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getSubject()
+     */
+    public Subject getSubject()
+    {
+        return this.subject;    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setSubject(javax.security.auth.Subject)
+     */
+    public void setSubject(Subject subject)
+    {
+        this.subject = subject;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getLocale()
+     */
+    public Locale getLocale()
+    {
+        return this.locale;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setLocale(java.util.Locale)
+     */
+    public void setLocale(Locale locale)
+    {
+        this.locale = locale;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getRequestParameter(java.lang.String)
+     */
+    public String getRequestParameter(String key)
+    {
+        return request.getParameter(key);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getParameterMap()
+     */
+    public Map getParameterMap()
+    {
+        return request.getParameterMap();    
+    }
+    
 }
+
+
