@@ -362,8 +362,8 @@
   <!-- Copy OJB mapping for registry into the portal directory-->
   <!-- ================================================================ -->
   <goal name="ojb.registry">
-    <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/>
-    <copy  file="./../services/security/src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>
+    <!-- <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/> -->
+    <!--<copy  file="./../services/security/src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>-->
   </goal>
   
 
