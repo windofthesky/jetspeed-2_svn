@@ -132,7 +132,7 @@ public class CapabilityValveImpl implements CapabilityValve
         catch (Exception e)
         {
             e.printStackTrace();
-            throw new PipelineException(e);
+            throw new PipelineException(e.getMessage(), e);
         }
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
