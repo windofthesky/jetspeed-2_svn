@@ -45,6 +45,7 @@ public class HSQLServerComponent implements Startable
     public static final String KEY_USE_JNDI_DS = "use.jndi.datasource";
     public static final String SERVICE_NAME = "HSQLDBServer";
     public static final String NAMING_ROOT = "java:comp/env/";
+    public static final String SYS_PROP_HSQLDBSERVER_DB_PATH = "HSQLDBServer.db.path";
     private static final Log log = LogFactory.getLog(HSQLServerComponent.class);
     private String password;
     private int port;
@@ -54,25 +55,21 @@ public class HSQLServerComponent implements Startable
     private String fqPath;
     private HSQLServer HSQLthread;
     private boolean serverStarted;
+    
 
     public HSQLServerComponent(int port, String user, String password, String dbScriptPath, boolean trace, 
     boolean silent)
     throws IOException
     {
+        if(dbScriptPath == null)
+        {
+            throw new IllegalArgumentException("dbScriptPath cannot be null.  Either set directly through the constructor "+
+                       " or you can set it through the system property \"HSQLDBServer.db.path\".");
+        }
         this.port = port;
         this.user = user;
         this.password = password;
-        // allow override by a system property
-        String dbPath = System.getProperty("services.HSQLDBServer.db.path", dbScriptPath);
-        fqPath = null;
-        if (System.getProperty("services.HSQLDBServer.db.path") == null)
-        {
-            fqPath = new File(dbPath).getCanonicalPath();
-        }
-        else
-        {
-            fqPath = dbPath;
-        }
+        fqPath = new File(dbScriptPath).getCanonicalPath();
         log.info("Using HSQL script file: " + fqPath);
         this.trace = trace;
         this.silent = silent;
@@ -219,6 +216,8 @@ public class HSQLServerComponent implements Startable
 
         HSQLServer(int port, String dbPath)
         {
+            log.debug("HSQL Server database: "+dbPath);
+            log.debug("HSQL Server port:     "+port);            
             args = 
             new String[]{
             "-database", 

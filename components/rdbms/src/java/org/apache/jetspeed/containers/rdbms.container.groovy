@@ -24,14 +24,8 @@ import java.io.File
 container = new DefaultPicoContainer()
 
 // This is the HSQL engine that holds the test registry
-if(new File("../../portal/test/db/hsql").exists())
-{
-   container.registerComponentInstance(new HSQLServerComponent(9001, "sa","","../../portal/test/db/hsql/Registry",false, true))
-}
-else
-{
-   container.registerComponentInstance(new HSQLServerComponent(9001, "sa","","./portal/test/db/hsql/Registry",false, true))
-}
+container.registerComponentInstance(new HSQLServerComponent(9001, "sa","", System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH),false, true))
+
 
 // This JNDI component helps us publish the datasource
 Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
