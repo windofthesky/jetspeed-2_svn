@@ -1,0 +1,8 @@
+package.id=Window
+
+component=org.apache.jetspeed.container.window.PortletWindowAccessor
+
+
+org.apache.jetspeed.container.window.PortletWindowAccessor.key.as.class=true
+org.apache.jetspeed.container.window.PortletWindowAccessor.is.singleton=true
+org.apache.jetspeed.container.window.PortletWindowAccessor.classname= org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl
