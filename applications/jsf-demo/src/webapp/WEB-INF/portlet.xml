@@ -23,10 +23,10 @@ limitations under the License.
       		<name>ViewPage</name>
 			<value>/greeting.jsp</value>
 	    </init-param>
-	    <description>JSF GuessNumber Portlet</description>
+	    <description>JSF GuessNumber Portlet - Using J2 JSF Bridge</description>
         <portlet-name>guessNumber</portlet-name>
-        <display-name>JSF GuessNumber Portlet</display-name>
-        <portlet-class>org.apache.portals.bridges.myfaces.FacesPortlet</portlet-class>
+        <display-name>JSF GuessNumber Portlet - J2 JSF Bridge</display-name>
+        <portlet-class>org.apache.portals.bridges.jsf.FacesPortlet</portlet-class>
 
         <supports>
             <mime-type>text/html</mime-type>
@@ -40,12 +40,12 @@ limitations under the License.
             <short-title>guessNumber</short-title>
         </portlet-info>
     </portlet>
-	
-   <portlet>
+    	
+   	<portlet>
         <description>Calendar Portlet</description>		
         <portlet-name>CalendarPortlet</portlet-name>		
         <display-name>Calendar</display-name>		
-        <portlet-class>org.apache.portals.bridges.myfaces.FacesPortlet</portlet-class>
+        <portlet-class>org.apache.portals.bridges.jsf.FacesPortlet</portlet-class>
         <init-param>
             <name>ViewPage</name>
             <value>/WEB-INF/view/calendar-view.jsp</value>

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.portlets.security.SecurityApplicationResources;
 import org.apache.jetspeed.portlets.security.SecurityApplicationUtils;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.portals.bridges.myfaces.FacesPortlet;
+import org.apache.portals.bridges.jsf.FacesPortlet;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
@@ -49,7 +49,7 @@ public class RoleMgtPortlet extends FacesPortlet
     }
    
     /**
-     * @see org.apache.portals.bridges.myfaces.FacesPortlet#preProcessFaces(javax.faces.context.FacesContext)
+     * @see org.apache.portals.bridges.jsf.FacesPortlet#preProcessFaces(javax.faces.context.FacesContext)
      */
     protected void preProcessFaces(FacesContext context)
     {

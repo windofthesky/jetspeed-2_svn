@@ -167,7 +167,7 @@ limitations under the License.
     
     &myfaces-deps;
     
-    &myfaces-bridge-deps;
+    &jsf-bridge-deps;
       
     <dependency>
       <groupId>commons-logging</groupId>

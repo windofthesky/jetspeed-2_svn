@@ -50,6 +50,9 @@ limitations under the License.
       <item name="PSML" href="psml.html"/>
       <item name="Site" href="site.html"/>
     </menu>
+    <menu name='Portlet Bridges'>
+      <item name="Portlet Bridges Overview" href="portlet-bridges.html"/>       
+    </menu>
     <menu name='Components'>
       <item name="Profiler" href="components/profiler.html"/>       
     </menu>

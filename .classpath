@@ -41,7 +41,7 @@
 	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="components/web-content/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
 	<classpathentry kind="src" path="portals-bridges/frameworks/src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/myfaces/src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/jsf/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/php/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/perl/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/struts/src/java"/>
@@ -97,7 +97,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.8-PATCHED.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.9.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jstl/jars/jstl-1.0.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/lucene/jars/lucene-1.4.1.jar"/>

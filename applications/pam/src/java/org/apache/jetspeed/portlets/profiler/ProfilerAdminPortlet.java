@@ -20,7 +20,7 @@ import javax.portlet.PortletException;
 
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.portals.bridges.myfaces.FacesPortlet;
+import org.apache.portals.bridges.jsf.FacesPortlet;
 
 
 /**

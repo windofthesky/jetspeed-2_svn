@@ -28,7 +28,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.portals.bridges.myfaces.FacesPortlet;
+import org.apache.portals.bridges.jsf.FacesPortlet;
 
 /**
  * Provides maintenance capabilities for User Administration.

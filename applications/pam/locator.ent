@@ -1,6 +1,6 @@
 <!-- Project dependencies -->
 <!ENTITY myfaces-deps SYSTEM "file:../../etc/project-dependencies/myfaces-deps.xml">
-<!ENTITY myfaces-bridge-deps SYSTEM "file:../../etc/project-dependencies/myfaces-bridge-deps.xml">
+<!ENTITY jsf-bridge-deps SYSTEM "file:../../etc/project-dependencies/jsf-bridge-deps.xml">
 
 <!-- Project reports -->
 <!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

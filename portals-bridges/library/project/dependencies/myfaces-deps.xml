@@ -1,6 +1,6 @@
     <dependency>
       <groupId>portals-bridges</groupId>
-      <artifactId>portals-bridges-myfaces</artifactId>
+      <artifactId>portals-bridges-jsf</artifactId>
       <version>0.1</version>
       <properties>
         <war.bundle>true</war.bundle>
@@ -9,7 +9,7 @@
 	<dependency>
 	  	<groupId>myfaces</groupId>
 	    <artifactId>myfaces</artifactId>
-    	<version>1.0.8-PATCHED</version>
+    	<version>1.0.9</version>
 	    <properties>
 			<war.bundle>true</war.bundle>
 		</properties>

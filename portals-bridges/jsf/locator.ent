@@ -1,0 +1,5 @@
+<!-- Project dependencies -->
+<!ENTITY jsf-api-deps SYSTEM "file:../../etc/project-dependencies/jsf-api-deps.xml">
+
+<!-- Project reports -->
+<!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

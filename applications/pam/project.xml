@@ -142,7 +142,7 @@ limitations under the License.
         
         &myfaces-deps;
         
-        &myfaces-bridge-deps;
+        &jsf-bridge-deps;
         
         <dependency>
             <groupId>commons-el</groupId>
@@ -208,14 +208,6 @@ limitations under the License.
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    <dependency>	
-      <groupId>portals-bridges</groupId>
-      <artifactId>portals-bridges-myfaces</artifactId>
-      <version>0.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>	
 
     <dependency>
       <id>velocity</id>

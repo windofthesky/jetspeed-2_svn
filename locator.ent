@@ -1,8 +1,9 @@
 <!-- Project dependencies -->
 <!ENTITY spring-deps SYSTEM "file:etc/project-dependencies/spring-deps.xml">
 <!ENTITY db-ojb-deps SYSTEM "file:etc/project-dependencies/db-ojb-deps.xml">
+<!ENTITY jsf-api-deps SYSTEM "file:etc/project-dependencies/jsf-api-deps.xml">
+<!ENTITY jsf-bridge-deps SYSTEM "file:etc/project-dependencies/jsf-bridge-deps.xml">
 <!ENTITY myfaces-deps SYSTEM "file:etc/project-dependencies/myfaces-deps.xml">
-<!ENTITY myfaces-bridge-deps SYSTEM "file:etc/project-dependencies/myfaces-bridge-deps.xml">
 <!ENTITY jmock-deps SYSTEM "file:etc/project-dependencies/jmock-deps.xml">
 <!ENTITY commons-config-dep SYSTEM "file:etc/project-dependencies/commons-config-dep.xml">
 
