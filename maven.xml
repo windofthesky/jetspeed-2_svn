@@ -96,7 +96,7 @@
                banner="Build and Install the Plugin jar"
                postProcessing="false"
                ignoreFailures="false"/>        
-
+  <!--
     <maven:reactor
                basedir="${basedir}"
                includes="services/security/project.xml"
@@ -104,7 +104,7 @@
                banner="Build and Install the services - security jar"
                postProcessing="false"
                ignoreFailures="false"/>
-
+  -->
      <!-- Build war files -->
      <maven:reactor
                basedir="${basedir}"
@@ -289,6 +289,8 @@
     <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/security-schema.sql" />
     <attainGoal name="db.execute" />
     <j:set var="database.arg.script" value="./src/sql/populate-db-default.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/test-persistence-schema.sql" />
     <attainGoal name="db.execute" />
   </goal>
 
