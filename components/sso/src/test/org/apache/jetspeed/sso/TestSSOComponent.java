@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 
@@ -211,6 +212,14 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     		throw new Exception(ssoex.getMessage());
 		}
 		*/
+        
+        Iterator sites = ssoBroker.getSites("");
+        while (sites.hasNext())
+        {
+            SSOSite site = (SSOSite)sites.next();
+            System.out.println("Site = " + site.getName());
+        }
+        
     }
 
     /**

@@ -52,4 +52,13 @@ public interface SSOProvider
         throws SSOException;
     
     Iterator getSites(String filter);
+    
+    SSOSite getSite(String siteName);
+    
+    void updateSite(SSOSite site) throws SSOException;
+    
+    void addSite(String siteName, String siteUrl) throws SSOException; 
+    
+    void removeSite(SSOSite site) throws SSOException;
+    
 }

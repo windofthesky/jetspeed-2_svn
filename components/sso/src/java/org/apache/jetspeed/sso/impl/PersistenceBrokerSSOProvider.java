@@ -15,13 +15,10 @@
  */
 package org.apache.jetspeed.sso.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -41,7 +38,6 @@ import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
 
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
-import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
@@ -59,10 +55,10 @@ import org.apache.ojb.broker.query.QueryFactory;
 * @author <a href="mailto:rogerrut@apache.org">Roger Ruttimann</a>
 */
 public class PersistenceBrokerSSOProvider extends
-		InitablePersistenceBrokerDaoSupport implements SSOProvider {
-	
+		InitablePersistenceBrokerDaoSupport implements SSOProvider 
+{	
 	private Hashtable mapSite = new Hashtable();	
-    	/**
+  	/**
      * PersitenceBrokerSSOProvider()
      * @param repository Location of repository mapping file.  Must be available within the classpath.
      * @param prefsFactoryImpl <code>java.util.prefs.PreferencesFactory</code> implementation to use.
@@ -79,8 +75,8 @@ public class PersistenceBrokerSSOProvider extends
     {
         Criteria queryCriteria = new Criteria();
         Query query = QueryFactory.newQuery(SSOSiteImpl.class, queryCriteria);
-        Iterator result = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-        return result;
+        Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        return c.iterator();        
     }
     
 	/* (non-Javadoc)
@@ -228,8 +224,6 @@ public class PersistenceBrokerSSOProvider extends
          }
          // Add to site
          this.mapSite.put(site, ssoSite);
-         // Clear cache
-         //this.mapSite.clear();
 	}
 
 	/* (non-Javadoc)
@@ -302,8 +296,6 @@ public class PersistenceBrokerSSOProvider extends
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
          }
          
-         // Clear cache
-       //  this.mapSite.clear();
 	}
 	
 	/**
@@ -594,7 +586,7 @@ public class PersistenceBrokerSSOProvider extends
 			while (itPrincipals.hasNext())
 			{
 				SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
-				if (         tmp.getFullPath().compareToIgnoreCase(fullPath) == 0
+				if (tmp.getFullPath().compareToIgnoreCase(fullPath) == 0
 				        && tmp.getSiteID() == site.getSiteId())
 				{
 					// Found -- get the remotePrincipal
@@ -658,4 +650,68 @@ public class PersistenceBrokerSSOProvider extends
 	    }
 	    return null;
 	}
+    
+    public SSOSite getSite(String siteName)
+    {
+        Criteria filter = new Criteria();
+        filter.addEqualTo("name", siteName);
+        Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
+        SSOSite site = (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        return site;       
+    }
+    
+    public void updateSite(SSOSite site)
+    throws SSOException
+    {
+        try
+        {
+            getPersistenceBrokerTemplate().store(site);
+            this.mapSite.put(site.getName(), site);                        
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to remove SSO Site: " + site.getName();
+            logger.error(msg, e);
+            throw new SSOException(msg, e);
+        }        
+    }
+    
+    public void addSite(String siteName, String siteUrl)
+    throws SSOException
+    {
+        try
+        {
+            SSOSite ssoSite = new SSOSiteImpl();
+            ssoSite.setSiteURL(siteUrl);
+            ssoSite.setName(siteName);
+            ssoSite.setCertificateRequired(false);
+            ssoSite.setAllowUserSet(true);            
+            getPersistenceBrokerTemplate().store(ssoSite);
+            this.mapSite.put(siteName, ssoSite);            
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to remove SSO Site: " + siteName;
+            logger.error(msg, e);
+            throw new SSOException(msg, e);
+        }                
+    }
+    
+    public void removeSite(SSOSite site)
+    throws SSOException
+    {
+        try
+        {
+            getPersistenceBrokerTemplate().delete(site);
+            this.mapSite.remove(site);
+
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to remove SSO Site: " + site.getName();
+            logger.error(msg, e);
+            throw new SSOException(msg, e);
+        }        
+    }
+        
 }
