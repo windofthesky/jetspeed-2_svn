@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Parent;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.xml.sax.EntityResolver;
@@ -146,10 +147,10 @@ public class JetspeedWebApplicationRewriter
                 // double check for register at Init
                 if (this.registerAtInit && jetspeedServlet instanceof Element)
                 {
-                    Element jetspeedServletElement =(Element)jetspeedServlet;
+                    Parent jetspeedServletElement =((Element)jetspeedServlet).getParent();
                     if (null == XPath.selectSingleNode(jetspeedServletElement, REGISTER_AT_INIT_XPATH))
                     {
-                        insertRegisterAtInit(jetspeedServletElement);
+                        insertRegisterAtInit((Element) jetspeedServletElement);
                     }
                 }
             }
