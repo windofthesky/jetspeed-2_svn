@@ -217,7 +217,7 @@ public class BaseRegistryEntry implements RegistryEntry, java.io.Serializable
         }
 
         this.metaInfo.setTitle(title);
-        this.description = description;
+        this.title = title;
     }
 
     /** @see RegistryEntry#getDescription */
