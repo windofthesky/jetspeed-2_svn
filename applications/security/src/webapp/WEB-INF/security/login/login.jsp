@@ -26,7 +26,7 @@ limitations under the License.
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
     <a href='<c:url value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
-    <a href='<c:url value="/portal/Administrative/change-password.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
+    <a href='<c:url value="/portal/my-account.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
