@@ -41,6 +41,14 @@ limitations under the License.
   	
   	&db-ojb-deps;
   	
+  	<dependency>
+      <id>jetspeed-cm</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>  	
    	<dependency>
       <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>

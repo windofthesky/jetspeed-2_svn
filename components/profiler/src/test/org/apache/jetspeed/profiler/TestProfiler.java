@@ -25,8 +25,10 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
+import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.profiler.impl.JetspeedProfiler;
+import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
@@ -41,9 +43,9 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestProfiler extends PersistenceSupportedTestCase
+public class TestProfiler extends DatasourceEnabledSpringTestCase
 {
-    private JetspeedProfiler profiler = null;
+    private Profiler profiler = null;
     protected static final Properties TEST_PROPS = new Properties();
     
     static
@@ -62,15 +64,6 @@ public class TestProfiler extends PersistenceSupportedTestCase
     {
       super.tearDown();
     }
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestProfiler(String name)
-    {
-        super(name);
-    }
 
     /**
      * Start the tests.
@@ -85,8 +78,7 @@ public class TestProfiler extends PersistenceSupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        
-        profiler = new JetspeedProfiler(persistenceStore, TEST_PROPS);
+        this.profiler = (Profiler) ctx.getBean("profiler");
     }
 
     public static Test suite()
@@ -399,4 +391,10 @@ public class TestProfiler extends PersistenceSupportedTestCase
         
         System.out.println("Maintenance tests completed.");
     }
+
+    protected String[] getConfigurations()
+    {
+        return new String[] {"/META-INF/test-spring.xml"};
+    }
+    
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * Copyright 2000-2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
@@ -41,18 +38,21 @@ import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.QueryFactory;
+
 
 /**
- * JetspeedProfiler
+ * JetspeedTransactionalProfiler
  * 
- * @deprecated: instead @see JetspeedProfilerImpl
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedProfiler implements Profiler
+public class JetspeedProfilerImpl extends
+        InitablePersistenceBrokerDaoSupport implements Profiler
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(JetspeedProfiler.class);
+    protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
 
     /** The default locator class implementation */
     private Class locatorClass = JetspeedProfileLocator.class;
@@ -68,15 +68,13 @@ public class JetspeedProfiler implements Profiler
 
     private String anonymousUser = "guest";
 
-    PersistenceStore persistentStore;
-
     private Map principalRules = new HashMap();
-
-    public JetspeedProfiler( PersistenceStore persistentStore )
-    {
-        this.persistentStore = persistentStore;
-    }
     
+    public JetspeedProfilerImpl(String repositoryPath)
+    {
+        super(repositoryPath);
+    }
+
     /**
      * Create a JetspeedProfiler with properties. Expected properties are:
      * 
@@ -87,23 +85,21 @@ public class JetspeedProfiler implements Profiler
      * impl services.profiler.profilingRule.impl = the pluggable Profiling Rule
      * impl
      * 
-     * @param pContainer
-     *            The persistence store container
      * @param properties
      *            Properties for this component described above
      * @throws ClassNotFoundException
      *             if any the implementation classes defined within the
      *             <code>properties</code> argument could not be found.
-     */
-    public JetspeedProfiler( PersistenceStore persistentStore, Properties properties )
-            throws ClassNotFoundException
+     */    
+    public JetspeedProfilerImpl(String repositoryPath, Properties properties)
+    throws ClassNotFoundException    
     {
-        this(persistentStore);
+        this(repositoryPath);
         this.defaultRule = properties.getProperty("defaultRule", "j1");
         this.anonymousUser = properties.getProperty("anonymousUser", "guest");
-        initModelClasses(properties); // TODO: move this to start()
+        initModelClasses(properties); // TODO: move this to start()        
     }
-
+    
     private void initModelClasses( Properties properties ) throws ClassNotFoundException
     {
         String modelName = "";
@@ -124,9 +120,8 @@ public class JetspeedProfiler implements Profiler
         {
             profilingRuleClass = Class.forName(modelName);
         }
-
     }
-
+    
     public ProfileLocator getProfile(RequestContext context, String locatorName) 
     throws ProfilerException
     {
@@ -166,29 +161,57 @@ public class JetspeedProfiler implements Profiler
         return rule.apply(context, this);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getProfile(org.apache.jetspeed.request.RequestContext,
-     *      org.apache.jetspeed.profiler.rules.ProfilingRule)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getProfile(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public ProfileLocator getProfile( RequestContext context, ProfilingRule rule )
+    public ProfileLocator getProfile(RequestContext context, ProfilingRule rule)
+            throws ProfilerException
     {
         // create a profile locator for given rule
         return rule.apply(context, this);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getDefaultRule()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#createLocator(org.apache.jetspeed.request.RequestContext)
      */
-    public ProfilingRule getDefaultRule()
+    public ProfileLocator createLocator(RequestContext context)
     {
-        return lookupProfilingRule(this.defaultRule);
+        try
+        {
+            ProfileLocator locator = (ProfileLocator) locatorClass.newInstance();
+            locator.init(this, context.getPath());
+            return locator;
+        }
+        catch (Exception e)
+        {
+            log.error("Failed to create locator for " + locatorClass);
+        }
+        return null;
     }
 
-    public ProfilingRule getRuleForPrincipal(Principal principal, String locatorName)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(java.util.Map)
+     */
+    public ProfiledPageContext createProfiledPageContext(Map locators)
+    {
+        try
+        {
+            ProfiledPageContext pageContext = (ProfiledPageContext) profiledPageContextClass.newInstance();
+            pageContext.init(this, locators);
+            return pageContext;
+        }
+        catch (Exception e)
+        {
+            log.error("Failed to create profiled page context for " + profiledPageContextClass);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getRuleForPrincipal(java.security.Principal, java.lang.String)
+     */
+    public ProfilingRule getRuleForPrincipal(Principal principal,
+            String locatorName)
     {
         // lookup the rule for the given principal in our user/rule table
         PrincipalRule pr = lookupPrincipalRule(principal.getName(), locatorName);
@@ -202,18 +225,22 @@ public class JetspeedProfiler implements Profiler
         // Now get the associated rule
         return pr.getProfilingRule();
     }
-    
-    
-    public void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName)
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#setRuleForPrincipal(java.security.Principal, org.apache.jetspeed.profiler.rules.ProfilingRule, java.lang.String)
+     */
+    public void setRuleForPrincipal(Principal principal, 
+                                    ProfilingRule rule,
+                                    String locatorName)
     {
-        Transaction tx = persistentStore.getTransaction();
-        tx.begin();
-  
-        Filter filter = persistentStore.newFilter();
-        filter.addEqualTo("principalName", principal);
-        filter.addEqualTo("locatorName", locatorName);
-        Object query = persistentStore.newQuery(principalRuleClass, filter);
-        PrincipalRule pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
+        Criteria c = new Criteria();
+        c.addEqualTo("principalName", principal);
+        c.addEqualTo("locatorName", locatorName);
+
+        PrincipalRule pr = (PrincipalRule)  
+                getPersistenceBrokerTemplate().getObjectByQuery(
+                QueryFactory.newQuery(principalRuleClass, c));
+                
         if (pr == null)
         {
             pr = new PrincipalRuleImpl(); // TODO: factory
@@ -221,21 +248,11 @@ public class JetspeedProfiler implements Profiler
             pr.setLocatorName(locatorName);
             pr.setProfilingRule(rule);
         }
-        try
-        {
-            pr.setProfilingRule(rule);
-            persistentStore.lockForWrite(pr);
-        }
-        catch (LockFailedException e)
-        {
-            tx.rollback();
-            e.printStackTrace();
-            // TODO: throw appropriate exception
-        }
-        persistentStore.getTransaction().commit();
+        pr.setProfilingRule(rule);
+        getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
     }
-
+    
     private String makePrincipalRuleKey(String principal, String locator)
     {
         return principal + ":" + locator;
@@ -256,111 +273,67 @@ public class JetspeedProfiler implements Profiler
         {
             return pr;
         }
-        Filter filter = persistentStore.newFilter();        
-        filter.addEqualTo("principalName", principal);
-        filter.addEqualTo("locatorName", locatorName);        
-        Object query = persistentStore.newQuery(principalRuleClass, filter);
-        pr = (PrincipalRule) persistentStore.getObjectByQuery(query);
+        Criteria c = new Criteria();
+        c.addEqualTo("principalName", principal);
+        c.addEqualTo("locatorName", locatorName);
+
+        pr = (PrincipalRule)  
+                getPersistenceBrokerTemplate().getObjectByQuery(
+                QueryFactory.newQuery(principalRuleClass, c));
+        
         principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
         return pr;
     }
-
-    /**
-     * Helper function to lookup a profiling rule by rule id
-     * 
-     * @param ruleid
-     *            The unique identifier for a rule.
-     * @return The found ProfilingRule associated with the rule id or null if
-     *         not found.
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getDefaultRule()
      */
-    private ProfilingRule lookupProfilingRule( String ruleid )
+    public ProfilingRule getDefaultRule()
     {
-        // TODO: implement caching
-        Filter filter = persistentStore.newFilter();
-        Object query = persistentStore.newQuery(profilingRuleClass, filter);
-        ProfilingRule rule = (ProfilingRule) persistentStore.getObjectByQuery(query);
-        return rule;
+        return getRule(this.defaultRule);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.Profiler#createLocator(org.apache.jetspeed.request.RequestContext)
-     */
-    public ProfileLocator createLocator( RequestContext context )
-    {
-        try
-        {
-            ProfileLocator locator = (ProfileLocator) locatorClass.newInstance();
-            locator.init(this, context.getPath());
-            return locator;
-        }
-        catch (Exception e)
-        {
-            log.error("Failed to create locator for " + locatorClass);
-        }
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(java.util.Map)
-     */
-    public ProfiledPageContext createProfiledPageContext(Map locators)
-    {
-        try
-        {
-            ProfiledPageContext pageContext = (ProfiledPageContext) profiledPageContextClass.newInstance();
-            pageContext.init(this, locators);
-            return pageContext;
-        }
-        catch (Exception e)
-        {
-            log.error("Failed to create profiled page context for " + profiledPageContextClass);
-        }
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getRules()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getRules()
      */
     public Collection getRules()
     {
-        return persistentStore.getExtent(profilingRuleClass);
+        return getPersistenceBrokerTemplate().getCollectionByQuery(
+                QueryFactory.newQuery(profilingRuleClass, new Criteria()));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getRule(java.lang.String)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getRule(java.lang.String)
      */
-    public ProfilingRule getRule( String id )
+    public ProfilingRule getRule(String id)
     {
-        Filter filter = persistentStore.newFilter();
-        filter.addEqualTo("id", id);
-        Object query = persistentStore.newQuery(profilingRuleClass, filter);
-        return (ProfilingRule) persistentStore.getObjectByQuery(query);
+        // TODO: implement caching
+        Criteria c = new Criteria();
+        c.addEqualTo("id", id);
+
+        return (ProfilingRule)  
+                getPersistenceBrokerTemplate().getObjectByQuery(
+                QueryFactory.newQuery(profilingRuleClass, c));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.profiler.ProfilerService#getAnonymousUser()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getAnonymousUser()
      */
     public String getAnonymousUser()
     {
         return this.anonymousUser;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getLocatorNamesForPrincipal(java.security.Principal)
+     */
     public String[] getLocatorNamesForPrincipal(Principal principal)
     {
-        Filter filter = persistentStore.newFilter();        
-        filter.addEqualTo("principalName", principal.getName());
-        Object query = persistentStore.newQuery(principalRuleClass, filter);
-        Collection result = persistentStore.getCollectionByQuery(query);
+        Criteria c = new Criteria();
+        c.addEqualTo("principalName", principal.getName());
+        
+        Collection result = getPersistenceBrokerTemplate().getCollectionByQuery(
+                QueryFactory.newQuery(principalRuleClass, c));        
         if (result.size() == 0)
         {
             return new String[]{};
@@ -376,19 +349,23 @@ public class JetspeedProfiler implements Profiler
         }
         return names;
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getRulesForPrincipal(java.security.Principal)
+     */
     public Collection getRulesForPrincipal(Principal principal)
     {
-        Filter filter = persistentStore.newFilter();        
-        filter.addEqualTo("principalName", principal.getName());
-        Object query = persistentStore.newQuery(principalRuleClass, filter);
-        Collection result = persistentStore.getCollectionByQuery(query);
-        return result;
+        Criteria c = new Criteria();
+        c.addEqualTo("principalName", principal.getName());
+        return getPersistenceBrokerTemplate().getCollectionByQuery(
+                QueryFactory.newQuery(principalRuleClass, c));        
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#getProfileLocators(org.apache.jetspeed.request.RequestContext, java.security.Principal)
+     */
     public Map getProfileLocators(RequestContext context, Principal principal)
-    throws ProfilerException
+            throws ProfilerException
     {
         Map locators = new HashMap();
         Iterator it = getRulesForPrincipal(principal).iterator();
@@ -399,72 +376,39 @@ public class JetspeedProfiler implements Profiler
         }
         return locators;
     }
-    
-    
-    public void storeProfilingRule(ProfilingRule rule)
-    throws ProfilerException
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#storeProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
+     */
+    public void storeProfilingRule(ProfilingRule rule) throws ProfilerException
     {
-        try
-        {
-            Transaction tx = persistentStore.getTransaction();
-            tx.begin();
-            persistentStore.makePersistent(rule);
-            persistentStore.lockForWrite(rule);
-            tx.commit();            
-        }
-        catch (Exception e)
-        {
-            throw new ProfilerException("failed to store: " + rule.getId(), e);
-        }
+        getPersistenceBrokerTemplate().store(rule);
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#deleteProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
+     */
     public void deleteProfilingRule(ProfilingRule rule)
-    throws ProfilerException    
+            throws ProfilerException
     {
-        try
-        {
-            Transaction tx = persistentStore.getTransaction();
-            tx.begin();
-            persistentStore.deletePersistent(rule);
-            tx.commit();
-        }
-        catch (Exception e)
-        {
-            throw new ProfilerException("failed to delete: " + rule.getId(), e);
-        }
-        
+        getPersistenceBrokerTemplate().delete(rule);
     }
-    
-    public void storePrincipalRule(PrincipalRule rule)
-    throws ProfilerException
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#storePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
+     */
+    public void storePrincipalRule(PrincipalRule rule) throws ProfilerException
     {
-        try
-        {
-            Transaction tx = persistentStore.getTransaction();
-            tx.begin();
-            persistentStore.makePersistent(rule);
-            persistentStore.lockForWrite(rule);
-            tx.commit();            
-        }
-        catch (Exception e)
-        {
-            throw new ProfilerException("failed to store: " + rule.getLocatorName(), e);
-        }        
+        getPersistenceBrokerTemplate().store(rule);
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.Profiler#deletePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
+     */
     public void deletePrincipalRule(PrincipalRule rule)
-    throws ProfilerException
+            throws ProfilerException
     {
-        try
-        {
-            Transaction tx = persistentStore.getTransaction();
-            tx.begin();
-            persistentStore.deletePersistent(rule);
-            tx.commit();
-        }
-        catch (Exception e)
-        {
-            throw new ProfilerException("failed to delete: " + rule.getLocatorName(), e);
-        }        
+        getPersistenceBrokerTemplate().delete(rule);
     }
+
 }

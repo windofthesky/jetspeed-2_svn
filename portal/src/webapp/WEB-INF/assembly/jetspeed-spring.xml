@@ -157,7 +157,7 @@ limitations under the License.
 		</property>
 		<property name="transactionAttributes">
 			<props>				
-				<prop key="regsister*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+				<prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
 				<prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
 				<prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
@@ -242,12 +242,33 @@ limitations under the License.
 			</props>
 		</property>
 	</bean>
+    
+  <!-- Profiler DAO-->
+  <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
+    	<constructor-arg>
+    		<value>META-INF/profiler-ojb.xml</value>
+    	</constructor-arg>
+    </bean>
   
-  <!-- Profiler -->
+  <!-- Profiler -->  
   <bean id="org.apache.jetspeed.profiler.Profiler" 
-  	   class="org.apache.jetspeed.profiler.impl.JetspeedProfiler"
+        name="profiler"
+        parent="baseTransactionProxy"        
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.profiler.Profiler</value>
+		</property>
+		<property name="target">
+			<ref bean="profilerImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="setRuleForPrincipal">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="store*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>		  	   
   </bean>
   
   <!-- Capabillites -->

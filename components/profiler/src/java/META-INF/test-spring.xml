@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition for PortletRegistry using Apache OJB.
+	-->
+<beans>
+  
+	<!-- Transaction manager for a single OJB PersistenceBroker (alternative to JTA) -->
+	<bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager"/>
+
+	<!-- Transaction manager that delegates to JTA (for a transactional JNDI DataSource) -->
+	<!--
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/>
+	-->
+
+
+
+	<!--
+		- A parent bean definition which is a base definition for transaction proxies.
+		- It is markes as abstract, since it is never supposed to be instantiated itself.
+		- We set shared transaction attributes here, following our naming patterns.
+		- The attributes can still be overridden in child bean definitions.
+		-->
+	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+			abstract="true">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+	
+  <!-- Profiler DAO-->
+  <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
+    	<constructor-arg>
+    		<value>META-INF/profiler-ojb.xml</value>
+    	</constructor-arg>
+    </bean>
+  
+  <!-- Profiler -->  
+  <bean id="org.apache.jetspeed.profiler.Profiler" 
+        name="profiler"
+        parent="baseTransactionProxy"        
+  >  	   
+		<property name="proxyInterfaces">
+			<value>org.apache.jetspeed.profiler.Profiler</value>
+		</property>
+		<property name="target">
+			<ref bean="profilerImpl"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="setRuleForPrincipal">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="store*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.profiler.ProfilerException</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>		  	   
+  </bean>
+	
+</beans>
