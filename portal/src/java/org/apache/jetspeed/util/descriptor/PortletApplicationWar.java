@@ -212,8 +212,11 @@ public class PortletApplicationWar
             try
             {
                 Reader extMetaDataXml = getReader(EXTENDED_PORTLET_XML_PATH);
-                ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
-                extMetaData.load();
+                if (extMetaDataXml != null)
+                {
+                    ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
+                    extMetaData.load();
+                }
             }
             catch (IOException e)
             {
