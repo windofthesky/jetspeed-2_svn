@@ -26,7 +26,7 @@ limitations under the License.
   <table width="100%">
   <tr>
     <td>
-      ${myPE.portletDefinition.name}
+      $jetspeed.getTitle($myPE, $myF)
     </td>
     <td>
     </td>

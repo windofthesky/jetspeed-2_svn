@@ -30,7 +30,7 @@ PortletEntity myPE = jetspeed.getCurrentPortletEntity();
   <td bgcolor="<%=myPage.getDefaultSkin()%>">
   <table width="100%">
   <tr>
-    <td><% if (myPE!=null) out.write(myPE.getPortletDefinition().getName());%></td>
+    <td><% jetspeed.getTitle(myPE, myF);%></td>
     <td>
     </td>
   </tr>
