@@ -140,8 +140,14 @@ public class CustomerPortlet extends org.apache.jetspeed.portlet.ServletPortlet
         PortletSession portletSession = request.getPortletSession();
         if (portletSession != null)
         {
-            customerList = (List) portletSession.getAttribute("CustomerList");
+            customerList = (List) portletSession.getAttribute("CustomerList", PortletSession.APPLICATION_SCOPE);
+            if (customerList == null)
+            {
+                customerList = this.defaultCustomers;
+                portletSession.setAttribute("CustomerList", this.defaultCustomers, PortletSession.APPLICATION_SCOPE);    
+            }
         }
+        
         else
         {
             // TODO:  the portletSession == null?
