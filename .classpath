@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/perl/src/java"/>
+	<classpathentry kind="src" path="components/portlet-factory/src/java"/>
 	<classpathentry kind="src" path="applications/localeselector/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/struts-demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/php/src/java"/>
@@ -93,5 +94,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet.jar"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/struts/src/java"/>
+	<classpathentry exported="true" kind="src" path="/jakarta-pluto"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -172,7 +172,7 @@ limitations under the License.
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}"
-               includes="components/file-cache/project.xml,components/id-generator/project.xml,components/locator/project.xml"
+               includes="components/file-cache/project.xml,components/id-generator/project.xml,components/locator/project.xml,components/portlet-factory/project.xml"
                goals="jar:install"
                banner="Build and Install the Misc. Components jar"
                postProcessing="false"
