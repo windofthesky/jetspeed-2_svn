@@ -163,6 +163,8 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     String getDescriptionText(Locale locale);
 
     void addDescription(Locale locale, String description);
+    
+    DescriptionSet getDescriptionSet();
 
     void addDisplayName(Locale locale, String displayName);
 

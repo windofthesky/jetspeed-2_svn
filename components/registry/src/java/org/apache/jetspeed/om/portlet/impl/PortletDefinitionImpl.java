@@ -634,6 +634,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         }
         return null;
     }
+    
+    public DescriptionSet getDescriptionSet()
+    {
+        return this.descListWrapper;
+    }
 
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDescription(java.util.Locale,

@@ -368,6 +368,11 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
 		portlet.addDescription(locale, description);
 
     }
+    
+    public DescriptionSet getDescriptionSet()
+    {
+        return portlet.getDescriptionSet();
+    }
 
     /** 
      * <p>
