@@ -30,18 +30,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
-import org.apache.jetspeed.services.JetspeedPortletServices;
-import org.apache.jetspeed.services.PortletServices;
+import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
@@ -50,11 +47,9 @@ import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.jdom.xpath.XPath;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -196,7 +191,6 @@ public class PortletApplicationWar
     public MutablePortletApplication createPortletApp() throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
-        PortletServices cps = JetspeedPortletServices.getSingleton();
         
         try
         {
@@ -211,16 +205,6 @@ public class PortletApplicationWar
                 {
                     ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
                     extMetaData.load();
-                    // validate services
-                    Iterator services = extMetaData.portletApp.getJetspeedServices().iterator();
-                    while (services.hasNext())
-                    {
-                        JetspeedServiceReference jsr = (JetspeedServiceReference)services.next();
-                        if (null == cps.getService(jsr.getName()))
-                        {
-                            throw new PortletApplicationException("Invalid Portlet Service Requested: " + jsr.getName());
-                        }                        
-                    }
                 }
             }
             catch (IOException e)
@@ -485,55 +469,13 @@ public class PortletApplicationWar
             webXmlIn = getInputStream(WEB_XML_PATH);
             Document doc = builder.build(webXmlIn);
 
-            Element root = doc.getRootElement();
             webXmlIn.close();
 
-            boolean changed = false;
 
-            Object jetspeedServlet = XPath.selectSingleNode(doc, JETSPEED_SERVLET_XPATH);
-            Object jetspeedServletMapping = XPath.selectSingleNode(doc, JETSPEED_SERVLET_MAPPING_XPATH);
-            if (doc.getRootElement().getChildren().size() == 0)
-            {
-                throw new MetaDataException("Source web.xml has no content!!!");
-            }
-
-            log.debug("web.xml already contains servlet for the JetspeedContainer servlet.");
-            log.debug("web.xml already contains servlet-mapping for the JetspeedContainer servlet.");
-
-            if (jetspeedServlet == null)
-            {
-                Element jetspeedServletElement = new Element("servlet");
-                Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
-                Element servletDspName = (Element) new Element("display-name").addContent("Jetspeed Container");
-                Element servletDesc = (Element) new Element("description")
-                        .addContent("MVC Servlet for Jetspeed Portlet Applications");
-                Element servletClass = (Element) new Element("servlet-class")
-                        .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
-                jetspeedServletElement.addContent(servletName);
-                jetspeedServletElement.addContent(servletDspName);
-                jetspeedServletElement.addContent(servletDesc);
-                jetspeedServletElement.addContent(servletClass);
-
-                insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
-                changed = true;
-            }
-
-            if (jetspeedServletMapping == null)
-            {
-
-                Element jetspeedServletMappingElement = new Element("servlet-mapping");
-
-                Element servletMapName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
-                Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
-
-                jetspeedServletMappingElement.addContent(servletMapName);
-                jetspeedServletMappingElement.addContent(servletUrlPattern);
-
-                insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
-                changed = true;
-            }
-
-            if (changed)
+            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(doc);
+            rewriter.processWebXML();
+            
+            if (rewriter.isChanged())
             {
                 System.out.println("Writing out infused web.xml for " + paName);
                 XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
@@ -577,46 +519,6 @@ public class PortletApplicationWar
 
     }
 
-    /**
-     * 
-     * <p>
-     * insertElementCorrectly
-     * </p>
-     * 
-     * @param root
-     *            JDom element representing the &lt; web-app &gt;
-     * @param toInsert
-     *            JDom element to insert into the web.xml hierarchy.
-     * @param elementsBefore
-     *            an array of web.xml elements that should be defined before the
-     *            element we want to insert. This order should be the order
-     *            defined by the web.xml's DTD type definition.
-     */
-    protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
-    {
-        List allChildren = root.getChildren();
-        List elementsBeforeList = Arrays.asList(elementsBefore);
-        toInsert.detach();
-        int insertAfter = 0;
-        for (int i = 0; i < allChildren.size(); i++)
-        {
-            Element element = (Element) allChildren.get(i);
-            if (elementsBeforeList.contains(element.getName()))
-            {
-                // determine the Content index of the element to insert after
-                insertAfter = root.indexOf(element);
-            }
-        }
-
-        try
-        {
-            root.addContent((insertAfter + 1), toInsert);
-        }
-        catch (ArrayIndexOutOfBoundsException e)
-        {
-            root.addContent(toInsert);
-        }
-    }
 
     /**
      * 
