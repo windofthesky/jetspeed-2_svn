@@ -30,109 +30,99 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Invokes the capability mapper in the request pipeline
- *
- * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
+ * 
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann </a>
  * @version $Id$
  */
 public class CapabilityValveImpl implements CapabilityValve
 {
     private static final Log log = LogFactory.getLog(CapabilityValveImpl.class);
-    String resourceDefault;        // the default name for a resource
+    String resourceDefault; // the default name for a resource
     private Capabilities capabilities;
-    
-    public CapabilityValveImpl(Capabilities capabilities)
+
+    public CapabilityValveImpl( Capabilities capabilities )
     {
         this.capabilities = capabilities;
     }
-    
+
     /**
-      * Initialize the valve before using in a pipeline.
-      */
+     * Initialize the valve before using in a pipeline.
+     */
     public void initialize() throws PipelineException
     {
 
     }
-    
-   
-    public void invoke(RequestContext request, ValveContext context)
-        throws PipelineException
+
+    public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
-        try
+
+        String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);
+        String agent = request.getRequest().getHeader("User-Agent");
+
+        // Get capability map
+        CapabilityMap cm = capabilities.getCapabilityMap(agent);
+
+        if (cm == null)
         {
-            String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);
-            String agent = request.getRequest().getHeader("User-Agent"); 
-            
-                        
-            // Get capability map
-            CapabilityMap cm = capabilities.getCapabilityMap(agent);
-            
-            if ( cm == null)
-            {
-                log.debug("Couldn't create capability map for agent: " + agent);
-            }
-            else
-            {
-                log.debug("Created Capability map for agent: " + agent);
-            }
-            
-            MediaType mediaType = cm.getPreferredMediaType();                          
-            MimeType mimeType = cm.getPreferredType();
-            
-            if(mediaType == null)
-            {
-                log.error("CapabilityMap returned a null media type");
-                throw new PipelineException("CapabilityMap returned a null media type");
-            }
-            
-            if(mimeType == null)
-            {
-                log.error("CapabilityMap returned a null mime type");
-                throw new PipelineException("CapabilityMap returned a null mime type");
-            }
-            
-            String encoding = request.getRequest().getCharacterEncoding();
-            
-            
-            if (encoding == null)
-            {
-                if (mediaType != null && mediaType.getCharacterSet() != null)
-                {
-                    encoding = mediaType.getCharacterSet();
-                }
-            }
-            
-            if (log.isDebugEnabled())
-            {
-                log.debug("MediaType: " + mediaType.getName());
-                log.debug("Encoding: "  + encoding);
-                log.debug("Mimetype: "  + mimeType.getName());
-            }
-                                                                            
-            // Put the encoding in the request
-            request.setCharacterEncoding(encoding);
-    
-            // Put the CapabilityMap into the request
-            request.setCapabilityMap(cm);
-            
-            // Put the Media Type into the request
-            request.setMediaType(mediaType.getName());
-                       
-            // Put the Mime Type into the request
-            request.setMimeType(mimeType.getName());
-            
-            // Put the Mime Type and Charset into the response
-            StringBuffer contentType = new StringBuffer(mimeType.getName());
-            if (encoding != null)
-            {
-                contentType.append("; charset=" + encoding);
-            }
-            request.getResponse().setContentType(contentType.toString());            
-        } 
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new PipelineException(e.getMessage(), e);
+            log.debug("Couldn't create capability map for agent: " + agent);
         }
+        else
+        {
+            log.debug("Created Capability map for agent: " + agent);
+        }
+
+        MediaType mediaType = cm.getPreferredMediaType();
+        MimeType mimeType = cm.getPreferredType();
+
+        if (mediaType == null)
+        {
+            log.error("CapabilityMap returned a null media type");
+            throw new PipelineException("CapabilityMap returned a null media type");
+        }
+
+        if (mimeType == null)
+        {
+            log.error("CapabilityMap returned a null mime type");
+            throw new PipelineException("CapabilityMap returned a null mime type");
+        }
+
+        String encoding = request.getRequest().getCharacterEncoding();
+
+        if (encoding == null)
+        {
+            if (mediaType != null && mediaType.getCharacterSet() != null)
+            {
+                encoding = mediaType.getCharacterSet();
+            }
+        }
+
+        if (log.isDebugEnabled())
+        {
+            log.debug("MediaType: " + mediaType.getName());
+            log.debug("Encoding: " + encoding);
+            log.debug("Mimetype: " + mimeType.getName());
+        }
+
+        // Put the encoding in the request
+        request.setCharacterEncoding(encoding);
+
+        // Put the CapabilityMap into the request
+        request.setCapabilityMap(cm);
+
+        // Put the Media Type into the request
+        request.setMediaType(mediaType.getName());
+
+        // Put the Mime Type into the request
+        request.setMimeType(mimeType.getName());
+
+        // Put the Mime Type and Charset into the response
+        StringBuffer contentType = new StringBuffer(mimeType.getName());
+        if (encoding != null)
+        {
+            contentType.append("; charset=" + encoding);
+        }
+        request.getResponse().setContentType(contentType.toString());
+
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
     }
