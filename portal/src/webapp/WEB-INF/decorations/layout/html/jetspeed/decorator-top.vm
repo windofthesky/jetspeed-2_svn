@@ -34,9 +34,11 @@ limitations under the License.
 </ol>
 *#
 
+#set($myF = $jetspeed.currentFragment)
 
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 
+<div id="layout-${myF.id}" class="layout-Jetspeed" >
 <p>
 <img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
 </p>
@@ -55,12 +57,34 @@ limitations under the License.
 	#foreach($childFolder in $folder.folders.iterator())
 	  <a href="${appRoot}/portal${childFolder.name}">$childFolder.metaData.getTitle($preferedLocal)</a> &nbsp;		
 	#end
-	
+
+    #*	
 	#foreach($childPage in $folder.pages.iterator())		
 		<a href="${appRoot}/portal${childPage.id}">$childPage.getTitle($preferedLocal)</a> &nbsp;
 	#end
+    *#
+    <p>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                #foreach($childPage in $folder.pages.iterator())
+                #set($tabName = $childPage.getTitle($preferedLocal))
+                #if($jetspeed.page == $childPage)
+                <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+                <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
+                <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+                #else
+                <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+                <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="${appRoot}/portal${childPage.id}">${tabName}</a></td>
+                <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+                #end
+                #end
+            </tr>
+        </table>
+    </p>
 	
 </p>
+</div>
+
 ## $jetspeed.include($jetspeed.currentFragment)
 
 <!--  END: layout/html/jetspeed/decorator.vm -->

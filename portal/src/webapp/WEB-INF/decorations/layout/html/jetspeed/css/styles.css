@@ -18,3 +18,49 @@ limitations under the License.
 BODY.layout-Jetspeed  {
 
 }
+
+.layout-Jetspeed .LTabLeftLow
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+    
+	/** Always use relative path ! **/
+	background:url(content/jetspeed/images/tableft_low.gif);
+}
+
+.layout-Jetspeed .LTabLow
+{
+	/**
+	Specify the height of the image used
+	else it will use the text height	
+	**/
+	height:25px;	
+	background:url(content/jetspeed/images/tabmiddle_low.gif);
+}
+ 
+.layout-Jetspeed .LTabRightLow
+{
+	width:10px;
+	background:url(content/jetspeed/images/tabright_low.gif);
+}
+
+.layout-Jetspeed .LTabLeft
+{
+	width:10px;
+	background:url(content/jetspeed/images/tableft.gif);
+}
+
+.layout-Jetspeed .LTab
+{
+	height:25px;	
+	background:url(content/jetspeed/images/tabmiddle.gif);
+}
+ 
+.layout-Jetspeed .LTabRight
+{
+	width:10px;
+	background:url(content/jetspeed/images/tabright.gif);
+}
