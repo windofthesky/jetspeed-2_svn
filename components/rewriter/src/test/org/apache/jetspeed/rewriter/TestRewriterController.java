@@ -23,7 +23,7 @@ import java.util.Iterator;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
 import org.apache.jetspeed.rewriter.rules.Attribute;
 import org.apache.jetspeed.rewriter.rules.Rule;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
@@ -65,7 +65,7 @@ public class TestRewriterController extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new NanoDeployerBasedTestSuite( TestRewriterController.class );
+        return new ContainerDeployerTestSuite(TestRewriterController.class, new String[]{"Rewriter"});
     }
 
     public void testFactories()
