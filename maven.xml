@@ -62,6 +62,13 @@
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/components/jetspeed"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Jetspeed Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/components/rdbms"
                includes="project.xml"
                goals="jar:install"
