@@ -27,7 +27,7 @@ import org.apache.jetspeed.util.FileSystemHelper;
  */
 public interface DeploymentRegistration
 {
-    void registerPortletApplication(
+    boolean registerPortletApplication(
             FileSystemHelper fileSystem, 
             String portletApplicationName)
         throws RegistryException;    

@@ -293,17 +293,16 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
         }
     }
     
-    public void registerPortletApplication(FileSystemHelper fileSystem, 
-                                           String portletApplicationName)
+    public boolean registerPortletApplication(FileSystemHelper fileSystem, 
+                                              String portletApplicationName)
     throws RegistryException
     {
         MutablePortletApplication pa = 
             registry.getPortletApplication(portletApplicationName);
         if (pa != null)
         {
-            // get the deployment date
-            System.out.println("PA " + portletApplicationName + " is already deployed.");
-            return;
+            // TODO: get the deployment date
+            return false;
         }
         
         PortletApplicationWar paWar = null;
@@ -324,39 +323,38 @@ public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, St
         
         try
         {
-        app = paWar.createPortletApp();
+            app = paWar.createPortletApp();
+            
+            if (app == null)
+            {
+                String msg = "Error loading portlet.xml: ";
+                log.error(msg);
+                throw new RegistryException(msg);
+            }
+                        
+            app.setApplicationType(MutablePortletApplication.WEBAPP);
         
-        if (app == null)
-        {
-        String msg = "Error loading portlet.xml: ";
-        log.error(msg);
-        throw new RegistryException(msg);
-        }
-        
-        
-        app.setApplicationType(MutablePortletApplication.WEBAPP);
-        
-        // load the web.xml
-        log.info("Loading web.xml into memory....");
-        MutableWebApplication webapp = paWar.createWebApp();
-        paWar.validate();
-        app.setWebApplicationDefinition(webapp);
-        
-        // save it to the registry
-        log.info("Saving the portlet.xml in the registry...");
-        store.getTransaction().begin();
-        registry.registerPortletApplication(app);
-        log.info("Committing registry changes...");
-        store.getTransaction().commit();
+            // load the web.xml
+            log.info("Loading web.xml into memory...." + portletApplicationName);
+            MutableWebApplication webapp = paWar.createWebApp();
+            paWar.validate();
+            app.setWebApplicationDefinition(webapp);
+            
+            // save it to the registry
+            log.info("Saving the portlet.xml in the registry..." + portletApplicationName);
+            store.getTransaction().begin();
+            registry.registerPortletApplication(app);
+            log.info("Committing registry changes..."  + portletApplicationName);
+            store.getTransaction().commit();
         }
         catch (Exception e)
         {
-        String msg = "Unable to register portlet application, " + paName + ", through the portlet registry: "
-        + e.toString();
-        log.error(msg, e);
-        store.getTransaction().rollback();
-        throw new RegistryException(msg, e);
-    }
-
-}    
+            String msg = "Unable to register portlet application, " + paName + ", through the portlet registry: "
+            + e.toString();
+            log.error(msg, e);
+            store.getTransaction().rollback();
+            throw new RegistryException(msg, e);
+        }
+        return true;
+    }    
 }

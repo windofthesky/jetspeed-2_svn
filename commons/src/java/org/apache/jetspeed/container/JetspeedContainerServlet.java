@@ -87,7 +87,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 String registerAtInit = config.getInitParameter("registerAtInit");
                 if (null != registerAtInit)
                 {
-                    System.out.println("*** Registering at INIT: " + context.getServletContextName());
+                    log.info("Considering PA for registration during servlet init: " + context.getServletContextName());
                     String portletApplication = config.getInitParameter("portletApplication");
                     if (null == portletApplication)
                     {
@@ -99,7 +99,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 }
                 else
                 {
-                    System.out.println("*** Not Registering at INIT: " + context.getServletContextName());
+                    log.info("Will not register this PA during servlet init: " + context.getServletContextName());
                 }
                 
             }
@@ -118,42 +118,77 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
 
     
     private void registerPortletApplication(ServletContext context, String portletApplicationName)
+    throws ServletException
     {
-        System.out.println("*** Registering PA: " + portletApplicationName);
+        final int INITIAL_WAIT = 5 * 1000; // initially wait 5 seconds
+        final int LONGER_WAIT =  300 * 1000; // longer wait stage 5 minutes
+        final int SLOW_DOWN_THRESHOLD = 20; // after 20 tries and 1 minute, fall back to longer wait
+        int tries = 0;
+        
         //InputStream portletStream = null;
         //InputStream servletStream = null;
         
-        try
-        {
-            //portletStream = context.getResourceAsStream("WEB-INF/portlet.xml");
-            //servletStream = context.getResourceAsStream("WEB-INF/web.xml");
-                                   
-            PortletServices services = JetspeedPortletServices.getSingleton();                         
-            DeploymentRegistration registrar =
-                (DeploymentRegistration)services.getService("PAM"); 
-            
-            if (registrar != null)
-            {
-                System.out.println("registrar found: " + registrar);
-                FileSystemHelper webapp = new DirectoryHelper(new File(context.getRealPath("/")));
-                registrar.registerPortletApplication(webapp, portletApplicationName);
-                System.out.println("done registering " + registrar);                
-            }
-            else
-            {
-                System.out.println("registry not yet available...");
-            }            
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            //closeStream(portletStream);
-            //closeStream(servletStream);
-        }
+        //portletStream = context.getResourceAsStream("WEB-INF/portlet.xml");
+        //servletStream = context.getResourceAsStream("WEB-INF/web.xml");
         
+        boolean registrarNotAvailable = true;
+        
+        while (registrarNotAvailable)
+        {
+            try
+            {
+                PortletServices services = JetspeedPortletServices.getSingleton();
+                if (services != null)
+                {
+                    DeploymentRegistration registrar =
+                        (DeploymentRegistration)services.getService("PAM"); 
+                
+                    if (registrar != null)
+                    {
+                        FileSystemHelper webapp = new DirectoryHelper(new File(context.getRealPath("/")));
+                        if (registrar.registerPortletApplication(webapp, portletApplicationName))
+                        {
+                            log.info("Portlet Application Registered at Servlet Init: " + portletApplicationName);
+                        }
+                        else
+                        {
+                            log.info("Portlet Application did not change. Not Registered at Servlet Init: " + portletApplicationName);
+                        }
+                        break;
+                    }
+                }                
+            }
+            catch (Exception e)
+            {
+                if (tries < 3)
+                {
+                    e.printStackTrace();
+                }
+                log.error("Failed to register PA: " + portletApplicationName);
+            }
+            finally
+            {
+                //closeStream(portletStream);
+                //closeStream(servletStream);
+            }    
+            log.error("*** Jetspeed Runtime Registration: Portlet Services not available for registering PA: " + portletApplicationName);
+            try
+            {
+                tries++;
+                if (tries > SLOW_DOWN_THRESHOLD)
+                {
+                    Thread.sleep(LONGER_WAIT);
+                }
+                else
+                {
+                    Thread.sleep(INITIAL_WAIT);
+                }
+            }
+            catch (InterruptedException e)
+            {
+                throw new ServletException("Servlet init interrupted for " + portletApplicationName);
+            }
+        }        
     }
 
     /*
