@@ -75,5 +75,11 @@ public interface NavigationalState
      * @return
      */
     WindowState getPreviousState(PortletWindow window);        
-        
+ 
+    /**
+     * Synchronize the navigation state with the request parameters
+     * 
+     */
+    void sync();
+    
 }

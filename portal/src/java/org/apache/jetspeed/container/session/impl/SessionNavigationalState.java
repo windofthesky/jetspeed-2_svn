@@ -16,6 +16,7 @@
 package org.apache.jetspeed.container.session.impl;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -23,6 +24,8 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.container.url.impl.PortalControlParameter;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -108,6 +111,30 @@ public class SessionNavigationalState
             return WindowState.NORMAL;
         }
         return state;        
+    }
+    
+    public void sync()
+    {
+        /*
+        PortalURL url = context.getPortalURL();
+        PortalControlParameter pcp = url.getControlParameters();
+        
+        System.out.println("SYNCING NOW: " + context.getPath());
+        
+        Iterator stateful = pcp.getStateFullControlParameter().entrySet().iterator();
+        while (stateful.hasNext())
+        {
+            Map.Entry entry = (Map.Entry)stateful.next();
+            System.out.println("STATEFUL KEY = " + entry.getKey() + ", VALUE = " + entry.getValue());            
+        }
+        Iterator stateless = pcp.getStateLessControlParameter().entrySet().iterator();
+        while (stateless.hasNext())
+        {
+            Map.Entry entry = (Map.Entry)stateless.next();
+            System.out.println("STATELESS KEY = " + entry.getKey() + ", VALUE = " + entry.getValue());
+        }
+        System.out.println("DONE SYNCING NOW: " );
+        */
     }
     
 }

@@ -123,7 +123,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             if (sessionBased && session != null)
             {
                 session.setAttribute(NAVSTATE_SESSION_KEY, state);
-            }
+            }                                    
             
         }
         catch(Exception e)

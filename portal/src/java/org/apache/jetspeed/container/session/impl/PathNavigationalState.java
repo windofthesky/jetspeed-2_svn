@@ -85,4 +85,8 @@ public class PathNavigationalState
         return url.getPreviousState(window);
     }
         
+    public void sync()
+    {
+        // do nothing
+    }
 }

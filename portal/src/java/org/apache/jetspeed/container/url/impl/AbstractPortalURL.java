@@ -64,7 +64,7 @@ public abstract class AbstractPortalURL implements PortalURL
         this.nsc = nsc;        
         init(context);
         pcp = new PortalControlParameter(this, nsc);
-        pcp.init();        
+        pcp.init();
     }
     
     public void init(RequestContext context)
@@ -217,10 +217,11 @@ public abstract class AbstractPortalURL implements PortalURL
         // check the complete pathInfo for
         // * navigational information
         // * control information
-        String pathInfo = context.getRequest().getPathInfo();
+                        
 
-        if (pathInfo != null)
+        if (context.getRequest().getPathInfo() != null)
         {
+            String pathInfo = new String(context.getRequest().getPathInfo());            
             StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/.");
 
             int mode = 0; // 0=navigation, 1=control information
@@ -517,7 +518,7 @@ public abstract class AbstractPortalURL implements PortalURL
     
     public abstract boolean isStateFullParameter(String tag);
     
-    public PortalControlParameter getControlParameter()
+    public PortalControlParameter getControlParameters()
     {
         return this.pcp;
     }

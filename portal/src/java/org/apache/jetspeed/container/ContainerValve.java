@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -45,6 +46,11 @@ public class ContainerValve
         try
         {  
             //PortletContainerServices.prepare();
+            NavigationalState state = request.getNavigationalState();
+            if (state != null)
+            {
+                state.sync();
+            }
             
             PortalURL url = request.getPortalURL();
             PortletWindow actionWindow = url.getPortletWindowOfAction();

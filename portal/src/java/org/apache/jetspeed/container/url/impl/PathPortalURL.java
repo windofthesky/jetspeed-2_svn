@@ -15,17 +15,6 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
-import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;

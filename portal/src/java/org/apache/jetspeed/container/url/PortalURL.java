@@ -11,6 +11,7 @@ import java.util.Iterator;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.container.url.impl.PortalControlParameter;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -65,6 +66,8 @@ public interface PortalURL
     WindowState getPreviousState(PortletWindow window);        
     
     ///////////////////////////////////////////////
+    
+    PortalControlParameter getControlParameters();
     
     boolean isNavigationalParameter(String token);
         
