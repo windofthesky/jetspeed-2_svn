@@ -71,9 +71,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.pluto.core.CoreUtils;
-import org.apache.pluto.core.InternalPortletRequest;
-import org.apache.pluto.core.InternalPortletResponse;
 import org.apache.pluto.om.portlet.PortletDefinition;
 // import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
