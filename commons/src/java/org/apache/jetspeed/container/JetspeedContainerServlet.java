@@ -199,6 +199,7 @@ public class JetspeedContainerServlet extends HttpServlet
     public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
         String portletName = null;
+        Integer method = ContainerConstants.METHOD_NOOP;
         try
         {
             // Check to make sure that we started up properly.
@@ -209,7 +210,7 @@ public class JetspeedContainerServlet extends HttpServlet
 
             // infuseClasspath();
             
-            Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
+            method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
                 return;
@@ -259,7 +260,10 @@ public class JetspeedContainerServlet extends HttpServlet
                 }
                 else
                 {
-                    displayPortletNotAvailableMessage(t, response, portletName);
+                    if (method != ContainerConstants.METHOD_ACTION)
+                    {
+                        displayPortletNotAvailableMessage(t, response, portletName);
+                    }
                 }
             }
             catch (Throwable e)
