@@ -60,6 +60,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
@@ -73,6 +75,7 @@ import org.apache.jetspeed.om.page.Property;
 public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 {
     private String testId = "test002";
+    private ComponentManager componentManager;
 
     /**
      * Defines the testcase name for JUnit.
@@ -103,7 +106,10 @@ public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestCastorXmlPageManager.class);
+        //return new TestSuite(TestCastorXmlPageManager.class);
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestCastorXmlPageManager.class);
+        suite.setScript("org/apache/jetspeed/page/impl/registry.container.groovy");
+        return suite ;      
     }
 
     public void testNewPage()

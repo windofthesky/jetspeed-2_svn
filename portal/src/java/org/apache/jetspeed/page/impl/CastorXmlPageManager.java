@@ -60,6 +60,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,48 +121,35 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     /** the output format for pretty printing when saving registries */
     protected OutputFormat format = null;
 
-    /** the base refresh rate for pages */
-    protected long scanRate = 1000 * 60; // every minute
-
-    /** the default cache size */
-    protected int cacheSize = 100;
-
     // castor mapping
-    public static final String DEFAULT_MAPPING = "page-mapping.xml";
-    protected String mapFile = null;
+    protected String mapFileResource = "org/apache/jetspeed/page/impl/page-mapping.xml";
 
     /** the Castor mapping file name */
     protected Mapping mapping = null;
 
-    public CastorXmlPageManager(IdGenerator generator, String mapFile, String root)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root)
     {    
         super(generator);
-        this.mapFile = mapFile;
-        this.rootDir = new File(root);        
+        this.rootDir = new File(root);
+        this.pages = fileCache;        
     }
     
-    public CastorXmlPageManager(IdGenerator generator, String mapFile, String root, List modelClasses)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root, List modelClasses)
     {
         super(generator, modelClasses);
-        this.mapFile = mapFile;
-        this.rootDir = new File(root);        
+        this.rootDir = new File(root);
+        this.pages = fileCache;        
     }
 
-    public CastorXmlPageManager(IdGenerator generator, 
-                                       String mapFile,
-                                       String root,                                        
-                                       List modelClasses,
-                                       String extension, 
-                                       long scanRate, 
-                                       int cacheSize)
+    public CastorXmlPageManager(IdGenerator generator,
+                                FileCache fileCache, 
+                                String root,                                        
+                                List modelClasses,
+                                String extension) 
                                        
     {
-        super(generator, modelClasses);
-        this.mapFile = mapFile;        
-        this.rootDir = new File(root);
+        this(generator, fileCache, root, modelClasses);
         this.ext = extension;
-        this.scanRate = scanRate;
-        this.cacheSize = cacheSize;
     }
 
 
@@ -203,7 +191,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         // psml castor mapping file
         loadMapping();
 
-        pages = new FileCache(this.scanRate, this.cacheSize);
         pages.addListener(this);
         pages.startFileScanner();
 
@@ -447,34 +434,28 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
 
     protected void loadMapping() 
     {
-        // test the mapping file and create the mapping object
-
-        if (mapFile != null)
-        {
-            File map = new File(mapFile);
+        try
+        {            
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(mapFileResource);
+                        
             if (log.isDebugEnabled())
             {
-                log.debug("Loading psml mapping file " + mapFile);
+                log.debug("Loading psml mapping file " + mapFileResource);
             }
-            if (map.exists() && map.isFile() && map.canRead())
-            {
-                try
-                {
-                    mapping = new Mapping();
-                    InputSource is = new InputSource(new FileReader(map));
-                    is.setSystemId(mapFile);
-                    mapping.loadMapping(is);
-                }
-                catch (Exception e)
-                {
-                    log.error("Error in psml mapping creation", e);
-                }
-            }
-            else
-            {
-                log.error("PSML Mapping not found or not a file or unreadable: " + mapFile);
-            }
+            
+            mapping = new Mapping();
+                    
+                    
+            InputSource is = new InputSource(stream);
+            is.setSystemId(mapFileResource);
+                   
+            mapping.loadMapping(is);
         }
+        catch (Exception e)
+        {
+            log.error("Error in psml mapping creation", e);            
+        }
+        
     }
 
     /**

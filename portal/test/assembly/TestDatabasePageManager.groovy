@@ -6,8 +6,6 @@ import org.apache.jetspeed.components.ComponentAssemblyTestCase
 // create the root container
 container = new DefaultPicoContainer()
 
-applicationRoot = ComponentAssemblyTestCase.getApplicationRoot("portal", "test")
-
 //
 // ID Generator
 //

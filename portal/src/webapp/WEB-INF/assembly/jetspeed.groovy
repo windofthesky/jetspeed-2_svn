@@ -30,6 +30,8 @@ import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponentImpl
 
+import org.apache.jetspeed.cache.file.FileCache
+
 
 // WARNING!!!!!!
 // DO NOT use {Class}.class as it appears to be broken in Groovy
@@ -61,17 +63,18 @@ container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocat
 Long counterStart = 65536
 peidPrefix = "P-"
 peidSuffix = ""
-container.registerComponentInstance("IdGenerator", new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix))
+idgenerator = new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix)
+container.registerComponentInstance("IdGenerator", idgenerator)
 
 //
 // Page Manager
 //
 root = applicationRoot + "/WEB-INF/pages"
-// TODO: move this into a class loader resource
-mapping = applicationRoot + "/WEB-INF/conf/page-mapping.xml"
-// TODO: modelclasses, extension, scanrate, cachesize
+Long scanRate = 120
+cacheSize = 100
+fileCache = new FileCache(scanRate, cacheSize)
 container.registerComponentInstance("CastorXmlPageManager", 
-                                     new CastorXmlPageManager(idgenerator, mapping, root))
+                                     new CastorXmlPageManager(idgenerator, fileCache, root))
 
 //
 // HSQL Server 

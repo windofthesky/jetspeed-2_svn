@@ -61,13 +61,13 @@ import java.util.Date;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.commons.io.StreamUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.util.FileCopy;
+import org.picocontainer.MutablePicoContainer;
 
 /**
  * Unit test for FileCache 
@@ -76,7 +76,7 @@ import org.apache.jetspeed.util.FileCopy;
  * @version $Id$
  */
 
-public class TestFileCache extends JetspeedTest implements FileCacheEventListener
+public class TestFileCache extends AbstractComponentAwareTestCase implements FileCacheEventListener
 {    
     String refreshedEntry = null;
 
@@ -85,19 +85,11 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
      *
      * @param name the testcase's name.
      */
-    public TestFileCache( String name ) {
+    public TestFileCache( String name ) 
+    {
         super( name );
     }
     
-    /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
-     */
-    public static void main(String args[]) 
-    {
-        junit.awtui.TestRunner.main( new String[] { TestFileCache.class.getName() } );
-    }
  
     /**
      * Creates the test suite.
@@ -107,8 +99,27 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
      */
     public static Test suite() 
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite( TestFileCache.class );
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestFileCache.class);
+        suite.setScript("org/apache/jetspeed/cache/file/filecache.container.groovy");
+        return suite;
+    }
+    
+    private MutablePicoContainer container = null;
+    
+    private FileCache cache = null;
+    
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        container = (MutablePicoContainer) getContainer();
+        cache = (FileCache) container.getComponentInstance(FileCache.class);
+    }    
+    
+    public void testComponent()
+    throws Exception
+    {
+        assertNotNull("container failed to load", container);
+        assertNotNull("component failed to load", cache);        
     }
 
     /**
@@ -117,7 +128,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
      */
 
     public void testLoadCache() throws Exception 
-    {
+    {        
         String templateFile = "./test/testdata/psml/user/cachetest/default.psml";
         try
         {
@@ -127,7 +138,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
             createTestFiles(templateFile);
 
             // create the Cache  wake up after 10 seconds, cache size 20
-            FileCache cache = new FileCache(10, 20);
+            // FileCache cache = new FileCache(10, 20);
 
             // load the Cache
             File directory = new File("./test/testdata/psml/user/cachetest/");
@@ -150,7 +161,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
             // start the cache's scanner
             cache.startFileScanner();
 
-            Thread.currentThread().sleep(2000);
+            Thread.sleep(2000);
 
             assertTrue(cache.getSize() == 20);
 
@@ -162,7 +173,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
             files[18].setLastModified(new Date().getTime());
 
 
-            Thread.currentThread().sleep(9000);
+            Thread.sleep(9000);
 
             assertNotNull(refreshedEntry);
             System.out.println("refreshed entry = " + refreshedEntry);
@@ -240,6 +251,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
             System.out.println(entry.getFile().getName());
         }
     }
+            
 }
 
 

@@ -2,6 +2,7 @@ import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
 import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.components.ComponentAssemblyTestCase
+import org.apache.jetspeed.cache.file.FileCache
 
 // create the root container
 container = new DefaultPicoContainer()
@@ -17,10 +18,11 @@ container.registerComponentInstance("IdGenerator", idgenerator)
 //
 // Page Manager
 //
-println("app root = " + applicationRoot)
+Long scanRate = 120
+cacheSize = 100
+fileCache = new FileCache(scanRate, cacheSize)
 root = applicationRoot + "/testdata/pages"
-mapping = applicationRoot + "/../src/webapp/WEB-INF/conf/page-mapping.xml"
 container.registerComponentInstance("CastorXmlPageManager", 
-                                     new CastorXmlPageManager(idgenerator, mapping, root))
+                                     new CastorXmlPageManager(idgenerator, fileCache, root))
 
 return container

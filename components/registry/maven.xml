@@ -42,6 +42,8 @@
   <goal name="db.create">
     <j:set var="database.arg.script" value="${basedir}/src/sql/${database.default.name}/create-db.sql" />
     <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="${basedir}/../../portal/src/sql/${database.default.name}/create-db-phase3-ojb.sql" />
+    <attainGoal name="db.execute" />
   </goal>
 
   <!-- ================================================================ -->
