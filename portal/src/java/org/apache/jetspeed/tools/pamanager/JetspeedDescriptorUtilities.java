@@ -74,7 +74,6 @@ public class JetspeedDescriptorUtilities
         {
             String msg = "Could not unmarshal \"" + pathPortletXML +"\".  " + t.toString();
             log.error(msg, t);
-            throw new PortletApplicationException(msg, t);
         }
 
         return result;
