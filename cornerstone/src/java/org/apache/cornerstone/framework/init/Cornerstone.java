@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.registry.IRegistry;
 import org.apache.cornerstone.framework.constant.Constant;
 import org.apache.cornerstone.framework.util.Util;
 import org.apache.log4j.Logger;
@@ -78,18 +81,44 @@ public class Cornerstone
      * @param iface Interface of implementation to create
      * @return Implementation of the interface
      */
-    public static Object getImplementation(Class iface)
+    public static Object getImplementation(Class implementationInterface)
 	{
-    	Object implementation = _ImplementationMap.get(iface);
+    	Object implementation = _ImplementationMap.get(implementationInterface);
     	if (implementation == null)
     	{
-    		Boolean implementationLoaded = (Boolean) _ImplementationLoadedMap.get(iface);
+    		Boolean implementationLoaded = (Boolean) _ImplementationLoadedMap.get(implementationInterface);
     		if (implementationLoaded == null)
     		{
-    			implementation = loadImplementation(iface);
+    			implementation = loadImplementation(implementationInterface);
     		}
     	}
     	return implementation;
+    }
+
+    public static IRegistry getRegistry()
+	{
+    	String registryFactoryClassName = getImplementationFactoryClassName(IRegistry.class);
+    	if (registryFactoryClassName != null)
+        {
+	        try
+			{
+				IFactory factory = (IFactory) Util.createInstance(registryFactoryClassName);
+				IRegistry registry = (IRegistry) factory.createInstance(_RuntimeHomeDir);
+				_ImplementationMap.put(IRegistry.class, registry);
+		    	_ImplementationLoadedMap.put(IRegistry.class, Boolean.TRUE);
+				return registry;
+			}
+			catch (Exception e)
+			{
+	    		_Logger.error("failed to create registry; factoryClassName=" + registryFactoryClassName);
+	            return null;
+			}
+        }
+    	else
+    	{
+    		_Logger.error("failed to create registry; factoryClassName=" + registryFactoryClassName);
+    		return null;
+    	}
     }
 
     protected static void readBootStrapProperties() throws InitException
@@ -145,30 +174,63 @@ public class Cornerstone
     	}
     }
 
-    protected static Object loadImplementation(Class implementationInterface)
-    {
+    protected static String getImplementationInstanceClassName(Class implementationInterface)
+	{
     	String implementationClassNameConfigName = Constant.IMPLEMENTATION + Constant.SLASH + implementationInterface.getName() + Constant.SLASH + Constant.INSTANCE_CLASS_NAME;
     	String implementationClassName = _BootStrapProperties.getProperty(implementationClassNameConfigName);
-    	_ImplementationLoadedMap.put(implementationInterface, Boolean.TRUE);
-    	if (implementationClassName == null)
+    	return implementationClassName;
+	}
+
+    protected static String getImplementationFactoryClassName(Class implementationInterface)
+	{
+    	String implementationFactoryClassNameConfigName = Constant.IMPLEMENTATION + Constant.SLASH + implementationInterface.getName() + Constant.SLASH + Constant.FACTORY_CLASS_NAME;
+    	String implementationFactoryClassName = _BootStrapProperties.getProperty(implementationFactoryClassNameConfigName);
+    	return implementationFactoryClassName;
+	}
+
+    protected static Object loadImplementation(Class implementationInterface)
+    {
+    	String implementationClassName = getImplementationInstanceClassName(implementationInterface);
+    	if (implementationClassName != null)
         {
-        	return null;
-        }
-        else
-        {	
+    		// instance.className provided
 	        try
 			{
 	        	_Logger.info("loadImplementation(): implementationClassName=" + implementationClassName);
-				Object manager = Util.createInstance(implementationClassName);
-				_ImplementationMap.put(implementationInterface, manager);
-				return manager;
+				Object implementation = Util.createInstance(implementationClassName);
+				_ImplementationMap.put(implementationInterface, implementation);
+		    	_ImplementationLoadedMap.put(implementationInterface, Boolean.TRUE);
+				return implementation;
 			}
 			catch (Exception e)
 			{
-	            _Logger.error("failed to create manager of " + implementationInterface.getName(), e);
+	            _Logger.error("failed to create implementation of " + implementationInterface.getName(), e);
 	            return null;
 			}
         }
+
+    	String implementationFactoryClassName = getImplementationFactoryClassName(implementationInterface);
+    	if (implementationFactoryClassName != null)
+        {
+    		// factory.className provided
+	        try
+			{
+	        	_Logger.info("loadImplementation(): implementationFactoryClassName=" + implementationFactoryClassName);
+				IFactory factory = (IFactory) Util.createInstance(implementationFactoryClassName);
+				Object implementation = factory.createInstance();
+				_ImplementationMap.put(implementationInterface, implementation);
+		    	_ImplementationLoadedMap.put(implementationInterface, Boolean.TRUE);
+				return implementation;
+			}
+			catch (Exception e)
+			{
+	            _Logger.error("failed to create implementation of " + implementationInterface.getName(), e);
+	            return null;
+			}
+        }
+
+        _Logger.error("no instance or factory class name specified for " + implementationInterface.getName());
+    	return null;
     }
 
     private static Logger _Logger = Logger.getLogger(Cornerstone.class);
