@@ -96,7 +96,7 @@ public class JetspeedPowerTool implements ViewTool
     public static final String HIDDEN = "hidden";
 
     public static final String LAYOUT_TEMPLATE_TYPE = "layout";
-    public static final String DECORATOR_TEMPLATE_TYPE = "decorator";
+    public static final String DECORATOR_TYPE = "decorator";    
     public static final String GENERIC_TEMPLATE_TYPE = "generic";
 
     private RenderRequest renderRequest;
@@ -115,9 +115,11 @@ public class JetspeedPowerTool implements ViewTool
 
     private CapabilityMap capabilityMap;
     private Locale locale;
-    private LocatorDescriptor locatorDescriptor;
-    private TemplateLocator locator;
+    private LocatorDescriptor templateLocatorDescriptor;
+    private TemplateLocator templateLocator;
     private PortletEntityAccessComponent entityAccess;
+    private TemplateLocator decorationLocator;
+    private LocatorDescriptor decorationLocatorDescriptor;
     /**
      * Empty constructor DO NOT USE!!!!  This is only here to allow creation of the
      * via the Velocity Tool Box.  For proper use out side the tool box use @see #JetspeedPowerTool(javax.portlet.RenderRequest, javax.portlet.RenderResponse, javax.portlet.PortletConfig)
@@ -323,26 +325,13 @@ public class JetspeedPowerTool implements ViewTool
     public TemplateDescriptor getTemplate(String path, String templateType) throws TemplateLocatorException
     {
         checkState();
-        if (templateType == null)
-        {
-            templateType = GENERIC_TEMPLATE_TYPE;
-        }
-        try
-        {
-        	
-			locatorDescriptor.setName(path);
-			locatorDescriptor.setType(templateType);
-			
-            TemplateDescriptor template = locator.locateTemplate(locatorDescriptor);
-            return template;
-        }
-        catch (TemplateLocatorException e)
-        {
-            log.error("Unable to locate template: " + path, e);
-            System.out.println("Unable to locate template: " + path);
-            throw e;
-        }
-
+        return getTemplate(path, templateType, templateLocator, templateLocatorDescriptor);
+    }
+    
+    public TemplateDescriptor getDecoration(String path, String templateType) throws TemplateLocatorException
+    {
+        checkState();
+        return getTemplate(path, templateType, decorationLocator, decorationLocatorDescriptor);
     }
 
     /**
@@ -443,6 +432,7 @@ public class JetspeedPowerTool implements ViewTool
         // preserve natural HTML rendering order
         flush();
         String decorator = f.getDecorator();
+        String fragmentType = f.getType();
         // Fallback to the default decorator if the current fragment is not
         // specifically decorated
         if (decorator == null)
@@ -450,7 +440,13 @@ public class JetspeedPowerTool implements ViewTool
             decorator = getPage().getDefaultDecorator(f.getType());
         }
 
-        TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TEMPLATE_TYPE + ".properties", DECORATOR_TEMPLATE_TYPE);
+        TemplateDescriptor propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", fragmentType, decorationLocator, decorationLocatorDescriptor);
+        // Not found specifcally for the fragmentType, then try the generic type
+        if(propsTemp == null)
+        {
+            propsTemp = getTemplate(decorator + "/" + DECORATOR_TYPE + ".properties", GENERIC_TEMPLATE_TYPE, decorationLocator, decorationLocatorDescriptor);
+        }
+        
 
         Configuration decoConf = new PropertiesConfiguration(propsTemp.getAbsolutePath());
         String ext = decoConf.getString("template.extension");
@@ -463,8 +459,13 @@ public class JetspeedPowerTool implements ViewTool
         }
         setCurrentFragment(f);
 
-        String decoratorPath = decorator + "/" + DECORATOR_TEMPLATE_TYPE + ext;
-        TemplateDescriptor template = getTemplate(decoratorPath, DECORATOR_TEMPLATE_TYPE);
+        String decoratorPath = decorator + "/" + DECORATOR_TYPE + ext;
+        TemplateDescriptor template = getTemplate(decoratorPath, fragmentType, decorationLocator, decorationLocatorDescriptor); 
+        // Not found specifcally for the fragmentType, then try the generic type
+        if(template == null)
+        {
+            template = getTemplate(decoratorPath, GENERIC_TEMPLATE_TYPE, decorationLocator, decorationLocatorDescriptor);
+        }
         PortletRequestDispatcher prd = portletConfig.getPortletContext().getRequestDispatcher(template.getAppRelativePath());
         prd.include(renderRequest, renderResponse);
 
@@ -497,20 +498,52 @@ public class JetspeedPowerTool implements ViewTool
     protected void clientSetup(RequestContext requestContext) 
     {        
         ComponentManager cm = Jetspeed.getComponentManager();
-        locator = (TemplateLocator) cm.getComponent("TemplateLocator");
+        templateLocator = (TemplateLocator) cm.getComponent("TemplateLocator");
+        decorationLocator = (TemplateLocator) cm.getComponent("DecorationLocator");
         // By using null, we create a re-useable locator    
         try
         {
-            locatorDescriptor = locator.createLocatorDescriptor(null);        
             capabilityMap = requestContext.getCapabilityMap();
-            locatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
             locale = requestContext.getLocale();
-            locatorDescriptor.setCountry(locale.getCountry());
-            locatorDescriptor.setLanguage(locale.getLanguage());       
+            
+            templateLocatorDescriptor = templateLocator.createLocatorDescriptor(null);        
+            templateLocatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
+            templateLocatorDescriptor.setCountry(locale.getCountry());
+            templateLocatorDescriptor.setLanguage(locale.getLanguage());
+            
+            decorationLocatorDescriptor = decorationLocator.createLocatorDescriptor(null);        
+            decorationLocatorDescriptor.setMediaType(capabilityMap.getPreferredMediaType().getName());
+            decorationLocatorDescriptor.setCountry(locale.getCountry());
+            decorationLocatorDescriptor.setLanguage(locale.getLanguage());            
+            
         }
         catch (Exception e)
         {
            log.error("Unable to perform client setup: "+e.toString(), e);
+        }
+    }
+    
+    protected TemplateDescriptor getTemplate(String path, String templateType, TemplateLocator locator, LocatorDescriptor descriptor) throws TemplateLocatorException
+    {
+        checkState();
+        if (templateType == null)
+        {
+            templateType = GENERIC_TEMPLATE_TYPE;
+        }
+        try
+        {
+        	
+            descriptor.setName(path);
+            descriptor.setType(templateType);
+			
+            TemplateDescriptor template = locator.locateTemplate(descriptor);
+            return template;
+        }
+        catch (TemplateLocatorException e)
+        {
+            log.error("Unable to locate template: " + path, e);
+            System.out.println("Unable to locate template: " + path);
+            throw e;
         }
     }
 
