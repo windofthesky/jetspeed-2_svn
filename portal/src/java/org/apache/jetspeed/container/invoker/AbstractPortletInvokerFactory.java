@@ -71,8 +71,8 @@ public abstract class AbstractPortletInvokerFactory
     /** The pool of local portlet invokers */ 
     protected ObjectPool pool;
     
-    protected String invokerClass;    
-    protected int invokerPoolSize = 30;
+    protected String invokerClass = null;    
+    protected int invokerPoolSize;
     
     public AbstractPortletInvokerFactory()
     {

@@ -91,14 +91,13 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class ServletPortletInvoker implements JetspeedPortletInvoker
 {
-    public static final String MVC_ENTRY_SERVLET = "/container";
-
     private final static Log log = LogFactory.getLog(ServletPortletInvoker.class);
 
     protected ServletContext jetspeedContext;
     protected ServletConfig jetspeedConfig;
     protected PortletDefinition portletDefinition;
     protected boolean activated = false;
+    protected String servletMappingName;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#passivate()
@@ -127,6 +126,14 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         activated = true;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
+     */
+    public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
+    {
+        this.servletMappingName = servletMappingName;
+        activate(portletDefinition, servletConfig);
+    }
 
     public ServletPortletInvoker()
     {
@@ -198,14 +205,14 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             throw new PortletException();
         }
 
-        RequestDispatcher dispatcher = appContext.getRequestDispatcher(MVC_ENTRY_SERVLET);
+        RequestDispatcher dispatcher = appContext.getRequestDispatcher(servletMappingName);
         if (null == dispatcher)
         {
             String message =
                 "Failed to get Request Dispatcher for Portlet Application: "
                     + portletApplicationName
                     + ", servlet: "
-                    + MVC_ENTRY_SERVLET;
+                    + servletMappingName;
             log.error(message);
             throw new PortletException(message);
         }
@@ -226,7 +233,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         catch (Exception e)
         {
             String message =
-                "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
+                "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + servletMappingName;
             log.error(message, e);
             throw new PortletException(message, e);
         }

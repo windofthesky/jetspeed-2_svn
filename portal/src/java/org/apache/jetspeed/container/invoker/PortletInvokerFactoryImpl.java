@@ -159,14 +159,14 @@ public class PortletInvokerFactoryImpl
         try
         {
             invoker = servletInvokerFactory.getPortletInvoker();
-            invoker.activate(portletDefinition, servletConfig);            
+            invoker.activate(portletDefinition, servletConfig, servletInvokerFactory.getServletMappingName());            
             return invoker;
         }
         catch (Throwable t)
         {
             log.error("failed to create SERVLET invoker, using default", t);
             invoker = new ServletPortletInvoker();
-            invoker.activate(portletDefinition, servletConfig);
+            invoker.activate(portletDefinition, servletConfig, servletInvokerFactory.getServletMappingName());
             return invoker;
         }
     }

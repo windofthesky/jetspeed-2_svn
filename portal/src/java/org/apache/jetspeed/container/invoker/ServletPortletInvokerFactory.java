@@ -65,16 +65,23 @@ public class ServletPortletInvokerFactory extends AbstractPortletInvokerFactory
 {
     public final static String INVOKER_SERVLET = "factory.invoker.servlet";
     public final static String INVOKER_SERVLET_POOL_SIZE = "factory.invoker.servlet.pool.size";
-    public final static String INVOKER_SERVLET_CONTEXT = "factory.invoker.servlet.context";
+    public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
+    public final static String DEFAULT_MAPPING_NAME = "/container";
+    
+    protected String servletMappingName = null;
     
     public ServletPortletInvokerFactory(PortalContext pc)
     {    
         super();                
         String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);        
-        int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE);
-        //String servletInvokerClass = pc.getConfigurationProperty(INVOKER_SERVLET);
+        int servletInvokerPoolSize = pc.getConfiguration().getInt(INVOKER_SERVLET_POOL_SIZE, 50);
+        servletMappingName = pc.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
         init(servletInvokerClass, servletInvokerPoolSize);                
     }
     
+    public String getServletMappingName()
+    {
+        return servletMappingName;
+    }
     
 }

@@ -118,6 +118,11 @@ public class JetspeedPortalContext implements PortalContext
         return configuration.getString(key);
     }
 
+    public String getConfigurationProperty(String key, String defaultValue)
+    {
+        return configuration.getString(key, defaultValue);
+    }
+
     /**
      * Set the configuration properties for this Jetspeed engine context.
      *

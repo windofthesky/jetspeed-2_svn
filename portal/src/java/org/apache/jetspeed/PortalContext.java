@@ -70,6 +70,7 @@ public interface PortalContext extends javax.portlet.PortalContext
     public void setConfiguration(Configuration configuration);
 
     public String getConfigurationProperty(String key);
+    public String getConfigurationProperty(String key, String defaultValue);
 
     public void setAttribute(String name, Object value);
     public Object getAttribute(String name);

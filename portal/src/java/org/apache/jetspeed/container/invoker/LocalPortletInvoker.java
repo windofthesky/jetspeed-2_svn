@@ -259,5 +259,13 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         Thread.currentThread().setContextClassLoader(oldLoader);                 
 
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
+     */
+    public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
+    {
+        activate(portletDefinition, servletConfig);
+    }
     
 }

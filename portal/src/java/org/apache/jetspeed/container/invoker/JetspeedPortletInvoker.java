@@ -62,7 +62,6 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * JetspeedPortletInvoker extends Pluto's portlet invoker and extends it
  * with lifecycle management. Portlet Invokers can be pooled, and activated
  * and passivated per request cycle.
- * TODO: I'd like to refactor activate and passivate, hopefully with a IOC service framework
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -77,7 +76,19 @@ public interface JetspeedPortletInvoker extends PortletInvoker
      * @param servletConfig The servlet configuration of the portal. 
      * @param containerServlet
      */
-    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig); //, String entryPoint);
+    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig);
+
+    /**
+     * Activating an invoker makes it ready to invoke portlets.
+     * If an invoker's state is not activated, it can not invoke.
+     * This second signature allows for activating with an extra property.
+     * 
+     * @param portletDefinition The portlet's definition that is being invoked.
+     * @param servletConfig The servlet configuration of the portal. 
+     * @param property Implementation specific property
+     * @param containerServlet
+     */
+    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig, String property);
     
     /**
      * Passivates an invoker, freeing it back to the invoker pool.
