@@ -43,7 +43,7 @@
     <field name="castorValues" type="java.lang.String" collection="collection" required="true">
       <bind-xml name="value" node="element"/>
     </field>
-    <field name="modifiable" type="java.lang.Boolean">
+    <field name="readOnly" type="java.lang.Boolean">
       <bind-xml name="modifiable" node="element"/>
     </field>
 
@@ -75,9 +75,16 @@
     <field name="castorPreferences" type="org.apache.jetspeed.tools.castor.om.common.PreferenceDescriptor" collection="collection">
       <bind-xml name="preference" node="element"/>
     </field>
+    <!--	
     <field name="preferencesValidator" type="java.lang.String">
       <bind-xml name="preferences-validator" node="element"/>
     </field>
+    -->
+    <field name="preferenceValidatorClassname" type="java.lang.String">
+      <bind-xml name="preferences-validator" node="element"/>
+    </field>
+
+
 
   </class>
 
