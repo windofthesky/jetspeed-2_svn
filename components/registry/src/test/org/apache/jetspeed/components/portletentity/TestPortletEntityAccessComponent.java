@@ -27,13 +27,16 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
+import org.jmock.Mock;
+import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
+import org.jmock.core.stub.ReturnStub;
 
 /**
  * Test Portlet Entity Accessor
@@ -58,10 +61,10 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
     protected void setUp() throws Exception
     {        
         super.setUp();
-    
-            entityAccess = new PortletEntityAccessComponentImpl(persistenceStore);
-            registry = new PortletRegistryComponentImpl(persistenceStore);
-        
+
+        registry = new PortletRegistryComponentImpl(persistenceStore);
+        entityAccess = new PortletEntityAccessComponentImpl(persistenceStore, registry);
+
         setupTestData();                   
     }
 
@@ -102,29 +105,44 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         System.out.println("pa = " + pa.getId());
         PortletDefinitionList portlets = pa.getPortletDefinitionList(); //.get(JetspeedObjectID.createFromString(TEST_PORTLET));
         Iterator pi = portlets.iterator();
-        PortletDefinition pd = null;
+        PortletDefinitionComposite pd = null;
         while (pi.hasNext())
         {
-            pd = (PortletDefinition)pi.next();
+            pd = (PortletDefinitionComposite)pi.next();
             assertTrue("Portlet Def not found", pd.getName().equals("EntityTestPortlet"));
         }
         assertNotNull("Portlet Def is null", pd);
-        MutablePortletEntity entity = entityAccess.newPortletEntityInstance(pd);
-        entity.setId(TEST_ENTITY);
+        
+        
+        
+        Mock mockf1 = new Mock(Fragment.class);
+        mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
+        mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(TEST_ENTITY));
+        Fragment f1 =(Fragment) mockf1.proxy();
+            
+        MutablePortletEntity entity = entityAccess.generateEntityFromFragment(f1);
+
         entityAccess.storePortletEntity(entity);
         
-        MutablePortletEntity entity2 = entityAccess.getPortletEntity(JetspeedObjectID.createFromString(TEST_ENTITY));
+        MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
+        mockf1.verify();
+        
+        
+        Mock mockf2 = new Mock(Fragment.class);
+        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
+        Fragment f2 =(Fragment) mockf2.proxy();
         
         MutablePortletEntity entity5 = entityAccess.newPortletEntityInstance(pd);
+        
         System.out.println("before storing entity: "  + entity5.getId());
         
-        //entity.setId(TEST_ENTITY);
         entityAccess.storePortletEntity(entity5);
-        System.out.println("store done: " + entity5.getId());        
+        System.out.println("store done: " + entity5.getId());  
+        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub( entity5.getId().toString()));
 
-        MutablePortletEntity entity6 = entityAccess.getPortletEntity(entity5.getId());
+        MutablePortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
         assertNotNull(entity6);
         System.out.println("reget : " + entity6.getId());        
         
@@ -191,5 +209,7 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         store.getTransaction().commit();              
 
     }
+    
+    
     
 }
