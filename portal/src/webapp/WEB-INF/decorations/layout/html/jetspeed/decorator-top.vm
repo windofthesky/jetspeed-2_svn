@@ -18,6 +18,7 @@ limitations under the License.
 #defineConstants()
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
 #set($preferedLocale = $JS2RequestContext.locale)
 <html>
 <head>
@@ -37,22 +38,22 @@ limitations under the License.
 <p>
 <img src="content/images/jetspeed-logo.gif" alt="Jetspeed 2 Logo" border="0">
 </p>
+
+#set($profiledPageContext = $request.getAttribute("org.apache.jetspeed.profiledPageContext"))
+
 <p>
-	#set($folder = $request.getAttribute("org.apache.jetspeed.folder"))
+	#set($parentFolder = $profiledPageContext.parentFolder)
 	
-	## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
-	
-	
-	#if($folder.parent)
+	#if($parentFolder)
 	 <p style="font-style:italic">	
-		<a href="$jetspeed.getAbsoluteUrl($folder.parent.url)">Back to $folder.parent.metaData.getTitle($preferedLocale)</a> &nbsp;
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)">Back to $parentFolder.metaData.getTitle($preferedLocale)</a> &nbsp;
 	 </p>
 	#end
 	
-  #includeNavigation("folders" $folder.folders $LEFT_TO_RIGHT)
+  #includeNavigation("folders" $profiledPageContext.siblingFolders $LEFT_TO_RIGHT)
 </p>
   <p>
-  #includeNavigation("tabs" $folder.pages $LEFT_TO_RIGHT)
+  #includeNavigation("tabs" $profiledPageContext.siblingPages $LEFT_TO_RIGHT)
   </p>
 </p>
 	
@@ -60,20 +61,11 @@ limitations under the License.
 <tr>
 	<td valign="top" nowrap>	
 		
-	 #set($pageManager = $jetspeed.getComponent("pageManager"))
-     #set($rootFolder = $pageManager.getFolder("/"))
-     #set($links = $rootFolder.links)
 	 Additional Links:
-	 #includeNavigation("linksWithIcon1" $links $TOP_TO_BOTTOM)
+	 #includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
 	</td>
 	<td width="99%" nowrap valign="top">
   
 ## $jetspeed.include($jetspeed.currentFragment)
 
 <!--  END: layout/html/jetspeed/decorator.vm -->
-
-
-
-
-
-
