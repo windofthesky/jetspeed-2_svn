@@ -3,9 +3,7 @@
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
          
-         
-  <property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
-  
+           
   <goal name="allClean"
         description="Clean the master project and all subprojects">
     <attainGoal name="subClean"/>
