@@ -14,6 +14,7 @@ limitations under the License.
 <%@ page import="javax.portlet.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.portals.bridges.beans.TabBean" %>
+<%@ page import="org.apache.jetspeed.portlets.security.users.UserDetailsPortlet" %>
 <%@ page import="org.apache.jetspeed.portlets.security.users.JetspeedUserBean" %>
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
@@ -24,6 +25,8 @@ limitations under the License.
 
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.SecurityResources" />
 
+<c:set var="errorMessagesKey"><%=UserDetailsPortlet.ERROR_MESSAGES%></c:set>
+<c:set var="errorMessages" value="${requestScope[errorMessagesKey]}"/>
 
 <portlet:defineObjects/>
 
@@ -57,6 +60,14 @@ limitations under the License.
   <div id="attributes">	
   <portlet:actionURL var="edit_user_attr_link" />
   
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
 	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_user_attribute"/>
 		
@@ -118,6 +129,14 @@ limitations under the License.
   <div id="Credential">
   <portlet:actionURL var="edit_credential_link" />
   
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
   <form name="Edit_Credential_Form" action="<c:out value="${edit_credential_link}"/>" method="post">
     <input type="hidden" name="portlet_action" value="security_user.update_user_credential"/>    
     <table>
@@ -194,6 +213,14 @@ limitations under the License.
   <div id="Role">
   <portlet:actionURL var="edit_role_link" />
   
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
 	<form name="Edit_Role_Form" action="<c:out value="${edit_role_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_role"/>		
 		<table>
@@ -246,6 +273,14 @@ limitations under the License.
   <div id="Group">
   <portlet:actionURL var="edit_group_link" />
   
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
 	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.edit_group"/>		
 		<table>
@@ -299,6 +334,14 @@ limitations under the License.
   <div id="Profile">	
   <portlet:actionURL var="edit_profile_link" />
   
+  <c:if test="${errorMessages != null}">
+    <ul>
+    <c:forEach items="${errorMessages}" var="error">
+      <li style="color:red"><c:out value="${error}"/></li>
+    </c:forEach>
+    </ul>
+  </c:if>
+
 	<form name="Edit_Profile_Form" action="<c:out value="${edit_profile_link}"/>" method="post">
 		<input type="hidden" name="portlet_action" value="security_user.remove_user_rule"/>		
 		<table>

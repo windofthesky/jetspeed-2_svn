@@ -16,12 +16,15 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -29,6 +32,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -41,6 +45,9 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.InvalidNewPasswordException;
+import org.apache.jetspeed.security.InvalidPasswordException;
+import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
@@ -93,7 +100,9 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
-    
+
+    /** The Error Messages KEY */
+    public static final String ERROR_MESSAGES = "errorMessages";
     
     private UserManager  userManager;
     private RoleManager  roleManager;
@@ -270,6 +279,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
            
             request.setAttribute(SecurityResources.REQUEST_SELECT_TAB, selectedTab);
         }
+
+        // check for ErrorMessages
+        ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, ERROR_MESSAGES);
+        if (errorMessages != null )
+        {
+            request.setAttribute(ERROR_MESSAGES,errorMessages);
+        }
         
         super.doView(request, response);
     }
@@ -336,7 +352,26 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 updateUserCredential(actionRequest, actionResponse);
             }
         }
-    }    
+    }
+    
+    private void publishErrorMessage(PortletRequest request, String message)
+    {
+        try
+        {
+            ArrayList errors = (ArrayList)PortletMessaging.receive(request,ERROR_MESSAGES);
+            if ( errors == null )
+            {
+                errors = new ArrayList();
+            }
+            errors.add(message);
+            PortletMessaging.publish(request, ERROR_MESSAGES, errors);
+        }
+        catch (NotSerializableException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }                
+    }
     
     public void removeUser(ActionRequest actionRequest, ActionResponse actionResponse) 
     throws PortletException
@@ -354,7 +389,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             }
             catch (Exception e)
             {
-                
+                publishErrorMessage(actionRequest,e.getMessage());
             }
         }
     }
@@ -377,6 +412,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
 
     private void updateUserCredential(ActionRequest actionRequest, ActionResponse actionResponse)
     {
+        ResourceBundle bundle = ResourceBundle.getBundle("org.apache.jetspeed.portlets.security.resources.UsersResources",actionRequest.getLocale());
+
         String userName = (String)
         actionRequest.getPortletSession().getAttribute(SecurityResources.PAM_CURRENT_USER, 
                              PortletSession.APPLICATION_SCOPE);
@@ -417,10 +454,21 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                 }
             }
+            catch ( InvalidPasswordException ipe )
+            {
+                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidPassword"));
+            }
+            catch ( InvalidNewPasswordException inpe )
+            {
+                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.invalidNewPassword"));
+            }
+            catch ( PasswordAlreadyUsedException paue )
+            {
+                publishErrorMessage(actionRequest,bundle.getString("chgpwd.error.passwordAlreadyUsed"));
+            }
             catch (SecurityException e)
             {
-                // TODO: logging
-                System.err.println("failed to update user credential " + userName + ": " + e);                                      
+                publishErrorMessage(actionRequest,e.getMessage());
             }
         }
     }
@@ -529,6 +577,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
+                        publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove user from role: " + userName + ", "  + roleNames[ix] + e);                       
                     }                
@@ -555,6 +604,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
+                    publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to add user to role: " + userName + ", "  + roleName + e);                       
                 }
@@ -585,6 +635,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (SecurityException e)
                     {
+                        publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove user from group: " + userName + ", "  + groupNames[ix] + e);                       
                     }                
@@ -611,6 +662,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (SecurityException e)
                 {
+                    publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to add user to group: " + userName + ", "  + groupName + e);                       
                 }
@@ -720,6 +772,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 catch (Exception e)
                 {
+                    publishErrorMessage(actionRequest,e.getMessage());
                     // TODO: logging
                     System.err.println("failed to set rule for principal: " + userName + ", "  + locatorName + e);                       
                 }
@@ -758,6 +811,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     }
                     catch (Exception e)
                     {
+                        publishErrorMessage(actionRequest,e.getMessage());
                         // TODO: logging
                         System.err.println("failed to remove rule for principal: " + userName + ", "  + locatorNames[ix] + e);                       
                     }                
