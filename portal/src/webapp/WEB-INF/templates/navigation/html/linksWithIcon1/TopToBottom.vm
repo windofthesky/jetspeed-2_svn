@@ -1,6 +1,6 @@
 <div >
   #foreach($node in $_nodeSet.iterator()) 
-  <p>
+  <div>
     #if($node.type == ".psml")
       <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage">$node.getTitle($preferedLocale)</a>	
     #elseif($node.type == ".link")
@@ -10,6 +10,6 @@
     #else
       <a href="$node.url">$node.title</a>	
     #end
-  </p> 
+  </div> 
   #end
 </div>
