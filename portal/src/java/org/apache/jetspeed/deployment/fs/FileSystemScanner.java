@@ -123,11 +123,17 @@ public class FileSystemScanner extends Thread
 
                     DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, objHandler);
                     dispatcher.dispatch(event);
-                    
-                    deployedFiles.add(stagedFiles[i]);
-                    // record the lastModified so we can watch for re-deployment                    
-                    long lastModified = aFile.lastModified();
-                    fileDates.put(stagedFiles[i], new Long(lastModified));
+                    if(event.getStatus() == DeploymentEvent.STATUS_OKAY)
+                    {
+                        deployedFiles.add(stagedFiles[i]);
+                        // record the lastModified so we can watch for 2re-deployment                    
+                        long lastModified = aFile.lastModified();
+                        fileDates.put(stagedFiles[i], new Long(lastModified));
+                    }
+                    else
+                    {
+                        log.error("Error deploying " + aFile.getAbsolutePath());
+                    }
 
                 }
                 catch (Exception e1)
@@ -189,9 +195,15 @@ public class FileSystemScanner extends Thread
                 DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, objHandler);                
                 dispatcher.dispatch(event);
                
-               
-                deployedFiles.remove(i);
-                fileDates.remove(fileName);
+                if(event.getStatus() == DeploymentEvent.STATUS_OKAY)
+                {
+                    deployedFiles.remove(i);
+                    fileDates.remove(fileName);
+                }
+                else
+                {
+                    log.error("Error undeploying " + aFile.getAbsolutePath());
+                }
 
             }
             catch (Exception e1)
