@@ -16,6 +16,7 @@ package org.apache.jetspeed.om.common.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 
@@ -116,5 +117,40 @@ public class LocalizedFieldImpl implements LocalizedField
     public void setName(String name)
     {
         this.name = name;        
+    }
+    
+    public String toString()
+    {
+        return "Name: " + name + " Value: " + value + " Locale: " + locale;
+    }
+    
+    public boolean equals(Object o)
+    {
+        boolean result = false;
+        
+        if(o instanceof LocalizedFieldImpl && o != null)
+        {
+            LocalizedFieldImpl localField = (LocalizedFieldImpl)o;
+            
+            result = (this.name == null) ? (localField.name == null) : (this.name.equals(localField.name));
+            result = result && ((this.value == null) ? (localField.value == null) : (this.value.equals(localField.value)));
+            result = result && ((this.locale == null) ? (localField.locale == null) : (this.locale.equals(localField.locale)));
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(27, 101);
+        hasher.append(name).append(value);
+        if(locale != null)
+        {    
+            hasher.append(locale.getCountry()).append(locale.getLanguage()).append(locale.getVariant());
+        }
+        return hasher.toHashCode();
     }
 }
