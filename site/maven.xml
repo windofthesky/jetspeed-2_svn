@@ -30,7 +30,7 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}/../"
                includes="*/project.xml,applications/*/project.xml"
-               excludes="applications/project.xml,site/project.xml"
+               excludes="applications/project.xml,cornerstone-demo/project.xml,cornerstone-jmx-demo/project.xml,plugin/project.xml,site/project.xml"
                goals="site"
                banner="Building Site"
                postProcessing="true"
