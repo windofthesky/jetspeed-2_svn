@@ -174,7 +174,7 @@ public class StandardDeploymentManager implements Startable, DeploymentManager
                     }
                     catch (FileNotDeployableException e)
                     {
-                        log.info(e.getMessage());                        
+                        // log.info(e.getMessage());                        
                         continue;
                     }
 
