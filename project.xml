@@ -137,6 +137,16 @@ limitations under the License.
       </roles>
     </developer>
 
+    <developer>
+      <name>Shinsuke Sugaya</name>
+      <id>shinsuke</id>
+      <email>shinsuke@apache.org</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+
+    </developer>
+
     </developers>
 
   <dependencies>
