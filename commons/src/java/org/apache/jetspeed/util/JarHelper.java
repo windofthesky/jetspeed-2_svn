@@ -16,6 +16,7 @@
 package org.apache.jetspeed.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -136,6 +137,19 @@ public class JarHelper implements FileSystemHelper
         }
     }
 
+    /**
+     * <p>
+     * copyFrom
+     * </p>
+     *
+     * @param directory
+     * @param fileFilter
+     * @throws IOException
+     */
+    public void copyFrom( File directory, FileFilter fileFilter ) throws IOException
+    {
+        dirHelper.copyFrom(directory, fileFilter);
+    }
     /**
      * <p>
      * copyFrom

@@ -17,6 +17,7 @@ package org.apache.jetspeed.page;
 
 // Java imports
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,15 @@ public class TestCastorXmlPageManager extends TestCase
     {
         super.setUp();
         dirHelper = new DirectoryHelper(new File("target/testdata/pages"));
-        dirHelper.copyFrom(new File("testdata/pages"));
+        FileFilter noCVS = new FileFilter() {
+
+            public boolean accept( File pathname )
+            {
+                return !pathname.getName().equals("CVS");                
+            }
+            
+        };
+        dirHelper.copyFrom(new File("testdata/pages"), noCVS);
         IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         FileCache cache = new FileCache(10, 12);
         pageManager = new CastorXmlPageManager(idGen, cache, "target/testdata/pages");

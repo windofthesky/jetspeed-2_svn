@@ -16,6 +16,7 @@
 package org.apache.jetspeed.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 
 /**
@@ -37,6 +38,18 @@ public interface FileSystemHelper
      * returns <code>false</code>
      */
     void copyFrom(File directory) throws IOException;
+    
+    /**
+     * 
+     * <p>
+     * copyFrom
+     * </p>
+     *
+     * @param directory
+     * @param fileFilter
+     * @throws IOException
+     */
+    void copyFrom(File directory, FileFilter fileFilter) throws IOException;
     
     /**
      * 

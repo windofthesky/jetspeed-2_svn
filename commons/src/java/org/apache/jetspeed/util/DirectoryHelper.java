@@ -16,6 +16,7 @@
 package org.apache.jetspeed.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -32,7 +33,6 @@ public class DirectoryHelper implements FileSystemHelper
 {
 
     protected File directory;
-
     /**
      * 
      */
@@ -49,6 +49,9 @@ public class DirectoryHelper implements FileSystemHelper
             throw new IllegalArgumentException("DirectoryHelper(File) requires directory not a file.");
         }
         this.directory = directory;
+        
+
+        
     }
 
     /**
@@ -62,13 +65,33 @@ public class DirectoryHelper implements FileSystemHelper
      */
     public void copyFrom( File srcDirectory ) throws IOException
     {
-        if(!directory.isDirectory())
+        copyFrom(srcDirectory, new FileFilter() {
+            public boolean accept(File pathname)
+            {
+               return true;
+            }
+           });
+    }
+    
+    /**
+     * <p>
+     * copyFrom
+     * </p>
+     *
+     * @see org.apache.jetspeed.util.FileSystemHelper#copyFrom(java.io.File, java.io.FileFilter)
+     * @param directory
+     * @param fileFilter
+     * @throws IOException
+     */
+    public void copyFrom( File srcDirectory, FileFilter fileFilter ) throws IOException
+    {
+        if(!srcDirectory.isDirectory())
         {
             throw new IllegalArgumentException("DirectoryHelper.copyFrom(File) requires directory not a file.");
         }
-        copyFiles(srcDirectory, directory);
+        copyFiles(srcDirectory, directory, fileFilter);        
+
     }
-    
     /**
      * 
      * <p>
@@ -81,10 +104,10 @@ public class DirectoryHelper implements FileSystemHelper
      * @throws FileNotFoundException
 
      */
-    protected void copyFiles(File srcDir, File dstDir) throws IOException
+    protected void copyFiles(File srcDir, File dstDir, FileFilter fileFilter) throws IOException
     {
              
-        File[] children = srcDir.listFiles();
+        File[] children = srcDir.listFiles(fileFilter);
         for(int i=0; i<children.length; i++)
         {
             File child = children[i];
@@ -102,7 +125,7 @@ public class DirectoryHelper implements FileSystemHelper
             {
                 File newSubDir = new File(dstDir, child.getName());
                 newSubDir.mkdir();
-                copyFiles(child, newSubDir);
+                copyFiles(child, newSubDir, fileFilter);
             }
         }
     }
