@@ -44,19 +44,19 @@ limitations under the License.
       	<td><fmt:message key="roles.label.Administrator"/></td>
       	<td><fmt:message key="roles.label.admin"/></td>
       	<td><%= renderRequest.isUserInRole("Administrator") %></td>
-      	<td><%= request.isUserInRole("Administrator") %></td>
+      	<td><%= request.isUserInRole("admin") %></td>
       </tr>
       <tr>
       	<td><fmt:message key="roles.label.Manager"/></td>
       	<td><fmt:message key="roles.label.manager"/></td>
       	<td><%= renderRequest.isUserInRole("Manager") %></td>
-      	<td><%= request.isUserInRole("Manager") %></td>
+      	<td><%= request.isUserInRole("manager") %></td>
       </tr>
       <tr>
       	<td><fmt:message key="roles.label.User"/></td>
       	<td><fmt:message key="roles.label.user"/></td>
       	<td><%= renderRequest.isUserInRole("User") %></td>
-      	<td><%= request.isUserInRole("User") %></td>
+      	<td><%= request.isUserInRole("user") %></td>
     	</tr>
     </table>
   </c:otherwise>
