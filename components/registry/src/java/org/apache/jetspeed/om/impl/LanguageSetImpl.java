@@ -123,15 +123,16 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         }
         if (fallBack == null)
         {
+            if (locale.equals(getDefaultLocale()))
+            {
+                return new LanguageImpl(locale, "");
+            }            
+
             ResourceBundle bundle = null;
             if (resources != null)
             {
                 bundle = loadResourceBundle(locale);
             }
-            if (bundle == null)
-            {
-                return new LanguageImpl(locale, "");
-            }            
             fallBack = createLanguage(locale, bundle);
         }
         else
