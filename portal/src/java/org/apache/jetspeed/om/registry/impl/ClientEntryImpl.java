@@ -52,33 +52,37 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.registry.base;
+package org.apache.jetspeed.om.registry.impl;
 
-import org.apache.jetspeed.om.registry.CapabilityMap;
 import org.apache.jetspeed.om.registry.ClientEntry;
-import org.apache.jetspeed.om.registry.MimetypeMap;
+import org.apache.jetspeed.om.registry.base.BaseRegistryEntry;
+import java.util.Vector;
 
 /**
  * Simple implementation of the ClientRegistry interface.
  *
  * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class BaseClientEntry extends BaseRegistryEntry
-        implements ClientEntry, java.io.Serializable
+public class ClientEntryImpl extends BaseRegistryEntry
+    implements ClientEntry, java.io.Serializable
 {
     private String useragentpattern = "";
     private String manufacturer = "";
     private String model = "";
     private String version = "";
-    private MimetypeMap mimetypes = new BaseMimetypeMap();
-    private CapabilityMap capabilities = new BaseCapabilityMap();
+    private Vector mimetypes;
+    private Vector capabilities;
+    
+    private int clientId;
 
-    public BaseClientEntry()
+    public ClientEntryImpl()
     {
     }
 
+    
     /**
      * Implements the equals operation so that 2 elements are equal if
      * all their member values are equal.
@@ -90,7 +94,7 @@ public class BaseClientEntry extends BaseRegistryEntry
             return false;
         }
 
-        BaseClientEntry obj = (BaseClientEntry)object;
+        ClientEntryImpl obj = (ClientEntryImpl)object;
 
         if (useragentpattern!=null)
         {
@@ -152,12 +156,12 @@ public class BaseClientEntry extends BaseRegistryEntry
             }
         }
 
-        if (!mimetypes.equals(obj.mimetypes))
+        if (!mimetypes.contains(obj.mimetypes))
         {
             return false;
         }
 
-        if (!capabilities.equals(obj.capabilities))
+        if (!capabilities.contains(obj.capabilities))
         {
             return false;
         }
@@ -205,35 +209,42 @@ public class BaseClientEntry extends BaseRegistryEntry
         version = name;
     }
 
-    public MimetypeMap getMimetypeMap()
+
+    public Vector getMimetypes()
     {
         return mimetypes;
     }
 
-    public CapabilityMap getCapabilityMap()
-    {
-        return capabilities;
-    }
-
-    // castor related method definitions
-
-    public BaseMimetypeMap getMimetypes()
-    {
-        return (BaseMimetypeMap)mimetypes;
-    }
-
-    public void setMimetypes(BaseMimetypeMap mimetypes)
+    public void setMimetypes(Vector mimetypes)
     {
         this.mimetypes = mimetypes;
     }
 
-    public BaseCapabilityMap getCapabilities()
+    public Vector getCapabilities()
     {
-        return (BaseCapabilityMap)capabilities;
+        return capabilities;
     }
 
-    public void setCapabilities(BaseCapabilityMap capabilities)
+    public void setCapabilities(Vector capabilities)
     {
         this.capabilities = capabilities;
+    }
+    
+    /**
+     * Set Client ID -- Assigns the Client ID
+     * @param id
+     */
+    public void setClientId(int id)
+    {
+        this.clientId = id;
+    }
+    
+    /**
+     * Get Client ID
+     * @return Client ID
+     */
+    public int getClientId()
+    {
+        return this.clientId;
     }
 }

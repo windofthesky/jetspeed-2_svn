@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.om.registry;
 
+import java.util.Vector;
+
 /**
  * <P>
  * The <CODE>ClientEntry</CODE> interface represents one client inside
@@ -65,6 +67,19 @@ package org.apache.jetspeed.om.registry;
  */
 public interface ClientEntry extends RegistryEntry
 {
+    /**
+    * Set Client ID -- Assigns the Client ID
+    * @param id
+    */
+    public void setClientId(int id);
+ 
+    
+       /**
+    * Get Client ID
+    * @return Client ID
+    */
+    public int getClientId();
+       
     /**
      * Returns the pattern parameter of this client. The pattern is used
      * to match a client to the user agent used to access the portal. If
@@ -133,7 +148,13 @@ public interface ClientEntry extends RegistryEntry
      * @return the MimeTypeMap
      * @see MimeTypeMap
      */
-    public MimetypeMap getMimetypeMap();
+    public Vector getMimetypes();
+    
+    /**
+     * Set MimeTypes
+     * @param mimetypes
+     */
+    public void setMimetypes(Vector mimetypes);
 
     /**
      * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
@@ -143,6 +164,7 @@ public interface ClientEntry extends RegistryEntry
      * @return the CapabilityMap
      * @see CapabilityMap
      */
-    public CapabilityMap getCapabilityMap();
+    public Vector getCapabilities();
+    public void setCapabilities(Vector capabilities);
 
 }

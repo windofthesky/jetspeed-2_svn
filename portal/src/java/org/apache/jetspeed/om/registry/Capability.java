@@ -51,84 +51,44 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+
+
 package org.apache.jetspeed.om.registry;
 
-import java.util.Vector;
-
 /**
- * This entry describes all the properties that should be present in
- * a RegistryEntry describing a MediaType
+ * Capability class.
  *
- * FIXME: we should add some additionnal attrbutes for separating 2 versions
- * of the same mime type
- *
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public interface MediaTypeEntry extends RegistryEntry
+public interface Capability
 {
     /**
-     * Set MediaType ID -- Assigns ID
+     * Set CapabilityId
+     * 
      * @param id
      */
-    public void setMediatypeId(int id);
-
-    /**
-     * Get MediaType ID -- Return ID
-     * @return MediaTypeID
-     */
-    public int getMediatypeId();
+    public void setCapabilityId(int id);
     
-    /** @return the character set associated with this MediaType */
-    public String getCharacterSet();
-
-    /** Sets the character set associated with this MediaType */
-    public void setCharacterSet( String charSet);
-
     /**
-     * Returns all supported capablities as <CODE>CapabilityMap</CODE>.
-     * The <CODE>CapabilityMap</CODE> contains all capabilities in arbitrary
-     * order.
-     *
-     * @return a vector of capabilities
+     * Get CapabilityId
      * 
+     * @return capabilityId
      */
-    public Vector getCapabilities();
+    public int getCapabilityId();
     
     /**
-     * Set the capabilities
-     * @param vector of capabilities
+     * Set Capability name
+     * 
+     * @param name
      */
-    public void setCapabilities(Vector capabilities);
+    public void setName(String name);
     
-   /**
-   * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
-   * The <CODE>MimeTypeMap</CODE> contains all mimetypes in decreasing
-   * order of importance.
-   *
-   * @return the MimeTypeMap
-   * @see MimeTypeMap
-   */
-  public Vector getMimetypes();
-  
-  /**
-   * Set mime types
-   * @param mimetypes
-   */
-  public void setMimetypes(Vector mimetypes);
-  
-  /**
-   *    removes the MimeType to the MimeType map 
-   * @param name
-   */
-  
-  public void removeMimetype(String name);
-  
-  /**
-   * removes the MimeType to the MimeType map 
-   * @param name
-   */
-  public void addMimetype(String name);
+    /**
+     * Get CapabilityId
+     * 
+     * @return capability string
+     */
+    public String getName();
 
-    
 }

@@ -716,7 +716,185 @@
       
   
     </class-descriptor>
-
-   
     
+    
+<!--
+   - C A P A B I L I T Y  M A P P I N G
+-->	
 
+<!--
+   - M E D I A T Y P E
+  -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.registry.impl.MediaTypeEntryImpl"
+   	  table="MEDIA_TYPE"
+   >
+      
+        <field-descriptor
+         name="MediatypeId"
+         column="MEDIATYPE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"            
+      />
+      
+      <field-descriptor
+         name="Name"
+         column="NAME"
+         jdbc-type="VARCHAR"     
+      />
+           
+      <field-descriptor
+         name="CharacterSet"
+         column="CHARACTER_SET"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="Title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />  
+      
+      <field-descriptor
+         name="Description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      /> 
+      
+      <collection-descriptor
+          name="Capabilities"
+          element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+ 
+          indirection-table="MEDIATYPE_TO_CAPABILITY"
+       >
+          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-element-class column="CAPABILITY_ID"/>
+       </collection-descriptor>
+       
+       <collection-descriptor
+          name="Mimetypes"
+          element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+ 
+          indirection-table="MEDIATYPE_TO_MIMETYPE"
+       >
+          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-element-class column="MIMETYPE_ID"/>
+       </collection-descriptor>
+      
+      </class-descriptor>
+             
+  <!--
+   - C L I E N T
+  -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.registry.impl.ClientEntryImpl"
+   	  table="CLIENT"
+   >
+        <field-descriptor
+         name="ClientId"
+         column="CLIENT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+       />
+      
+        <field-descriptor
+         name="Name"
+         column="NAME"
+         jdbc-type="VARCHAR"     
+      />
+      
+      <field-descriptor
+         name="Useragentpattern"
+         column="USER_AGENT_PATTERN"
+         jdbc-type="VARCHAR"     
+      />
+      
+      <field-descriptor
+         name="Manufacturer"
+         column="MANUFACTURER"
+         jdbc-type="VARCHAR"     
+      />
+      
+      <field-descriptor
+         name="Model"
+         column="MODEL"
+         jdbc-type="VARCHAR"     
+      />
+      
+      <field-descriptor
+         name="Version"
+         column="VERSION"
+         jdbc-type="VARCHAR"     
+      />
+      
+      <collection-descriptor
+          name="Capabilities"
+          element-class-ref="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+ 
+          indirection-table="MEDIATYPE_TO_CAPABILITY"
+       >
+          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-element-class column="CAPABILITY_ID"/>
+       </collection-descriptor>
+       
+       <collection-descriptor
+          name="Mimetypes"
+          element-class-ref="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+ 
+          indirection-table="MEDIATYPE_TO_MIMETYPE"
+       >
+          <fk-pointing-to-this-class column="MEDIATYPE_ID"/>
+          <fk-pointing-to-element-class column="MIMETYPE_ID"/>
+       </collection-descriptor>
+      
+    </class-descriptor>
+
+<!--
+   - M I M E T Y P E 
+  -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.registry.impl.MimeTypeImpl"
+   	  table="MIMETYPE"
+   >
+        <field-descriptor
+         name="MimetypeId"
+         column="MIMETYPE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />  
+    </class-descriptor>
+    
+<!--
+   - C A P A B I L I T Y
+  -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.registry.impl.CapabilityImpl"
+   	  table="CAPABILITY"
+   >
+        <field-descriptor
+         name="CapabilityId"
+         column="CAPABILITY_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+       <field-descriptor
+         name="Name"
+         column="CAPABILITY"
+         jdbc-type="VARCHAR"     
+      />
+      
+    </class-descriptor>
+   
+  

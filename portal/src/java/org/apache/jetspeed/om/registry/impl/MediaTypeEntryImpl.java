@@ -51,10 +51,11 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.om.registry.base;
+package org.apache.jetspeed.om.registry.impl;
 
-import org.apache.jetspeed.om.registry.CapabilityMap;
 import org.apache.jetspeed.om.registry.MediaTypeEntry;
+import org.apache.jetspeed.om.registry.base.BaseRegistryEntry;
+import java.util.Vector;
 
 /**
  * Default bean like implementation of MediaTypeEntry interface
@@ -63,18 +64,18 @@ import org.apache.jetspeed.om.registry.MediaTypeEntry;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class BaseMediaTypeEntry extends BaseRegistryEntry
+public class MediaTypeEntryImpl extends BaseRegistryEntry
     implements MediaTypeEntry
 {
-
-    protected String mimeType;
     protected String characterSet;
-    private CapabilityMap capabilities = new BaseCapabilityMap();
+    private Vector capabilities;
+    private Vector mimetypes;
+    private int mediatypeId;
 
-    public BaseMediaTypeEntry()
+    public MediaTypeEntryImpl()
     {}
 
-    public BaseMediaTypeEntry(long id,
+    public MediaTypeEntryImpl(long id,
                               String name,
                               int _hidden,
                               String mimeType,
@@ -83,9 +84,7 @@ public class BaseMediaTypeEntry extends BaseRegistryEntry
                               String image,
                                String role)
     {
-        super(id, name, _hidden, title, description, image, role);
-
-        this.mimeType = mimeType;
+         this.mimetypes.add(mimeType);
     }
 
     /**
@@ -99,18 +98,18 @@ public class BaseMediaTypeEntry extends BaseRegistryEntry
             return false;
         }
 
-        BaseMediaTypeEntry obj = (BaseMediaTypeEntry)object;
+        MediaTypeEntryImpl obj = (MediaTypeEntryImpl)object;
 
-        if (mimeType!=null)
+        if (mimetypes.isEmpty()!= true)
         {
-            if (!mimeType.equals(obj.mimeType))
+            if ( !mimetypes.contains(obj.getMimetypes().firstElement()) )
             {
                 return false;
             }
         }
         else
         {
-            if (obj.mimeType!=null)
+            if (obj.getMimetypes().isEmpty() == false)
             {
                 return false;
             }
@@ -138,21 +137,8 @@ public class BaseMediaTypeEntry extends BaseRegistryEntry
 
         return super.equals(object);
     }
-
-    /** @return the mime type associated with this MediaType */
-    public String getMimeType()
-    {
-        return this.mimeType;
-    }
-
-    /** Sets the MimeType associated with this MediaType
-     *  @param mimeType the MIME type to associate
-     */
-    public void setMimeType( String mimeType )
-    {
-        this.mimeType = mimeType;
-    }
-
+    
+ 
     /** @return the character set associated with this MediaType */
     public String getCharacterSet()
     {
@@ -165,20 +151,56 @@ public class BaseMediaTypeEntry extends BaseRegistryEntry
         this.characterSet = charSet;
     }
 
-    public CapabilityMap getCapabilityMap()
+    
+    public Vector getCapabilities()
     {
-        return capabilities;
+        return this.capabilities;
     }
 
-    // castor related method definitions
-
-    public BaseCapabilityMap getCapabilities()
-    {
-        return (BaseCapabilityMap)capabilities;
-    }
-
-    public void setCapabilities(BaseCapabilityMap capabilities)
+    public void setCapabilities(Vector capabilities)
     {
         this.capabilities = capabilities;
     }
+    
+    public Vector getMimetypes()
+    {
+        return this.mimetypes;
+    }
+    
+    public void setMimetypes(Vector mimetypes)
+    {
+        this.mimetypes = mimetypes;
+    }
+    
+    public void addMimetype(String name)
+    {
+        if (!mimetypes.contains(name))
+        {
+            mimetypes.add(name);
+        }
+    }
+
+    public void removeMimetype(String name)
+    {
+        mimetypes.remove(name);
+    }
+    
+    /**
+     * Set MediaType ID -- Assigns ID
+     * @param id
+     */
+    public void setMediatypeId(int id)
+    {
+        this.mediatypeId = id;
+    }
+
+    /**
+     * Get MediaType ID -- Return ID
+     * @return MediaTypeID
+     */
+    public int getMediatypeId()
+    {
+        return this.mediatypeId;
+    }
+
 }

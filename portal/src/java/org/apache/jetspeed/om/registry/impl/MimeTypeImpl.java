@@ -52,129 +52,53 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.registry.base;
+package org.apache.jetspeed.om.registry.impl;
 
-import java.util.Iterator;
-import java.util.Vector;
+import org.apache.jetspeed.om.registry.MimeType;
 
-import org.apache.jetspeed.om.registry.CapabilityMap;
 
 /**
- * Simple bean-like implementation of the CapabilityMap
+ * Mimetype implementation class.
  *
- * @author <a href="shesmer@raleigh.ibm.com">Stephan Hesmer</a>
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
+ * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class BaseCapabilityMap implements CapabilityMap, java.io.Serializable
+
+public class MimeTypeImpl implements MimeType
 {
-    private Vector caps = new Vector();
+    private int mimeTypeId;
+    private String name;
 
-    public BaseCapabilityMap()
-    {
-    }
-
-    /**
-     * Implements the equals operation so that 2 elements are equal if
-     * all their member values are equal.
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#setMimetypeId(int)
      */
-    public boolean equals(Object object)
+    public void setMimetypeId(int id)
     {
-        if (object==null)
-        {
-            return false;
-        }
-
-        BaseCapabilityMap obj = (BaseCapabilityMap)object;
-
-        Iterator i = caps.iterator();
-        Iterator i2 = obj.caps.iterator();
-        while(i.hasNext())
-        {
-            String c1 = (String)i.next();
-            String c2 = null;
-
-            if (i2.hasNext())
-            {
-                c2 = (String)i2.next();
-            }
-            else
-            {
-                return false;
-            }
-
-            if (!c1.equals(c2))
-            {
-                return false;
-            }
-        }
-
-        if (i2.hasNext())
-        {
-            return false;
-        }
-
-        return true;
+      this.mimeTypeId = id;
     }
 
-    public Iterator getCapabilities()
-    {
-        return caps.iterator();
-    }
-
-    public void addCapability(String name)
-    {
-        if (!caps.contains(name))
-        {
-            caps.add(name);
-        }
-    }
-
-    public void removeCapability(String name)
-    {
-        caps.remove(name);
-    }
-
-    /**
-     * Checks if the argument capability is included in this map
-     *
-     * @param capabiltiy a capability descriptor
-     * @return true if the capability is supported
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#getMimetypeId()
      */
-    public boolean contains(String capability)
+    public int getMimetypeId()
     {
-        return caps.contains(capability);
+        return this.mimeTypeId;
     }
 
-    /**
-     * Checks if the all the elements of argument capability map
-     * are included in the current one
-     *
-     * @param map a CapabilityMap implementation to test
-     * @return true is all the elements the argument map are included in the
-     * current map.
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#setName(java.lang.String)
      */
-    public boolean containsAll(CapabilityMap map)
+    public void setName(String name)
     {
-        Iterator i = map.getCapabilities();
-
-        while(i.hasNext())
-        {
-            String capability = (String)i.next();
-            if (!contains(capability))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        this.name = name;
     }
 
-    // castor related method definitions
-
-    public Vector getCaps()
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.registry.MimeType#getName()
+     */
+    public String getName()
     {
-        return caps;
+        return this.name;
     }
 
 }
