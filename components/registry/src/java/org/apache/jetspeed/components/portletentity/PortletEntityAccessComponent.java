@@ -68,13 +68,13 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public interface PortletEntityAccessComponent
 {
-	PortletEntity getPortletEntity(ObjectID id);
+	StoreablePortletEntityDelegate getPortletEntity(ObjectID id);
 
 
-	PortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
+	StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String portletName);
        
 
-	PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
+	StoreablePortletEntityDelegate newPortletEntityInstance(PortletDefinition portletDefinition);
 
 
 	void removePortletEntity(PortletEntity portletEntity) throws PortletEntityNotDeletedException;

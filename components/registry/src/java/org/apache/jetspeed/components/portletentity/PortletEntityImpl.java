@@ -53,18 +53,12 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.preference.impl.AbstractPreference;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -105,11 +99,7 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
 
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
 
-    protected PreferenceSetImpl mutatingPreferencesWrapper = new PreferenceSetImpl();
-
     protected List originalPreferences;
-
-    protected List mutatingPreferences;
 
     private PortletApplicationEntity applicationEntity = null;
 
@@ -118,39 +108,24 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     private PortletEntity modifiedObject = null;
 
     private PortletDefinitionComposite portletDefinition = null;
-
+	
+	/**
+	 *  
+	 * <p>
+	 * getPreferenceSet
+	 * </p>
+	 *  <strong>WARNING!!!<br/></strong>
+	 * This method should not be used to alter the contents
+	 * of the PreferenceSet directly by user calls to the portal.  
+	 * You should be wrapping this with an instance of the
+	 * {@link StoreablePortletEntityDelegate#store()}.
+	 * 
+	 * @see org.apache.pluto.om.entity.PortletEntity#getPreferenceSet()
+	 * @return
+	 */
     public PreferenceSet getPreferenceSet()
     {
-        if (mutatingPreferences == null)
-        {
-            if (originalPreferences == null)
-            {
-                originalPreferences = new ArrayList();
-                mutatingPreferences = new ArrayList();
-            }
-            else
-            {
-                initMutatingPreferences();
-            }
-
-        }
-        mutatingPreferencesWrapper.setInnerCollection(mutatingPreferences);
-        return mutatingPreferencesWrapper;
-    }
-
-    protected void initMutatingPreferences()
-    {
-        mutatingPreferences = new ArrayList(originalPreferences.size());
-        if (originalPreferences != null)
-        {
-
-            Iterator itr = originalPreferences.iterator();
-            while (itr.hasNext())
-            {
-                AbstractPreference pref = (AbstractPreference) itr.next();
-                mutatingPreferences.add(pref.clone());
-            }
-        }
+		return new PreferenceSetImpl(originalPreferences);
     }
 
     public PortletDefinition getPortletDefinition()
@@ -167,75 +142,37 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     {
         return portletWindows;
     }
-
+	
+	/**
+	 *  
+	 * <p>
+	 * store
+	 * </p>
+	 * This method is not directly supported. Use
+	 * {@link StoreablePortletEntityDelegate#store()}
+	 * 
+	 */
     public void store() throws java.io.IOException
     {
-        try
-        {
-
-            if (mutatingPreferences != null && mutatingPreferences.size() > 0)
-            {
-                boolean originalPrefsExist = true;
-                if (originalPreferences == null)
-                {
-                    originalPreferences = new ArrayList(mutatingPreferences.size());
-                    originalPrefsExist = false;
-                }
-
-                try
-                {
-                    for (int i = 0; i < mutatingPreferences.size(); i++)
-                    {
-                        AbstractPreference pref = (AbstractPreference) mutatingPreferences.get(i);
-                        if (originalPrefsExist)
-                        {
-                            AbstractPreference orgPref = (AbstractPreference) originalPreferences.get(i);
-                            if (orgPref != null)
-                            {
-                                BeanUtils.copyProperties(orgPref, pref);
-                            }
-                            else
-                            {
-                                originalPreferences.add(pref.clone());
-                            }
-
-                        }
-                        else
-                        {
-                            originalPreferences.add(pref.clone());
-                        }
-
-                    }
-                }
-                catch (Exception e1)
-                {
-                    throw new IOException("Unable to map mutated preferences into the originals: " + e1.toString());
-                }
-
-            }
-
-            // PortletEntityAccess.storePortletEntity(this);
-            // TODO: this is bad
-//			PersistenceStoreContainer pContainer = (PersistenceStoreContainer) PicoBootstrapContainer.getComponentInstance(PersistenceStoreContainer.class);
-//			PersistenceStore store = pContainer.getStore("jetspeed");
-//			Transaction tx = store.getTransaction();
-//			if(!tx.isOpen())
-//			{
-//				tx.begin();
-//			}
-//			store.lockForWrite(this);
-//			tx.checkpoint();
-        }
-        catch (Exception e)
-        {
-            throw new IOException("Unable to store Portlet Entity. " + e.toString());
-        }
+		throw new UnsupportedOperationException("PortletEntityImpl.store() is not directly accessable.  "+ 
+						   "Use the StoreablePortletEntityDelegate instead.");      
 
     }
+    
+    /**
+     *  
+     * <p>
+     * reset
+     * </p>
+     * 
+	 * This method is not directly supported. Use
+	 * {@link StoreablePortletEntityDelegate#store()}
+     */
 
     public void reset() throws java.io.IOException
     {
-        initMutatingPreferences();
+        throw new UnsupportedOperationException("PortletEntityImpl.reset() is not directly accessable.  "+ 
+                   "Use the StoreablePortletEntityDelegate instead.");
     }
 
     // internal methods used for debugging purposes only
