@@ -17,6 +17,7 @@ package org.apache.jetspeed.locator;
 
 import java.util.Iterator;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -70,11 +71,21 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
      * @param roots A list of resource root directories where templates are located.
      * @param appRoot  Root from where this application runs
      */
-    public JetspeedTemplateLocator(List roots, String appRoot) 
+    public JetspeedTemplateLocator(List roots, String appRoot) throws FileNotFoundException 
     {
-        this.roots = roots;   
         this.appRoot = appRoot;
-        
+        log.info("Locator application root "+new File(appRoot).getAbsolutePath());
+        this.roots = roots;   
+        Iterator itr = roots.iterator();
+        while(itr.hasNext())
+        {
+            String path  = (String) itr.next();
+            File checkFile = new File(path);
+            if(!checkFile.exists())
+            {
+                throw new FileNotFoundException("Locator resource root "+checkFile.getAbsolutePath()+" does not exist.");
+            }
+        }        
     }
 
     /**
@@ -87,10 +98,9 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
      */
     public JetspeedTemplateLocator(List roots, 
                                         String defaultLocatorType,
-                                        String appRoot)
+                                        String appRoot) throws FileNotFoundException
     {
-        this.roots = roots;        
-        this.appRoot = appRoot;
+        this(roots, appRoot);
         this.defaultLocatorType = defaultLocatorType;
     }
 
@@ -107,12 +117,10 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
     public JetspeedTemplateLocator(List roots, 
                                    List omClasses,
                                    String defaultLocatorType,
-                                   String appRoot)
+                                   String appRoot) throws FileNotFoundException
     {
-        System.out.println("Initializing template locator component: " + locatorClass); 
-        this.roots = roots;
-        this.appRoot = appRoot;
-        this.defaultLocatorType = defaultLocatorType;
+        this(roots,  defaultLocatorType, appRoot);                
+      
         if (omClasses.size() > 0)
         {
             this.templateClass = (Class)omClasses.get(0);
