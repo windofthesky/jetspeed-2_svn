@@ -16,21 +16,21 @@
 package org.apache.jetspeed.components.persistence.store.ojb.pb;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
+import org.apache.jetspeed.components.persistence.store.RemovalAware;
 import org.apache.jetspeed.components.persistence.store.Transaction;
-import org.apache.jetspeed.components.persistence.store.LockFailedException;
+import org.apache.jetspeed.components.persistence.store.UpdateAware;
 import org.apache.jetspeed.components.persistence.store.impl.StoreEventInvoker;
 import org.apache.jetspeed.components.persistence.store.ojb.CriteriaFilter;
 import org.apache.ojb.broker.Identity;
@@ -134,8 +134,21 @@ public class PBStore implements PersistenceStore
     public void deletePersistent(Object obj) throws LockFailedException
     {
         checkBroker();
-        invoker.beforeDeletePersistent(obj);        
+        invoker.beforeDeletePersistent(obj);
+        RemovalAware ra = null;
+        if(obj instanceof RemovalAware)
+        {
+           ra = (RemovalAware) obj;
+           ra.preRemoval(this);
+        }
+            
         pb.delete(obj);
+        
+        if(ra != null)
+        {
+            ra.postRemoval(this);
+        }
+        
         invoker.afterDeletePersistent(obj);
 
     }
@@ -382,9 +395,21 @@ public class PBStore implements PersistenceStore
     {
         try
         {
-            invoker.beforeMakePersistent(obj);
             checkBroker();
+            invoker.beforeMakePersistent(obj);
+            UpdateAware ua = null;
+            if(obj instanceof UpdateAware)
+            {
+                ua = (UpdateAware) obj;
+                ua.preUpdate(this);
+            }          
+            
             pb.store(obj);
+            if(ua != null)
+            {
+                ua.postUpdate(this);
+            }
+            
             invoker.afterMakePersistent(obj);
         }
         finally
