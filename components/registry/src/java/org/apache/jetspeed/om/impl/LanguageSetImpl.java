@@ -103,7 +103,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
                 if (resources != null)
                 {
                     return createLanguage(lang.getLocale(), loadResourceBundle(lang.getLocale()), lang.getTitle(), lang
-                            .getShortTitle(), StringUtils.join(lang.getKeywords(), ","));
+                            .getShortTitle(), StringUtils.join(lang.getKeywords(), ","), false);
                 }
                 else
                 {
@@ -120,7 +120,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
         if (fallBack != null && resources != null)
         {
             fallBack = createLanguage(fallBack.getLocale(), loadResourceBundle(fallBack.getLocale()), fallBack
-                    .getTitle(), fallBack.getShortTitle(), StringUtils.join(fallBack.getKeywords(), ","));
+                    .getTitle(), fallBack.getShortTitle(), StringUtils.join(fallBack.getKeywords(), ","), true);
         }
 
         if (fallBack == null)
@@ -264,7 +264,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
             shortTitle = defaultLang.getShortTitle();
             keywords = StringUtils.join(defaultLang.getKeywords(), ",");
         }
-        return createLanguage(locale, bundle, title, shortTitle, keywords);
+        return createLanguage(locale, bundle, title, shortTitle, keywords, false);
     }
 
     /**
@@ -278,9 +278,9 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
      * @return
      */
     private Language createLanguage( Locale locale, ResourceBundle bundle, String title, String shortTitle,
-            String keywords )
+            String keywords, boolean createNow)
     {
-        if (!locale.equals(getDefaultLocale()))
+        if (!createNow && !locale.equals(getDefaultLocale()))
         {
             Language defaultLang = get(getDefaultLocale());
 
