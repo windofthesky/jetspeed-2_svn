@@ -93,7 +93,8 @@ container.registerComponentInstance(pContainerClass, pContainer);
 //
 
 Class registryClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent")
-Parameter[] regParams = new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")}
-container.registerComponentInstance(registryClass, new PortletRegistryComponentImpl() );
+Class registryImplClass = Class.forName("org.apache.jetspeed.components.portletregsitry.PortletRegistryComponentImpl")
+// Parameter[] regParams = new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")}
+container.registerComponentImplementation(registryClass, registryImplClass, new Parameter[] {new ComponentParameter(pContainerClass), new ConstantParameter("jetspeed")} );
 
 return container
