@@ -16,6 +16,7 @@
 package org.apache.jetspeed.util.descriptor;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,6 +38,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
@@ -514,7 +516,19 @@ public class PortletApplicationWar
             if(rewriter.isPortletTaglibAdded())
             {
                 //add portlet tag lib to war
-                //warStruct.
+                File portletTaglibDir = new File(Jetspeed.getRealPath("WEB-INF/tld"));
+                File child = new File(warStruct.getRootDirectory(), "WEB-INF/tld");
+                DirectoryHelper dh = new DirectoryHelper(child);
+                dh.copyFrom(portletTaglibDir, new FileFilter(){
+
+                    public boolean accept(File pathname)
+                    {
+                        return pathname.getName().indexOf("portlet.tld") != -1;
+                    }
+                    
+                });
+                
+                dh.close();
             }
 
         }
