@@ -68,6 +68,7 @@ import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
+import org.apache.jetspeed.components.hsql.HSQLServerComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.services.JetspeedContainerServices;
@@ -157,14 +158,31 @@ public class JetspeedEngine implements Engine
                 System.setProperty("java.util.prefs.PreferencesFactory", preferencesFactory);
                 log.info("Configured java.util.prefs.PreferencesFactory from " + log4jFile);
             }
+            
+            // Set the db script to be used, if not already set (HSQL only)
+            String dbScriptPath = System.getProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH);
+            
+            if(dbScriptPath == null)
+            {
+                dbScriptPath = configuration.getString(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH, getRealPath("WEB-INF/db/hsql/Registry"));
+                System.setProperty(HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH, dbScriptPath);
+                log.info("Jetspeed Engine will use the value "+dbScriptPath+" set in the configuration property "
+                        +HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH+" for starting the HSQL server.");
+            }
+            else
+            {
+                log.info("Jetspeed Engine will use the value "+dbScriptPath+" set in the system property "
+                        +HSQLServerComponent.SYS_PROP_HSQLDBSERVER_DB_PATH+" for starting the HSQL server.");
+            }
+            
 
             //
             // bootstrap the initable services
             //
-            initServices();
-            log.info("Service initialization complete");
             initComponents();
-            log.info("Components initialization complete");
+            log.info("Components initialization complete");            
+            initServices();
+            log.info("Service initialization complete");            
 
             // 
             // create the container
@@ -346,6 +364,7 @@ public class JetspeedEngine implements Engine
         {
             DatasourceComponent ds = (DatasourceComponent) componentManager.getComponent(DatasourceComponent.class);
             jndi.bindObject("comp/env/jdbc/jetspeed", ds.getDatasource());
+            jndi.bindToCurrentThread();
         }
     }
     private void initServices() throws CPSInitializationException
