@@ -43,6 +43,11 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public interface RequestContext
 {
+    public static final String PREFERED_LANGUAGE_SESSION_KEY = "org.apache.jetspeed.prefered.language";
+    public static final String PREFERED_LOCALE_SESSION_KEY = "org.apache.jetspeed.prefered.locale";
+    public static final String PREFERED_CHARACTERENCODING_KEY = "org.apache.jetspeed.prefered.characterencoding";
+    public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";    												
+
     /**
      * Gets the HTTP Servlet Request.  This is the Servlet
      * containers raw request object.  This request should
