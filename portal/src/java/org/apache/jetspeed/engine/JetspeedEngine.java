@@ -47,6 +47,7 @@ import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.services.information.InformationProviderManager;
 import org.apache.jetspeed.services.information.InformationProviderServiceService;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.services.information.InformationProviderService;
@@ -141,6 +142,10 @@ public class JetspeedEngine implements Engine
             initServices();
             log.info("Service initialization complete");
 
+            // patch up OJB
+            ClassLoader ploader2 = this.getClass().getClassLoader();
+            ClassHelper.setClassLoader(ploader2);
+            
             //
             // create the pipelines
             //
