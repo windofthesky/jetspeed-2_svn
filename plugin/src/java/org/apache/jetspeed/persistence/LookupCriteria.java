@@ -93,9 +93,9 @@ public interface LookupCriteria
      */
     public abstract void addLessOrEqualThan(String arg0, Object arg1);
     /**
-     * @see org.apache.ojb.broker.query.Criteria#addLike(java.lang.String, java.lang.Object)
+     * @see org.apache.ojb.broker.query.Criteria#addLike(java.lang.Object, java.lang.Object)
      */
-    public abstract void addLike(String arg0, Object arg1);
+    public abstract void addLike(Object arg0, Object arg1);
     /**
      * @see org.apache.ojb.broker.query.Criteria#addNotBetween(java.lang.String, java.lang.Object, java.lang.Object)
      */

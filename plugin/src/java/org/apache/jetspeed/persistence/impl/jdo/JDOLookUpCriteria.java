@@ -103,7 +103,7 @@ public class JDOLookUpCriteria implements LookupCriteria
     /**
      * @see org.apache.jetspeed.persistence.LookupCriteria#addLike(java.lang.String, java.lang.Object)
      */
-    public void addLike(String arg0, Object arg1)
+    public void addLike(Object arg0, Object arg1)
     {
         addAnd();
         boolean both = false;

@@ -124,9 +124,9 @@ public class OjbLookupCriteria implements LookupCriteria
     }
 
     /**
-     * @see org.apache.ojb.broker.query.Criteria#addLike(java.lang.String, java.lang.Object)
+     * @see org.apache.ojb.broker.query.Criteria#addLike(java.lang.Object, java.lang.Object)
      */
-    public void addLike(String arg0, Object arg1)
+    public void addLike(Object arg0, Object arg1)
     {
         ojbCriteria.addLike(arg0, arg1);
     }
