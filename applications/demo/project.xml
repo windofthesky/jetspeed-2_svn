@@ -68,15 +68,6 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>1.4-rc1</version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
             <groupId>servletapi</groupId>
             <artifactId>servletapi</artifactId>
             <version>2.3</version>
@@ -146,6 +137,15 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+		<dependency>
+            <groupId>jetspeed2</groupId>
+            <artifactId>jetspeed-web-content</artifactId>
+            <version>2.0-a1-dev</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>		
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
