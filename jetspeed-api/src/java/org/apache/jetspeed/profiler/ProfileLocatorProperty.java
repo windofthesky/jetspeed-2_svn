@@ -74,4 +74,9 @@ public interface ProfileLocatorProperty
      * @return control classification flag
      */
     boolean isControl();
+    
+    /**
+     * @return true if a property is a navigation
+     */
+    boolean isNavigation();
 }

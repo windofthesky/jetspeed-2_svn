@@ -31,24 +31,27 @@ public class ProfileLocatorPropertyImpl implements ProfileLocatorProperty
     private String value;
     private String type;
     private int fallbackType;
-    private boolean isControl;
+    private boolean isControl = true;
+    private boolean isNavigation = false;
         
-    public ProfileLocatorPropertyImpl(RuleCriterion criterion, boolean isControl, String value)
+    public ProfileLocatorPropertyImpl(RuleCriterion criterion, boolean isControl, boolean isNavigation, String value)
     {
         this.name = criterion.getName();
         this.value = value;
         this.type = criterion.getType();
         this.fallbackType = criterion.getFallbackType();
         this.isControl = isControl;
+        this.isNavigation = isNavigation;
     }
     
-    public ProfileLocatorPropertyImpl(String name, boolean isControl, String value)
+    public ProfileLocatorPropertyImpl(String name, boolean isControl, boolean isNavigation, String value)
     {
         this.name = name;
         this.value = value;
         this.type = ProfilingRule.STANDARD;
         this.fallbackType = RuleCriterion.FALLBACK_CONTINUE;
         this.isControl = isControl;
+        this.isNavigation = isNavigation;
     }
 
     /**
@@ -124,4 +127,12 @@ public class ProfileLocatorPropertyImpl implements ProfileLocatorProperty
         return isControl;
     }
 
+    /**
+     * @return navigation classification flag
+     */
+    public boolean isNavigation()
+    {
+        return isNavigation;
+    }
+    
 }

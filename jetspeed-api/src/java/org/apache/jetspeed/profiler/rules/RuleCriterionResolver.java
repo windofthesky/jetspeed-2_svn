@@ -74,6 +74,9 @@ public interface RuleCriterionResolver
     /** look in user attributes */
     public static final String USER_ATTRIBUTE = "user.attribute";
     
+    /** change the current navigation path */
+    public static final String NAVIGATION = "navigation";
+    
     /**
      * Resolver the value for a criterion.
      * 
@@ -90,5 +93,12 @@ public interface RuleCriterionResolver
      * @return The control class flag
      */    
     boolean isControl(RuleCriterion criterion);
+
+    /**
+     * Gets the navigation classification of the resolver.
+     * 
+     * @return The control class flag
+     */    
+    boolean isNavigation(RuleCriterion criterion);
     
 }

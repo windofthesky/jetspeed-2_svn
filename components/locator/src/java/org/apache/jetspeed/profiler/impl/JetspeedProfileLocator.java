@@ -89,20 +89,35 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
         }
         return false;
     }
-    
-    public void add(RuleCriterion criterion, boolean isControl, String value)
+
+    public boolean isNavigation(String name)
     {
-        elements.add(new ProfileLocatorPropertyImpl(criterion, isControl, value));
+        Iterator iter = elements.iterator();
+        while (iter.hasNext())
+        {
+            ProfileLocatorPropertyImpl element = (ProfileLocatorPropertyImpl)iter.next();
+            String elementName = element.getName();
+            if (elementName != null && elementName.equals(name))
+            {
+                return element.isNavigation();
+            }
+        }
+        return false;
+    }
+    
+    public void add(RuleCriterion criterion, boolean isControl, boolean isNavigation, String value)
+    {
+        elements.add(new ProfileLocatorPropertyImpl(criterion, isControl, isNavigation, value));
     }
 
-    public void add(String name, boolean isControl, String value)
+    public void add(String name, boolean isControl, boolean isNavigation, String value)
     {
-        elements.add(new ProfileLocatorPropertyImpl(name, isControl, value));
+        elements.add(new ProfileLocatorPropertyImpl(name, isControl, isNavigation, value));
     }
     
     public void add(String name, String value)
     {
-        add(name, true, value);
+        add(name, true, false, value);
     }
     
     public void createFromLocatorPath(String path)
@@ -115,7 +130,7 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
             if (tokenizer.hasMoreTokens())
             {
                 String value = tokenizer.nextToken();
-                this.add(name, true, value);
+                this.add(name, true, false, value);
             }
         }        
     }

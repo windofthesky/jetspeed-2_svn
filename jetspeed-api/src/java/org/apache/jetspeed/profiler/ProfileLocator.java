@@ -68,18 +68,20 @@ public interface ProfileLocator
      * 
      * @param criterion The rule criterion on which this property is based.
      * @param isControl The control classification for property.
+     * @param isNavigation The navigation classification for property.
      * @param value The value to set on the property.
      */        
-    void add(RuleCriterion criterion, boolean isControl, String value);
+    void add(RuleCriterion criterion, boolean isControl, boolean isNavigation, String value);
 
     /**
      * Add a property based on a simple name and value.
      * 
      * @param name The name of the property.
      * @param isControl The control classification for property.
+     * @param isNavigation The control classification for property.
      * @param value The value to set on the property.
      */            
-    void add(String name, boolean isControl, String value);
+    void add(String name, boolean isControl, boolean isNavigation, String value);
     
     /**
      * Add a property based on a simple name and value assumed
@@ -105,6 +107,14 @@ public interface ProfileLocator
      * @return control classification flag
      */
     boolean isControl(String name);
+
+    /**
+     * For a given property name, return navigation status of property.
+     *  
+     * @param name The name of the property
+     * @return navigation classification flag
+     */
+    boolean isNavigation(String name);
     
     /**
      * <p>Profiles can be created from a normalized <i>Profile Locator Path</i>
