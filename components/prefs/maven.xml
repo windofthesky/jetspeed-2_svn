@@ -4,21 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.prefs.TestPreferences'/> 
-  
- 
-  <!-- ================================================================ -->
-  <!-- Set System properties for junit                                  -->
-  <!-- ================================================================ -->
-  <preGoal name="test:single">
-     <j:set var="java.util.prefs.PreferencesFactory" value="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"/>
-     <j:set var="maven.junit.sysproperties">java.util.prefs.PreferencesFactory</j:set>
-  </preGoal>
- 
-  <preGoal name="test:test">
-     <j:set var="java.util.prefs.PreferencesFactory" value="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"/>
-     <j:set var="maven.junit.sysproperties">java.util.prefs.PreferencesFactory</j:set>
-  </preGoal>
+  <property name='testcase' value='org.apache.jetspeed.prefs.TestPropertyManager'/> 
     
   <goal name="deployJar">
   	<attainGoal name="jar:install"/>
