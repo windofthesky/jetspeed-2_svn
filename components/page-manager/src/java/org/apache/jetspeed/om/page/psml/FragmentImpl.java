@@ -21,6 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
 
@@ -41,20 +44,25 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private List fragments = new Vector();
 
     private List properties = new Vector();
-    
+
     private String name;
-    
-    private String renderedContent;
+
+    private InheritableThreadLocal portletContent = new InheritableThreadLocal();
+
+    private static final Log log = LogFactory.getLog(FragmentImpl.class);
+
+    private InheritableThreadLocal overridenContent = new InheritableThreadLocal();
 
     public FragmentImpl()
-    {}
+    {
+    }
 
     public String getType()
     {
         return this.type;
     }
 
-    public void setType(String type)
+    public void setType( String type )
     {
         this.type = type;
     }
@@ -64,7 +72,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return this.state;
     }
 
-    public void setState(String state)
+    public void setState( String state )
     {
         this.state = state;
     }
@@ -74,7 +82,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return this.decorator;
     }
 
-    public void setDecorator(String decoratorName)
+    public void setDecorator( String decoratorName )
     {
         this.decorator = decoratorName;
     }
@@ -84,7 +92,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return this.skin;
     }
 
-    public void setSkin(String skin)
+    public void setSkin( String skin )
     {
         this.skin = skin;
     }
@@ -104,9 +112,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         List layouts = new ArrayList();
         Iterator i = this.properties.iterator();
 
-        while(i.hasNext())
+        while (i.hasNext())
         {
-            Property p = (Property)i.next();
+            Property p = (Property) i.next();
             if (!layouts.contains(p.getLayout()))
             {
                 layouts.add(p.getLayout());
@@ -116,7 +124,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return layouts;
     }
 
-    public List getProperties(String layoutName)
+    public List getProperties( String layoutName )
     {
         List props = new ArrayList();
         Iterator i = this.properties.iterator();
@@ -126,9 +134,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             layoutName = "";
         }
 
-        while(i.hasNext())
+        while (i.hasNext())
         {
-            Property p = (Property)i.next();
+            Property p = (Property) i.next();
             if (layoutName.equals(p.getLayout()))
             {
                 props.add(p);
@@ -137,35 +145,35 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
         return props;
     }
-    
-    public String getPropertyValue(String layout, String propName)
+
+    public String getPropertyValue( String layout, String propName )
     {
         Iterator itr = getProperties(layout).iterator();
-        while(itr.hasNext())
+        while (itr.hasNext())
         {
             Property aProp = (Property) itr.next();
-            if(aProp.getName().equals(propName))
+            if (aProp.getName().equals(propName))
             {
                 return aProp.getValue();
             }
         }
-        
+
         return null;
     }
-    
-    public void setPropertyValue(String layout, String propName, String value)
+
+    public void setPropertyValue( String layout, String propName, String value )
     {
         Iterator itr = getProperties(layout).iterator();
-        while(itr.hasNext())
+        while (itr.hasNext())
         {
             Property aProp = (Property) itr.next();
-            if(aProp.getName().equals(propName))
+            if (aProp.getName().equals(propName))
             {
                 aProp.setValue(value);
                 return;
             }
         }
-        
+
         PropertyImpl newProp = new PropertyImpl();
         newProp.setLayout(layout);
         newProp.setName(propName);
@@ -173,18 +181,18 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         addProperty(newProp);
     }
 
-    public void addProperty(Property p)
+    public void addProperty( Property p )
     {
         this.properties.add(p);
     }
 
-    public void removeProperty(Property p)
+    public void removeProperty( Property p )
     {
         Iterator i = this.properties.iterator();
 
-        while(i.hasNext())
+        while (i.hasNext())
         {
-            Property p2 = (Property)i.next();
+            Property p2 = (Property) i.next();
 
             if (p2.equals(p))
             {
@@ -193,7 +201,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         }
     }
 
-    public void clearProperties(String layoutName)
+    public void clearProperties( String layoutName )
     {
         if (layoutName == null)
         {
@@ -203,9 +211,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
         Iterator i = this.properties.iterator();
 
-        while(i.hasNext())
+        while (i.hasNext())
         {
-            Property p = (Property)i.next();
+            Property p = (Property) i.next();
 
             if (layoutName.equals(p.getLayout()))
             {
@@ -216,21 +224,20 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     public Vector getProperties()
     {
-        return (Vector)this.properties;
+        return (Vector) this.properties;
     }
 
-    public void setProperties(Vector props)
+    public void setProperties( Vector props )
     {
-        this.properties=props;
+        this.properties = props;
     }
 
-    public void setFragments(List fragments)
+    public void setFragments( List fragments )
     {
         this.fragments = fragments;
     }
 
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
+    public Object clone() throws java.lang.CloneNotSupportedException
     {
         Object cloned = super.clone();
 
@@ -238,20 +245,20 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
         return cloned;
 
-    }   // clone
+    } // clone
 
     /**
      * <p>
      * equals
      * </p>
-     *
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      * @param obj
      * @return
      */
     public boolean equals( Object obj )
     {
-        if(obj != null && obj instanceof Fragment)
+        if (obj != null && obj instanceof Fragment)
         {
             Fragment aFragment = (Fragment) obj;
             return getId().equals(aFragment.getId());
@@ -261,30 +268,32 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             return false;
         }
     }
+
     /**
      * <p>
      * hashCode
      * </p>
-     *
+     * 
      * @see java.lang.Object#hashCode()
      * @return
      */
     public int hashCode()
-    {    
-        if(getId() != null)
+    {
+        if (getId() != null)
         {
-            return (Fragment.class.getName()+":"+getId()).hashCode();
+            return (Fragment.class.getName() + ":" + getId()).hashCode();
         }
         else
         {
             return super.hashCode();
         }
     }
+
     /**
      * <p>
      * getName
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.om.page.Fragment#getName()
      * @return
      */
@@ -292,52 +301,99 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     {
         return name;
     }
+
     /**
      * <p>
      * setName
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.om.page.Fragment#setName(java.lang.String)
      * @param name
      */
     public void setName( String name )
     {
-       this.name = name;
+        this.name = name;
 
     }
-    
+
     /**
      * 
      * <p>
      * getRenderedContent
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.om.page.Fragment#getRenderedContent()
      * @return
      */
     public String getRenderedContent()
     {
-        if(renderedContent != null)
+        if(overridenContent.get() != null)
         {
-            return renderedContent;
+            return ((StringBuffer) overridenContent.get()).toString();
+        }
+        
+        PortletContent content = (PortletContent) portletContent.get();
+        if (content != null)
+        {
+            synchronized (content)
+            {
+                if (content.isComplete())
+                {
+                    return content.getContent();
+                }
+                else
+                {
+                    try
+                    {
+                        log.debug("Waiting on content for Fragment " + getId());
+                        content.wait();
+                        return content.getContent();
+                    }
+                    catch (InterruptedException e)
+                    {
+                        return e.getMessage();
+                    }
+                    finally
+                    {
+                        log.debug("Been notified that Faragment " + getId() + " is complete");
+                    }
+                }
+            }
         }
         else
         {
             throw new IllegalStateException("You cannot invoke getRenderedContent() until the content has been set.");
         }
     }
-    
+
     /**
-     * 
      * <p>
-     * setRenderedContent
+     * setPortletContent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.page.Fragment#setPortletContent(org.apache.jetspeed.aggregator.PortletContent)
+     * @param portletContent
+     */
+    public void setPortletContent( PortletContent portletContent )
+    {
+        this.portletContent.set(portletContent);
+    }
+    /**
+     * <p>
+     * overrideRenderedContent
      * </p>
      *
-     * @see org.apache.jetspeed.om.page.Fragment#setRenderedContent(java.lang.String)
-     * @param renderedContent
+     * @see org.apache.jetspeed.om.page.Fragment#overrideRenderedContent(java.lang.String)
+     * @param contnent
      */
-    public void setRenderedContent( String renderedContent )
-    {
-        this.renderedContent = renderedContent;
+    public void overrideRenderedContent( String content )
+    {        
+        StringBuffer buffer = (StringBuffer)overridenContent.get();
+        if(buffer == null)
+        {
+            buffer = new StringBuffer("Encountered the following problem(s) while attmepting to render portlet fragment: "+getId()+"<br />");
+            overridenContent.set(buffer);
+        }
+        buffer.append(content).append("<br />");
     }
 }
