@@ -564,7 +564,7 @@ public class FacesPortlet extends GenericServletPortlet
                 defaultView = facesContext.getViewRoot().getViewId();
             }
             
-            portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView.replaceAll(".jsp", ".jsf"));
+            portletRequest.setAttribute(REQUEST_SERVLET_PATH, defaultView.replaceAll("[.]jsp", ".jsf"));
         }
         else if (portletRequest instanceof RenderRequest)
         {
