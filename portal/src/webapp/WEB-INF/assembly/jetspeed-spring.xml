@@ -86,22 +86,16 @@ limitations under the License.
   
   <!-- Page File Cache -->
   <bean id="PageFileCache" 
-  	   class="org.apache.jetspeed.cache.file.FileCache" >
+  	   class="org.apache.jetspeed.cache.file.FileCache" 
+  	   init-method="startFileScanner"
+  	   destroy-method="stopFileScanner"
+  	   >
   	   <!-- Scan rate for changes in cached files on the file system -->
-  	   <constructor-arg index="0"><value>120</value></constructor-arg>
+  	   <constructor-arg index="0"><value>10</value></constructor-arg>
   	   <!-- Cache size -->
   	   <constructor-arg index="1"><value>100</value></constructor-arg>  	   
   </bean>
   
-  <!-- PageManager -->
-  <bean id="org.apache.jetspeed.page.PageManager" 
-  	   class="org.apache.jetspeed.page.impl.CastorXmlPageManager" init-method="start" destroy-method="stop">  	   
-  	   <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
-  	   <constructor-arg index="1"><ref bean="PageFileCache"/></constructor-arg>
-  	   <constructor-arg index="2"><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>  	   
-  </bean>
-  
-
   <!-- Persistence Store -->
   <bean id="persistenceStoreTarget" 
   	   class="org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore"  	   
