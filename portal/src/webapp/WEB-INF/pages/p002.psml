@@ -17,18 +17,14 @@ limitations under the License.
 <page id="p001">
   <defaults
      skin="light-blue"
-     layout-decorator="clear"
-     portlet-decorator="box-titled"
+     layout-decorator="jetspeed"
+     portlet-decorator="jetspeed"
   />
   <title>Welcome to Jetspeed-2</title>
-  <fragment id="1" type="layout" name="jetspeed::OneColumn">
-    <fragment id="12" type="portlet" name="HW_App::LoginPortlet"/>
-    <fragment id="3" type="portlet" name="HW_App::HelloPortlet"/>
-    <fragment id="6"  type="portlet" name="HW_App::DisplayRequestPortlet"/>
-    <fragment id="9"  type="portlet" name="HW_App::CustomerList"/>
-    <fragment id="10" type="portlet" name="HW_App::CustomerInfo"/>
-    <fragment id="11" type="portlet" name="HW_App::CustomerDetail"/>
-    <fragment id="4"  type="portlet" name="PAM::PortletApplicationBrowser"/>
-    <fragment id="5" type="portlet" name="HW_App::PreferencePortlet"/>
+  <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
+  
+	  <fragment id="9" type="portlet" name="HW_App::CustomerList"/>
+
   </fragment>
+  
 </page>
