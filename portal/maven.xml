@@ -62,255 +62,241 @@ limitations under the License.
   </preGoal>
 -->
 
- <goal name="pam.register">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="register" />
-            <arg value="-PortletAppName" />
-            <arg value="jetspeed" />
-            <arg value="-warfilename" />
-            <arg value="target/jetspeed.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
- </goal>
+	<goal name="pam.template.deploy">
+		<echo>Deploying App ${pam.app.name}</echo>
+		<j:if test="$pam.app.war}">
+			<echo>Using war ${pam.app.war}</echo>
+		</j:if>
+		
+		<echo>${deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="deploy"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+	
+			<arg value="-warfilename"/>
+			<arg value="${pam.app.war}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${pam.deploy.dir}/"/>
+			
+			<!--
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+	
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
+	
+	<goal name="pam.template.register">
+		<echo>Performing action ${pam.action} with App ${pam.app.name}</echo>
+		
+		<echo>${deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="${pam.action}"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+	
+			<arg value="-warfilename"/>
+			<arg value="${pam.app.war}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${pam.deploy.dir}/"/>
+			
+			<!--
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+	
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
+	
+	<goal name="pam.template.undeploy">
+		<echo>Undeploying App ${pam.app.name}</echo>
+		<j:if test="$pam.app.war}">
+			<echo>Using war ${pam.app.war}</echo>
+		</j:if>
+		
+		<echo>${deploy.war.dir}</echo>
+		<java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+			<classpath>
+				<path refid="maven.dependency.classpath"/>
+				<pathelement path="${maven.build.dest}"/>
+				<pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+			</classpath>
+			<sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+			<sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+			<sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+			<sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+			<sysproperty key="portal.use.internal.jndi" value="true"/>
+			
+			<arg value="-action"/>
+			<arg value="undeploy"/>
+			
+			<arg value="-PortletAppName"/>
+			<arg value="${pam.app.name}"/>
+			
+			<arg value="-PortalName"/>
+			<arg value="jetspeed"/>
+			
+			<arg value="-ApplicationType"/>
+			<arg value="${pam.app.type}"/>
+			
+			<arg value="-webappDir"/>
+			<arg value="${pam.deploy.dir}/"/>
+	
+			<!--
+			<arg value="-UserName"/>
+			<arg value="${pam.username}"/>
+	
+			<arg value="-Password"/>
+			<arg value="${pam.password}"/>
+	
+			<arg value="-ApplicationServer"/>
+			<arg value="${pam.server.type}"/>
+	
+			<arg value="-Server"/>
+			<arg value="${pam.server}"/>
+	
+			<arg value="-ServerPort"/>
+			<arg value="${pam.server.port}"/>
+	
+			<arg value="-Impl"/>
+			<arg value="${pam.impl}"/>
+			-->
+	
+		</java>
+	</goal>
 
- <goal name="pam.unregister">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="unregister" />
-            <arg value="-PortletAppName" />
-            <arg value="jetspeed" />
-            <arg value="-warfilename" />
-            <arg value="target/jetspeed.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
- </goal>
 
- <goal name="pam.deploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="HW_App" />
-            <arg value="-warfilename" />
-            <arg value="../applications/demo/target/demo.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
+  <goal name="pam.register">
+  	<j:set var="pam.action" value="register"/>
+ 	<j:set var="pam.app.name" value="jetspeed"/>
+ 	<j:set var="pam.app.war" value="target/jetspeed.war"/>
+ 	<attainGoal name="pam.template.register"/>
   </goal>
 
- <goal name="pam.tsdeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="testsuite" />
-            <arg value="-warfilename" />
-            <arg value="../../jakarta-pluto/testsuite/target/testsuite.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
+  <goal name="pam.unregister">
+  	<j:set var="pam.action" value="unregister"/>
+ 	<j:set var="pam.app.name" value="jetspeed"/>
+ 	<j:set var="pam.app.war" value="target/jetspeed.war"/>
+ 	<attainGoal name="pam.template.register"/>
+  </goal>
+
+  <goal name="pam.deploy">
+ 	<j:set var="pam.app.name" value="HW_App"/>
+ 	<j:set var="pam.app.war" value="../applications/demo/target/demo.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+  </goal>
+
+  <goal name="pam.tsdeploy">
+ 	<j:set var="pam.app.name" value="testsuite"/>
+ 	<j:set var="pam.app.war" value="../../jakarta-pluto/testsuite/target/testsuite.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
   </goal>
 
   <goal name="pam.strutsdeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="struts-demo" />
-            <arg value="-warfilename" />
-            <arg value="../struts-portlet/demo/target/struts-demo.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
+ 	<j:set var="pam.app.name" value="struts-demo"/>
+ 	<j:set var="pam.app.war" value="../struts-portlet/demo/target/struts-demo.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
   </goal>
 
   <goal name="pam.securitydeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="security" />
-            <arg value="-warfilename" />
-            <arg value="../applications/security/target/security.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-        </java>
+ 	<j:set var="pam.app.name" value="security"/>
+ 	<j:set var="pam.app.war" value="../applications/security/target/security.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
   </goal>
 
   <goal name="pam.undeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="undeploy" />
-            <arg value="-PortletAppName" />
-            <arg value="HW_App" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
+ 	<j:set var="pam.app.name" value="HW_App"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
   </goal>
 
-
   <goal name="pam.tsundeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="undeploy" />
-            <arg value="-PortletAppName" />
-            <arg value="testsuite" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
+ 	<j:set var="pam.app.name" value="testsuite"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
   </goal>
 
   <goal name="pam.strutsundeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="undeploy" />
-            <arg value="-PortletAppName" />
-            <arg value="struts-demo" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
+ 	<j:set var="pam.app.name" value="testsuite"/>
+ 	<j:set var="pam.app.type" value="struts-demo"/>
+ 	<attainGoal name="pam.template.undeploy"/>
   </goal>
 
   <goal name="pam.securityundeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="undeploy" />
-            <arg value="-PortletAppName" />
-            <arg value="security" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
+ 	<j:set var="pam.app.name" value="security"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
   </goal>
 
   <!-- ================================================================ -->
@@ -358,9 +344,6 @@ limitations under the License.
       </fileset>
     </copy>
   </goal>
-
-
-
 
   <!-- ================================================================ -->
   <!-- Does all three deployment steps at once                                                                        -->
@@ -450,31 +433,10 @@ limitations under the License.
   </goal>
 
 
- <goal name="pam.rssdeploy">
-         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
-          <classpath>
-            <path refid="maven.dependency.classpath"/>
-            <pathelement path="${maven.build.dest}"/>
-            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
-          </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
-            <sysproperty key="portal.use.internal.jndi" value="true"/>
-            <arg value="-action" />
-            <arg value="deploy" />
-            <arg value="-PortletAppName" />
-            <arg value="rss" />
-            <arg value="-warfilename" />
-            <arg value="../applications/rss.war" />
-            <arg value="-webappDir" />
-            <arg value="${pam.deploy.dir}/" />
-            <arg value="-PortalName" />
-            <arg value="jetspeed" />
-            <arg value="-ApplicationType" />
-            <arg value="webapp" />
-        </java>
+  <goal name="pam.rssdeploy">
+ 	<j:set var="pam.app.name" value="rss"/>
+ 	<j:set var="pam.app.war" value="../applications/rss.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
   </goal>
 
   <goal name="db.test.properties">
