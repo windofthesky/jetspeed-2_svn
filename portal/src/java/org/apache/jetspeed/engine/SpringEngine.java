@@ -95,7 +95,14 @@ public class SpringEngine extends AbstractEngine
         String[] configs = new String[configFiles.length];
         for(int i=0; i<configFiles.length; i++)
         {
-            configs[i] = configFiles[i].getCanonicalFile().toURL().toExternalForm();            
+            configs[i] = configFiles[i].getCanonicalFile().toURL().toExternalForm();
+            if(configs[i].indexOf("pooled-datasource-support") > -1 && i > 0)
+            {	
+                String current0Offset = configs[0];
+                configs[0] = configs[i];
+                configs[i] = current0Offset;
+                
+            }          
         }
         
         ComponentManager cm = new SpringComponentManager(configs, null);
