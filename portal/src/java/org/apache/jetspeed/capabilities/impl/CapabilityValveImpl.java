@@ -77,7 +77,19 @@ public class CapabilityValveImpl implements CapabilityValve
             }
             
             MediaType mediaType = cm.getPreferredMediaType();                          
-            MimeType mimeType = cm.getPreferredType();  
+            MimeType mimeType = cm.getPreferredType();
+            
+            if(mediaType == null)
+            {
+                log.error("CapabilityMap returned a null media type");
+                throw new PipelineException("CapabilityMap returned a null media type");
+            }
+            
+            if(mimeType == null)
+            {
+                log.error("CapabilityMap returned a null mime type");
+                throw new PipelineException("CapabilityMap returned a null mime type");
+            }
             
             String encoding = request.getRequest().getCharacterEncoding();
             
