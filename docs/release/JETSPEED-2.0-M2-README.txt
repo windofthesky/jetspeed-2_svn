@@ -3,53 +3,57 @@
    April 2, 2005
 --------------------------
 
-* Navigations Refactoring (RW)
-* Login/Password Enhancements (RW, AD)
-* LDAP (ML)
-* Portlet Messaging (PM)
-* Deployment Refactoring (AD)
-* User Admin Portlets (JS2-121) - enhancements (AD)
-* Site Manager (*)
-    -- add/edit/remove folders, pages, links, metadata
-    -- import/export
-    -- integrate customizer
-    -- global site settings from edit mode
-* Secure Access to Site Resources (JS2-111) (*)
-    -- Portlets
-    -- Windows
-* Documentation (JS2-83)
-* Enhanced credential security and validation (JS2-151)
-* Encrypt SSO credentials, certificate support (RR)
-* Portlet Selector, Customizer (DST)
-* Print Mode
-* Portlet Caching
-* WSRP Support
+* PALM - Portlet Application Lifecycle Manager 
+    A new administrative portlet for managing the lifecycle of portlet applications
+    Supports start, stop, undeploy and delete operations
 
+* JBoss Support 
+   Jetspeed tested and running on JBoss versions 3.2.7 and 4.0.1sp1
+    
+* New Improved Deployment
+   Deployment overhauled to support application server controlled deployment.
+   Class loader and cross-context session control issues resolved.
+
+* Struts Bridge Enhancements
+
+* Navigations Refactoring 
+
+* Enhanced credential security and validation, Login/Password Enhancements 
+
+* LDAP Authentication support added.
+
+* Secure Access to Site Resources (Pages, Folders)
+
+* Profiler, Layout, PSML Security Documentation 
+
+* SSO Enhancements
+
+* Improved JSF Support
+
+* Finer grain Spring configuration
+
+* Main Jetspeed context no longer requires /jetspeed
+ 
 -----------
 Bug fixes
 -----------
-* Closed Open Issues 
-	get list from JIRA?
-
------------
- Features
------------
-
+see M2-bugfixes.html
 
 ---------------------
  Tested App Servers:
 ---------------------
  * Tomcat 5.0.30
- * Tomcat 5.5
+ * Tomcat 5.5.8
+ * JBoss 3.2.7
+ * JBoss 4.0.1sp1
  
  (Tomcat 5.5 requires a different jetspeed.xml found in the source tree under src/resources/jetspeed-tomcat-5.5.xml)
 
- Jetspeed 2 has been independently tested and run on JBoss, Weblogic, and Websphere application servers
  Check out our wiki page for details: http://wiki.apache.org/portals/Jetspeed2
 
 
 ---------------------
- NOT Supported:
+ NO Longer Supported:
 ---------------------
  * Tomcat 4.1.x
 
@@ -59,24 +63,40 @@ Support for Tomcat 4.1.x has been dropped.
  Installation Instructions
 ---------------------------
 
-1. Download jetspeed-2.0-M1.tar.gz 
-   Download jetspeed-2.0-M1.zip (windows)
-2. Expand jetspeed-2.0-M1.tar.gz into a clean Tomcat installation **
+1. Download jetspeed-2.0-M2-Tomcat-5.0.30.tar.gz, or
+   Download jetspeed-2.0-M2-Tomcat-5.0.30.zip (windows), or
+   Download jetspeed-2.0-M2-Tomcat-5.5.8.tar.gz, or 
+   Download jetspeed-2.0-M2-Tomcat-5.5.8.zip (windows)
+2. Expand jetspeed-2.0-M2-Tomcat-<version>.tar.gz into a clean directory (as example we will use 'jetspeed')
    
-
-   tar xfz jetspeed-2.0-M1.tar.gz -C tomcat   # where 'tomcat' is your tomcat home directory
+   cd /jetspeed
+   tar xfz jetspeed-2.0-M2-Tomcat-<version>.tar.gz
 
    For Windows:
+   
+   cd c:\jetspeed
+   unzip jetspeed-2.0-M2-Tomcat-<version>.zip 
 
-   unzip jetspeed-2.0-M1.zip directly into your tomcat home directory (overlay)
+3. start the database
 
-3. cd $TOMCAT_HOME/jetspeed-database
+   cd /jetspeed/jetspeed-database
+   start-database.sh
+   
+   For Windows:
+   
+   cd c:\jetspeed\jetspeed-database
+   start-database.bat
 
-4. start-database.sh (.bat)
-  
-5. startup Tomcat
+4. startup Tomcat 
 
-6. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+   execute /jetspeed/jakarta-tomcat-<version>/bin/start.sh
+   
+   For Windows:
+   
+   execute c:\jetspeed\jakarta-tomcat-<version>\bin\start.bat
+   
+
+5. start up a web browser and navigate to http://localhost:8080/jetspeed/portal
 
 
 ------------------------------
@@ -88,52 +108,17 @@ Support for Tomcat 4.1.x has been dropped.
 3. create a database schema/catalog to hold your database tables 
 4. type 'ant' to run the database population scripts
 5. edit the jetspeed.xml properties 
-    - Tomcat4 - $TOMCAT_HOME/webapps/jetspeed.xml
-    - Tomcat5 - $TOMCAT_HOME/conf/Catalina/localhost/jetspeed.xml
+    - $TOMCAT_HOME/conf/Catalina/localhost/jetspeed.xml
    
     and set your database connection
 
 6. copy your database driver into Tomcat's common/endorsed directory
 
-7. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+7. start up a web browser, navigate to http://localhost:8080/jetspeed/portal
 
  Sample accounts to login as:
     
  admin/admin
-
-**    NOTE: if you are installing into a Tomcat instance which had Jetspeed installed previously, remember to delete these files :
-        $TOMCAT_HOME/shared/lib/jetspeed*.jar
-        $TOMCAT_HOME/shared/lib/pluto*.jar
-        $TOMCAT_HOME/shared/lib/portlet-api*.jar
-        $TOMCAT_HOME/shared/lib/portals-bridges*.jar
-        $TOMCAT_HOME/webapps/jetspeed
-
-
------------------------------
-   Deployment Optimization
------------------------------
-
-There are some known issues with deployment and race conditions with the default jetspeed configuration.
-To optimize deployment, add these properties to your $HOME/build.properties:
-
-org.apache.jetspeed.services.autodeployment.user = admin
-org.apache.jetspeed.services.autodeployment.password = admin
-
-Edit your $TOMCAT_HOME/conf/tomcat-users.xml and add the required manager and admin roles and admin user:
-
-<?xml version='1.0' encoding='utf-8'?>
-<tomcat-users>
-  <role rolename="manager"/>
-  <role rolename="admin"/>
-  ...
-  <user username="admin" password="admin" roles="admin,manager,user"/>
-</tomcat-users>
-
-
-If you make these changes, its recommended to change Tomcat's server.xml and turn off Autodeployment feature:
-
-      <Host name="localhost" debug="0" appBase="webapps"
-       unpackWARs="true" autoDeploy="false">  <------------------
-
-
-
+ manager/manager
+ user/user
+ 
