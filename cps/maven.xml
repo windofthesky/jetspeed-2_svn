@@ -16,11 +16,19 @@
   <!-- Set System properties for junit                                  -->
   <!-- ================================================================ -->
   <preGoal name="test:single">
-      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
+  	<attainGoal name="why.doesnt.maven.do.this"/>
   </preGoal>
  
   <preGoal name="test:test">
-      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
+  	<attainGoal name="why.doesnt.maven.do.this"/>
   </preGoal>
 
+  <goal name='why.doesnt.maven.do.this'>
+      <copy  file="./src/java/META-INF/js-components.properties" tofile="./target/classes/META-INF/js-components.properties"/>    
+		<copy todir="./target/classes/org/apache/jetspeed/components/">
+            <fileset dir="./src/test/org/apache/jetspeed/components/">
+              <include name="**/*.bsh"/>
+            </fileset>
+		</copy>
+  </goal>
 </project>
