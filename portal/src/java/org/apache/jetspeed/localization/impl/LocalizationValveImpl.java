@@ -21,6 +21,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.i18n.CurrentLocale;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
@@ -117,6 +118,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         request.setLocale(locale);
         request.getRequest().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         request.getRequest().getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
+        CurrentLocale.set(locale);
        
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
