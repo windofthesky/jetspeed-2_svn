@@ -116,15 +116,14 @@ public class FileSystemScanner extends Thread
             File aFile = new File(directoryToWatchFile, stagedFiles[i]);
             if (!isDeployed(stagedFiles[i]))
             {
-
+                FSObjectHandler objHandler =null;
                 try
                 {
-                    FSObjectHandler objHandler = getFSObjectHandler(aFile);
+                    objHandler = getFSObjectHandler(aFile);
 
                     DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, objHandler);
                     dispatcher.dispatch(event);
-                    // we are responsible for reclaiming the FSObject's resource
-                    objHandler.close();
+                    
                     deployedFiles.add(stagedFiles[i]);
                     // record the lastModified so we can watch for re-deployment                    
                     long lastModified = aFile.lastModified();
@@ -134,6 +133,21 @@ public class FileSystemScanner extends Thread
                 catch (Exception e1)
                 {
                     log.error("Error deploying " + aFile.getAbsolutePath(), e1);
+                }
+                finally
+                {
+                    if(objHandler != null)
+                    {
+                        try
+                        {
+                            objHandler.close();
+                        }
+                        catch (IOException e)
+                        {
+                            
+                        }
+                    }
+                    
                 }
             }
         }
@@ -166,15 +180,16 @@ public class FileSystemScanner extends Thread
             {            	
             	continue;
             }
-
+            
+            FSObjectHandler objHandler = null;
             try
             {
-                FSObjectHandler objHandler = getFSObjectHandler(aFile);
+                objHandler = getFSObjectHandler(aFile);
 
                 DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_UNDEPLOY, objHandler);                
                 dispatcher.dispatch(event);
-                // we are responsible for reclaiming the FSObject's resource
-                objHandler.close();
+               
+               
                 deployedFiles.remove(i);
                 fileDates.remove(fileName);
 
@@ -182,6 +197,22 @@ public class FileSystemScanner extends Thread
             catch (Exception e1)
             {
                 log.error("Error undeploying " + aFile.getAbsolutePath(), e1);
+            }
+            finally
+            {
+                if(objHandler != null)
+                {
+                    try
+                    {
+                        // we are responsible for reclaiming the FSObject's resource
+                        objHandler.close();
+                    }
+                    catch (IOException e)
+                    {
+
+                    }
+                }
+                
             }
 
         }
