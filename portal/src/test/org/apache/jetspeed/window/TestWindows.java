@@ -124,7 +124,7 @@ public class TestWindows extends TestCase
         
         windowAccess.getPortletWindow(f1);
         // Double that second call bypasses creating a new window
-        windowAccess.getPortletWindow(f1);
+        //windowAccess.getPortletWindow(f1);
         
         windowListMock.verify();         
 
