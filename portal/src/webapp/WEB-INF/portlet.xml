@@ -72,8 +72,8 @@ limitations under the License.
   
   <portlet id="PortletApplicationBrowser">
     <init-param>
-			<description>This parameter sets the template used to format the browser.</description>
-			<name>template</name>
+			<description>This parameter sets the template used in view mode.</description>
+			<name>ViewPage</name>
 			<value>/pages/pam/pam-browser.jsp</value>
      </init-param>   
     <portlet-name>PortletApplicationBrowser</portlet-name>
@@ -93,7 +93,30 @@ limitations under the License.
       <keywords>applications,apps,PAM</keywords>
     </portlet-info>
   </portlet>
-  
+
+  <portlet id="PortletApplicationDetail">
+    <init-param>
+      <description>This parameter sets the template used in view mode.</description>
+      <name>ViewPage</name>
+      <value>/pages/pam/pam-detail.jsp</value>
+    </init-param>   
+    <portlet-name>PortletApplicationDetail</portlet-name>
+    <display-name>Portlet Application Detail</display-name>
+    <description>The PAM (Portlet Application Manager) Portlet Application Detail displays a specific portlet application deployed to this portal. From here you can add, edit, and delete this portlet application.</description>
+    <portlet-class>org.apache.jetspeed.portlets.pam.PortletApplicationDetail</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Portlet Application Detail</title>
+      <short-title>PAD</short-title>
+      <keywords>applications,apps,PAM,PAD</keywords>
+    </portlet-info>
+  </portlet>
 
 </portlet-app>
 
