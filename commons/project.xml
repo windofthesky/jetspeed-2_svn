@@ -27,6 +27,13 @@ limitations under the License.
   <shortDescription>Common Code for Jetspeed Portal</shortDescription>
   <dependencies>
     <dependency>
+      <id>commons-collections</id>
+      <version>3.0</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
       <id>pluto</id>
       <version>1.0-SNAPSHOT</version>
       <properties>
