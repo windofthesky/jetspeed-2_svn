@@ -868,6 +868,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         resourceBundle = string;
     }
+    
+    public Collection getSupportedLocales()
+    {
+        return supportedLocales;
+    }
 
     public void addSupportedLocale(String locale)
     {

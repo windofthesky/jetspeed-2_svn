@@ -63,6 +63,10 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
     void addContentType(String contentType, Collection modes);
 
     void setLanguageSet(LanguageSet languages);
+    
+    String getResourceBundle();
+    
+    Collection getSupportedLocales();
 
     /**
      * The PreferenceSet is a collection user-defineable preferences
