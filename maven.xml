@@ -120,7 +120,7 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
   </goal>
-
+  
   <goal name="allBuild"
         description="Build all jars and war">
     <attainGoal name="check.required.properties"/>
@@ -194,7 +194,7 @@ limitations under the License.
     <maven:reactor
                basedir="${basedir}/components/deploy-tool"
                includes="project.xml"
-               goals="jar:install"
+               goals="jar:install,uberjar"
                banner="Build and Install the Jetspeed Components jar"
                postProcessing="false"
                ignoreFailures="false"/>			   
