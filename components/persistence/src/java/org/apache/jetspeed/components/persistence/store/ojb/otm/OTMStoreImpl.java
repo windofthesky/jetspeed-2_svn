@@ -27,7 +27,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.persistence.store.TransactionEventListener;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.impl.StoreEventInvoker;
 import org.apache.jetspeed.components.persistence.store.ojb.CriteriaFilter;
 import org.apache.ojb.broker.Identity;

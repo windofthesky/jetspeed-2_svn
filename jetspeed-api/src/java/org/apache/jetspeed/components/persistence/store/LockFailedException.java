@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components.persistence.store.impl;
+package org.apache.jetspeed.components.persistence.store;
 
 import org.apache.jetspeed.exception.JetspeedException;
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components.portletregistry;
+
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -24,7 +25,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
