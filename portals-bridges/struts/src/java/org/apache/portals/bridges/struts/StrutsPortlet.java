@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.portals.bridges.common.StrutsServletContextProvider;
+import org.apache.portals.bridges.common.ServletContextProvider;
 import org.apache.portals.bridges.struts.util.EmptyHttpServletResponseImpl;
 
 /**
@@ -47,7 +47,7 @@ import org.apache.portals.bridges.struts.util.EmptyHttpServletResponseImpl;
 public class StrutsPortlet extends GenericPortlet
 {
     /**
-     * Name of class implementing {@link StrutsServletContextProvider}
+     * Name of class implementing {@link ServletContextProvider}
      */
     public static final String PARAM_SERVLET_CONTEXT_PROVIDER = "ServletContextProvider";
     /**
@@ -90,7 +90,7 @@ public class StrutsPortlet extends GenericPortlet
      * Default URL for the view page.
      */
     private String defaultViewPage = null;
-    private StrutsServletContextProvider servletContextProvider;
+    private ServletContextProvider servletContextProvider;
     private static final Log log = LogFactory.getLog(StrutsPortlet.class);
     public static final String REQUEST_TYPE = "org.apache.portals.bridges.struts.request_type";
     public static final String PAGE_URL = "org.apache.portals.bridges.struts.page_url";
@@ -120,8 +120,8 @@ public class StrutsPortlet extends GenericPortlet
                 if (clazz != null)
                 {
                     Object obj = clazz.newInstance();
-                    if (StrutsServletContextProvider.class.isInstance(obj))
-                        servletContextProvider = (StrutsServletContextProvider) obj;
+                    if (ServletContextProvider.class.isInstance(obj))
+                        servletContextProvider = (ServletContextProvider) obj;
                     else
                         throw new PortletException("class not found");
                 }

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.portals.bridges.common.StrutsServletContextProvider;
+import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
  * ServletContextProviderImpl supplies access to the
@@ -33,7 +33,7 @@ import org.apache.portals.bridges.common.StrutsServletContextProvider;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class ServletContextProviderImpl implements StrutsServletContextProvider 
+public class ServletContextProviderImpl implements ServletContextProvider 
 {
     public ServletContext getServletContext(GenericPortlet portlet) 
     {

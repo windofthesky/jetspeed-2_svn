@@ -23,12 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * StrutsServletContextProvider
+ * ServletContextProvider
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public interface StrutsServletContextProvider 
+public interface ServletContextProvider 
 {
     ServletContext getServletContext(GenericPortlet portlet);
 
