@@ -26,6 +26,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -41,41 +42,43 @@ import org.apache.webapp.admin.TreeControlNode;
 /**
  * This portlet is a browser over all the portlet applications in the system.
  *
+ * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @author <a href="mailto:ccardona@gluecode.com">Chris Cardona</a>
- * 
  * @version $Id$
  */
 public class PortletApplicationBrowser extends ServletPortlet
 {
     private String template;
+    private PortletContext context;
+    private PortletRegistryComponent registry;
     
     public void init(PortletConfig config)
     throws PortletException 
     {
         super.init(config);
+        context = getPortletContext();                
+        registry = (PortletRegistryComponent)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        if (null == registry)
+        {
+            throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
+        }
     }
     
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        PortletContext context = getPortletContext();
         response.setContentType("text/html");
         
-        PortletRegistryComponent registry = (PortletRegistryComponent)
-                context.getAttribute("cps:PortletRegistryComponent");
-        if (registry != null)
+        List apps = registry.getPortletApplications();
+        TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
+        if(control == null)
         {
-            List apps = registry.getPortletApplications();
-            TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
-            if(control == null)
-            {
-                PortletURL actionURL = response.createActionURL();
-            	control = buildTree(apps, actionURL);
-            	request.getPortletSession().setAttribute("j2_tree", control);
-            }
-            request.setAttribute("j2_tree", control);
-        }        
+            PortletURL actionURL = response.createActionURL();
+        	control = buildTree(apps, actionURL);
+        	request.getPortletSession().setAttribute("j2_tree", control);
+        }
+        request.setAttribute("j2_tree", control);
+        
         super.doView(request, response);
         
     }
@@ -98,20 +101,22 @@ public class PortletApplicationBrowser extends ServletPortlet
 		    }
 		}
 		
-		String selectedNode = actionRequest.getParameter("select_node");
+		String selectedNode = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_NODE);
 		if(selectedNode != null)
 		{
 		    control.selectNode(selectedNode);
-		    //TODO:  signal details portlet that node was selected
-		    
-		    System.out.println("Node Selected: " + selectedNode);
+            MutablePortletApplication pa = registry.getPortletApplicationByIdentifier(selectedNode);
+            if (null != pa)
+            {
+                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa, PortletSession.APPLICATION_SCOPE);
+            }
 		}	
 	}
 	
 	private TreeControl buildTree(List apps, PortletURL actionURL) {
 	    
 	    
-	    actionURL.setParameter("select_node", "ROOT-NODE");
+	    actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, "ROOT-NODE");
 		TreeControlNode root =
             new TreeControlNode("ROOT-NODE",
                                 null, "J2_ROOT",
@@ -121,7 +126,7 @@ public class PortletApplicationBrowser extends ServletPortlet
 		TreeControl control = new TreeControl(root);
 		
 		
-		actionURL.setParameter("select_node", "APP_ROOT");
+		actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, "APP_ROOT");
 		TreeControlNode portletApps = 
 			new TreeControlNode("APP-NODE", null, "APP_ROOT", actionURL.toString(), null, false, "J2_DOMAIN");
 		root.addChild(portletApps);
@@ -130,7 +135,7 @@ public class PortletApplicationBrowser extends ServletPortlet
         while (it.hasNext())
         {
             MutablePortletApplication pa = (MutablePortletApplication)it.next();
-            actionURL.setParameter("select_node", pa.getName());
+            actionURL.setParameter(PortletApplicationResources.REQUEST_SELECT_NODE, pa.getName());
             TreeControlNode appNode = new TreeControlNode(pa.getName(), null, pa.getName(), actionURL.toString(), null, false, "PA_APP_DOMAIN"  );
             portletApps.addChild(appNode);
         }

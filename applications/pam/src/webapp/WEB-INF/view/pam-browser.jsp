@@ -15,23 +15,9 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 <portlet:defineObjects/>
-<p>This page was invoked from a LOCAL portlet app</P>
-<a href='/snipet.html'>somelink</a>
-<p>renderURL</p>
-<p>
-<portlet:renderURL windowState="normal" portletMode="view"  var="myView">
-	 <portlet:param name="invokeMsg" value="No action just render" />
-</portlet:renderURL>
-<a href="<c:out value="${myView}" />">View!</a>
-</p>
-<p>"<c:out value="${myView}" />"</p>
-<p>
-<a href="<portlet:actionURL windowState="normal" portletMode="view" />">My Action!!!</a>
-<a href="<portlet:actionURL windowState="normal" portletMode="view" />">Invoke My Action!!!</a>
-</p>
-<br>
-
-<portlet:actionURL windowState="normal" portletMode="view"  var="nodeLink" >
+<h2>Portlet Application Manager</h2>
+<h3>Application Tree View</h3>
+<portlet:actionURL var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>
 

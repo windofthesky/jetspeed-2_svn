@@ -10,9 +10,26 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
-<%@ page language="java" import="javax.portlet.*, java.util.List" session="true" %>
+<%@ page language="java" import="javax.portlet.*, org.apache.jetspeed.portlets.pam.PortletApplicationBean" session="true" %>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <portlet:defineObjects/>
-<br>
-<p>TODO: write me</p>
+<h2>Portlet Application Detail</h2>
+
+<%
+	String name = "N/A";
+	String version = "0.0";
+	PortletApplicationBean pa = (PortletApplicationBean)renderRequest.getAttribute("portletApplication");
+	if (null != pa)
+	{
+		name = pa.getName();
+		version = pa.getVersion();
+	}
+		
+%>
+
+
+app.name = <%= name %><br/>
+app.version = <%= version %>
+
+<p>TODO: Details</p>

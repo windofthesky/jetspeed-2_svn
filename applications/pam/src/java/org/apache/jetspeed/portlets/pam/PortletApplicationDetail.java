@@ -16,41 +16,57 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
-//import java.io.InputStream;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletURL;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 import org.apache.jetspeed.portlet.ServletPortlet;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
 /**
  * This portlet is a browser over all the portlet applications in the system.
  *
+ * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @author <a href="mailto:ccardona@gluecode.com">Chris Cardona</a>
  * @version $Id$
  */
 public class PortletApplicationDetail extends ServletPortlet
 {
+    private final String VIEW_PA = "portletApplication"; 
+
+    private PortletContext context;
+    private PortletRegistryComponent registry;
+    
+    public void init(PortletConfig config)
+    throws PortletException 
+    {
+        super.init(config);
+        context = getPortletContext();
+        registry = (PortletRegistryComponent)context.getAttribute(PortletApplicationResources.CPS_REGISTRY_COMPONENT);
+        if (null == registry)
+        {
+            throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
+        }        
+    }
+    
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        PortletContext context = getPortletContext();
-        response.setContentType("text/html");        
-        PortletURL url = response.createRenderURL();
-        PortletURL actionUrl = response.createActionURL();
-        url.setWindowState(WindowState.MAXIMIZED);
-        actionUrl.setPortletMode(PortletMode.EDIT);
-        // url.addParameter("test", "value");
-        response.getWriter().println("<br/><b>Init Param 'Template' = " + this.getInitParameter("template") +  "</b>");
-        response.getWriter().println("<br/><b>Render URL = <a href='" + url +  "'>" + url + "</a></b>");
-        response.getWriter().println("<br/><b>Action URL = <a href='" + actionUrl +  "'>" + actionUrl + "</a></b>");
-        response.getWriter().println("<br/><b>Request dispatching now</b>");        
+        response.setContentType("text/html");
+        
+        MutablePortletApplication pa = (MutablePortletApplication)
+                request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+                                                         PortletSession.APPLICATION_SCOPE);
+        
+        if (null != pa)
+        {
+            request.setAttribute(VIEW_PA, new PortletApplicationBean(pa));
+        }
         super.doView(request, response);
      }
 	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
