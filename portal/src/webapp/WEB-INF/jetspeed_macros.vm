@@ -1,0 +1,16 @@
+#macro (defineConstants)
+  #* Constants for layout orientation *#	
+  #set($LEFT_TO_RIGHT = "LeftToRight")
+  #set($RIGHT_TO_LEFT = "RightToLeft")
+  #set($TOP_TO_BOTTOM = "TopToBottom")
+  #set($BOTTOM_TO_TOP = "BottomToTop")
+#end
+
+#* Includes a navigation component *#
+#macro (includeNavigation $name $_nodeSet $orientation)
+ #parse($jetspeed.getTemplate("${name}/${orientation}.vm", "navigation").appRelativePath)
+#end
+
+#macro (defineConfig $name $type)
+  #set($_navConfig =$jetspeed.getTypeConfiguration("navigation", $name))
+#end

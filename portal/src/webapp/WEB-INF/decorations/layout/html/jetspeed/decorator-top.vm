@@ -14,6 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
+#* Add all template constants to the current context *#
+#defineConstants()
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 #set($preferedLocale = $JS2RequestContext.locale)
 <html>
@@ -46,32 +49,11 @@ limitations under the License.
 	 </p>
 	#end
 	
-	<div class="FolderList">
-	 #foreach($childFolder in $folder.folders.iterator())
-	  <span><a href="$jetspeed.getAbsoluteUrl($childFolder.url)" class="FolderLink">$childFolder.metaData.getTitle($preferedLocale)</a></span>		
-	 #end
-	</div>
-
+  #includeNavigation("folders" $folder.folders $LEFT_TO_RIGHT)
 </p>
-
-    <p>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%">
-            <tr>
-                #foreach($childPage in $folder.pages.iterator())
-                #set($tabName = $childPage.getTitle($preferedLocale))
-                #if($jetspeed.page == $childPage)
-                <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-                <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
-                <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-                #else
-                <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-                <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.path)">${tabName}</a></td>
-                <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
-                #end
-                #end
-            </tr>
-        </table>
-    </p>
+  <p>
+  #includeNavigation("tabs" $folder.pages $LEFT_TO_RIGHT)
+  </p>
 </p>
 	
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -82,14 +64,7 @@ limitations under the License.
      #set($rootFolder = $pageManager.getFolder("/"))
      #set($links = $rootFolder.links)
 	 Additional Links:
-	
-     <div id="rootLinks">
-     #foreach($link in $links.iterator()) 
-	 <p>
-      <a href="$link.url" target="$link.target" class="Link">$link.getTitle($preferedLocale)</a>	
-	 </p> 
-	 #end
-	 </div>
+	 #includeNavigation("linksWithIcon1" $links $TOP_TO_BOTTOM)
 	</td>
 	<td width="99%" nowrap valign="top">
   

@@ -484,6 +484,26 @@ public class JetspeedPowerTool implements ViewTool
         return getTemplate(path, templateType, templateLocator, templateLocatorDescriptor);
     }
     
+    public Configuration getTypeConfiguration(String type, String name) throws Exception
+    {
+        try
+        {
+            TemplateDescriptor locator = getTemplate(name+"/"+type+".properties", type);
+            return new PropertiesConfiguration(locator.getAbsolutePath());
+        }
+        catch (TemplateLocatorException e)
+        {
+            log.warn(e.toString(), e);
+            return null;
+        }
+        catch (IOException e)
+        {
+
+            log.warn(e.toString(), e);
+            return null;
+        }
+    }
+    
     public TemplateDescriptor getDecoration(String path, String templateType) throws TemplateLocatorException
     {
         checkState();
@@ -544,13 +564,32 @@ public class JetspeedPowerTool implements ViewTool
     	try
         {
 			flush();
-            PortletRequestDispatcher pDispatcher = portletConfig.getPortletContext().getRequestDispatcher(getTemplate(template, templateType).getAppRelativePath());
+            TemplateDescriptor useLocator = getTemplate(template, templateType);
+            PortletRequestDispatcher pDispatcher = portletConfig.getPortletContext().getRequestDispatcher(useLocator.getAppRelativePath());
             pDispatcher.include(renderRequest, renderResponse);
         }
         catch (Exception e)
         {            
             PrintWriter directError = new PrintWriter(renderResponse.getWriter());
 			directError.write("Error occured process includeTemplate(): "+e.toString()+"\n\n");
+            e.printStackTrace(directError);
+            directError.close();            
+        }    	
+    }
+    
+    public void  includeDecoration(String template, String templateType) throws IOException
+    {
+    	checkState();    	
+    	try
+        {
+			flush();
+            PortletRequestDispatcher pDispatcher = portletConfig.getPortletContext().getRequestDispatcher(getDecoration(template, templateType).getAppRelativePath());
+            pDispatcher.include(renderRequest, renderResponse);
+        }
+        catch (Exception e)
+        {            
+            PrintWriter directError = new PrintWriter(renderResponse.getWriter());
+			directError.write("Error occured process includeDecoration(): "+e.toString()+"\n\n");
             e.printStackTrace(directError);
             directError.close();            
         }    	

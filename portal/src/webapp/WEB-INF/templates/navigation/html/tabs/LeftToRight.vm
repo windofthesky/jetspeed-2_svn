@@ -1,0 +1,17 @@
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+        #foreach($childPage in $_nodeSet.iterator())
+        #set($tabName = $childPage.getTitle($preferedLocale))
+        #if($jetspeed.page == $childPage)
+        <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+        <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
+        <td class="LTabRight" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+        #else
+        <td class="LTabLeftLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+        <td class="LTabLow" align="center" valign="middle" nowrap="true"><a href="$jetspeed.getAbsoluteUrl($childPage.path)">${tabName}</a></td>
+        <td class="LTabRightLow" style="font-size:1pt;" nowrap="true">&nbsp;</td>
+        #end
+        #end
+  </tr>
+</table>

@@ -1,0 +1,7 @@
+<div >
+  #foreach($link in $_nodeSet.iterator()) 
+  <p>
+    <a href="$link.url" target="$link.target" class="Link">$link.getTitle($preferedLocale)</a>	
+  </p> 
+  #end
+</div>
