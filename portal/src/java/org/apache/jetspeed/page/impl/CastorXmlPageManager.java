@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.impl;
 
 //standard java stuff
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -89,17 +90,19 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     /** the Castor mapping file name */
     protected Mapping mapping = null;
 
-    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root) throws FileNotFoundException
     {    
         super(generator);
         this.rootDir = new File(root);
+        verifyPath(rootDir);
         this.pages = fileCache;        
     }
     
-    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root, List modelClasses)
+    public CastorXmlPageManager(IdGenerator generator, FileCache fileCache, String root, List modelClasses) throws FileNotFoundException
     {
         super(generator, modelClasses);
         this.rootDir = new File(root);
+        verifyPath(rootDir);
         this.pages = fileCache;        
     }
 
@@ -107,7 +110,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
                                 FileCache fileCache, 
                                 String root,                                        
                                 List modelClasses,
-                                String extension) 
+                                String extension) throws FileNotFoundException 
                                        
     {
         this(generator, fileCache, root, modelClasses);
@@ -122,7 +125,10 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         
 
         //If the rootDir does not exist, treat it as context relative
-        if (!rootDir.exists())
+        // NO NO NO!  If a value gets passed in, it should be expected to exist
+        // only default to context relative if rootDir == null 
+        //if (!rootDir.exists())
+        if(rootDir == null)
         {
             try
             {
@@ -438,5 +444,13 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
     public void evict(FileCacheEntry entry)
     {
         log.debug("Entry is evicting: " + entry.getFile().getName());
+    }
+    
+    protected void verifyPath(File path) throws FileNotFoundException
+    {
+        if(!path.exists())
+        {
+            throw new FileNotFoundException("Could not locate root pages path "+path.getAbsolutePath());
+        }
     }
 }
