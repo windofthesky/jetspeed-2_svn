@@ -74,9 +74,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletContextFactory;
+import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
 import org.apache.pluto.core.CoreUtils;
-import org.apache.pluto.core.InternalPortletRequest;
-import org.apache.pluto.core.InternalPortletResponse;
 import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -157,16 +156,11 @@ public class ServletPortletInvoker implements PortletInvoker
         System.out.println("%%% invoker.pa = " + app);
 
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
-        //String portletApplicationName = "/HW_App";
-
-        InternalPortletRequest internalPortletRequest = CoreUtils.getInternalRequest(portletRequest);
-
-        InternalPortletResponse internalPortletResponse = CoreUtils.getInternalResponse(portletResponse);
 
         // gather all required data from request and response
-        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) internalPortletRequest).getRequest();
+        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
 
-        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) internalPortletResponse).getResponse();
+        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse).getResponse();
 
         ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
         if (null == appContext)

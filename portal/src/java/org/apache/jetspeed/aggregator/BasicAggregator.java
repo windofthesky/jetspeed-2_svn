@@ -55,22 +55,24 @@ package org.apache.jetspeed.aggregator;
 
 import java.util.Iterator;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.container.PortletContainerFactory;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.profile.Entry;
 import org.apache.jetspeed.om.profile.PSMLDocument;
 import org.apache.jetspeed.om.profile.Portlets;
 import org.apache.jetspeed.om.profile.Profile;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
-import org.apache.pluto.om.portlet.PortletDefinition;
-
-import org.apache.jetspeed.container.PortletContainerFactory;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CPSInitializationException;
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.PortletContainer;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -79,18 +81,16 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class BasicAggregator extends BaseCommonService 
-    implements Aggregator
+public class BasicAggregator extends BaseCommonService implements Aggregator
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
     private final static String DEFAULT_STRATEGY = "strategy.default";
 
-    public  final static int STRATEGY_SEQUENTIAL = 0;
-    public  final static int STRATEGY_PARALLEL = 1;
+    public final static int STRATEGY_SEQUENTIAL = 0;
+    public final static int STRATEGY_PARALLEL = 1;
     private final static String CONFIG_STRATEGY_SEQUENTIAL = "sequential";
-    private final static String CONFIG_STRATEGY_PARALLEL = "parallel"; 
+    private final static String CONFIG_STRATEGY_PARALLEL = "parallel";
     private int strategy = STRATEGY_SEQUENTIAL;
-    
 
     /**
      * This is the early initialization method called by the
@@ -101,9 +101,9 @@ public class BasicAggregator extends BaseCommonService
      */
     public void init() throws CPSInitializationException
     {
-        if (isInitialized()) 
+        if (isInitialized())
         {
-            return;        
+            return;
         }
 
         try
@@ -119,15 +119,14 @@ public class BasicAggregator extends BaseCommonService
         // initialization done
         setInit(true);
 
-     }
+    }
 
     private void initConfiguration() throws CPSInitializationException
     {
-        String defaultStrategy = getConfiguration().getString(DEFAULT_STRATEGY, 
-                                                        CONFIG_STRATEGY_SEQUENTIAL);
+        String defaultStrategy = getConfiguration().getString(DEFAULT_STRATEGY, CONFIG_STRATEGY_SEQUENTIAL);
         if (defaultStrategy.equals(CONFIG_STRATEGY_SEQUENTIAL))
         {
-            strategy = STRATEGY_SEQUENTIAL;                                                    
+            strategy = STRATEGY_SEQUENTIAL;
         }
         else if (defaultStrategy.equals(CONFIG_STRATEGY_PARALLEL))
         {
@@ -147,9 +146,8 @@ public class BasicAggregator extends BaseCommonService
      * Builds the portlet set defined in the context into a portlet tree.
      *
      * @return Unique Portlet Entity ID
-     */     
-    public void build(RequestContext request)
-        throws JetspeedException
+     */
+    public void build(RequestContext request) throws JetspeedException
     {
         Profile profile = request.getProfile();
         if (null == profile)
@@ -169,22 +167,22 @@ public class BasicAggregator extends BaseCommonService
 
         PortletContainer container;
         try
-        {        
+        {
             container = PortletContainerFactory.getPortletContainer();
         }
         catch (PortletContainerException e)
         {
-            throw new JetspeedException("Failed to get PortletContainer: " + e);            
+            throw new JetspeedException("Failed to get PortletContainer: " + e);
         }
 
-        for (Iterator eit = portlets.getEntriesIterator(); eit.hasNext(); )
+        for (Iterator eit = portlets.getEntriesIterator(); eit.hasNext();)
         {
-            Entry psmlEntry = (Entry)eit.next();
+            Entry psmlEntry = (Entry) eit.next();
 
             // 
             // Load Portlet from registry
             // 
-            System.out.println("*** Getting portlet from registry: " + psmlEntry.getName());            
+            System.out.println("*** Getting portlet from registry: " + psmlEntry.getName());
             PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(psmlEntry.getParent());
             if (portletDefinition == null)
             {
@@ -196,17 +194,20 @@ public class BasicAggregator extends BaseCommonService
             //
             try
             {
-                PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, 
-                                                                             psmlEntry.getName());                
-                container.renderPortlet(portletWindow, request.getRequest(), request.getResponse());                
+                PortletWindow portletWindow = PortletWindowFactory.getWindow(portletDefinition, psmlEntry.getName());
+
+                HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
+                HttpServletResponse servletResponse = request.getResponseForWindow(portletWindow);
+
+                container.renderPortlet(portletWindow, servletRequest, servletResponse);
             }
             catch (Throwable t)
             {
-                t.printStackTrace();                
-                log.error("Failed to service portlet, portlet exception: " +  t);
+                t.printStackTrace();
+                log.error("Failed to service portlet, portlet exception: " + t);
                 break;
             }
         }
     }
-    
+
 }

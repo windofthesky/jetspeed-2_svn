@@ -123,8 +123,8 @@ public class JetspeedPortletContainerWrapper implements PortletContainer
     {
         PortletContainerFactory.getPortletContainerOriginal().portletLoad(
             portletWindow,
-            ServletObjectAccess.getServletRequest(servletRequest),
-            ServletObjectAccess.getServletResponse(servletResponse));
+            ServletObjectAccess.getServletRequest(servletRequest, portletWindow),
+            ServletObjectAccess.getServletResponse(servletResponse, portletWindow));
     }
 
     /** 
