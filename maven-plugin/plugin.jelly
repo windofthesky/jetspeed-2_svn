@@ -85,7 +85,7 @@ limitations under the License.
   <goal name="jetspeed2:db.create">
   	<echo>Using DB: ${org.apache.jetspeed.production.database.default.name}</echo>
   	<echo>*************************************</echo>
-    <echo>*   Excuting standard SQL scripts   *</echo>
+    <echo>*   Executing standard SQL scripts   *</echo>
     <echo>*************************************</echo>
   	<!-- Run standard SQL scripts -->
     <util:file name="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}" var="sqlSrcDir"/>
@@ -102,7 +102,7 @@ limitations under the License.
     <util:file name="src/sql" var="sqlSrcDir"/>
     <j:if test="${sqlSrcDir.exists()}">
     <echo>*************************************</echo>
-    <echo>* Excuting user-defined SQL Scripts *</echo>
+    <echo>* Executing user-defined SQL Scripts *</echo>
     <echo>*************************************</echo>
     <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
       <j:if test="${sqlFile.name.endsWith('.sql')}">
