@@ -260,17 +260,18 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         return new PortletMode(name);
     }
 
-    public boolean hasPortalParameter( HttpServletRequest request, int parameterType )
+    public String[] parsePortalParameter( HttpServletRequest request, int parameterType )
     {
         String key = getNavigationKey(NavigationalStateComponent.PREFIX) + getNavigationKey(parameterType);
         String pathInfo = request.getPathInfo();
         if (null == pathInfo)
         {
-            return false;
+            return null;
         }
         StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
         StringBuffer path = new StringBuffer();
         boolean isName = true;
+        String result [] = new String[2];
         while (tokenizer.hasMoreTokens())
         {
             String token = tokenizer.nextToken();
@@ -285,9 +286,15 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             }
             if (token.startsWith(key))
             {
-                return true;
+                result[0] = token;
+                if (tokenizer.hasMoreTokens())
+                {
+                    result[1] = tokenizer.nextToken();
+                    return result;
+                }
+                break;
             }
         }
-        return false;
+        return null;
     }
 }
