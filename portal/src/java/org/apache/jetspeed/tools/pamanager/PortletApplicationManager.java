@@ -230,7 +230,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 else
                 {
                     // Uses war file and applicationServerName
-                    deployServer(strWarFileName, strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
+                    // DST: deployServer(strWarFileName, strAppServer, strPortletAppName, strServer, intServerPort, strUserName, strPassword);
                 }
             }
         }
@@ -400,7 +400,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
-
+/*
     public static void deployServer(String warFile, String appServer, String strPortletAppName, String strServer, int intServerPort, String strUser, String strPassword)
     {
         Object dc;
@@ -409,7 +409,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             
             try
             {
-				dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
+                dc = new CatalinaPAM(strServer, intServerPort, strUser, strPassword);
                 ((Deployment) dc).deploy(warFile, strPortletAppName);
             }
             catch (PortletApplicationException e)
@@ -423,7 +423,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             System.out.println("Application Server: " + appServer + " not supported");
         }
     }
-
+*/
     /**
      * Prepares the specified war file for deployment.
      *

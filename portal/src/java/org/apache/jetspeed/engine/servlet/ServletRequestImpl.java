@@ -81,6 +81,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
 
     public Map getParameterMap()
     {
+        /*
+         * DST TODO: REMOVING this code for now so that FORM post parameters are passed on.
+         * I will schedule time to rewrite and ensure it works with the spec 
+         * 
         //get control params
         if (portletParameters == null)
         {
@@ -122,6 +126,8 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         }
 
         return Collections.unmodifiableMap(portletParameters);
+        */
+        return Collections.unmodifiableMap(super.getParameterMap());
     }
 
     public Enumeration getParameterNames()
