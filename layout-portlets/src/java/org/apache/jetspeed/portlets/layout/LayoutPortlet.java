@@ -59,7 +59,14 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 
             try
             {
-                String helpPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
+                String helpPage = prefs.getValue(PARAM_HELP_PAGE, null);
+                if (helpPage == null)
+                {
+                    helpPage = this.getInitParameter(PARAM_HELP_PAGE);
+                    if (helpPage == null)
+                        helpPage = "columns";
+                }
+                
 
                 // TODO: Need to retreive layout.properties instead of
                 // hard-coding ".vm"
@@ -106,7 +113,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 JetspeedPowerTool jpt = getJetspeedPowerTool(request);
                 if (maximized)
                 {
-                    String viewPage = prefs.getValue(PARAM_MAX_PAGE, "maximized");
+                    String viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
+                    if (viewPage == null)
+                    {
+                        viewPage = this.getInitParameter(PARAM_MAX_PAGE);
+                        if (viewPage == null)
+                            viewPage = "maximized";
+                    }
 
                     // TODO: Need to retreive layout.properties instead of
                     // hard-coding ".vm"
@@ -115,7 +128,14 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 }
                 else
                 {
-                    String viewPage = prefs.getValue(PARAM_VIEW_PAGE, "columns");
+                    String viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
+                    if (viewPage == null)
+                    {
+                        viewPage = this.getInitParameter(PARAM_VIEW_PAGE);
+                        if (viewPage == null)
+                            viewPage = "columns";
+                    }
+                    
 
                     // TODO: Need to retreive layout.properties instead of
                     // hard-coding ".vm"

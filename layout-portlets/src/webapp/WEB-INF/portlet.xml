@@ -304,5 +304,40 @@ limitations under the License.
     </portlet-info>
 </portlet>
 
+<portlet id="FrameLayoutPortlet">
+    <portlet-name>FrameLayoutPortlet</portlet-name>
+    <display-name>Frame Layout Portlet</display-name>
+    <init-param>
+      <name>ViewPage</name>
+      <value>frames</value>
+    </init-param>
+    <init-param>
+      <name>MaxPage</name>
+      <value>maximized</value>
+    </init-param>
+    <init-param>
+      <name>columns</name>
+      <value>2</value>
+    </init-param>
+    <init-param>
+      <name>sizes</name>
+      <value>25%,75%</value>
+    </init-param>
+    <init-param>
+      <name>layoutType</name>
+      <value>Frame</value>
+    </init-param>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Frame Layout Portlet</title>
+      <short-title>Frame Layout</short-title>
+    </portlet-info>
+</portlet>
+
 </portlet-app>
 
