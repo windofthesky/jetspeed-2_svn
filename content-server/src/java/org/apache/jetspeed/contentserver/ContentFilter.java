@@ -1,3 +1,18 @@
+/*
+ * Copyright 2000-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.jetspeed.contentserver;
 
 import java.io.File;
@@ -18,12 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Created on Dec 30, 2003
- * 
- * @author
- */
-
-/**
  * <p>
  * ContentFilter
  * </p>
@@ -34,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ContentFilter implements Filter
 {
-
     public static final String SESSION_CONTENT_PATH_ATTR = "org.apache.jetspeed.content.pathes";
 
     private FilterConfig config;
@@ -43,7 +51,7 @@ public class ContentFilter implements Filter
 
     // private String themesDir;
     private File contentDirFile;
-    
+
     private static final Log log = LogFactory.getLog(ContentFilter.class);
 
     private String urlHint;
@@ -55,44 +63,46 @@ public class ContentFilter implements Filter
      */
     public void init(FilterConfig config) throws ServletException
     {
-        this.config = config;        
+        this.config = config;
         String dir = config.getInitParameter("content.directory");
         urlHint = config.getInitParameter("url.hint");
         this.contentDir = config.getServletContext().getRealPath(dir);
         // this.themesDir = this.contentDir + "/themes";
         this.contentDirFile = new File(this.contentDir);
-        if (!contentDirFile.exists()) { throw new ServletException(
-                "The specified content directory "
-                        + contentDirFile.getAbsolutePath() + " does not exist!"); }
-
+        if (!contentDirFile.exists())
+        {
+            throw new ServletException(
+            "The specified content directory "
+            + contentDirFile.getAbsolutePath() + " does not exist!");
+        }
     }
 
     /**
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException
+    public void doFilter(ServletRequest request, ServletResponse response, 
+    FilterChain chain) throws IOException, ServletException
     {
         if (request instanceof HttpServletRequest)
         {
-            
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            String requestURI = httpRequest.getRequestURI();            
-            String mimeType = config.getServletContext()
-            .getMimeType(requestURI);
-            
-            if (mimeType == null) { throw new NullPointerException(
-                    "MIME-TYPE for "
-                    + requestURI
-                    + " could not be located.  Make sure your container is properly configured to detect MIME types."); }
-            
+            String requestURI = httpRequest.getRequestURI();
+            String mimeType = config.getServletContext().getMimeType(requestURI);
+            if (mimeType == null)
+            {
+                throw new NullPointerException(
+                        "MIME-TYPE for "
+                                + requestURI
+                                + " could not be located.  Make sure your container is properly configured to detect MIME types.");
+            }
             log.debug(mimeType + " detected: " + requestURI);
-            
-            SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, urlHint, true);
-            long contentLength = contentLocator.mergeContent(requestURI, getContentSearchPathes(httpRequest), response.getOutputStream());
-            
+            SimpleContentLocator contentLocator = new SimpleContentLocator(
+                    this.contentDir, urlHint, true);
+            long contentLength = contentLocator.mergeContent(requestURI,
+                    getContentSearchPathes(httpRequest), response
+                            .getOutputStream());
             if (contentLength > -1)
             {
                 response.setContentType(mimeType);
@@ -103,12 +113,8 @@ public class ContentFilter implements Filter
             {
                 chain.doFilter(request, response);
             }
-            
             return;
-            
         }
-        
-
         chain.doFilter(request, response);
     }
 
@@ -117,22 +123,17 @@ public class ContentFilter implements Filter
      */
     public void destroy()
     {
-
     }
-
 
     protected List getContentSearchPathes(HttpServletRequest request)
     {
-        List contentPathes = (List) request.getSession().getAttribute(
-                SESSION_CONTENT_PATH_ATTR);
+        List contentPathes = (List) request.getSession().getAttribute(SESSION_CONTENT_PATH_ATTR);
         if (contentPathes == null)
         {
-            contentPathes = new ArrayList();            
+            contentPathes = new ArrayList();
             //request.getSession()
-            //        .setAttribute(SESSION_THEME_ATTR, contentPathes);            
+            //        .setAttribute(SESSION_THEME_ATTR, contentPathes);
         }
-
         return contentPathes;
     }
-
 }
