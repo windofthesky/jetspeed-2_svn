@@ -22,17 +22,24 @@ package org.apache.jetspeed.components.adapters;
 public class StandardDelegationStrategy extends AbstractDelegationStrategy
 {
 
-    private Object delegatedInstance;
+     private Object instance;
     
-       protected Object getDelegatedInstance()
+    public Object get()
     {
-         return delegatedInstance;
+       if(instance != null)
+       {
+         return instance;
+       }
+       else
+       {
+           return adapter.getComponentInstance();
+       }
     }
 
 
-    protected void setDelegatedInstance( Object instance )
+    public void set( Object instance )
     {
-        delegatedInstance  = instance;
+       this.instance  = instance;
     }
 
 }

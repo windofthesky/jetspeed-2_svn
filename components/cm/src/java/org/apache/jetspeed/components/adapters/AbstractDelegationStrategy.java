@@ -15,77 +15,22 @@
  */
 package org.apache.jetspeed.components.adapters;
 
-import java.lang.reflect.Method;
+import org.picocontainer.ComponentAdapter;
 
-import org.picocontainer.defaults.InterfaceFinder;
-import org.picocontainer.defaults.Swappable;
 
 public abstract class AbstractDelegationStrategy implements DelegationStrategy
 {
 
-    private InterceptorAdapter adapter;
+    protected ComponentAdapter adapter;
     
-    public Object invoke( Object proxy, Method method, Object[] args )
-            throws Throwable
-    {
-        if(adapter == null)
-        {
-            throw new IllegalStateException("InterceptorAdapter cannot be null.  You must call setAdapter() before calling invoke().");
-        }
-        
-        //System.out.println("Invoking method: " + method);
-        Class declaringClass = method.getDeclaringClass();
-        if (declaringClass.equals(Object.class))
-        {
-            if (method.equals(InterfaceFinder.hashCode))
-            {
-                // Return the hashCode of ourself, as Proxy.newProxyInstance()
-                // may
-                // return cached proxies. We want a unique hashCode for each
-                // created proxy!
-                return new Integer(System
-                        .identityHashCode(AbstractDelegationStrategy.this));
-            }
-            if (method.equals(InterfaceFinder.equals))
-            {
-                return new Boolean(proxy == args[0]);
-            }
-            // If it's any other method defined by Object, call on ourself.
-            return method.invoke(AbstractDelegationStrategy.this, args);
-        }
-        else if (declaringClass.equals(Swappable.class))
-        {
-            return method.invoke(this, args);
-        }
-        else
-        {
-            if (getDelegatedInstance() == null)
-            {
-                setDelegatedInstance(adapter.getDelegatedComponentInstance());
-            }
-            return method.invoke(getDelegatedInstance(), args);
-        }
-    }
-
-    public Object __hotSwap( Object newSubject )
-    {
-        Object result = getDelegatedInstance();
-        setDelegatedInstance(newSubject);
-        return result;
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see org.apache.jetspeed.components.DelegationStrategy#setAdapter(org.picocontainer.ComponentAdapter)
      */
-    public void setAdapter( InterceptorAdapter adapter )
+    public void setAdapter( ComponentAdapter adapter )
     {
         this.adapter = adapter;
 
     }
-
-    protected abstract Object getDelegatedInstance();
-   
-    protected abstract void setDelegatedInstance( Object instance );
 }

@@ -15,8 +15,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.syntax.SyntaxException;
 import org.picocontainer.Parameter;
 import org.picocontainer.PicoInitializationException;
 import org.picocontainer.PicoIntrospectionException;
@@ -98,7 +98,7 @@ public class GroovyComponentAdapter extends AbstractComponentAdapter
             return instance;
             
         }
-        catch (SyntaxException e)
+        catch (CompilationFailedException e)
         {
             throw new PicoInitializationException(e);
         }

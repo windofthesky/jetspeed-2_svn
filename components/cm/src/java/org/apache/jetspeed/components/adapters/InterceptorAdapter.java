@@ -15,16 +15,16 @@
  */
 package org.apache.jetspeed.components.adapters;
 
-import java.lang.reflect.Proxy;
-
 import org.picocontainer.ComponentAdapter;
 import org.picocontainer.PicoInitializationException;
 import org.picocontainer.PicoIntrospectionException;
 import org.picocontainer.defaults.AssignabilityRegistrationException;
-import org.picocontainer.defaults.ImplementationHidingComponentAdapter;
-import org.picocontainer.defaults.InterfaceFinder;
+import org.picocontainer.defaults.DecoratingComponentAdapter;
 import org.picocontainer.defaults.NotConcreteRegistrationException;
-import org.picocontainer.defaults.Swappable;
+
+import com.thoughtworks.proxy.factory.StandardProxyFactory;
+import com.thoughtworks.proxy.toys.hotswap.HotSwapping;
+import com.thoughtworks.proxy.toys.multicast.ClassHierarchyIntrospector;
 
 /**
  * InterceptorAdaptor
@@ -32,63 +32,46 @@ import org.picocontainer.defaults.Swappable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class InterceptorAdapter extends ImplementationHidingComponentAdapter // DecoratingComponentAdapterFactory
+public class InterceptorAdapter extends DecoratingComponentAdapter
 {
     private Class delegationStrategyClass;
-    
+    protected StandardProxyFactory proxyFactory;
+
     public InterceptorAdapter( ComponentAdapter delegate, Class delegationStrategyClass )
     {
         super(delegate);
         this.delegationStrategyClass = delegationStrategyClass;
+        this.proxyFactory = new StandardProxyFactory();
     }
-    private final InterfaceFinder interfaceFinder = new InterfaceFinder();
 
-    public Object getComponentInstance() throws PicoInitializationException,
-            PicoIntrospectionException, AssignabilityRegistrationException,
-            NotConcreteRegistrationException
+    public Object getComponentInstance() throws PicoInitializationException, PicoIntrospectionException,
+            AssignabilityRegistrationException, NotConcreteRegistrationException
     {
-        Class[] interfaces;
-        if (getDelegate().getComponentKey() instanceof Class
-                && ((Class) getDelegate().getComponentKey()).isInterface())
+
+        Class[] proxyTypes;
+        if (getComponentKey() instanceof Class && proxyFactory.canProxy((Class) getComponentKey()))
         {
-            // If the compo
-            interfaces = new Class[]{(Class) getDelegate().getComponentKey()};
+            proxyTypes = new Class[]{(Class) getComponentKey()};
         }
         else
         {
-            interfaces = interfaceFinder.getInterfaces(getDelegate()
-                    .getComponentImplementation());
+            proxyTypes = ClassHierarchyIntrospector.addIfClassProxyingSupportedAndNotObject(
+                    getComponentImplementation(), getComponentImplementation().getInterfaces(), proxyFactory);
         }
-        Class[] swappableAugmentedInterfaces = new Class[interfaces.length + 1];
-        swappableAugmentedInterfaces[interfaces.length] = Swappable.class;
-        System.arraycopy(interfaces, 0, swappableAugmentedInterfaces, 0,
-                interfaces.length);
-        if (interfaces.length == 0)
-        {
-            throw new PicoIntrospectionException(
-                    "Can't hide implementation for "
-                            + getDelegate().getComponentImplementation()
-                                    .getName()
-                            + ". It doesn't implement any interfaces.");
-        }
-        
+
         final DelegationStrategy delegationStrategy;
         try
         {
             delegationStrategy = (DelegationStrategy) delegationStrategyClass.newInstance();
-            delegationStrategy.setAdapter(this);
+            delegationStrategy.setAdapter(this.getDelegate());
+            return HotSwapping.object(proxyTypes, proxyFactory, delegationStrategy, true);
         }
         catch (Exception e)
         {
-            throw new PicoInitializationException("Error while creating new DelegationStartegy instance: "+e.toString(), e);
+            throw new PicoInitializationException("Error while creating new DelegationStartegy instance: "
+                    + e.toString(), e);
         }
-        
-        return Proxy.newProxyInstance(getClass().getClassLoader(),
-                swappableAugmentedInterfaces, delegationStrategy);
-    }
 
-    Object getDelegatedComponentInstance()
-    {
-        return super.getComponentInstance();
+        
     }
 }

@@ -27,10 +27,11 @@ import org.picocontainer.PicoContainer;
 import org.picocontainer.defaults.CachingComponentAdapter;
 import org.picocontainer.defaults.ComponentParameter;
 import org.picocontainer.defaults.ConstantParameter;
-import org.picocontainer.defaults.ConstructorComponentAdapter;
+import org.picocontainer.defaults.ConstructorInjectionComponentAdapter;
 import org.picocontainer.defaults.DefaultPicoContainer;
 import org.picocontainer.defaults.InstanceComponentAdapter;
-import org.picocontainer.defaults.Swappable;
+
+import com.thoughtworks.proxy.toys.hotswap.Swappable;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
@@ -91,7 +92,7 @@ public class TestInterceptorAdapter extends TestCase
         assertTrue(testComponent instanceof Swappable);
 
         // Now test our hot swapping
-        ((Swappable) testComponent).__hotSwap(c2);
+        ((Swappable) testComponent).hotswap(c2);
 
         assertTrue(testComponent.getValue1() == 2
                 && testComponent.getValue2().equals("c2"));
@@ -102,7 +103,7 @@ public class TestInterceptorAdapter extends TestCase
         Thread.currentThread().setName("Thread 1");
         DefaultPicoContainer pico = new DefaultPicoContainer();
 
-        ConstructorComponentAdapter cca = new ConstructorComponentAdapter(
+        ConstructorInjectionComponentAdapter cca = new ConstructorInjectionComponentAdapter(
                 MockComponent.class, BaseMockComponent.class, new Parameter[]{
                         new ConstantParameter(new Integer(1)),
                         new ConstantParameter("c1")});
@@ -144,7 +145,7 @@ public class TestInterceptorAdapter extends TestCase
         
         pico.registerComponentImplementation(SINGLETON_KEY, MockDependentComponent.class,  new Parameter[]{new ComponentParameter(MockComponent.class)});
         
-        ConstructorComponentAdapter cca = new ConstructorComponentAdapter(MockComponent.class, BaseMockComponent.class, new Parameter[] {new ConstantParameter(new Integer(1)), new ConstantParameter("c1")});
+        ConstructorInjectionComponentAdapter cca = new ConstructorInjectionComponentAdapter(MockComponent.class, BaseMockComponent.class, new Parameter[] {new ConstantParameter(new Integer(1)), new ConstantParameter("c1")});
         
         pico.registerComponent(new InterceptorAdapter(cca, ThreadLocalDelegationStrategy.class));
         pico.start();
@@ -170,7 +171,7 @@ public class TestInterceptorAdapter extends TestCase
         
         //Now change this thread without affecting the other thread
         MockComponent c2 = new BaseMockComponent(2, "c2");
-        ((Swappable) testMc).__hotSwap(c2);
+        ((Swappable) testMc).hotswap(c2);
         
         assertEquals("c2", mdc.getMockComponent().getValue2());
         // verify that the value has not changed in the other thread

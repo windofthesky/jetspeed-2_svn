@@ -27,15 +27,26 @@ public class ThreadLocalDelegationStrategy extends AbstractDelegationStrategy
     /* (non-Javadoc)
      * @see org.apache.jetspeed.components.AbstractDelegationStrategy#getDelegatedInstance()
      */
-    protected Object getDelegatedInstance()
+    public Object get()
     {        
-        return localInstance.get();
+        Object useInstance = localInstance.get();
+        if(useInstance != null)
+        {
+            return useInstance;
+        }
+        else
+        {
+            useInstance = adapter.getComponentInstance();
+            set(useInstance);
+            return useInstance;
+        }
+        
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.components.AbstractDelegationStrategy#setDelegatedInstance(java.lang.Object)
      */
-    protected void setDelegatedInstance( Object instance )
+    public void set( Object instance )
     {
         localInstance.set(instance);
     }

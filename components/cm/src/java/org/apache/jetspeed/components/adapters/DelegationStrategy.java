@@ -15,17 +15,17 @@
  */
 package org.apache.jetspeed.components.adapters;
 
-import java.lang.reflect.InvocationHandler;
+import org.picocontainer.ComponentAdapter;
 
-import org.picocontainer.defaults.Swappable;
+import com.thoughtworks.proxy.toys.delegate.ObjectReference;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public interface DelegationStrategy extends InvocationHandler, Swappable
+public interface DelegationStrategy extends ObjectReference
 {
-    void setAdapter(InterceptorAdapter adapter);
+    void setAdapter(ComponentAdapter adapter);
     
 
 }
