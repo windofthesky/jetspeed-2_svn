@@ -76,7 +76,7 @@ public class ContentTypeImpl implements ContentTypeComposite, Serializable
 {
 
     private String contentType;
-    protected Collection portletModes; 
+    protected Collection portletModes;
     /**
      *  field that represents a FK relationship to the parent portlet.
      * Required by some O/R tools like OJB.
@@ -104,6 +104,11 @@ public class ContentTypeImpl implements ContentTypeComposite, Serializable
     public Iterator getPortletModes()
     {
         return portletModes.iterator();
+    }
+
+    public Collection getPortletModesCollection()
+    {
+        return portletModes;
     }
 
     /**
@@ -144,6 +149,12 @@ public class ContentTypeImpl implements ContentTypeComposite, Serializable
     public void addPortletMode(PortletMode mode)
     {
         portletModes.add(mode);
+
+    }
+
+    public void addPortletMode(String mode)
+    {
+        portletModes.add(new PortletMode(mode));
 
     }
 

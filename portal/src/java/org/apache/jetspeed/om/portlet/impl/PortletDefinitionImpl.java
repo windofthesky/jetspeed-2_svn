@@ -55,9 +55,10 @@ package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.jetspeed.om.common.MutableDescription;
@@ -78,7 +79,7 @@ import org.apache.jetspeed.om.impl.LanguageSetImpl;
 import org.apache.jetspeed.om.impl.ParameterSetImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
-import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
+import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -87,8 +88,11 @@ import org.apache.pluto.om.common.DisplayNameSet;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
@@ -105,6 +109,8 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
 {
+	
+	private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class); 
     private int id;
     private String className;
     private String name;
@@ -202,6 +208,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
      */
     public PreferenceSet getPreferenceSet()
     {
+    	log.debug("Portlet "+name+" has "+prefSet.size()+" preferences.");
         return prefSet;
     }
 
@@ -356,6 +363,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         return param;
     }
 
+    public void addInitParameter(Parameter parameter)
+    {
+        parameterSet.add(parameter);
+    }
+
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String, java.lang.String)
      */
@@ -383,18 +395,17 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(java.lang.String, java.util.Collection)
      */
-    public PreferenceComposite addPreference(String name, Collection values)
+    public PreferenceComposite addPreference(String name, String[] values)
     {
         // PreferenceComposite pref = JetspeedPortletRegistry.newPreference();
-        PreferenceComposite pref = new PreferenceImpl();
+        PreferenceComposite pref = new DefaultPreferenceImpl();
         pref.setName(name);
         pref.setValues(values);
-        pref.setType(PreferenceComposite.TYPE_DEFAULT);
         if (prefSet == null)
         {
             prefSet = new PreferenceSetImpl();
         }
-        prefSet.add(pref);
+        addPreference(pref);
 
         return pref;
     }
@@ -567,6 +578,17 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
 
     }
 
+    public void addDescription(Description description)
+    {
+        if (descriptions == null)
+        {
+            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PORTLET);
+        }
+
+        descriptions.addDescription(description);
+
+    }
+
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDisplayName(java.util.Locale, java.lang.String)
      */
@@ -581,54 +603,14 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
 
     }
 
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @return
-     */
-    public String getDisplayName()
+    public void addDisplayName(DisplayName displayName)
     {
-        DisplayName dn = getDisplayName(Locale.getDefault());
-        if (dn != null)
+        if (displayNames == null)
         {
-            return dn.getDisplayName();
+            displayNames = new DisplayNameSetImpl(MutableDisplayName.TYPE_PORTLET);
         }
-        return null;
-    }
 
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @param dn
-     */
-    public void setDisplayName(String dn)
-    {
-        addDisplayName(Locale.getDefault(), dn);
-    }
-
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @return
-     */
-    public String getDescription()
-    {
-        Description desc = getDescription(Locale.getDefault());
-        if (desc != null)
-        {
-            return desc.getDescription();
-        }
-        return null;
-    }
-
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @param desc
-     */
-    public void setDescription(String desc)
-    {
-        addDescription(Locale.getDefault(), desc);
+        displayNames.addDisplayName(displayName);
     }
 
     /** 
@@ -670,6 +652,37 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     public void setPreferenceValidatorClassname(String string)
     {
         preferenceValidatorClassname = string;
+    }
+
+    /** 
+     * <p>
+     * addPreference
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(org.apache.pluto.om.common.Preference)
+     * @param preference
+     */
+    public void addPreference(Preference preference)
+    {
+        if (prefSet == null)
+        {
+            prefSet = new PreferenceSetImpl();
+        }
+        prefSet.add(preference);
+
+    }
+
+    /** 
+     * <p>
+     * addSecurityRoleRef
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(org.apache.pluto.om.common.SecurityRoleRef)
+     * @param securityRef
+     */
+    public void addSecurityRoleRef(SecurityRoleRef securityRef)
+    {
+        securityRoleRefSet.add(securityRef);
     }
 
 }
