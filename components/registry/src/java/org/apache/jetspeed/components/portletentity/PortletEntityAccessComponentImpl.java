@@ -16,10 +16,10 @@
 package org.apache.jetspeed.components.portletentity;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.persistence.Storeable;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
@@ -27,7 +27,6 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
-import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -55,7 +54,6 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     private PersistenceStore persistenceStore;
 
     private PortletRegistryComponent registry;
-
     
 
     /**
@@ -178,7 +176,9 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         if (entityCache.get(entityId) != null)
         {
-            return wrapEntity((PortletEntityImpl) entityCache.get(entityId));
+            PortletEntityImpl entity = (PortletEntityImpl) entityCache.get(entityId);
+            entity.setStore(persistenceStore);
+            return entity;
         }
         else
         {
@@ -195,8 +195,9 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             } 
             else
             {
+                ((Storeable) portletEntity).setStore(persistenceStore);
                 entityCache.put(entityId, portletEntity);
-                return wrapEntity((PortletEntityImpl) portletEntity);
+                return (PortletEntityImpl) portletEntity;
             }
         }
     }
@@ -207,7 +208,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      */
     public MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition)
     {
-        PortletEntityCtrl portletEntity = new PortletEntityImpl();
+        PortletEntityImpl portletEntity = new PortletEntityImpl();
         if (portletDefinition instanceof StoreablePortletDefinitionDelegate)
         {
             portletEntity.setPortletDefinition(((StoreablePortletDefinitionDelegate) portletDefinition).getPortlet());
@@ -216,7 +217,9 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         {
             portletEntity.setPortletDefinition(portletDefinition);
         }
-        return wrapEntity((PortletEntityImpl)  portletEntity);
+        portletEntity.setStore(persistenceStore);
+        
+        return (PortletEntityImpl)  portletEntity;
 
     }
 
@@ -234,14 +237,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         try
         {
             prepareTransaction(store);
-            if (portletEntity instanceof StoreablePortletEntityDelegate)
-            {
-				store.deletePersistent(((StoreablePortletEntityDelegate)portletEntity).getPortletEntity());
-            }            
-            else
-            {
-                store.deletePersistent(portletEntity);
-            }
+            
+            store.deletePersistent(portletEntity);            
 
             store.getTransaction().checkpoint();
         }
@@ -262,33 +259,16 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      */
     public void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException
     {
-        PersistenceStore store = getPersistenceStore();
+
         try
         {
-            prepareTransaction(store);
-			if (portletEntity instanceof StoreablePortletEntityDelegate)
-			{
-                PortletEntity realEntity = ((StoreablePortletEntityDelegate)portletEntity).getPortletEntity();
-				store.lockForWrite(realEntity);
-                store.getTransaction().checkpoint();                
-               // autoCreateEntityId(realEntity, store);
-			}            
-			else
-			{
-				store.lockForWrite(portletEntity);
-                store.getTransaction().checkpoint();
-              //  autoCreateEntityId(portletEntity, store);                
-			}
-                        
+            ((PortletEntityCtrl)portletEntity).store();
         }
         catch (Exception e)
         {
-            String msg = "Unable to store Portlet Entity.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-
-            throw new PortletEntityNotStoredException(msg, e);
-        }
+            log.error(e.toString(), e);     
+            throw new PortletEntityNotStoredException(e.toString(), e);
+         }
 
     }
 
@@ -327,16 +307,4 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         return persistenceStore;
     }
-    
-    protected StoreablePortletEntityDelegate wrapEntity(PortletEntityImpl entity)
-    {
-        List list =(List) ((PreferenceSetImpl)entity.getPreferenceSet()).getInnerCollection();
-        return new StoreablePortletEntityDelegate(entity, entity, list, getPersistenceStore());
-    }
-    
-
-    
-    
-    
-
 }

@@ -20,12 +20,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -39,7 +42,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
-import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -433,14 +435,36 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 store.deleteAll(store.newQuery(PortletInitParameterImpl.class, filter));
                 store.getTransaction().checkpoint();
 
-                filter = store.newFilter();
-                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
-                store.deleteAll(store.newQuery(DefaultPreferenceImpl.class, filter));
-                store.getTransaction().checkpoint();
+//                filter = store.newFilter();
+//                filter.addEqualTo("parentId", new Long(curPortlet.getOID()));
+//
+//                store.getTransaction().checkpoint();
+                
+                String appNodePath = MutablePortletApplication.PREFS_ROOT + "/" +((MutablePortletApplication)app).getName();
+                try
+                {
+                    if(Preferences.systemRoot().nodeExists(appNodePath))
+                    {                   
+                        Preferences node = Preferences.systemRoot().node(appNodePath);
+                        log.info("Removing Application preference node "+node.absolutePath());
+                        node.removeNode();
+                    }
+                }
+                catch (BackingStoreException e)
+                {
+                   throw new RegistryException(e.toString(), e);
+                }
                 
                 filter = store.newFilter();
                 filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
                 store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                
+                
+                filter = store.newFilter();
+                filter.addEqualTo("portletId", new Long(curPortlet.getOID()));
+                store.deleteAll(store.newQuery(PortletEntityImpl.class, filter));
                 store.getTransaction().checkpoint();
 
                 filter = store.newFilter();

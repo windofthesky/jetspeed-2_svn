@@ -15,8 +15,10 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -25,12 +27,17 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponentImpl;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -64,6 +71,9 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
 
         registry = new PortletRegistryComponentImpl(persistenceStore);
         entityAccess = new PortletEntityAccessComponentImpl(persistenceStore, registry);
+        
+        PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
+        PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
 
         setupTestData();                   
     }
@@ -76,7 +86,7 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
     protected void tearDown() throws Exception
     {                
         teardownTestData();
-        super.tearDown();
+       //super.tearDown();
     }
 
    public static Test suite()
@@ -121,8 +131,90 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         Fragment f1 =(Fragment) mockf1.proxy();
             
         MutablePortletEntity entity = entityAccess.generateEntityFromFragment(f1);
+        PreferenceSetComposite prefs = (PreferenceSetComposite) entity.getPreferenceSet();
+        prefs.remove("pref1");
+        assertNotNull(prefs);
+        assertNull(prefs.get("pref1"));
+        
+        // test adding a pref
+        prefs.add("pref1", Arrays.asList(new String[]{"1"}));
+        assertNotNull(prefs.get("pref1"));
+        
+        // Remove should return the deleted pref
+        assertNotNull(prefs.remove("pref1"));
+        
+        // Should be gone
+        assertNull(prefs.get("pref1"));        
+        
+        // Add it back so we can test tole back
+        prefs.add("pref1", Arrays.asList(new String[]{"1"}));
 
         entityAccess.storePortletEntity(entity);
+        
+        prefs = (PreferenceSetComposite) entity.getPreferenceSet();
+        
+        assertNotNull(prefs.get("pref1"));
+        
+        PreferenceComposite pref = (PreferenceComposite) prefs.get("pref1");
+        
+        assertEquals("1", pref.getValueAt(0));
+        
+        pref.setValueAt(0, "2");
+        
+        assertEquals("2", pref.getValueAt(0));
+        
+        entity.reset();
+        
+        pref = (PreferenceComposite) prefs.get("pref1");
+        
+        assertEquals("1", pref.getValueAt(0));
+        
+        prefs.remove(pref);       
+        
+        assertNull(prefs.get("pref1"));
+        
+        entity.reset();
+        
+        assertNotNull(prefs.get("pref1"));
+        
+        prefs.add("pref2", Arrays.asList(new String[]{"2", "3"}));
+        
+        entity.store();
+        
+        PreferenceComposite pref2 = (PreferenceComposite) prefs.get("pref2");
+        
+        assertNotNull(pref2);
+        
+        Iterator prefsValues = pref2.getValues();
+        int count = 0;
+        while(prefsValues.hasNext())
+        {
+            prefsValues.next();
+            count++;
+        }
+        
+        assertEquals(2, count);
+        
+        pref2.addValue("4");
+        prefsValues = pref2.getValues();
+        count = 0;
+        while(prefsValues.hasNext())
+        {
+            assertEquals(String.valueOf(count+2), prefsValues.next());
+            count++;
+        }
+        assertEquals(3, count);
+        
+        entity.reset();
+        
+        prefsValues = pref2.getValues();
+        count = 0;
+        while(prefsValues.hasNext())
+        {
+            assertEquals(String.valueOf(count+2), prefsValues.next());
+            count++;
+        }
+        assertEquals(2, count);
         
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
@@ -182,6 +274,9 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
   
         app.setWebApplicationDefinition(webApp);
         
+        PreferenceSetComposite prefSet = (PreferenceSetComposite) portlet.getPreferenceSet();
+        prefSet.add("pref1", Arrays.asList(new String[]{"1"}));
+        
         store.makePersistent(app);
         store.getTransaction().commit();              
     }
@@ -205,6 +300,24 @@ public class TestPortletEntityAccessComponent extends PersistenceSupportedTestCa
         {
             entityAccess.removePortletEntity(entity);
         }
+        
+        if(Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
+        {
+            Preferences.systemRoot().node(MutablePortletApplication.PREFS_ROOT).removeNode();
+        }
+        
+        if(Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
+        {
+            Preferences.userRoot().node(PortletDefinitionComposite.PORTLETS_PREFS_ROOT).removeNode();
+        }
+        
+        
+        
+        if(Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
+        {
+            Preferences.userRoot().node(MutablePortletEntity.PORTLET_ENTITY_ROOT).removeNode();
+        }
+        
                 
         store.getTransaction().commit();              
 

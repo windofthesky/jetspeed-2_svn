@@ -56,6 +56,14 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>jetspeed-prefs</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
     <!-- Testing only -->
     <dependency>
       <id>jetspeed-rdbms</id>
@@ -288,6 +296,10 @@ limitations under the License.
 
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     <unitTest>
+       <excludes>
+        <exclude>**/Abstract*</exclude>
+
+      </excludes>
       <resources>
         <resource>
           <directory>${basedir}/src/test</directory>

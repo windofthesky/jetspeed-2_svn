@@ -16,22 +16,10 @@
 package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Iterator;
-import java.util.Locale;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.impl.DublinCoreImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
@@ -43,23 +31,8 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @version $Id$
  *  
  */
-public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
+public class TestRegistryDirectPart2 extends AbstractRegistryTest
 {
-
-    private static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
-    private static final String PORTLET_0_NAME = "Portlet 0";
-    private static final String PORTLET_1_CLASS = "com.portlet.MyClass";
-    private static final String PORTLET_1_NAME = "Portlet 1";
-    private static final String PORTLET_1_UID = "com.portlet.MyClass.Portlet 1";
-    private static final String PORTLET_0_UID = "com.portlet.MyClass0.Portlet 0";
-    private static final String MODE_HELP = "HELP";
-    private static final String MODE_VIEW = "VIEW";
-    private static final String MODE_EDIT = "EDIT";
-    private static int testPasses = 0;
-    public static final String APP_1_NAME = "RegistryTestPortlet";
-    private static PortletRegistryComponent registry;
-    private static PersistenceStore store;
-
 
     /*
      * (non-Javadoc)
@@ -69,10 +42,7 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        registry = new PortletRegistryComponentImpl(persistenceStore);
-        store = registry.getPersistenceStore();
 
-        testPasses++;
     }
 
     /*
@@ -82,8 +52,8 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
      */
     protected void tearDown() throws Exception
     {
-        PersistenceStore store = registry.getPersistenceStore();
-        store.getTransaction().begin();
+        
+        persistenceStore.getTransaction().begin();
         
         Iterator itr = registry.getPortletApplications().iterator();
         while(itr.hasNext())
@@ -91,7 +61,8 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
             registry.removeApplication((PortletApplicationDefinition)itr.next());
         }
         
-        store.getTransaction().commit(); 
+        persistenceStore.getTransaction().commit(); 
+        
         super.tearDown();
     }
 
@@ -108,105 +79,9 @@ public class TestRegistryDirectPart2 extends PersistenceSupportedTestCase
     {
         super(testName);
     }
-
-    public void test001() throws Exception
+    
+    public void testData() throws Exception
     {
-
-        // now makes sure everthing got persisted
-
-        store.getTransaction().begin();
-        PortletApplicationDefinitionImpl app = null;
-        Filter filter = store.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app =
-            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
-                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
-        store.getTransaction().commit();
-        assertNotNull("Failed to retreive portlet application", app);
-
-        validateDublinCore(app.getMetadata());
-
-        WebApplicationDefinitionImpl webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 1");
-
-        store.invalidateAll();
-
-        assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
-        assertNotNull("Web app was not saved along with the portlet app.", webApp);
-        assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
-        assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
-        assertTrue("\"user.name.family\" user attribute ref was not found.", app.getUserAttributeRefs().size() == 1);
-        portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
-        assertNotNull("Portlet could not be retreived by unique name.", portlet);
-
-        validateDublinCore(portlet.getMetadata());
-
-        assertNotNull("Portlet Application was not set in the portlet defintion.", portlet.getPortletApplicationDefinition());
-        assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
-        assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
-        assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));
-        assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
-        assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
-        assertNotNull("\"preference 1\" was not found.", portlet.getPreferenceSet().get("preference 1"));
-        assertNotNull("Language information not found for Portlet 1", portlet.getLanguageSet().get(Locale.getDefault()));
-        assertNotNull("Content Type html not found.", portlet.getContentTypeSet().get("html/text"));
-        assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));
-        Iterator itr = portlet.getPreferenceSet().get("preference 1").getValues();
-        int valueCount = 0;
-        ;
-        while (itr.hasNext())
-        {
-            itr.next();
-            valueCount++;
-        }
-        assertEquals("\"preference 1\" did not have to values.", 2, valueCount);
-
-        store.getTransaction().begin();
-        webApp = null;
-        filter = store.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app =
-            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
-                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-
-        store.getTransaction().commit();
-        assertNotNull("Web app was not located by query.", webApp);
-        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
-
-        ObjectID oid = app.getId();
-        MutablePortletApplication pa = registry.getPortletApplication(oid);
-        assertNotNull("could retrieve portlet application by id.", pa);
-
-        registry.removeApplication(app);
-    }
-
-    private void validateDublinCore(GenericMetadata metadata)
-    {
-        DublinCoreImpl dc = new DublinCoreImpl(metadata);
-        assertEquals(dc.getTitles().size(), 3);
-        assertEquals(dc.getContributors().size(), 1);
-        assertEquals(dc.getCoverages().size(), 2);
-        assertEquals(dc.getCreators().size(), 1);
-        assertEquals(dc.getDescriptions().size(), 1);
-        assertEquals(dc.getFormats().size(), 1);
-        assertEquals(dc.getIdentifiers().size(), 1);
-        assertEquals(dc.getLanguages().size(), 1);
-        assertEquals(dc.getPublishers().size(), 1);
-        assertEquals(dc.getRelations().size(), 1);
-        assertEquals(dc.getRights().size(), 1);
-        assertEquals(dc.getSources().size(), 1);
-        assertEquals(dc.getSubjects().size(), 1);
-        assertEquals(dc.getTypes().size(), 1);
-    }
-
-    protected void invalidate(Object[] objs) throws LockFailedException
-    {
-        store.getTransaction().begin();
-        for (int i = 0; i < objs.length; i++)
-        {
-            store.invalidate(objs[i]);
-        }
-        store.getTransaction().commit();
+        verifyData();
     }
 }

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.common.preference;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.pluto.om.common.Description;
@@ -101,5 +102,9 @@ public interface PreferenceComposite extends PreferenceCtrl, Preference, Seriali
      * @param string
      */
     void setType(String string);
+    
+    String[] cloneValues();
+    
+    Iterator getDescriptions();
 
 }

@@ -15,18 +15,12 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.Locale;
 
 import javax.portlet.PortletMode;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -40,9 +34,9 @@ import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.pluto.om.common.PreferenceSetCtrl;
 
 /**
  * 
@@ -53,22 +47,10 @@ import org.apache.jetspeed.util.JetspeedLocale;
  * @version $Id$
  *  
  */
-public class TestRegistryDirect extends PersistenceSupportedTestCase
+public class TestRegistryDirect extends AbstractRegistryTest
 {
 
-    private static final String PORTLET_0_CLASS = "com.portlet.MyClass0";
-    private static final String PORTLET_0_NAME = "Portlet 0";
-    private static final String PORTLET_1_CLASS = "com.portlet.MyClass";
-    private static final String PORTLET_1_NAME = "Portlet 1";
-    private static final String PORTLET_1_UID = "com.portlet.MyClass.Portlet 1";
-    private static final String PORTLET_0_UID = "com.portlet.MyClass0.Portlet 0";
-    private static final String MODE_HELP = "HELP";
-    private static final String MODE_VIEW = "VIEW";
-    private static final String MODE_EDIT = "EDIT";
-    private static int testPasses = 0;
-    public static final String APP_1_NAME = "RegistryTestPortlet";
-    private static PortletRegistryComponent registry;
-    private static PersistenceStore store;
+        
 
 
     /*
@@ -80,10 +62,9 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
     {
         super.setUp();
         
-        registry = new PortletRegistryComponentImpl(persistenceStore);
-        store = registry.getPersistenceStore();
-
-        testPasses++;
+        
+        buildTestData();
+        
     }
 
     /*
@@ -93,13 +74,7 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
-    }
-
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRegistryDirect.class);
+       //  super.tearDown();
     }
 
     /**
@@ -110,11 +85,19 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
         super(testName);
     }
 
-    public void test001() throws Exception
+    /**
+     * <p>
+     * buildTestData
+     * </p>
+     *
+     * @throws RegistryException
+     * @throws LockFailedException
+     */
+    private void buildTestData() throws RegistryException, LockFailedException
     {
         // Create an Application and a Web app
         
-        store.getTransaction().begin();
+        persistenceStore.getTransaction().begin();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
         app.setApplicationIdentifier("App_1");
@@ -142,12 +125,14 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
 
         addDublinCore(portlet.getMetadata());
 
-        PreferenceComposite pc = new DefaultPreferenceImpl();
-        pc.setName("preference 1");
-        pc.addValue("value 1");
-        pc.addValue("value 2");
+        // PreferenceComposite pc = new PrefsPreference();
+        app.addPortletDefinition(portlet);
+        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet(); 
+        PreferenceComposite pc =(PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]{"value 1", "value 2"}));
         pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
-        portlet.addPreference(pc);
+        
+        assertNotNull(pc.getValueAt(0));
+       
 
         portlet.addLanguage(registry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1", null));
 
@@ -163,83 +148,10 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
         portlet.addContentType(html);
         portlet.addContentType(wml);
 
-        app.addPortletDefinition(portlet);
-        app.setWebApplicationDefinition(webApp);
-        store.makePersistent(app);
-        store.getTransaction().commit();
-
-        // Now makes sure everthing got persisted
-        store.getTransaction().begin();
-        app = null;
-        Filter filter = store.newFilter();
-        app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
-
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        portlet = (PortletDefinitionImpl) app.getPortletDefinitionByName("Portlet 1");
-
-        assertNotNull("Failed to reteive portlet application", app);
-
-        validateDublinCore(app.getMetadata());
-
-        assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
-        assertNotNull("Web app was not saved along with the portlet app.", webApp);
-        assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
-        assertTrue("\"user.name.family\" user attribute was not found.", app.getUserAttributes().size() == 1);
         
-        portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
-
-        assertNotNull("Portlet could not be retreived by unique name.", portlet);
-
-        validateDublinCore(portlet.getMetadata());
-
-        assertNotNull("Portlet Application was not set in the portlet defintion.", portlet.getPortletApplicationDefinition());
-        assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
-        assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
-        assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));
-        assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
-        assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
-        assertNotNull("\"preference 1\" was not found.", portlet.getPreferenceSet().get("preference 1"));
-        assertNotNull("Language information not found for Portlet 1", portlet.getLanguageSet().get(Locale.getDefault()));
-        assertNotNull("Content Type html not found.", portlet.getContentTypeSet().get("html/text"));
-        assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));
-        Iterator itr = portlet.getPreferenceSet().get("preference 1").getValues();
-        int valueCount = 0;
-        ;
-        while (itr.hasNext())
-        {
-            itr.next();
-            valueCount++;
-        }
-        assertEquals("\"preference 1\" did not have to values.", 2, valueCount);
-
-        // Pull out our Web app and add a Description to it
-        store.getTransaction().begin();
-        webApp = null;
-        filter = store.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app =
-            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
-                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
-        store.lockForWrite(app);
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        assertNotNull("Web app was not located by query.", webApp);
-        webApp.addDescription(Locale.getDefault(), "Web app description");
-
-        store.getTransaction().commit();
-
-        store.getTransaction().begin();
-        webApp = null;
-        filter = store.newFilter();
-        filter.addEqualTo("name", "App_1");
-        app =
-            (PortletApplicationDefinitionImpl) store.getObjectByQuery(
-                store.newQuery(PortletApplicationDefinitionImpl.class, filter));
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-
-        store.getTransaction().commit();
-        assertNotNull("Web app was not located by query.", webApp);
-        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.getDefault()));
-
+        app.setWebApplicationDefinition(webApp);
+        persistenceStore.makePersistent(app);
+        persistenceStore.getTransaction().commit();
     }
 
     private void addDublinCore(GenericMetadata metadata)
@@ -263,33 +175,9 @@ public class TestRegistryDirect extends PersistenceSupportedTestCase
         dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
         dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
     }
-
-    private void validateDublinCore(GenericMetadata metadata)
+    
+    public void testData() throws Exception
     {
-        DublinCore dc = new DublinCoreImpl(metadata);
-        assertEquals(dc.getTitles().size(), 3);
-        assertEquals(dc.getContributors().size(), 1);
-        assertEquals(dc.getCoverages().size(), 2);
-        assertEquals(dc.getCreators().size(), 1);
-        assertEquals(dc.getDescriptions().size(), 1);
-        assertEquals(dc.getFormats().size(), 1);
-        assertEquals(dc.getIdentifiers().size(), 1);
-        assertEquals(dc.getLanguages().size(), 1);
-        assertEquals(dc.getPublishers().size(), 1);
-        assertEquals(dc.getRelations().size(), 1);
-        assertEquals(dc.getRights().size(), 1);
-        assertEquals(dc.getSources().size(), 1);
-        assertEquals(dc.getSubjects().size(), 1);
-        assertEquals(dc.getTypes().size(), 1);
-    }
-
-    protected void invalidate(Object[] objs) throws LockFailedException
-    {
-        store.getTransaction().begin();
-        for (int i = 0; i < objs.length; i++)
-        {
-            store.invalidate(objs[i]);
-        }
-        store.getTransaction().commit();
+        verifyData();
     }
 }

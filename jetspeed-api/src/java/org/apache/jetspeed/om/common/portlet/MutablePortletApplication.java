@@ -47,6 +47,8 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  */
 public interface MutablePortletApplication extends PortletApplicationDefinition, Serializable
 {
+    public static final String PREFS_ROOT ="portlet_application";
+    
     public GenericMetadata getMetadata();
     
     public void setMetadata(GenericMetadata metadata);

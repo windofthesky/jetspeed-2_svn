@@ -38,4 +38,5 @@ public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
     int size();
 
     void setPreferenceValidator(PreferencesValidator validator);
+
 }

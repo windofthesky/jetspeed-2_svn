@@ -30,4 +30,6 @@ public interface MutablePortletEntity
         PortletEntity, 
         PortletEntityCtrl
 {
+
+    public static final String PORTLET_ENTITY_ROOT = "portlet_entity";
 }

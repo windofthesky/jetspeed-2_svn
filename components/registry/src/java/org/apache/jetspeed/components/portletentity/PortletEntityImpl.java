@@ -1,27 +1,39 @@
 /*
  * Copyright 2000-2004 The Apache Software Foundation.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.jetspeed.components.portletentity;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.persistence.Storeable;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
+import org.apache.jetspeed.om.preference.impl.PrefsPreference;
+import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
@@ -29,25 +41,58 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.util.StringUtils;
 
 /**
- * Portlet Entity default implementation. 
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * Portlet Entity default implementation.
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id$
  */
-public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
+public class PortletEntityImpl implements MutablePortletEntity, Storeable
 {
 
     private long oid;
+
     private long portletId;
 
     private JetspeedObjectID id;
+
+    protected PersistenceStore store;
+
+    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
+
+    protected List originalPreferences;
+
+    protected PrefsPreferenceSetImpl preferenceSet;
+
+    protected Map originalValues;
+
+    private PortletApplicationEntity applicationEntity = null;
+
+    private PortletWindowList portletWindows = new PortletWindowListImpl();
+
+    private PortletEntity modifiedObject = null;
+
+    private PortletDefinitionComposite portletDefinition = null;
+
+    private boolean dirty=false;
+
+    /**
+     * <p>
+     * setPersistenceStore
+     * </p>
+     * 
+     * @see org.apache.jetspeed.components.persistence.Storeable#setStore(Object)
+     * @param store
+     */
+    public void setStore( Object store )
+    {
+        this.store = (PersistenceStore) store;
+    }
 
     public ObjectID getId()
     {
@@ -58,41 +103,67 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     {
         return oid;
     }
-    
-    public void setId(String id)
+
+    public void setId( String id )
     {
         this.id = JetspeedObjectID.createFromString(id);
     }
 
-    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
-
-    protected List originalPreferences;
-
-    private PortletApplicationEntity applicationEntity = null;
-
-    private PortletWindowList portletWindows = new PortletWindowListImpl();
-
-    private PortletEntity modifiedObject = null;
-
-    private PortletDefinitionComposite portletDefinition = null;
-	    
-	/**
-	 *  
-	 * <p>
-	 * getPreferenceSet
-	 * </p>
-	 *  <strong>WARNING!!!<br/></strong>
-	 * This method should not be used to alter the contents
-	 * of the PreferenceSet directly by user calls to the portal.  
-	 * You should be wrapping this with an instance of the
-	 * {@link StoreablePortletEntityDelegate#store()}.
-	 * 
-	 * @see org.apache.pluto.om.entity.PortletEntity#getPreferenceSet()
-	 * @return
-	 */
+    /**
+     * 
+     * <p>
+     * getPreferenceSet
+     * </p>
+     * 
+     * @see org.apache.pluto.om.entity.PortletEntity#getPreferenceSet()
+     * @return
+     */
     public PreferenceSet getPreferenceSet()
     {
-		return new PreferenceSetImpl(originalPreferences);
+        try
+        {
+            if (preferenceSet == null || !dirty)
+            {
+                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() + "/" + PrefsPreference.PORTLET_PREFERENCES_ROOT;
+                Preferences prefNode = Preferences.userRoot().node(prefNodePath);
+                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
+
+                backupValues(preferenceSet);
+                dirty = true;
+            }
+        }
+        catch (BackingStoreException e)
+        {
+            String msg = "Preference backing store failed: " + e.toString();
+            IllegalStateException ise = new IllegalStateException(msg);
+            ise.initCause(e);
+            throw ise;
+        }
+
+        return preferenceSet;
+    }
+
+    /**
+     * <p>
+     * backupValues
+     * </p>
+     *
+     * 
+     */
+    protected void backupValues(PreferenceSet preferenceSet)
+    {
+        originalValues = new HashMap();
+        Iterator itr = preferenceSet.iterator();
+        while (itr.hasNext())
+        {
+            PrefsPreference pref = (PrefsPreference) itr.next();
+         
+            String[] currentValues = pref.getValueArray();
+            String[] backUp = new String[currentValues.length];
+            System.arraycopy( currentValues, 0, backUp ,0, currentValues.length);
+            originalValues.put(pref.getName(), backUp);
+
+        }
     }
 
     public PortletDefinition getPortletDefinition()
@@ -109,37 +180,100 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     {
         return portletWindows;
     }
-	
-	/**
-	 *  
-	 * <p>
-	 * store
-	 * </p>
-	 * This method is not directly supported. Use
-	 * {@link StoreablePortletEntityDelegate#store()}
-	 * 
-	 */
-    public void store() throws java.io.IOException
+
+    /**
+     * 
+     * <p>
+     * store
+     * </p>
+     *  
+     */
+    public void store() throws IOException
     {
-		throw new UnsupportedOperationException("PortletEntityImpl.store() is not directly accessable.  "+ 
-						   "Use the StoreablePortletEntityDelegate instead.");      
+        if (store == null)
+        {
+            throw new IllegalStateException("You must call PortletEntityImpl.setStore() before "
+                    + "invoking PortletEntityImpl.store().");
+        }
+        
+    
+        try
+        {
+            prepareTransaction(store);            
+			store.lockForWrite(this);
+			if(preferenceSet != null)
+			{
+				preferenceSet.flush();
+			}			
+            store.getTransaction().checkpoint();
+            dirty = false;
+            if(preferenceSet != null)
+            {
+                backupValues(preferenceSet);
+            }
+        }
+        catch (Exception e)
+        {           
+            String msg = "Failed to store portlet entity:" + e.toString();
+            IOException ioe = new IOException(msg);
+            ioe.initCause(e);
+            store.getTransaction().rollback();
+            throw ioe;
+        }
 
     }
-    
+
     /**
-     *  
+     * 
      * <p>
      * reset
      * </p>
      * 
-	 * This method is not directly supported. Use
-	 * {@link StoreablePortletEntityDelegate#store()}
      */
 
-    public void reset() throws java.io.IOException
+    public void reset() throws IOException
     {
-        throw new UnsupportedOperationException("PortletEntityImpl.reset() is not directly accessable.  "+ 
-                   "Use the StoreablePortletEntityDelegate instead.");
+        try
+        {
+            if(originalValues != null && preferenceSet != null )
+            {
+            	Iterator prefs = preferenceSet.iterator();
+            	
+            	while(prefs.hasNext())
+            	{
+            		PrefsPreference pref = (PrefsPreference) prefs.next();
+            		if(originalValues.containsKey(pref.getName()))
+            		{
+            			pref.setValues((String[]) originalValues.get(pref.getName()));
+            		}
+            		else
+            		{
+            			preferenceSet.remove(pref);
+            		}
+            		preferenceSet.flush();
+            	}    		
+            	
+            	Iterator keys = originalValues.keySet().iterator();
+            	while(keys.hasNext())
+            	{
+            	    String key = (String) keys.next();
+            	    if(preferenceSet.get(key) == null)
+            	    {
+            	        preferenceSet.add(key,Arrays.asList((String[])originalValues.get(key)));
+            	    }
+            	}
+            }
+            dirty = false;
+            backupValues(preferenceSet);
+        }
+        catch (BackingStoreException e)
+        {
+            String msg = "Preference backing store failed: "+e.toString();
+            IOException ioe = new IOException(msg);
+            ioe.initCause(e);
+            throw ioe;
+        }
+        
     }
 
     // internal methods used for debugging purposes only
@@ -149,7 +283,7 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
         return toString(0);
     }
 
-    public String toString(int indent)
+    public String toString( int indent )
     {
         StringBuffer buffer = new StringBuffer(1000);
         StringUtils.newLine(buffer, indent);
@@ -177,7 +311,7 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
     /**
      * @see org.apache.pluto.om.entity.PortletEntity#getDescription(java.util.Locale)
      */
-    public Description getDescription(Locale arg0)
+    public Description getDescription( Locale arg0 )
     {
         return portletDefinition.getDescription(arg0);
     }
@@ -188,11 +322,25 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl
      * </p>
      * 
      * @param composite
-     * 
+     *  
      */
-    public void setPortletDefinition(PortletDefinition composite)
+    public void setPortletDefinition( PortletDefinition composite )
     {
         portletDefinition = (PortletDefinitionComposite) composite;
+    }
+
+    /**
+     * Checks to see if the <code>store</code>'s current transaction
+     * needs to be started or not.
+     * @param store
+     */
+    protected void prepareTransaction(PersistenceStore store)
+    {
+        Transaction tx = store.getTransaction();
+        if (!tx.isOpen())
+        {
+            tx.begin();
+        }
     }
 
 }
