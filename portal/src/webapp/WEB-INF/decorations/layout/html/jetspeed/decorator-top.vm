@@ -15,10 +15,10 @@ limitations under the License.
 *#
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
+#set($preferedLocale = $JS2RequestContext.locale)
 <html>
 <head>
-    <title>$jetspeed.page.title</title>
+    <title>$jetspeed.page.getTitle($preferedLocale)</title>
 #set($cssUrls = $renderRequest.getAttribute("cssUrls"))
 #foreach($cssUrl in $cssUrls)
     <link rel="stylesheet" type="text/css" media="all" href="$cssUrl" />
@@ -38,7 +38,7 @@ limitations under the License.
 	#set($folder = $request.getAttribute("org.apache.jetspeed.folder"))
 	
 	## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
-	#set($preferedLocale = $JS2RequestContext.locale)
+	
 	
 	#if($folder.parent)
 	 <p style="font-style:italic">	

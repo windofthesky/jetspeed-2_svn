@@ -53,4 +53,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    
   </fragment>
+  <metadata name="title" xml:lang="fr">
+		Ma Premiere Page de PSML
+  </metadata>
 </page>
