@@ -1,0 +1,14 @@
+<project default="java:jar"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+<goal name="moveResources">
+	 <move todir="${basedir}/src/resources">
+	 	<fileset dir="${basedir}/src/java">
+            <include name="**/*.properties"/>      
+      </fileset>
+	</move>	
+</goal>
+  
+</project>
