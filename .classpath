@@ -24,9 +24,9 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/portlet-factory/src/java"/>
 	<classpathentry kind="src" path="components/prefs/src/java"/>
 	<classpathentry excluding="**/CVS/*|Log4j.properties" kind="src" path="components/prefs/src/test"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/java"/>
+	<classpathentry excluding="**/CVS/*|META-INF/test-spring.xml" kind="src" path="components/profiler/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/profiler/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/registry/src/java"/>
+	<classpathentry excluding="**/CVS*|META-INF/transaction.xml" kind="src" path="components/registry/src/java"/>
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/registry/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/rdbms/src/java"/>
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/rdbms/src/test"/>
@@ -34,10 +34,10 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/security/src/java"/>
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/security/src/test"/>
-	<classpathentry excluding="**/CVS*" kind="src" path="components/sso/src/java"/>
+	<classpathentry excluding="**/CVS*|META-INF/transaction.xml" kind="src" path="components/sso/src/java"/>
 	<classpathentry kind="src" path="components/sso/src/test"/>
 	<classpathentry kind="src" path="components/web-content/src/java"/>
-	<classpathentry kind="src" path="components/web-content/src/test"/>
+	<classpathentry excluding="**/CVS*|log4j.properties" kind="src" path="components/web-content/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/common/src/java"/>
 	<classpathentry kind="src" path="portals-bridges/frameworks/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/myfaces/src/java"/>
