@@ -62,7 +62,6 @@ import java.util.Set;
 
 import org.apache.pluto.om.common.Preference;
 
-
 /**
  * 
  * PreferenceSetImpl
@@ -74,7 +73,7 @@ import org.apache.pluto.om.common.Preference;
 public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceSetComposite, Serializable
 {
 
-    private HashMap prefMap = new HashMap();
+    protected HashMap prefMap = new HashMap();
 
     /**
      * @param wrappedSet
@@ -145,6 +144,11 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
         Preference pref = (Preference) o;
         prefMap.remove(pref.getName());
         return super.remove(o);
+    }
+
+    public Set getPreferenceNames()
+    {
+        return prefMap.keySet();
     }
 
 }

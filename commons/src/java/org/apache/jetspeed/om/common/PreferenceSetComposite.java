@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.om.common;
 
+import java.util.Set;
+
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.PreferenceSetCtrl;
 
@@ -67,5 +69,5 @@ import org.apache.pluto.om.common.PreferenceSetCtrl;
  */
 public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
 {
-
+    Set getPreferenceNames();
 }

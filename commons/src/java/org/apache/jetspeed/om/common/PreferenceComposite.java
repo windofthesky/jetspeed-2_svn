@@ -72,7 +72,25 @@ import org.apache.pluto.om.common.PreferenceCtrl;
 public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
 {
     void addDescription(Locale locale, String Description);
-    
+
     Description getDescription(Locale locale);
+
+    /**
+     * @throws java.lang.ArrayIndexOutofBounds if index is outside the constraints
+     * @param index
+     * @return The String value at the specified index or <code>null</code>
+     * if no values are present.
+     */
+    String getValueAt(int index);
+
+    void setValueAt(int index, String value);
+
+    /**
+     * 
+     * @return
+     */
+    String[] getValueArray();
+    
+    
 
 }

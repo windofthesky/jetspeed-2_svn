@@ -76,5 +76,6 @@ public interface PreferenceValue
     /**
      * @param string
      */
-    public abstract void setValue(String string);
+    public abstract void setValue(String string);   
+    
 }
