@@ -180,7 +180,7 @@ public class PersistenceBrokerSSOProvider extends
          }
          
          // Clear cache
-         this.mapSite.clear();
+         //this.mapSite.clear();
 
 	}
 
@@ -241,7 +241,7 @@ public class PersistenceBrokerSSOProvider extends
          }
          
          // Clear cache
-         this.mapSite.clear();
+       //  this.mapSite.clear();
 	}
 	
 	/**
@@ -301,7 +301,7 @@ public class PersistenceBrokerSSOProvider extends
 			 }
 			 
 			 // Clear cache
-			 this.mapSite.clear();
+			// this.mapSite.clear();
 		
 	    }
 	
@@ -387,7 +387,9 @@ public class PersistenceBrokerSSOProvider extends
 		while (itPrincipals.hasNext() && principal == null /*not found yet*/)
 		{
 			SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
-			if ( tmp != null && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+			if ( 		 tmp != null 
+			        && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0
+			        && tmp.getSiteID() == ssoSite.getSiteId())
 			{
 				// Found it stop iteration
 				principal = tmp;
@@ -445,7 +447,9 @@ public class PersistenceBrokerSSOProvider extends
 		while (ixPrincipals.hasNext())
 		{
 			SSOPrincipal principal = (SSOPrincipal)ixPrincipals.next();
-			if ( principal != null && principal.getFullPath().compareToIgnoreCase(fullPath) == 0)
+			if (         principal != null 
+			        && principal.getFullPath().compareToIgnoreCase(fullPath) == 0
+			        && principal.getSiteID() == ssoSite.getSiteId())
 			{
 				// Found Principal -- extract remote principals 
 				return principal.getRemotePrincipals();
@@ -470,7 +474,9 @@ public class PersistenceBrokerSSOProvider extends
 			while (itPrincipals.hasNext() && principal == null)
 			{
 				SSOPrincipal tmp  = (SSOPrincipal)itPrincipals.next();
-				if ( tmp != null && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+				if ( 		 tmp != null 
+				       && tmp.getFullPath().compareToIgnoreCase(fullPath) == 0 
+				       && tmp.getSiteID() == ssoSite.getSiteId())
 					principal = tmp;	// Found existing entry
 			}
 		}
@@ -493,6 +499,8 @@ public class PersistenceBrokerSSOProvider extends
 		    		principal = (SSOPrincipal) itPrincipals.next();
 		    		try
 					{
+		    		    // Set the Site ID for this principal
+		    		    principal.setSiteID(ssoSite.getSiteId());
 		    			ssoSite.addPrincipal(principal);
 					}
 		    		catch (SSOException ssoex)
@@ -544,7 +552,8 @@ public class PersistenceBrokerSSOProvider extends
 			while (itPrincipals.hasNext())
 			{
 				SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
-				if ( tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+				if (         tmp.getFullPath().compareToIgnoreCase(fullPath) == 0
+				        && tmp.getSiteID() == site.getSiteId())
 				{
 					// Found -- get the remotePrincipal
 					Collection collRemotePrincipals = tmp.getRemotePrincipals() ;

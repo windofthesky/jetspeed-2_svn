@@ -59,6 +59,9 @@ public class SSOPrincipalImpl implements SSOPrincipal {
 	   /** Remote principals for Principal */
 	   private Collection remotePrincipals;
 	   
+	   /** SIteID for Remote principal */
+	   private int siteID;
+	   
 
 	   /**
 	    * <p>
@@ -251,5 +254,17 @@ public class SSOPrincipalImpl implements SSOPrincipal {
 	public void setRemotePrincipals(Collection remotePrincipals) {
 		this.remotePrincipals = remotePrincipals;
 	}
+    /**
+     * @return Returns the siteID.
+     */
+    public int getSiteID() {
+        return siteID;
+    }
+    /**
+     * @param siteID The siteID to set.
+     */
+    public void setSiteID(int siteID) {
+        this.siteID = siteID;
+    }
 }
 
