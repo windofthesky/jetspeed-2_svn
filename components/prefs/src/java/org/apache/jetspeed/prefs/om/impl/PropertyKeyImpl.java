@@ -37,15 +37,12 @@ public class PropertyKeyImpl implements PropertyKey
     /**
      * <p>Property key constructor given the associated
      * property set definition, the property key name and type.</p>
-     * @param propertySetDefId The property set definition.
      * @param propertyKeyName The property key name.
      * @param propertyKeyType The property key type.
      */
-    public PropertyKeyImpl(int propertySetDefId,
-                           String propertyKeyName,
+    public PropertyKeyImpl(String propertyKeyName,
                            short propertyKeyType)
     {
-        this.propertySetDefId = propertySetDefId;
         this.propertyKeyName = propertyKeyName;
         this.propertyKeyType = propertyKeyType;
         this.creationDate = new Timestamp(System.currentTimeMillis());
@@ -68,24 +65,6 @@ public class PropertyKeyImpl implements PropertyKey
     public void setPropertyKeyId(int propertyKeyId)
     {
         this.propertyKeyId = propertyKeyId;
-    }
-
-    private int propertySetDefId;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.PropertyKey#getPropertySetDefId()
-     */
-     public int getPropertySetDefId()
-     {
-        return this.propertySetDefId;
-     }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.PropertyKey#setPropertySetDefId(int)
-     */
-    public void setPropertySetDefId(int propertySetDefId)
-    {
-        this.propertySetDefId = propertySetDefId;
     }
 
     private String propertyKeyName;
@@ -158,6 +137,19 @@ public class PropertyKeyImpl implements PropertyKey
     public void setModifiedDate(Timestamp modifiedDate)
     {
         this.modifiedDate = modifiedDate;
+    }
+
+    /**
+     * <p>Convert <code>PropertyKey</code> to string.</p>
+     * @return The Property string value.
+     */
+    public String toString()
+    {
+        String toStringPropertyKey = "[[propertyKeyName, " + this.propertyKeyName + "], "
+            + "[propertyKeyType, " + this.propertyKeyType + "], "
+            + "[creationDate, " + this.creationDate + "], "
+            + "[modifiedDate, " + this.modifiedDate + "]]";
+        return toStringPropertyKey;
     }
 
 }

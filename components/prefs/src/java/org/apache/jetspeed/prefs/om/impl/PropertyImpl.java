@@ -51,10 +51,11 @@ public class PropertyImpl implements Property
      * @param valueObjectType The value object type.
      * @param valueObject The value object.
      */
-    public PropertyImpl(int propertyKeyId, int nodeId, short valueObjectType, Object valueObject)
+    public PropertyImpl(int nodeId, int propertyKeyId, PropertyKey propertyKey, short valueObjectType, Object valueObject)
     {
-        this.propertyKeyId = propertyKeyId;
         this.nodeId = nodeId;
+        this.propertyKeyId = propertyKeyId;
+        this.propertyKey = propertyKey;
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
 
@@ -317,6 +318,21 @@ public class PropertyImpl implements Property
     public void setModifiedDate(Timestamp modifiedDate)
     {
         this.modifiedDate = modifiedDate;
+    }
+
+    /**
+     * <p>Convert <code>Property</code> to string.</p>
+     * @return The Property string value.
+     */
+    public String toString()
+    {
+        String toStringProperty = "[[nodeId, " + this.nodeId + "], "
+            + "[propertyKeyId, " + this.propertyKeyId + "], "
+            + "[propertyKey, " + this.propertyKey + "], "
+            + "[propertyValue, " + getPropertyValue(propertyKey.getPropertyKeyType()) + "], "
+            + "[creationDate, " + this.creationDate + "], "
+            + "[modifiedDate, " + this.modifiedDate + "]]";
+        return toStringProperty;
     }
 
 }

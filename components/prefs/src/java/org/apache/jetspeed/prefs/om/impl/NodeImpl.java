@@ -14,11 +14,11 @@
  */
 package org.apache.jetspeed.prefs.om.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.Timestamp;
 
 import org.apache.jetspeed.prefs.om.Node;
-import org.apache.jetspeed.prefs.om.PropertySetDef;
 
 /**
  * <p>{@link Node} interface implementation.</p>
@@ -48,19 +48,19 @@ public class NodeImpl implements Node
      *  <li>Full path.</li>
      * </ul>
      * @param parentNodeId The parent node id.
-     * @param propertySetDefId The property set definition id.
      * @param nodeName The node name.
      * @param nodeType The node type.
      * @param fullPath The full path.
      */
-    public NodeImpl(Integer parentNodeId, Integer propertySetDefId,
-                    String nodeName, short nodeType, String fullPath)
+    public NodeImpl(Integer parentNodeId, String nodeName,
+                    short nodeType, String fullPath)
     {
         this.parentNodeId = parentNodeId;
-        this.propertySetDefId = propertySetDefId;
         this.nodeName = nodeName;
         this.nodeType = nodeType;
         this.fullPath = fullPath;
+        this.nodeKeys = new ArrayList(0);
+        this.nodeProperties = new ArrayList(0);
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
     }
@@ -101,58 +101,40 @@ public class NodeImpl implements Node
         this.parentNodeId = parentNodeId;
     }
 
-    private Collection properties;
+    private Collection nodeProperties;
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Node#getProperties()
+     * @see org.apache.jetspeed.prefs.om.Node#getNodeProperties()
      */
-    public Collection getProperties()
+    public Collection getNodeProperties()
     {
-        return this.properties;
+        return this.nodeProperties;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Node#setProperties(java.util.Collection)
+     * @see org.apache.jetspeed.prefs.om.Node#setNodeProperties(java.util.Collection)
      */
-    public void setProperties(Collection properties)
+    public void setNodeProperties(Collection nodeProperties)
     {
-        this.properties = properties;
+        this.nodeProperties = nodeProperties;
     }
 
-    private Integer propertySetDefId;
+    private Collection nodeKeys;
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Node#getPropertySetDefId()
+     * @see org.apache.jetspeed.prefs.om.Node#getNodeKeys()
      */
-    public Integer getPropertySetDefId()
+    public Collection getNodeKeys()
     {
-        return this.propertySetDefId;
-    }
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Node#setPropertySetDefId(java.lang.Integer)
-     */
-    public void setPropertySetDefId(Integer propertySetDefId)
-    {
-        this.propertySetDefId = propertySetDefId;
-    }
-
-    private PropertySetDef propertySetDef;
-
-    /**
-     * @see org.apache.jetspeed.prefs.om.Node#getPropertySetDef()
-     */
-    public PropertySetDef getPropertySetDef()
-    {
-        return this.propertySetDef;
+        return this.nodeKeys;
     }
 
     /**
-     * @see org.apache.jetspeed.prefs.om.Node#setPropertySetDef(org.apache.jetspeed.prefs.om.PropertySetDef)
+     * @see org.apache.jetspeed.prefs.om.Node#setNodeKeys(java.util.Collection)
      */
-    public void setPropertySetDef(PropertySetDef propertySetDef)
+    public void setNodeKeys(Collection nodeKeys)
     {
-        this.propertySetDef = propertySetDef;
+        this.nodeKeys = nodeKeys;
     }
 
     private String nodeName;
@@ -252,10 +234,11 @@ public class NodeImpl implements Node
     public String toString()
     {
         String toStringNode = "[[parentNodeId, " + this.parentNodeId + "], "
-            + "[propertySetDefId, " + this.propertySetDefId + "], "
             + "[nodeName, " + this.nodeName + "], "
-            + "[nodeType, " + this.nodeType + "], "
             + "[fullPath, " + this.fullPath + "], "
+            + "[nodeType, " + this.nodeType + "], "
+            + "[nodeKeys, " + this.nodeKeys + "], "
+            + "[nodeProperties, " + this.nodeProperties + "], "
             + "[creationDate, " + this.creationDate + "], "
             + "[modifiedDate, " + this.modifiedDate + "]]";
         return toStringNode;
