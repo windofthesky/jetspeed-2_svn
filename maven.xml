@@ -2,6 +2,12 @@
          xmlns:j="jelly:core"
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
+         
+         
+  <property name='testcase' value='org.apache.jetspeed.pipeline.TestPipeline'/>
+  
+  <!-- Set up the test DB via System property override -->
+  <property name="HSQLDBServer.db.path" value="./portal/test/db/hsql/Registry"/>
 
   <goal name="allClean"
         description="Clean the master project and all subprojects">
