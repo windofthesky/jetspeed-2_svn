@@ -170,7 +170,6 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             Streams.drain(bais, response.getPortletOutputStream());
             bais.close();
-            System.out.println("RSS Portlet: DONE, (CACHED TRANSFORM)." + key);
         }
         else
         {
@@ -194,7 +193,6 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                 Streams.drain(bais, response.getPortletOutputStream());                
                 cache.put(key, bytes, 15);                
-                System.out.println("RSS Portlet: DONE, (TRANSFORMED)." + key);                
             }
             catch (Exception ex)
             {

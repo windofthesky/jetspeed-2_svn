@@ -75,7 +75,6 @@ public class RomeRSSPortlet extends AbstractRssPortlet
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             Streams.drain(bais, response.getPortletOutputStream());
             bais.close();
-            System.out.println("RSS Portlet: DONE, (CACHED TRANSFORM)." + key);
         }
         else
         {        
