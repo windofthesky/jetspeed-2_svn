@@ -53,6 +53,7 @@
  */
 package org.apache.jetspeed.container;
 
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -60,31 +61,40 @@ import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
 
 import javax.portlet.PortletContext;
+import javax.portlet.PortletRequestDispatcher;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.container.namespace.NamespaceMapper;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * Implements the Portlet API Portlet Context class
+ * 
+ * TODO: on LOCAL apps, we need to merge in web.xml props. See PLT 10.3
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
 public class JetspeedPortletContext implements PortletContext, InternalPortletContext
 {
+    /**
+     * The path to the Local Portlet Apps directory
+     */
+    public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";    
+    
     private static final int MAJOR_VERSION = 2;
     private static final int MINOR_VERSION = 0;
     private static final String JETSPEED_APPLICATION_INFO =
         "Jakarta Jetspeed Portal Server, Version " + MAJOR_VERSION + "." + MINOR_VERSION;
 
     private ServletContext servletContext;
-    private PortletApplicationDefinition application;
+    private MutablePortletApplication application;    
 
     public JetspeedPortletContext(ServletContext servletContext, PortletApplicationDefinition application)
     {
         this.servletContext = servletContext;
-        this.application = application;
+        this.application = (MutablePortletApplication)application;
     }
 
     public int getMajorVersion()
@@ -106,13 +116,21 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public javax.portlet.PortletRequestDispatcher getRequestDispatcher(String path)
     {
-        javax.servlet.RequestDispatcher rd = servletContext.getRequestDispatcher(path);
+        String localizedPath = localizePath(path, this.application);         
+        RequestDispatcher rd = servletContext.getRequestDispatcher(localizedPath);        
+        
+        
+        // TODO: factory        
         return new JetspeedRequestDispatcher(rd);
     }
 
-    public javax.portlet.PortletRequestDispatcher getNamedDispatcher(String name)
+    public PortletRequestDispatcher getNamedDispatcher(String name)
     {
+        // TODO: localize name
+        
         RequestDispatcher rd = servletContext.getNamedDispatcher(name);
+        // TODO: factory
+        
         return new JetspeedRequestDispatcher(rd);
     }
 
@@ -121,9 +139,9 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         return servletContext.getMimeType(file);
     }
 
-    public java.io.InputStream getResourceAsStream(String path)
+    public InputStream getResourceAsStream(String path)
     {
-        return servletContext.getResourceAsStream(path);
+        return servletContext.getResourceAsStream(localizePath(path, this.application));
     }
 
     public java.lang.Object getAttribute(java.lang.String name)
@@ -153,15 +171,15 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
 
     public String getRealPath(String path)
     {
-        return servletContext.getRealPath(path);
+        return servletContext.getRealPath(localizePath(path, this.application));
     }
 
     public java.net.URL getResource(String path) throws java.net.MalformedURLException
     {
-        return servletContext.getResource(path);
+        return servletContext.getResource(localizePath(path, this.application));
     }
 
-    public java.util.Enumeration getAttributeNames()
+    public Enumeration getAttributeNames()
     {
         Enumeration attributes = servletContext.getAttributeNames();
 
@@ -227,4 +245,25 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         return servletContext.getServletContextName();
     }
 
+    private String localizePath(String path, MutablePortletApplication app)
+    {        
+        if (path == null)
+        {
+            return "/";
+        }
+        if (app.getApplicationType() == MutablePortletApplication.WEBAPP)
+        {
+            return path;
+        }
+        
+        StringBuffer pathBuffer = new StringBuffer(LOCAL_PA_ROOT);
+        pathBuffer.append(app.getWebApplicationDefinition().getContextRoot());
+        if (!path.startsWith("/"))
+        {
+            pathBuffer.append("/");
+        }
+        pathBuffer.append(path); 
+        String result = pathBuffer.toString();
+        return result;
+    }
 }
