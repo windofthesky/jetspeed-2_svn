@@ -270,7 +270,7 @@ limitations under the License.
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     <aspectSourceDirectory>src/aop</aspectSourceDirectory>
     <unitTest>
-       <includes>
+      <includes>
         <include>**/Test*.java</include>
       </includes>
 
