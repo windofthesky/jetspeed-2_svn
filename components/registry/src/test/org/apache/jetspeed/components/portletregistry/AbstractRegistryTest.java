@@ -6,6 +6,7 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -143,6 +144,10 @@ public abstract class AbstractRegistryTest extends PersistenceSupportedTestCase
 
         validateDublinCore(app.getMetadata());
 
+        Collection services = app.getJetspeedServices();
+        assertNotNull("jetspeed services is null", services);
+        System.out.println("services is " + services);
+        
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
         assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));

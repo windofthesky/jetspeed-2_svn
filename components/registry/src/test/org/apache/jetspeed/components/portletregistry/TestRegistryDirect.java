@@ -23,12 +23,14 @@ import javax.portlet.PortletMode;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
+import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
@@ -108,6 +110,11 @@ public class TestRegistryDirect extends AbstractRegistryTest
         UserAttribute ua = new UserAttributeImpl("user.name.family", "User Last Name");
         app.addUserAttribute(ua);
 
+        JetspeedServiceReference service1 = new JetspeedServiceReferenceImpl("PortletEntityAccessComponent");
+        app.addJetspeedService(service1);
+        JetspeedServiceReference service2 = new JetspeedServiceReferenceImpl("PortletRegistryComponent");
+        app.addJetspeedService(service2);
+        
         addDublinCore(app.getMetadata());
 
         WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
