@@ -128,16 +128,17 @@ public abstract class AbstractEngine implements Engine
             System.getProperties().setProperty(LogFactory.class.getName(),
                     Log4jFactory.class.getName());
     
+            // patch up OJB
+            ClassLoader ploader2 = this.getClass().getClassLoader();
+            //ClassLoader ploader2 = Thread.currentThread().getContextClassLoader();
+            ClassHelper.setClassLoader(ploader2);
+            
             //
             // bootstrap the initable services
             //
             componentManager = initComponents(configuration, config);
             log.info("Components initialization complete");
-    
-            // patch up OJB
-            ClassLoader ploader2 = this.getClass().getClassLoader();
-            ClassHelper.setClassLoader(ploader2);
-            
+                
             //
             // create the pipelines
             //
