@@ -1090,11 +1090,24 @@ limitations under the License.
       />
       
       <field-descriptor
+         name="appName"
+         column="APP_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="portletName"
+         column="PORTLET_NAME"
+         jdbc-type="VARCHAR"
+      />
+      <!--
+      <field-descriptor
          name="portletId"
          column="PORTLET_DEFINITION_ID"
          jdbc-type="BIGINT"
 
       />
+      -->
       
       <field-descriptor
          name="id"
@@ -1104,7 +1117,7 @@ limitations under the License.
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
       />
 <!--         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion" -->
-      
+     <!-- 
      <reference-descriptor 
       	name="portletDefinition" 
       	class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" 
@@ -1114,7 +1127,7 @@ limitations under the License.
    	 >       	        
          <foreignkey field-ref="portletId"/>
       </reference-descriptor>
-
+       -->
  
   
   </class-descriptor>
