@@ -51,6 +51,15 @@ limitations under the License.
    </constructor-arg>
   </bean> 
   
+  <bean id="folderValve"
+        class="org.apache.jetspeed.pipeline.valve.impl.FolderNavigationValve"
+        init-method="initialize"
+  >
+   <constructor-arg>
+   	<ref bean="org.apache.jetspeed.page.PageManager" />
+   </constructor-arg>
+  </bean> 
+  
   <bean id="containerValve"
         class="org.apache.jetspeed.container.ContainerValve"
         init-method="initialize"
@@ -104,6 +113,7 @@ limitations under the License.
     	<ref bean="localizationValve"/>
     	<ref bean="capabilityValve"/>
     	<ref bean="securityValve"/>
+    	<ref bean="folderValve"/>
     	<ref bean="profilerValve"/>
     	<ref bean="containerValve"/>
     	<ref bean="actionValve"/>
