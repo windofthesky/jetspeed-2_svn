@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.persistence.store.Filter;
+import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.idgenerator.IdGenerator;
@@ -28,8 +30,6 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
-import org.apache.jetspeed.persistence.LookupCriteria;
-import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.picocontainer.Startable;
 
@@ -42,13 +42,7 @@ import org.picocontainer.Startable;
 public class DatabasePageManager extends AbstractPageManager implements PageManager, Startable
 {
     protected final static Log log = LogFactory.getLog(DatabasePageManager.class);
-
-    private PersistencePlugin plugin;
-
-    private PersistencePlugin originalPlugin;
-
-    private String originalAlias;
-
+    private PersistenceStoreContainer pContainer;
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
 
@@ -64,6 +58,8 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     public DatabasePageManager(PersistenceStoreContainer pContainer, IdGenerator generator, String storeName)
     {
         super(generator);
+        this.pContainer = pContainer;
+        
     }
 
     public void start()
@@ -95,10 +91,12 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
         else
         {
-            LookupCriteria c = plugin.newLookupCriteria();
-            c.addEqualTo("id", id);
-            Object q = plugin.generateQuery(pageClass, c);
-            Page page = (Page) plugin.getObjectByQuery(pageClass, q);
+            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+            Filter filter = store.newFilter();
+            filter.addEqualTo("id", id);
+            Object q = store.newQuery(pageClass, filter);
+            store.getTransaction().begin();
+            Page page = (Page) store.getObjectByQuery( q);
 
             pageCache.put(id, page);
             return page;
@@ -144,7 +142,10 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
     {
         try
         {
-            plugin.prepareForUpdate(page);
+            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+            store.getTransaction().begin();
+            store.lockForWrite(page);
+            store.getTransaction().commit();
         }
         catch (Exception e)
         {
@@ -165,7 +166,10 @@ public class DatabasePageManager extends AbstractPageManager implements PageMana
         }
         try
         {
-            plugin.prepareForDelete(page);
+            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
+            store.getTransaction().begin();
+            store.deletePersistent(page);
+            store.getTransaction().commit();
         }
         catch (Exception e)
         {
