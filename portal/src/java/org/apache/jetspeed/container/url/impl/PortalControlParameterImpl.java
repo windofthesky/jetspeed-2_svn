@@ -90,7 +90,7 @@ public class PortalControlParameterImpl implements PortalControlParameter
 
     public PortletWindow getPortletWindowOfAction() 
     {
-        Iterator iterator = getStateLessControlParameter().keySet().iterator();
+        Iterator iterator = getStateFullControlParameter().keySet().iterator();
         PortletWindow portletWindow = null;
         while (iterator.hasNext())
         {
@@ -201,7 +201,7 @@ public class PortalControlParameterImpl implements PortalControlParameter
 
     public void setAction(PortletWindow window)
     {
-        getStateLessControlParameter().put(url.getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
+        getStateFullControlParameter().put(url.getActionKey(window), nav.getNavigationKey(NavigationalStateComponent.ACTION).toUpperCase());
     }
 
     public void setMode(PortletWindow window, PortletMode mode)
