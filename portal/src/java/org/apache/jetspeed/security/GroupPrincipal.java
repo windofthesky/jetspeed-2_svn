@@ -53,12 +53,14 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
+
 /**
  * GroupPrincipal
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface GroupPrincipal
+public interface GroupPrincipal extends Principal
 {
 }
