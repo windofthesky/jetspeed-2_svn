@@ -261,7 +261,6 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.GroupManager" 
   	   class="org.apache.jetspeed.security.impl.GroupManagerImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
   </bean>
   
@@ -269,7 +268,6 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.RoleManager" 
   	   class="org.apache.jetspeed.security.impl.RoleManagerImpl"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.components.persistence.store.PersistenceStore"/></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
   </bean>
   
