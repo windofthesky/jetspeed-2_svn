@@ -382,11 +382,12 @@ public class JetspeedRequestContext implements RequestContext
      */
     public String getPath()
     {
-        String pathInfo = request.getPathInfo();
-        if (pathInfo == null)
+        if (request.getPathInfo() == null)
         {
             return null;
         }
+        String pathInfo = new String(request.getPathInfo());
+        System.out.println("path info = " + pathInfo);
         StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
         StringBuffer path = new StringBuffer();
         int mode = 0; // 0=navigation, 1=control information
