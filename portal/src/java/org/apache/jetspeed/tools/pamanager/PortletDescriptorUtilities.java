@@ -63,10 +63,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.impl.DescriptionImpl;
-import org.apache.jetspeed.om.impl.DisplayNameImpl;
 import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.impl.ParameterDescriptionImpl;
+import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
+import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
+import org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
@@ -198,12 +200,12 @@ public class PortletDescriptorUtilities
             digester.addBeanPropertySetter("portlet-app/portlet/expiration-cache", "expirationCache");
             digester.addSetNext("portlet-app/portlet", "addPortletDefinition");
 
-            digester.addObjectCreate("portlet-app/portlet/display-name", DisplayNameImpl.class);
+            digester.addObjectCreate("portlet-app/portlet/display-name", PortletDisplayNameImpl.class);
             digester.addSetProperties("portlet-app/portlet/display-name", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/display-name", "displayName");
             digester.addSetNext("portlet-app/portlet/display-name", "addDisplayName");
 
-            digester.addObjectCreate("portlet-app/portlet/description", DescriptionImpl.class);
+            digester.addObjectCreate("portlet-app/portlet/description", PortletDescriptionImpl.class);
             digester.addSetProperties("portlet-app/portlet/description", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/description", "description");
             digester.addSetNext("portlet-app/portlet/description", "addDescription");
@@ -213,7 +215,7 @@ public class PortletDescriptorUtilities
             digester.addBeanPropertySetter("portlet-app/portlet/init-param/value", "value");
             digester.addSetNext("portlet-app/portlet/init-param", "addInitParameter");
 
-            digester.addObjectCreate("portlet-app/portlet/init-param/description", DescriptionImpl.class);
+            digester.addObjectCreate("portlet-app/portlet/init-param/description", ParameterDescriptionImpl.class);
             digester.addSetProperties("portlet-app/portlet/init-param/description", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/init-param/description", "description");
             digester.addSetNext("portlet-app/portlet/init-param/description", "addDescription");
@@ -244,7 +246,7 @@ public class PortletDescriptorUtilities
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/role-link", "roleLink");
             digester.addSetNext("portlet-app/portlet/security-role-ref", "addSecurityRoleRef");
 
-            digester.addObjectCreate("portlet-app/portlet/security-role-ref/description", DescriptionImpl.class);
+            digester.addObjectCreate("portlet-app/portlet/security-role-ref/description", SecurityRoleRefDescriptionImpl.class);
             digester.addSetProperties("portlet-app/portlet/security-role-ref/description", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/description", "description");
             digester.addSetNext("portlet-app/portlet/security-role-ref/description", "addDescription");
@@ -258,7 +260,7 @@ public class PortletDescriptorUtilities
         }
         catch (Throwable t)
         {
-            String msg = "Could not unmarshal: " + pathPortletXML;
+            String msg = "Could not unmarshal \"" + pathPortletXML+"\".  "+t.toString();
             log.error(msg, t);
             throw new PortletApplicationException(msg, t);
         }
