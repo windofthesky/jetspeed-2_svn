@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="commons/src/java"/>
+	<classpathentry kind="src" path="layout-portlets/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="applications/pam/src/java"/>
 	<classpathentry kind="src" path="components/page-manager/src/java"/>
 	<classpathentry kind="src" path="components/page-manager/src/test"/>
@@ -37,7 +38,7 @@
 	<classpathentry excluding="**/CVS*|Log4j.properties" kind="src" path="components/security/src/test"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portal/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-b9.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-b10.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/castor/jars/castor-0.9.4.3.jar"/>
@@ -76,5 +77,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/struts-portlet/jars/struts-portlet-spi-0.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/struts/jars/struts-1.2.1-dev-20040407.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-vfs/jars/commons-vfs-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jmock/jars/jmock-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
