@@ -27,6 +27,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
 
     /** The application id. */
     protected long appId;
+    protected long id;    
     
     /**
      * <p>Default constructor.</p>
@@ -121,4 +122,11 @@ public class UserAttributeRefImpl implements UserAttributeRef
         return userAttributeRef;
     }
 
+    /**
+     * @return Returns the id.
+     */
+    public long getId()
+    {
+        return id;
+    }
 }

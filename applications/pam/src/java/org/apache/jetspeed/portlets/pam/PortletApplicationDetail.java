@@ -19,10 +19,8 @@ package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -202,9 +200,7 @@ public class PortletApplicationDetail extends ServletPortlet
                 
                 if(action.endsWith("metadata"))
                 {
-                    // TODO: move this into tx
-                    MutablePortletApplication pa = registry.getPortletApplication(paName);                    
-                    processMetadataAction(actionRequest, actionResponse, pa.getMetadata(), action);
+                    processMetadataAction(actionRequest, actionResponse, paName, null, action);
                 }
                 else if(action.endsWith("user_attribute"))
                 {
@@ -213,41 +209,66 @@ public class PortletApplicationDetail extends ServletPortlet
             }
             else if(isPortletAction(action))
             {
-                // TODO: move this into tx
-                MutablePortletApplication pa = registry.getPortletApplication(paName);                    
                 
                 action = getAction(PORTLET_ACTION_PREFIX, action);
                 String pdefName = (String) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
                 
-                // TODO: move this into tx
-                PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
-                
                 if(action.endsWith("metadata"))
                 {
-                    processMetadataAction(actionRequest, actionResponse, pdef.getMetadata(), action);
+                    processMetadataAction(actionRequest, actionResponse, paName, pdefName, action);
                 }
                 else if(action.endsWith("portlet"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processPortletAction(actionRequest, actionResponse, pa, pdef, action);
                 }
                 else if(action.endsWith("preference"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processPreferenceAction(actionRequest, actionResponse, pa, pdef, action);
                 }
                 else if(action.endsWith("language"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processLanguage(actionRequest, actionResponse, pa, pdef, action);
                 }
                 else if(action.endsWith("parameter"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processParameter(actionRequest, actionResponse, pa, pdef, action);
                 }
                 else if(action.endsWith("security"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processSecurity(actionRequest, actionResponse, pa, pdef, action);
                 }
                 else if(action.endsWith("content_type"))
                 {
+                    // TODO: move this into tx
+                    MutablePortletApplication pa = registry.getPortletApplication(paName);                                        
+                    // TODO: move this into tx
+                    PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
+                    
                     processContentType(actionRequest, actionResponse, pa, pdef, action);
                 }
             }
@@ -301,15 +322,10 @@ public class PortletApplicationDetail extends ServletPortlet
                         modified = true;
                     }
                 }
-    
                 if (modified)
                 {
                     registry.getPersistenceStore().lockForWrite(mpa);
                     tx.commit();
-                }
-                else
-                {
-                    tx.rollback();
                 }
             }
             catch (LockFailedException e)
@@ -335,8 +351,7 @@ public class PortletApplicationDetail extends ServletPortlet
                 }
                 catch (LockFailedException e)
                 {
-                    throw new PortletException("Failed add user attribute: " + userAttrName, e);
-                    
+                    throw new PortletException("Failed add user attribute: " + userAttrName, e);                    
                 }
             }
         }
@@ -351,37 +366,27 @@ public class PortletApplicationDetail extends ServletPortlet
                 {
                     Transaction tx = registry.getPersistenceStore().getTransaction();
                     tx.begin();
+                    int count = 0;
                     MutablePortletApplication mpa = registry.getPortletApplication(paName);
-                    Collection attribs = new LinkedList();
                     Iterator userAttrIter = mpa.getUserAttributes().iterator();
                     while (userAttrIter.hasNext())
                     {
-                        boolean found = false;
                         UserAttribute userAttr = (UserAttribute) userAttrIter.next();
                         for(int ix = 0; ix < userAttrNames.length; ix++)
                         {
                             userAttrName = userAttrNames[ix];
                             if(userAttr.getName().equals(userAttrName))
                             {
-                                found = true;
                                 userAttrIter.remove();
+                                count++;                                
                                 break;
                             }
                         }
-                        if (!found)
-                        {
-                            attribs.add(userAttr);
-                        }
-                    }
-                    
-                    if (attribs.size() > 0)
+                    }                    
+                    if (count > 0)
                     {
                         registry.getPersistenceStore().lockForWrite(mpa);
                         tx.commit();
-                    }
-                    else
-                    {
-                        tx.rollback();
                     }
                 }
                 catch (LockFailedException e)
@@ -403,73 +408,160 @@ public class PortletApplicationDetail extends ServletPortlet
      */
     private void processMetadataAction(ActionRequest actionRequest, 
                                        ActionResponse actionResponse, 
-                                       GenericMetadata md, 
-                                       String action) 
+                                       String  paName, 
+                                       String  pdName,
+                                       String action)
     throws PortletException, IOException
     {
+        Transaction tx = registry.getPersistenceStore().getTransaction();
+        tx.begin();
+        MutablePortletApplication pa = registry.getPortletApplication(paName);
+        if (pa == null)
+        {
+            return;
+        }        
+        PortletDefinitionComposite pd = null;
+        GenericMetadata meta = null;                
+        if (pdName != null)
+        {
+            pd = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdName);
+            if (pd != null)
+            {
+                meta = pd.getMetadata();
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            meta = pa.getMetadata();
+        }
+        if (meta == null)
+        {
+            return;
+        }
         
         if(action.equals("edit_metadata"))
-        {
-            Iterator fieldsIter = md.getFields().iterator();
-            
-            while (fieldsIter.hasNext())
-            {
-                LocalizedField field = (LocalizedField) fieldsIter.next();
-                String id = field.getId().toString();
-                String value = actionRequest.getParameter(id + ":value");
-                if(value != null)
-                {
-                    if(!value.equals(field.getValue()))
-                    {
-                        field.setValue(value);
-                    }
-                }
-            }
-            
-            registry.getPersistenceStore().getTransaction().commit();
-        }
-        else if(action.equals("remove_metadata"))
-        {
-            Iterator fieldsIter = md.getFields().iterator();
-            String[] ids = actionRequest.getParameterValues("metadata_id");
-            
-            if(ids != null)
-            {
+        {               
+            try
+            {                
+                boolean modified = false;
+                Iterator fieldsIter = meta.getFields().iterator();            
                 while (fieldsIter.hasNext())
                 {
                     LocalizedField field = (LocalizedField) fieldsIter.next();
                     String id = field.getId().toString();
-
-                    for(int i=0; i<ids.length; i++)
+                    String value = actionRequest.getParameter(id + ":value");
+                    if (value != null)
                     {
-                        String mid = ids[i];
-                        if(mid.equals(id))
+                        if (!value.equals(field.getValue()))
                         {
-                            fieldsIter.remove();
-                            break;
+                            field.setValue(value);
+                            modified = true;
                         }
                     }
                 }
+                if (modified)
+                {
+                    if (pd == null)
+                    {
+                        registry.getPersistenceStore().lockForWrite(pa);
+                    }
+                    else
+                    {
+                        registry.getPersistenceStore().lockForWrite(pd);                        
+                    }   
+                    tx.commit();                        
+                }
             }
-            registry.getPersistenceStore().getTransaction().commit();
+            catch (LockFailedException e)
+            {
+                throw new PortletException("Failed update meta data attributes: " 
+                        + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
+            }            
+        }
+        else if (action.equals("remove_metadata"))
+        {
+            String[] ids = actionRequest.getParameterValues("metadata_id");            
+            if (ids != null)
+            {
+                try
+                {
+                    Iterator fieldsIter = meta.getFields().iterator();
+                    int count = 0;                        
+                    while (fieldsIter.hasNext())
+                    {
+                        LocalizedField field = (LocalizedField) fieldsIter.next();
+                        String id = field.getId().toString();
+    
+                        for(int i=0; i<ids.length; i++)
+                        {
+                            String mid = ids[i];
+                            if(mid.equals(id))
+                            {
+                                fieldsIter.remove();
+                                count++;
+                                break;
+                            }
+                        }
+                    }
+                    if (count > 0)
+                    {
+                        if (pd == null)
+                        {
+                            registry.getPersistenceStore().lockForWrite(pa);
+                        }
+                        else
+                        {
+                            registry.getPersistenceStore().lockForWrite(pd);                        
+                        }   
+                        tx.commit();
+                    }                        
+                }
+                catch (LockFailedException e)
+                {
+                    throw new PortletException("Failed remove meta data attributes: " 
+                            + paName + ", " + ((pdName == null) ? "" : pdName), e);                                    
+                }                                            
+            }
         }
         else if(action.equals("add_metadata"))
         {
             String name = actionRequest.getParameter("name");
             String value = actionRequest.getParameter("value");
             String localeParam = actionRequest.getParameter("locale");
-            if(localeParam == null)
+            
+            if(localeParam == null || name.trim().length() == 0)
             {
                 localeParam = "en"; //need to default better
             }
             Locale locale = new Locale(localeParam);
             
-            md.addField(locale, name, value);
-            
-            registry.getPersistenceStore().getTransaction().commit();
+            if (name != null && name.trim().length() > 0)                
+            {
+                try
+                {
+                    if (pd == null)
+                    {
+                        registry.getPersistenceStore().lockForWrite(pa);
+                    }
+                    else
+                    {
+                        registry.getPersistenceStore().lockForWrite(pd);                        
+                    }   
+                    meta.addField(locale, name, value);                    
+                    tx.commit();
+                }
+                catch (LockFailedException e)
+                {
+                    throw new PortletException("Failed add meta data attribute: " + paName + ", " + name, e);                    
+                }                                                                
+            }
         }
     }
-    
+        
     private void processPortletAction(ActionRequest actionRequest, ActionResponse actionResponse, MutablePortletApplication pa, PortletDefinitionComposite portlet, String action) throws PortletException, IOException
     {
         if(action.equals("edit_portlet"))

@@ -165,8 +165,8 @@ limitations under the License.
       <collection-descriptor
          name="metadataFields"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
-         auto-delete="true"
-         auto-update = "true"
+         auto-delete="object"
+         auto-update = "object"
          auto-retrieve = "true"
       >
          <inverse-foreignkey field-ref="parentId"/>
@@ -206,8 +206,8 @@ limitations under the License.
       <collection-descriptor
          name="userAttributeRefs"
          element-class-ref="org.apache.jetspeed.om.impl.UserAttributeRefImpl"
-         auto-delete="true"
-         auto-update = "true"
+         auto-delete="object"
+         auto-update = "object"
          auto-retrieve = "true"
        >
          <inverse-foreignkey field-ref="appId"/>
@@ -354,8 +354,8 @@ limitations under the License.
       <collection-descriptor
          name="metadataFields"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl"
-         auto-delete="false"
-         auto-update = "true"
+         auto-delete="object"
+         auto-update = "object"
          auto-retrieve = "true"
       >
          <inverse-foreignkey field-ref="parentId"/>
@@ -1240,10 +1240,10 @@ limitations under the License.
       <field-descriptor
          name="id"
          column="ID"
-         jdbc-type="BIGINT"
+         jdbc-type="BIGINT"         
          primarykey="true"
          autoincrement="true"
-         access="anonymous"
+	     indexed="true"                  
       />
 
       <field-descriptor

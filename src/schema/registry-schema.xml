@@ -28,6 +28,9 @@ limitations under the License.
         <column name="VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
+        <foreign-key foreignTable="PORTLET_APPLICATION">                        
+            <reference foreign="APPLICATION_ID" local="OBJECT_ID"/>            
+        </foreign-key>        
     </table>
     
     <!--
@@ -39,6 +42,9 @@ limitations under the License.
         <column name="VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
+        <foreign-key foreignTable="PORTLET_DEFINITION">                        
+            <reference foreign="ID" local="OBJECT_ID"/>            
+        </foreign-key>                
     </table>
 
     <!--
@@ -144,6 +150,9 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="NAME" size="150" type="VARCHAR"/>
         <column name="NAME_LINK" size="150" type="VARCHAR"/>
+        <foreign-key foreignTable="PORTLET_APPLICATION">
+            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
+        </foreign-key>                
     </table>
 
 	<!--
