@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.page.impl;
+package org.apache.jetspeed.page.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,17 +59,19 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.store.PersistenceStore;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.services.page.PageManagerService;
-import org.apache.jetspeed.services.page.PageNotRemovedException;
-import org.apache.jetspeed.services.page.PageNotUpdatedException;
+import org.apache.jetspeed.page.PageNotRemovedException;
+import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.picocontainer.Startable;
 
 /**
  * DatabasePageManagerService
@@ -77,9 +79,9 @@ import org.apache.jetspeed.services.page.PageNotUpdatedException;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DatabasePageManagerService extends AbstractPageManagerService implements PageManagerService
+public class DatabasePageManager extends AbstractPageManager implements PageManager, Startable
 {
-    protected final static Log log = LogFactory.getLog(DatabasePageManagerService.class);
+    protected final static Log log = LogFactory.getLog(DatabasePageManager.class);
 
     private PersistencePlugin plugin;
 
@@ -90,22 +92,20 @@ public class DatabasePageManagerService extends AbstractPageManagerService imple
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
 
-    /* (non-Javadoc)
-     * @see org.apache.fulcrum.Service#init()
-     */
-    public void init() throws CPSInitializationException
+
+    public DatabasePageManager(PersistenceStore store, IdGenerator generator)
     {
-        if (!isInitialized())
-        {
-            super.init();
+        super(generator);
+    }
 
-            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
-            String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
+    public void start()
+    {
+        //PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
+        // TODO: use new stuff String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
+        // String pluginName = "jetspeed";
 
-            plugin = ps.getPersistencePlugin(pluginName);
+        // plugin = ps.getPersistencePlugin(pluginName);
 
-            setInit(true);
-        }
     }
     
     /* (non-Javadoc)

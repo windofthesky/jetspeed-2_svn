@@ -51,16 +51,22 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.page.impl;
+package org.apache.jetspeed.page.impl;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.cps.BaseCommonService;
-import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.services.page.PageManagerService;
-import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.page.psml.FragmentImpl;
+import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.psml.PropertyImpl;
+import org.apache.jetspeed.page.PageManager;
+import org.picocontainer.Startable;
 
 /**
  * AbstractPageManagerService
@@ -68,27 +74,44 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class AbstractPageManagerService 
-    extends BaseCommonService
-    implements PageManagerService    
+public abstract class AbstractPageManager 
+    implements PageManager, Startable    
 {
-    protected Class fragmentClass = null;
-    protected Class pageClass = null;
-    protected Class propertyClass = null;
-    protected IdGenerator generator = null;
+    private final static Log log = LogFactory.getLog(AbstractPageManager.class);
     
-    /* (non-Javadoc)
-     * @see org.apache.fulcrum.Service#init()
-     */
-    public void init() throws CPSInitializationException
+    protected Class fragmentClass = FragmentImpl.class;
+    protected Class pageClass = PageImpl.class;
+    protected Class propertyClass = PropertyImpl.class;
+    protected IdGenerator generator = null;
+
+    public AbstractPageManager(IdGenerator generator)
+    {    
+        this.generator = generator;
+    }
+    
+    public AbstractPageManager(IdGenerator generator, List modelClasses)
     {
-        pageClass = loadModelClass("page.impl");
-        fragmentClass = loadModelClass("fragment.impl");
-        propertyClass = loadModelClass("property.impl");
-        
-        // TODO: get the IdGenerator during construction (i'll be getting to this next)
-        IdGenerator generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");
-         
+        this.generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");        
+        if (modelClasses.size() > 0)
+        {
+            this.fragmentClass = (Class)modelClasses.get(0);
+            if (modelClasses.size() > 1)
+            {
+                this.pageClass  = (Class)modelClasses.get(1);
+                if (modelClasses.size() > 2)
+                {
+                    this.propertyClass  = (Class)modelClasses.get(2);
+                }                
+            }
+        }                                 
+    }
+    
+    public void start()
+    {
+    }
+    
+    public void stop()
+    {
     }
     
     /* (non-Javadoc)
@@ -157,6 +180,21 @@ public abstract class AbstractPageManagerService
             // throw new JetspeedException(message, e);
         }
         return property;        
+    }
+
+    public Object createObject(Class classe)
+    {
+        Object object = null;
+        try
+        {
+            object = classe.newInstance();
+        }
+        catch (Exception e)
+        {
+            log.error("Factory failed to create object: " + classe.getName(), e);            
+        }
+        
+        return object;        
     }
     
 }

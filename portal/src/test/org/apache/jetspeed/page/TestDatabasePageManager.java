@@ -51,57 +51,76 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.page;
+package org.apache.jetspeed.page;
 
-import org.apache.jetspeed.exception.JetspeedException;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.apache.jetspeed.PortalComponentAssemblyTestCase;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 
 /**
- * <p>
- * PageNotRemovedException
- * </p>
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $Id$
+ * TestPageService
  *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
-public class PageNotRemovedException extends JetspeedException
+public class TestDatabasePageManager extends PortalComponentAssemblyTestCase
 {
-
+    private PageManager service = null;
+    
     /**
-     * 
+     * Defines the testcase name for JUnit.
+     *
+     * @param name the testcase's name.
      */
-    public PageNotRemovedException()
+    public TestDatabasePageManager(String name)
     {
-        super();
-        // TODO Auto-generated constructor stub
+        super(name);
+    }
+    
+    /**
+     * Start the tests.
+     *
+     * @param args the arguments. Not used
+     */
+    public static void main(String args[])
+    {
+        junit.awtui.TestRunner.main(new String[] { TestDatabasePageManager.class.getName()});
+    }
+
+    public void setup()
+    {
+        System.out.println("Setup: Testing Page Service");
     }
 
     /**
-     * @param message
+     * Creates the test suite.
+     *
+     * @return a test suite (<code>TestSuite</code>) that includes all methods
+     *         starting with "test"
      */
-    public PageNotRemovedException(String message)
+    public static Test suite()
     {
-        super(message);
-        // TODO Auto-generated constructor stub
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestDatabasePageManager.class);
     }
-
-    /**
-     * @param nested
-     */
-    public PageNotRemovedException(Throwable nested)
+    
+    
+    public void testBuildBasePage()
     {
-        super(nested);
-        // TODO Auto-generated constructor stub
-    }
+        PageManager pm = (PageManager)componentManager.getComponent("DatabasePageManager");
+        assertNotNull("page manager is null", pm);            
+        
+        Page page = pm.newPage();
+        page.setTitle("TEST");
 
-    /**
-     * @param msg
-     * @param nested
-     */
-    public PageNotRemovedException(String msg, Throwable nested)
-    {
-        super(msg, nested);
-        // TODO Auto-generated constructor stub
-    }
+        Fragment frag = pm.newFragment();
+        frag.setId("Frag1");
+        frag.setType(Fragment.LAYOUT);
 
+        page.setRootFragment(frag);
+    }
+    
 }

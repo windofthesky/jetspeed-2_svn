@@ -51,90 +51,57 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.page;
+package org.apache.jetspeed.page;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.jetspeed.exception.JetspeedException;
 
 /**
- * TestPageService
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * <p>
+ * PageNotRemovedException
+ * </p>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class TestPageDBPersistence extends JetspeedTest
+public class PageNotRemovedException extends JetspeedException
 {
-    private PageManagerService service = null;
-    
+
     /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
+     * 
      */
-    public TestPageDBPersistence(String name)
+    public PageNotRemovedException()
     {
-        super(name);
+        super();
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * Start the tests.
-     *
-     * @param args the arguments. Not used
+     * @param message
      */
-    public static void main(String args[])
+    public PageNotRemovedException(String message)
     {
-        junit.awtui.TestRunner.main(new String[] { TestPageDBPersistence.class.getName()});
-    }
-
-    public void setup()
-    {
-        System.out.println("Setup: Testing Page Service");
+        super(message);
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
+     * @param nested
      */
-    public static Test suite()
+    public PageNotRemovedException(Throwable nested)
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestPageDBPersistence.class);
-    }
-    
-    protected PageManagerService getService()
-    {
-        if (service == null)
-        {
-            service = (PageManagerService) CommonPortletServices.getPortalService("DB" + PageManagerService.SERVICE_NAME);
-        }
-        return service;
+        super(nested);
+        // TODO Auto-generated constructor stub
     }
 
-    public void testService()
+    /**
+     * @param msg
+     * @param nested
+     */
+    public PageNotRemovedException(String msg, Throwable nested)
     {
-        assertNotNull(getService());
+        super(msg, nested);
+        // TODO Auto-generated constructor stub
     }
-    
-    private Page buildBasePage(String name)
-    {
-        Page page = getService().newPage();
-        page.setTitle("TEST");
 
-        Fragment frag = getService().newFragment();
-        frag.setId("Frag1");
-        frag.setType(Fragment.LAYOUT);
-
-        page.setRootFragment(frag);
-
-        return page;
-    }
-    
 }

@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.page;
+package org.apache.jetspeed.page;
 
 // Java imports
 import java.util.List;
@@ -59,12 +59,10 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.PortalComponentAssemblyTestCase;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPageXmlPersistence
@@ -72,9 +70,8 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @author <a href="raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class TestPageXmlPersistence extends JetspeedTest
+public class TestCastorXmlPageManager extends PortalComponentAssemblyTestCase
 {
-    private PageManagerService service = null;
     private String testId = "test002";
 
     /**
@@ -82,7 +79,7 @@ public class TestPageXmlPersistence extends JetspeedTest
      *
      * @param name the testcase's name.
      */
-    public TestPageXmlPersistence(String name)
+    public TestCastorXmlPageManager(String name)
     {
         super(name);
     }
@@ -94,12 +91,7 @@ public class TestPageXmlPersistence extends JetspeedTest
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(new String[] { TestPageXmlPersistence.class.getName()});
-    }
-
-    public void setup()
-    {
-        System.out.println("Setup: Testing Xml Persistence of Pages");
+        junit.awtui.TestRunner.main(new String[] { TestCastorXmlPageManager.class.getName()});
     }
 
     /**
@@ -111,27 +103,14 @@ public class TestPageXmlPersistence extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestPageXmlPersistence.class);
-    }
-
-    protected PageManagerService getService()
-    {
-        if (service == null)
-        {
-            service = (PageManagerService) CommonPortletServices.getPortalService("XML" + PageManagerService.SERVICE_NAME);
-        }
-        return service;
-    }
-
-    public void testService()
-    {
-        assertNotNull(getService());
+        return new TestSuite(TestCastorXmlPageManager.class);
     }
 
     public void testNewPage()
     {
-        PageManagerService pms = getService();
-        Page testpage = pms.newPage();
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Page testpage = pm.newPage();
         assertNotNull(testpage);
         assertNotNull(testpage.getId());
         assertNotNull(testpage.getRootFragment());
@@ -140,9 +119,9 @@ public class TestPageXmlPersistence extends JetspeedTest
 
     public void testNewFragment()
     {
-
-        PageManagerService pms = getService();
-        Fragment f = pms.newFragment();
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Fragment f = pm.newFragment();
         assertNotNull(f);
         assertNotNull(f.getId());
         assertTrue(f.getType().equals(Fragment.LAYOUT));
@@ -155,8 +134,9 @@ public class TestPageXmlPersistence extends JetspeedTest
 
     public void testGetPage()
     {
-        PageManagerService pms = getService();
-        Page testpage = pms.getPage("test001");
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Page testpage = pm.getPage("test001");
         assertNotNull(testpage);
         assertTrue(testpage.getId().equals("test001"));
         assertTrue(testpage.getTitle().equals("Test Page"));
@@ -214,8 +194,9 @@ public class TestPageXmlPersistence extends JetspeedTest
 
     public void testRegisterPage() throws Exception
     {
-        PageManagerService pms = getService();
-        Page page = pms.newPage();
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Page page = pm.newPage();
         System.out.println("Retrieved test_id in register " + this.testId);
         page.setId(this.testId);
         page.setDefaultSkin("myskin");
@@ -223,15 +204,15 @@ public class TestPageXmlPersistence extends JetspeedTest
 
         Fragment root = page.getRootFragment();
         root.setName("TestLayout");
-        Fragment f = pms.newFragment();
+        Fragment f = pm.newFragment();
         f.setType(Fragment.PORTLET);
         f.setName("TestPortlet");
-        Property p = pms.newProperty();
+        Property p = pm.newProperty();
         p.setLayout("TestLayout");
         p.setName("row");
         p.setValue("0");
         f.addProperty(p);
-        p = pms.newProperty();
+        p = pm.newProperty();
         p.setLayout("TestLayout");
         p.setName("column");
         p.setValue("0");
@@ -240,7 +221,7 @@ public class TestPageXmlPersistence extends JetspeedTest
 
         try
         {
-            pms.registerPage(page);
+            pm.registerPage(page);
         }
         catch (Exception e)
         {
@@ -250,7 +231,7 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.testId);
+        page = pm.getPage(this.testId);
         assertNotNull(page);
         assertTrue(page.getId().equals(this.testId));
         assertTrue(page.getTitle().equals("Registered Page"));
@@ -265,13 +246,14 @@ public class TestPageXmlPersistence extends JetspeedTest
 
     public void testUpdatePage() throws Exception
     {
-        PageManagerService pms = getService();
-        Page page = pms.getPage(this.testId);
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Page page = pm.getPage(this.testId);
         page.setTitle("Updated Title");
 
         try
         {
-            pms.updatePage(page);
+            pm.updatePage(page);
         }
         catch (Exception e)
         {
@@ -281,14 +263,15 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.testId);
+        page = pm.getPage(this.testId);
         assertTrue(page.getTitle().equals("Updated Title"));
     }
 
     public void testListPages() throws Exception
     {
-        PageManagerService pms = getService();
-        List pages = pms.listPages();
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        List pages = pm.listPages();
         assertTrue(pages.size() == 3);
         assertTrue(pages.contains(this.testId));
         assertTrue(pages.contains("test001"));
@@ -296,12 +279,13 @@ public class TestPageXmlPersistence extends JetspeedTest
 
     public void testRemovePage() throws Exception
     {
-        PageManagerService pms = getService();
-        Page page = pms.getPage(this.testId);
+        PageManager pm = (PageManager)componentManager.getComponent("CastorXmlPageManager");
+        assertNotNull("castor xml manager is null", pm);            
+        Page page = pm.getPage(this.testId);
 
         try
         {
-            pms.removePage(page);
+            pm.removePage(page);
         }
         catch (Exception e)
         {
@@ -311,7 +295,7 @@ public class TestPageXmlPersistence extends JetspeedTest
             assertNotNull(errmsg, null);
         }
 
-        page = pms.getPage(this.testId);
+        page = pm.getPage(this.testId);
         assertNull(page);
     }
 }

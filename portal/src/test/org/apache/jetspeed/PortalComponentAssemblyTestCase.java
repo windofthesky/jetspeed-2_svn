@@ -51,90 +51,28 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed;
 
-package org.apache.jetspeed.services.page;
-
-import java.util.List;
-
-import org.apache.jetspeed.cps.CommonService;
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.components.ComponentAssemblyTestCase;
 
 /**
- * This service is responsible for loading and saving Pages into
- * the selected persistent store.
+ * PortalComponentAssemblyTestCase
  *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PageManagerService extends CommonService
+public class PortalComponentAssemblyTestCase extends ComponentAssemblyTestCase
 {
-    /** The name of the service */
-    public String SERVICE_NAME = "PageManager";
-
-    /**
-     * Creates a new empty Page instance
-     *
-     * @return a newly created Page object
+    public PortalComponentAssemblyTestCase(String name)
+    {
+        super(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.ComponentAssemblyTestCase#getBaseProject()
      */
-    public Page newPage();
-
-    /**
-     * Creates a new empty Fragment instance
-     *
-     * @return a newly created Fragment object
-     */
-    public Fragment newFragment();
-
-    /**
-     * Creates a new empty Property instance
-     *
-     * @return a newly created Property object
-     */
-    public Property newProperty();
-
-    /**
-     * Returns a PSML document for the given key
-     *
-     * @param locator The locator descriptor of the document to be retrieved.
-     */
-    public Page getPage(String id);
-
-    /**
-     * Returns a PSML document for the given locator
-     *
-     * @param locator The locator descriptor of the document to be retrieved.
-     */
-    public Page getPage(ProfileLocator locator);
-
-    /** Query for a collection of profiles given a profile locator criteria.
-     *
-     * @param locator The profile locator criteria.
-     *
-     * @return A collection of profiles that match the criteria specified in the locator.
-     */
-    public List listPages();
-
-    /** Store the PSML document on disk, using its locator
-     *
-     * @param profile the profile locator description.
-     * @return true if the operation succeeded
-     */
-    public void registerPage(Page page) throws JetspeedException;
-
-    /** Update a page in persistent storage
-     *
-     * @param locator The description of the profile to be removed.
-     */
-    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException;
-
-    /** Remove a document.
-     *
-     * @param locator The description of the profile to be removed.
-     */
-    public void removePage(Page page)  throws PageNotRemovedException;
-
+    public String getBaseProject()
+    {
+        return "portal";
+    }
 }
-

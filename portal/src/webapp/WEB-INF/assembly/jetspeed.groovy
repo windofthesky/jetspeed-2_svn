@@ -23,4 +23,13 @@ peidPrefix = "P-"
 peidSuffix = ""
 container.registerComponentInstance("IdGenerator", new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix))
 
+//
+// Page Manager
+//
+root = applicationRoot + "/WEB-INF/pages"
+mapping = applicationRoot + "/WEB-INF/conf/page-mapping.xml"
+// TODO: modelclasses, extension, scanrate, cachesize
+container.registerComponentInstance("CastorXmlPageManager", 
+                                     new CastorXmlPageManager(idgenerator, mapping, root))
+
 return container

@@ -52,7 +52,7 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.services.page.impl;
+package org.apache.jetspeed.page.impl;
 
 //standard java stuff
 import java.io.File;
@@ -69,11 +69,11 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
-import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.services.page.PageManagerService;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
@@ -83,6 +83,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.picocontainer.Startable;
 import org.xml.sax.InputSource;
 
 /**
@@ -92,8 +93,10 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class CastorXmlPageManagerService extends AbstractPageManagerService implements FileCacheEventListener, PageManagerService
+public class CastorXmlPageManager extends AbstractPageManager implements FileCacheEventListener, PageManager, Startable
 {
+    private final static Log log = LogFactory.getLog(CastorXmlPageManager.class);
+    
     // configuration keys
     protected final static String CONFIG_ROOT = "root";
     protected final static String CONFIG_EXT = "ext";
@@ -109,7 +112,7 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
     // base store directory
     protected File rootDir = null;
     // file extension
-    protected String ext;
+    protected String ext = DEFAULT_EXT;
 
     /** The pages loaded by this manager */
     protected FileCache pages = null;
@@ -130,31 +133,50 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
     /** the Castor mapping file name */
     protected Mapping mapping = null;
 
-    private final static Log log = LogFactory.getLog(CastorXmlPageManagerService.class);
-
-    /**
-     * This is the early initialization method called by the
-     * Turbine <code>Service</code> framework
-     */
-    public void init() throws CPSInitializationException
+    public CastorXmlPageManager(IdGenerator generator, String mapFile, String root)
+    {    
+        super(generator);
+        this.mapFile = mapFile;
+        this.rootDir = new File(root);        
+    }
+    
+    public CastorXmlPageManager(IdGenerator generator, String mapFile, String root, List modelClasses)
     {
-        if (isInitialized())
-        {
-            return;
-        }
+        super(generator, modelClasses);
+        this.mapFile = mapFile;
+        this.rootDir = new File(root);        
+    }
 
-        super.init();
-        
-        // get the PSML Root Directory
-        this.root = getConfiguration().getString(CONFIG_ROOT, DEFAULT_ROOT);
+    public CastorXmlPageManager(IdGenerator generator, 
+                                       String mapFile,
+                                       String root,                                        
+                                       List modelClasses,
+                                       String extension, 
+                                       long scanRate, 
+                                       int cacheSize)
+                                       
+    {
+        super(generator, modelClasses);
+        this.mapFile = mapFile;        
         this.rootDir = new File(root);
+        this.ext = extension;
+        this.scanRate = scanRate;
+        this.cacheSize = cacheSize;
+    }
+
+
+
+    public void start()
+    {
+        super.start();
+        
 
         //If the rootDir does not exist, treat it as context relative
         if (!rootDir.exists())
         {
             try
             {
-                this.rootDir = new File(Jetspeed.getRealPath(root));
+                this.rootDir = new File(Jetspeed.getRealPath(DEFAULT_ROOT));
             }
             catch (Exception e)
             {
@@ -173,35 +195,21 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
             }
         }
 
-        // get default extension
-        this.ext = getConfiguration().getString(CONFIG_EXT, DEFAULT_EXT);
-
         // create the serializer output format
         this.format = new OutputFormat();
         format.setIndenting(true);
         format.setIndent(4);
 
         // psml castor mapping file
-        mapFile = getConfiguration().getString("mapping", DEFAULT_MAPPING);
-        mapFile = Jetspeed.getRealPath(mapFile);
         loadMapping();
-
-        this.scanRate = getConfiguration().getLong(CONFIG_SCAN_RATE, this.scanRate);
-        this.cacheSize = getConfiguration().getInt(CONFIG_CACHE_SIZE, this.cacheSize);
 
         pages = new FileCache(this.scanRate, this.cacheSize);
         pages.addListener(this);
         pages.startFileScanner();
 
-        //Mark that we are done
-        setInit(true);
     }
 
-    /**
-     * This is the shutdown method called by the
-     * Turbine <code>Service</code> framework
-     */
-    public void shutdown()
+    public void stop()
     {
         pages.stopFileScanner();
     }
@@ -238,7 +246,6 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
         if (page == null)
         {
             File f = new File(this.rootDir, id + this.ext);
-
             if (!f.exists())
             {
                 return null;
@@ -310,7 +317,7 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
         {
             public boolean accept(File dir, String file)
             {
-                return file.endsWith(CastorXmlPageManagerService.this.ext);
+                return file.endsWith(CastorXmlPageManager.this.ext);
             }
         });
 
@@ -438,7 +445,7 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
 
     }
 
-    protected void loadMapping() throws CPSInitializationException
+    protected void loadMapping() 
     {
         // test the mapping file and create the mapping object
 
@@ -461,12 +468,11 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
                 catch (Exception e)
                 {
                     log.error("Error in psml mapping creation", e);
-                    throw new CPSInitializationException("Error in mapping", e);
                 }
             }
             else
             {
-                throw new CPSInitializationException("PSML Mapping not found or not a file or unreadable: " + mapFile);
+                log.error("PSML Mapping not found or not a file or unreadable: " + mapFile);
             }
         }
     }
