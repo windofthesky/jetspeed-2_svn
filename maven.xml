@@ -17,8 +17,8 @@ limitations under the License.
          xmlns:j="jelly:core"
          xmlns:maven="jelly:maven"
          xmlns:ant="jelly:ant">
-         
-           
+
+
   <goal name="allClean"
         description="Clean the master project and all subprojects">
     <attainGoal name="subClean"/>
@@ -53,7 +53,7 @@ limitations under the License.
   <goal name="allBuild"
         description="Build all jars and war">
   	<attainGoal name="db.scripts.gen"/>
-  	<attainGoal name="db.create"/>
+  	<attainGoal name="db.create.test.db"/>
 
     <!-- Build jars -->
     <maven:reactor
@@ -69,7 +69,7 @@ limitations under the License.
                goals="install"
                banner="Build and Install the common jar"
                postProcessing="false"
-               ignoreFailures="false"/>               
+               ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}/commons"
                includes="project.xml"
@@ -149,7 +149,6 @@ limitations under the License.
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>
-        
 
      <maven:reactor
                basedir="${basedir}/applications/demo"
@@ -167,11 +166,11 @@ limitations under the License.
                banner="Build and Install the Demo application WAR"
                postProcessing="false"
                ignoreFailures="false"/>
-               
+
           <attainGoal name="copy.shared.deps" />
   </goal>
-  
-  <goal name="copy.shared.deps"> 
+
+  <goal name="copy.shared.deps">
       <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
@@ -186,10 +185,10 @@ limitations under the License.
                goals="catalina:shared"
                banner="Deploys container jars to shared/lib to Tomcat"
                postProcessing="false"
-               ignoreFailures="false"/>  
+               ignoreFailures="false"/>
   </goal>
 
- 
+
   <goal name="show.maven.props">
   	<echo message="maven.home.local = ${maven.home.local}" />
   	<echo message="maven.repo.local = ${maven.repo.local}" />
@@ -197,44 +196,44 @@ limitations under the License.
 
   <goal name="start.production.server">
   	<echo message="====================================" />
-  	<echo message="  Production/Deployment Database    " />  	
+  	<echo message="  Production/Deployment Database    " />
   	<echo message="====================================" />
          <java classname="org.hsqldb.Server" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <arg value="-database" />          
+            <arg value="-database" />
             <arg value="./src/database/hsql/Production" />
-            <arg value="-port" />          
+            <arg value="-port" />
             <arg value="9001" />
-            <arg value="-silent" />          
+            <arg value="-silent" />
             <arg value="true" />
-            <arg value="-trace" />          
+            <arg value="-trace" />
             <arg value="false" />
-        </java>  
+        </java>
   </goal>
-  
+
   <goal name="start.test.server">
   	<echo message="====================================" />
-  	<echo message="        Testing Database            " />  	
+  	<echo message="        Testing Database            " />
   	<echo message="====================================" />
          <java classname="org.hsqldb.Server" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
           </classpath>
-            <arg value="-database" />          
+            <arg value="-database" />
             <arg value="./src/database/hsql/Test" />
-            <arg value="-port" />          
+            <arg value="-port" />
             <arg value="9001" />
-            <arg value="-silent" />          
+            <arg value="-silent" />
             <arg value="true" />
-            <arg value="-trace" />          
+            <arg value="-trace" />
             <arg value="false" />
-        </java>  
+        </java>
   </goal>
-      
+
   <goal name="db.scripts.gen" prereqs="torque:init"
         description="Build SQL scripts using Torque generator">
 
@@ -288,9 +287,26 @@ limitations under the License.
         excludes="${torque.schema.sql.excludes}"
       />
     </torque-sql>
-                 
+
   </goal>
-                
+
+  <goal name="db.test.properties">
+    <j:set var="org.apache.jetspeed.database.default.name" value="${org.apache.jetspeed.test.database.default.name}"/>
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+  </goal>
+
+  <goal name="db.production.properties">
+    <j:set var="org.apache.jetspeed.database.default.name" value="${org.apache.jetspeed.production.database.default.name}"/>
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+  </goal>
 
   <!-- ================================================================ -->
   <!-- EXECUTE a DB SCRIPT                                              -->
@@ -298,11 +314,14 @@ limitations under the License.
   <!-- ================================================================ -->
   <goal name="db.execute">
     <sql driver="${org.apache.jetspeed.database.driver}"
-         classpathref="maven.dependency.classpath"
          url="${org.apache.jetspeed.database.url}"
          userid="${org.apache.jetspeed.database.user}"
          password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+      </classpath>
     </sql>
   </goal>
 
@@ -310,22 +329,32 @@ limitations under the License.
   <!-- EXECUTE CREATE DB SQL SCRIPTS                                    -->
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
+  <goal name="db.create.test.db">
+    <attainGoal name="db.test.properties"/>
+    <attainGoal name="db.create"/>
+  </goal>
+
+  <goal name="db.create.production.db">
+    <attainGoal name="db.production.properties"/>
+    <attainGoal name="db.create"/>
+  </goal>
+
   <goal name="db.create">
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase3ojb-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase1-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/phase2-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/registry-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/prefs-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/security-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
     <attainGoal name="db.execute" />
     <j:set var="database.arg.script" value="./src/sql/populate-db-default.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./target/src/sql/${database.default.name}/test-persistence-schema.sql" />
+    <j:set var="database.arg.script" value="./target/src/sql/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
     <attainGoal name="db.execute" />
   </goal>
 
@@ -334,9 +363,9 @@ limitations under the License.
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
   <!-- ================================================================ -->
   <goal name="db.drop">
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/drop-db.sql" />
+    <j:set var="database.arg.script" value="./src/sql/${org.apache.database.default.name}/drop-db.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/registry-drop-db.sql" />
+    <j:set var="database.arg.script" value="./src/sql/${org.apache.database.default.name}/registry-drop-db.sql" />
     <attainGoal name="db.execute" />
   </goal>
 
@@ -346,9 +375,9 @@ limitations under the License.
   <!-- ================================================================ -->
   <goal name="db.recreate">
 <!--    <attainGoal name="db.drop" /> -->
-    <attainGoal name="db.create" />
+    <attainGoal name="db.create.production.db" />
   </goal>
-  
+
     <goal name="quickStart"
         description="Creates the production DB and calls portal/maven fulDeploy">
         <attainGoal name="db.recreate" />
@@ -359,6 +388,6 @@ limitations under the License.
                banner="Deploying basic Jetspeed portal suite"
                postProcessing="false"
                ignoreFailures="false"/>
-    </goal>        
+    </goal>
 
 </project>

@@ -30,12 +30,12 @@ using the MetadataManager.
 
     <jdbc-connection-descriptor
         jcd-alias="jetspeed"
-        platform="Hsqldb"
+        platform="@PLATFORM@"
         default-connection="true"
         jdbc-level="2.0"
          jndi-datasource-name="java:comp/env/jdbc/jetspeed"
         batch-mode="false"
-     >     
+     >
 
         <connection-pool
             maxActive="21"

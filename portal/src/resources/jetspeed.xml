@@ -49,24 +49,24 @@ limitations under the License.
     <!-- HSQL dB username and password for dB connections  -->
     <parameter>
      <name>username</name>
-     <value>sa</value>
+     <value>@USERNAME@</value>
     </parameter>
     <parameter>
      <name>password</name>
-     <value></value>
+     <value>@PASSWORD@</value>
     </parameter>
 
     <!-- Class name for HSQL JDBC driver -->
     <parameter>
        <name>driverClassName</name>
-       <value>org.hsqldb.jdbcDriver</value>
+       <value>@DRIVER@</value>
     </parameter>
 
     <!-- The JDBC connection url for connecting to your HSQL dB.  -->
     <parameter>
       <name>url</name>
-      <value>jdbc:hsqldb:hsql://127.0.0.1</value>
+      <value>@URL@</value>
     </parameter>
   </ResourceParams>
-	
+
 </Context>

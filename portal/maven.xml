@@ -20,11 +20,11 @@ limitations under the License.
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.container.session.TestNavigationalState'/> 
+<property name='testcase' value='org.apache.jetspeed.container.session.TestNavigationalState'/>
 
 <preGoal name="java:prepare-filesystem">
  	<echo message="====================================" />
-  	<echo message="        Copying OJB Metadata        " />  	
+  	<echo message="        Copying OJB Metadata        " />
   	<echo message="====================================" />
  	<maven:reactor
                basedir="${basedir}"
@@ -33,13 +33,13 @@ limitations under the License.
                banner="Copying OJB Metadata for Registry and Security"
                ignoreFailures="false"/>
  </preGoal>
- 
- <!-- Always rbuild the DB befure we test 
+
+ <!-- Always rbuild the DB befure we test
  <preGoal name="test:test">
  	<attainGoal name="db.recreate" />
  </preGoal>
 -->
- 
+
 <!--
   <goal name="jaxb:portlet"
         description="Generate java classes from protlet API schema">
@@ -71,11 +71,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="register" />
             <arg value="-PortletAppName" />
@@ -94,11 +95,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="unregister" />
             <arg value="-PortletAppName" />
@@ -117,11 +119,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -140,11 +143,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -163,11 +167,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -186,11 +191,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -210,11 +216,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -233,11 +240,12 @@ limitations under the License.
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="undeploy" />
             <arg value="-PortletAppName" />
@@ -260,7 +268,15 @@ limitations under the License.
       <!-- <copy  file="./target/jetspeed-2.0-a1-dev.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>-->
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
-      <copy  file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml"/>
+
+      <copy file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+        </filterset>
+      </copy>
       <attainGoal name="catalina:base-shared" />
       <attainGoal name="catalina:shared" />
   </goal>
@@ -279,11 +295,11 @@ limitations under the License.
          <exclude name="WEB-INF/db/**"/>
       </fileset>
     </copy>
-  </goal> 
-  
-  
+  </goal>
 
-  
+
+
+
   <!-- ================================================================ -->
   <!-- Does all three deployment steps at once                                                                        -->
   <!-- ================================================================ -->
@@ -291,7 +307,7 @@ limitations under the License.
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
-     <attainGoal name="pam.strutsdeploy" />  	 
+     <attainGoal name="pam.strutsdeploy" />
      <attainGoal name="db.entities" />
   </goal>
 
@@ -320,11 +336,12 @@ limitations under the License.
 
          <path refid="maven.dependency.classpath"/>
          <pathelement path="${maven.build.dest}"/>
+         <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
         </classpath>
-        <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-        <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-        <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-        <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
          <arg value="-action" />
          <arg value="deploy" />
          <arg value="-PortletAppName" />
@@ -351,7 +368,7 @@ limitations under the License.
     <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.6.jar" todir="${catalina.shared.lib}"/>
-    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${catalina.shared.lib}"/>    
+    <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${catalina.shared.lib}"/>
   </goal>
 
   <goal name="catalina:shared"
@@ -359,7 +376,7 @@ limitations under the License.
     <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${catalina.shared.lib}"/>
     <copy file="../portlet-api/target/portlet-api-1.0.jar" todir="${catalina.shared.lib}"/>
   </goal>
-  
+
   <!-- ================================================================ -->
   <!-- Copy OJB mapping for registry into the portal directory-->
   <!-- ================================================================ -->
@@ -367,18 +384,19 @@ limitations under the License.
     <!-- <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/> -->
     <!--<copy  file="./../services/security/src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>-->
   </goal>
-  
+
 
  <goal name="pam.rssdeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
             <pathelement path="${maven.build.dest}"/>
+            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
           </classpath>
-            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.database.url}"/>
-            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.database.driver}"/>
-            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.database.user}"/>
-            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.database.password}"/>
+            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+            <sysproperty key="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -394,6 +412,22 @@ limitations under the License.
         </java>
   </goal>
 
+  <goal name="db.test.properties">
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+  </goal>
+
+  <goal name="db.production.properties">
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.production.database.password}"/>
+    <j:set var="org.apache.jetspeed.jdbc.drivers.path" value="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
+  </goal>
+
   <!-- ================================================================ -->
   <!-- EXECUTE a DB SCRIPT                                              -->
   <!-- ================================================================ -->
@@ -404,16 +438,51 @@ limitations under the License.
          userid="${org.apache.jetspeed.database.user}"
          password="${org.apache.jetspeed.database.password}"
          src="${database.arg.script}">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+      </classpath>
     </sql>
   </goal>
 
   <goal name="db.entities">
       <j:set var="database.arg.script" value="../src/sql/populate-entities-for-default-psml.sql" />
+      <attainGoal name="db.production.properties"/>
       <attainGoal name="db.execute" />
   </goal>
 
+  <goal name="ojb.set.production.database.platform">
+    <copy file="./src/java/repository_database.xml" todir="${maven.build.dest}" overwrite="true">
+    <filterset begintoken="@" endtoken="@">
+        <filter token="PLATFORM" value="${org.apache.jetspeed.production.database.ojb.platform}"/>
+    </filterset>
+    </copy>
+  </goal>
+
+  <preGoal name="jar:jar">
+    <attainGoal name="ojb.set.production.database.platform"/>
+  </preGoal>
+
+<!--
   <preGoal name="war">
    <attainGoal name= "jar:install"/>
+  </preGoal>
+-->
+
+  <preGoal name="war:webapp">
+    <attainGoal name="ojb.set.production.database.platform"/>
+  </preGoal>
+
+  <preGoal name="test:test">
+    <attainGoal name="db.test.properties"/>
+    <copy file="src/java/repository_database.xml" todir="${maven.test.dest}" overwrite="true">
+    <filterset begintoken="@" endtoken="@">
+        <filter token="PLATFORM" value="${org.apache.jetspeed.test.database.ojb.platform}"/>
+    </filterset>
+    </copy>
+
+    <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+    <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
   </preGoal>
 
 </project>

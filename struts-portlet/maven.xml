@@ -13,17 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project default="install"
+<project default="java:jar"
          xmlns:j="jelly:core"
+         xmlns:define="jelly:define"
          xmlns:maven="jelly:maven"
          xmlns:reactor="reactor">
 
   <goal name="allClean"
-        description="Clean the master project and all subprojects">
-    <attainGoal name="subClean"/>
-  </goal>
-
-  <goal name="subClean"
         description="Clean all subprojects"
         >
     <maven:reactor

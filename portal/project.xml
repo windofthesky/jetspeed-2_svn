@@ -24,7 +24,7 @@ limitations under the License.
   </description>
   <shortDescription>Portal Aggregation Engine</shortDescription>
 
-  <repository>                 
+  <repository>
     <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portal</connection>
     <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portal/</url>
   </repository>
@@ -69,7 +69,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency> 
+    </dependency>
     <dependency>
       <id>jetspeed-persistence</id>
       <groupId>jetspeed2</groupId>
@@ -101,8 +101,8 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency> 
-    
+    </dependency>
+
     <dependency>
       <id>picocontainer</id>
       <version>1.0-beta-5-SNAPSHOT</version>
@@ -130,7 +130,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>    
+    </dependency>
     <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
@@ -378,7 +378,7 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-    
+
      <dependency>
       <id>regexp</id>
       <version>1.2</version>
@@ -451,6 +451,7 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>repository_database.xml</exclude>
         </excludes>
       </resource>
         <resource>
@@ -467,6 +468,8 @@ limitations under the License.
         <directory>${basedir}/src/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>repository_database.xml</exclude>
+          <include>${maven.build.dest}/repository_database.xml</include>
         </excludes>
       </resource>
     </resources>
@@ -489,6 +492,6 @@ limitations under the License.
     <report>maven-linkcheck-plugin</report>
 -->
     <report>maven-tasklist-plugin</report>
-  </reports>  
+  </reports>
 </project>
 

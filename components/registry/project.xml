@@ -26,13 +26,13 @@ limitations under the License.
 	  Registry Components
   </description>
 
-  <repository>                 
+  <repository>
     <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/components/registry</connection>
     <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/components/registry/</url>
   </repository>
 
   <shortDescription>Registry Components</shortDescription>
-  <dependencies>  
+  <dependencies>
   	<dependency>
       <id>jetspeed-cm</id>
       <groupId>jetspeed2</groupId>
@@ -40,7 +40,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>  
+    </dependency>
     <dependency>
       <id>jetspeed-persistence</id>
       <groupId>jetspeed2</groupId>
@@ -57,7 +57,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
-    </dependency>    	
+    </dependency>
   	 <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
@@ -93,8 +93,8 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>   
-    
+    </dependency>
+
     <dependency>
       <id>commons-configuration</id>
       <version>1.0-dev</version>
@@ -144,8 +144,8 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>    
-    <dependency>    	
+    </dependency>
+    <dependency>
       <id>jdbc-se</id>
       <jar>jdbc-se2.0.jar</jar>
       <properties>
@@ -201,7 +201,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>    
+    </dependency>
      <dependency>
       <id>groovy</id>
      <version>1.0-beta-4-snapshot</version>
@@ -215,7 +215,7 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-    </dependency>    
+    </dependency>
     <dependency>
       <id>jetspeed-commons</id>
       <groupId>jetspeed2</groupId>
@@ -278,8 +278,8 @@ limitations under the License.
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
- 
-    
+
+
     <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
     <unitTest>
       <resources>
@@ -287,6 +287,7 @@ limitations under the License.
           <directory>${basedir}/src/test</directory>
           <excludes>
            <exclude>**/*.java</exclude>
+           <exclude>repository_database.xml</exclude>
           </excludes>
         </resource>
         <resource>
@@ -297,7 +298,7 @@ limitations under the License.
       </resource>
       </resources>
     </unitTest>
-    
+
     <resources>
       <resource>
         <directory>${basedir}/src/java</directory>
@@ -306,6 +307,6 @@ limitations under the License.
         </excludes>
       </resource>
     </resources>
-    
+
   </build>
 </project>

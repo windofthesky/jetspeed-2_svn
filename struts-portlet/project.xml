@@ -34,7 +34,4 @@ limitations under the License.
       </roles>
     </developer>
   </developers>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-  </build>
 </project>

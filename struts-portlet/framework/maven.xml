@@ -13,9 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project default="jar:jar"
+<project default="java:jar"
          xmlns:j="jelly:core"
          xmlns:define="jelly:define"
+         xmlns:maven="jelly:maven"
          xmlns:reactor="reactor">
 
 </project>
