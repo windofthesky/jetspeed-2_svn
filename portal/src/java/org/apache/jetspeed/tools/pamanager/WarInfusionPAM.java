@@ -237,11 +237,11 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
         deleteDirectory(deployPortletAppDirectory);
         if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists() && !deployPortletAppWarFile.exists())
         {
-            log.info("Portlet application undeployment from " + deployPortletAppWarFile.getAbsolutePath() + " complete.");
+            log.error("Portlet application undeployment of " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
         }
         else
         {
-            log.error("Portlet application undeployment from " + deployPortletAppWarFile.getAbsolutePath() + " failed, unable to undeploy.");
+            log.error("Portlet application undeployment of " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to undeploy.");
         }
     }
         
@@ -465,57 +465,72 @@ public class WarInfusionPAM extends FileSystemPAM implements PortletApplicationM
                 // undeploy any existing artifacts; move new portlet app
                 // context and expanded war file or war file into webapps
                 // container deployment directory as atomically as possible
-                deployPortletAppWarFile.delete();
-                deployPortletAppContextFile.delete();
-                deleteDirectory(deployPortletAppDirectory);
-                if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists() && !deployPortletAppWarFile.exists())
+                if (tempDeployPortletAppWarFile != null)
                 {
-                    if (tempDeployPortletAppWarFile != null)
+                    // undeploy and deploy portlet app war file
+                    deployPortletAppWarFile.delete();
+                    if (!deployPortletAppWarFile.exists())
                     {
-                        // deploy portlet app war file
                         tempDeployPortletAppWarFile.renameTo(deployPortletAppWarFile);
                         if (deployPortletAppWarFile.exists())
                         {
-                            log.info("Portlet application deployment to " + deployPortletAppWarFile.getAbsolutePath() + " complete.");
+                            log.info("Portlet application deployment of " + deployPortletAppWarFile.getAbsolutePath() + " complete.");
                         }
                         else
                         {
-                            log.error("Portlet application deployment to " + deployPortletAppWarFile.getAbsolutePath() + " failed, unable to deploy.");
+                            log.error("Portlet application deployment of " + deployPortletAppWarFile.getAbsolutePath() + " failed, unable to deploy.");
                         }
                     }
-                    else if ((tempDeployPortletAppContextFile != null) && (tempDeployPortletAppDirectory != null))
+                    else
                     {
-                        // deploy portlet app context.xml and expanded war file directory
+                        log.error("Portlet application deployment of " + deployPortletAppWarFile.getAbsolutePath() + " failed, unable to undeploy.");
+                    }
+                }
+                else if ((tempDeployPortletAppContextFile != null) && (tempDeployPortletAppDirectory != null))
+                {
+                    // undeploy and deploy portlet app context.xml and expanded war file directory
+                    deployPortletAppContextFile.delete();
+                    deleteDirectory(deployPortletAppDirectory);
+                    if (!deployPortletAppContextFile.exists() && !deployPortletAppDirectory.exists())
+                    {
                         tempDeployPortletAppContextFile.renameTo(deployPortletAppContextFile);
                         tempDeployPortletAppDirectory.renameTo(deployPortletAppDirectory);
                         if (deployPortletAppContextFile.exists() && deployPortletAppDirectory.exists())
                         {
-                            log.info("Expanded portlet application deployment to " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
+                            log.info("Expanded portlet application deployment of " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
                         }
                         else
                         {
                             deployPortletAppContextFile.delete();
                             deleteDirectory(deployPortletAppDirectory);
-                            log.error("Expanded portlet application deployment to " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to deploy.");
+                            log.error("Expanded portlet application deployment of " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to deploy.");
                         }
                     }
-                    else if (tempDeployPortletAppDirectory != null)
+                    else
                     {
-                        // deploy portlet app expanded war file directory
+                        log.error("Portlet application deployment of " + deployPortletAppContextFile.getAbsolutePath() + " and " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to undeploy.");
+                    }
+                }
+                else if (tempDeployPortletAppDirectory != null)
+                {
+                    // undeploy and deploy portlet app expanded war file directory
+                    deleteDirectory(deployPortletAppDirectory);
+                    if (!deployPortletAppDirectory.exists())
+                    {
                         tempDeployPortletAppDirectory.renameTo(deployPortletAppDirectory);
                         if (deployPortletAppDirectory.exists())
                         {
-                            log.info("Expanded portlet application deployment to " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
+                            log.info("Expanded portlet application deployment of " + deployPortletAppDirectory.getAbsolutePath() + " complete.");
                         }
                         else
                         {
-                            log.error("Expanded portlet application deployment to " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to deploy.");
+                            log.error("Expanded portlet application deployment of " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to deploy.");
                         }
                     }
-                }
-                else
-                {
-                    log.error("Portlet application deployment to " + deployPortletAppWarFile.getAbsolutePath() + ", " + deployPortletAppContextFile.getAbsolutePath() + ", and/or " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to undeploy.");
+                    else
+                    {
+                        log.error("Portlet application deployment of " + deployPortletAppDirectory.getAbsolutePath() + " failed, unable to undeploy.");
+                    }
                 }
 
                 // do not complete registration synchronously: infused
