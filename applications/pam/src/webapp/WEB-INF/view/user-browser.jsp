@@ -15,7 +15,7 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 <portlet:defineObjects/>
-<h3>User Manager</h3>
+
 <portlet:actionURL var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>

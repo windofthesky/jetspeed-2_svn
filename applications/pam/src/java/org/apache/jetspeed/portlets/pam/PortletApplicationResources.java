@@ -23,8 +23,12 @@ package org.apache.jetspeed.portlets.pam;
  */
 public final class PortletApplicationResources
 {
-    public final static String PORTLET_URL = "portlet_url";
+    /** the selected non-leaf node in the tree view */
+    public final static String REQUEST_NODE = "node";
+    /** the selected leaf node in the tree view */
     public final static String REQUEST_SELECT_NODE = "select_node";
+    
+    public final static String PORTLET_URL = "portlet_url";
     public final static String REQUEST_SELECT_PORTLET = "select_portlet";
     public final static String REQUEST_SELECT_TAB = "selected_tab";
     public final static String PAM_CURRENT_PA = "org.apache.jetspeed.pam.pa";
@@ -34,5 +38,6 @@ public final class PortletApplicationResources
     public final static String CURRENT_FOLDER = "current_folder";
     public final static String CURRENT_PAGE = "current_page";
     public final static String CURRENT_USER = "current_user";
-    public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";    
+    public final static String PAM_CURRENT_USER = "org.apache.jetspeed.pam.user";
+    public final static String REQUEST_SELECT_USER = "select_user";        
 }

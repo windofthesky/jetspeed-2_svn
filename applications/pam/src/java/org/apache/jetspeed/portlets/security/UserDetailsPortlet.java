@@ -18,6 +18,8 @@ package org.apache.jetspeed.portlets.security;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
@@ -26,7 +28,9 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 
@@ -74,24 +78,22 @@ public class UserDetailsPortlet extends ServletPortlet
         response.setContentType("text/html");
         
         String userName = (String)
-            request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER,
-                                                     PortletSession.APPLICATION_SCOPE);
-        User user;
-        try
+            request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                         PortletSession.APPLICATION_SCOPE);
+
+        User user = null;
+        if (userName != null)
         {
-            user = manager.getUser(userName);
-        }
-        catch (Exception e)
-        {
-            throw new PortletException(e);
+            // TODO: don't lookup with every view call
+            user = lookupUser(userName);
         }
         
-        if (null != user)
-        {
-            request.setAttribute(VIEW_USER, user); // TODO: bean
-                        
-            request.setAttribute("tabs", userTabMap.values());
+        if (user != null)
+        {        
+            request.setAttribute(VIEW_USER, new JetspeedUserBean(user));
             
+            // Tabs
+            request.setAttribute("tabs", userTabMap.values());        
             TabBean selectedTab = (TabBean) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, PortletSession.APPLICATION_SCOPE);
             if(selectedTab == null)
             {
@@ -99,10 +101,41 @@ public class UserDetailsPortlet extends ServletPortlet
             }
                         
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
-            
         }
+        
         super.doView(request, response);
     }
-    
 
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) 
+        throws PortletException, IOException
+    {                        
+        String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
+        System.out.println("SELECTED TAB = " + selectedTab);
+        if (selectedTab != null)
+        {
+            TabBean tab = (TabBean) userTabMap.get(selectedTab);
+            if (tab != null)
+            {
+                actionRequest.getPortletSession().setAttribute(
+                        PortletApplicationResources.REQUEST_SELECT_TAB, tab);
+            }
+        }
+                
+    }    
+
+    private User lookupUser(String userName)
+    {
+        User user = null;
+        try
+        {
+            user = manager.getUser(userName);
+        }
+        catch (Exception e)
+        {
+            // TODO: logging
+            System.err.println("user not found: " + userName + ", " + e);
+        }    
+        return user;
+    }
+    
 }

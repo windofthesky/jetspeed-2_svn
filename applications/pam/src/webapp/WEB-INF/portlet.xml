@@ -33,6 +33,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>    
     <portlet-info>
       <title>Portlet Application Browser</title>
       <short-title>Apps</short-title>
@@ -57,7 +58,7 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
-    <supported-locale>en</supported-locale>
+    <supported-locale>en</supported-locale>    
     <portlet-info>
       <title>Portlet Application Detail</title>
       <short-title>PAD</short-title>
@@ -202,6 +203,8 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
     <portlet-info>
       <title>User Browser</title>
       <short-title>Users</short-title>
@@ -226,6 +229,8 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.SecurityResources</resource-bundle>            
     <portlet-info>
       <title>User Detail Information</title>
       <short-title>User</short-title>

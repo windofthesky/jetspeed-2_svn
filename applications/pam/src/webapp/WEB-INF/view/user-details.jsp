@@ -14,6 +14,7 @@ limitations under the License.
 <%@ page import="javax.portlet.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.jetspeed.portlets.pam.beans.TabBean" %>
+<%@ page import="org.apache.jetspeed.portlets.security.users.JetspeedUserBean" %>
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
 
@@ -28,11 +29,17 @@ limitations under the License.
 
 <c:set var="user" value="${requestScope.user}" />
 
+user = <c:out value="${user}"/>
+
+<%--Beginning of User check -%>
+<c:if test="${user != null}">
+
+userxxx = <c:out value="${user}"/>
+
 <c:set var="tabs" value="${requestScope.tabs}"/>
 <c:set var="selectedTab" value="${requestScope.selected_tab}"/>
 
-<fmt:message key="user.details.name"/> = <c:out value="${name}"/><br />
-<fmt:message key="user.details.version"/> = <c:out value="${version}"/> <br />
+<fmt:message key="user.principal.name"/> = <c:out value="${user.Principal}"/><br />
 
 <div id="tabs">
 	<c:set var="tab_items" value="${tabs}"/>
@@ -41,199 +48,28 @@ limitations under the License.
 	<%@ include file="tabs.jsp"%>
 </div>
 
-<%--Beginning of Portlets tab data--%>
+<%--Beginning of User Attributes tab data--%>
 <%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'pa_portlets'}">
-  <div id="portlets">
-	
-	<portlet:actionURL var="select_portlet_link" >
-        <%--<portlet:param name="select_portlet" value="<%= pdefName %>" />--%>
-    </portlet:actionURL>
-	<form action="<c:out value="${select_portlet_link}"/>">
-		<select name="select_portlet" onChange="this.form.submit();">
-		
-			<option value="" <c:if test="! ${selectedPDef}"> selected="true"</c:if> >
-				<fmt:message key="pam.details.choose_portlet"/>
-			</option>
-
-			<c:forEach var="portletDef" items="${pa.portletDefinitions}">
-			    <c:set var="pdefName" value="${portletDef.name}"/>
-			    
-			    <%--We must do this since portlet taglib doesn't support expressions--%>
-			    <% String pdefName = (String) pageContext.getAttribute("pdefName"); %>
-			    
-			    <option value="<c:out value="${portletDef.name}"/>" <c:if test="${selectedPDef.name == portletDef.name}">selected="true"</c:if>>
-				  <c:out value="${portletDef.name}"/>
-			    </option>
-				<%--
-			    <a href="<c:out value="${select_portlet_link}"/>">
-			        <c:out value="${portletDef.name}" /><br />
-			    </a>
-			    --%>
-			</c:forEach>
-		</select>
-		
-		<!--<input type="submit" value="Select"/>-->
-    </form>
+<c:if test="${selectedTab.id == 'user_attributes'}">
+  <div id="attributes">	
   </div>
-    
-  <div id="selectedPortlet" class="">
-	
-	<c:if test="${selectedPDef != null}">
-		<%@ include file="portlet-detail.jsp" %>
-	</c:if>
-    
-  </div>
+  <h3>USER ATTRIBUTES</h3>
+      
 </c:if>
-<%--End of Portlets tab data--%>
+<%--End of User Attributes tab data--%>
 
-<%--Beginning of UserAttr tab data--%>
+<%--Beginning Security tab data--%>
 <%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'pa_user_attribtues'}">
-  <div id="Details">
-	<portlet:actionURL var="edit_user_attr_link" >
-	</portlet:actionURL>
-		
-	<form name="Edit_UserAttr_Form" action="<c:out value="${edit_user_attr_link}"/>">
-		<input type="hidden" name="portlet_action" value="portlet_app.edit_user_attribute"/>
-		
-		<table>
-			<tr>
-				<th>&nbsp;</th>
-				<th><fmt:message key="pam.details.name"/></th>
-				<th><fmt:message key="pam.details.value"/></th>
-			</tr>
-		<c:forEach var="userAttr" items="${pa.userAttributes}">
-			<tr>
-			<%--<input type="hidden" name="user_attr_name" value="<c:out value="${userAttr.name}"/>"/>--%>
-			
-				<td>
-					<input type="checkbox" name="user_attr_id" value="<c:out value="${userAttr.name}"/>"/>
-				</td>
-				<td>
-					<c:out value="${userAttr.name}"/>
-				</td>
-				<td>
-					<input type="text" name="<c:out value="${userAttr.name}"/>:description" value="<c:out value="${userAttr.description}"/>"/>
-				</td>
-			</tr>
-		</c:forEach>
-		</table>
-		
-		<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = 'portlet_app.edit_user_attribute'"/>
-		<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = 'portlet_app.remove_user_attribute'"/>
-	</form>
-	
-	<form action="<c:out value="${edit_user_attr_link}"/>">
-		<input type="hidden" name="portlet_action" value="portlet_app.add_user_attribute"/>
-		
-		<table>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.name"/>
-				</td>
-				<td>
-					<input type="text" name="user_attr_name" value=""/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.description"/>
-				</td>
-				<td>
-					<input type="text" name="user_attr_desc" value=""/>
-				</td>
-			</tr>
-		</table>
-		<input type="submit" value="<fmt:message key="pam.details.add_user_attribute"/>"/>
-	</form>
+<c:if test="${selectedTab.id == 'user_security'}">
+  <div id="Security">
   </div>
+  <h3>SECURITY ATTRIBUTES</h3>
+  
 </c:if>
 <%--End of UserAttr tab data--%>
 
-
-<%--Beginning of Metadata tab data--%>
-<%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'pa_metadata'}">
-	<div id="metadata">
-		<c:set var="md" value="${pa.metadata}"/>
-	
-		<portlet:actionURL var="edit_metadata_link" >
-			
-		</portlet:actionURL>
-		<c:set var="action_prefix" value="portlet_app."/>
-		
-		<%@ include file="metadata-detail.jsp" %>
-		
-	</div>
 </c:if>
-<%--End of Metadata tab data--%>
-
-<%--Beginning of Details tab data--%>
-<%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'pa_details'}">
-	<div id="details">
-		<table>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.name"/>
-				<td>
-					<c:out value="${name}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.version"/>
-				</td>
-				<td>
-					<c:out value="${version}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>		
-					<fmt:message key="pam.details.description"/>
-				</td>
-				<td>
-					<c:out value="${pa.description}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.type"/>
-				</td>
-				<td>
-					<c:choose>
-						<c:when test="${pa.applicationType == '0'}">
-							<fmt:message key="pam.details.type.webapp"/>
-						</c:when>
-						<c:when test="${pa.applicationType == '1'}">
-							<fmt:message key="pam.details.type.local"/>
-						</c:when>
-					</c:choose>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<fmt:message key="pam.details.id"/>
-				</td>
-				<td>
-					<c:out value="${pa.applicationIdentifier}"/>
-				</td>
-			</tr>
-		</table>
-	
-		
-		<c:if test="${! empty pa.jetspeedServices}">
-			<hr />
-			<fmt:message key="pam.details.services"/>
-			<hr />
-			<c:forEach var="service" items="${pa.jetspeedServices}">
-				<c:out value="${service.name}"/> <br /> <%--| <c:out value="${service.appId}"/> | <c:out value="${service.id}"/><br />--%>
-			</c:forEach>
-		</c:if>
-	</div>
-</c:if>
-<%--End of Details tab data--%>
+<%--End of User check --%>
 
 <br />
 <br />
