@@ -89,15 +89,15 @@ public interface PersistencePlugin extends Plugin
     int LOCK_LEVEL_READ = 1;
     
     void beginTransaction() throws TransactionStateException;
-	
+    
     void commitTransaction() throws TransactionStateException;
-	
+    
     void prepareForDelete(Object obj) throws TransactionStateException;
-	
+    
     void prepareForUpdate(Object obj) throws TransactionStateException;
-	
+    
     void rollbackTransaction() throws TransactionStateException;
-	
+    
     /**
      * Takes an object that was modified outside of the current transaction
      * and makes it so that it appears to have been modified within the 
