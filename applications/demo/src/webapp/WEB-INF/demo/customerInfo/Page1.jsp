@@ -3,9 +3,11 @@
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<portlet:defineObjects/>
 
 <div>
-  Hello from Page 1<br>
+  Hello from Page 1 with Taglib<br>
   <table>
     <c:forEach items="${CustomerList}" var="Customer">
     <tr>
