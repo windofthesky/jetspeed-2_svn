@@ -1,6 +1,7 @@
 <project default="java:jar"
          xmlns:j="jelly:core"
-         xmlns:maven="jelly:maven">
+         xmlns:maven="jelly:maven"
+         xmlns:ant="jelly:ant">
 
   <goal name="allClean"
         description="Clean the master project and all subprojects">
@@ -148,66 +149,11 @@
                postProcessing="false"
                ignoreFailures="false"/>  
   </goal>
-  
-  <preGoal name="allBuild">
-  	<!-- Make sure that the org.apache.jetspeed.dbutil.HSQLServer
-  	   - is compiled.
-  	  -->
-  	<attainGoal name="java:compile" />
-  	<echo message="====================================" />
-  	<echo message="Starting HSQL server for testing    " />  	
-  	<echo message="====================================" />
-  	<!-- Test DB -->
-  	<java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="true" >
-       <classpath>
-         <path refid="maven.dependency.classpath"/>
-         <pathelement path="${maven.build.dest}"/>
-        </classpath>
-         <arg value="-database" />
-         <arg value="portal/test/db/hsql/Registry" />
-         <arg value="-port" />
-         <arg value="9001" />
-         <arg value="-no_system_exit" />
-         <arg value="true" />
-         <arg value="-silent" />
-         <arg value="true" />
-         <arg value="-trace" />
-         <arg value="false" />
-      </java> 
-  	
-  </preGoal>
-  
-  <postGoal name="allBuild">
-  	<echo message="====================================" />
-  	<echo message="        Stopping HSQL server        " />  	
-  	<echo message="====================================" />
-  	<java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="true" >
-       <classpath>
-         <path refid="maven.dependency.classpath"/>
-         <pathelement path="${maven.build.dest}"/>
-        </classpath>
-         <arg value="kill" />
-         <arg value="9001" />     
-         <arg value="sa" />
-         <arg value="" />
-      </java>   	
-  	
-  </postGoal>
-  
-  <goal name="quick">
-  	<echo message="====================================" />
-  	<echo message="        Stopping HSQL server        " />  	
-  	<echo message="====================================" />
-  	<java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="true" >
-       <classpath>
-         <path refid="maven.dependency.classpath"/>
-         <pathelement path="${maven.build.dest}"/>
-        </classpath>
-         <arg value="kill" />
-         <arg value="9001" />     
-         <arg value="sa" />
-         <arg value=" " />
-      </java>  
+
+ 
+  <goal name="show.maven.props">
+  	<echo message="maven.home.local = ${maven.home.local}" />
+  	<echo message="maven.repo.local = ${maven.repo.local}" />
   </goal>
 
 </project>
