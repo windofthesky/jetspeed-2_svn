@@ -34,8 +34,6 @@ import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
@@ -81,16 +79,21 @@ public class PortletApplicationDescriptor
             // TODO move config to digester-rules.xml. Example: http://www.onjava.com/pub/a/onjava/2002/10/23/digester.html?page=3
             Digester digester = new Digester();
             digester.setValidating(false);
-            digester.addObjectCreate("portlet-app", PortletApplicationDefinitionImpl.class);
+                       
+            // digester.addRuleSet(new PortletApplicationRuleSet(appName));
+            
+            digester.addRule("portlet-app", new PortletApplicationRule(appName));
             digester.addSetProperties("portlet-app", "id", "applicationIdentifier");
 
-            digester.addObjectCreate("portlet-app/portlet", PortletDefinitionImpl.class);
+
+            digester.addRule("portlet-app/portlet", new PortletRule());
+            
             digester.addSetProperties("portlet-app/portlet", "id", "portletIdentifier");
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-name", "name");
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-class", "className");
             digester.addBeanPropertySetter("portlet-app/portlet/expiration-cache", "expirationCache");
-            digester.addSetNext("portlet-app/portlet", "addPortletDefinition");
-
+           
+            
             digester.addObjectCreate("portlet-app/portlet/display-name", PortletDisplayNameImpl.class);
             digester.addSetProperties("portlet-app/portlet/display-name", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/display-name", "displayName");
@@ -121,16 +124,9 @@ public class PortletApplicationDescriptor
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-info/short-title", "shortTitle");
             digester.addCallMethod("portlet-app/portlet/portlet-info/keywords", "setKeywords", 0, new Class[]{String.class});
             digester.addSetNext("portlet-app/portlet/portlet-info", "addLanguage");
+            
+            digester.addRuleSet(new PortletPreferenceRuleSet());
 
-            digester.addObjectCreate("portlet-app/portlet/portlet-preferences/preference", DefaultPreferenceImpl.class);
-            digester.addBeanPropertySetter("portlet-app/portlet/portlet-preferences/preference/name", "name");
-            digester.addCallMethod("portlet-app/portlet/portlet-preferences/preference/value", "addValue", 0);
-            digester.addCallMethod(
-                "portlet-app/portlet/portlet-preferences/preference/read-only",
-                "setReadOnly",
-                0,
-                new Class[] { Boolean.class });
-            digester.addSetNext("portlet-app/portlet/portlet-preferences/preference", "addPreference");
             
             digester.addObjectCreate("portlet-app/user-attribute", UserAttributeImpl.class);
             digester.addBeanPropertySetter("portlet-app/user-attribute/description", "description");
@@ -146,10 +142,10 @@ public class PortletApplicationDescriptor
             digester.addSetProperties("portlet-app/portlet/security-role-ref/description", "lang", "language");
             digester.addBeanPropertySetter("portlet-app/portlet/security-role-ref/description", "description");
             digester.addSetNext("portlet-app/portlet/security-role-ref/description", "addDescription");
-
+            
             PortletApplicationDefinitionImpl pd = (PortletApplicationDefinitionImpl) digester.parse(portletXmlReader);
 
-            pd.setName(appName);
+           
             if(pd.getApplicationIdentifier() == null)
             {
                 pd.setApplicationIdentifier(appName);
