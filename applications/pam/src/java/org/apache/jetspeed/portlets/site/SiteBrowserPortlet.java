@@ -37,7 +37,7 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.portals.bridges.common.GenericServletPortlet;
-import org.apache.portals.bridges.frameworks.messaging.PortletMessageComponent;
+import org.apache.portals.messaging.PortletMessaging;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
@@ -131,9 +131,9 @@ public class SiteBrowserPortlet extends GenericServletPortlet
                     String domain = child.getDomain();
                     String name = child.getName();
 
-                    PortletMessageComponent.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
+                    PortletMessaging.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
                             PortletApplicationResources.CURRENT_FOLDER);
-                    PortletMessageComponent.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
+                    PortletMessaging.cancel(actionRequest, PortletApplicationResources.SITE_PORTLET,
                             PortletApplicationResources.CURRENT_PAGE);
                     
                     String attrName = PortletApplicationResources.CURRENT_FOLDER;
@@ -142,7 +142,7 @@ public class SiteBrowserPortlet extends GenericServletPortlet
                         attrName = PortletApplicationResources.CURRENT_PAGE;
                     }
 
-                    PortletMessageComponent.publish(actionRequest, PortletApplicationResources.SITE_PORTLET, attrName,
+                    PortletMessaging.publish(actionRequest, PortletApplicationResources.SITE_PORTLET, attrName,
                             name);
 
                     /*

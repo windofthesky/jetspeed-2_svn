@@ -30,7 +30,7 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.portals.bridges.frameworks.VelocityFrameworkPortlet;
-import org.apache.portals.bridges.frameworks.messaging.PortletMessageComponent;
+import org.apache.portals.messaging.PortletMessaging;
 
 /**
  * SiteDetailsPortlet
@@ -63,9 +63,9 @@ public class SiteDetailsPortlet extends VelocityFrameworkPortlet
         response.setContentType("text/html");
 
         // Get the messages from the browser
-        String currentFolder = (String) PortletMessageComponent.consume(request,
+        String currentFolder = (String) PortletMessaging.consume(request,
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.CURRENT_FOLDER);
-        String currentPage = (String) PortletMessageComponent.consume(request,
+        String currentPage = (String) PortletMessaging.consume(request,
                 PortletApplicationResources.SITE_PORTLET, PortletApplicationResources.CURRENT_PAGE);
 
         if (currentFolder != null)
