@@ -366,11 +366,13 @@ limitations under the License.
   <!-- ================================================================ -->
   <goal name="db.create.test">
     <attainGoal name="db.test.properties"/>
+    <attainGoal name="db.drop2"/>	
     <attainGoal name="db.create"/>
   </goal>
 
   <goal name="db.create.production">
     <attainGoal name="db.production.properties"/>
+    <attainGoal name="db.drop2"/>		
     <attainGoal name="db.create"/>
   </goal>
 
@@ -413,7 +415,25 @@ limitations under the License.
     <j:set var="database.arg.script" value="./src/sql/${org.apache.jetspeed.database.default.name}/registry-drop-db.sql" />
     <attainGoal name="db.execute" />
   </goal>
+  
+  <goal name="db.drop2">
+    <j:choose>
+      <j:when test="${org.apache.jetspeed.database.default.name == 'mssql'}" >		
+          <j:set var="database.arg.script" value="./src/sql/mssql/drop.sql" />
+          <attainGoal name="db.execute" />		  
+      </j:when>   	
+      <j:when test="${org.apache.jetspeed.database.default.name == 'oracle'}" >		
+          <j:set var="database.arg.script" value="./src/sql/oracle/drop.sql" />
+          <attainGoal name="db.execute" />		  
+      </j:when>   		  
+	  </j:choose>
+  </goal>
 
+  <goal name="db.drop.oracle">
+    <attainGoal name="db.test.properties"/>
+      <j:set var="database.arg.script" value="./src/sql/oracle/drop2.sql" />
+      <attainGoal name="db.execute" />		      	
+  </goal>
   <!-- ================================================================ -->
   <!-- EXECUTE RECREATE DB SQL SCRIPTS                                  -->
   <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
