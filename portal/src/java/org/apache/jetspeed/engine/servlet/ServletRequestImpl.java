@@ -28,6 +28,7 @@ import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -61,12 +63,14 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
     private ServletRequest currentRequest = null;
 
     private Map portletParameters;
+    private ObjectID webAppId;
 
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
         nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
         this.portletWindow = window;        
+        webAppId = portletWindow.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition().getWebApplicationDefinition().getId();
     }
 
     protected HttpServletRequest _getHttpServletRequest()
@@ -447,4 +451,20 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
   					.getPortletApplicationDefinition()
   					.getWebApplicationDefinition().getContextRoot();
   	}
+  	
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServletRequest#getSession()
+     */
+    public HttpSession getSession()
+    {
+        return new NamespaceEncodedSession(super.getSession(), webAppId);
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServletRequest#getSession(boolean)
+     */
+    public HttpSession getSession(boolean arg0)
+    {
+        return new NamespaceEncodedSession(super.getSession(arg0), webAppId);
+    }
 }
