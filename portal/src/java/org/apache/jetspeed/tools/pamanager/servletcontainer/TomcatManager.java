@@ -153,14 +153,23 @@ public class TomcatManager implements ApplicationServerManager, Startable
     {
         try
         {
-            reload.setQueryString(buildPathQueryArgs(appPath));
-            client.executeMethod(reload);
-            return reload.getResponseBodyAsString();
+           // reload.setQueryString(buildPathQueryArgs(appPath));
+            // This is the only way to get changes made to web.xml to
+            // be picked up, reload DOES NOT reload the web.xml
+            stop(appPath);
+            Thread.sleep(1500);
+            return start(appPath);
+        }
+        catch (InterruptedException e)
+        {
+            return "FAIL - "+e.toString();
         }
         finally
         {
-            reload.recycle();
-            reload.setPath(reloadPath);
+            stop.recycle();
+            stop.setPath(reloadPath);
+            start.recycle();
+            start.setPath(reloadPath);
         }
     }
 
