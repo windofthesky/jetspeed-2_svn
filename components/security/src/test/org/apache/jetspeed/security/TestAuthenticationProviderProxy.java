@@ -290,24 +290,28 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
      */
     private void destroyTestData()
     {
-        final String[] users = new String[] { "anonuser1", "anonuser2", "anonuser3", "anonuser4", "anonuser5", };
+        try
+        {
+            Iterator userIter = ums.getUsers("");
+            User user;
+            String userName;
+            while (userIter.hasNext())
+            {
+                user = (User)userIter.next();
+                userName = SecurityHelper.getPrincipal(user.getSubject(),UserPrincipal.class).getName();
+                ums.removeUser(userName);
+            }
+        }
+        catch (SecurityException e)
+        {
+            System.err.println(e.toString());
+        }
+
         final String[] roles = new String[] { "testrole1", "testrole1.subrole1", "testrole1.subrole1.subrole2", "testrole2",
         "testrole2.subrole1" };
         final String[] groups = new String[] { "testgroup1", "testgroup1.subgroup1", "testgroup1.subgroup1.subgroup2", "testgroup2",
         "testgroup2.subgroup1" };
-        
-        for (int i = 0; i < users.length; i++)
-        {
-            try
-            {
-                ums.removeUser(users[i]);
-            }
-            catch (SecurityException e)
-            {
-                System.err.println(e.toString());
-            }
-        }
-        
+
         for (int i = 0; i < roles.length; i++)
         {
             try
@@ -332,5 +336,4 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
             }
         }
     }
-
 }

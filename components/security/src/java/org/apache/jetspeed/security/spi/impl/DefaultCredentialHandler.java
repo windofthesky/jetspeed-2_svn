@@ -23,12 +23,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
+import org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor;
+import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
 import org.apache.jetspeed.security.spi.SecurityAccess;
 
 /**
@@ -39,74 +40,50 @@ public class DefaultCredentialHandler implements CredentialHandler
 {
     private static final Log log = LogFactory.getLog(DefaultCredentialHandler.class);
 
-    /** Private credentials. */
+    /** Private credentials type. */
     private static final int PRIVATE = 0;
 
-    /** Public credentials. */
+    /** Public credentials type. */
     private static final int PUBLIC = 1;
 
-    /** Common queries. */
-    private SecurityAccess commonQueries = null;
+    private SecurityAccess securityAccess;
 
-    /**
-     * <p>
-     * Constructor providing access to the common queries.
-     * </p>
-     */
-    public DefaultCredentialHandler(SecurityAccess commonQueries)
+    private PasswordCredentialProvider pcProvider;
+    
+    private InternalPasswordCredentialInterceptor ipcInterceptor;
+    
+    public DefaultCredentialHandler(SecurityAccess securityAccess, PasswordCredentialProvider pcProvider, 
+            InternalPasswordCredentialInterceptor ipcInterceptor)
     {
-        this.commonQueries = commonQueries;
+        this.securityAccess = securityAccess;
+        this.pcProvider = pcProvider;
+        this.ipcInterceptor = ipcInterceptor;
     }
     
-    protected Class getPasswordCredentialClass()
-    {
-        return DefaultPasswordCredentialImpl.class;
-    }
-    
-    protected char[] validatePassword(InternalUserPrincipal internalUser, String userName, char[] password) throws SecurityException
-    {
-        if (null == password)
-        {
-            throw new SecurityException(SecurityException.INVALID_PASSWORD);
-        }
-        return password;
-    }
-
-    protected PasswordCredential createPasswordCredential(InternalUserPrincipal internalUser, String userName, char[] password) throws SecurityException
-    {
-        return new DefaultPasswordCredentialImpl(userName, validatePassword(internalUser, userName, password));
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#createPasswordCredential(java.lang.String, char[])
-     */
-    public PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException
-    {
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(userName, false);
-        if (null == internalUser)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
-        }
-        return createPasswordCredential(internalUser, userName, password);
-    }
-
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */
     public Set getPrivateCredentials(String username)
     {
-        return getCredentials(username, PRIVATE);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPrivatePasswordCredential(org.apache.jetspeed.security.PasswordCredential,
-     *      org.apache.jetspeed.security.PasswordCredential)
-     */
-    public void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
-            throws SecurityException
-    {
-        setCredential(oldPwdCredential, newPwdCredential, PRIVATE);
-
+        Set credentials = new HashSet();
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(username, false);
+        if (null != internalUser)
+        {
+            InternalCredential credential = getPasswordCredential(internalUser, username );
+            if ( credential != null )
+            {
+                try
+                {
+                    credentials.add(pcProvider.create(username,credential));
+                }
+                catch (SecurityException e)
+                {
+                    if ( log.isErrorEnabled() )
+                        log.error("Failure creating a PasswordCredential for InternalCredential "+credential, e);
+                }
+            }
+        }
+        return credentials;
     }
 
     /**
@@ -114,136 +91,233 @@ public class DefaultCredentialHandler implements CredentialHandler
      */
     public Set getPublicCredentials(String username)
     {
-        return getCredentials(username, PUBLIC);
+        return new HashSet();
     }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPublicPasswordCredential(org.apache.jetspeed.security.PasswordCredential,
-     *      org.apache.jetspeed.security.PasswordCredential)
-     */
-    public void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
-            throws SecurityException
+    
+    private InternalCredential getPasswordCredential(InternalUserPrincipal internalUser, String username)
     {
-        setCredential(oldPwdCredential, newPwdCredential, PUBLIC);
-    }
-
-    /**
-     * <p>
-     * Gets the credentials given a type.
-     * </p>
-     * 
-     * @param username The username.
-     * @param type The type.
-     * @return The set.
-     */
-    private Set getCredentials(String username, int type)
-    {
-        Set internalCredentials = new HashSet();
-        Set credentials = new HashSet();
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username, false);
-        if (null != internalUser)
+        InternalCredential credential = null;
+        
+        Collection internalCredentials = internalUser.getCredentials();
+        if ( internalCredentials != null )
         {
-            internalCredentials.addAll(internalUser.getCredentials());
             Iterator iter = internalCredentials.iterator();
+            
             while (iter.hasNext())
             {
-                InternalCredential credential = (InternalCredential) iter.next();
-                if (credential.getType() == type)
+                credential = (InternalCredential) iter.next();
+                if (credential.getType() == PRIVATE )
                 {
-                    // PasswordCredential support.
                     if ((null != credential.getClassname())
-                            && (credential.getClassname().equals(getPasswordCredentialClass().getName())))
+                            && (credential.getClassname().equals(pcProvider.getPasswordCredentialClass().getName())))
                     {
                         try
                         {
-                            PasswordCredential pwdCred = createPasswordCredential(internalUser, username, credential.getValue()
-                                    .toCharArray());
-                            credentials.add(pwdCred);
+                            if ( ipcInterceptor != null && ipcInterceptor.afterLoad(pcProvider, username, credential) )
+                            {
+                                // update InternalUserPrincipal to save post processed data 
+                                securityAccess.setInternalUserPrincipal(internalUser,internalUser.isMappingOnly());
+                            }
+                            break;
                         }
                         catch (SecurityException e)
                         {
                             if ( log.isErrorEnabled() )
-                                log.error("Failure creating PasswordCredential from InternalCredential "+credential, e);
+                                log.error("Failure loading InternalCredential "+credential, e);
                         }
                     }
                 }
+                credential = null;
             }
         }
-
-        return credentials;
+        return credential;
     }
 
     /**
-     * <p>
-     * Sets the password credential given a type.
-     * </p>
-     * 
-     * @param oldPwdCredential The old {@link PasswordCredential}.
-     * @param newPwdCredential The new {@link PasswordCredential}.
-     * @param type The type.
-     * @throws SecurityException Throws a {@link SecurityException}.
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPassword(java.lang.String,java.lang.String,java.lang.String)
      */
-    private void setCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential, int type)
-            throws SecurityException
+    public void setPassword(String userName, String oldPassword, String newPassword) throws SecurityException
     {
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(newPwdCredential.getUserName(), false);
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
         if (null == internalUser)
         {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + newPwdCredential.getUserName());
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + userName);
         }
+        
         Collection credentials = internalUser.getCredentials();
         if (null == credentials)
         {
             credentials = new ArrayList();
         }
-            
-        if (null != oldPwdCredential)
+
+        if (null != oldPassword)
         {
-            InternalCredential oldInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
-                    new String(oldPwdCredential.getPassword()), type, oldPwdCredential.getClass().getName());
-            Iterator iter = credentials.iterator();
-            boolean updated = false;
-            
-            while (iter.hasNext())
+            if ( pcProvider.getValidator() != null )
             {
-                InternalCredential credential = (InternalCredential) iter.next();
-                if ( credential.equals(oldInternalCredential))
-                {
-                    credential.setValue(new String(newPwdCredential.getPassword()));
-                    updated = true;
-                    break;
-                }
+                pcProvider.getValidator().validate(oldPassword);
             }
-            if (!updated)
+            if ( pcProvider.getEncoder() != null )
             {
-                // supplied PasswordCredential not defined for this user
-                throw new SecurityException(SecurityException.INVALID_PASSWORD);
+                oldPassword = pcProvider.getEncoder().encode(userName, oldPassword);
+            }
+        }
+        
+        InternalCredential credential = getPasswordCredential(internalUser, userName );
+        
+        if (oldPassword != null && (credential == null || credential.getValue() == null || !credential.getValue().equals(oldPassword)))
+        {
+            // supplied PasswordCredential not defined for this user
+            throw new SecurityException(SecurityException.INVALID_PASSWORD);
+        }
+        
+        if ( pcProvider.getValidator() != null )
+        {
+            pcProvider.getValidator().validate(newPassword);
+        }
+        
+        boolean encoded = false;
+        if ( pcProvider.getEncoder() != null )
+        {
+            newPassword = pcProvider.getEncoder().encode(userName, newPassword);
+            encoded = true;
+        }
+
+        boolean create = credential == null;
+
+        if ( credential == null )
+        {
+            credential = new InternalCredentialImpl(internalUser.getPrincipalId(), newPassword, PRIVATE,
+                            pcProvider.getPasswordCredentialClass().getName());
+            credential.setEncoded(encoded);
+            credentials.add(credential);
+        }
+        else if ( oldPassword == null )
+        {
+/* TODO: should only be allowed for admin                     
+            // User *has* an PasswordCredential: setting a new Credential without supplying
+            // its current one is not allowed
+            throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+*/            
+        }
+        else if ( oldPassword.equals(newPassword) )
+        {
+            throw new SecurityException(SecurityException.INVALID_PASSWORD);
+        }
+
+        if ( ipcInterceptor != null )
+        {
+            if ( create )
+            {
+                ipcInterceptor.beforeCreate(internalUser, credentials, userName, credential, newPassword );
+            }
+            else
+            {
+                ipcInterceptor.beforeSetPassword(internalUser, credentials, userName, credential, newPassword );
+            }
+        }
+        if (!create)
+        {
+            credential.setValue(newPassword);
+            credential.setEncoded(encoded);
+        }
+                
+        internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+        internalUser.setCredentials(credentials);
+        // Set the user with the new credentials.
+        securityAccess.setInternalUserPrincipal(internalUser, false);
+    }
+    
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordEnabled(java.lang.String, boolean)
+     */
+    public void setPasswordEnabled(String userName, boolean enabled) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
+        if (null != internalUser)
+        {
+            InternalCredential credential = getPasswordCredential(internalUser, userName );
+            if ( credential != null && !credential.isExpired() && credential.isEnabled() != enabled )
+            {
+                credential.setEnabled(enabled);
+                internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                securityAccess.setInternalUserPrincipal(internalUser, false);
             }
         }
         else
         {
-            Iterator iter = credentials.iterator();
-            while (iter.hasNext())
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+        }
+    }
+  
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordUpdateRequired(java.lang.String, boolean)
+     */
+    public void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
+        if (null != internalUser)
+        {
+            InternalCredential credential = getPasswordCredential(internalUser, userName );
+            if ( credential != null && !credential.isExpired() && credential.isUpdateRequired() != updateRequired )
             {
-                InternalCredential credential = (InternalCredential) iter.next();
-                if (credential.getType() == type)
+                credential.setUpdateRequired(updateRequired);
+                internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                securityAccess.setInternalUserPrincipal(internalUser, false);
+            }
+        }
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+        }
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#authenticate(java.lang.String, java.lang.String)
+     */
+    public boolean authenticate(String userName, String password) throws SecurityException
+    {
+        boolean authenticated = false;
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userName, false);
+        if (null != internalUser)
+        {
+            InternalCredential credential = getPasswordCredential(internalUser, userName );
+            if ( credential != null && credential.isEnabled() && !credential.isExpired())
+            {
+                if ( pcProvider.getEncoder() != null && credential.isEncoded())
                 {
-                    if ((null != credential.getClassname())
-                            && (credential.getClassname().equals((PasswordCredential.class).getName())))
+                    password = pcProvider.getEncoder().encode(userName,password);
+                }
+
+                authenticated = credential.getValue().equals(password);
+                boolean update = false;
+
+                if ( ipcInterceptor != null )
+                {
+                    update = ipcInterceptor.afterAuthenticated(internalUser, userName, credential, authenticated);
+                    if ( update && (!credential.isEnabled() || credential.isExpired()))
                     {
-                        // User *has* an PasswordCredential: setting a new Credential without supplying
-                        // its current one is not allowed
-                        throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+                        authenticated = false;
                     }
                 }
-            } 
-            InternalCredential newInternalCredential = new InternalCredentialImpl(internalUser.getPrincipalId(),
-                    new String(newPwdCredential.getPassword()), type, newPwdCredential.getClass().getName());
-            credentials.add(newInternalCredential);
+                if ( authenticated )
+                {
+                    credential.setAuthenticationFailures(0);
+                    credential.setLastLogonDate(new Timestamp(System.currentTimeMillis()));
+                    update = true;
+                }
+                
+                if ( update )
+                {
+                    internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+                    securityAccess.setInternalUserPrincipal(internalUser, false);
+                }
+            }
         }
-        internalUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-        internalUser.setCredentials(credentials);
-        // Set the user with the new credentials.
-        commonQueries.setInternalUserPrincipal(internalUser, false);
+        else
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST);
+        }
+        return authenticated;
     }
 }

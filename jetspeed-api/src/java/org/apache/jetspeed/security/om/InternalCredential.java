@@ -15,6 +15,7 @@
 package org.apache.jetspeed.security.om;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -29,8 +30,7 @@ import java.sql.Timestamp;
  *  <li>Private credential: type == 0</li>
  *  <li>Public credential: type == 1</li>
  * </ul>
- * <p>The credential classname represent the class of credential.  For password
- * this field is null.
+ * <p>The credential classname represent the class of credential.
  * </p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * TODO Add multiple credentials support.
@@ -72,7 +72,84 @@ public interface InternalCredential extends Serializable, Cloneable
      * @param value The credential value.
      */
     void setValue(String value);
+    
+    /**
+     * <p>Getter for the update required state</p>
+     * @return true if required
+     */
+    boolean isUpdateRequired();
+    
+    /**
+     * <p>Setter for the update required state</p>
+     * @param updateRequired the update required state
+     */
+    void setUpdateRequired(boolean updateRequired);
+    
+    /**
+     * <p>Getter for the encoded state</p>
+     * @return true if encoded
+     */
+    boolean isEncoded();
+    
+    /**
+     * Setter for the encoded state</p>
+     * @param encoded The encoded state
+     */
+    void setEncoded(boolean encoded);
+    
+    /**
+     * <p>Getter for the enabled state</p>
+     * @return true if enabled
+     */
+    boolean isEnabled();
+    
+    /**
+     * Setter for the enabled state</p>
+     * @param enabled The enabled state
+     */
+    void setEnabled(boolean enabled);
+    
+    /**
+     * <p>Getter for the current number of authentication failures in a row.</p>
+     * <ul>
+     *   <li>-1: never tried yet</li>
+     *   <li> 0: none, or last attempt was successful</li>
+     *   <li>>0: number of failures</li>
+     * </ul>
+     * @return The number of authentication failures
+     */
+    int getAuthenticationFailures();
+    
+    /**
+     * <p>Setter for the number of authentication failures</p>
+     * @param authenticationFailures The number of authentication failures
+     */
+    void setAuthenticationFailures(int authenticationFailures);
 
+    /**
+     * Getter for the expired state.</p>
+     * @return true if expired
+     */
+    boolean isExpired();
+    
+    /**
+     * Setter for the expired state.</p>
+     * @param expired The expired state
+     */
+    void setExpired(boolean expired);
+    
+    /**
+     * <p>Getter for the expiration date.</p>
+     * @return The expiration date.
+     */
+    Date getExpirationDate();
+    
+    /**
+     * <p>Setter for the expiration date.</p>
+     * @param expirationDate The expiration date.
+     */
+    void setExpirationDate(Date expirationDate);
+    
     /**
      * <p>Getter for the credential type.</p>
      * <ul>
@@ -129,4 +206,15 @@ public interface InternalCredential extends Serializable, Cloneable
      */
     void setModifiedDate(Timestamp modifiedDate);
 
+    /**
+     * <p>Getter for the last logon date</p>
+     * @return The last logon date.
+     */
+    Timestamp getLastLogonDate();
+    
+    /**
+     * <p>Setter for the last logon date</p>
+     * @param lastLogonDate The last logon date.
+     */
+    void setLastLogonDate(Timestamp lastLogonDate);
 }

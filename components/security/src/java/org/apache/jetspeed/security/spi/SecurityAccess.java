@@ -37,6 +37,16 @@ public interface SecurityAccess
 {
     /**
      * <p>
+     * Returns if a Internal UserPrincipal is defined for the user name.
+     * </p>
+     * 
+     * @param username The user name.
+     * @return true if the user is known
+     */
+    public boolean isKnownUser(String username);
+
+    /**
+     * <p>
      * Returns the {@link InternalUserPrincipal} from the user name.
      * </p>
      * 

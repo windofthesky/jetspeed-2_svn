@@ -17,7 +17,6 @@ package org.apache.jetspeed.security.spi.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 
@@ -47,16 +46,6 @@ public class LdapCredentialHandler implements CredentialHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPublicPasswordCredential(org.apache.jetspeed.security.PasswordCredential, org.apache.jetspeed.security.PasswordCredential)
-     */
-    public void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
-            throws SecurityException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */
     public Set getPrivateCredentials(String username)
@@ -78,21 +67,37 @@ public class LdapCredentialHandler implements CredentialHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPrivatePasswordCredential(org.apache.jetspeed.security.PasswordCredential, org.apache.jetspeed.security.PasswordCredential)
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPassword(java.lang.String,java.lang.String,java.lang.String)
      */
-    public void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential)
-            throws SecurityException
+    public void setPassword(String userName, String oldPassword, String newPassword ) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordEnabled(java.lang.String, boolean)
+     */
+    public void setPasswordEnabled(String userName, boolean enabled) throws SecurityException
     {
         // TODO Auto-generated method stub
 
     }
-
+    
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialHandler#createPasswordCredential(java.lang.String, char[])
+     * @see org.apache.jetspeed.security.spi.CredentialHandler#setPasswordUpdateRequired(java.lang.String, boolean)
      */
-    public PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException
+    public void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException
     {
-        return new DefaultPasswordCredentialImpl(userName,password);
-    }
+        // TODO Auto-generated method stub
 
+    }
+    
+    public boolean authenticate(String userName, String password)
+    {
+        if (userName.equals("ldap1") || userName.equals("ldap2") || userName.equals("ldap3"))
+        {
+            return "password".equals(password);
+        }
+        return false;
+    }
 }

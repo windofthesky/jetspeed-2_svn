@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.security.om.impl;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import org.apache.jetspeed.security.om.InternalCredential;
@@ -25,7 +26,6 @@ import org.apache.jetspeed.security.om.InternalCredential;
  */
 public class InternalCredentialImpl implements InternalCredential
 {
-
     /**
      * <p>InternalCredential implementation default constructor.</p>
      */
@@ -103,7 +103,115 @@ public class InternalCredentialImpl implements InternalCredential
     {
         this.value = value;
     }
+    
+    private boolean updateRequired;
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#isUpdateRequired()
+     */
+    public boolean isUpdateRequired()
+    {
+        return updateRequired;
+    }
+    
+    /*
+     * @see org.apache.jetspeed.security.om.InternalCredential#setUpdateRequired(boolean)
+     */
+    public void setUpdateRequired(boolean updateRequired)
+    {
+        this.updateRequired = updateRequired;
+    }
+    
+    private boolean encoded;
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalCredential#isEncoded()
+     */
+    public boolean isEncoded()
+    {
+        return encoded;
+    }
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalCredential#setEncoded(boolean)
+     */
+    public void setEncoded(boolean encoded)
+    {
+        this.encoded = encoded;
+    }
+    
+    private boolean enabled = true;
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalCredential#isEnabled()
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalCredential#setEnabled(boolean)
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+    
+    private int authenticationFailures;
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalCredential#getAuthenticationFailures()
+     */
+    public int getAuthenticationFailures()
+    {
+        return authenticationFailures;
+    }
 
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#setAuthenticationFailures(int)
+     */
+    public void setAuthenticationFailures(int authenticationFailures)
+    {
+        this.authenticationFailures = authenticationFailures;
+    }
+
+    private boolean expired;
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#isExpired()
+     */
+    public boolean isExpired()
+    {
+        return expired;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#setExpired(boolean)
+     */
+    public void setExpired(boolean expired)
+    {
+        this.expired = expired;
+    }
+    
+    private Date expirationDate;
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#getExpirationDate()
+     */
+    public Date getExpirationDate()
+    {
+        return expirationDate;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#setExpirationDate(java.sql.Timestamp)
+     */
+    public void setExpirationDate(Date expirationDate)
+    {
+        this.expirationDate = expirationDate;
+    }
+    
     private int type;
 
     /**
@@ -176,6 +284,24 @@ public class InternalCredentialImpl implements InternalCredential
         this.modifiedDate = modifiedDate;
     }
 
+    private Timestamp lastLogonDate;
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#getLastLoggedInDate()
+     */
+    public Timestamp getLastLogonDate()
+    {
+        return lastLogonDate;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.om.InternalCredential#setLastLogonDate(java.sql.Timestamp)
+     */
+    public void setLastLogonDate(Timestamp lastLogonDate)
+    {
+        this.lastLogonDate = lastLogonDate;
+    }
+
     /**
      * <p>Compares this {@link InternalCredential} to the provided credential
      * and check if they are equal.</p>
@@ -187,7 +313,9 @@ public class InternalCredentialImpl implements InternalCredential
             return false;
 
         InternalCredential c = (InternalCredential) object;
-        boolean isEqual = ((c.getValue().equals(this.getValue())) && (c.getType() == this.getType()) && ((null == c.getClassname()) || (c.getClassname().equals(this.getClassname()))));
+        boolean isEqual = (((null == c.getClassname()) || (c.getClassname().equals(this.getClassname()))) &&
+                            (c.getValue().equals(this.getValue())) && 
+                            (c.getType() == this.getType()));
         return isEqual;
     }
 
@@ -199,10 +327,17 @@ public class InternalCredentialImpl implements InternalCredential
     {
         String toStringCredential = "[[principalId, " + this.principalId + "], "
             + "[value, " + this.value + "], "
+            + "[updateRequired, " + this.updateRequired + "], "
+            + "[encoded, " + this.encoded + "], "
+            + "[enabled, " + this.enabled + "], "
+            + "[authenticationFailures, "+ this.authenticationFailures + "], "
+            + "[expired, "+ this.expired + "], "
             + "[type, " + this.type + "], "
             + "[classname, " + this.classname + "], "
             + "[creationDate, " + this.creationDate + "], "
-            + "[modifiedDate, " + this.modifiedDate + "]]";
+            + "[modifiedDate, " + this.modifiedDate + "], "
+            + "[lastLogonDate, " + this.lastLogonDate + "]"
+            + (expirationDate != null ? (", [expirationDate, "+ this.expirationDate + "]]") : "]");
         return toStringCredential;
-    }
+    }    
 }

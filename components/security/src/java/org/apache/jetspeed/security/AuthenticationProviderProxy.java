@@ -78,41 +78,53 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
 
     /**
      * <p>
-     * Create a new {@link PasswordCredential} in a given authentication provider
+     * Adds or updates a private password credential in a given authentication provider.<br>
+     * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
-     * @param userName The username
-     * @param password The password
+     * @param oldPwdCredential The old {@link PasswordCredential}.
+     * @param newPwdCredential The new {@link PasswordCredential}.
      * @param authenticationProvider The authentication provider name.
-     * @return The new PasswordCredential
-     * @throws SecurityException if the UserPrincipal doesn't exists or the password isn't valid.
+     * @throws SecurityException Throws a {@link SecurityException}.
      */
-    PasswordCredential createPasswordCredential(String userName, char[] password, 
+    void setPassword(String userName, String oldPassword, String newPassword,
             String authenticationProvider) throws SecurityException;
     
     /**
      * <p>
-     * Sets public password credential in a given authentication provider.
+     * Set the update required state of the user password credential in a given authentication provider.
      * </p>
      * 
-     * @param oldPwdCredential The old password credential.
-     * @param newPwdCredential The new password credential.
+     * @param username The user name.
+     * @param updateRequired The update required state.
      * @param authenticationProvider The authentication provider name.
-     * @throws SecurityException Throws a security exception.
+     * @throws Throws a security exception.
      */
-    void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential,
+    void setPasswordUpdateRequired(String userName, boolean updateRequired, 
             String authenticationProvider) throws SecurityException;
 
     /**
      * <p>
-     * Sets private password credential in a given authentication provider.
+     * Set the enabled state of the user password credential in a given authentication provider.
      * </p>
      * 
-     * @param oldPwdCredential The old password credential.
-     * @param newPwdCredential The new password credential.
+     * @param username The user name.
+     * @param enabled The enabled state.
      * @param authenticationProvider The authentication provider name.
-     * @throws SecurityException Throws a security exception.
+     * @throws Throws a security exception.
      */
-    void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential,
+    void setPasswordEnabled(String userName, boolean enabled, 
             String authenticationProvider) throws SecurityException;
+
+    /**
+     * <p>
+     * Authenticate a user in a given authentication provider
+     * </p>
+     * 
+     * @param userName The user name.
+     * @param password The user password.
+     * @param authenticationProvider The authentication provider name.
+     * @return Whether or not a user is authenticated.
+     */
+    boolean authenticate(String userName, String password, String authenticationProvider) throws SecurityException;
 }

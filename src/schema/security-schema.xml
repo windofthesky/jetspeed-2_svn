@@ -95,8 +95,15 @@ limitations under the License.
         <column name="VALUE" required="true" size="254" type="VARCHAR"/>
         <column name="TYPE" required="true" type="SMALLINT"/>
         <column name="CLASSNAME" size="254" type="VARCHAR"/>
+        <column name="UPDATE_REQUIRED" required="true" type="BIT"/>
+        <column name="IS_ENCODED" required="true" type="BIT"/>
+        <column name="IS_ENABLED" required="true" type="BIT"/>
+        <column name="AUTH_FAILURES" required="true" type="SMALLINT"/>
+        <column name="IS_EXPIRED" required="true" type="BIT"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
+        <column name="LAST_LOGON_DATE" required="false" type="TIMESTAMP"/>
+        <column name="EXPIRATION_DATE" required="false" type="DATE"/>
         <foreign-key foreignTable="SECURITY_PRINCIPAL">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>
@@ -109,6 +116,7 @@ limitations under the License.
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
         <column name="IS_MAPPING_ONLY" required="true" type="BIT"/>
+        <column name="IS_ENABLED" required="true" type="BIT"/>
         <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>

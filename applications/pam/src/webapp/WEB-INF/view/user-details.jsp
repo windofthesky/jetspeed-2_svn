@@ -113,6 +113,82 @@ limitations under the License.
 </c:if>
 <%--End of User Attributes tab data--%>
 
+<%--Beginning Security Credential tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'user_credential'}">
+  <div id="Credential">
+  <portlet:actionURL var="edit_credential_link" />
+  
+  <form name="Edit_Credential_Form" action="<c:out value="${edit_credential_link}"/>" method="post">
+    <input type="hidden" name="portlet_action" value="security_user.update_user_credential"/>    
+    <table>
+      <tr>
+        <td>
+          <fmt:message key="security.credential.value"/>
+        </td>
+        <td>
+          <input type="password" name="user_cred_value" value=""/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td>
+          <input type="hidden" name="user_cred_updreq" value="<c:out value="${credential.updateRequired}"/>"/>
+          <input type="checkbox" 
+                 <c:if test="${credential.updateRequired}">checked</c:if>
+                 onclick="if(this.checked) user_cred_updreq.value='true';else user_cred_updreq.value='false';"
+          />
+        </td>
+        <td>
+          <fmt:message key="security.credential.update.required"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <fmt:message key="security.credential.last.logon"/>
+        </td>
+        <td>
+          <fmt:formatDate value="${credential.lastLogonDate}" type="both" dateStyle="short" timeStyle="long"/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td>
+          <input type="hidden" name="user_cred_enabled" value="<c:out value="${credential.enabled}"/>"/>
+          <input type="checkbox" 
+                 <c:if test="${credential.enabled}">checked</c:if>
+                 onclick="if(this.checked) user_cred_enabled.value='true';else user_cred_enabled.value='false';"
+          />
+        </td>
+        <td>
+          <fmt:message key="security.enabled"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <fmt:message key="security.credential.expires"/>
+        </td>
+        <td>
+          <fmt:formatDate value="${credential.expirationDate}" type="both" dateStyle="short" timeStyle="long"/>
+        </td>
+        <td>
+          &nbsp;
+        </td>
+        <td>
+          <input type="checkbox" disabled <c:if test="${credential.expired}">checked</c:if>/>
+        </td>
+        <td>
+          <fmt:message key="security.expired"/>
+        </td>
+      </tr>
+    </table>
+    <input type="submit" value="<fmt:message key="security.update"/>"/>
+  </form>
+    
+  </div>  
+</c:if>
+<%--End of Security Credential tab data--%>
+
 <%--Beginning Security Role tab data--%>
 <%--TODO:  switch to c:choose --%>
 <c:if test="${selectedTab.id == 'user_role'}">

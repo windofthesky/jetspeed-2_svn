@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.HierarchyResolver;
-import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
@@ -90,29 +89,14 @@ public class UserManagerImpl implements UserManager
         ArgUtil.notNull(new Object[] { username, password }, new String[] { "username", "password" },
                 "authenticate(java.lang.String, java.lang.String)");
 
+        
         boolean authenticated = false;
-        Set privateCredentials = atnProviderProxy.getPrivateCredentials(username);
-
-        Iterator privateCredIter = privateCredentials.iterator();
         try
         {
-            PasswordCredential authPwdCred = atnProviderProxy.createPasswordCredential(username, password.toCharArray());
-            while (privateCredIter.hasNext())
+            authenticated = atnProviderProxy.authenticate(username, password);
+            if (authenticated && log.isDebugEnabled())
             {
-                Object currPrivateCred = privateCredIter.next();
-                if (currPrivateCred instanceof PasswordCredential)
-                {
-                    PasswordCredential currPwdCred = (PasswordCredential) currPrivateCred;
-                    if (currPrivateCred.equals(authPwdCred))
-                    {
-                        if (log.isDebugEnabled())
-                        {
-                            log.debug("Authenticated user: " + username);
-                        }
-                        authenticated = true;
-                        break;
-                    }
-                }
+                log.debug("Authenticated user: " + username);
             }
         }
         catch (SecurityException e)
@@ -128,7 +112,7 @@ public class UserManagerImpl implements UserManager
      */
     public void addUser(String username, String password) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, password }, new String[] { "username", "password" },
+        ArgUtil.notNull(new Object[] { username }, new String[] { "username" },
                 "addUser(java.lang.String, java.lang.String)");
 
         addUser(username, password, atnProviderProxy.getDefaultAuthenticationProvider());
@@ -140,7 +124,7 @@ public class UserManagerImpl implements UserManager
      */
     public void addUser(String username, String password, String atnProviderName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, password, atnProviderName }, new String[] { "username", "password", "atnProviderName"},
+        ArgUtil.notNull(new Object[] { username, atnProviderName }, new String[] { "username", "atnProviderName"},
                 "addUser(java.lang.String, java.lang.String, java.lang.String)");
 
         // Check if user already exists.
@@ -163,9 +147,11 @@ public class UserManagerImpl implements UserManager
             {
                 // Add user principal.
                 atnProviderProxy.addUserPrincipal(userPrincipal);
-                // Set security credentials
-                PasswordCredential pwdCredential = atnProviderProxy.createPasswordCredential(username, password.toCharArray());
-                atnProviderProxy.setPrivatePasswordCredential(null, pwdCredential, atnProviderName);
+                if ( password != null )
+                {
+                    // Set private password credential
+                    atnProviderProxy.setPassword(username, null, password, atnProviderName);
+                }
                 if (log.isDebugEnabled())
                 {
                     log.debug("Added user: " + fullPath);
@@ -202,24 +188,15 @@ public class UserManagerImpl implements UserManager
         UserPrincipal userPrincipal = new UserPrincipalImpl(username);
         String fullPath = userPrincipal.getFullPath();
         atnProviderProxy.removeUserPrincipal(userPrincipal);
-        if (!userExists(username))
+        // Remove preferences
+        Preferences preferences = Preferences.userRoot().node(fullPath);
+        try
         {
-            // Remove preferences
-            Preferences preferences = Preferences.userRoot().node(fullPath);
-            try
-            {
-                preferences.removeNode();
-            }
-            catch (BackingStoreException bse)
-            {
-                bse.printStackTrace();
-            }
+            preferences.removeNode();
         }
-        else
+        catch (BackingStoreException bse)
         {
-            String msg = "Could not remove user.";
-            log.error(msg);
-            throw new SecurityException(msg);
+            bse.printStackTrace();
         }
     }
 
@@ -332,13 +309,31 @@ public class UserManagerImpl implements UserManager
      */
     public void setPassword(String username, String oldPassword, String newPassword) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, oldPassword, newPassword }, new String[] { "username", "oldPassword",
+        ArgUtil.notNull(new Object[] { username, newPassword }, new String[] { "username", 
                 "newPassword" }, "setPassword(java.lang.String, java.lang.String, java.lang.String)");
 
-        PasswordCredential oldPwdCredential = atnProviderProxy.createPasswordCredential(username, oldPassword.toCharArray());
-        PasswordCredential newPwdCredential = atnProviderProxy.createPasswordCredential(username, newPassword.toCharArray());
-
-        atnProviderProxy.setPrivatePasswordCredential(oldPwdCredential, newPwdCredential);
+        atnProviderProxy.setPassword(username, oldPassword, newPassword);
     }
 
+    
+    /**
+     * @see org.apache.jetspeed.security.UserManager#setPasswordEnabled(java.lang.String, boolean)
+     */
+    public void setPasswordEnabled(String userName, boolean enabled) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { userName,  }, new String[] { "userName" }, 
+                "setPasswordEnabled(java.lang.String, boolean)");
+
+        atnProviderProxy.setPasswordEnabled(userName, enabled);
+    }
+    /**
+     * @see org.apache.jetspeed.security.UserManager#setPasswordUpdateRequired(java.lang.String, boolean)
+     */
+    public void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { userName,  }, new String[] { "userName" }, 
+            "setPasswordUpdateRequired(java.lang.String, boolean)");
+
+        atnProviderProxy.setPasswordUpdateRequired(userName, updateRequired);
+    }
 }

@@ -15,6 +15,8 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Arrays;
 
 import org.apache.jetspeed.security.PasswordCredential;
@@ -40,6 +42,21 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     /** The password. */
     private char[] password;
 
+    /** The update required state */
+    private boolean updateRequired;
+    
+    /** The enabled state. */
+    private boolean enabled = true;
+    
+    /** The expired state. */
+    private boolean expired;
+    
+    /** The expiration date. */
+    private Date expirationDate;
+    
+    /** The last logged in date */
+    private Timestamp lastLogonDate;
+    
     /**
      * @param userName
      * @param password
@@ -49,7 +66,18 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
         this.userName = userName;
         this.password = (char[]) password.clone();
     }
-
+    
+    public DefaultPasswordCredentialImpl(String userName, char[] password, boolean updateRequired, boolean enabled, 
+            boolean expired, Date expirationDate, Timestamp lastLogonDate)
+    {
+        this(userName, password);
+        this.updateRequired = updateRequired;
+        this.enabled = enabled;
+        this.expired = expired;
+        this.expirationDate = expirationDate;
+        this.lastLogonDate = lastLogonDate;
+    }
+    
     /**
      * @return The username.
      */
@@ -64,6 +92,47 @@ public class DefaultPasswordCredentialImpl implements PasswordCredential, Serial
     public char[] getPassword()
     {
         return (char[]) password.clone();
+    }
+    
+    
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#isUpdateRequired()
+     */
+    public boolean isUpdateRequired()
+    {
+        return updateRequired;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#isEnabled()
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#isExpired()
+     */
+    public boolean isExpired()
+    {
+        return expired;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#getExpirationDate()
+     */
+    public Date getExpirationDate()
+    {
+        return expirationDate;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.PasswordCredential#getLastLogonDate()
+     */
+    public Timestamp getLastLogonDate()
+    {
+        return lastLogonDate;
     }
 
     /**

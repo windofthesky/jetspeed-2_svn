@@ -51,6 +51,25 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
        super(repositoryPath);
     }
+    
+    /**
+     * <p>
+     * Returns if a Internal UserPrincipal is defined for the user name.
+     * </p>
+     * 
+     * @param username The user name.
+     * @return true if the user is known
+     */
+    public boolean isKnownUser(String username)
+    {
+        UserPrincipal userPrincipal = new UserPrincipalImpl(username);
+        String fullPath = userPrincipal.getFullPath();
+        // Get user.
+        Criteria filter = new Criteria();
+        filter.addEqualTo("fullPath", fullPath);
+        Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
+        return getPersistenceBrokerTemplate().getCount(query) == 1;
+    }
 
     /**
      * <p>

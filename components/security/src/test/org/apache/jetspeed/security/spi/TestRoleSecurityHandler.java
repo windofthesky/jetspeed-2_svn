@@ -126,6 +126,7 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
     
     protected void initMappedRole() throws Exception
     {
+        destroyMappedRole();
         ums.addUser("mappedroleuser", "password");
         rms.addRole("mappedrole");
         rms.addRole("mappedrole.role1");
@@ -141,11 +142,16 @@ public class TestRoleSecurityHandler extends AbstractSecurityTestcase
     
     protected void destroyMappedRole() throws Exception
     {
-        ums.removeUser("mappedroleuser");
-        rms.removeRole("mappedrole");
-        rms.removeRole("mappedrole.role1");
-        gms.removeGroup("mappedgroup");
-        pms.removePermission(new PortletPermission("myportlet", "view"));   
+        if (ums.userExists("mappedroleuser"))
+            ums.removeUser("mappedroleuser");
+        if (rms.roleExists("mappedrole"))
+            rms.removeRole("mappedrole.role1");
+        if (rms.roleExists("mappedrole.role1"))
+            rms.removeRole("mappedrole");
+        if (gms.groupExists("mappedgroup"))
+            gms.removeGroup("mappedgroup");
+        PortletPermission pp = new PortletPermission("myportlet", "view");
+        if (pms.permissionExists(pp))
+            pms.removePermission(pp);   
     }
-
 }

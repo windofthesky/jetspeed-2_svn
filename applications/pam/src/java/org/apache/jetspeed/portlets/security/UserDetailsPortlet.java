@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.portlet.ActionRequest;
@@ -40,6 +41,7 @@ import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttrib
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -61,6 +63,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String VIEW_ROLES = "roles";
     private final String VIEW_GROUPS = "groups";
     private final String VIEW_RULES = "rules";
+    private final String VIEW_CREDENTIAL = "credential"; 
     private final String VIEW_ALL_RULES = "prules";
     private final String VIEW_SELECTED_RULE = "selectedRule";
     
@@ -74,11 +77,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private final String ACTION_ADD_GROUP = "add_user_group";
     private final String ACTION_REMOVE_RULE = "remove_user_rule";
     private final String ACTION_ADD_RULE = "add_rule";
+    private final String ACTION_UPDATE_CREDENTIAL = "update_user_credential";
     
     private final String TAB_ATTRIBUTES = "user_attributes";
     private final String TAB_ROLE = "user_role";
     private final String TAB_GROUP = "user_group";
     private final String TAB_PROFILE = "user_profile";
+    private final String TAB_CREDENTIAL = "user_credential";
     
     private UserManager  userManager;
     private RoleManager  roleManager;
@@ -116,8 +121,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
         TabBean tb2 = new TabBean(TAB_ROLE);
         TabBean tb3 = new TabBean(TAB_GROUP);
         TabBean tb4 = new TabBean(TAB_PROFILE);
+        TabBean tb5 = new TabBean(TAB_CREDENTIAL);
         
         userTabMap.put(tb1.getId(), tb1);
+        userTabMap.put(tb5.getId(), tb5);
         userTabMap.put(tb2.getId(), tb2);
         userTabMap.put(tb3.getId(), tb3); 
         userTabMap.put(tb4.getId(), tb4);
@@ -164,6 +171,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 request.setAttribute(VIEW_RULES, getRules(user));
                 request.setAttribute(VIEW_ALL_RULES, getProfilerRules());
+            }
+            else if (selectedTab.getId().equals(TAB_CREDENTIAL))
+            {
+                request.setAttribute(VIEW_CREDENTIAL, getCredential(userName));
             }
            
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
@@ -225,6 +236,10 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 removeUserProfile(actionRequest, actionResponse);
             }
+            else if (action.endsWith(this.ACTION_UPDATE_CREDENTIAL))
+            {
+                updateUserCredential(actionRequest, actionResponse);
+            }
         }
     }    
     
@@ -244,6 +259,56 @@ public class UserDetailsPortlet extends GenericServletPortlet
         return principal;
     }    
 
+    private void updateUserCredential(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+        actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                             PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            try
+            {
+                String password = actionRequest.getParameter("user_cred_value");
+                boolean updated = false;
+                if ( password != null && password.trim().length() > 0 )
+                {
+                    userManager.setPassword(userName, null, password);
+                    updated = true;
+                }
+                PasswordCredential credential = getCredential(userName);
+                if ( credential != null )
+                {
+                    String updateRequiredStr = actionRequest.getParameter("user_cred_updreq");
+                    if (updateRequiredStr != null)
+                    {
+                        boolean updateRequired = Boolean.valueOf(updateRequiredStr).booleanValue();
+                        if (updateRequired != credential.isUpdateRequired())
+                        {
+                            userManager.setPasswordUpdateRequired(userName,updateRequired);
+                            updated = true;
+                        }
+                    }
+                    String enabledStr = actionRequest.getParameter("user_cred_enabled");
+                    if (enabledStr != null)
+                    {
+                        boolean enabled = Boolean.valueOf(enabledStr).booleanValue();
+                        if (enabled != credential.isEnabled())
+                        {
+                            userManager.setPasswordEnabled(userName,enabled);
+                            updated = true;
+                        }
+                    }
+                }
+            }
+            catch (SecurityException e)
+            {
+                // TODO: logging
+                System.err.println("failed to update user credential " + userName + ": " + e);                                      
+            }
+        }
+    }
+    
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
     {
         String userName = (String)
@@ -473,7 +538,24 @@ public class UserDetailsPortlet extends GenericServletPortlet
             System.err.println("groups not found: " + userName + ", " + e);       
         }
         return new LinkedList();
-    }    
+    }
+    
+    private PasswordCredential getCredential(String userName)
+    {
+        PasswordCredential credential = null;
+        Set credentials = lookupUser(userName).getSubject().getPrivateCredentials();
+        Iterator iter = credentials.iterator();
+        while (iter.hasNext())
+        {
+            Object o = iter.next();
+            if (o instanceof PasswordCredential)
+            {
+                credential = (PasswordCredential)o;
+                break;
+            }
+        }
+        return credential;
+    }
     
     private User lookupUser(String userName)
     {

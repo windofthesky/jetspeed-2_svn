@@ -14,24 +14,27 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
+import org.apache.jetspeed.security.SecurityException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
  * <p>
- * Unit testing for {@link UserManager}.
+ * Unit testing for {@link PasswordCredentialProvider}.
  * </p>
  * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  */
-public class TestCredentialHandler extends AbstractSecurityTestcase
+public class TestPasswordCredentialProvider extends AbstractSecurityTestcase
 {
-
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -59,7 +62,7 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
      */
     public static Test suite()
     {
-        return new TestSuite(TestCredentialHandler.class);
+        return new TestSuite(TestPasswordCredentialProvider.class);
     }
 
     /**
@@ -70,29 +73,15 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
     public void testGetPrivateCredentials() throws Exception
     {
         initUser();
-        Set privateCredentials = ch.getPrivateCredentials("testcred");
+        Set privateCredentials = ums.getUser("testcred").getSubject().getPrivateCredentials();
         assertNotNull(privateCredentials);
         assertEquals(1, privateCredentials.size());
-        PasswordCredential[] pwdCreds = (PasswordCredential[]) privateCredentials.toArray(new PasswordCredential[1]);
+        PasswordCredential[] pwdCreds = (PasswordCredential[]) privateCredentials.toArray(new PasswordCredential[0]);
         assertEquals("testcred", pwdCreds[0].getUserName());
-        assertEquals("password", new String(pwdCreds[0].getPassword()));
+        assertNotSame("password01", new String(pwdCreds[0].getPassword()));
         destroyUser();
     }
     
-    /**
-     * <p>
-     * Test <code>getPublicCredentials</code>..
-     * </p>
-     */
-    public void testGetPublicCredentials() throws Exception
-    {
-        initUser();
-        Set publicCredentials = ch.getPublicCredentials("testcred");
-        assertNotNull(publicCredentials);
-        assertEquals(0, publicCredentials.size());
-        destroyUser();
-    }
-
     /**
      * <p>
      * Test <code>setPassword</code>..
@@ -101,21 +90,43 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
     public void testSetPassword() throws Exception
     {
         initUser();
-        // Replace existing password credential.
-        ch.setPassword("testcred","password","newpassword");
-        // Test that the credential was properly set.
-        Set privateCredentials = ch.getPrivateCredentials("testcred");
+        Set privateCredentials = ums.getUser("testcred").getSubject().getPrivateCredentials();
         assertNotNull(privateCredentials);
         assertEquals(1, privateCredentials.size());
         PasswordCredential[] pwdCreds = (PasswordCredential[]) privateCredentials.toArray(new PasswordCredential[0]);
         assertEquals("testcred", pwdCreds[0].getUserName());
-        assertEquals("newpassword", new String(pwdCreds[0].getPassword()));
-        // Add password credential.
-        ch.setPassword("testcred","newpassword","anotherpassword");
-        // Test that the credential was properly set.
-        privateCredentials = ch.getPrivateCredentials("testcred");
+        String encodedPassword = new String(pwdCreds[0].getPassword());
+        assertNotSame("password01", encodedPassword );
+        
+        // Try setting an invalid password: to short (min: 8)
+        try
+        {
+            ums.setPassword("testcred","password01","1234567");
+            fail("Should not be able to set an invalid password");
+        }
+        catch (SecurityException e){}
+        // Try setting an invalid password: no digits
+        try
+        {
+            ums.setPassword("testcred","password01","newpassword");
+            fail("Should not be able to set an invalid password");
+        }
+        catch (SecurityException e){}
+        // Setting a valid password
+        ums.setPassword("testcred","password01","passwd01");
+
+        // Test that the credential was updated.
+        privateCredentials = ums.getUser("testcred").getSubject().getPrivateCredentials();
         assertNotNull(privateCredentials);
         assertEquals(1, privateCredentials.size());
+        pwdCreds = (PasswordCredential[]) privateCredentials.toArray(new PasswordCredential[0]);
+        assertEquals("testcred", pwdCreds[0].getUserName());
+        String newEncodedPassword = new String(pwdCreds[0].getPassword());
+        assertNotSame(encodedPassword, newEncodedPassword);
+        assertNotSame("passwd01", newEncodedPassword);
+        
+        // Test authentication with the new password
+        assertTrue(ums.authenticate("testcred","passwd01"));
         destroyUser();
     }
     
@@ -126,7 +137,7 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
      */
     protected void initUser() throws Exception
     {
-        ums.addUser("testcred", "password");
+        ums.addUser("testcred", "password01");
     }
 
     /**
@@ -138,4 +149,12 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
     {
         ums.removeUser("testcred");
     }
+    
+    protected String[] getConfigurations()
+    {
+        String[] confs = super.getConfigurations();
+        List confList = new ArrayList(Arrays.asList(confs));
+        confList.add("META-INF/spcpv.xml");
+        return (String[]) confList.toArray(new String[1]);
+    }    
 }

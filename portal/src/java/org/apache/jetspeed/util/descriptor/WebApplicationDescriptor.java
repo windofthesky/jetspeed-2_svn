@@ -92,7 +92,7 @@ public class WebApplicationDescriptor
         }
         catch (Throwable t)
         {            
-            String msg = "Could not digest web.xml." + t.toString();            
+            String msg = "Could not digester web.xml." + t.toString();            
             throw new PortletApplicationException(msg, t);
         }
     }

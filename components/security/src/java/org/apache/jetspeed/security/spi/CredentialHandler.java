@@ -38,18 +38,6 @@ public interface CredentialHandler
 {
     /**
      * <p>
-     * Factory method to create a new, CredentialHandler specific, {@link PasswordCredential}.
-     * </p>
-     * 
-     * @param userName The username
-     * @param password The password
-     * @return The new PasswordCredential
-     * @throws SecurityException if the UserPrincipal doesn't exists or the password isn't valid.
-     */
-    PasswordCredential createPasswordCredential(String userName, char[] password) throws SecurityException;
-    
-    /**
-     * <p>
      * Gets the public credentials for the user.
      * </p>
      * 
@@ -57,17 +45,6 @@ public interface CredentialHandler
      * @return The set of public credentials.
      */
     Set getPublicCredentials(String username);
-    
-    /**
-     * <p>
-     * Sets a public password credential.
-     * </p>
-     * 
-     * @param oldPwdCredential The old {@link PasswordCredential}.
-     * @param newPwdCredential The new {@link PasswordCredential}.
-     * @throws SecurityException Throws a {@link SecurityException}.
-     */
-    void setPublicPasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential) throws SecurityException;
     
     /**
      * <p>
@@ -81,13 +58,46 @@ public interface CredentialHandler
     
     /**
      * <p>
-     * Sets a private password credential.  If <code>oldPwdCredential</code> is not null, the new
-     * password credential will replace the old one.
+     * Adds or updates a private password credential.<br>
+     * If <code>oldPassword</code> is not null, the oldPassword will first be checked (authenticated).<br>
      * </p>
      * 
      * @param oldPwdCredential The old {@link PasswordCredential}.
      * @param newPwdCredential The new {@link PasswordCredential}.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setPrivatePasswordCredential(PasswordCredential oldPwdCredential, PasswordCredential newPwdCredential) throws SecurityException;
+    void setPassword(String userName, String oldPassword, String newPassword) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the update required state of the user password credential.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param updateRequired The update required state.
+     * @throws Throws a security exception.
+     */
+    void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the enabled state of the user password credential.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param enabled The enabled state.
+     * @throws Throws a security exception.
+     */
+    void setPasswordEnabled(String userName, boolean enabled) throws SecurityException;
+
+    /**
+     * <p>
+     * Authenticate a user.
+     * </p>
+     * 
+     * @param userName The user name.
+     * @param password The user password.
+     * @return Whether or not a user is authenticated.
+     */
+    boolean authenticate(String userName, String password) throws SecurityException;
 }

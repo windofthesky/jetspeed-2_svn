@@ -14,6 +14,9 @@
 */
 package org.apache.jetspeed.security;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 /**
  * <p>
  * PasswordCredential
@@ -33,4 +36,29 @@ public interface PasswordCredential
      * @return The password.
      */
     char[] getPassword();
+
+    /**
+     * @return true if update required.
+     */
+    boolean isUpdateRequired();
+    
+    /**
+     * @return true if enabled.
+     */
+    boolean isEnabled();
+    
+    /**
+     * @return true if expired.
+     */
+    boolean isExpired();
+    
+    /**
+     * @return when the password is (going to be) expired.
+     */
+    Date getExpirationDate();
+    
+    /**
+     * @return the last time the user logged in 
+     */
+    Timestamp getLastLogonDate();
 }

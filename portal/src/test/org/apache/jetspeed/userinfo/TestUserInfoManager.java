@@ -166,7 +166,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         User user = null;
         try
         {
-            ums.addUser("test", "password");
+            ums.addUser("test", "password01");
             user = ums.getUser("test");
         }
         catch (SecurityException sex)

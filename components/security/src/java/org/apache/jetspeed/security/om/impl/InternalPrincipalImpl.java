@@ -49,6 +49,9 @@ public class InternalPrincipalImpl implements InternalPrincipal
 
     /** The modified date. */
     private Timestamp modifiedDate;
+    
+    /** The enabled state. */
+    private boolean enabled = true;
 
     /**
      * <p>
@@ -200,4 +203,19 @@ public class InternalPrincipalImpl implements InternalPrincipal
         this.modifiedDate = modifiedDate;
     }
 
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#isEnabled()
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+    
+    /** 
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setEnabled(boolean)
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }    
 }

@@ -1,0 +1,115 @@
+package org.apache.jetspeed.security.spi.impl;
+
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
+import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
+import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
+
+public class DefaultPasswordCredentialProvider implements PasswordCredentialProvider
+{
+    private CredentialPasswordValidator validator;
+    private CredentialPasswordEncoder   encoder;
+    
+    public DefaultPasswordCredentialProvider()
+    {
+        this(new DefaultCredentialPasswordValidator(),null);
+    }
+    
+    public DefaultPasswordCredentialProvider(CredentialPasswordValidator validator, CredentialPasswordEncoder encoder)
+    {
+        this.validator = validator;
+        this.encoder = encoder;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#getPasswordCredentailClass()
+     */
+    public Class getPasswordCredentialClass()
+    {
+        return DefaultPasswordCredentialImpl.class;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#getValidator()
+     */
+    public CredentialPasswordValidator getValidator()
+    {
+        return validator;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#getEncoder()
+     */
+    public CredentialPasswordEncoder getEncoder()
+    {
+        return encoder;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#postLoadInternalCredential(java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
+     */
+    public boolean postLoadInternalCredential(String userName, InternalCredential credential) throws SecurityException
+    {
+        boolean updated = false;
+        if (!credential.isEncoded() && getEncoder() != null)
+        {
+            if ( getValidator() != null)
+            {
+                getValidator().validate(credential.getValue());
+            }            
+            credential.setValue(getEncoder().encode(userName,credential.getValue()));
+            credential.setEncoded(true);
+            updated = true;
+        }
+        return updated;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#postLoadInternalCredential(java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
+     */
+    public boolean postAuthenticateInternalCredential(String userName, InternalCredential credential) throws SecurityException
+    {
+        boolean updated = false;
+        if (!credential.isEncoded() && getEncoder() != null)
+        {
+            if ( getValidator() != null)
+            {
+                getValidator().validate(credential.getValue());
+            }            
+            credential.setValue(getEncoder().encode(userName,credential.getValue()));
+            credential.setEncoded(true);
+            updated = true;
+        }
+        return updated;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#create(java.lang.String, java.lang.String)
+     */
+    public PasswordCredential create(String userName, String password) throws SecurityException
+    {
+        validator.validate(password);
+        PasswordCredential pc;
+        if ( encoder != null )
+        {
+            pc = new DefaultPasswordCredentialImpl(userName, encoder.encode(userName, password).toCharArray());
+        }
+        else
+        {
+            pc = new DefaultPasswordCredentialImpl(userName, password.toCharArray());
+        }
+        return pc;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#create(java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
+     */
+    public PasswordCredential create(String userName, InternalCredential credential) throws SecurityException
+    {
+        return new DefaultPasswordCredentialImpl(userName, credential.getValue().toCharArray(), 
+                credential.isUpdateRequired(),credential.isEnabled(), credential.isExpired(), 
+                credential.getExpirationDate(), credential.getLastLogonDate());
+    }
+}

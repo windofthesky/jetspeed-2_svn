@@ -39,4 +39,15 @@ public interface BasePrincipal extends Principal, Serializable
      */
     String getFullPath();
 
+    /**
+     * <p>Getter for the enabled state</p>
+     * @return true if enabled
+     */
+    boolean isEnabled();
+    
+    /**
+     * Setter for the enabled state</p>
+     * @param enabled The enabled state
+     */
+    void setEnabled(boolean enabled);    
 }

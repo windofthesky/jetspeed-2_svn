@@ -146,4 +146,26 @@ public interface UserManager
      * @throws Throws a security exception.
      */
     void setPassword(String username, String oldPassword, String newPassword) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the update required state of the user password credential.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param updateRequired The update required state.
+     * @throws Throws a security exception.
+     */
+    void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException;
+
+    /**
+     * <p>
+     * Set the enabled state of the user password credential.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param enabled The enabled state.
+     * @throws Throws a security exception.
+     */
+    void setPasswordEnabled(String userName, boolean enabled) throws SecurityException;
 }

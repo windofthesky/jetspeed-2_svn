@@ -71,6 +71,13 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
 	    <collection-descriptor
 	        name="credentials"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
@@ -112,9 +119,9 @@ limitations under the License.
 	    <collection-descriptor
 	        name="permissions"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
-	        proxy="false"
-	        refresh="false"
-	        auto-retrieve="false"
+	        proxy="true"
+	        refresh="true"
+	        auto-retrieve="true"
 	        auto-update="link"
 	        auto-delete="link"
 	        indirection-table="PRINCIPAL_PERMISSION"
@@ -185,6 +192,55 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+      <field-descriptor
+          name="lastLogonDate"
+          column="last_logon_date"
+          jdbc-type="TIMESTAMP"
+          nullable="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="updateRequired"
+          column="update_required"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="encoded"
+          column="is_encoded"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="authenticationFailures"
+          column="auth_failures"
+          jdbc-type="SMALLINT"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="expired"
+          column="is_expired"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>                  
+      <field-descriptor
+          name="expirationDate"
+          column="expiration_date"
+          jdbc-type="DATE"
+          nullable="true"
+      >
+      </field-descriptor>      
 	</class-descriptor>
 	
 	<!--
@@ -242,6 +298,13 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
 	    <collection-descriptor
 	        name="userPrincipals"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
@@ -341,6 +404,13 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
 	    <collection-descriptor
 	        name="userPrincipals"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
@@ -440,6 +510,13 @@ limitations under the License.
 	        nullable="false"
 	    >
 	    </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="BIT"
+          nullable="false"
+      >
+      </field-descriptor>      
 	    <collection-descriptor
 	        name="permissions"
 	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"

@@ -33,15 +33,15 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
  */
 public class DefaultUserSecurityHandler implements UserSecurityHandler
 {
-    /** Common queries. */
-    private SecurityAccess commonQueries = null;
+    /** SecurityAccess. */
+    private SecurityAccess securityAccess = null;
     
     /**
-     * <p>Constructor providing access to the common queries.</p>
+     * <p>Constructor providing access to the SecurityAccess implementation.</p>
      */
-    public DefaultUserSecurityHandler(SecurityAccess commonQueries)
+    public DefaultUserSecurityHandler(SecurityAccess securityAccess)
     {
-        this.commonQueries = commonQueries;
+        this.securityAccess = securityAccess;
     }
     
     /**
@@ -49,7 +49,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
      */
     public boolean isUserPrincipal(String userName)
     {
-        return commonQueries.getInternalUserPrincipal(userName, false) != null;
+        return securityAccess.isKnownUser(userName);
     }
     
     /**
@@ -58,7 +58,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public Principal getUserPrincipal(String username)
     {
         UserPrincipal userPrincipal = null;
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username, false);
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(username, false);
         if (null != internalUser)
         {
             userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
@@ -72,7 +72,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public List getUserPrincipals(String filter)
     {
         List userPrincipals = new LinkedList();
-        Iterator result = commonQueries.getInternalUserPrincipals(filter);
+        Iterator result = securityAccess.getInternalUserPrincipals(filter);
         while (result.hasNext())
         {
             InternalUserPrincipal internalUser = (InternalUserPrincipal) result.next();
@@ -93,7 +93,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     {
         String fullPath = userPrincipal.getFullPath();
         InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
-        commonQueries.setInternalUserPrincipal(internalUser, false);        
+        securityAccess.setInternalUserPrincipal(internalUser, false);        
     }
     
     /**
@@ -103,7 +103,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     {
         String fullPath = userPrincipal.getFullPath();
         InternalUserPrincipal internalUser = new InternalUserPrincipalImpl(fullPath);
-        commonQueries.setInternalUserPrincipal(internalUser, false);        
+        securityAccess.setInternalUserPrincipal(internalUser, false);        
     }
     
     /**
@@ -111,17 +111,17 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
      */
     public void removeUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
-        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(userPrincipal.getName(), false);
+        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userPrincipal.getName(), false);
         if (null != internalUser)
         {
-            commonQueries.removeInternalUserPrincipal(internalUser);
+            securityAccess.removeInternalUserPrincipal(internalUser);
         }
         else
         {
-            internalUser = commonQueries.getInternalUserPrincipal(userPrincipal.getName(), true);
+            internalUser = securityAccess.getInternalUserPrincipal(userPrincipal.getName(), true);
             if (null != internalUser)
             {
-                commonQueries.removeInternalUserPrincipal(internalUser);
+                securityAccess.removeInternalUserPrincipal(internalUser);
             }
         }
     }
