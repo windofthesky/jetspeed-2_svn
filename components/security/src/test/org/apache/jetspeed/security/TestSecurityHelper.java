@@ -21,9 +21,8 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
@@ -32,7 +31,7 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestSecurityHelper extends AbstractComponentAwareTestCase
+public class TestSecurityHelper extends AbstractSecurityTestcase
 {
     /**
      * Defines the testcase name for JUnit.
@@ -41,36 +40,14 @@ public class TestSecurityHelper extends AbstractComponentAwareTestCase
      */
     public TestSecurityHelper(String name)
     {
-        super(name, "./src/test/Log4j.properties");
+        super(name);
     }
 
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Creates the test suite.
-     *
-     * @return a test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
+ 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestSecurityHelper.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestSecurityHelper.class);
     }
     
     public void testHelpers() throws Exception

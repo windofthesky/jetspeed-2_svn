@@ -20,28 +20,18 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestLoginModule extends AbstractComponentAwareTestCase
+public class TestLoginModule extends AbstractSecurityTestcase
 {
     /** <p>The JAAS login context.</p> */
     private LoginContext loginContext = null;
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The user manager. */
-    private UserManager ums;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -49,7 +39,7 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
      */
     public TestLoginModule(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -58,8 +48,8 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
+       
+    
         initUserObject();
 
         // Set up login context.
@@ -79,20 +69,15 @@ public class TestLoginModule extends AbstractComponentAwareTestCase
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         destroyUserObject();
+        super.tearDown();
+        
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestLoginModule.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestLoginModule.class);
     }
 
     public void testLogin() throws LoginException

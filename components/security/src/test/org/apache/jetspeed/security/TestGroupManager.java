@@ -22,29 +22,17 @@ import java.util.prefs.Preferences;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * <p>Unit testing for {@link GroupManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestGroupManager extends AbstractComponentAwareTestCase
+public class TestGroupManager extends AbstractSecurityTestcase
 {
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The user manager. */
-    private UserManager ums;
-
-    /** The group manager. */
-    private GroupManager gms;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -52,49 +40,26 @@ public class TestGroupManager extends AbstractComponentAwareTestCase
      */
     public TestGroupManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        gms = (GroupManager) container.getComponentInstance(GroupManager.class);
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
-    }
-
+   
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         destroyGroups();
+        super.tearDown();
+        
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
+     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestGroupManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestGroupManager.class);
     }
-
-    /**
-     * <p>Test the container.</p>
-     */
-    public void testContainer()
-    {
-        assertNotNull(container);
-    }
-
+     
     /**
      * <p>Test add group.</p>
      */

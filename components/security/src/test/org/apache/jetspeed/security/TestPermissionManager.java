@@ -14,44 +14,26 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Permission;
+import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.security.Permission;
-import java.security.Permissions;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * <p>Unit testing for {@link PermissionManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestPermissionManager extends AbstractComponentAwareTestCase
+public class TestPermissionManager extends AbstractSecurityTestcase
 {
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The user manager. */
-    private UserManager ums;
-
-    /** The group manager. */
-    private GroupManager gms;
-
-    /** The role manager. */
-    private RoleManager rms;
-
-    /** The role manager. */
-    private PermissionManager pms;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -59,51 +41,25 @@ public class TestPermissionManager extends AbstractComponentAwareTestCase
      */
     public TestPermissionManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
-        gms = (GroupManager) container.getComponentInstance(GroupManager.class);
-        rms = (RoleManager) container.getComponentInstance(RoleManager.class);
-        pms = (PermissionManager) container.getComponentInstance(PermissionManager.class);
-    }
-
+ 
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         destroyPermissions();
+        super.tearDown();        
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPermissionManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPermissionManager.class);
     }
-
-    /**
-     * <p>Test the container.</p>
-     */
-    public void testContainer()
-    {
-        assertNotNull(container);
-    }
-
+    
     /**
      * <p>Test remove principal and associated permissions.</p>
      */

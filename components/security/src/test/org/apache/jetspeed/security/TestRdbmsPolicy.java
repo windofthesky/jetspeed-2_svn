@@ -14,8 +14,8 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.AccessController;
 import java.security.AccessControlException;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javax.security.auth.Subject;
@@ -23,31 +23,18 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
+public class TestRdbmsPolicy extends AbstractSecurityTestcase
 {
     /** <p>The JAAS login context.</p> */
     private LoginContext loginContext = null;
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The user manager. */
-    private UserManager ums;
-
-    /** <p>The permission manager.</p> */
-    private PermissionManager pms;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -55,7 +42,7 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
      */
     public TestRdbmsPolicy(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
     /**
@@ -64,9 +51,7 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
     public void setUp() throws Exception
     {
         super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
-        pms = (PermissionManager) container.getComponentInstance(PermissionManager.class);
+       
         initUser();
 
         // Let's login in.
@@ -90,7 +75,7 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
+        
 
         // Logout.
         try
@@ -103,20 +88,15 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
             assertTrue("\t\t[TestRdbmsPolicy] Failed to tear down test.", false);
         }
         destroyUser();
+        super.tearDown();
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
-    public static Test suite()
+   public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRdbmsPolicy.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRdbmsPolicy.class);
     }
-
+    
     /**
      * <p>Executing this test requires adding an entry to java.policy.</p>
      * <p>A possible entry would be to grant for all principals:</p>

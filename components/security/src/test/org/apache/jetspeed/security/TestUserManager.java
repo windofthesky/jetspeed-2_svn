@@ -22,26 +22,17 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * <p>Unit testing for {@link UserManager}.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestUserManager extends AbstractComponentAwareTestCase
+public class TestUserManager extends AbstractSecurityTestcase
 {
-
-    /** The mutable pico container. */
-    private MutablePicoContainer container;
-
-    /** The user manager. */
-    private UserManager ums;
 
     /**
      * <p>Defines the test case name for junit.</p>
@@ -49,46 +40,24 @@ public class TestUserManager extends AbstractComponentAwareTestCase
      */
     public TestUserManager(String testName)
     {
-        super(testName, "./src/test/Log4j.properties");
+        super(testName);
     }
 
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        container = (MutablePicoContainer) getContainer();
-        ums = (UserManager) container.getComponentInstance(UserManager.class);
-    }
-
+   
     /**
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown() throws Exception
-    {
-        super.tearDown();
+    {       
         destroyUserObject();
+        super.tearDown();
     }
 
-    /**
-     * <p>Creates the test suite.</p>
-     * @return A test suite (<code>TestSuite</code>) that includes all methods
-     *         starting with "test"
-     */
+  
+    
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestUserManager.class);
-        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
-        return suite;
-    }
-
-    /**
-     * <p>Test the container.</p>
-     */
-    public void testContainer()
-    {
-        assertNotNull(container);
+           return new TestSuite(TestUserManager.class);
     }
 
     /**
