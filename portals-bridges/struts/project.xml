@@ -24,13 +24,13 @@ limitations under the License.
   <pomVersion>3</pomVersion>
   <groupId>portals-bridges</groupId>
   <id>portals-bridges-struts</id>
-  <name>Apache Portals Struts Framework Bridge</name>
+  <name>Apache Portals Struts Bridge</name>
   <currentVersion>0.2</currentVersion>
   <package>org.apache.portals.bridges.struts</package>
   <description>
-    Apache Portals Struts Framework Bridge
+    Apache Portals Struts Bridge
   </description>
-  <shortDescription>Apache Portals Struts Framework Bridge</shortDescription>
+  <shortDescription>Apache Portals Struts Bridge</shortDescription>
   <repository>
     <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/portals-bridges/struts</connection>
     <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/portals-bridges/struts/</url>
