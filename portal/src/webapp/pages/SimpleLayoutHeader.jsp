@@ -18,9 +18,10 @@ limitations under the License.
 
 <html>
 <head>
-	<title>Welcome to Jetspeed 2</title>
-        <link href="content/css/styles.css" type="text/css" rel="stylesheet">
-	<base href="http://<%=request.getServerName()%>:<%=request.getServerPort()%><%=request.getContextPath()%>/" />
+    <title>Welcome to Jetspeed 2</title>
+    <link href="content/css/styles.css" type="text/css" rel="stylesheet">
+<!--    <base href="http://<%=request.getServerName()%>:<%=request.getServerPort()%><%=request.getContextPath()%>/" />
+ -->
 </head>
 
 <body>
