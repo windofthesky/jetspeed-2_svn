@@ -276,7 +276,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport im
     public void setRuleForPrincipal( Principal principal, ProfilingRule rule, String locatorName )
     {
         Criteria c = new Criteria();
-        c.addEqualTo("principalName", principal);
+        c.addEqualTo("principalName", principal.getName());
         c.addEqualTo("locatorName", locatorName);
 
         PrincipalRule pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
