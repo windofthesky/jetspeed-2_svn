@@ -67,7 +67,7 @@ public interface TemplateLocator
     public final static String PARAM_LANGUAGE           = "language";
     public final static String PARAM_COUNTRY            = "country";
     
-    public final static String TYPE_EMAIL               = "email";
+    public final static String TYPE_EMAIL               = "emails";
     public final static String TYPE_PORTLET             = "portlet";
     
   

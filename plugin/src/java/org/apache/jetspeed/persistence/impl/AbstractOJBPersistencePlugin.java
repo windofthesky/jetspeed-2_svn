@@ -323,7 +323,6 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
         connectionToPBMap = new HashMap();
 
         String correctPath = configuration.getPathResolver().getRealPath(configuration.getProperty("OJB.path") + File.separator);
-System.out.println("correctPath = " + correctPath);
         File ojbPropsLocation = new File(correctPath);
         URL ojbUrl = null;
         if (ojbPropsLocation.exists())
