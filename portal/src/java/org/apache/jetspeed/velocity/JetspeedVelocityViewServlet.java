@@ -164,8 +164,24 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         if (renderRequest != null)
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
-        }                        
-        ctx.put("JS2RequestContext", request.getAttribute(RequestContext.REQUEST_PORTALENV));
+        }
+        
+        RequestContext requestContext = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if(requestContext == null)
+        {
+            throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no RequestContext in "+
+                   "the HttpServletRequest.");
+        }
+        
+        JetspeedPowerTool jpt = (JetspeedPowerTool) renderRequest.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
+        if(jpt == null)
+        {
+            throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no JetspeedPowerTool in "+
+                   "the HttpServletRequest.");
+        }
+        
+        ctx.put("jetspeed", jpt);  
+        ctx.put("JS2RequestContext", requestContext);
         ctx.put("renderRequest", renderRequest);
         ctx.put("renderResponse", renderResponse);
         ctx.put("portletConfig", portletConfig);
@@ -178,7 +194,8 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         StringBuffer appRoot = new StringBuffer(request.getScheme()).append("://")
                                    .append(request.getServerName()).append(":")
                                    .append(request.getServerPort()).append(renderRequest.getContextPath());
-        ctx.put("appRoot", appRoot.toString());
+        ctx.put("appRoot", appRoot.toString());        
+        
         
         // setup TLS for Context propagation
         handlingRequestContext.set(ctx);
@@ -326,6 +343,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         // get render request and request context from Context
         RenderRequest renderRequest = (RenderRequest) ctx.get("renderRequest");
         RequestContext requestContext = (RequestContext) ctx.get("JS2RequestContext");
+        JetspeedPowerTool jpt = (JetspeedPowerTool) ctx.get("jetspeed");
         if ((renderRequest != null) && (requestContext != null))
         {
             // get layout type and decoration, fallback to
@@ -333,13 +351,15 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             Fragment layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.LAYOUT_ATTR);
             if (layout == null)
             {
-                layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
+               // layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
+                layout = jpt.getCurrentFragment();
             }
             String layoutType = layout.getType();
             String layoutDecoration = layout.getDecorator();
             if (layoutDecoration == null)
             {
-                Page page = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+                //Page page = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+                Page page = requestContext.getPage();
                 layoutDecoration = page.getDefaultDecorator(layoutType);
             }
             
