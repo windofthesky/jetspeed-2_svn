@@ -15,24 +15,26 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.commons.vfs.VFS;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.exception.JetspeedException;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 /**
  * PortletApplicationManager
@@ -225,8 +227,10 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         {
             System.out.println("Ready to run PAM implementation: " + className);
             System.out.print("Supporting interfaces: Deployment");
-            Class clas = Class.forName(className);
-            deployer = (Deployment)clas.newInstance(); 
+            // Class clas = Class.forName(className);
+            PortletRegistryComponent portletRegistry = (PortletRegistryComponent) engine.getComponentManager()
+                    .getComponent(PortletRegistryComponent.class);
+            deployer = (Deployment) engine.getComponentManager().getComponent("PAM");
             if (deployer instanceof Registration)
             {                
                 System.out.print(", Registration");
@@ -300,7 +304,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                     shutdownAndExit(engine);                                
                 }
     
-                register(registrator, strWebAppDir, strPortletAppName, strWarFileName); // [RUN]
+                register(registrator, strPortletAppName, strWarFileName); // [RUN]
             }
             else if (strAction.compareToIgnoreCase("unregister") == 0)
             {          
@@ -313,7 +317,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 }
                 
                 // Application server can be null -- using Catalina as default
-                unregister(registrator, strWebAppDir, strPortletAppName); // [RUN]
+                unregister(registrator, strPortletAppName); // [RUN]
             }
             else if (strAction.compareToIgnoreCase("undeploy") == 0)
             {
@@ -429,16 +433,16 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @param webApplicationName The webapps directory or name inside the Application Server
      * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
+     * @throws IOException
      */
 
-    public static void register(Registration registrator,
-                                String webApplicationName, 
+    public static void register(Registration registrator,                                
                                 String portletApplicationName,
                                 String warFile)
-    throws PortletApplicationException
+    throws PortletApplicationException, IOException
     {
-        System.out.println("Registering Web Application [" + webApplicationName + "] to Portlet Application [" + portletApplicationName + "]...");
-        registrator.register(webApplicationName, portletApplicationName, warFile);
+        System.out.println("Registering Portlet Application [" + portletApplicationName + "]...");
+        registrator.register(new PortletApplicationWar(warFile,  portletApplicationName, "/"+portletApplicationName, VFS.getManager()) );
         System.out.println("...PAM Register done");        
     }
 
@@ -450,33 +454,33 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * @param portletApplicationName The Portlet Application name
      */
 
-    public static void unregister(Registration registrator, 
-                                  String webApplicationName, 
+    public static void unregister(Registration registrator,
+                                  
                                   String portletApplicationName)
     throws PortletApplicationException    
     {
         System.out.println("Unregistering Portlet Application [" + portletApplicationName + "...");
-        registrator.unregister(webApplicationName, portletApplicationName);
+        registrator.unregister(portletApplicationName);
         System.out.println("...PAM Unregister done");        
     }
 
     /**
      * Deploys the specified war file to the webapps dirctory specified.
      *
-     * @param webApplicationName The webapps directory or name inside the Application Server
+     * @param webAppsDir The webapps directory or name inside the Application Server
      * @param warFile The warFile containing the Portlet Application
      * @param portletApplicationName The Portlet Application name
      * @throws PortletApplicationException
      */
 
     public static void deploy(Deployment deployer,
-                              String webApplicationName, 
+                              String webAppsDir, 
                               String warFile,
                               String portletApplicationName)
-    throws PortletApplicationException        
+    throws PortletApplicationException, IOException        
     {
-        System.out.println("Deploying Web Application [" + webApplicationName + "] to Portlet Application [" + portletApplicationName + "]...");
-        deployer.deploy(webApplicationName, warFile, portletApplicationName);
+        System.out.println("Deploying Web Application [" + webAppsDir + "] to Portlet Application [" + portletApplicationName + "]...");
+        deployer.deploy(new PortletApplicationWar(warFile, portletApplicationName, "/"+portletApplicationName, VFS.getManager()));
         System.out.println("...PAM Deploy done");        
     }
 
@@ -485,6 +489,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      *
      * @param paName The Portlet Application name
      * @throws PortletApplicationException
+     * @throws IOException
      */    
     public static void undeploy(Deployment deployer,
                                 String webApplicationName, 
@@ -493,19 +498,16 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                                 int port, 
                                 String user, 
                                 String password)
-    throws PortletApplicationException    
+    throws PortletApplicationException, IOException    
     {
-        Map map = new HashMap();        
-        if (deployer instanceof CatalinaPAM)
+        if (deployer instanceof ApplicationServerPAM)
         {
-            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
-            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
-            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
-            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
+            ((ApplicationServerPAM)deployer).start();            
         }
         System.out.println("Un-deploying Web Application [" + webApplicationName + "], Portlet Application [" + portletApplicationName + "]...");
-        deployer.connect(map);
-        deployer.undeploy(webApplicationName, portletApplicationName);
+        
+        String webAppPath = deployer.getDeploymentPath(webApplicationName);
+        deployer.undeploy(new PortletApplicationWar(webAppPath, portletApplicationName, "/"+portletApplicationName, VFS.getManager() ));
         System.out.println("...PAM Undeploy done");                                
     }
 
@@ -528,20 +530,13 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                              String password)
     throws PortletApplicationException
     {
-        Map map = new HashMap();        
-        if (lifecycle instanceof CatalinaPAM)
+        if (lifecycle instanceof ApplicationServerPAM)
         {
-            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
-            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
-            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
-            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
+            ((ApplicationServerPAM)lifecycle).start();            
         }
         System.out.println("Starting Portlet Application [" + portletApplicationName + "...");
-        if (lifecycle instanceof Deployment)
-        {
-            ((Deployment)lifecycle).connect(map);
-        }
-        lifecycle.start(portletApplicationName);
+     
+        lifecycle.startPortletApplication(portletApplicationName);
         System.out.println("...PAM Start done");                        
     }
 
@@ -565,19 +560,13 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     throws PortletApplicationException        
     {
         Map map = new HashMap();        
-        if (lifecycle instanceof CatalinaPAM)
+        if (lifecycle instanceof ApplicationServerPAM)
         {
-            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
-            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
-            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
-            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
+            ((ApplicationServerPAM)lifecycle).start();            
         }
         System.out.println("Stopping Portlet Application [" + portletApplicationName + "...");
-        if (lifecycle instanceof Deployment)
-        {
-            ((Deployment)lifecycle).connect(map);
-        }
-        lifecycle.stop(portletApplicationName);
+      
+        lifecycle.stopPortletApplication(portletApplicationName);
         System.out.println("...PAM Stop done");                
     }
 
@@ -602,19 +591,13 @@ public class PortletApplicationManager implements JetspeedEngineConstants
     throws PortletApplicationException    
     {        
         Map map = new HashMap();        
-        if (lifecycle instanceof CatalinaPAM)
+        if (lifecycle instanceof ApplicationServerPAM)
         {
-            map.put(CatalinaPAM.PAM_PROPERTY_SERVER, host);
-            map.put(CatalinaPAM.PAM_PROPERTY_PORT, new Integer(port));
-            map.put(CatalinaPAM.PAM_PROPERTY_USER, user);
-            map.put(CatalinaPAM.PAM_PROPERTY_PASSWORD, password);            
+            ((ApplicationServerPAM)lifecycle).start();            
         }
         System.out.println("Reloading Portlet Application [" + portletApplicationName + "...");
-        if (lifecycle instanceof Deployment)
-        {
-            ((Deployment)lifecycle).connect(map);
-        }
-        lifecycle.reload(portletApplicationName);
+     
+        lifecycle.reloadPortletApplication(portletApplicationName);
         System.out.println("...PSM Reload done");        
     }
 
