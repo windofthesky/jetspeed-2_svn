@@ -14,8 +14,7 @@
         </fileset>
     </copy>
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/">
-      <fileset dir="${maven.war.src}">
-      </fileset>
+      <fileset dir="./src/webapp"/>
     </copy>
   </goal>
 
