@@ -78,7 +78,7 @@ limitations under the License.
          	 <include name="*.sql" />
          </fileset>          	       	       
      </copy>
-     
+     <!--
      <move file="${basedir}/target/classes/plugin-resources/Empty.script" tofile="${basedir}/target/classes/plugin-resources/Production.script" overwrite="true"/>
 	 <echo>Initializing HSQL Production.script with basic portal info.......</echo>
 	<j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:target/classes/plugin-resources/Production"/>
@@ -87,6 +87,7 @@ limitations under the License.
     <j:set var="org.apache.jetspeed.database.password" value=""/>
     <j:set var="org.apache.jetspeed.database.default.name" value="hsql" />
     <attainGoal name="db.create" />	 
+    -->
 </goal>
 
 <goal name="copyPortlaWebApp">
