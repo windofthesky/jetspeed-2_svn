@@ -36,7 +36,11 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.util.IsolatedLog4JLogger;
+import org.apache.log4j.Hierarchy;
+import org.apache.log4j.Level;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.spi.RootCategory;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -123,7 +127,10 @@ public abstract class AbstractEngine implements Engine
             Properties p = new Properties();
             p.load(new FileInputStream(log4jFile));
             p.setProperty(APPLICATION_ROOT_KEY, context.getApplicationRoot());
-            PropertyConfigurator.configure(p);
+            Hierarchy h = new Hierarchy(new RootCategory(Level.INFO));
+            new PropertyConfigurator().doConfigure(p,h);
+            IsolatedLog4JLogger.setHierarchy(h);
+            
             log.info("Configured log4j from " + log4jFile);
             log.info("Starting Jetspeed Engine ("+getClass().getName()+") at "+format.format(startTime));
     
