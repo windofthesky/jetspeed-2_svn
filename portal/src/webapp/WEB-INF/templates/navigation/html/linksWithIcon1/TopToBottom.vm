@@ -1,7 +1,15 @@
 <div >
-  #foreach($link in $_nodeSet.iterator()) 
+  #foreach($node in $_nodeSet.iterator()) 
   <p>
-    <a href="$link.url" target="$link.target" class="Link">$link.getTitle($preferedLocale)</a>	
+    #if($node.type == ".psml")
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkPage">$node.getTitle($preferedLocale)</a>	
+    #elseif($node.type == ".link")
+      <a href="$node.url" target="$node.target" class="Link">$node.getTitle($preferedLocale)</a>	
+    #elseif($node.type == "folder")
+      <a href="$jetspeed.getAbsoluteUrl($node.url)" class="LinkFolder">$node.metaData.getTitle($preferedLocale)</a>	
+    #else
+      <a href="$node.url">$node.title</a>	
+    #end
   </p> 
   #end
 </div>
