@@ -57,7 +57,6 @@ package org.apache.jetspeed.om.common.preference;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-
 import java.util.Set;
 
 import org.apache.jetspeed.om.common.AbstractSupportSet;
@@ -75,6 +74,8 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
 {
 
     protected HashMap prefMap = new HashMap();
+
+    private String preferenceType;
 
     /**
      * @param wrappedSet
@@ -103,6 +104,9 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
     public Preference add(String name, Collection values)
     {
         PreferenceImpl pref = new PreferenceImpl();
+
+        pref.setType(preferenceType);
+
         pref.setName(name);
         pref.setValues(values);
         add(pref);
@@ -132,7 +136,13 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
      */
     public boolean add(Object o)
     {
-        Preference pref = (Preference) o;
+
+        PreferenceComposite pref = (PreferenceComposite) o;
+        if (preferenceType == null)
+        {
+            preferenceType = pref.getType();
+        }
+
         prefMap.put(pref.getName(), pref);
         return super.add(pref);
     }
@@ -150,6 +160,39 @@ public class PreferenceSetImpl extends AbstractSupportSet implements PreferenceS
     public Set getNames()
     {
         return prefMap.keySet();
+    }
+
+    /**
+         * @return The type of preference this Set is holding which
+         * wil either be "user preference" or "default preference"     
+         */
+    public String getPreferenceType()
+    {
+        return preferenceType;
+    }
+
+    /**
+         * @param string
+         */
+    public void setPreferenceType(String string)
+    {
+        preferenceType = string;
+    }
+
+    /**
+     * @see java.util.Collection#addAll(java.util.Collection)
+     */
+    public boolean addAll(Collection c)
+    {
+        // Auto-initialize the preference "type" this preference set will contain
+        if (preferenceType == null && c.size() > 0)
+        {
+            Object[] prefArray = c.toArray();
+            PreferenceComposite pref = (PreferenceComposite) prefArray[0];
+            preferenceType = pref.getType();
+        }
+
+        return super.addAll(c);
     }
 
 }

@@ -54,18 +54,90 @@
 package org.apache.jetspeed.om.common.preference;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
- * PreferenceValueImpl
- * <br />
- * Represents preference values associated the preferences
- * specified within the registry.
+ * PreferenceValueObject
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PreferenceValueImpl extends AbstractPreferenceValue implements Serializable, PreferenceValue
+public class PreferenceValueImpl implements Serializable, PreferenceValue
 {
+
+    private long preferenceId;
+    private long id;
+    private String value;
+    /**
+     * @return
+     */
+    public String getValue()
+    {
+        return value;
+    }
+
+    /**
+     * @param string
+     */
+    public void setValue(String string)
+    {
+        value = string;
+    }
+
+    /**
+     * @return same as <code>getValue()</code>
+     */
+    public String toString()
+    {
+        return getValue();
+    }
+
+    protected final static ArrayList convertValueObjectsToStrings(Collection valueObjs)
+    {
+        ArrayList values = new ArrayList(valueObjs.size());
+        Iterator itr = valueObjs.iterator();
+        while (itr.hasNext())
+        {
+            values.add(itr.next().toString());
+        }
+
+        return values;
+    }
+
+    protected final static void convertStringsToValueObjects(Collection stringValues, List valueObjects)
+    {
+        Iterator itr = stringValues.iterator();
+        int count = 0;
+        try
+        {
+            while (itr.hasNext())
+            {
+                String strValue = (String) itr.next();
+                if (count < valueObjects.size())
+                {
+                    PreferenceValueImpl valueObj = (PreferenceValueImpl) valueObjects.get(count);
+                    valueObj.setValue(strValue);
+                }
+                else
+                {
+                    PreferenceValueImpl valueObj = new PreferenceValueImpl();                    
+                    
+                    valueObj.setValue(strValue);
+                    valueObjects.add(valueObj);
+                }
+                count++;
+            }
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Unable to instantiate value class.", e);
+        }
+
+    }
+
 }

@@ -73,7 +73,7 @@ import org.apache.jetspeed.om.common.MutableDisplayNameSet;
 
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.extended.PortletParameterSetImpl;
-import org.apache.jetspeed.om.common.preference.AbstractPreferenceImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
@@ -394,6 +394,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         PreferenceComposite pref = new PreferenceImpl();
         pref.setName(name);
         pref.setValues(values);
+        pref.setType(PreferenceComposite.TYPE_DEFAULT);
         if (prefSet == null)
         {
             prefSet = new PreferenceSetImpl();

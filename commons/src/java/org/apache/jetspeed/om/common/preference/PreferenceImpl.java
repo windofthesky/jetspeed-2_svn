@@ -51,17 +51,247 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+
 package org.apache.jetspeed.om.common.preference;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.jetspeed.om.common.DescriptionImpl;
+import org.apache.jetspeed.om.common.DescriptionSetImpl;
+import org.apache.jetspeed.om.common.MutableDescription;
+import org.apache.jetspeed.om.common.MutableDescriptionSet;
+import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.pluto.om.common.Description;
+import org.apache.pluto.om.common.Preference;
 
 /**
  * 
- * PreferenceImpl
+ * <p>
+ * AbstractPreferenceImpl
+ * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PreferenceImpl extends AbstractPreferenceImpl
+public class PreferenceImpl implements PreferenceComposite, Serializable
 {
+    private String name;
+    protected Collection values;
+    private boolean modifiable;
+    /** a collection of <code>PreferenceValueObjects</code>
+     * that can be persisted in a unique fashion.
+     */
+    private List valueObjects;
+
+    /** Localized Descriptions */
+    private MutableDescriptionSet descriptions;
+
+    /** Unique key for O/R tools*/
+    protected long id;
+
+    /** FK to parent portlet */
+    protected long parentId;
+    
+    /** The type of preference this is either the portlet default or user defined */
+    private String type;
+
+    public PreferenceImpl()
+    {
+        //values = new ArrayList();
+        super(); 
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.Preference#getName()
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.Preference#getValues()
+     */
+    public Iterator getValues()
+    {
+        if (values == null)
+        {
+            values = PreferenceValueImpl.convertValueObjectsToStrings(this.valueObjects);
+        }
+        return values.iterator();
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.Preference#isModifiable()
+     */
+    public boolean isModifiable()
+    {
+        return modifiable;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setName(java.lang.String)
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setValues(java.util.Collection)
+     */
+    public void setValues(Collection values)
+    {
+        this.values = values;
+        if (this.valueObjects == null)
+        {
+            this.valueObjects = new ArrayList(values.size());
+        }
+        PreferenceValueImpl.convertStringsToValueObjects(values, valueObjects);
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setDescription(java.lang.String)
+     */
+    public void setDescription(String description)
+    {
+        // TODO: Is this still needed as we are using localized text???
+        //this.description = description;
+        if (descriptions == null)
+        {
+            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PREFERENCE);
+        }
+
+        descriptions.addDescription(new DescriptionImpl(Locale.getDefault(), description, MutableDescription.TYPE_PREFERENCE));
+    }
+
+    /**
+     * @see org.apache.pluto.om.common.PreferenceCtrl#setModifiable(boolean)
+     */
+    public void setModifiable(boolean modifiable)
+    {
+        this.modifiable = modifiable;
+    }
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj)
+    {
+        if (obj != null && obj instanceof Preference)
+        {
+            Preference pref = (Preference) obj;
+            return pref.getName().equals(this.getName());
+        }
+
+        return false;
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(23, 83);
+        hasher.append(name);
+        return hasher.toHashCode();
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.PreferenceComposite#addDescription(java.util.Locale, java.lang.String)
+     */
+    public void addDescription(Locale locale, String description)
+    {
+        if (descriptions == null)
+        {
+            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PREFERENCE);
+        }
+        descriptions.addDescription(new DescriptionImpl(locale, description, MutableDescription.TYPE_PREFERENCE));
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.PreferenceComposite#getDescription(java.util.Locale)
+     */
+    public Description getDescription(Locale locale)
+    {
+        if (descriptions != null)
+        {
+            return descriptions.get(locale);
+        }
+        return null;
+    }
+
+    /**
+     * Remove when Castor is properly mapped
+     * @deprecated
+     * @return
+     */
+    public String getDescription()
+    {
+        Description desc = getDescription(Locale.getDefault());
+        if (desc != null)
+        {
+            return desc.getDescription();
+        }
+
+        return null;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.PreferenceComposite#getValueAt(int)
+     */
+    public String getValueAt(int index)
+    {
+        return getValueArray()[index];
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.PreferenceComposite#getValueArray()
+     */
+    public String[] getValueArray()
+    {
+        if (valueObjects != null)
+        {
+            return (String[]) valueObjects.toArray(new String[valueObjects.size()]);
+        }
+
+        return null;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.PreferenceComposite#setValueAt(int, java.lang.String)
+     */
+    public void setValueAt(int index, String value)
+    {
+        if (valueObjects == null)
+        {
+            valueObjects = new ArrayList();
+        }
+
+        valueObjects.set(index, value);
+
+    }
+    
+    /**
+     * @return
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param string
+     */
+    public void setType(String string)
+    {
+        type = string;
+    }
 
 }

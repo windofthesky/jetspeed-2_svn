@@ -71,6 +71,8 @@ import org.apache.pluto.om.common.PreferenceCtrl;
  */
 public interface PreferenceComposite extends PreferenceCtrl, Preference, Serializable
 {
+    public static final String TYPE_DEFAULT = "default preference";
+    public static final String TYPE_USER = "user preference";
     void addDescription(Locale locale, String Description);
 
     Description getDescription(Locale locale);
@@ -90,6 +92,10 @@ public interface PreferenceComposite extends PreferenceCtrl, Preference, Seriali
      * @return
      */
     String[] getValueArray();
+    
+    String getType();
+    
+    void setType(String type);
     
     
 
