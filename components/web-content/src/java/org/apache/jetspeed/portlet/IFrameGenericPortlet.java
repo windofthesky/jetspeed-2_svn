@@ -95,7 +95,6 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         else
             value = getAttributePreference(prefs, attribute);
         
-        System.out.println("ATT = " + attribute + "VALUE = " + value);
         if (value == null || value == "") { return; }
         content.append(" ").append(attribute).append("=\"").append(value).append("\"");
     }
