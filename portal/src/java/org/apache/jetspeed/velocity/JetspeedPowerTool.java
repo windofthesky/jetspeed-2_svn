@@ -40,6 +40,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.capabilities.CapabilityMap;
@@ -134,7 +135,7 @@ public class JetspeedPowerTool implements ViewTool
     protected static final String RENDER_REQUEST_ATTR = "renderRequest";
     public static final String DISPATCHER_ATTR = "dispatcher";
     private static final String COLUMNS_ATTR = "columns";
-    public static final String PAGE_ATTR = "page";
+  
     public static final String FRAGMENT_ATTR = "fragment";
     public static final String LAYOUT_ATTR = "layout";
     
@@ -356,7 +357,7 @@ public class JetspeedPowerTool implements ViewTool
     public Page getPage()
     {
         checkState();
-        return (Page) renderRequest.getAttribute(PAGE_ATTR);
+        return (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
     }
 
     /**
@@ -929,6 +930,11 @@ public class JetspeedPowerTool implements ViewTool
         {
             return "Portlet Unavailable";
         }
+    }
+    
+    public Object getComponent(String name)
+    {
+        return Jetspeed.getComponentManager().getComponent(name);
     }
     
 }
