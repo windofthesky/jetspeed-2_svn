@@ -1,0 +1,32 @@
+# jetspeed required properties
+org.apache.jetspeed.server.home = /tomcat4
+org.apache.jetspeed.catalina.version.major = 4
+org.apache.jetspeed.server.shared = ${org.apache.jetspeed.server.home}/shared/lib
+org.apache.jetspeed.deploy.war.dir = ${org.apache.jetspeed.server.home}/webapps
+org.apache.jetspeed.services.autodeployment.user = j2deployer
+org.apache.jetspeed.services.autodeployment.password = j2deployer
+
+# jetspeed db build properties example for Oracle9i
+# Override the database connection and driverproperties in your ${USER_HOME}/build.properties appropriately
+# See:
+#   http://portals.apache.org/jetspeed-2/database.html
+
+org.apache.jetspeed.test.database.url = jdbc:oracle:thin:@localhost:1521:orcl
+org.apache.jetspeed.test.database.driver = com.p6spy.engine.spy.P6SpyDriver
+#org.apache.jetspeed.test.database.driver = oracle.jdbc.driver.OracleDriver
+org.apache.jetspeed.test.database.user = j2t
+org.apache.jetspeed.test.database.password =j2t
+
+org.apache.jetspeed.test.jdbc.drivers.path=/portal/lib/oracle/ojdbc14.jar;/portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.test.database.default.name=oracle
+org.apache.jetspeed.test.database.ojb.platform=oracle9i
+
+org.apache.jetspeed.production.database.url = jdbc:oracle:thin:@localhost:1521:orcl
+#org.apache.jetspeed.production.database.driver = com.p6spy.engine.spy.P6SpyDriver
+org.apache.jetspeed.production.database.driver = oracle.jdbc.driver.OracleDriver
+org.apache.jetspeed.production.database.user = j2p
+org.apache.jetspeed.production.database.password =j2p
+
+org.apache.jetspeed.production.jdbc.drivers.path=/portal/lib/oracle/ojdbc14.jar;/portal/lib/oracle/nls_charset12.jar
+org.apache.jetspeed.production.database.default.name=oracle
+org.apache.jetspeed.production.database.ojb.platform=oracle9i
