@@ -32,4 +32,6 @@ public interface MutablePortletEntity
 {
 
     public static final String PORTLET_ENTITY_ROOT = "portlet_entity";
+    
+    String getPortletUniqueName();
 }
