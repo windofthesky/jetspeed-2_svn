@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
@@ -61,6 +63,7 @@ public class OTMStoreImpl implements PersistenceStore
     private PBKey pbKey;
     private StoreEventInvoker invoker;
     private String jcd;
+    private static final Log log = LogFactory.getLog(OTMStoreImpl.class);
 
 	/**
 	 * Name of the JavaConnectionDescriptor this store will use to access
@@ -174,10 +177,17 @@ public class OTMStoreImpl implements PersistenceStore
      */
     public void deleteAll(Object query) throws LockFailedException
     {
-        Iterator itr = getCollectionByQuery(query).iterator();
-        while (itr.hasNext())
+        try
         {
-            deletePersistent(itr.next());
+            Iterator itr = getCollectionByQuery(query).iterator();
+            while (itr.hasNext())
+            {
+                OTMConn.deletePersistent(itr.next());
+            }
+        }
+        catch (Exception e)
+        {
+            log.warn("Problem encountered deleting objects", e);
         }
 
     }
@@ -414,9 +424,9 @@ public class OTMStoreImpl implements PersistenceStore
      */
     public Transaction getTransaction()
     {
-        if (tx == null || OTMConn.getTransaction() == null)
+        if (tx == null)
         {
-            tx = new OTMTransactionImpl(kit.getTransaction(OTMConn), this);
+            tx = new OTMTransactionImpl(OTMConn, kit, this);
             for (int i = 0; i < listeners.size(); i++)
             {
                 tx.addEventListener((TransactionEventListener) listeners.get(i));
@@ -448,6 +458,19 @@ public class OTMStoreImpl implements PersistenceStore
             throw new LockFailedException(e.toString(), e);
         }
 
+    }
+    
+    public void invalidateAll() throws LockFailedException
+    {
+        try
+        {
+            
+            OTMConn.invalidateAll();
+        }
+        catch (LockingException e)
+        {
+            throw new LockFailedException(e.toString(), e);
+        }
     }
 
     /** 

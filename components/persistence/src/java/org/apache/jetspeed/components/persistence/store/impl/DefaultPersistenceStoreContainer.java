@@ -387,35 +387,35 @@ public class DefaultPersistenceStoreContainer
         {
             while (started)
             {
-                Iterator keys = storeLastUsed.keySet().iterator();
-                while (keys.hasNext())
-                {
-                    PersistenceStore store = (PersistenceStore) keys.next();
-                    Date last = (Date) storeLastUsed.get(store);
-                    Date now = new Date();
-                    if ((now.getTime() - last.getTime()) > ttl)
-                    {
-                        log.debug("PersistenceStore " + store + " has exceeded its TTL, attemting to close.");
-                        // broker should now be considered available
-                        try
-                        {
-                            store.close();
-                            log.debug("PersistenceStore successfully closed.");
-                        }
-                        catch (Throwable e1)
-                        {
-                            log.error("Unable to close PersistenceStore " + store, e1);
-                        }
-                    }
-                }
-
+                
                 try
                 {
+                    Iterator keys = storeLastUsed.keySet().iterator();
+                    while (keys.hasNext())
+                    {
+                        PersistenceStore store = (PersistenceStore) keys.next();
+                        Date last = (Date) storeLastUsed.get(store);
+                        Date now = new Date();
+                        if ((now.getTime() - last.getTime()) > ttl)
+                        {
+                            log.debug("PersistenceStore " + store + " has exceeded its TTL, attemting to close.");
+                            // broker should now be considered available
+                            try
+                            {
+                                store.close();
+                                storeLastUsed.remove(store);
+                                log.debug("PersistenceStore successfully closed.");
+                            }
+                            catch (Throwable e1)
+                            {
+                                log.error("Unable to close PersistenceStore " + store, e1);
+                            }
+                        }
+                    }
                     sleep(checkInterval);
                 }
-                catch (InterruptedException e)
+                catch (Exception e)
                 {
-
                 }
             }
         }

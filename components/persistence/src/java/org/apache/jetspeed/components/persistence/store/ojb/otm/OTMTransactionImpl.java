@@ -22,6 +22,8 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.components.persistence.store.TransactionEventListener;
 import org.apache.jetspeed.components.persistence.store.impl.TransactionEventInvoker;
+import org.apache.ojb.otm.OTMConnection;
+import org.apache.ojb.otm.OTMKit;
 
 /**
  * <p>
@@ -35,23 +37,33 @@ import org.apache.jetspeed.components.persistence.store.impl.TransactionEventInv
  */
 public class OTMTransactionImpl implements Transaction
 {
-    private org.apache.ojb.otm.core.Transaction OTMTx;
+    private OTMConnection conn;
+    private OTMKit kit;
     private List eventListeners;
     private TransactionEventInvoker invoker;
     private OTMStoreImpl store;
     private static final Log log = LogFactory.getLog(OTMTransactionImpl.class);
-    public OTMTransactionImpl(org.apache.ojb.otm.core.Transaction OTMTx, PersistenceStore store)
+    public OTMTransactionImpl(OTMConnection conn, OTMKit kit, PersistenceStore store)
     {
-        if (OTMTx == null)
+        if (conn == null)
         {
-            throw new IllegalArgumentException("The OTM Transaction cannot be null.");
+            throw new IllegalArgumentException("The OTM Connection cannot be null.");
         }
+        
+        if (kit == null)
+        {
+            throw new IllegalArgumentException("The OTM kit cannot be null.");
+        }
+        
         if (store == null)
         {
             throw new IllegalArgumentException("The PersistenceStore cannot be null.");
         }
-        this.OTMTx = OTMTx;
+        
         eventListeners = new ArrayList();
+        this.store = (OTMStoreImpl)store;
+        this.kit = kit;
+        this.conn = conn;
         invoker = new TransactionEventInvoker(eventListeners, store);
     }
 
@@ -65,6 +77,7 @@ public class OTMTransactionImpl implements Transaction
      */
     public void begin()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         if (!OTMTx.isInProgress())
         {
             invoker.beforeBegin();
@@ -83,10 +96,12 @@ public class OTMTransactionImpl implements Transaction
      */
     public void commit()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         invoker.beforeCommit();
+        
         OTMTx.commit();
-        // store.setTransaction(null);
-        //  OTMTx = null;
+        store.setTransaction(null);
+        OTMTx = null;
         invoker.afterCommit();
     }
 
@@ -100,6 +115,7 @@ public class OTMTransactionImpl implements Transaction
      */
     public void rollback()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         if (OTMTx != null && OTMTx.isInProgress())
         {
             invoker.beforeRollback();
@@ -122,6 +138,7 @@ public class OTMTransactionImpl implements Transaction
      */
     public boolean isOpen()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         return OTMTx.isInProgress();
     }
 
@@ -135,6 +152,7 @@ public class OTMTransactionImpl implements Transaction
      */
     public Object getWrappedTransaction()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         return OTMTx;
     }
 
@@ -161,6 +179,7 @@ public class OTMTransactionImpl implements Transaction
      */
     public void checkpoint()
     {
+        org.apache.ojb.otm.core.Transaction OTMTx = kit.getTransaction(conn);
         OTMTx.checkpoint();
     }
 }

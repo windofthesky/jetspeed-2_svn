@@ -11,7 +11,8 @@ import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent
 import org.apache.jetspeed.components.datasource.DatasourceComponent
 import org.apache.commons.pool.impl.GenericObjectPool
 import org.apache.jetspeed.components.persistence.store.ojb.OJBTypeIntializer
-import org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl
+// import org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl
+import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
 import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 import org.apache.jetspeed.page.PageManager
@@ -53,8 +54,9 @@ Class pContainerClass = Class.forName("org.apache.jetspeed.components.persistenc
 // Parameter[] storeParams = new Parameter[] {new ConstantParameter("jetspeed")}
 
 
-Class OTMStoreClass = Class.forName("org.apache.jetspeed.components.persistence.store.ojb.otm.OTMStoreImpl")
-ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", OTMStoreClass, new Parameter[] {new ConstantParameter("jetspeed")})
+
+// ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", OTMStoreClass, new Parameter[] {new ConstantParameter("jetspeed")})
+ComponentAdapter ca = new ConstructorComponentAdapter("jetspeed", PBStore, new Parameter[] {new ConstantParameter("jetspeed")})
 
 pContainer.registerComponent(ca)
 

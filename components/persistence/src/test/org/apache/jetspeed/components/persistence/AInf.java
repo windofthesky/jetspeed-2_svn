@@ -5,70 +5,53 @@
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.apache.jetspeed.components.persistence;
-
+import java.util.Collection;
 
 /**
  * <p>
- * B
+ * AInf
  * </p>
  *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $ $
  *
  */
-public class B
+public interface AInf
 {
-    
-    private AInf a;
-    private int aId;
-    private int id;
-    private String name;
-    /**
-     * @return Returns the a.
-     */
-    public AInf getA()
-    {
-        return a;
-    }
 
     /**
-     * @param a The a to set.
+     * @return Returns the bList.
      */
-    public void setA(AInf a)
-    {
-        this.a = a;
-    }
+    public abstract Collection getBList()
+    ;
+
+    /**
+     * @param list The bList to set.
+     */
+    public abstract void setBList(Collection list)
+    ;
 
     /**
      * @return Returns the id.
      */
-    public int getId()
-    {
-        return id;
-    }
+    public abstract int getId()
+    ;
 
     /**
      * @param id The id to set.
      */
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+    public abstract void setId(int id)
+    ;
 
     /**
      * @return Returns the name.
      */
-    public String getName()
-    {
-        return name;
-    }
+    public abstract String getName()
+    ;
 
     /**
      * @param name The name to set.
      */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
+    public abstract void setName(String name)
+    ;
 }

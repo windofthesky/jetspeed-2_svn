@@ -171,33 +171,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
         return suite;
     }
 
-    //    public static Test suite()
-    //    {
-    //        // All methods starting with "test" will be executed in the test suite.
-    //		JetspeedTestSuite testSuite = new JetspeedTestSuite(TestRegistry.class);
-    //		registry = (PortletRegistryComponent)
-    // Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-    //		PersistenceStoreContainer pContainer = (PersistenceStoreContainer)
-    // Jetspeed.getComponentManager().getComponent(PersistenceStoreContainer.class);
-    //		store = pContainer.getStoreForThread("jetspeed");
-    //        try
-    //        {
-    //            
-    //            List allPortletDefinitions = registry.getAllPortletDefinitions();
-    //            List allPortletApps = registry.getPortletApplications();
-    //            removeCollection(allPortletApps, store);
-    //            removeCollection(allPortletDefinitions, store);
-    //            store.getTransaction().commit();
-    //        }
-    //        catch (Exception e)
-    //        {
-    //			store.getTransaction().rollback();
-    //
-    //            throw new RuntimeException("Test suite failed: " + e.toString());
-    //        }
-    //        return testSuite;
-    //
-    //    }
+   
 
     protected static void removeCollection(Collection col, PersistenceStore store) throws LockingException, 
     LockFailedException
@@ -234,25 +208,25 @@ public class TestRegistry extends AbstractComponentAwareTestCase
             pac.setName(APP_1_NAME);
             pac.setDescription("This is a Registry Test Portlet.");
             pac.setVersion("1.0");
-            GenericMetadata md = pac.getMetadata();
-            DublinCore dc = new DublinCoreImpl(md);
-            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
-            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 2");
-            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 3");
-            dc.addContributor(JetspeedLocale.getDefaultLocale(), "Contrib 1");
-            dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 1");
-            dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 2");
-            dc.addCreator(JetspeedLocale.getDefaultLocale(), "Creator 1");
-            dc.addDescription(JetspeedLocale.getDefaultLocale(), "Description 1");
-            dc.addFormat(JetspeedLocale.getDefaultLocale(), "Format 1");
-            dc.addIdentifier(JetspeedLocale.getDefaultLocale(), "Identifier 1");
-            dc.addLanguage(JetspeedLocale.getDefaultLocale(), "Language 1");
-            dc.addPublisher(JetspeedLocale.getDefaultLocale(), "Publisher 1");
-            dc.addRelation(JetspeedLocale.getDefaultLocale(), "Relation 1");
-            dc.addRight(JetspeedLocale.getDefaultLocale(), "Right 1");
-            dc.addSource(JetspeedLocale.getDefaultLocale(), "Source 1");
-            dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
-            dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
+//            GenericMetadata md = pac.getMetadata();
+//            DublinCore dc = new DublinCoreImpl(md);
+//            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 1");
+//            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 2");
+//            dc.addTitle(JetspeedLocale.getDefaultLocale(), "Test title 3");
+//            dc.addContributor(JetspeedLocale.getDefaultLocale(), "Contrib 1");
+//            dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 1");
+//            dc.addCoverage(JetspeedLocale.getDefaultLocale(), "Coverage 2");
+//            dc.addCreator(JetspeedLocale.getDefaultLocale(), "Creator 1");
+//            dc.addDescription(JetspeedLocale.getDefaultLocale(), "Description 1");
+//            dc.addFormat(JetspeedLocale.getDefaultLocale(), "Format 1");
+//            dc.addIdentifier(JetspeedLocale.getDefaultLocale(), "Identifier 1");
+//            dc.addLanguage(JetspeedLocale.getDefaultLocale(), "Language 1");
+//            dc.addPublisher(JetspeedLocale.getDefaultLocale(), "Publisher 1");
+//            dc.addRelation(JetspeedLocale.getDefaultLocale(), "Relation 1");
+//            dc.addRight(JetspeedLocale.getDefaultLocale(), "Right 1");
+//            dc.addSource(JetspeedLocale.getDefaultLocale(), "Source 1");
+//            dc.addSubject(JetspeedLocale.getDefaultLocale(), "Subject 1");
+//            dc.addType(JetspeedLocale.getDefaultLocale(), "Type 1");
             wac.setContextRoot("/root");
             wac.addDescription(JetspeedLocale.getDefaultLocale(), "This is an english desrcitpion");
             wac.addDisplayName(JetspeedLocale.getDefaultLocale(), "This is an english display name");

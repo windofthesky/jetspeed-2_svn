@@ -152,12 +152,13 @@ public class FileSystemPAM implements Deployment
 
         String portletAppDir = util.formatWebApplicationPath(webAppsDir, paName);
         String portletXMLPath = portletAppDir + "/WEB-INF/portlet.xml";
+        PersistenceStore store = registry.getPersistenceStore();
         try
         {
             // Remove all registry entries
             // load the portlet.xml
             log.info("Loading " + portletXMLPath + " into memory....");
-
+            store.getTransaction().begin();
             MutablePortletApplication app = (MutablePortletApplication) registry.getPortletApplication(paName);
             // Application app = registry.loadPortletApplicationSettings(portletXMLPath, paName);
 
@@ -172,8 +173,10 @@ public class FileSystemPAM implements Deployment
 
             // registry.processPortletApplicationTree(app, "remove");
             // locate the deployment home
-
+            
+            
             registry.removeApplication(app);
+            store.getTransaction().commit();
 
             // Remove the webapps directory
 
@@ -417,15 +420,13 @@ public class FileSystemPAM implements Deployment
 
         // save it to the registry
         log.info("Saving the portlet.xml in the registry...");
-
+        PersistenceStore store = registry.getPersistenceStore();
         try
         {
-
+            store.getTransaction().begin();
             registry.registerPortletApplication(app);
-            log.info("Committing regsitry changes...");
-            PersistenceStoreContainer pContainer = (PersistenceStoreContainer)Jetspeed.getComponentManager().getComponent(PersistenceStoreContainer.class);
-            PersistenceStore store = pContainer.getStoreForThread("jetspeed");
-            store.getTransaction().commit();            
+            log.info("Committing registry changes...");
+            store.getTransaction().commit();                        
 
         }
         catch (Exception e)
@@ -433,6 +434,7 @@ public class FileSystemPAM implements Deployment
             String msg =
                 "Unable to register portlet application, " + app.getName() + ", through the portlet registry: " + e.toString();
             log.error(msg, e);
+            store.getTransaction().rollback();
             throw new RegistryException(msg, e);
         }
 
@@ -483,19 +485,21 @@ public class FileSystemPAM implements Deployment
      */
     protected void rollbackRegistry(MutablePortletApplication app)
     {
+        PersistenceStore store = registry.getPersistenceStore();
         try
         {
 
             // remove entries from the registry
             // registry.processPortletApplicationTree(app, "remove");
+            store.getTransaction().begin();
             log.info("Saving the portlet.xml in the registry...");
             registry.removeApplication(app);
-
+            store.getTransaction().commit();
         }
 
         catch (Exception e1)
         {
-
+            store.getTransaction().rollback();
             log.error("Error processing rollback.  Attempting to rollback registry transaction.", e1);
 
         }

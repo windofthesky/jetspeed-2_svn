@@ -161,6 +161,8 @@ public interface PersistenceStore
     
     void invalidate(Object obj) throws LockFailedException;
     
+    void invalidateAll() throws LockFailedException;
+    
     void invalidateExtent(Class clazz) throws LockFailedException;
     
 	void invalidateByQuery(Object query) throws LockFailedException;

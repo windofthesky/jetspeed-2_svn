@@ -19,7 +19,7 @@
   <!-- Merge OJB desriptor with Jetspeed main OJB descriptor                                              -->
   <!-- ================================================================ -->
   <goal name="ojb.registry">
-    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/java/repository_registry.xml"/>
+    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/java/repository_registry.xml" overwrite="true"/>
 <!--    <copy  file="${basedir}/src/java/repository_registry.xml" tofile="${basedir}/../../portal/src/test/repository_registry.xml"/> -->
    </goal>
 

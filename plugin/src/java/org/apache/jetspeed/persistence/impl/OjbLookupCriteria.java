@@ -128,7 +128,7 @@ public class OjbLookupCriteria implements LookupCriteria
      */
     public void addLike(Object arg0, Object arg1)
     {
-        ojbCriteria.addLike(arg0, arg1);
+        ojbCriteria.addLike((String)arg0, arg1);
     }
 
     /**
