@@ -19,6 +19,14 @@ limitations under the License.
     <links>
       <item name="Jetspeed 2" href="../../index.html"/>
     </links>
+    <menu name="Jetspeed 2 Security Documentation">
+      <item name="Overview" href="index.html"/>
+      <item name="Authentication" href="#"/>
+      <item name="Authorization Security Services" href="#"/>
+      <item name="Aggregate Security Services" href="#"/>
+      <item name="SPI Architecture" href="#"/>
+      <item name="Security Services Configuration" href="#"/>
+    </menu>
     <menu name="Misc.">
       <item name="Tasks" href="tasks.html"/>
     </menu>
