@@ -70,9 +70,10 @@ import org.apache.jetspeed.cps.template.Template;
 import org.apache.jetspeed.cps.template.TemplateLocator;
 import org.apache.jetspeed.cps.template.TemplateLocatorException;
 import org.apache.jetspeed.cps.template.TemplateLocatorService;
+import org.apache.jetspeed.entity.PortletEntityAccess;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.services.entity.PortletEntityAccess;
+
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
