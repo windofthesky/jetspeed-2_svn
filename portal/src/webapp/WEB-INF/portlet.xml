@@ -30,7 +30,7 @@ limitations under the License.
       <name>sizes</name>
       <value>50%,50%</value>
     </init-param>
-    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -61,7 +61,7 @@ limitations under the License.
       <name>sizes</name>
       <value>50%,50%</value>
     </init-param>
-    <portlet-class>org.apache.jetspeed.layout.MultiColumnPortlet</portlet-class>
+    <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
