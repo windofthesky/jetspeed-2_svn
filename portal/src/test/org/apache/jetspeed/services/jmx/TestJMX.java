@@ -65,6 +65,7 @@ import mx4j.connector.rmi.jrmp.JRMPConnector;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 /**
  * TestRegistryCategories
  *
@@ -77,10 +78,10 @@ public class TestJMX extends JetspeedTest
     /**
      * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
      */
-    public void overrideProperties(Configuration properties)
-    {
-        super.overrideProperties(properties);
-    }
+//    public void overrideProperties(Configuration properties)
+//    {
+//        super.overrideProperties(properties);
+//    }
 
     /**
      * Defines the testcase name for JUnit.
@@ -115,7 +116,7 @@ public class TestJMX extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestJMX.class);
+        return new JetspeedTestSuite(TestJMX.class);
     }
 
     /**

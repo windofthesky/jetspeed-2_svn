@@ -55,21 +55,10 @@ package org.apache.jetspeed.test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.util.Properties;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.apache.jetspeed.exception.JetspeedException;
+
 
 /**
  * Tests the Jetspeed Engine.
@@ -78,66 +67,49 @@ import org.apache.jetspeed.exception.JetspeedException;
  * @since 2.0
  * @version $Id$
  */
-public abstract class JetspeedTest
-    extends TestCase
-    implements JetspeedEngineConstants
+public abstract class JetspeedTest extends TestCase implements JetspeedEngineConstants
 {
+	
+	
+
+	
     /**
      * Creates a new instance.
      */
-    public JetspeedTest(String testName) 
+    public JetspeedTest(String testName)
     {
         super(testName);
+		
     }
 
     /**
      * Return the Test
      */
-    public static Test suite() 
-    {
-        return new TestSuite(JetspeedTest.class);
+    public static Test suite()
+    {    	
+        return new JetspeedTestSuite(JetspeedTest.class);
     }
 
     protected Engine engine = null;
+	protected JetspeedTestSuite jsuite;
 
     /**
      * Setup the test.
      */
-    public void setUp() 
+    public void setUp() throws Exception
     {
-        try
-        {
-            if (engine != null)
-            {
-                return;
-            }
-            String propertiesFilename = getPropertiesFile();
-            String applicationRoot = getApplicationRoot();
-            Configuration properties = (Configuration) 
-                new PropertiesConfiguration(propertiesFilename);
-            
-            properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
-            //properties.setProperty(WEBAPP_ROOT_KEY, null);
-            overrideProperties(properties);
-            engine = Jetspeed.createEngine(properties, applicationRoot, null);
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            assertTrue("Failed to setup JetspeedTest", false);
-        }
+  
+        super.setUp();
     }
 
-   
     /**
      * Override to set your own properties file
      *
      */
-    public String getPropertiesFile()
-    {
-        return "./src/webapp/WEB-INF/conf/jetspeed.properties";
-    }
+//    public String getPropertiesFile()
+//    {
+//        return jsuite.getPropertiesFile();
+//    }
 
     /**
      * Override to set your own application root
@@ -145,63 +117,19 @@ public abstract class JetspeedTest
      */
     public String getApplicationRoot()
     {
-        return "./src/webapp";
+        return jsuite.getApplicationRoot();
     }
 
-    /*
-     * Implement this method to override any properties in your test.
-     * If you override this method in a derived class, call super.overrideProperties to get these settings
-     * 
-     * @param properties The base configuration properties for the Jetspeed system.
-     */
-    public void overrideProperties(Configuration properties)
-    {        
-        String testPropsPath = getApplicationRoot() + "/WEB-INF/conf/test/jetspeed.properties";
-        try
-        {
-            File testFile = new File(testPropsPath);
-            if (testFile.exists())
-            {
-                FileInputStream is = new FileInputStream(testPropsPath);
-                Properties props = new Properties();
-                props.load(is);
-
-                Iterator it = props.entrySet().iterator();
-                while (it.hasNext())
-                {
-                    Entry entry = (Entry)it.next();
-                    //if (entry.getValue() != null && ((String)entry.getValue()).length() > 0)
-                    properties.setProperty((String)entry.getKey(), (String)entry.getValue());                    
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            assertTrue("Failed to read Test-specific properties", false);            
-        }
-    }
-    
     /**
      * Tear down the test.
      */
-    public void tearDown() 
+    public void tearDown() throws Exception
     {
-        try
-        {
-            if (engine != null)
-            {
-                Jetspeed.shutdown();
-            }
-        }
-        catch (JetspeedException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            engine = null;
-        }
+
     }
+
+   
+
+
 
 }

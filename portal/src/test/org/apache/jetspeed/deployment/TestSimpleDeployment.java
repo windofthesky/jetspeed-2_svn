@@ -11,9 +11,7 @@ import java.util.HashMap;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
@@ -22,6 +20,7 @@ import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
 import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryUtils;
@@ -75,13 +74,13 @@ public class TestSimpleDeployment extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestSimpleDeployment.class);
+        return new JetspeedTestSuite(TestSimpleDeployment.class);
     }
 
-    public void overrideProperties(Configuration properties)
-    {
-        super.overrideProperties(properties);
-    }
+//    public void overrideProperties(Configuration properties)
+//    {
+//        super.overrideProperties(properties);
+//    }
 
     public void testDeploy() throws Exception
     {
@@ -99,7 +98,7 @@ public class TestSimpleDeployment extends JetspeedTest
         DeploymentEventDispatcher ded = new DeploymentEventDispatcher(deployRoot);
         SimpleRegistry registry = new InMemoryRegistryImpl();
         DeployDecoratorEventListener ddel = new DeployDecoratorEventListener(registry);
-        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, testDb, new FileSystemPAM());
+        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM());
         ded.addDeploymentListener(ddel);
         ded.addDeploymentListener(dpal);
         HashMap handlers = new HashMap();
@@ -137,7 +136,7 @@ public class TestSimpleDeployment extends JetspeedTest
             testDb = new File("./test/db/hsql/Registry").getCanonicalPath();
             // remove any prior left overs
             
-			FileSystemPAM pam = new FileSystemPAM(testDb);
+			FileSystemPAM pam = new FileSystemPAM();
 			
 			pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);	
         }
@@ -152,11 +151,11 @@ public class TestSimpleDeployment extends JetspeedTest
     /**
      * @see junit.framework.TestCase#tearDown()
      */
-    public void tearDown()
+    public void tearDown() throws Exception
     {
         
         super.tearDown();
-		FileSystemPAM pam = new FileSystemPAM(testDb);
+		FileSystemPAM pam = new FileSystemPAM();
 		try
         {
             pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);

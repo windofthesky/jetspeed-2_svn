@@ -60,6 +60,7 @@ import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPageService
@@ -105,7 +106,7 @@ public class TestPageDBPersistence extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPageDBPersistence.class);
+        return new JetspeedTestSuite(TestPageDBPersistence.class);
     }
     
     protected PageManagerService getService()

@@ -67,6 +67,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.spi.services.prefs.impl.PropertyException;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * <p>Unit testing for {@link PropertyManagerService}.</p>
@@ -105,7 +106,7 @@ public class TestPropertyManagerService extends JetspeedTest
     /**
      * @see junit.framework.TestCase#setUp()
      */
-    public void setUp()
+    public void setUp() throws Exception
     {
         super.setUp();
         destroyPropertySetDefTestObject(true);
@@ -114,7 +115,7 @@ public class TestPropertyManagerService extends JetspeedTest
     /**
      * @see junit.framework.TestCase#tearDown()
      */
-    public void tearDown()
+    public void tearDown() throws Exception
     {
         super.tearDown();
         destroyPropertySetDefTestObject(true);
@@ -127,7 +128,7 @@ public class TestPropertyManagerService extends JetspeedTest
      */
     public static Test suite()
     {
-        return new TestSuite(TestPropertyManagerService.class);
+        return new JetspeedTestSuite(TestPropertyManagerService.class);
     }
 
     /**

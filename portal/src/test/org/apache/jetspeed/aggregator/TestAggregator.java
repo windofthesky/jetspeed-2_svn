@@ -57,6 +57,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextFactory;
@@ -86,7 +87,7 @@ public class TestAggregator extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestAggregator.class);
+        return new JetspeedTestSuite(TestAggregator.class);
     }
 
     /**

@@ -61,6 +61,7 @@ import junit.framework.TestSuite;
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * Test Capability Service
@@ -74,10 +75,10 @@ public class TestCapability extends JetspeedTest
     /**
      * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
      */
-    public void overrideProperties(Configuration properties)
-    {
-        super.overrideProperties(properties);
-    }
+//    public void overrideProperties(Configuration properties)
+//    {
+//        super.overrideProperties(properties);
+//    }
 
     /**
      * Defines the testcase name for JUnit.
@@ -100,7 +101,7 @@ public class TestCapability extends JetspeedTest
             new String[] { TestCapability.class.getName()});
     }
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         System.out.println("Setup: Testing Capability Service");
         super.setUp();
@@ -114,7 +115,7 @@ public class TestCapability extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestCapability.class);
+        return new JetspeedTestSuite(TestCapability.class);
     }
 
     protected CapabilityService getService()

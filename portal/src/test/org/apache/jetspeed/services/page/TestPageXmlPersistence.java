@@ -64,6 +64,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPageXmlPersistence
@@ -110,7 +111,7 @@ public class TestPageXmlPersistence extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPageXmlPersistence.class);
+        return new JetspeedTestSuite(TestPageXmlPersistence.class);
     }
 
     protected PageManagerService getService()

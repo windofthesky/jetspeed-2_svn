@@ -59,6 +59,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPortletURL
@@ -105,7 +106,7 @@ public class TestPortletURL extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPortletURL.class);
+        return new JetspeedTestSuite(TestPortletURL.class);
     }
 
 

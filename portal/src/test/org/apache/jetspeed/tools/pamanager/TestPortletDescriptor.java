@@ -63,6 +63,7 @@ import junit.textui.TestRunner;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -74,6 +75,7 @@ import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -122,16 +124,16 @@ public class TestPortletDescriptor extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPortletDescriptor.class);
+        return new JetspeedTestSuite(TestPortletDescriptor.class);
     }
 
     /*
      * Overrides the database properties
      */
-    public void overrideProperties(Configuration properties)
-    {
-        super.overrideProperties(properties);
-    }
+//    public void overrideProperties(Configuration properties)
+//    {
+//        super.overrideProperties(properties);
+//    }
 
     public void testLoadPortletApplicationTree() throws Exception
     {
@@ -323,12 +325,23 @@ public class TestPortletDescriptor extends JetspeedTest
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
 
         app.setName("HW_App");
-        JetspeedPortletRegistry.registerPortletApplication(app);
+		try
+        {
+            JetspeedPortletRegistry.beginTransaction();
+            JetspeedPortletRegistry.registerPortletApplication(app);
+            JetspeedPortletRegistry.commitTransaction();
+        }
+        catch (Exception e)
+        {
+			JetspeedPortletRegistry.rollbackTransaction();
+			throw e;
+        }
+      
         PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
-        plugin.clearCache();
+        
 
-        PortletDefinition pd = JetspeedPortletRegistry.getPortletDefinitionByUniqueName("PreferencePortlet");
+        PortletDefinition pd = JetspeedPortletRegistry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
         assertNotNull(pd);
 
         assertNotNull(pd.getPreferenceSet());

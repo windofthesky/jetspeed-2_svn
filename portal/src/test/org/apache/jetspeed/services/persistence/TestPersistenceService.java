@@ -58,9 +58,6 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -75,6 +72,7 @@ import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
@@ -88,7 +86,10 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
 public class TestPersistenceService extends JetspeedTest
 {
 
+    private static final String TEST_APP_1 = "test adding object";
     private PersistenceService service;
+
+    private PersistencePlugin plugin;
 
     /**
      * @param testName
@@ -101,16 +102,16 @@ public class TestPersistenceService extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPersistenceService.class);
+        return new JetspeedTestSuite(TestPersistenceService.class);
     }
 
     /**
      * @see org.apache.jetspeed.test.JetspeedTest#overrideProperties(org.apache.commons.configuration.Configuration)
      */
-    public void overrideProperties(Configuration properties)
-    {
-        super.overrideProperties(properties);
-    }
+//    public void overrideProperties(Configuration properties)
+//    {
+//        super.overrideProperties(properties);
+//    }
 
     public void testInit() throws Exception
     {
@@ -119,7 +120,7 @@ public class TestPersistenceService extends JetspeedTest
 
     public void testDefaultPlugin()
     {
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
         assertNotNull(plugin);
     }
 
@@ -171,7 +172,7 @@ public class TestPersistenceService extends JetspeedTest
 
     public void testAddingLangaugeToPortlet() throws Exception
     {
-        PersistencePlugin plugin = service.getPersistencePlugin("jetspeed-test");
+        
 
         try
         {
@@ -210,7 +211,7 @@ public class TestPersistenceService extends JetspeedTest
     {
         initTestObject();
 
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
 
         PortletApplicationDefinitionImpl app;
         try
@@ -249,13 +250,13 @@ public class TestPersistenceService extends JetspeedTest
     }
 
     public void testAdd2atATime() throws TransactionStateException
-    {
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+    {        
         MutablePortletApplication app1 = new PortletApplicationDefinitionImpl();
 
         try
         {
             plugin.beginTransaction();
+            
             plugin.prepareForUpdate(app1);
             app1.setName("This is app 1 of 2");
             app1.setVersion("1.0");
@@ -291,7 +292,7 @@ public class TestPersistenceService extends JetspeedTest
 
     public void testGet2atATime() throws TransactionStateException
     {
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+       
         LookupCriteria lc1 = plugin.newLookupCriteria();
         lc1.addEqualTo("name", "This is app 1 of 2");
         MutablePortletApplication app1 =
@@ -339,7 +340,7 @@ public class TestPersistenceService extends JetspeedTest
 
         assertNotNull(app);
 
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
 
         try
         {
@@ -376,9 +377,9 @@ public class TestPersistenceService extends JetspeedTest
 
         assertNotNull(app);
         
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
         LookupCriteria c = plugin.newLookupCriteria();
-        c.addEqualTo("name", "test adding object");
+        c.addEqualTo("name", TEST_APP_1);
         Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
         plugin.deleteByQuery(query);
 
@@ -400,14 +401,14 @@ public class TestPersistenceService extends JetspeedTest
     protected void initTestObject()
     {
 
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
         try
         {
 
             plugin.beginTransaction();
             MutablePortletApplication app = new PortletApplicationDefinitionImpl();
             plugin.prepareForUpdate(app);
-            app.setName("test adding object");
+            app.setName(TEST_APP_1);
             app.setVersion("1.0");
             app.setDescription("This is a test from persistence layer");
             // create a web application
@@ -449,7 +450,7 @@ public class TestPersistenceService extends JetspeedTest
 
     protected Language getEnglishLanguage()
     {
-        PersistencePlugin plugin = service.getPersistencePlugin("jetspeed-test");
+        
         MutableLanguage lang = new LanguageImpl();
 
         lang.setTitle("Portlet Title");
@@ -462,9 +463,9 @@ public class TestPersistenceService extends JetspeedTest
 
     protected PortletApplicationDefinitionImpl getTestObject1()
     {
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
         LookupCriteria c = plugin.newLookupCriteria();
-        c.addEqualTo("name", "test adding object");
+        c.addEqualTo("name", TEST_APP_1);
 
         Object obj =
             plugin.getObjectByQuery(
@@ -476,13 +477,12 @@ public class TestPersistenceService extends JetspeedTest
 
     protected void destroyTestObject()
     {
-        PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
+        
         LookupCriteria c = plugin.newLookupCriteria();
-        c.addEqualTo("name", "test adding object");
+ 		c.addEqualTo("name",  TEST_APP_1);
+ 		Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
         Collection removeUs =
-            plugin.getCollectionByQuery(
-                PortletApplicationDefinitionImpl.class,
-                plugin.generateQuery(PortletApplicationDefinitionImpl.class, c));
+            plugin.getCollectionByQuery(PortletApplicationDefinitionImpl.class, query);
 
         Iterator itr = removeUs.iterator();
         try
@@ -513,18 +513,20 @@ public class TestPersistenceService extends JetspeedTest
     /**com
      * @see junit.framework.TestCase#tearDown()
      */
-    public void tearDown()
+    public void tearDown() throws Exception
     {
+		destroyTestObject();
         super.tearDown();
-        destroyTestObject();
+        
     }
 
     /**
      * @see junit.framework.TestCase#setUp()
      */
-    public void setUp()
+    public void setUp() throws Exception
     {
         super.setUp();
+		plugin = getService().getDefaultPersistencePlugin();
         destroyTestObject();
     }
 

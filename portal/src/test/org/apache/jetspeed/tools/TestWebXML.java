@@ -53,6 +53,8 @@
  */
 package org.apache.jetspeed.tools;
 
+import org.apache.jetspeed.test.JetspeedTestSuite;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -81,7 +83,7 @@ public class TestWebXML
      */
     public static Test suite() 
     {
-        return new TestSuite(TestWebXML.class);
+        return new JetspeedTestSuite(TestWebXML.class);
     }
 
     /**

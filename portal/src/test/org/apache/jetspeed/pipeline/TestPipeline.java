@@ -58,6 +58,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestPipeline
@@ -101,7 +102,7 @@ public class TestPipeline extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPipeline.class);
+        return new JetspeedTestSuite(TestPipeline.class);
     }
 
     /**

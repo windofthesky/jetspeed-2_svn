@@ -78,6 +78,7 @@ import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
  * TestProfiler
@@ -123,7 +124,7 @@ public class TestProfiler extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestProfiler.class);
+        return new JetspeedTestSuite(TestProfiler.class);
     }
 
     protected ProfilerService getService()

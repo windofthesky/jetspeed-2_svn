@@ -66,6 +66,7 @@ import junit.framework.TestSuite;
 import org.apache.commons.io.StreamUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.jetspeed.test.JetspeedTest;
+import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.util.FileCopy;
 
 /**
@@ -107,7 +108,7 @@ public class TestFileCache extends JetspeedTest implements FileCacheEventListene
     public static Test suite() 
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite( TestFileCache.class );
+        return new JetspeedTestSuite( TestFileCache.class );
     }
 
     /**
