@@ -348,14 +348,16 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
      */
     public void setAttribute( String name, Object value )
     {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Attribute name == null");
+        }
+        
         // This allows us to make jetpseed objects avaiable to portlets
         // This makes the portlet non-portable but is a must admin portlets
         if(name.startsWith("org.apache.jetspeed"))
         {
-            if (name == null)
-            {
-                throw new IllegalArgumentException("Attribute name == null");
-            }
+           
 
             if ( value == null)
             {
