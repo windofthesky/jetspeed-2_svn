@@ -181,7 +181,7 @@ public class TemplateLocatorServiceImpl
                                 + " returning "
                                 + workingPath);
                 }
-                return createTemplateFromPath(path, templateName, realPath);
+                return createTemplateFromPath(path, templateName, realPath, root + workingPath);
             }
             // else strip path of one of its components and loop
             int pt = path.lastIndexOf(PATH_SEPARATOR);
@@ -266,10 +266,15 @@ public class TemplateLocatorServiceImpl
      * @param realPath the real path on the file system
      * @return newly created Template
      */
-    private Template createTemplateFromPath(String path, String name, String realPath)
+    private Template createTemplateFromPath(String path, String name, String realPath, String relativePath)
     {    
         TemplateImpl template = new TemplateImpl();
         template.setAbsolutePath(realPath);
+        if(relativePath.indexOf("/") != 0)
+        {
+			relativePath = "/"+relativePath;
+        }
+        template.setAppRelativePath(relativePath);
         template.setName(name);            
         StringTokenizer tok = new StringTokenizer(path, "/");
         int count = 0;

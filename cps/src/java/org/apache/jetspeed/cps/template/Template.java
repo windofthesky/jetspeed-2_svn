@@ -75,4 +75,14 @@ public interface Template extends TemplateLocator
      */    
     void setAbsolutePath(String path);
     
+	/**
+	 * Returns the template path relative to the applications root
+	 * @return Application-relative path
+	 */
+	public String getAppRelativePath();
+	/**
+	 * Sets the template path relative to the applications root
+	 * @param string Application-relative path
+	 */
+	public void setAppRelativePath(String string);
 }

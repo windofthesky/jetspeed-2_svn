@@ -62,6 +62,7 @@ package org.apache.jetspeed.cps.template;
 public class TemplateImpl extends TemplateLocatorImpl implements Template 
 {
     String absolutePath;
+    String appRelativePath;
     
     public TemplateImpl()
     {
@@ -93,6 +94,8 @@ public class TemplateImpl extends TemplateLocatorImpl implements Template
         this.absolutePath = path;
     }
     
+    
+    
     /**
      * @see Object#clone
      * @return an instance copy of this object
@@ -102,4 +105,20 @@ public class TemplateImpl extends TemplateLocatorImpl implements Template
         return super.clone();
     }
     
+    /**
+     * @return
+     */
+    public String getAppRelativePath()
+    {
+        return appRelativePath;
+    }
+
+    /**
+     * @param string
+     */
+    public void setAppRelativePath(String string)
+    {
+        appRelativePath = string;
+    }
+
 }
