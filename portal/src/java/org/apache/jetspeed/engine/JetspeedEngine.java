@@ -100,7 +100,8 @@ public class JetspeedEngine implements Engine
     private static final Log log = LogFactory.getLog(JetspeedEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
-    private final HashMap requestContextPerThread = new HashMap();
+    private ThreadLocal TLrequestContext = new ThreadLocal();
+    // private final HashMap requestContextPerThread = new HashMap();
 
     /**
      * Initializes the engine with a commons configuration, starting all early initable services.
@@ -234,8 +235,9 @@ public class JetspeedEngine implements Engine
 
     public void service(RequestContext context) throws JetspeedException
     {
-        requestContextPerThread.put(Thread.currentThread(), context);
-        pipeline.invoke(context);
+       // requestContextPerThread.put(Thread.currentThread(), context);
+       TLrequestContext.set(context);
+       pipeline.invoke(context);
     }
 
     /**
@@ -354,7 +356,7 @@ public class JetspeedEngine implements Engine
      */
     public RequestContext getCurrentRequestContext()
     {
-        return (RequestContext) requestContextPerThread.get(Thread.currentThread());
+        return (RequestContext) TLrequestContext.get();
     }
 
 }
