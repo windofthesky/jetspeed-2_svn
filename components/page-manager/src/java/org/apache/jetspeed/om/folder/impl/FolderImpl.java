@@ -48,9 +48,8 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
  */
 public class FolderImpl extends AbstractNode implements Folder
 {
-
-    //TODO: need to grab this from metadata...once we have metadata
-    private String defaultPage = "default-page.psml";
+    
+    private static final String FALLBACK_DEFAULT_PAGE = "default-page.psml";
     private String defaultTheme;
     private NodeSet allNodes;
     private File directory;
@@ -90,9 +89,14 @@ public class FolderImpl extends AbstractNode implements Folder
     public String getDefaultPage()
     {
         try
-        {
-            getPage(defaultPage);
-            return defaultPage;
+        {   
+            String defaultPage = metadata.getDefaultPage();
+            if(defaultPage == null)
+            {
+                defaultPage = FALLBACK_DEFAULT_PAGE;
+            }
+            ;
+            return getPage(defaultPage).getName();
         }
         catch (NodeException e)
         {
@@ -115,7 +119,7 @@ public class FolderImpl extends AbstractNode implements Folder
      */
     public void setDefaultPage( String defaultPage )
     {
-        this.defaultPage = defaultPage;
+        metadata.setDefaultPage(defaultPage);
     }
 
     /*

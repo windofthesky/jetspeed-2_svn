@@ -35,6 +35,7 @@ import org.apache.jetspeed.page.document.AbstractNode;
 public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
 {
     private Vector docOrder;
+    private String defaultPage;
     
     public FolderMetaDataImpl()
     {
@@ -91,5 +92,19 @@ public class FolderMetaDataImpl extends AbstractNode implements FolderMetaData
     {
         docOrder = docIndexes;
 
+    }
+    /**
+     * @return Returns the defaultPage.
+     */
+    public String getDefaultPage()
+    {
+        return defaultPage;
+    }
+    /**
+     * @param defaultPage The defaultPage to set.
+     */
+    public void setDefaultPage( String defaultPage )
+    {
+        this.defaultPage = defaultPage;
     }
 }

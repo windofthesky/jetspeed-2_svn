@@ -37,5 +37,9 @@ public interface FolderMetaData extends Document
     Vector getDocumentOrder();
     
     void setDocumentOrder(Vector docIndexes);
+    
+    String getDefaultPage();
+    
+    void setDefaultPage(String defaultPage);
 
 }

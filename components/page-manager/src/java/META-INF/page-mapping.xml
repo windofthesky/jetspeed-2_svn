@@ -142,6 +142,10 @@
     <field name="title" type="java.lang.String">
       <bind-xml name="title"/>
     </field>
+    
+    <field name="defaultPage" type="java.lang.String">
+      <bind-xml name="defaultPage"/>
+    </field>
 
     <field name="documentOrder"
            type="java.lang.String" 
