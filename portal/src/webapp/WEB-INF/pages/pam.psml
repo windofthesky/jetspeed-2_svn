@@ -13,32 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="p001">
+<page id="pam">
   <defaults
      skin="orange"
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
-  <title>My First PSML Page</title>
+  <title>Portlet Application Manager</title>
   <fragment id="2" type="layout" name="jetspeed::VelocityTwoColumns">
-    <fragment id="3" type="portlet" name="HW_App::HelloPortlet">
+    <fragment id="13" type="portlet" name="jetspeed::PortletApplicationBrowser" decorator="minty-blue">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
-    </fragment>                                
-    <fragment id="5" 
-     type="portlet" 
-     name="HW_App::PreferencePortlet"
-     decorator="metal">
+    </fragment>
+    <fragment id="14" type="portlet" name="jetspeed::PortletApplicationDetail" decorator="minty-blue">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="9" type="portlet" name="HW_App::CustomerList">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>
-    <fragment id="7" type="portlet" name="HW_App::PickANumberPortlet" decorator="minty-blue">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>        
   </fragment>
 </page>
