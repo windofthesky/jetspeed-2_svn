@@ -4,13 +4,12 @@
 <database>
 
     <!--
-       pref_property_value
+       prefs_property_value
     -->
-    <table name="PREF_PROPERTY_VALUE">
-        <column name="PROPERTY_VALUE_ID" primaryKey="true"
-            required="true" type="INTEGER"/>
-        <column name="PROPERTY_KEY_ID" type="INTEGER"/>
+    <table name="PREFS_PROPERTY_VALUE">
+        <column name="PROPERTY_VALUE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="NODE_ID" type="INTEGER"/>
+        <column name="PROPERTY_KEY_ID" type="INTEGER"/>
         <column name="BOOLEAN_VALUE" type="BIT"/>
         <column name="DATETIME_VALUE" type="TIMESTAMP"/>
         <column name="LONG_VALUE" type="INTEGER"/>
@@ -18,59 +17,53 @@
         <column name="TEXT_VALUE" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <foreign-key foreignTable="PREF_PROPERTY_KEY">
+        <foreign-key foreignTable="PREFS_PROPERTY_KEY">
             <reference foreign="PROPERTY_KEY_ID" local="PROPERTY_KEY_ID"/>
         </foreign-key>
-        <foreign-key foreignTable="PREF_NODE">
+        <foreign-key foreignTable="PREFS_NODE">
+            <reference foreign="NODE_ID" local="NODE_ID"/>
+        </foreign-key>
+    </table>
+
+    <!--
+       prefs_node_property_key
+    -->
+    <table name="PREFS_NODE_PROPERTY_KEY">
+        <column name="NODE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PROPERTY_KEY_ID" primaryKey="true" required="true" type="INTEGER"/>
+    	<foreign-key foreignTable="PREFS_PROPERTY_KEY">
+            <reference foreign="PROPERTY_KEY_ID" local="PROPERTY_KEY_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="PREFS_NODE">
             <reference foreign="NODE_ID" local="NODE_ID"/>
         </foreign-key>
     </table>
     
-    <!--
-       pref_property_key
+   <!--
+       prefs_property_key
     -->
-    <table name="PREF_PROPERTY_KEY">
+    <table name="PREFS_PROPERTY_KEY">
         <column name="PROPERTY_KEY_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PROPERTY_SET_DEF_ID" type="INTEGER"/>
         <column name="PROPERTY_NAME" size="100" type="VARCHAR"/>
         <column name="PROPERTY_TYPE" type="SMALLINT"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <foreign-key foreignTable="PREF_PROPERTY_SET_DEF">
-            <reference foreign="PROPERTY_SET_DEF_ID" local="PROPERTY_SET_DEF_ID"/>
-        </foreign-key>
     </table>
     
     <!--
        pref_node
     -->
-    <table name="PREF_NODE">
+    <table name="PREFS_NODE">
         <column name="NODE_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PARENT_NODE_ID" type="INTEGER"/>
-        <column name="PROPERTY_SET_DEF_ID" type="INTEGER"/>
         <column name="NODE_NAME" size="100" type="VARCHAR"/>
         <column name="NODE_TYPE" type="SMALLINT"/>
         <column name="FULL_PATH" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <foreign-key foreignTable="PREF_PROPERTY_SET_DEF">
-            <reference foreign="PROPERTY_SET_DEF_ID" local="PROPERTY_SET_DEF_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="PREF_NODE">
+        <foreign-key foreignTable="PREFS_NODE">
             <reference foreign="NODE_ID" local="PARENT_NODE_ID"/>
         </foreign-key>
-    </table>
-
-    <!-- 
-       pref_property_set_def
-    -->
-    <table name="PREF_PROPERTY_SET_DEF">
-        <column name="PROPERTY_SET_DEF_ID" primaryKey="true"
-            required="true" type="INTEGER"/>
-        <column name="PROPERTY_SET_NAME" size="100" type="VARCHAR"/>
-        <column name="PROPERTY_SET_TYPE" type="SMALLINT"/>
-        <column name="CREATION_DATE" type="TIMESTAMP"/>
-        <column name="MODIFIED_DATE" type="TIMESTAMP"/>
     </table>
         
 </database>
