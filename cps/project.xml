@@ -162,6 +162,14 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>jetspeed-rdbms</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency> 
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
