@@ -33,6 +33,7 @@ public interface PortletWindowAccessor
      * @param fragment
      * @return
      * @throws FailedToRetrievePortletWindow
+     * @throws InconsistentWindowStateException If the window references a non-existsent PortletEntity
      */
     PortletWindow getPortletWindow(Fragment fragment) throws FailedToRetrievePortletWindow;
     
@@ -42,8 +43,10 @@ public interface PortletWindowAccessor
      * @param principal
      * @return
      * @throws FailedToCreateWindowException
+     * @throws FailedToRetrievePortletWindow
+     * @throws InconsistentWindowStateException If the window references a non-existsent PortletEntity
      */
-    PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException;
+    PortletWindow getPortletWindow(Fragment fragment, String principal) throws FailedToCreateWindowException, FailedToRetrievePortletWindow;
 
     /**
      * Lookup a portlet window in the cache
