@@ -15,10 +15,6 @@
  */
 package org.apache.jetspeed.deployment;
 
-import java.io.InputStream;
-
-import org.apache.commons.configuration.Configuration;
-
 /**
  * <p>
  * DeploymentEvent

@@ -18,7 +18,6 @@ import java.security.AccessController;
 import java.security.AccessControlContext;
 import java.security.Permission;
 import java.security.PermissionCollection;
-import java.security.SecurityPermission;
 import java.util.StringTokenizer;
 
 import javax.security.auth.Subject;

@@ -14,21 +14,16 @@
  */
 package org.apache.jetspeed.prefs;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import javax.naming.NameAlreadyBoundException;
 
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.impl.PropertyException;
 
 import org.picocontainer.MutablePicoContainer;

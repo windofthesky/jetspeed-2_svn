@@ -14,10 +14,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -27,14 +24,8 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 
 /**
  * <p>LoginModule implementation that authenticates a user

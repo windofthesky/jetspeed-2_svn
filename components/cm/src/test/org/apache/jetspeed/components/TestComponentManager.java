@@ -15,14 +15,9 @@
  */
 package org.apache.jetspeed.components;
 
-import java.io.File;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
 
 /**
  * TestComponentManager

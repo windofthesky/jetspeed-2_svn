@@ -15,11 +15,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.window.PortletWindow;

@@ -16,7 +16,6 @@
 package org.apache.jetspeed.pipeline;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.test.JetspeedTest;

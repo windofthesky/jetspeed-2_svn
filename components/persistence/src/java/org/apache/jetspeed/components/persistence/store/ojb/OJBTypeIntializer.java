@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.components.persistence.store.ojb;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.apache.commons.logging.Log;

@@ -15,7 +15,6 @@
 package org.apache.jetspeed.security.om;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.sql.Timestamp;
 
 /**

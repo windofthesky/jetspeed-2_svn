@@ -18,7 +18,6 @@ import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupPrincipal;
-import org.apache.jetspeed.security.RolePrincipal;
 
 /**
  * <p>A group made of a {@link GroupPrincipal} and the user {@link Preferences}.</p>

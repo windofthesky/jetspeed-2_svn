@@ -19,7 +19,6 @@ package org.apache.jetspeed.om.page;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;

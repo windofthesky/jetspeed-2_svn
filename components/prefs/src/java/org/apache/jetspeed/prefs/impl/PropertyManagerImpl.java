@@ -32,7 +32,6 @@ import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
 import org.apache.jetspeed.prefs.om.impl.PropertyKeyImpl;
-import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**

@@ -19,13 +19,7 @@ package org.apache.jetspeed.services.jmx;
 
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
-import mx4j.connector.RemoteMBeanServer;
-import mx4j.connector.rmi.jrmp.JRMPConnector;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.modeler.ManagedBean;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 /**

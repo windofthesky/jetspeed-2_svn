@@ -16,11 +16,7 @@ package org.apache.jetspeed.security;
 
 import java.security.AccessController;
 import java.security.AccessControlException;
-import java.security.Principal;
 import java.security.PrivilegedAction;
-import java.security.Policy;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
@@ -30,10 +26,8 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 import org.picocontainer.MutablePicoContainer;

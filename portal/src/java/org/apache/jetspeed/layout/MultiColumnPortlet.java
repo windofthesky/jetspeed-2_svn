@@ -23,17 +23,12 @@ import java.util.Vector;
 import java.util.StringTokenizer;
 import java.util.Collections;
 
-import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

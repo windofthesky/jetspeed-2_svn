@@ -14,7 +14,6 @@
  */
 package org.apache.jetspeed.security.om.impl;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;

@@ -14,9 +14,7 @@
  */
 package org.apache.jetspeed.security.om;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.sql.Timestamp;
 
 /**
  * <p>Interface representing Jetspeed security role principal object model.</p>

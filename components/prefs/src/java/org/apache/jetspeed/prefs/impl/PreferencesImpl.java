@@ -15,9 +15,6 @@
 package org.apache.jetspeed.prefs.impl;
 
 import java.sql.Timestamp;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,23 +22,18 @@ import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.PropertyKey;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
-import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * <p>{@link Preferences} implementation relying on Jetspeed

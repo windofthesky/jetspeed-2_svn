@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreEvent;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreEventListener;
 
 /**

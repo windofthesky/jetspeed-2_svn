@@ -39,7 +39,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
-import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;

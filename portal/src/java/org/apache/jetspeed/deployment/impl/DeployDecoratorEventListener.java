@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +21,6 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.simpleregistry.Entry;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
-import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistryException;
 
 /**
  * <p>

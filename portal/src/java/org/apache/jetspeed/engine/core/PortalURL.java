@@ -7,7 +7,6 @@
 package org.apache.jetspeed.engine.core;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * <p>

@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import junit.framework.Test;
 
 import org.apache.jetspeed.JetspeedPortalContext;
-import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;

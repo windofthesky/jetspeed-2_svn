@@ -18,26 +18,20 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.JetspeedCredential;
-import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
 import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.JetspeedCredentialImpl;

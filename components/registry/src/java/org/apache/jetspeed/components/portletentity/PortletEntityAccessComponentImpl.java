@@ -26,7 +26,6 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
 import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;

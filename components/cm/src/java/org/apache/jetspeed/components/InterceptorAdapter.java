@@ -19,7 +19,6 @@ import org.picocontainer.ComponentAdapter;
 import org.picocontainer.PicoInitializationException;
 import org.picocontainer.PicoIntrospectionException;
 import org.picocontainer.defaults.AssignabilityRegistrationException;
-import org.picocontainer.defaults.DecoratingComponentAdapterFactory;
 import org.picocontainer.defaults.ImplementationHidingComponentAdapter;
 import org.picocontainer.defaults.InterfaceFinder;
 import org.picocontainer.defaults.NotConcreteRegistrationException;

@@ -15,8 +15,6 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;

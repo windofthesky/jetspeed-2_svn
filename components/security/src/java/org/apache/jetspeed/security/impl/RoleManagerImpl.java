@@ -27,19 +27,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
 import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
 import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**

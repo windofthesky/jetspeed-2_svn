@@ -30,15 +30,10 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.JetspeedGroupPrincipal;
 import org.apache.jetspeed.security.om.impl.JetspeedGroupPrincipalImpl;
-import org.apache.jetspeed.security.om.JetspeedRolePrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedRolePrincipalImpl;
 import org.apache.jetspeed.security.om.JetspeedUserPrincipal;
-import org.apache.jetspeed.security.om.impl.JetspeedUserPrincipalImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**

@@ -15,7 +15,6 @@
 package org.apache.jetspeed.security;
 
 import java.util.Collection;
-import java.util.prefs.Preferences;
 
 /**
  * <p>Describes the service interface for managing roles.</p>

@@ -17,14 +17,8 @@ package org.apache.jetspeed.aggregator;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.Jetspeed;
-
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextFactory;
-import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.picocontainer.MutablePicoContainer;
 
 /**
