@@ -185,6 +185,13 @@ public interface SSOPrincipal {
 	 *  Setter for the  remotePrincipals 
 	 */
 	public void setRemotePrincipals(Collection remotePrincipals) ;
-	
-	}
 
+	/**
+	* Getter for the siteID.
+	*/
+	public int getSiteID();
+	/**
+	* Setter for thesiteID
+	*/
+	public void setSiteID(int siteID);
+}
