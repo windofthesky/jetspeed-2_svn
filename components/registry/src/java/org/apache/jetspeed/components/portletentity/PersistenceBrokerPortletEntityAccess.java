@@ -84,18 +84,25 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     {
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
         ObjectID entityKey = generateEntityKey(fragment, principal);
+        MutablePortletEntity portletEntity = null;
 
-        if (pd == null)
+        if (pd != null)
         {
-            throw new PortletEntityNotGeneratedException("Failed to retrieve Portlet Definition for "
-                    + fragment.getName());
+            portletEntity = newPortletEntityInstance(pd);
+            if (portletEntity == null)
+            {
+                throw new PortletEntityNotGeneratedException("Failed to create Portlet Entity for "
+                        + fragment.getName());
+            }
+        }
+        else
+        {
+            String msg = "Failed to retrieve Portlet Definition for " + fragment.getName();
+            logger.warn(msg);
+            portletEntity = new PortletEntityImpl();
+            fragment.setRenderedContent(msg);
         }
 
-        MutablePortletEntity portletEntity = newPortletEntityInstance(pd);
-        if (portletEntity == null)
-        {
-            throw new PortletEntityNotGeneratedException("Failed to create Portlet Entity for " + fragment.getName());
-        }
         portletEntity.setId(entityKey.toString());
 
         return portletEntity;

@@ -47,7 +47,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityAccessComponentImpl.java,v 1.21 2004/07/02
- *          13:30:24 weaver Exp $
+ *                13:30:24 weaver Exp $
  *  
  */
 public class PortletEntityAccessComponentImpl implements PortletEntityAccessComponent
@@ -84,7 +84,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * </p>
      * 
      * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment,
-     *      java.security.Principal)
+     *          java.security.Principal)
      * @param fragment
      * @param principal
      * @return
@@ -94,17 +94,25 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
         ObjectID entityKey = generateEntityKey(fragment, principal);
+        MutablePortletEntity portletEntity = null;
 
-        if (pd == null)
+        if (pd != null)
         {
-            throw new PortletEntityNotGeneratedException("Failed to retrieve Portlet Definition for "
-                    + fragment.getName());
+            portletEntity = newPortletEntityInstance(pd);
+            if (portletEntity == null)
+            {
+                throw new PortletEntityNotGeneratedException("Failed to create Portlet Entity for "
+                        + fragment.getName());
+            }
         }
-        MutablePortletEntity portletEntity = newPortletEntityInstance(pd);
-        if (portletEntity == null)
+        else
         {
-            throw new PortletEntityNotGeneratedException("Failed to create Portlet Entity for " + fragment.getName());
+            String msg = "Failed to retrieve Portlet Definition for " + fragment.getName();
+            log.warn(msg);
+            portletEntity = new PortletEntityImpl();
+            fragment.setRenderedContent(msg);
         }
+        
         portletEntity.setId(entityKey.toString());
 
         return portletEntity;
@@ -117,8 +125,8 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * 
      * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment)
      * @param fragment
-     * @return @throws
-     *         PortletEntityNotGeneratedException
+     * @return
+     * @throws PortletEntityNotGeneratedException
      */
     public MutablePortletEntity generateEntityFromFragment( Fragment fragment )
             throws PortletEntityNotGeneratedException
@@ -132,7 +140,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * </p>
      * 
      * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntityForFragment(org.apache.jetspeed.om.page.Fragment,
-     *      java.lang.String)
+     *          java.lang.String)
      * @param fragment
      * @param principal
      * @return
@@ -163,7 +171,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
      * </p>
      * 
      * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityKey(org.apache.jetspeed.om.page.Fragment,
-     *      java.lang.String)
+     *          java.lang.String)
      * @param fragment
      * @param principal
      * @return
@@ -194,7 +202,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     {
         if (entityCache.get(entityId) != null)
         {
-            PortletEntityImpl entity = (PortletEntityImpl) entityCache.get(entityId);            
+            PortletEntityImpl entity = (PortletEntityImpl) entityCache.get(entityId);
             return entity;
         }
         else
@@ -212,7 +220,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
             }
             else
             {
-                
+
                 String portletUniqueName = portletEntity.getPortletUniqueName();
                 PortletDefinitionComposite parentPortletDef = registry
                         .getPortletDefinitionByUniqueName(portletUniqueName);
