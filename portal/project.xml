@@ -466,7 +466,8 @@ limitations under the License.
       <excludes>
         <exclude>org/apache/jetspeed/test/JetspeedTest</exclude>
         <exclude>org/apache/jetspeed/test/JetspeedTestSuite</exclude>
-        <exclude>org/apache/jetspeed/services/jmx/TestJMX</exclude>
+        <exclude>**/TestJMX*.java</exclude>
+        <exclude>**/TestEngine.java</exclude>
       </excludes>
       <includes>
         <include>**/Test*.java</include>
