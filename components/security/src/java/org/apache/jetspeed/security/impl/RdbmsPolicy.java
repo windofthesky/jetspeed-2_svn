@@ -23,6 +23,9 @@ import java.security.Policy;
 
 import javax.security.auth.Subject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.security.PermissionManager;
 
 /**
@@ -39,6 +42,7 @@ import org.apache.jetspeed.security.PermissionManager;
  */
 public class RdbmsPolicy extends Policy
 {
+    private static final Log log = LogFactory.getLog(RdbmsPolicy.class);
 
     /** <p>Default Policy.</p> */
     private static String defaultPolicy = "sun.security.provider.PolicyFile";
@@ -49,21 +53,10 @@ public class RdbmsPolicy extends Policy
     /**
      * <p>Default constructor.</p>
      */
-    public RdbmsPolicy()
+    public RdbmsPolicy(PermissionManager pms)
     {
-        System.out.println("\t\t[RdbmsPolicy] Policy constructed.");
-    }
-
-    /**
-     * <p>Returns the {@link PermissionManagerService}.</p>
-     * TODO This should be improved.
-     */
-    protected void getPermissionManagerService()
-    {
-        if (pms == null)
-        {
-            //pms = (PermissionManager) CommonPortletServices.getPortalService(PermissionManager.SERVICE_NAME);
-        }
+        if (log.isDebugEnabled()) log.debug("RdbmsPolicy constructed.");
+        this.pms = pms;
     }
 
     /**
@@ -71,7 +64,7 @@ public class RdbmsPolicy extends Policy
      */
     public void refresh()
     {
-        System.out.println("\t\t[RdbmsPolicy] Refresh called.");
+        if (log.isDebugEnabled()) log.debug("RdbmsPolicy refresh called.");
     }
 
     /**
@@ -88,7 +81,7 @@ public class RdbmsPolicy extends Policy
      */
     public PermissionCollection getPermissions(CodeSource codeSource)
     {
-        System.out.println("\t\t[RdbmsPolicy] getPermissions called for '" + codeSource + "'.");
+        if (log.isDebugEnabled()) log.debug("getPermissions called for '" + codeSource + "'.");
 
         Permissions perms = null;
 
@@ -99,7 +92,6 @@ public class RdbmsPolicy extends Policy
         {
             // Add permission associated with the Subject Principals to Permissions.
             // Get the permissions
-            getPermissionManagerService();
             perms = pms.getPermissions(user.getPrincipals());
         }
         if (null != perms)

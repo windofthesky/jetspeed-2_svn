@@ -73,11 +73,6 @@ public class TestRdbmsPolicy extends AbstractComponentAwareTestCase
         container = (MutablePicoContainer) getContainer();
         ums = (UserManager) container.getComponentInstance(UserManager.class);
         pms = (PermissionManager) container.getComponentInstance(PermissionManager.class);
-
-        // Insert custom provider here.
-        Policy.setPolicy(new RdbmsPolicy());
-        Policy.getPolicy().refresh();
-
         initUser();
 
         // Let's login in.

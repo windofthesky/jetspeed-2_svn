@@ -45,6 +45,22 @@ public class TestSecurityHelper extends AbstractComponentAwareTestCase
     }
 
     /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    public void setUp() throws Exception
+    {
+        super.setUp();
+    }
+
+    /**
+     * @see junit.framework.TestCase#tearDown()
+     */
+    public void tearDown() throws Exception
+    {
+        super.tearDown();
+    }
+
+    /**
      * Creates the test suite.
      *
      * @return a test suite (<code>TestSuite</code>) that includes all methods
@@ -53,6 +69,7 @@ public class TestSecurityHelper extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestSecurityHelper.class);
+        suite.setScript("org/apache/jetspeed/security/containers/test.security.groovy");
         return suite;
     }
     
