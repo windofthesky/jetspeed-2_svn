@@ -642,8 +642,8 @@ copying over the files, so I need this 'manual' copy in order to deploy
         <fileset dir="${jetspeed2.home}/etc/db-ojb">
         </fileset>
     </copy>
+  </postGoal>
 -->
 
-  </postGoal>
 
 </project>
