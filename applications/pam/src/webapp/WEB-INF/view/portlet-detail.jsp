@@ -295,7 +295,13 @@ limitations under the License.
 	<form action="<c:out value="${edit_parameter_link}"/>">
 		<input type="hidden" name="portlet_action" value=""/>
 	
-	<table>
+	<table border="1">
+		<tr>
+			<th>&nbsp;</th>
+			<th><fmt:message key="pam.details.name"/></th>
+			<th><fmt:message key="pam.details.value"/></th>
+			<th><fmt:message key="pam.details.locale"/> / <fmt:message key="pam.details.description"/></th>
+		</tr>
 	<c:forEach var="theparam" items="${paramSet.innerCollection}">
 		<tr>
 			<td>
@@ -308,9 +314,25 @@ limitations under the License.
 			<td>
 				<input type="text" name="<c:out value="${theparam.name}"/>:value" value="<c:out value="${theparam.value}"/>"/>
 			</td>
-			<%--
-				TODO handle descriptions
-			--%>
+			<td>
+				<%
+					ParameterComposite param = (ParameterComposite)pageContext.findAttribute("theparam");
+					pageContext.setAttribute("description_set", param.getDescriptionSet());
+				%>
+				<table>
+				<c:forEach var="description" items="${description_set.innerCollection}" varStatus="descStatus">
+					<tr>
+						<td>
+							<c:out value="${description.locale}"/>
+						</td>
+						<td>
+							<input type="text" name="<c:out value="${theparam.name}"/>:description:<c:out value="${descStatus.index}"/>"
+								value="<c:out value="${description.description}"/>"/>
+						</td>
+					</tr>
+				</c:forEach>
+				</table>
+			</td>
 		</tr>
 	</c:forEach>
 	</table>

@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.common;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterCtrl;
 
@@ -41,5 +42,7 @@ public interface ParameterComposite extends Parameter, ParameterCtrl, Serializab
 	
 	
     void addDescription(Locale locale, String desc);
+    
+    DescriptionSet getDescriptionSet();
     
 }

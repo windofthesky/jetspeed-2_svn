@@ -602,13 +602,24 @@ public class PortletApplicationDetail extends ServletPortlet
         if(action.equals("add_parameter"))
         {
             String name = actionRequest.getParameter("name");
-            String value = actionRequest.getParameter("value");
-            String description = actionRequest.getParameter("description");
-            String locale = actionRequest.getParameter("locale");
-            
-            portlet.addInitParameter(name, value, description, new Locale(locale));
-            
-            registry.getPersistenceStore().getTransaction().commit();
+            if(name != null)
+            {
+                String description = actionRequest.getParameter("description");
+	            String locale = actionRequest.getParameter("locale");
+	            
+                ParameterComposite parameter = (ParameterComposite)portlet.getInitParameterSet().get(name);
+                if(parameter == null)
+                {
+		            String value = actionRequest.getParameter("value");
+		            parameter = portlet.addInitParameter(name, value, description, new Locale(locale));
+                }
+                else
+                {
+                    parameter.addDescription(new Locale(locale), description);
+                }
+	            
+	            registry.getPersistenceStore().getTransaction().commit();
+            }
         }
         else if(action.equals("edit_parameter"))
         {
@@ -622,10 +633,31 @@ public class PortletApplicationDetail extends ServletPortlet
                     ParameterComposite param = (ParameterComposite) portlet.getInitParameterSet().get(paramId);
                     
                     String value = actionRequest.getParameter(paramId + ":value");
-                    //String description[] = actionRequest.getParameterValues(paramId + ":description");
-                    
-                    
                     param.setValue(value);
+                    
+                    int index = 0;
+                    Iterator descIter = param.getDescriptionSet().iterator();
+                    while (descIter.hasNext())
+                    {
+                        MutableDescription description = (MutableDescription) descIter.next();
+                        String descParam = actionRequest.getParameter(paramId + ":description:" + index);
+                        //changing locale not allowed.
+                        
+                        if(descParam != null)
+                        {
+                            if(descParam.length() == 0)
+                            {
+                                descIter.remove();
+                            }
+                            else if(!descParam.equals(description.getDescription()))
+                            {
+                                description.setDescription(descParam);
+                            }
+                        }
+                        
+                        index++;
+                    }
+                    
                 }
             }
             

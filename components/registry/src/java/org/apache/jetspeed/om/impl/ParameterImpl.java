@@ -199,4 +199,12 @@ public class ParameterImpl implements ParameterComposite, Serializable
         return null;
     }
 
+    /**
+     * @see org.apache.jetspeed.om.common.ParameterComposite#getDescriptionSet()
+     */
+    public DescriptionSet getDescriptionSet()
+    {
+        return descCollWrapper;
+    }
+
 }
