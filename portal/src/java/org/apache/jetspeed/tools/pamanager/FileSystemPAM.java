@@ -80,6 +80,8 @@ public class FileSystemPAM implements Deployment
     // Implementation of deplyment interface
 
     private static final String DEPLOYMENT_SYSTEM = "jetspeed-deploy";
+
+    private String deploymentDbAlias;
     /**
      * Deploys the specified war file to the webapps dirctory specified.
      * 
@@ -88,9 +90,11 @@ public class FileSystemPAM implements Deployment
      * @param paName The Portlet Application name
      * @throws PortletApplicationException
      */
-    public void deploy(String webAppsDir, String warFile, String paName)
+    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias)
         throws PortletApplicationException
     {
+        this.deploymentDbAlias = deploymentDbAlias;
+
         // Call into DeplyUtilities class
         DeployUtilities util = new DeployUtilities();
 
@@ -116,12 +120,7 @@ public class FileSystemPAM implements Deployment
 
             // load the portlet.xml
             System.out.println("Loading " + portletXMLPath + " into memory....");
-            app =
-                (
-                    MutablePortletApplication) PortletDescriptorUtilities
-                        .loadPortletApplicationTree(
-                    portletXMLPath,
-                    paName);
+            app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletApplicationTree(portletXMLPath, paName);
 
             if (app == null)
             {
@@ -208,15 +207,12 @@ public class FileSystemPAM implements Deployment
             // load the portlet.xml
             System.out.println("Loading " + portletXMLPath + " into memory....");
             identifyDeploymentSystem();
-            MutablePortletApplication app =
-                (MutablePortletApplication) JetspeedPortletRegistry.getPortletApplication(paName);
+            MutablePortletApplication app = (MutablePortletApplication) JetspeedPortletRegistry.getPortletApplication(paName);
             // Application app = JetspeedPortletRegistry.loadPortletApplicationSettings(portletXMLPath, paName);
 
             if (app == null)
             {
-                System.out.println(
-                    "Error retrieving Application from Registry Database. Application not found: "
-                        + paName);
+                System.out.println("Error retrieving Application from Registry Database. Application not found: " + paName);
                 return;
             }
 
@@ -225,7 +221,7 @@ public class FileSystemPAM implements Deployment
 
             // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
             // locate the deployment home
-            
+
             JetspeedPortletRegistry.removeApplication(app);
 
             // Remove the webapps directory
@@ -236,9 +232,7 @@ public class FileSystemPAM implements Deployment
             if (util.deleteDir(new File(webAppsDir + paName)) == false)
             {
                 System.out.println(
-                    "Failed to delete web app directory "
-                        + webAppsDir
-                        + " .Make sure the application is no longer running.");
+                    "Failed to delete web app directory " + webAppsDir + " .Make sure the application is no longer running.");
             }
 
             // DONE
@@ -252,22 +246,27 @@ public class FileSystemPAM implements Deployment
 
     }
 
-
-   /**
-    * Alters the deployment DB alias based on the value found in
-    * the user's build.properties file.
-    * @throws IOException
-    */
+    /**
+     * Alters the deployment DB alias based on the value found in
+     * the user's build.properties file.
+     * @throws IOException
+     */
     protected void identifyDeploymentSystem() throws IOException
     {
-        String userBuildFile =
-            System.getProperty("user.home") + File.separator + "build.properties";
-        Configuration buildProps =
-            new PropertiesConfiguration(userBuildFile, "./build.properties");
-        
-        // See if the user has overriden the deployment alias
-        String dbAliasOverride = buildProps.getString("deployment.db.alias");
-        
+        String dbAliasOverride;
+        if (this.deploymentDbAlias == null)
+        {
+            String userBuildFile = System.getProperty("user.home") + File.separator + "build.properties";
+            Configuration buildProps = new PropertiesConfiguration(userBuildFile, "./build.properties");
+
+            // See if the user has overriden the deployment alias
+            dbAliasOverride = buildProps.getString("deployment.db.alias");
+        }
+        else
+        {
+            dbAliasOverride = this.deploymentDbAlias;
+        }
+
         if (dbAliasOverride != null)
         {
             // Change the deployment location to match the user's build.properties
@@ -287,11 +286,7 @@ public class FileSystemPAM implements Deployment
 
     }
 
-    private void rollback(
-        int nState,
-        String webAppsDir,
-        String paName,
-        MutablePortletApplication app)
+    private void rollback(int nState, String webAppsDir, String paName, MutablePortletApplication app)
     {
         System.out.println("Exception in deploy. Rollback of application deployment...");
 
@@ -320,8 +315,7 @@ public class FileSystemPAM implements Deployment
             if (nState >= 1)
             {
                 // Remove the webapps directory
-                System.out.println(
-                    "Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
+                System.out.println("Rollback: Remove " + webAppsDir + paName + " and all sub-directories.");
 
                 // Call into DeplyUtilities class
                 DeployUtilities util = new DeployUtilities();
@@ -339,4 +333,21 @@ public class FileSystemPAM implements Deployment
             return;
         }
     }
+    /** 
+     * <p>
+     * deploy
+     * </p>
+     * 
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String, java.lang.String, java.lang.String)
+     * @param webAppsDir
+     * @param warFile
+     * @param paName
+     * @throws PortletApplicationException
+     */
+    public void deploy(String webAppsDir, String warFile, String paName) throws PortletApplicationException
+    {
+        deploy(webAppsDir, warFile, paName, null);
+
+    }
+
 }
