@@ -12,14 +12,15 @@
   #end
 
   #if ($decorator)
-        #set($decoTop = "${decorator}-top.vm")
-        #set($decoBottom = "${decorator}-bottom.vm")
+        #set($decoTop = "${decorator}/decorator-top.vm")
+        #set($decoBottom = "${decorator}/decorator-bottom.vm")
   #end
 
-<!-- Decorator  $decorator  ${decoTop}.vm-${decoBottom}.vm-->
+<!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
+
 
   #if (($decoTop) && ($myFragment == $myPage.getRootFragment()))
-      #parse($jetspeed.getTemplate($decoTop).appRelativePath)
+      #parse($jetspeed.getDecoration($decoTop, "layout").appRelativePath)
   #end
 
 <table width="100%" cellspacing="0" cellpadding="0">
@@ -41,5 +42,5 @@
 </table>
 
 #if (($decoBottom ) && ($myFragment == $myPage.getRootFragment()))
-   #parse($jetspeed.getTemplate($decoBottom).appRelativePath)
+   #parse($jetspeed.getDecoration($decoBottom, "layout").appRelativePath)
 #end
