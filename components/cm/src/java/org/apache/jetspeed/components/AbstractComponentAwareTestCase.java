@@ -36,25 +36,6 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
 {
     private ComponentManager ncm;
     private MutablePicoContainer container;
-    private String log4jFile = "./src/webapp/WEB-INF/conf/Log4j.properties";
-    
-    /**
-     * @param arg0
-     */
-    public AbstractComponentAwareTestCase(String arg0)
-    {
-        super(arg0);
-    }
-    
-    /**
-     * @param arg0
-     */
-    public AbstractComponentAwareTestCase(String arg0, String log4jFile)
-    {
-        super(arg0);
-        this.log4jFile = log4jFile;
-    }
-    
     
     /**
      * @return Returns the ncm.
@@ -90,34 +71,8 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
         this.container = container;
     }
 
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        
-        Properties p = new Properties();
-        try
-        {
-            String base = System.getProperty("basedir");
-            if (base != null)
-            {
-                File baseDir = new File(base);
-                if(baseDir.exists())
-                {
-                    System.out.println("Finding logfile from basedir " + baseDir);
-                    File logFile = new File(baseDir, log4jFile);
-                    p.load(new FileInputStream(logFile));
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        PropertyConfigurator.configure(p);
-        
-        System.getProperties().setProperty(LogFactory.class.getName(), Log4jFactory.class.getName());
-        
-    }
+    
+
     
     public String getApplicationRoot()
     {
@@ -125,4 +80,20 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
     }
     
 
+    /**
+     * 
+     */
+    public AbstractComponentAwareTestCase()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    /**
+     * @param arg0
+     */
+    public AbstractComponentAwareTestCase( String arg0 )
+    {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 }
