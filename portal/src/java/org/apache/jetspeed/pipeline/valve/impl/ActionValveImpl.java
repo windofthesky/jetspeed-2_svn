@@ -76,10 +76,6 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 responseCommitted = response.isCommitted();
                 request.setAttribute(PortalReservedParameters.PIPELINE, null); // clear the pipeline
             }
-            else
-            {
-                log.info("No action window defined for this request");
-            }
         }
         catch (PortletContainerException e)
         {

@@ -287,7 +287,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>commons-dbcp</id>
-      <version>1.1</version>
+      <version>1.2</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
@@ -454,7 +454,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>velocity</id>
-      <version>1.4-rc1</version>
+      <version>1.4</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
