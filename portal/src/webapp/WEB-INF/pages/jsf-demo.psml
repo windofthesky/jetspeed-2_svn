@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright 2004 The Apache Software Foundation
 
@@ -19,9 +19,9 @@ limitations under the License.
      layout-decorator="tigris"
      portlet-decorator="tigris"
   />
-  
+
    <title>JSF Demo</title>
-   <fragment id="jsfportletspage" type="layout" name="jetspeed::VelocityTwoColumns">
+   <fragment id="jsfportletspage" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
      <fragment id="jsfGuessNumber1" type="portlet" name="jsf-demo::guessNumber">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
@@ -33,10 +33,10 @@ limitations under the License.
      <fragment id="jsfGuessNumber2" type="portlet" name="jsf-demo-myfaces::guessNumberMyFaces">
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
-     </fragment>                                                        	                                              
+     </fragment>
   </fragment>
   <metadata name="title" xml:lang="ja">
-        JSF 数当てポートレット
+        JSF 数当ῦみートレット
   </metadata>
 
   <security-constraints>

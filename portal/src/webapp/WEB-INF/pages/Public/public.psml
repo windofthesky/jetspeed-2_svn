@@ -17,7 +17,7 @@ limitations under the License.
      portlet-decorator="tigris"
   />
   <title>Public Share</title>
-  <fragment id="ps-1000" type="layout" name="jetspeed::VelocityTwoColumns">
+  <fragment id="ps-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ps-1001" type="portlet" name="rss::RSS">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
