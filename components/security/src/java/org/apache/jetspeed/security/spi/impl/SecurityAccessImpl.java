@@ -127,7 +127,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
-        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_USER_ROOT + "%");
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_USER_ROOT + filter + "%");
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, queryCriteria);
         Iterator result = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         return result;
@@ -341,7 +341,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
-        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_ROLE_ROOT + "%");
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_ROLE_ROOT + filter + "%");
         Query query = QueryFactory.newQuery(InternalRolePrincipalImpl.class, queryCriteria);
         Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
         return c.iterator();
@@ -352,7 +352,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
       
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
-        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_GROUP_ROOT + "%");        
+        queryCriteria.addLike("fullPath", UserPrincipal.PREFS_GROUP_ROOT + filter + "%");        
         Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, queryCriteria);
         Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
         return c.iterator();
