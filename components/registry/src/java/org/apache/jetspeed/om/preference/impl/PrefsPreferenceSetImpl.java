@@ -328,6 +328,7 @@ public class PrefsPreferenceSetImpl implements PreferenceSetComposite
             }
 
             PrefsPreferenceSetImpl.this.remove(currentPref);
+            beginSize = size();
 
         }
     }
