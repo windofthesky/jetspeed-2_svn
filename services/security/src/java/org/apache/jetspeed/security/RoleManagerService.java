@@ -63,7 +63,7 @@ import org.apache.jetspeed.cps.CommonService;
  * <p>Role hierarchy elements are being returned as a {@link Role}
  * collection.  The backing implementation must appropriately map 
  * the role hierarchy to a preferences sub-tree.</p> 
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface RoleManagerService extends CommonService
 {

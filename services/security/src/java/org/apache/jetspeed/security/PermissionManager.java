@@ -62,7 +62,7 @@ import org.apache.jetspeed.cps.CommonPortletServices;
 
 /**
  * Convenience static wrapper around {@link PermissionManagerService}.
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PermissionManager
 {

@@ -71,7 +71,7 @@ import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 
 /**
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class TestLoginModule extends JetspeedTest
 {

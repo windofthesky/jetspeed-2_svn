@@ -69,7 +69,7 @@ import java.util.Collection;
  *     permission o.a.j.security.PortletPermission "myportlet", "view,edit,minimize,maximize";
  * };
  * </code><pre>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface PermissionManagerService
 {

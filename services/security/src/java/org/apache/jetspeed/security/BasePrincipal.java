@@ -59,7 +59,7 @@ import java.security.Principal;
 
 /**
 * <p>The base principal.</p>
-* @author <a href="mailto:taylor@sensova.com">David Le Strat</a>
+* @author <a href="mailto:taylor@apache.org">David Taylor</a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
 */
 public interface BasePrincipal extends Principal, Serializable
 {

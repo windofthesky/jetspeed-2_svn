@@ -57,7 +57,7 @@ import java.util.prefs.Preferences;
 
 /**
  * <p>A role made of a {@link RolePrincipal} and the role {@link Preferences}.</p>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface Role
 {

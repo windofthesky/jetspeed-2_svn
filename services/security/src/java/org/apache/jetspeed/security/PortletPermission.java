@@ -69,7 +69,7 @@ import javax.security.auth.Subject;
  *    <li><a href="http://www-106.ibm.com/developerworks/library/j-jaas/">
  *    Extend JAAS for class instance-level authorization.</a></li>
  * </ul>
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class PortletPermission extends Permission
 {

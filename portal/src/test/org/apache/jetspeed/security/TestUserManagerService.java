@@ -77,7 +77,7 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
 /**
  * <p>Unit testing for {@link UserManagerService}.</p>
  *
- * @author <a href="mailto:david@sensova.com">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class TestUserManagerService extends JetspeedTest
 {
