@@ -16,6 +16,7 @@
 package org.apache.jetspeed.mbeans.registry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class RegistryMBeanImpl implements RegistryMBean
     {
         PortletRegistry regsitry =
             (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        List portlets = regsitry.getAllPortletDefinitions();
+        Collection portlets = regsitry.getAllPortletDefinitions();
         ArrayList list = new ArrayList(portlets.size());
         Iterator itr = portlets.iterator();
         while (itr.hasNext())

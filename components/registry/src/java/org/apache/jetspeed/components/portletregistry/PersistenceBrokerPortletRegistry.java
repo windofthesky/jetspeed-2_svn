@@ -15,10 +15,8 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -81,11 +79,11 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         }
     }
 
-    public List getAllPortletDefinitions()
+    public Collection getAllPortletDefinitions()
     {
         Criteria c = new Criteria();
-        List list = new ArrayList(getPersistenceBrokerTemplate().getCollectionByQuery(
-                QueryFactory.newQuery(PortletDefinitionImpl.class, c)));
+        Collection list = getPersistenceBrokerTemplate().getCollectionByQuery(
+                QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
     }
@@ -120,11 +118,11 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
         return app;
     }
 
-    public List getPortletApplications()
+    public Collection getPortletApplications()
     {
         Criteria c = new Criteria();
-        List list = new ArrayList(getPersistenceBrokerTemplate().getCollectionByQuery(
-                QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c)));
+        Collection list = getPersistenceBrokerTemplate().getCollectionByQuery(
+                QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
     }

@@ -15,10 +15,8 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -144,7 +142,7 @@ public class PortletRegistryComponentImpl implements PortletRegistry
      * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#getAllPortletDefinitions()
      * @return
      */
-    public List getAllPortletDefinitions()
+    public Collection getAllPortletDefinitions()
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -160,7 +158,7 @@ public class PortletRegistryComponentImpl implements PortletRegistry
             {
             }
         }
-        return new ArrayList(pds);
+        return pds;
     }
 
     public PersistenceStore getPersistenceStore()
@@ -241,7 +239,7 @@ public class PortletRegistryComponentImpl implements PortletRegistry
      * @see org.apache.jetspeed.registry.PortletRegistryComponentImpl#getPortletApplications()
      * @return
      */
-    public List getPortletApplications()
+    public Collection getPortletApplications()
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
@@ -257,7 +255,7 @@ public class PortletRegistryComponentImpl implements PortletRegistry
             {
             }
         }
-        return new ArrayList(pas);
+        return pas;
     }
 
     /**

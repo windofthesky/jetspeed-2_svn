@@ -16,7 +16,6 @@
 package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -43,7 +42,7 @@ public interface PortletRegistry
     Language createLanguage( Locale locale, String title, String shortTitle, String description, Collection keywords )
     throws RegistryException;
 
-    List getAllPortletDefinitions();
+    Collection getAllPortletDefinitions();
 
     /**
      * Retreives a PortletApplication by it's unique ObjectID.
@@ -74,7 +73,7 @@ public interface PortletRegistry
      */
     MutablePortletApplication getPortletApplicationByIdentifier( String identifier );
 
-    List getPortletApplications();
+    Collection getPortletApplications();
 
     /**
      * Locates a portlet using it's unique <code>identifier</code> 

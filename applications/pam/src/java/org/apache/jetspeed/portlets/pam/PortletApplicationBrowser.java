@@ -16,10 +16,9 @@
 package org.apache.jetspeed.portlets.pam;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-//import java.io.InputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -79,7 +78,7 @@ public class PortletApplicationBrowser extends GenericServletPortlet
         TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
         if(control == null)
         {
-            List apps = registry.getPortletApplications();
+            Collection apps = registry.getPortletApplications();
         	control = buildTree(apps, request.getLocale());
         	request.getPortletSession().setAttribute("j2_tree", control);
         }
@@ -161,8 +160,8 @@ public class PortletApplicationBrowser extends GenericServletPortlet
 		}
 	}
 	
-	private TreeControl buildTree(List apps, Locale locale) {
-	    
+	private TreeControl buildTree(Collection apps, Locale locale) 
+    {	    
 		TreeControlNode root =
             new TreeControlNode("ROOT-NODE",
                                 null, 
