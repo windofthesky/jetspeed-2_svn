@@ -119,6 +119,17 @@ public class TestPortletEntityAccessComponent extends AbstractComponentAwareTest
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
         
+        StoreablePortletEntityDelegate entity5 = entityAccess.newPortletEntityInstance(pd);
+        System.out.println("before storing entity: "  + entity5.getId());
+        
+        //entity.setId(TEST_ENTITY);
+        entityAccess.storePortletEntity(entity5);
+        System.out.println("store done: " + entity5.getId());        
+
+        StoreablePortletEntityDelegate entity6 = entityAccess.getPortletEntity(entity5.getId());
+        assertNotNull(entity6);
+        System.out.println("reget : " + entity6.getId());        
+        
         // TODO: test preferences
         System.out.println("PortletEntity Test completed.");
     }
