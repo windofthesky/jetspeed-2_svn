@@ -58,6 +58,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class FileSystemScanner extends Thread
     private boolean started = true;
     private List deployedFiles;
 
-    private static final Log log = LogFactory.getLog(FileSystemScanner.class);
+    private static final Log log = LogFactory.getLog("deployment");
 
     public FileSystemScanner(String directoryToWatch, Map fileTypeHandlers, DeploymentEventDispatcher dispatcher, long delay)
         throws FileNotFoundException, IOException
@@ -104,6 +105,7 @@ public class FileSystemScanner extends Thread
         this.delay = delay;
         this.dispatcher = dispatcher;
         this.deployedFiles = new ArrayList();
+		this.fileDates = new HashMap();
 
         Set fileExtensions = fileTypeHandlers.keySet();
         this.filter = new AllowedFileTypeFilter((String[]) fileExtensions.toArray(new String[1]));
@@ -161,8 +163,9 @@ public class FileSystemScanner extends Thread
                     // we are responsible for reclaiming the FSObject's resource
                     objHandler.close();
                     deployedFiles.add(aFile);
-                    // record the lastModified so we can watch for re-deployment
-                    fileDates.put(aFile, new Long(aFile.lastModified()));
+                    // record the lastModified so we can watch for re-deployment                    
+                    long lastModified = aFile.lastModified();
+                    fileDates.put(aFile, new Long(lastModified));                    
 
                 }
                 catch (Exception e1)
