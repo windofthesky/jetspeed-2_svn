@@ -580,8 +580,7 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        System.out.println("============== SET UP");
-        
+                
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Reader rdbmsScript = new InputStreamReader(cl
                 .getResourceAsStream("org/apache/jetspeed/containers/rdbms.container.groovy"));
@@ -601,8 +600,7 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
     }
 
     protected void tearDown() throws Exception
-    {
-        System.out.println("============== TEAR DOWN");
+    {        
         // parent.stop();
         rdbmsContainer.stop();
         persistenceContainer.stop();

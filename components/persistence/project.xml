@@ -188,10 +188,25 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+      <id>jta</id>
+      <jar>jta1.0.1.jar</jar>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
      <dependency>
       <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
       <id>portlet-api</id>
       <version>1.0</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
+      </properties>
+    </dependency>
+    <!-- Testing only -->
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
