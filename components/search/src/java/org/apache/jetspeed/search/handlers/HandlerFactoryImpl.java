@@ -80,9 +80,10 @@ public class HandlerFactoryImpl implements HandlerFactory
                 throw new Exception("No handler was found for document type: " + className);
             }
     
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            //ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             
-            handler = (ObjectHandler) classLoader.loadClass(handlerClass).newInstance();
+            //handler = (ObjectHandler) classLoader.loadClass(handlerClass).newInstance();
+            handler = (ObjectHandler)Class.forName(handlerClass).newInstance();
             handlerCache.put(className, handler);
         }
         //System.out.println("HandlerFactory: returning handler " + handler + " for " + obj);
