@@ -466,6 +466,18 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         ctListWrapper.setInnerCollection(contentTypes);
         ctListWrapper.addContentType(cType);
     }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addContentType(java.lang.String, java.lang.String[])
+     */
+    public void addContentType(String contentType, Collection modes)
+    {
+        ContentTypeImpl ct = new ContentTypeImpl();
+        ct.setContentType(contentType);
+        ct.setPortletModes(modes);
+        
+        addContentType(ct);
+    }
 
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(java.lang.String,

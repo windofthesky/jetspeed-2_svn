@@ -45,7 +45,6 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
 
@@ -838,8 +837,8 @@ public class PortletApplicationDetail extends ServletPortlet
             String contentType = actionRequest.getParameter("content_type");
             if(contentType != null)
             {
-	            ContentTypeImpl contentTypeImpl = new ContentTypeImpl();
-	            contentTypeImpl.setContentType(contentType);
+	            ArrayList allModes = new ArrayList();
+	            
 	            
 	            String[] modes = actionRequest.getParameterValues("mode");
 	            if(modes != null)
@@ -847,7 +846,8 @@ public class PortletApplicationDetail extends ServletPortlet
 	                for(int i=0; i<modes.length; i++)
 	                {
 	                    String mode = modes[i];
-	                    contentTypeImpl.addPortletMode(mode);
+	                    //contentTypeImpl.addPortletMode(mode);
+	                    allModes.add(mode);
 	                }
 	            }
 
@@ -855,10 +855,11 @@ public class PortletApplicationDetail extends ServletPortlet
 	            StringTokenizer tok = new StringTokenizer(customModes, ",");
 	            while (tok.hasMoreTokens())
 	            {
-	                contentTypeImpl.addPortletMode(tok.nextToken());
+	                //contentTypeImpl.addPortletMode(tok.nextToken());
+	                allModes.add(tok.nextToken());
 	            }
 	            
-	            portlet.addContentType(contentTypeImpl);
+	            portlet.addContentType(contentType, allModes);
 	            
 	            registry.getPersistenceStore().getTransaction().commit();
             }

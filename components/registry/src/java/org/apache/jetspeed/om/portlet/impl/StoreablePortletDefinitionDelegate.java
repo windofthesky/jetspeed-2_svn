@@ -16,6 +16,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
@@ -99,6 +100,14 @@ public class StoreablePortletDefinitionDelegate implements PortletDefinitionComp
     {
         portlet.addContentType(cType);
 
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addContentType(java.lang.String, java.lang.String[])
+     */
+    public void addContentType(String contentType, Collection modes)
+    {
+        portlet.addContentType(contentType, modes);
     }
 
     /** 
