@@ -45,7 +45,7 @@ BODY.layout-Jetspeed
 
 .PTitle
 {
-  font-size: 1.25em;
+ 
 }
 
 
@@ -102,7 +102,7 @@ BODY.layout-Jetspeed
 	Specify the height of the image used
 	else it will use the text height	
 	**/
-	font-size: .5em;
+
 	height:25px;	
 	color:black;
 	background:url(content/jetspeed/images/tabmiddle_low.gif);
@@ -131,7 +131,7 @@ BODY.layout-Jetspeed
 
 .layout-Jetspeed .LTab
 {
-    font-size: .5em;
+  
     font-weight: bold;
     letter-spacing: 1;
 	height:25px;	
