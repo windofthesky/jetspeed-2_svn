@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.idgenerator;
+package org.apache.jetspeed.idgenerator.impl;
 
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.picocontainer.Startable;
 
 /**

@@ -18,9 +18,9 @@ package org.apache.jetspeed.om.portlet.impl;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;

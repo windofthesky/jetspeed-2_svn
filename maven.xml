@@ -356,6 +356,37 @@ limitations under the License.
                banner="Deploying basic Jetspeed portal suite"
                postProcessing="false"
                ignoreFailures="false"/>
-    </goal>        
+    </goal>   
+    
+    <preGoal name="jar:jar">     
+  	 <j:forEach var="lib" items="${pom.artifacts}">
+      <j:set var="dep" value="${lib.dependency}"/>     
+      <j:if test="${dep.getProperty('jar.bundle')=='true'}">
+         <j:if test="${dep.type =='jar'}"> 
+           <ant:copy todir="${maven.build.dest}/lib" file="${lib.path}"/>  
+         </j:if> 
+      </j:if>  
+    </j:forEach>  	
+  </preGoal> 
+  
+  <!-- Because of the way or our cotainer handles classloading, we need
+  	 alter the testing class path to NOT include compnent jars at testing time
+  	-->
+  <preGoal name="test:test">     
+   <ant:path id="maven.dependency.classpath" >
+  	<j:forEach var="lib" items="${pom.artifacts}">
+  	 <j:set var="dep" value="${lib.dependency}"/>  
+  	  <j:if test="${dep.getProperty('component.only')!='true'}" >
+       <j:if test="${dep.type =='jar'}" >
+	    <ant:pathelement path="${lib.path}" />	   
+	    </j:if>	 
+	  </j:if> 
+	  <j:if test="${dep.getProperty('component.only')=='true'}">
+	  	<copy todir="${basedir}/target/deploy" file="${lib.path}" overwrite="true"/>    
+	  </j:if>
+     </j:forEach> 
+   </ant:path> 
+   
+  </preGoal>     
 
 </project>

@@ -34,103 +34,73 @@ limitations under the License.
 
   <dependencies>
     <dependency>
-      <id>jetspeed-cm</id>
-      <groupId>jetspeed2</groupId>
+      <id>jetspeed2:jetspeed-cm</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
+    </dependency>
+    <dependency>
+      <id>jetspeed2:jetspeed-commons</id>
+      <version>2.0-a1-dev</version>
     </dependency>
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-io</id>
       <version>0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>junit</id>
       <version>3.8.1</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>log4j</id>
       <version>1.2.6</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
      <id>picocontainer</id>
       <version>1.0-RC-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>nanocontainer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency> 
     <dependency>
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>nanocontainer:nanocontainer-deployer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
      <dependency>
       <id>asm</id>
       <version>1.4.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>groovy</id>
-     <version>1.0-beta-4-snapshot</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
+     <version>1.0-beta-4-snapshot</version>    
     </dependency>
     <dependency>
       <id>xerces</id>
       <version>2.3.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
       <version>2.0.2</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
   </dependencies>
   <build>

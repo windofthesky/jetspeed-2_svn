@@ -14,7 +14,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <!-- This is a sample metadata repository for the ObJectBridge System.
      Use this file as a template for building your own mappings-->
 
@@ -32,5 +31,7 @@ limitations under the License.
     &database;
 
     <!-- include ojb internal mappings here -->
-    &internal;    
+    &internal;
+    
+
 </descriptor-repository>

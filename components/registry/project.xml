@@ -33,145 +33,83 @@ limitations under the License.
 
   <shortDescription>Registry Components</shortDescription>
   <dependencies>  
-  	<dependency>
-      <id>jetspeed-cm</id>
-      <groupId>jetspeed2</groupId>
+   	<dependency>
+      <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
+    </dependency>
+  	<dependency>
+      <id>jetspeed2:jetspeed-cm</id>
+      <version>2.0-a1-dev</version>
     </dependency>  
     <dependency>
-      <id>jetspeed-persistence</id>
-      <groupId>jetspeed2</groupId>
+      <id>jetspeed2:jetspeed-persistence</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <component.only>true</component.only>
       </properties>
     </dependency>
     <!-- Testing only -->
     <dependency>
-      <id>jetspeed-rdbms</id>
-      <groupId>jetspeed2</groupId>
+      <id>jetspeed2:jetspeed-rdbms</id>
       <version>2.0-a1-dev</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <component.only>true</component.only>
       </properties>
     </dependency>    	
   	 <dependency>
       <id>commons-lang</id>
       <version>2.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-beanutils</id>
       <version>1.6.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-vfs</id>
       <version>SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>nanocontainer:nanocontainer-deployer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>junit</id>
       <version>3.8.1</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
-
       <id>log4j</id>
       <version>1.2.6</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>   
-    
-    <dependency>
-      <id>commons-configuration</id>
-      <version>1.0-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
     <dependency>
       <id>commons-collections</id>
       <version>3.0</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>commons-io</id>
       <version>0.1</version>
       <properties>
-        <war.bundle.jar>true</war.bundle.jar>
+        <jar.bundle>true</jar.bundle>
       </properties>
     </dependency>
     <dependency>
-      <id>ojb:db-ojb</id>
-      <version>1.0.rc5-PATCHED</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <!--
-    <dependency>
-      <id>ojb</id>
-      <version>1.0.rc4</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>-->
-     <dependency>
-      <id>commons-pool</id>
-      <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>commons-dbcp</id>
-      <version>1.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>    
-    <dependency>    	
-      <id>jdbc-se</id>
-      <jar>jdbc-se2.0.jar</jar>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
-        <dependency>
       <id>xerces</id>
       <version>2.3.0</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
@@ -180,114 +118,41 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-     <dependency>
-      <id>jdom</id>
-      <version>b8</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-      <dependency>
-      <id>fulcrum</id>
-      <version>3.0-b2-dev</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
+     
     <!-- This is only a test dependency -->
     <dependency>
       <id>hsqldb</id>
       <version>1.7.1</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>picocontainer</id>
       <version>1.0-RC-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
     <dependency>
       <id>nanocontainer</id>
       <version>1.0-beta-1-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>    
      <dependency>
       <id>groovy</id>
      <version>1.0-beta-4-snapshot</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
      <dependency>
       <id>asm</id>
       <version>1.4.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>    
-    <dependency>
-      <id>jetspeed-commons</id>
-      <groupId>jetspeed2</groupId>
-      <version>2.0-a1-dev</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
     <dependency>
       <id>pluto</id>
       <groupId>pluto</groupId>
       <version>1.0-SNAPSHOT</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
      </dependency>
      <dependency>
       <!-- portlet-api.jar must be in %MAVEN_HOME%respository/portlet-api/jars -->
       <id>portlet-api</id>
       <version>1.0</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
     </dependency>
-    <dependency>
+     <dependency>
       <id>servletapi</id>
       <version>2.3</version>
-      <properties>
-        <war.bundle.jar>false</war.bundle.jar>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>groovy</id>
-     <version>1.0-beta-4-snapshot</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>asm</id>
-      <version>1.4.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>jta</id>
-      <jar>jta1.0.1.jar</jar>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>tyrex</id>
-      <version>1.0.1</version>
-      <properties>
-        <war.bundle.jar>true</war.bundle.jar>
-      </properties>
     </dependency>
   </dependencies>
   <build>

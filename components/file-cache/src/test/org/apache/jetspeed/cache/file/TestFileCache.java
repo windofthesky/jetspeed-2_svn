@@ -26,6 +26,7 @@ import junit.framework.Test;
 
 import org.apache.commons.io.StreamUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.picocontainer.MutablePicoContainer;

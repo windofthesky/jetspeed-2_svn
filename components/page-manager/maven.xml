@@ -16,7 +16,8 @@ limitations under the License.
 <project default="java:jar"
          xmlns:j="jelly:core" 
          xmlns:define="jelly:define"
-         xmlns:reactor="reactor">
+         xmlns:reactor="reactor"
+         xmlns:ant="jelly:ant">
 
 <!--
   <preGoal name="test:test">
@@ -53,11 +54,6 @@ limitations under the License.
   	<attainGoal name="jar:install"/>
  </goal> 
  
-  <preGoal name="test:test">
-  	 <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-rdbms-2.0-a1-dev.jar" overwrite="true"/>
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-persistence-2.0-a1-dev.jar" overwrite="true"/>
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-file-cache-2.0-a1-dev.jar" overwrite="true"/>
-     <copy todir="${basedir}/target/deploy" file="${maven.repo.local}/jetspeed2/jars/jetspeed-id-generator-2.0-a1-dev.jar" overwrite="true"/>    
-  </preGoal>
+    
 
 </project>

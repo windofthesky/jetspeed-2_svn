@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.cache.file;
+package org.apache.jetspeed.cache.file.impl;
 
 import java.util.Collections;
 import java.util.Date;
@@ -27,6 +27,9 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cache.file.FileCache;
+import org.apache.jetspeed.cache.file.FileCacheEntry;
+import org.apache.jetspeed.cache.file.FileCacheEventListener;
 
 /**
  * FileCache keeps a cache of files up-to-date with a most simple eviction policy.
@@ -38,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  *  @version $Id$
  */
 
-public class FileCache implements java.util.Comparator
+public class BaseFileCache implements java.util.Comparator, FileCache
 {
     protected long scanRate = 300;  // every 5 minutes
     protected int maxSize = 100; // maximum of 100 items
@@ -47,13 +50,13 @@ public class FileCache implements java.util.Comparator
     private FileCacheScanner scanner = null;
     private Map cache = null;
 
-    private final static Log log = LogFactory.getLog(FileCache.class);
+    private final static Log log = LogFactory.getLog(BaseFileCache.class);
 
     /**
      * Default constructor. Use default values for scanReate and maxSize
      *
      */
-    public FileCache()
+    public BaseFileCache()
     {
         cache = new HashMap();
         this.scanner = new FileCacheScanner();
@@ -66,7 +69,7 @@ public class FileCache implements java.util.Comparator
      * @param scanRate how often in seconds to refresh and evict from the cache
      * @param maxSize the maximum allowed size of the cache before eviction starts
      */
-    public FileCache(long scanRate, 
+    public BaseFileCache(long scanRate, 
                      int maxSize)
     {
         cache = new HashMap();
@@ -85,7 +88,7 @@ public class FileCache implements java.util.Comparator
      * @param scanRate how often in seconds to refresh and evict from the cache
      * @param maxSize the maximum allowed size of the cache before eviction starts
      */
-    public FileCache(int initialCapacity, 
+    public BaseFileCache(int initialCapacity, 
                      int loadFactor, 
                      long scanRate, 
                      int maxSize)
@@ -174,7 +177,7 @@ public class FileCache implements java.util.Comparator
     public void put(File file, Object document)
         throws java.io.IOException
     {
-        FileCacheEntry entry = new FileCacheEntry(file, document);
+        FileCacheEntry entry = new BaseFileCacheEntry(file, document);
         cache.put(file.getCanonicalPath(), entry);
     }
 
@@ -188,7 +191,7 @@ public class FileCache implements java.util.Comparator
         throws java.io.IOException
     {
         File file = new File(key);
-        FileCacheEntry entry = new FileCacheEntry(file, document);
+        FileCacheEntry entry = new BaseFileCacheEntry(file, document);
         cache.put(file.getCanonicalPath(), entry);
     }
 
@@ -337,14 +340,14 @@ public class FileCache implements java.util.Comparator
                     try
                     {
                         int count = 0;
-                        for (Iterator it = FileCache.this.cache.values().iterator(); it.hasNext(); )
+                        for (Iterator it = BaseFileCache.this.cache.values().iterator(); it.hasNext(); )
                         {
                             FileCacheEntry entry = (FileCacheEntry) it.next();
                             Date modified = new Date(entry.getFile().lastModified());
     
                             if (modified.after(entry.getLastModified()))
                             {                            
-                                for (Iterator lit = FileCache.this.listeners.iterator(); lit.hasNext(); )
+                                for (Iterator lit = BaseFileCache.this.listeners.iterator(); lit.hasNext(); )
                                 {
                                     FileCacheEventListener listener = 
                                         (FileCacheEventListener) lit.next();
@@ -354,9 +357,9 @@ public class FileCache implements java.util.Comparator
                             }
                             count++;
                         }
-                        if (count > FileCache.this.getMaxSize())
+                        if (count > BaseFileCache.this.getMaxSize())
                         {
-                            FileCache.this.evict();
+                            BaseFileCache.this.evict();
                         }
                     }
                     catch (Exception e)
@@ -364,7 +367,7 @@ public class FileCache implements java.util.Comparator
                         log.error("FileCache Scanner: Error in iteration...", e);
                     }
     
-                    sleep(FileCache.this.getScanRate() * 1000);                
+                    sleep(BaseFileCache.this.getScanRate() * 1000);                
 
                     if (this.stopping)
                     {

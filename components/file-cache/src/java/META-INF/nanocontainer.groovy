@@ -16,6 +16,7 @@
 
 import org.apache.jetspeed.components.ChildAwareContainer
 import org.apache.jetspeed.cache.file.FileCache
+import org.apache.jetspeed.cache.file.impl.BaseFileCache
 
 container = new ChildAwareContainer(parent)
 
@@ -27,11 +28,11 @@ loadFactor = Integer.parseInt(System.getProperty("org.apache.jetspeed.file_cache
 
 if(initialCapacity != -1 && loadFactor != -1)
 {
-	FileCache fileCache = new FileCache(initialCapacity, loadFactor, scanRate, cacheSize)
+	FileCache fileCache = new BaseFileCache(initialCapacity, loadFactor, scanRate, cacheSize)
 }
 else
 {
-	FileCache fileCache = new FileCache(scanRate, cacheSize)
+	FileCache fileCache = new BaseFileCache(scanRate, cacheSize)
 }
 
 container.registerComponentInstance(FileCache, fileCache)

@@ -70,6 +70,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-1.4.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/mockrunner/jars/mockrunner-0.2.7.jar"/>
 	<classpathentry sourcepath="NANO_DEPLOYER_SRC" kind="var" path="MAVEN_REPO/nanocontainer/jars/nanocontainer-deployer-1.0-beta-1-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-vfs/jars/commons-vfs-SNAPSHOT.jar"/>
+	<classpathentry sourcepath="VFS_SRC" kind="var" path="MAVEN_REPO/commons-vfs/jars/commons-vfs-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

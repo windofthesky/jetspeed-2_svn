@@ -23,8 +23,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
 import org.apache.jetspeed.page.PageManager
 import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.cache.file.FileCache
-import org.apache.jetspeed.profiler.Profiler
-import org.apache.jetspeed.profiler.impl.JetspeedProfiler
+
 
 
 import java.io.File

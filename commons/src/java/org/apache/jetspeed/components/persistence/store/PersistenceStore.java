@@ -18,7 +18,6 @@ package org.apache.jetspeed.components.persistence.store;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.jetspeed.components.persistence.store.impl.LockFailedException;
 
 /**
  * <p>

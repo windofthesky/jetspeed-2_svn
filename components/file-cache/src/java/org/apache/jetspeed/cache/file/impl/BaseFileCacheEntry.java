@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.cache.file;
+package org.apache.jetspeed.cache.file.impl;
 
 import java.io.File;
 import java.util.Date;
+
+import org.apache.jetspeed.cache.file.FileCacheEntry;
 
 /**
  * FileCache entry keeps the cached content along with last access information.
@@ -26,7 +28,7 @@ import java.util.Date;
  *  @version $Id$
  */
 
-public class FileCacheEntry
+public class BaseFileCacheEntry implements FileCacheEntry
 {
     protected File file;
     protected Object document;
@@ -34,7 +36,7 @@ public class FileCacheEntry
     protected long lastAccessed;
     protected Date lastModified;
 
-    private FileCacheEntry()
+    private BaseFileCacheEntry()
     {
     }
 
@@ -44,7 +46,7 @@ public class FileCacheEntry
      * @param document The user specific content being cached
      * @param lastModified The document's last modified stamp
      */
-    public FileCacheEntry(File file, Object document)
+    public BaseFileCacheEntry(File file, Object document)
     {
         this.file = file;
         this.document = document;
