@@ -140,6 +140,20 @@
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+     <dependency>
+      <id>asm</id>
+      <version>1.4.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+      <dependency>
+      <id>groovy</id>
+     <version>1.0-beta-4-snapshot</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
