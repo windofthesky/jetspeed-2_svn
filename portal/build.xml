@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Portal-Engine" default="jar" basedir=".">
+
+    <!-- Give user a chance to override without editing this file 
+         (and without typing -D each time they invoke a target) -->    
+
+    <property file="${user.home}/build.properties" />
+    <property file="${user.home}/.build.properties" />
+    <property file="build.properties" />
+  
+    <!-- Generic project properties -->
+
+    <property name="project.fullname" value="Jetspeed Portal Engine Implementation"/>
+    <property name="project.name" value="jetspeed"/>
+    <property name="project.version" value="2.0-dev"/>
+
+  <!-- Configure the directory into which the web application is built -->
+  <property name="build"    value="${basedir}/build"/>
+
+  <!-- Configure the context path for this application -->
+  <property name="path"     value="/jetspeed"/>
+
+  <!-- Configure properties to access the Manager application -->
+  <property name="url"      value="http://127.0.0.1:8080/manager"/>
+  <property name="username" value="both"/>
+  <property name="password" value="tomcat"/>
+
+  <!-- Configure the custom Ant tasks for the Manager application -->
+  <!--
+  <taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="install"   classname="org.apache.catalina.ant.InstallTask"/>
+  <taskdef name="list"      classname="org.apache.catalina.ant.ListTask"/>
+  <taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
+  <taskdef name="remove"    classname="org.apache.catalina.ant.RemoveTask"/>
+  <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+  <taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
+  <taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
+  <taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
+  <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+		-->
+    <!-- =================================================================== -->
+    <!-- Set the properties related to the source tree                       -->
+    <!-- =================================================================== -->
+
+    <!-- Source locations for the build -->    
+
+	 <property name="deploy.dir" value="${catalina.home}/webapps/${project.name}"/>
+	 <property name="deploy.war.target" value="${catalina.home}/webapps/${project.name}.war"/>
+    <property name="src.dir" value="src"/>
+    <property name="src.java.dir" value="${src.dir}/java"/>    
+    <property name="src.test.dir" value="${src.dir}/test"/>    
+    <property name="src.xml.dir" value="${src.dir}/xml"/>
+    <property name="lib.dir" value="../../libs"/>    
+    <property name="webapp.dir" value="src/webapp"/>        
+    
+    <!-- =================================================================== -->
+    <!-- Set the properties related to the build area                        -->
+    <!-- =================================================================== -->
+
+    <!-- Destination locations for the build (relative to the basedir as -->
+    <!-- specified in the 'basedir' attribute of the project tag)        -->
+
+    <property name="build.dir" value="target"/>        
+    <property name="out.test.dir" value="${build.dir}/test"/>    
+    <property name="build.dest.dir" value="${build.dir}/classes"/>        
+    <property name="javadocs.destdir" value="docs/api"/>    
+    <property name="release.dir" value="${project.name}-${project.version}/"/>
+
+    <!-- Miscellaneous settings -->
+
+    <property name="year" value="2003"/>
+    <property name="locale.default" value="en"/>
+    <property name="debug" value="on"/>
+    <property name="optimize" value="off"/>
+    <property name="deprecation" value="on"/>
+         
+    <!-- =================================================================== -->
+    <!-- Builds Classpath                                                    -->
+    <!-- =================================================================== -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>       
+        <pathelement location="../commons/target/jetspeed-commons-2.0-a1-dev.jar"/>
+
+    </path>
+
+    <!-- =================================================================== -->
+    <!-- Initializes the build.                                              -->
+    <!-- =================================================================== -->    
+    <target name="init">
+
+        <!-- So that we can use the ${TSTAMP}, ${DSTAMP}, ... time stamps
+             in targets, if need be -->
+        <tstamp/>
+
+        <echo message="---------- ${project.fullname} ${project.version} ----------"/>
+        <echo message=""/>
+
+        <echo message="java.class.path = ${java.class.path}"/>        
+        <echo message=""/>
+        <echo message="java.home = ${java.home}"/>
+        <echo message="user.home = ${user.home}"/>
+        <echo message=""/>
+        <echo message="basedir = ${basedir}"/>
+        <echo message=""/>        
+        <echo message="build.compiler = ${build.compiler}"/>
+        <echo message="locale.default = ${locale.default}"/>
+                
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dest.dir}"/>
+                  
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Displays usage information                                         -->
+    <!-- ================================================================== -->
+    <target name="usage" description="Displays usage information">
+        <echo message="Use -projecthelp to see the available targets"/>
+    </target>
+        
+    <!-- =================================================================== -->
+    <!-- Compiles the class files                                            -->
+    <!-- =================================================================== -->
+    <target 
+        name="compile"  
+        description="Compiles the class files"
+    >
+        
+        <javac 
+            classpathref="classpath"
+            destdir="${build.dest.dir}" 
+            debug="${debug}"
+            deprecation="${deprecation}"
+            optimize="${optimize}">            
+          <src path="${src.java.dir}/"/>
+<!--          <src path="${src.test.dir}/"/>  -->
+        </javac>
+
+
+        <copy todir="${build.dest.dir}">            
+            <fileset dir="${src.java.dir}/">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build.dest.dir}">            
+            <fileset dir="${src.java.dir}/">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.dest.dir}">            
+            <fileset dir="${src.java.dir}/">
+                <include name="**/*.dtd"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build.dest.dir}">            
+            <fileset dir="${src.java.dir}/">
+                <include name="**/*_${locale.default}.properties"/>
+            </fileset>
+            <mapper type="glob" from="*_${locale.default}.properties" to="*.properties"/>
+        </copy>
+
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- Creates the jar file                                               -->
+    <!-- =================================================================== -->
+    <target name="jar" depends="compile" description="Creates the jar file">
+        <jar
+            jarfile="${build.dir}/${project.name}-${project.version}.jar" 
+            basedir="${build.dest.dir}"            
+            includes="org/"/>
+    </target>
+            
+    <!-- =================================================================== -->
+    <!-- Generates the project's API documentation                           -->
+    <!-- =================================================================== -->
+    <target 
+        name="javadocs" depends="jar" 
+        description="Generates the project's API documentation"
+    >
+        <mkdir dir="${javadocs.destdir}"/>
+        
+        <javadoc        
+            sourcepath="${src.java.dir}" 
+            packagenames="org.apache.jetspeed.*"
+            destdir="${javadocs.destdir}"         
+            author="true"
+            private="false"
+            version="true"
+            use="true"
+            windowtitle="${project.fullname} API"
+            doctitle="${project.fullname}"                
+            bottom="Copyright &#169; ${year} Apache Software Foundation. All Rights Reserved."
+        >
+            <classpath refid="classpath"/>
+        </javadoc>
+
+    </target>
+        
+    <!-- =================================================================== -->
+    <!-- Regenerate the castor registry markup Java peers                    -->
+    <!-- =================================================================== -->
+    <target  name="prepare_apis" depends="init">
+        <uptodate 
+            property="apis.uptodate" 
+            targetfile="${build.dir}/${project.name}-${project.version}.jar"
+        >
+            <srcfiles dir="${src.xml.dir}" includes="**/*.xsd"/>
+        </uptodate>
+    </target>
+        
+    <target name="apis" depends="prepare_apis" unless="apis.uptodate">
+        
+        <!-- regen jcm -->
+         
+        <delete quiet="true" >
+        <fileset dir="${src.java.dir}/org/apache/jetspeed/xml/api/jcm">
+            <exclude name="CVS"/>
+            <exclude name="package.html"/>
+        </fileset>
+        </delete>
+        <java classname="org.exolab.castor.builder.SourceGenerator" fork="yes">
+            <classpath refid="classpath"/>
+            <arg value="-i" />
+            <arg value="${src.xml.dir}/jetspeed-portal-content.xsd" />
+            <arg value="-f" />
+            <arg value="-dest" />
+            <arg value="${src.java.dir}" />
+            <arg value="-package" />
+            <arg value="org.apache.jetspeed.xml.api.jcm" />
+        </java>
+
+    <!-- Compile with no deprecation in the API because castor generates (2001/12/17) deprecated SAX1 calls -->
+        <javac 
+            classpathref="classpath"
+            srcdir="${src.java.dir}/org/apache/jetspeed/xml/api" 
+            destdir="${build.dest.dir}" 
+            debug="${debug}"
+            deprecation="off"
+            optimize="${optimize}">            
+        </javac>
+        
+    </target>        
+
+    <!-- =================================================================== -->
+    <!-- Creates the war file                                                -->
+    <!-- =================================================================== -->
+    <target name="war" depends="jar" description="Creates the war file">        
+                
+        <!-- Create the war file -->
+        <war warfile="${build.dir}/${project.name}.war"
+            webxml="${webapp.dir}/WEB-INF/web.xml">
+
+            <classes dir="${build.dest.dir}">
+                <!-- Do not include test files in the runtime jar -->
+                <exclude name="**/Test*.*"/>
+                <exclude name="**/test*.*"/>
+
+                <!-- Also exclude the test cactus.properties file -->
+                <exclude name="cactus.properties"/>
+            </classes>
+                        
+            <lib dir="${lib.dir}">
+                <include name="*.jar"/>                
+                <exclude name="servlet*.jar"/>
+            </lib>            
+            
+            <fileset dir="${webapp.dir}"> 
+                <exclude name="WEB-INF/web.xml"/>
+            </fileset>
+
+        </war>       
+        
+    </target>    
+
+
+  
+    <!-- =================================================================== -->
+    <!-- Hot deploys JetSpeed on a local server                                  -->
+    <!-- =================================================================== -->
+    <target name="hotdeploy" depends="compile" description="Hot deploys Jetspeed classes on a local server">        
+        <copy todir="${deploy.dir}/WEB-INF/classes">
+            <fileset dir="${build.dest.dir}">
+                <!-- Do not include test files in the runtime jar -->
+                 <exclude name="**/Test*.*"/>
+                 <exclude name="**/test*.*"/>
+            </fileset>
+        </copy>       
+        <copy  todir="${deploy.dir}">
+          <fileset  dir="${webapp.dir}">
+          </fileset>
+        </copy>
+
+    </target>    
+           
+    <!-- =================================================================== -->
+    <!-- Deploys JetSpeed on a local server                                  -->
+    <!-- =================================================================== -->
+    <target name="deploy"  depends="compile,war" description="Deploys jetspeed.war on a local server">        
+        <!-- Remove app dir from webapp & Copy the war file from of the build dir -->
+        <delete dir="${deploy.dir}"/> 
+        <copy  file="${build.dir}/${project.name}.war" tofile="${deploy.war.target}">
+        </copy>
+    </target>    
+           
+           
+    <!-- =================================================================== -->
+    <!-- Rebuilds everything                                                 -->
+    <!-- This is a little quicker than "clean; build" because there is no    -->
+    <!-- second JVM bootup.                                                  -->
+    <!-- =================================================================== -->
+    <target name="rebuild" depends="clean,jar" 
+            description="Rebuilds everything"
+    />
+
+    <!-- =================================================================== -->
+    <!-- Cleans up the distribution                                          -->
+    <!-- =================================================================== -->
+    <target name="clean" description="Cleans up the distribution">    
+  	    <delete dir="${build.dir}"/>
+<!--
+  	     <mkdir dir="${src.java.dir}/org/apache/jetspeed/om/portlets/impl"/>
+		  <delete>
+        <fileset dir="${src.java.dir}/org/apache/jetspeed/om/portlets">
+            <exclude name="CVS"/>
+            <include name="**.java"/>
+            <include name="**.properties"/>
+            <include name="**.ser"/>
+        </fileset>
+        <fileset dir="${src.java.dir}/org/apache/jetspeed/om/portlets/impl">
+            <exclude name="CVS"/>
+            <include name="**.java"/>
+        </fileset>
+        </delete>
+-->
+  	     <mkdir dir="${build.dir}"/>
+  	     <mkdir dir="${build.dir}/classes"/>
+    </target>
+
+   <!-- =================================================================== -->
+   <!-- Object Model                                                        -->
+   <!-- =================================================================== -->
+    <target name="check_pom">
+      <uptodate property="pomBuild.notRequired"  targetfile="./src/java/org/apache/jetspeed/om/portlets/PortletApp.java">		
+        <srcfiles dir= "../src/xml/" includes="portlet.xsd"/>
+      </uptodate>
+    </target>
+          
+    <target name="pom" depends="check_pom"
+            unless="pomBuild.notRequired"
+            description="Generate Portlet Object Model sources using JAXB">
+
+		<exec  executable="java" >
+		  	<arg line="-jar ../lib/jaxb-xjc.jar -d src/java -p org.apache.jetspeed.om.portlets ../src/xml/portlet.xsd"/>
+		</exec>  
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Run the Unit Tests                                                  -->
+    <!-- =================================================================== -->
+
+	 <target name="test" depends="compile"
+		description="Unit Tests">
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+        <classpath>
+                <pathelement location="${build.dest.dir}"/>
+                <path refid="classpath"/>
+                <pathelement location="${junit.jar}"/>
+            </classpath>
+
+    		<formatter type="plain" usefile="false"/>
+			<!-- JUnit unit tests -->
+   		<test name="org.apache.jetspeed.services.idgenerator.TestIdGenerator"/>       
+ 		   <test name="org.apache.jetspeed.pipeline.TestPipeline"/>  
+  		   <test name="org.apache.jetspeed.cache.file.TestFileCache"/>  
+			<test name="org.apache.jetspeed.services.registry.TestMarshallRegistry"/>  
+  		   <test name="org.apache.jetspeed.services.psml.TestMarshalPsml"/>  
+ 		   <test name="org.apache.jetspeed.services.profiler.TestProfilerService"/>  
+  	    </junit>
+	</target>
+
+
+    <!-- =================================================================== -->
+    <!-- Run the Quick Test                                                  -->
+    <!-- =================================================================== -->
+
+	 <target name="qt" depends="compile"
+		description="Quick unit tests used for testing the tests!">
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+        <classpath>
+                <pathelement location="${build.dest.dir}"/>
+                <pathelement location="${build.dir}/test-classes"/>                
+                <path refid="classpath"/>
+                <pathelement location="${junit.jar}"/>
+            </classpath>
+
+    		<formatter type="plain" usefile="false"/>
+			<!-- JUnit unit tests -->
+<!-- 		   <test name="org.apache.jetspeed.test.TestComponents"/>  -->
+           <test name="org.apache.jetspeed.tools.TestWebXML"/>
+		</junit>
+	</target>
+
+    <!-- =================================================================== -->
+    <!-- Command Line Deploy Tool                                                 -->
+    <!-- =================================================================== -->
+    <target name="deploy_tool" depends="compile"
+        description="Test CommandLineDeployTool">
+        
+        <java fork="true" classname="org.apache.jetspeed.tools.CommandLineDeployTool" >
+        <classpath>
+                <pathelement location="${build.dest.dir}"/>
+                <path refid="classpath"/>
+            </classpath>
+            <arg value="${catalina.home}/webapps/"/>
+    		<arg value="/apache/"/>
+            <arg value="file://${build.dir}/jetspeed.war"/>
+            <arg value="Catalina"/>
+            <arg value="-debug/"/>
+        </java>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Tomcat Ant Install                                                 -->
+    <!-- =================================================================== -->
+    <target name="install" description="Install web application"
+          depends="compile">
+    <install url="${url}" username="${username}" password="${password}"
+            path="${path}" war="jar:file:/apache/jetspeed-2/portal/target/jetspeed.war!/"/>
+    </target>
+
+</project>

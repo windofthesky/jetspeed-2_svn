@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Tasks</title>
+  </properties>
+  <body>
+    <section name="PortalEngine Tasks">
+      <subsection name="Phase 1">
+        <ul>
+<li>Capability valve, add capability and media type support in from J1 (RR)</li>
+<li>Session valve, start porting Jetspeed Security</li>
+<li>Remove, or confirm the requirement, the log4j.jar. We should be using commons-logging.</li>
+<li>Update LICENSE.TXT</li>
+        </ul>
+      </subsection>
+      <subsection name="Phase 2">
+        <ul>
+        </ul>
+      </subsection>
+      <subsection name="General Cleanup">
+        <ul>
+<li>Checktyle errors</li>
+        </ul>
+      </subsection>
+    </section>
+
+  </body>
+</document>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="registry" engine="hsql">
+  <driver url="jdbc:hsqldb:./test/db/hsql/Registry"
+          class-name="org.hsqldb.jdbcDriver">
+    <param name="user" value="sa" />
+    <param name="password" value="" />
+  </driver>
+  <mapping href="registry-mapping.xml"/>
+</database>        

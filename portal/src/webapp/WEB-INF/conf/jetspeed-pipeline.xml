@@ -1,0 +1,17 @@
+<pipelineDescriptor>
+  <name>JetspeedPipeline</name>
+  <valveDescriptors>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.capability.CapabilityValveImpl</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.container.ContainerValve</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.services.profiler.ProfilerValve</className>
+    </valveDescriptor>
+    <valveDescriptor>
+      <className>org.apache.jetspeed.aggregator.AggregatorValve</className>
+    </valveDescriptor>
+  </valveDescriptors>
+</pipelineDescriptor>

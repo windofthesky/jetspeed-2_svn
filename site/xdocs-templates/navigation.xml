@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  WARNING:  This file is generated.  The source is xdocs-templates/navigation.xml 
+
+  Note:  Changes to this file are not reflected on the generated site until the
+         allSite goal is atained, i.e. maven allSite 
+ -->
+<project>
+
+ <body>
+   <menu name="Misc.">
+      <item name="Goals" href="js2-goals.html"/>
+      <item name="Tasks" href="tasks.html"/>
+    </menu>
+    <menu name="Sub Projects">
+    #foreach ($reactorProject in $reactorProjects)
+      <item name="$reactorProject.name" href="../../../${reactorProject.file.parentFile.name}/target/docs/index.html"/>
+    #end
+    </menu>
+  </body>
+</project>

@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+                           "http://castor.exolab.org/mapping.dtd">
+<mapping>
+
+  <class name="org.apache.jetspeed.om.common.BaseSecurityRoleRef">
+
+   <!-- STW Test
+    <field name="description" type="java.lang.String">
+        <bind-xml name="description" node="element"/>
+    </field>
+    -->
+
+    <field name="roleName" type="java.lang.String" required="true">
+      <bind-xml name="role-name" node="element"/>
+    </field>
+    <field name="roleLink" type="java.lang.String">
+        <bind-xml name="role-link" node="element"/>
+    </field>
+  </class>
+
+  <!-- <class name="org.apache.jetspeed.om.common.BaseParameter"> -->
+  <class name="org.apache.jetspeed.om.common.extended.PortletInitParameter">
+
+    <field name="description" type="java.lang.String">
+      <bind-xml name="description" node="element"/>
+    </field>
+
+    <field name="name" type="java.lang.String" required="true">
+      <bind-xml name="name" node="element"/>
+    </field>
+    <field name="value" type="java.lang.String" required="true">
+      <bind-xml name="value" node="element"/>
+    </field>
+
+  </class>
+
+  <class name="org.apache.jetspeed.tools.castor.om.common.PreferenceDescriptor">
+      
+    <field name="name" type="java.lang.String" required="true">
+      <bind-xml name="name" node="element"/>
+    </field>
+    <field name="castorValues" type="java.lang.String" collection="collection" required="true">
+      <bind-xml name="value" node="element"/>
+    </field>
+    <field name="modifiable" type="java.lang.Boolean">
+      <bind-xml name="modifiable" node="element"/>
+    </field>
+
+  </class>
+
+  <class name="org.apache.jetspeed.tools.castor.om.common.portlet.ContentTypeDescriptor">
+
+    <field name="contentType" type="java.lang.String">
+      <bind-xml name="mime-type" node="element"/>
+    </field>
+
+    <field name="castorPortletModes"
+           type="java.lang.String"
+           collection="collection">
+      <bind-xml name="portlet-mode" node="element"/>
+    </field>
+
+  </class>
+<!--
+  <class name="org.apache.pluto.portalImpl.om.portlet.impl.PortletInfoImpl">
+    <field name="defaultInfo" type="org.apache.pluto.portalImpl.om.portlet.impl.LanguageImpl">
+      <bind-xml name="default-info" node="element"/>
+    </field>
+  </class>
+-->
+
+  <class name="org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor">
+      
+    <field name="castorPreferences" type="org.apache.jetspeed.tools.castor.om.common.PreferenceDescriptor" collection="collection">
+      <bind-xml name="preference" node="element"/>
+    </field>
+    <field name="preferencesValidator" type="java.lang.String">
+      <bind-xml name="preferences-validator" node="element"/>
+    </field>
+
+  </class>
+
+  <class name="org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor">
+
+    <field name="title" type="java.lang.String">
+      <bind-xml name="title" node="element"/>
+    </field>
+    <field name="shortTitle" type="java.lang.String">
+      <bind-xml name="short-title" node="element"/>
+    </field>
+    <field name="castorKeywords" type="java.lang.String">
+      <bind-xml name="keywords" node="element"/>
+    </field>
+
+  </class>
+
+  <class name="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor">
+      
+    <field name="portletIdentifier" type="java.lang.String">        
+      <bind-xml name="id" node="attribute"/>
+    </field>
+    <!--
+    <field name="description" type="java.lang.String">
+      <bind-xml name="description" node="element"/>
+    </field>
+    -->
+    <field name="name" type="java.lang.String">
+      <bind-xml name="portlet-name" node="element"/>
+    </field>
+
+    <field name="displayName" type="java.lang.String">
+      <bind-xml name="display-name" node="element"/>
+    </field>
+
+    <field name="className" type="java.lang.String">
+      <bind-xml name="portlet-class" node="element"/>
+    </field>
+    <field name="castorInitParams"
+           type="org.apache.jetspeed.om.common.extended.PortletInitParameter"
+           collection="collection">
+      <bind-xml name="init-param" node="element"/>
+    </field>
+
+    <field name="expirationCache" type="java.lang.String">
+      <bind-xml name="expiration-cache" node="element"/>
+    </field>
+    <field name="castorContentTypes"
+           type="org.apache.jetspeed.tools.castor.om.common.portlet.ContentTypeDescriptor"
+           collection="collection">
+      <bind-xml name="supports" node="element"/>
+    </field>
+    <field name="castorSupportedLocales" type="java.lang.String" collection="collection">
+      <bind-xml name="supported-locale" node="element"/>
+    </field>
+    <field name="resourceBundle" type="java.lang.String">
+      <bind-xml name="resource-bundle" node="element"/>
+    </field>
+    <field name="castorResources" type="org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor">
+      <bind-xml name="portlet-info" node="element"/>
+    </field>
+
+   <field name="castorPreferences"
+           type="org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor">
+      <bind-xml name="portlet-preferences" node="element"/>
+    </field>
+    <field name="castorInitSecurityRoleRefs"
+           type="org.apache.jetspeed.om.common.BaseSecurityRoleRef"
+           collection="collection">
+      <bind-xml name="security-role-ref" node="element"/>
+    </field>
+
+  </class>
+
+  <class name="org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition">
+    <map-to xml="portlet-app"/>
+
+    <field name="version" type="java.lang.String">
+      <bind-xml name="version" node="attribute"/>
+    </field>
+    <field name="applicationIdentifier" type="java.lang.String">
+      <bind-xml name="id" node="attribute"/>
+    </field>
+
+    <field name="portletDefinitions"
+           type="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor"
+           collection="collection">
+      <bind-xml name="portlet" node="element"/>
+    </field>
+    <!--
+    TODO: implement these
+    <field name="customPortletMode" type="java.lang.String" collection="collection">
+      <bind-xml name="custom-portlet-mode" node="element"/>
+    </field>
+    <field name="customPortletState" type="java.lang.String" collection="collection">
+      <bind-xml name="custom-window-state" node="element"/>
+    </field>
+    <field name="userAttribute" type="java.lang.String" collection="collection">
+      <bind-xml name="user-attribute" node="element"/>
+    </field>
+    <field name="securityConstraint" type="java.lang.String" collection="collection">
+      <bind-xml name="security-constraint" node="element"/>
+    </field>
+  -->
+  </class>
+
+</mapping>

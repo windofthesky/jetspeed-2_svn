@@ -1,0 +1,50 @@
+<!DOCTYPE plugins SYSTEM "persistence-plugins.dtd">
+<plugins>
+	<!-- This is the system default plugin for Jetspeed -->
+
+
+	<plugin name="jetspeed" default="true">
+		<classname>
+  	 	org.apache.jetspeed.services.perisistence.impl.OJBODMGPersistencePlugin
+  	 </classname>
+ 
+	 <property name="OJB.path">
+  	 	WEB-INF/conf/ojb
+ 	 </property>
+ 	 <!-- 
+ 	 	 - The plugin will resolve the alias based on the
+ 	 	 - application's root.  Only use use this with
+ 	 	 - file-system based RDBMSes like HSQL
+ 	 	 - in stand-alone mode.
+ 	  -->
+ 	 <property name="resolve.db.alias">true</property>
+	</plugin>
+
+	<!-- Plugin that points to the test DB -->	
+	<plugin name="jetspeed-test" >
+		<classname>
+  	 	org.apache.jetspeed.services.perisistence.impl.OJBODMGPersistencePlugin
+  	 </classname>
+ 	 <property name="OJB.path">
+   	     WEB-INF/conf/ojb
+ 	  </property>
+	  <property name="override.default.jcd">
+  	 	jetspeed-test
+ 	 </property>
+	</plugin>
+	<!-- Deployment plugin -->
+
+
+    <plugin name="jetspeed-deploy" >
+		<classname>
+  	 	org.apache.jetspeed.services.perisistence.impl.OJBODMGPersistencePlugin
+  	 </classname>
+ 	 <property name="OJB.path">
+   	     WEB-INF/conf/ojb
+ 	  </property>
+	  <property name="override.default.jcd">
+  	 	jetspeed-deploy
+ 	 </property>
+	</plugin>	
+
+</plugins>

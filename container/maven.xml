@@ -1,0 +1,6 @@
+<project default="java:jar"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+</project>

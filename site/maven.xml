@@ -1,0 +1,57 @@
+<project default="java:jar"
+         xmlns:j="jelly:core"
+         xmlns:maven="jelly:maven"
+         xmlns:velocity="jelly:org.apache.commons.jelly.tags.velocity.VelocityTagLibrary">
+
+
+  <goal name="allSite">
+    <attainGoal name="subSite"/>
+    <attainGoal name="site"/>
+  </goal>
+  
+  <goal name="subSite"
+        description="Build the site for all subprojects"
+        >
+    <maven:reactor
+               basedir="${basedir}/../"
+               includes="*/project.xml,applications/*/project.xml"
+               excludes="applications/project.xml,site/project.xml"
+               goals="site"
+               banner="Building Site"
+               postProcessing="true"
+               ignoreFailures="false"/>
+    <!--
+     |
+     | Now we take each of our template in the ${basedir}/templates
+     | directory and process them against the information collected
+     | by the reactor.
+     |
+     | For each template name Y.xml a corresponding Y.html will be
+     | generated in the top-level directory of the site. So for example
+     | if we have a template named 'mail.xml', a page named 'mail.html'
+     | will be generated in the top-level directory.
+     | 
+     -->
+
+    <fileScanner var="templates">
+      <fileset dir="${basedir}/xdocs-templates">
+        <include name="*.xml"/>
+      </fileset>
+    </fileScanner>
+    <j:set var="templatesX" value="${templates}X"/>
+    <j:if test="${!templatesX.equals('X')}">
+      <j:forEach var="template" items="${templates.iterator()}">
+      
+        <j:set var="templateName" value="${template.name}"/>
+        <echo>Processing ${templateName} template ...</echo> 
+    
+        <velocity:merge 
+          name="${basedir}/xdocs/${templateName}"
+          basedir="${basedir}/xdocs-templates"
+          template="${templateName}"/>
+
+      </j:forEach>
+    </j:if>
+  </goal>
+
+</project>

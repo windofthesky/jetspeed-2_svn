@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlets id="01" name="theRootSet">
+    <security-ref parent="all_users"/>
+    <entry id="03" parent="LoggedInWelcome">
+      <security-ref parent="anybody"/>
+    </entry>
+    
+    <portlets id="02">
+        <entry id="99" parent="HelloWhatever">
+          <parameter name="xyz" value="123">
+            <security-ref parent="admin_only"/>
+          </parameter>
+        </entry>
+    </portlets>
+</portlets>

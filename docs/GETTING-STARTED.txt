@@ -1,0 +1,107 @@
+----------------
+GETTING STARTED
+----------------
+
+Requirements
+-------------
+1. Ant 1.5 or higher
+2. Maven 0.8 or higher
+     Maven Beta 9 Note:
+Delete all of these lines from the jar creation section
+
+<j:set var="extensionList" value=""/>
+       <j:forEach var="artifact" items="${pom.artifacts}">
+         <j:set var="dep" value="${artifact.dependency}"/>
+         <j:set var="extensionList" value="${extensionList},${dep.artifactId}"/>
+       </j:forEach>
+
+     <j:if test="${extensionList.length() != 0}">
+                <j:set var="extensionList" value="${extensionList.substring(1)}"/>
+         <ant:attribute name="Extension-List" value="${extensionList}"/>
+       </j:if>
+
+             <j:forEach var="artifact" items="${pom.artifacts}">
+         <j:set var="dep" value="${artifact.dependency}"/>
+         <ant:attribute name="${dep.artifactId}-Extension-Name" value="${dep.artifactId}"/>
+         <ant:attribute name="${dep.artifactId}-Implementation-Version" value="${dep.version}"/>
+         <ant:attribute name="${dep.artifactId}-Implementation-URL" value="http://www.ibiblio.org/maven${artifact.urlPath}"/>
+       </j:forEach>      
+ 
+3. Java 1.3 or higher
+4. Servlet 2.3
+     Tomcat 4.1.18-LE w/JDK 1.4
+     Tomcat 4.1.24 w/ JDK 1.3
+
+5. Define the following in the user's build.properties
+    catalina.shared.lib = ${CATALINA_HOME}/shared/lib/
+    deploy.war.dir = ${CATALINA_BASE}/webapps/
+
+6.  Edit ${CATALINA_BASE}/conf/server.xml, add this line:
+    (this only needs to be done once)
+
+     <Context path="/jetspeed" docBase="jetspeed" crossContext="true"/>
+
+---------------------------------------------
+Building - instructions as of May 26, 2003
+---------------------------------------------
+1a. Build all jars and wars:
+     cd {$jetspeed-2-home}
+     maven allBuild
+
+
+1b Build all jars and wars in steps
+   1. Build Portlet-API
+       cd {$jetspeed-2-home}/portlet-api
+       maven jar:install
+
+   2. Build Jetspeed Commons
+       cd {$jetspeed-2-home}/commons
+       maven jar:install
+
+   3. Build Container
+       cd {$jetspeed-2-home}/container
+       maven jar:install
+
+   4. Build the demo web application 
+       cd {$jetspeed-2-home}/applications/demo
+       maven war
+
+   5. Build Jetspeed Portal
+       cd {$jetspeed-2-home}/portal
+       maven war
+
+2. Install into Catalina Shared
+    cd {$jetspeed-2-home}
+    maven catalina:base-shared
+    maven catalina:shared
+
+
+!!!! NOTE !!!!! make sure you have defined a property in your local  build.properties
+located in your user directory to point to the correct database alias.
+example: 
+  deployment.db.alias=/C:/webapps/jetspeed2/webapps/jetspeed/WEB-INF/db/hsql/Registry
+  
+3. Deploy Jetspeed Portal WAR into Catalina
+    cd {$jetspeed-2-home}/portal
+    maven deploy
+    
+4. Install the demo web application into Catalina
+    cd {$jetspeed-2-home}/portal
+    maven pam.deploy 
+  
+5. Run Tomcat, go to Jetspeed
+
+6. To undeploy the demo app
+    cd {$jetspeed-2-home}/portal
+    maven pam.undeploy 
+
+NOTE: im experience a problem where the portlet-container jar isn't the latest one copied into the HW_APP webapp
+      this causes HelloPortlet to not display any info
+      Its easily fixed by manually copying 
+  ${maven.repo.home}/jetspeed2/jars/jetspeed-container-2.0-a1-dev.jar ${catalina.home}/webapps/HW_APP/WEB-INF/lib/
+
+  I also think that this jar should not be put in the WAR during WAR creation, but should either be:
+    a) in catalina shared
+    or
+    b) merged into the deployed web app by the PAM
+

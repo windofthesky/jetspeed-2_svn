@@ -1,0 +1,22 @@
+----------------------------------------------------------------
+  T O D O   L i s t
+----------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------
+2003-05-22
+
+Think we need to be able to get the portlets out of the registry.
+Still have some problems there with the deploy.
+
+
+-----------------------------------------------------------------------------------------------------------
+2003-05-23
+
+- Separate Test registry data from Deployed registry data
+- Separate Test PSML from Deployed PSML data
+- Change Application to have APP_ID
+- Deploy tool needs to write Application to Registry
+- PortletConfig to pass to portlet.init().
+    
+
+

@@ -1,0 +1,177 @@
+<project default="java:jar"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+  <!-- Target of maven test:single test -->
+  <property name='testcase' value='org.apache.jetspeed.tools.pamanager.TestPortletDescriptor'/>  
+
+ 
+<!--
+  <goal name="jaxb:portlet"
+        description="Generate java classes from protlet API schema">
+
+      <echo>Processing "Compile portlet.xsd to java classes"</echo>
+
+      <uptodate property="xsdBuild.uptodate" 
+        targetfile="./src/java/org/apache/jetspeed/om/portlets/PortletApp.java">
+        <srcfiles dir= "../src/xml" includes="portlets.xsd"/>
+      </uptodate>
+
+     <j:set var="xsdBuild.notRequired" value="${xsdBuild.uptodate}"/>
+		<echo>xsd=[${xsdBuild.notRequired}]</echo>
+
+     <j:if test="${xsdBuild.notRequired == null}">     
+ 			<exec  executable="java" >
+		  	<arg line="-jar ${maven.home}/repository/jaxb/jars/jaxb-xjc.jar -d ${basedir}/src -p java.org.apache.jetspeed.om.portlets ${basedir}/../src/xml/portlet.xsd"/>
+			</exec>  
+	  </j:if>  
+  </goal>
+
+  <preGoal name="java:compile">
+   <attainGoal name= "jaxb:portlet"/> 
+  </preGoal>
+-->
+
+ <goal name="pam.deploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="HW_App" />
+            <arg value="-warfilename" />
+            <arg value="../applications/demo/target/demo.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />            
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />            
+        </java>
+  </goal>
+  
+  <goal name="pam.undeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="undeploy" />
+            <arg value="-PortletAppName" />
+            <arg value="HW_App" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}" />            
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />            
+        </java>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE a DB SCRIPT                                              -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.execute">
+    <sql driver="${database.default.driver}" 
+         classpathref="maven.dependency.classpath" 
+         url="${database.default.url}"
+         userid="${database.default.username}" 
+         password="${database.default.password}" 
+         src="${database.arg.script}">
+    </sql>
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE CREATE DB SQL SCRIPTS                                    -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.create">
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db-phase3-ojb.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/create-db-phase2.sql" />
+    <attainGoal name="db.execute" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE DROP DB SQL SCRIPTS                                      -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.drop">
+    <j:set var="database.arg.script" value="./src/sql/${database.default.name}/drop-db.sql" />
+    <attainGoal name="db.execute" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- EXECUTE RECREATE DB SQL SCRIPTS                                  -->
+  <!-- TODO: I'd like to implement this as a plugin or use commons SQL  -->
+  <!-- ================================================================ -->
+  <goal name="db.recreate">
+    <attainGoal name="db.drop" />
+    <attainGoal name="db.create" />
+  </goal>
+
+  <!-- ================================================================ -->
+  <!-- TEST DB SQL SCRIPTS                                              -->
+  <!-- ================================================================ -->
+  <goal name="db.test.create">
+    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
+    <attainGoal name="db.create" />
+  </goal>
+
+  <goal name="db.test.drop">
+    <j:set var="database.default.url" value="jdbc:hsqldb:${basedir}/test/db/hsql/Registry" />
+    <attainGoal name="db.drop" />
+  </goal>
+
+  <goal name="db.test.recreate">
+    <attainGoal name="db.test.drop" />
+    <attainGoal name="db.test.create" />
+  </goal>
+   
+  <!-- ================================================================ -->
+  <!-- Deploy to Catalina and Expand                                    -->
+  <!-- ================================================================ -->
+  <goal name="deploy">
+     <echo message="Deploying ${pom.id}, ${pom.name}"/>
+      <delete dir="${deploy.war.dir}/${webapp.name}"/> 
+      <copy  file="${maven.build.dir}/${webapp.name}.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
+      <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>      
+  </goal>
+
+
+  <!-- ================================================================ -->
+  <!-- Hot Deploy for mundane everyday development under Catalina       -->
+  <!-- ================================================================ -->
+  <goal name="hotdeploy">
+    <echo message="Hot Deploying ${pom.id}, ${pom.name}"/>
+    <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
+        <fileset dir="${maven.build.dir}/classes">
+        </fileset>
+    </copy>       
+    <copy todir="${deploy.war.dir}/${webapp.name}/">
+      <fileset dir="${webapp.dir}">
+         <exclude name="WEB-INF/db/**"/>
+      </fileset>
+    </copy>
+    <copy  todir="${deploy.war.dir}/${webapp.name}/WEB-INF/lib/">
+      <fileset dir="../container/target/">
+        <include name="*.jar"/>      
+      </fileset>
+      <fileset dir="../commons/target/">
+        <include name="*.jar"/>      
+      </fileset>
+      <fileset dir="../portlet-api/target">
+        <include name="*.jar"/>      
+      </fileset>
+    </copy>
+  </goal>
+
+  <preGoal name="hotdeploy">
+   <attainGoal name= "java:compile"/> 
+  </preGoal>
+
+</project>

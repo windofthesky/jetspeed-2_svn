@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <pomVersion>3</pomVersion>
+  <id>portlet-api</id>
+  <name>Java Portlet API</name>
+  <currentVersion>0.6.6</currentVersion>
+  <package>javax.portlet</package>
+  <description>
+	  Java Standard Portlet API
+  </description>
+  <shortDescription>Java Portlet API</shortDescription>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+  </build>
+</project>

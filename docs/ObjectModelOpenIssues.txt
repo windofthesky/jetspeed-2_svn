@@ -1,0 +1,28 @@
+=====================================
+Object Model Open Issue List
+=====================================
+
+Pluto doesn't provide full-fidelity of the portlet.xml
+A lot of short-cuts are taken
+This document lists all known issues
+
+
+PortletDefinition
+-----------------
+1. expirationCache, why String? (Pluto)
+
+2. Display Name doesn't have language support (array)
+    Look at Paul's Castor implementation, already solved
+        see old model: org.apache.jetspeed.om.common.base.BaseDisplayName
+
+3. Description is missing
+    It also uses an array based on language
+    see old model: org.apache.jetspeed.om.common.impl.CastorJdoPortletDescription
+
+4. Supports ID is not stored
+        <supports id="Minimal support">
+
+5. Not tested or mapped
+<xs:element name="supported-locale" type="portlet:supported-localeType" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="resource-bundle" type="portlet:resource-bundleType" minOccurs="0"/>
+<xs:element name="security-role-ref" type="portlet:security-role-refType" minOccurs="0" maxOccurs="unbounded"/>

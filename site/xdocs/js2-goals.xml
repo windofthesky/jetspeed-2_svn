@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Maven Goals</title>
+  </properties>
+  <body>
+    <p>
+      In addition the standard maven goals, the following goals have been defined.
+    </p>
+    <section name="Root Project">
+      <table>
+        <tr>
+          <th>Goal</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>allBuild</td>
+          <td>
+            Builds war and jar files in the correct order for each
+            subproject, including the portlet applications. After
+            each war or jar is build, it is coppied to the local 
+            maven repository.
+          </td>
+        </tr>
+        <tr>
+          <td>allClean</td>
+          <td>Cleans all subprojects and the root project.</td>
+        </tr>
+        <tr>
+          <td>allSite</td>
+          <td>See the allSite goals in the Site subproject</td>
+        </tr>
+       </table>
+    </section>
+    <section name="Site Subproject">
+      <table>
+        <tr>
+          <th>Goal</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>allSite</td>
+          <td>
+            Builds the site for each subproject and updates the 
+            subproject list on the navigation bar. This calls
+            the "subSite" and "site" goals.
+          </td>
+        </tr>
+        <tr>
+          <td>subSite</td>
+          <td>
+            Builds the site for each subproject, excluding the "site"
+            subproject, and updates the subproject list on the navigation bar.
+          </td>
+        </tr>
+      </table>
+    </section>
+  </body>
+</document>

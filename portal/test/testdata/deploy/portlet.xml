@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app id="TestRegistry" version="1.0">
+ <portlet id="HelloPortlet">
+    <init-param>
+			<description>test init param</description>
+			<name>hello</name>
+			<value>Hello Portlet</value>
+     </init-param>  
+    <portlet-name>HelloWorld Portlet</portlet-name>
+    <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
+    <display-name lang="en">HelloWorld Portlet Wrapper</display-name>  
+    <expiration-cache>-1</expiration-cache>
+    <supports id="Minimal support">
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>HelloWorldTitle</title>
+      <short-title>This is the short title</short-title>
+      <keywords>Test,David</keywords>
+    </portlet-info>
+    <portlet-preferences>
+      <preference> 
+        <name>time-server</name>
+        <value>http://timeserver.myco.com</value>
+        <modifiable>0</modifiable>
+      </preference>
+      <preference>
+        <name>port</name>
+        <value>404</value>
+        <modifiable>1</modifiable>
+      </preference>    
+    </portlet-preferences>
+  </portlet>
+ 
+  <portlet id="DisplayRequestPortlet">
+    <portlet-name>Display the Portlet Request Information</portlet-name>
+    <portlet-class>org.apache.jetspeed.demo.simple.DisplayRequestServlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Display the Portlet Request Information</title>
+    </portlet-info>
+  </portlet>
+  
+  <portlet id="PickANumberPortlet">
+    <portlet-name>Pick a number game</portlet-name>
+    <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Pick a Number</title>
+    </portlet-info>
+  </portlet>
+  
+  <portlet id="AttributeScopePortlet">
+    <portlet-name>Attribute Scope Demo</portlet-name>
+    <portlet-class>org.apache.jetspeed.demo.simple.AttributeScopeServlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Attribute Scope Demo Portlet</title>
+    </portlet-info>
+   
+  </portlet>
+  
+ </portlet-app>
+
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlets id="01" name="theRootSet">
+	<security-ref parent="owner-only"/>
+	<metainfo>
+		<title>Welcome</title>
+	</metainfo>
+	<layout position="-1" size="-1"/>
+	<control name="TabControl"/>
+	<controller name="TabController"/>
+	<portlets id="02" name="childSet1">
+		<security-ref parent="owner-only"/>		
+		<metainfo>
+			<title>Home</title>
+		</metainfo>
+		<layout position="-1" size="-1"/>
+		<skin name="grey"/>
+		<controller name="TwoColumns"/>
+		<entry id="03" parent="StockQuote">
+			<layout position="-1" size="-1">
+				<property name="column" value="0"/>
+				<property name="row" value="1"/>
+			</layout>
+		</entry>
+	</portlets>
+	<portlets id="04" name="childSet2">
+		<metainfo>
+			<title>Another Tab</title>
+		</metainfo>
+		<layout position="-1" size="-1"/>
+		<controller name="TwoColumns"/>
+		<entry id="05" parent="StockQuote">
+			<layout position="-1" size="-1">
+				<property name="column" value="0"/>
+				<property name="row" value="1"/>
+			</layout>
+		</entry>
+		<entry id="06" parent="http://jakarta.apache.org/jetspeed/channels/jetspeed.rss">
+			<skin name="StylesOnly"/>
+			<layout position="-1" size="-1">
+				<property name="column" value="1"/>
+				<property name="row" value="1"/>
+			</layout>
+		</entry>
+		<entry id="07" parent="http://www.xmlhack.com/rsscat.php">
+			<layout position="-1" size="-1">
+				<property name="column" value="0"/>
+				<property name="row" value="2"/>
+			</layout>
+		</entry>
+	</portlets>
+</portlets>

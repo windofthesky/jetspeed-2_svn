@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<portlets xmlns="http://xml.apache.org/jetspeed/2000/psml">
+    <metainfo>
+      <title>Default Apache News page</title>
+    </metainfo>
+  <security-ref parent="user-only"/>
+
+   <controller name="ColumnController"/>
+
+  <entry type="ref" parent="Apacheweek">
+  </entry>
+
+  <entry type="ref" parent="XMLHack">
+  </entry>
+
+
+</portlets>

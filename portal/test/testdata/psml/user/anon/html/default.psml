@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlets>
+
+    <metainfo>
+      <title>Welcome to Jetspeed-2</title>
+    </metainfo>
+
+    <entry type="ref" name="HelloPortlet" parent="HelloPortlet"/>
+
+</portlets>

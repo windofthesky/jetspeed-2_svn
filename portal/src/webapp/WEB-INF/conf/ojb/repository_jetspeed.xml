@@ -1,0 +1,704 @@
+<!--
+   - P O R T L E T    A P P L I C A T I O N
+-->	
+
+<!--
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition"
+   >
+     <extent-class class-ref="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor" />  
+  </class-descriptor>
+-->
+
+ 
+  <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition"
+   	  table="PORTLET_APPLICATION"
+   >
+     
+      <field-descriptor
+         name="id"
+         column="APPLICATION_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+         
+      />
+      <!--conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
+      <field-descriptor
+         name="name"
+         column="APP_NAME"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="applicationIdentifier"
+         column="APP_IDENTIFIER"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="version"
+         column="VERSION"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      /> 
+             
+      <field-descriptor
+         name="webApplicationId"
+         column="WEB_APP_ID"
+         jdbc-type="INTEGER"
+
+       
+      />
+     
+      <reference-descriptor 
+      	  name="webApplication" 
+      	  class-ref="org.apache.jetspeed.om.common.servlet.BaseWebApplicationDefinition" 
+      	  auto-delete="true"
+
+      	  >
+         <foreignkey field-ref="webApplicationId"/>
+      </reference-descriptor>
+      
+      <collection-descriptor
+         name="portlets"
+         auto-delete="true"
+    
+         element-class-ref="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
+         collection-class="org.apache.jetspeed.om.collection.ManageablePortletDefinitionList"
+      >
+         <inverse-foreignkey field-ref="appId"/>
+      </collection-descriptor>
+       
+   </class-descriptor>
+   
+
+   
+<!--
+ 	- W E B    A P P L I C A T I O N 
+-->
+
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.servlet.BaseWebApplicationDefinition"
+   	  table="WEB_APPLICATION"
+   >
+   
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+
+      />
+     
+ 
+      <field-descriptor
+         name="contextRoot"
+         column="CONTEXT_ROOT"
+         jdbc-type="VARCHAR"
+      />
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="web application"
+          />
+        </query-customizer>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="displayNames"
+         element-class-ref="org.apache.jetspeed.om.common.DisplayNameImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="web application"
+          />
+        </query-customizer>
+      </collection-descriptor>
+      
+     
+   </class-descriptor>
+
+<!--
+   -  P O R T L E T   D E F I N I T I O N
+ -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite"
+
+   >
+      <extent-class class-ref="org.apache.jetspeed.om.common.portlet.BasePortletDefinition" />         
+   
+   </class-descriptor>
+ 
+ 
+ 
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.BasePortletDefinition"
+   	  table="PORTLET_DEFINITION"
+
+   >
+   
+   
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+       
+      />
+
+      <field-descriptor
+         name="portletIdentifier"
+         column="PORTLET_IDENTIFIER"
+         jdbc-type="VARCHAR"       
+      />
+      
+    
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="className"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="appId"
+         column="APPLICATION_ID"
+         jdbc-type="INTEGER"
+         
+      />
+      <!-- conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion" -->
+      
+       <field-descriptor
+         name="expirationCache"
+         column="EXPIRATION_CACHE"
+         jdbc-type="VARCHAR"
+      />
+      
+
+
+      <reference-descriptor 
+      	name="app" 
+      	class-ref="org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition" 
+   	 >       	        
+         <foreignkey field-ref="appId"/>
+      </reference-descriptor>
+
+
+      <collection-descriptor
+         name="languageSet"
+         element-class-ref="org.apache.jetspeed.om.common.BaseLanguage"
+         collection-class="org.apache.jetspeed.om.collection.ManageableLanguageSet"
+         auto-delete="true"
+      >
+         <inverse-foreignkey field-ref="portletId"/>
+
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="contentTypes"
+         element-class-ref="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
+         collection-class="org.apache.jetspeed.om.collection.ManageableContentTypeSet"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="portletId"/>
+      </collection-descriptor>
+      
+
+      	<collection-descriptor
+         name="parameterSet"
+         element-class-ref="org.apache.jetspeed.om.common.extended.PortletInitParameter"
+         collection-class="org.apache.jetspeed.om.collection.ManageablePortletParameterSet"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="prefSet"
+         element-class-ref="org.apache.jetspeed.om.common.BasePreference"
+         collection-class="org.apache.jetspeed.om.collection.ManageablePreferenceSet"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="portletId"/>
+      </collection-descriptor>
+      
+     <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="portlet"
+          />
+        </query-customizer>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="displayNames"
+         element-class-ref="org.apache.jetspeed.om.common.DisplayNameImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDisplayNameSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="portlet"
+          />
+        </query-customizer>
+      </collection-descriptor>
+       
+   </class-descriptor>
+   
+
+
+<!-- 
+   - L A N G U A G E 
+-->
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.BaseLanguage"
+   	  table="LANGUAGE"
+   >
+   
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_ID"
+         jdbc-type="INTEGER"
+          
+      />
+      
+      
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="keywords"
+         column="KEYWORDS"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />      
+
+   </class-descriptor>
+
+<!--
+   - C O N T E N T    T Y P E 
+ -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
+
+   >
+      <extent-class class-ref="org.apache.jetspeed.om.common.portlet.BaseContentType" />              
+   </class-descriptor>
+ 
+ 
+ 
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.portlet.BaseContentType"
+   	  table="PORTLET_CONTENT_TYPE"
+   >   
+     <field-descriptor
+         name="contentTypeId"
+         column="CONTENT_TYPE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_ID"
+         jdbc-type="INTEGER"
+
+      />
+      <field-descriptor
+         name="contentType"
+         column="CONTENT_TYPE"
+         jdbc-type="VARCHAR"
+      />
+      <field-descriptor
+         name="portletModes"
+         column="MODES"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />  
+   </class-descriptor>
+   
+
+
+<!--
+   - P A R A M E T E R
+ -->
+ <!--
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.BaseParameter"
+   	  table="PARAMETER"
+   >
+   <extent-class class-ref="org.apache.jetspeed.om.common.extended.PortletInitParameter" />
+   <extent-class class-ref="org.apache.jetspeed.om.common.extended.ServletInitParameter" />
+   
+    
+
+   </class-descriptor>
+   -->
+
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.extended.ServletInitParameter"
+   	  table="PARAMETER"
+   >
+   
+   <field-descriptor
+         name="parentId"
+         column="PARENT_ID"
+         jdbc-type="INTEGER"
+
+      />
+      
+        <field-descriptor
+         name="parameterId"
+         column="PARAMETER_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="parentId"
+         column="PARENT_ID"
+         jdbc-type="INTEGER"
+
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+   
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"         
+      />       
+         
+
+   
+   <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      
+      
+      
+    </class-descriptor>
+
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.extended.PortletInitParameter"
+   	  table="PARAMETER"
+   >
+      <field-descriptor
+         name="parentId"
+         column="PARENT_ID"
+         jdbc-type="INTEGER"
+
+      />
+      
+        <field-descriptor
+         name="parameterId"
+         column="PARAMETER_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="parentId"
+         column="PARENT_ID"
+         jdbc-type="INTEGER"
+
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"         
+      />       
+         
+   
+   <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="parameter"
+          />
+        </query-customizer>
+      </collection-descriptor>      
+   
+    </class-descriptor>
+
+<!--
+   - P R E F E R E N C E S
+ -->
+ 
+     <class-descriptor
+   	  class="org.apache.jetspeed.om.common.PreferenceComposite"
+
+   >
+      <extent-class class-ref="org.apache.jetspeed.om.common.BasePreference" />
+      
+   </class-descriptor>
+ 
+
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.common.BasePreference"
+   	  table="PORTLET_PREFERENCE"
+   >
+      
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+         
+      />
+      
+      <field-descriptor
+         name="portletId"
+         column="PORTLET_ID"
+         jdbc-type="INTEGER"
+
+      />
+      
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+      
+      
+      <collection-descriptor
+         name="valueObjects"
+         element-class-ref="org.apache.jetspeed.om.common.PreferenceValueObject"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="preferenceId"/>
+      </collection-descriptor>
+      
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.common.DescriptionImpl"
+         collection-class="org.apache.jetspeed.om.collection.ManageableDescriptionSetImpl"
+         auto-delete="true"
+      >         
+         <inverse-foreignkey field-ref="objectId"/>
+         <query-customizer
+             class="org.apache.jetspeed.util.ojb.TypeFilterQueryCustomizerImpl">
+        <attribute
+            attribute-name="type"
+            attribute-value="preference"
+          />
+        </query-customizer>
+      </collection-descriptor>
+      
+ 
+               
+  
+    </class-descriptor>
+    
+ 
+        
+   <class-descriptor
+   	  class="org.apache.jetspeed.om.common.PreferenceValueObject"
+   	  table="PREFERENCE_VALUE"
+   >
+      
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="preferenceId"
+         column="PREFERENCE_ID"
+         jdbc-type="INTEGER"         
+      />
+      
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />  
+  
+    </class-descriptor>
+    
+    
+<!--
+   - L O C A L I Z E D   D E S C R I P I T I O N
+ -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.common.DescriptionImpl"
+   	  table="LOCALIZED_DESCRITPION"
+   >
+      
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="objectId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+
+          />
+        
+      
+      <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="description"
+         column="DESCRIPTION"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />          
+      
+  
+    </class-descriptor>
+    
+  <!--
+   - L O C A L I Z E D   D I S P L A Y   N A M E
+  -->
+    <class-descriptor
+   	  class="org.apache.jetspeed.om.common.DisplayNameImpl"
+   	  table="LOCALIZED_DISPLAY_NAME"
+   >
+      
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"         
+      />
+      
+      <field-descriptor
+         name="objectId"
+         column="OBJECT_ID"
+         jdbc-type="INTEGER"
+      
+      />
+      
+      <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
+         name="displayName"
+         column="DISPLAY_NAME"
+         jdbc-type="VARCHAR"
+      />   
+      
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />          
+      
+  
+    </class-descriptor>
+
+   
+    
+

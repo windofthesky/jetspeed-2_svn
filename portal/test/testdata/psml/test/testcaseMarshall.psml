@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlets id="01" name="theRootSet">
+    <portlets id='02' name='test'>
+        <metainfo>
+          <title>Portlet Title</title>
+          <description>Portlet Description</description>
+          <image>Portlet Image</image>
+        </metainfo>
+        <entry id="07" parent="http://www.xmlhack.com/rsscat.php">
+            <metainfo>
+                <title>Entry Title</title>
+                <description>Entry Description</description>
+                <image>Entry Image</image>
+            </metainfo>
+            <skin name="gray"/>
+            <layout position="-1" size="-1">
+                <property name="column" value="0"/>
+                <property name="row" value="2"/>
+            </layout>
+        </entry>
+    </portlets>       
+    <reference id='300' name='ReferenceTest' path='group/apache/page/news/'/>
+
+</portlets>
