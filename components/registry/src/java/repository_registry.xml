@@ -547,13 +547,6 @@ limitations under the License.
    	  table="PARAMETER"
    >
    
-   <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="INTEGER"
-
-      />
-      
         <field-descriptor
          name="parameterId"
          column="PARAMETER_ID"
@@ -599,13 +592,7 @@ limitations under the License.
    	  proxy="dynamic"
    	  table="PARAMETER"
    >
-      <field-descriptor
-         name="parentId"
-         column="PARENT_ID"
-         jdbc-type="INTEGER"
 
-      />
-      
         <field-descriptor
          name="parameterId"
          column="PARAMETER_ID"
