@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import javax.naming.NamingException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.components.datasource.DatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
 
 /**
  * <p>
@@ -49,11 +47,12 @@ public class SpringEngine extends AbstractEngine
      * 
      * @see org.apache.jetspeed.engine.AbstractEngine#initComponents(org.apache.commons.configuration.Configuration)
      * @param configuration
+     * @return
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws NamingException
      */
-    protected void initComponents( Configuration configuration ) throws IOException, ClassNotFoundException,
+    protected ComponentManager initComponents( Configuration configuration ) throws IOException, ClassNotFoundException,
             NamingException
     {
         
@@ -69,7 +68,9 @@ public class SpringEngine extends AbstractEngine
         }
         configs.add("file:///"+absApplicationRoot + configuration.getString("jetspeed.spring.xml", "/WEB-INF/assembly/jetspeed-spring.xml"));
        
-        componentManager = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
+        ComponentManager cm = new SpringComponentManager((String[])configs.toArray(new String[configs.size()]), null);
+        
+        return cm;
     }
 
 }

@@ -73,7 +73,7 @@ public abstract class AbstractEngine implements Engine
     private Pipeline defaultPipeline = null;
     private Class pipelineClass = null;
     private HashMap pipelines = new HashMap();
-    protected ComponentManager componentManager = null;
+    private ComponentManager componentManager = null;
         private static final Log log = LogFactory.getLog(PicoEngine.class);
     private static final Log console = LogFactory.getLog(CONSOLE_LOGGER);
     /** stores the most recent RequestContext on a per thread basis */
@@ -141,7 +141,7 @@ public abstract class AbstractEngine implements Engine
             //
             // bootstrap the initable services
             //
-            initComponents(configuration);
+            componentManager = initComponents(configuration);
             log.info("Components initialization complete");
             initServices();
             log.info("Service initialization complete");
@@ -325,7 +325,21 @@ public abstract class AbstractEngine implements Engine
         return base.concat(path);
     }
     
-    protected abstract void initComponents( Configuration configuration )
+    /**
+     * 
+     * <p>
+     * initComponents
+     * </p>
+     * Main responsibility of the subclassed implementation of this method
+     * is to provide a <code>ComponentManager</code> implementation for the 
+     * Engine.
+     *
+     * @param configuration Usually jetspeed.properties
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws NamingException
+     */
+    protected abstract ComponentManager initComponents( Configuration configuration )
     throws IOException, ClassNotFoundException, NamingException;
 
     private void initServices() throws CPSInitializationException

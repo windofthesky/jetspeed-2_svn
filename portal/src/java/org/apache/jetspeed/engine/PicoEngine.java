@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.naming.NamingException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.PicoComponentManager;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
@@ -37,7 +38,7 @@ import org.picocontainer.defaults.SimpleReference;
  */
 public class PicoEngine extends AbstractEngine implements Engine
 {
-    protected void initComponents( Configuration configuration )
+    protected ComponentManager initComponents( Configuration configuration )
             throws IOException, ClassNotFoundException, NamingException
     {
         String applicationRoot = getRealPath("/");
@@ -49,17 +50,17 @@ public class PicoEngine extends AbstractEngine implements Engine
         MutablePicoContainer bootContainer = new DefaultPicoContainer();        
         bootContainer.registerComponentInstance("portal_configuration", configuration);
               
-        componentManager = new  PicoComponentManager(containerAssembler, bootContainer, "PORTAL_SCOPE");
+        ComponentManager cm = new  PicoComponentManager(containerAssembler, bootContainer, "PORTAL_SCOPE");
         
         try
         {
             if (useInternalJNDI)
             {
-                JNDIComponent jndi = (JNDIComponent) componentManager
+                JNDIComponent jndi = (JNDIComponent) cm
                         .getComponent(JNDIComponent.class);
                 if (jndi != null)
                 {
-                    DatasourceComponent ds = (DatasourceComponent) componentManager
+                    DatasourceComponent ds = (DatasourceComponent) cm
                             .getComponent(DatasourceComponent.class);
                     if (ds != null)
                     {
@@ -74,6 +75,8 @@ public class PicoEngine extends AbstractEngine implements Engine
         {
             // skip for now
         }
+        
+        return cm;
 
     }
 }
