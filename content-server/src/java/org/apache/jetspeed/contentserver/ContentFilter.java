@@ -88,24 +88,22 @@ public class ContentFilter implements Filter
                             + " could not be located.  Make sure your container is properly configured to detect MIME types.");
                 }
 
-                if (mimeType.equals("image/gif"))
+                System.out.println(mimeType + " detected: " + requestURI);
+
+                boolean found = setThemeContent(requestURI, httpRequest, httpResponse, mimeType);
+
+                if (found)
                 {
-                    System.out.println("GIF detected: " + requestURI);
-
-                    boolean found = setThemeContent(requestURI, httpRequest, httpResponse, mimeType);
-
-                    if (found)
-                    {
-                        System.out.println("Setting status to OK");
-                        httpResponse.setStatus(HttpServletResponse.SC_OK);
-                    }
-                    else
-                    {
-                        chain.doFilter(request, response);
-                    }
-
-                    return;
+                    System.out.println("Setting status to OK");
+                    httpResponse.setStatus(HttpServletResponse.SC_OK);
                 }
+                else
+                {
+                    chain.doFilter(request, response);
+                }
+
+                return;
+
             }
         }
         catch (Exception e)
@@ -138,7 +136,7 @@ public class ContentFilter implements Filter
             if (fileCache.containsKey(themeName + ":" + URI))
             {
                 fqFile = (File) fileCache.get(themeName + ":" + URI);
-				System.out.println("Found cached theme file for URI: " + URI);
+                System.out.println("Found cached theme file for URI: " + URI);
             }
             else
             {
@@ -146,7 +144,7 @@ public class ContentFilter implements Filter
                 fqFile = new File(fqPath);
                 System.out.println("Actual theme content located at: " + fqPath);
                 System.out.println("Theme content exists? " + fqFile.exists());
-				fileCache.put(themeName + ":" + URI, fqFile);
+                fileCache.put(themeName + ":" + URI, fqFile);
             }
 
             BufferedInputStream bis = null;
