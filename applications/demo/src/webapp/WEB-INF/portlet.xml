@@ -8,6 +8,7 @@
      </init-param>   
     <portlet-name>HelloPortlet</portlet-name>
     <display-name>HelloWorld Portlet Wrapper</display-name>
+    <description>This is the hello world of portlets, it doesn't do much</description>
     <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -58,7 +59,7 @@
     	 <preference>
     	 	 <name>pref1</name>
     	 	 <value>Hello</value>
-    	 	  <value>Hello2</value>
+    	 	 <value>Hello2</value>
     	  </preference>
     </portlet-preferences>
   </portlet>
