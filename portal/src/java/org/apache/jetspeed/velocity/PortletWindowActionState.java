@@ -15,7 +15,9 @@
  */
 package org.apache.jetspeed.velocity;
 
+import java.util.List;
 import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * DecoratorAction
@@ -23,54 +25,38 @@ import java.io.Serializable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DecoratorAction implements Serializable
+public class PortletWindowActionState implements Serializable
 {
-    String name = null;
-    String link = null;
-    String alt = null;
-    String action = null;
+    private List actions = new Vector();
+    private String windowState;
+    private String portletMode;
+    
+    public PortletWindowActionState(String windowState, String portletMode)
+    {        
+        this.windowState = windowState;
+        this.portletMode = portletMode;
+    }
+    
 
     /**
-     * Constructor
-     * 
-     * @param name   Name of the action
-     * @param alt    Alternative text description (localized)
+     * @return Returns the actions.
      */
-    public DecoratorAction(String name, String alt, String link)
+    public List getActions()
     {
-        this.name = name;
-        this.alt = alt;
-        this.link = link;
+        return actions;
     }
-    
-    public String getName()
+    /**
+     * @return Returns the portletMode.
+     */
+    public String getPortletMode()
     {
-        return this.name;
+        return portletMode;
     }
-    
-    public String getLink()
+    /**
+     * @return Returns the windowState.
+     */
+    public String getWindowState()
     {
-        return this.link;
+        return windowState;
     }
-    
-    public void setLink(String link)
-    {
-        this.link = link;
-    }
-
-    public String getAlt()
-    {
-        return this.alt;
-    }
-
-    public String getAction()
-    {
-        return this.action;
-    }
-    
-    public void setAction(String action)
-    {
-        this.action = action;
-    }
-    
 }

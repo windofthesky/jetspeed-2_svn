@@ -18,13 +18,16 @@ package org.apache.jetspeed.velocity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletMode;
@@ -40,6 +43,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
@@ -55,9 +59,11 @@ import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.services.information.PortletURLProviderImpl;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -119,16 +125,6 @@ public class JetspeedPowerTool implements ViewTool
 {
 
     public static final String FRAGMENT_PROCESSING_ERROR_PREFIX = "fragment.processing.error.";
-    private static final int ACTION_MINIMIZE = 0;    
-    private static final int ACTION_MAXIMIZE = 1;
-    private static final int ACTION_NORMAL = 2;
-    private static final int ACTION_VIEW = 3;
-    private static final int ACTION_EDIT = 4;
-    private static final int ACTION_HELP = 5;
-    private static final String ACTION_STRINGS[] =
-    {
-            "minimize", "maximize", "restore", "view", "edit", "help"
-    };
     
     protected static final String PORTLET_CONFIG_ATTR = "portletConfig";
     protected static final String RENDER_RESPONSE_ATTR = "renderResponse";
@@ -156,6 +152,8 @@ public class JetspeedPowerTool implements ViewTool
     private Writer templateWriter;
 
     private Stack fragmentStack;
+    
+    private static final String POWER_TOOL_SESSION_ACTIONS = "org.apache.jetspeed.powertool.actions";
 
     private static final Log log = LogFactory.getLog(JetspeedPowerTool.class);
 
@@ -793,89 +791,166 @@ public class JetspeedPowerTool implements ViewTool
         
        
     }
-
-        
-
-    
+         
+    /**
+     * Gets the list of decorator actions for a window.
+     * Each window (on each page) has its own collection of actions associated with it.
+     * The creation of the decorator action list per window will only be called once per session.
+     * This optimization is to avoid the expensive operation of security checks and action object creation and logic
+     * on a per request basis. 
+     * 
+     * @return A list of actions available to the current window, filtered by securty access and current state.
+     * @throws Exception
+     */
     public List getDecoratorActions() throws Exception
     {
-        List actions = new Vector();        
-        WindowState state = getWindowState();
-        if(state != null)
+        RequestContext context = Jetspeed.getCurrentRequestContext();
+        String key = getPage().getId() + ":" + this.getCurrentFragment().getId();
+        Map sessionActions = (Map)context.getSessionAttribute(POWER_TOOL_SESSION_ACTIONS);
+        if (null == sessionActions)
         {
-        String s = state.toString();
-        if (s.equals(WindowState.NORMAL.toString()))
-        {
-            actions.add(createAction(ACTION_MINIMIZE));
-            actions.add(createAction(ACTION_MAXIMIZE));
-        }
-        else if (s.equals(WindowState.MAXIMIZED.toString()))
-        {
-            actions.add(createAction(ACTION_MINIMIZE));
-            actions.add(createAction(ACTION_NORMAL));            
-        }
-        else // minimized
-        {
-            actions.add(createAction(ACTION_MAXIMIZE));
-            actions.add(createAction(ACTION_NORMAL));                        
-        }
+            sessionActions = new HashMap();
+            context.setSessionAttribute(POWER_TOOL_SESSION_ACTIONS, sessionActions);
+        }        
+        PortletWindowActionState actionState = (PortletWindowActionState)sessionActions.get(key);
         
-        PortletMode mode = getPortletMode();
-        String m = mode.toString();
-        if (m.equals(PortletMode.VIEW.toString()))
+        String state = getWindowState().toString();        
+        String mode = getPortletMode().toString();
+
+        if (null == actionState)
         {
-            actions.add(createAction(ACTION_EDIT));
-            actions.add(createAction(ACTION_HELP));            
-        }
-        else if (m.equals(PortletMode.EDIT.toString()))
-        {
-            actions.add(createAction(ACTION_VIEW));
-            actions.add(createAction(ACTION_HELP));                        
-        }
-        else // help
-        {
-            actions.add(createAction(ACTION_VIEW));
-            actions.add(createAction(ACTION_EDIT));                        
-        }
-        return actions;
+            actionState = new PortletWindowActionState(state, mode);   
+            sessionActions.put(key, actionState);
         }
         else
         {
-            return null;
+            // check to see if state or mode has changed
+            if (actionState.getWindowState().equals(state))
+            {
+                if (actionState.getPortletMode().equals(mode))
+                {
+                    // nothing has changed
+                    return actionState.getActions();
+                }                
+            }
+            // something has changed, rebuild the list
         }
+        
+                        
+        List actions = actionState.getActions();
+        actions.clear();
+     
+        PortletDefinitionComposite portlet = 
+            (PortletDefinitionComposite) getCurrentPortletEntity().getPortletDefinition();
+        if (null == portlet)
+        {
+            return actions; // allow nothing
+        }        
+        
+        if (state.equals(WindowState.NORMAL.toString()))
+        {
+            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet.getUniqueName());
+        }
+        else if (state.equals(WindowState.MAXIMIZED.toString()))
+        {
+            createAction(actions, JetspeedActions.INDEX_MINIMIZE, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet.getUniqueName());            
+        }
+        else // minimized
+        {
+            createAction(actions, JetspeedActions.INDEX_MAXIMIZE, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_NORMAL, portlet.getUniqueName());                        
+        }
+        
+        if (mode.equals(PortletMode.VIEW.toString()))
+        {
+            createAction(actions, JetspeedActions.INDEX_EDIT, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_HELP, portlet.getUniqueName());            
+        }
+        else if (mode.equals(PortletMode.EDIT.toString()))
+        {
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_HELP, portlet.getUniqueName());                        
+        }
+        else // help
+        {
+            createAction(actions, JetspeedActions.INDEX_VIEW, portlet.getUniqueName());
+            createAction(actions, JetspeedActions.INDEX_EDIT, portlet.getUniqueName());                        
+        }
+        return actions;
     }
     
-    public DecoratorAction createAction(int kind) throws Exception
+    /**
+     * Determines whether the access request indicated by the specified permission should be 
+     * allowed or denied, based on the security policy currently in effect.
+     *  
+     * @param resource The fully qualified resource name of the portlet (PA::portletName)
+     * @param action The action to perform on this resource (i.e. view, edit, help, max, min...)
+     * @return true if the action is allowed, false if it is not
+     */
+    private boolean checkPermission(String resource, String action)
     {
-        DecoratorAction action = new DecoratorAction(ACTION_STRINGS[kind], ACTION_STRINGS[kind], "content/images/" + ACTION_STRINGS[kind] + ".gif");
+        try
+        {
+            AccessController.checkPermission(new PortletPermission(resource, action));            
+        }
+        catch (AccessControlException e)
+        {
+            return false;
+        }        
+        return true;         
+    }
+    
+    /**
+     * Creates a Decorator Action link to be added to the list of actions decorating a portlet.
+     * 
+     * @param actions
+     * @param kind
+     * @param resource
+     * @return
+     * @throws Exception
+     */
+    public DecoratorAction createAction(List actions, int actionId, String resource) throws Exception
+    {               
+        String actionName = JetspeedActions.ACTIONS[actionId];
+        if (checkPermission(resource, actionName))
+        {
+            return null;
+        }
+        DecoratorAction action =  new DecoratorAction(actionName, 
+                                                      actionName, 
+                                    "content/images/" +  actionName + ".gif"); // TODO: HARD-CODED .gif
+        
         PortletEntity entity = getCurrentPortletEntity();
         
-        // TODO: use a factory to create this object
-        PortletURLProviderImpl url = new PortletURLProviderImpl(Jetspeed.getCurrentRequestContext(), 
-                                                                windowAccess.getPortletWindow(getCurrentFragment()));
-        switch (kind)
+        PortletURLProviderImpl url = 
+            new PortletURLProviderImpl(Jetspeed.getCurrentRequestContext(), 
+                                       windowAccess.getPortletWindow(getCurrentFragment()));
+        switch (actionId)
         {
-            case ACTION_MAXIMIZE:
+            case JetspeedActions.INDEX_MAXIMIZE:
                 url.setWindowState(WindowState.MAXIMIZED);
                 break;
-            case ACTION_MINIMIZE:
+            case JetspeedActions.INDEX_MINIMIZE:
                 url.setWindowState(WindowState.MINIMIZED);
                 break;
-            case ACTION_NORMAL:
+            case JetspeedActions.INDEX_NORMAL:
                 url.setWindowState(WindowState.NORMAL);
                 break;
-            case ACTION_VIEW:
+            case JetspeedActions.INDEX_VIEW:
                 url.setPortletMode(PortletMode.VIEW);
                 break;
-            case ACTION_EDIT:
+            case JetspeedActions.INDEX_EDIT:
                 url.setPortletMode(PortletMode.EDIT);
                 break;
-            case ACTION_HELP:
+            case JetspeedActions.INDEX_HELP:
                 url.setPortletMode(PortletMode.HELP);
                 break;                                
         }
         
         action.setAction(url.toString());
+        actions.add(action);
         return action;
         
     }
