@@ -47,7 +47,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
     private final static int USER_PROPERTY_SET_TYPE = 0;
     private final static int SYSTEM_PROPERTY_SET_TYPE = 1;
 
-    private PreferencesProvider provider;
+    private PreferencesProviderImpl provider;
 
     /**
      * <p>
@@ -71,6 +71,7 @@ public class TestPreferences extends PersistenceSupportedTestCase
         pms = new PropertyManagerImpl(persistenceStore);
         provider = new PreferencesProviderImpl(persistenceStore,
                 "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", true);
+        provider.start();
     }
 
     /**

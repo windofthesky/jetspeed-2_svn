@@ -54,6 +54,7 @@ public class AbstractPrefsSupportedTestCase extends RegistrySupportedTestCase
         super.setUp();
         PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
         PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
+        provider.start();
     }
 
 }

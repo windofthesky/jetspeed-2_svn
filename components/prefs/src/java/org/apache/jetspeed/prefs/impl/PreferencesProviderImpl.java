@@ -103,8 +103,9 @@ public class PreferencesProviderImpl implements PreferencesProvider, Startable
         log.debug("Loading prefernces api into classloader...");
 
         try
-        {     // Initializes the static systemRoot and userRoot        
-              Class prefImplClass = PreferencesImpl.class;
+        {           
+              PreferencesImpl.systemRoot = new PreferencesImpl(null, "", PreferencesImpl.SYSTEM_NODE_TYPE);
+              PreferencesImpl.userRoot =  new PreferencesImpl(null, "", PreferencesImpl.USER_NODE_TYPE);
             
         }
         catch(Throwable e)
