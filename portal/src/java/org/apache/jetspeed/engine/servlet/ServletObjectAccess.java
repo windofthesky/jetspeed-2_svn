@@ -53,9 +53,16 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.pluto.core.CoreUtils;
+import org.apache.pluto.core.InternalPortletRequest;
+import org.apache.pluto.core.InternalPortletResponse;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.services.factory.FactoryManager;
 
 /**
@@ -67,20 +74,35 @@ import org.apache.pluto.services.factory.FactoryManager;
  */
 public abstract class ServletObjectAccess
 {
-    public static HttpServletRequest getServletRequest(HttpServletRequest request)
+    public static HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
     {
-        return requestFactory.getServletRequest(request);
+    	System.out.println("n");
+        return requestFactory.getServletRequest(request, window);
     }
 
-    public static HttpServletResponse getServletResponse(HttpServletResponse response)
+    public static HttpServletResponse getServletResponse(HttpServletResponse response, PortletWindow window)
     {
         return responseFactory.getServletResponse(response);
     }
-    
 
-    private static ServletRequestFactory requestFactory = 
-        (ServletRequestFactory)FactoryManager.getFactory(javax.servlet.http.HttpServletRequest.class);
-    private static ServletResponseFactory responseFactory = 
-        (ServletResponseFactory)FactoryManager.getFactory(javax.servlet.http.HttpServletResponse.class);
-    
+    public static HttpServletRequest getServletRequest(PortletRequest request)
+    {
+        InternalPortletRequest internalPortletRequest = CoreUtils.getInternalRequest(request);
+
+        return  (HttpServletRequest) ((javax.servlet.http.HttpServletRequestWrapper) internalPortletRequest).getRequest();
+            
+    }
+
+    public static HttpServletResponse getServletResponse(PortletResponse response)
+    {
+        InternalPortletResponse internalPortletResponse = CoreUtils.getInternalResponse(response);
+        return (HttpServletResponse) ((HttpServletResponseWrapper) internalPortletResponse).getResponse();
+            
+    }
+
+    private static ServletRequestFactory requestFactory =
+        (ServletRequestFactory) FactoryManager.getFactory(javax.servlet.http.HttpServletRequest.class);
+    private static ServletResponseFactory responseFactory =
+        (ServletResponseFactory) FactoryManager.getFactory(javax.servlet.http.HttpServletResponse.class);
+
 }

@@ -57,6 +57,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletConfig;
 
+import org.apache.pluto.om.window.PortletWindow;
+
 /**
  * Factory implementation for creating HTTP Request Wrappers
  *
@@ -79,10 +81,10 @@ public class ServletRequestFactoryImpl
     {
     }
 
-    public HttpServletRequest getServletRequest(HttpServletRequest request)
+    public HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
     {
         // TODO: use pool here
-        HttpServletRequest servletRequest = new ServletRequestImpl(request);
+        HttpServletRequest servletRequest = new ServletRequestImpl(request, window);
         return servletRequest;
     }
     
