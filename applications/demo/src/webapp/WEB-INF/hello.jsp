@@ -19,4 +19,6 @@ limitations under the License.
 <p>This is a test line</P>
 <b><portlet:namespace/>test@pluto.org</b>
 <p>Goodbye</p>
-
+<p>
+<a href="/jetspeed/portal/pam">Portlet Application Manager</a>
+</p>
