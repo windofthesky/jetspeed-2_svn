@@ -54,7 +54,7 @@ limitations under the License.
     <dependency>
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
-      <version>1.2.1-dev-20040407</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>struts-portlet</groupId>
@@ -64,6 +64,14 @@ limitations under the License.
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java</directory>
+        <includes>
+          <include>META-INF/tlds/*</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
   <reports>
     <report>maven-jdepend-plugin</report>

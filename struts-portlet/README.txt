@@ -16,7 +16,7 @@ Struts Portlet Framework:
 
 This is the initial version of a small framework to allow Struts to be used as Action handler and context renderer within a portlet.
 It's far from complete yet but already the standard MailReader example application does run nicely under Jetspeed 2.
-This example application can be found under the demo folder.
+This example application can be found under the demo folder and is automatically build and deployed with the default Jetspeed 2 setup.
 
 Documentation I haven't really written yet (you're looking at all there is right now) but will be provided as soon as possible.
 
@@ -85,7 +85,7 @@ Usage:
     This interface has to be implemented for a specific portal and gives the struts-portlet access to the servlet context
     its running in. For J2 this has already been done: org.apache.jetspeed.portlet.StrutsServletContextProviderImpl and
     globabally available to any J2 portlet (embedded in the jetspeed-commons-<version>.jar located in Tomcat/shared/lib).
-    The J2 implementation with J2 running under Tomcat 4.1.29 is the only one which has been tested so far.
+    The J2 implementation with J2 running under Tomcat 4.1.30 and 5.0.24 is the only one which has been tested so far.
 
     The other jar contains the framework classes. This jar has to be put in the WEB-INF/lib of a portlet.
 
@@ -114,12 +114,13 @@ Usage:
         value:    <action mapping> to default action page
         required: no, default taken from ViewPage
 
-  - Use the right struts.jar and its .tld files. The framework is developed against the nightly build of 20040407. Anything
+  - Use the right struts.jar and its .tld files. The framework currently has been tested against version 1.2.1. Anything
     after that will probably/hopefully work.
 
-  - Copy the struts-portlet.tld from this project to your tld folder.
-
-  - modify struts-config.xml:
+  - The struts-portlet.tld is included in the struts-portlet.jar so you can refer to it directly from within jsp files
+    using something like <%@ taglib uri="http://struts.apache.org/tags-portlet" prefix="sp" %>.
+   
+   - modify struts-config.xml:
     Define as controller processorClass: org.apache.struts.portlet.PortletRequestProcessor.
     Note, tiles usage isn't possible yet (probably won't be difficult to support so maybe soon).
 
@@ -134,8 +135,8 @@ Usage:
 
 Demo:
 
-  As example implementation and proof of concept the Struts MailReader example application (from nightly build 20040407) is
-  is converted to a Struts portlet.
+  As example implementation and proof of concept the Struts MailReader example application (from version 1.2.1) is
+  converted to a Struts portlet.
 
   The example has been modified on the following points:
   - all jsp files and the tour.html are moved below WEB-INF in folder view.
@@ -150,28 +151,9 @@ Demo:
   - Logoff doesn't invalidate the session anymore which could interfere with the current session implementation in J2 (which
     as far as I know is shared between all portlets, not sure if that's according to the specs though).
 
-  Known issues:
-  - JS2-11 (http://nagoya.apache.org/jira/browse/JS2-11) currently requires web-app_2_3.dtd to be available from the working
-    directory when deploying the demo application. [FIXED 2004-04-19 DST]
-  - JS2-14 (http://nagoya.apache.org/jira/browse/JS2-14) breaks the local anchor references in the tour. [FIXED 2004-04-19 DST]
-
-  To build and deploy navigate to the demo folder and run (make sure the production database is running):
-    maven deploy
-
-  Note that the project.properties in the demo folder should be adapted to your environment first!
-
-  Undeploy using:
-    maven undeploy
-
-  During deployment/undeployment an example portlet-entity is inserted/removed from the database using ID 15 (the next one
-  available if just the jetspeed demo portlets are all deployed).
-
-  Under subfolder jetspeed an example struts-demo.psml and an extended Log4J.properties file can be found for testing the
-  example under jetspeed. Simply copy these files over to your deployed jetspeed webapp folder.
-
-  As the demo is configured for deployment under Jetspeed-2 a Struts Portlet SPI implementation will be available at runtime.
+  As the demo is configured for deployment under Jetspeed-2 a Struts Portlet SPI implementation is already available at runtime.
   To get it running under a different portal an implementation for StrutsServletContextProvider has to be provided. If its not
   delivered by the portal itself you can try to define one yourself and include it in the demo together with the spi jar.
 
 
-20040418, Ate Douma
+20040724, Ate Douma
