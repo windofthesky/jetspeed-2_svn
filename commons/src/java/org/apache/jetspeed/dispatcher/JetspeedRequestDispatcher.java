@@ -15,9 +15,11 @@
  */
 package org.apache.jetspeed.dispatcher;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.portlet.PortletRequestDispatcher;
@@ -68,7 +70,7 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
             PrintWriter pw = null;
             if (servletResponse != null)
             {
-                pw = servletResponse.getWriter();
+                pw = getPrintWriter(servletResponse);
                 pw.write("JetspeedRequestDispatcher failed to include servlet resources. (details below) <br/>");
                 pw.write("Exception: " + e.getClass().getName() + " <br/>");
                 pw.write("Message: " + e.getMessage() + " <br/>");
@@ -112,6 +114,21 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
         {
             pw.write("&nbsp;&nbsp;&nbsp;" + traceArray[i].toString() + "<br />");
         }
+    }
+    
+    private static final PrintWriter getPrintWriter(ServletResponse response) throws IOException
+    {
+        PrintWriter pw = null;
+        try
+        {
+            pw = response.getWriter();
+        }
+        catch(IllegalStateException ise)
+        {
+            pw = new PrintWriter(response.getOutputStream());
+        }
+        
+        return pw;
     }
 
 }
