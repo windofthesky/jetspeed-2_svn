@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import java.io.IOException;
+
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSet;
@@ -51,7 +53,7 @@ public interface Folder extends SecuredResource, ChildNode
     
     void setDefaultTheme(String defaultTheme);
     
-    FolderSet getFolders();
+    FolderSet getFolders() throws IOException;
     
     void setFolders(FolderSet folders);
     
@@ -80,4 +82,6 @@ public interface Folder extends SecuredResource, ChildNode
 .     * @throws PageNotFoundException if the Page requested could not be found.
      */
     Page getPage(String name) throws PageNotFoundException;
+    
+    FolderMetaData getMetaData();
 }

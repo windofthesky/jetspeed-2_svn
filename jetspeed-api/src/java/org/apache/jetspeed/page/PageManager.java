@@ -16,6 +16,7 @@
 
 package org.apache.jetspeed.page;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.jetspeed.exception.JetspeedException;
@@ -81,7 +82,7 @@ public interface PageManager
      * @return <code>Folder</code> object represented by the <code>folderPath</code> or
      * <code>null</code> if no such folder exists.
      */
-    Folder getFolder(String folderPath);
+    Folder getFolder(String folderPath) throws IOException;
 
     /**
      * 

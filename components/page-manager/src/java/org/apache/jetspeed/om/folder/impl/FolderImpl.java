@@ -16,14 +16,19 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderMetaData;
 import org.apache.jetspeed.om.folder.FolderSet;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSet;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.impl.PageSetImpl;
+import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * FolderImpl
@@ -46,15 +51,21 @@ public class FolderImpl implements Folder
     private Folder parent;
     private File directory;
     private PageManager pageManager;
+ 
+    private FolderMetaData metaData;
+    private Locale locale;
 
     //private GenericMetadata metadata;
 
-    public FolderImpl( File directory, String name, PageManager pageManager )
+    public FolderImpl( File directory, String name, PageManager pageManager ) throws   IOException
     {
 
         this.directory = directory;
+        ArgUtil.assertNotNull(String.class, name, this);
         this.name = name;
         this.pageManager = pageManager;
+        this.metaData = new FolderMetaDataImpl(this, directory);        
+        
     }
 
     /**
@@ -67,8 +78,9 @@ public class FolderImpl implements Folder
 
     /**
      * @return Returns the parent.
+     * @throws IOException
      */
-    public Folder getParent()
+    public Folder getParent() throws IOException
     {
         if (name.equals("/"))
         {
@@ -194,7 +206,7 @@ public class FolderImpl implements Folder
      * 
      * @see org.apache.jetspeed.om.folder.Folder#getFolders()
      */
-    public FolderSet getFolders()
+    public FolderSet getFolders() throws IOException
     {
         if (folders == null)
         {
@@ -242,7 +254,12 @@ public class FolderImpl implements Folder
         if (pages == null)
         {
             pages = new PageSetImpl(this);
-            File[] children = getDirectory().listFiles();
+            File[] children = getDirectory().listFiles(new FilenameFilter(){
+
+                public boolean accept( File dir, String name )
+                {                   
+                    return !name.endsWith(".metadata");
+                }});
             for (int i = 0; i < children.length; i++)
             {
                 if (children[i].isFile())
@@ -283,4 +300,16 @@ public class FolderImpl implements Folder
         this.pages = pages;
     }
 
+    /**
+     * <p>
+     * getMetaData
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getMetaData()
+     * @return
+     */
+    public FolderMetaData getMetaData()
+    {        
+        return metaData;
+    }
 }

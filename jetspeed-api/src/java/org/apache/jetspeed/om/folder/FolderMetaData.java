@@ -15,11 +15,11 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.io.IOException;
+import java.util.Locale;
 
 /**
  * <p>
- * ChildNode
+ * FolderMetaData
  * </p>
  * <p>
  *
@@ -28,19 +28,10 @@ import java.io.IOException;
  * @version $Id$
  *
  */
-public interface ChildNode
+public interface FolderMetaData
 {
-    /**
-     * 
-     * <p>
-     * getParent
-     * </p>
-     *
-     * @return The parent folder for this node or <code>null</code> if this 
-     * node is the root folder of a system.
-     * @throws IOException
-     */
-    Folder getParent() throws IOException;
+    String getTitle();
     
-    void setParent(Folder parent);
+    String getTitle(Locale locale);
+
 }
