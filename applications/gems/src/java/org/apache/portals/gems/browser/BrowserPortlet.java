@@ -17,6 +17,7 @@ package org.apache.portals.gems.browser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -55,7 +56,10 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
     protected static final String POOLNAME = "poolname";
 
     protected static final String START = "start";
-
+    protected static final String FIND = "find";
+    protected static final String SEARCH_STRING = "searchString";
+    protected static final String SEARCH_COLUMN = "searchColumn";
+    
     protected static final String CUSTOMIZE_TEMPLATE = "customizeTemplate";
 
     protected static final String WINDOW_SIZE = "WindowSize";
@@ -152,9 +156,16 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 
         String sortColName = request.getParameter(SORT_COLUMN_NAME);
         int start = getStartVariable(request, START, sortColName, iterator);
+        
         PortletPreferences prefs = request.getPreferences();
 
         windowSize = Integer.parseInt(prefs.getValue(WINDOW_SIZE, "10"));
+        
+        StatusMessage message = (StatusMessage)PortletMessaging.consume(request, "DatabaseBrowserPortlet", "action");
+        if (message != null)
+        {
+            this.getContext(request).put("statusMsg", message);            
+        }
         
         try
         {
@@ -271,11 +282,31 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 {
                     clearBrowserIterator(request);
                 }
-                String start = request.getParameter("start");
+                String start = request.getParameter(START);
                 if (start != null)
                 {
-                    response.setRenderParameter("start", start);
+                    response.setRenderParameter(START, start);
                 }
+                String searchString = request.getParameter(SEARCH_STRING);
+                if (searchString != null)
+                {                    
+                    String searchColumn = request.getParameter(SEARCH_COLUMN);
+                    int index = find(this.getBrowserIterator(request), searchString, searchColumn);
+                    if (index == -1)
+                    {
+                        try
+                        {
+                            StatusMessage sm = new StatusMessage("Could not find match for: " + searchString, StatusMessage.ALERT);        
+                            PortletMessaging.publish(request, "DatabaseBrowserPortlet", "action", sm);
+                        }
+                        catch (Exception e)
+                        {}
+                    }
+                    else
+                    {
+                        response.setRenderParameter(START, Integer.toString(index));                        
+                    }
+                }                
             }
         }
     }
@@ -328,7 +359,8 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         int start = -1;
         // if users want to overwrite how the sorting affects the cursor for
         // the window
-        if (sortColName != null) start = getStartIndex();
+        if (sortColName != null) 
+            start = getStartIndex();
 
         if (start < 0)
         {
@@ -507,5 +539,29 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
         {
             System.err.println("Failed to publish message: " + e);
         }        
+    }
+
+    public int find(BrowserIterator iterator, String searchString, String searchColumn)
+    {
+        int index = 0;
+        int column = 1; 
+        
+        if (searchColumn != null)
+            column = Integer.parseInt(searchColumn);
+        
+        Iterator it = iterator.getResultSet().iterator();
+        while (it.hasNext())
+        {
+            // TODO: this only works on String columns
+            List row = (List)it.next();
+            String item = (String)row.get(column);
+            if (item.startsWith(searchString))
+            {
+                return index;
+            }
+            index++;
+        }
+        
+        return -1;
     }
 }
