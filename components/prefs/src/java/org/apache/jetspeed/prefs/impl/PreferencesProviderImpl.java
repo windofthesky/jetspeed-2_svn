@@ -19,12 +19,13 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStoreContaine
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.picocontainer.Startable;
 
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
-public class PreferencesProviderImpl implements PreferencesProvider
+public class PreferencesProviderImpl implements PreferencesProvider, Startable
 {
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesProviderImpl.class);
@@ -68,4 +69,20 @@ public class PreferencesProviderImpl implements PreferencesProvider
         return this.storeKeyName;
     }
 
+    /* (non-Javadoc)
+     * @see org.picocontainer.Startable#start()
+     */
+    public void start()
+    {
+        // Needs to be started so that it becomes registered as a provider
+
+    }
+    /* (non-Javadoc)
+     * @see org.picocontainer.Startable#stop()
+     */
+    public void stop()
+    {
+        // TODO Auto-generated method stub
+
+    }
 }
