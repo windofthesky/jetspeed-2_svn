@@ -66,4 +66,25 @@ import org.apache.fulcrum.Service;
  */
 public interface CommonService extends Service
 {
+    /**
+     * Load an implementation class from the configuration.
+     * 
+     * @param configurationName
+     * @return
+     * @throws CPSInitializationException
+     */
+    public Class loadModelClass(String configurationName)
+    throws CPSInitializationException;
+    
+    /**
+     * Creates objects given the class. 
+     * Throws exceptions if the class is not found in the default class path, 
+     * or the class is not an instance of CmsObject.
+     * 
+     * @param classe the class of object
+     * @return the newly created object
+     * @throws ContentManagementException
+     */    
+    public Object createObject(Class classe);
+    
 }
