@@ -45,7 +45,7 @@ limitations under the License.
   <goal name="build.security">
   	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
-</goal>
+  </goal>
 
   <preGoal name="test:test">
     <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
