@@ -63,7 +63,9 @@ public class BasePrincipalImpl implements BasePrincipal
 
     /**
      * <p>Gets the principal implementation full path from the principal name.</p>
-     * <p>Prepends PREFS_{PRINCIPAL}_ROOT if not prepended.</p>        
+     * <p>Hierarchical principal names should follow: {principal}.{subprincipal}.
+     * "." is used as the separator for hierarchical elements.</p>
+     * <p>The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.</p>        
      * @param name The principal name.
      * @param prefsRoot The preferences root node.
      * @return The preferences full path / principal name.
@@ -71,20 +73,18 @@ public class BasePrincipalImpl implements BasePrincipal
     public static String getFullPathFromPrincipalName(String name, String prefsRoot)
     {
         String fullPath = name;
-        if (!fullPath.startsWith(prefsRoot))
+        if (null != fullPath)
         {
-            if (fullPath.startsWith("/"))
-            {
-                fullPath = fullPath.substring(1, fullPath.length());
-            }
-            fullPath = prefsRoot + fullPath;
+            fullPath = prefsRoot + fullPath.replace('.', '/');
         }
         return fullPath;
     }
 
     /**
      * <p>Gets the principal name from the principal implementation full path.</p>
-     * <p>Remove prepended PREFS_{PRINCIPAL}_ROOT if present.</p>        
+     * <p>Hierarchical principal names should follow: {principal}.{subprincipal}.
+     * "." is used as the separator for hierarchical elements.</p>
+     * <p>The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.</p>        
      * @param fullPath The principal full path.
      * @param prefsRoot The preferences root node.
      * @return The principal name.
@@ -92,7 +92,7 @@ public class BasePrincipalImpl implements BasePrincipal
     public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot)
     {
         String name = fullPath;
-        if (name.startsWith(prefsRoot))
+        if (null != name)
         {
             if (prefsRoot.equals(UserPrincipalImpl.PREFS_USER_ROOT))
             {
@@ -100,8 +100,9 @@ public class BasePrincipalImpl implements BasePrincipal
             }
             else
             {
-                name = name.substring(prefsRoot.length() - 1, name.length());
+                name = name.substring(prefsRoot.length(), name.length());
             }
+            name = name.replace('/', '.');
         }
         return name;
     }

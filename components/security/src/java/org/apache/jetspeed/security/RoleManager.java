@@ -21,6 +21,9 @@ import java.util.Collection;
  * <p>Role hierarchy elements are being returned as a {@link Role}
  * collection.  The backing implementation must appropriately map 
  * the role hierarchy to a preferences sub-tree.</p> 
+ * <p>The convention {principal}.{subprincipal} has been chosen to name
+ * roles hierachies in order to support declarative security.  Implementation
+ * follow the conventions enforced by the preferences API.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface RoleManager
@@ -28,40 +31,42 @@ public interface RoleManager
 
     /**
      * <p>Add a new role.</p>
-     * <p>Role principal names are relative to the /role node.</p>
+     * <p>Role principal names are expressed as {principal}.{subprincipal} where
+     * "." is the separator expressing the hierarchical nature of a role.</p>
      * <p>Role principal path names are stored leveraging the {@link Preferences}
      * api.  Roles will be stored under /role/theGroupName/theGroupNameChild
-     * when given the full path name /theRoleName/theRoleNameChild.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleNameChild).
+     * when given the full path name theRoleName.theRoleNameChild.
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleNameChild).
      * @throws Throws a security exception if the role already exists.
      */
     void addRole(String roleFullPathName) throws SecurityException;
 
     /**
      * <p>Remove a given role and all the children of that role.</p>
-     * <p>Role principal names are relative to the /role node.</p>
+     * <p>Role principal names are expressed as {principal}.{subprincipal} where
+     * "." is the separator expressing the hierarchical nature of a role.</p>
      * <p>Role principal path names are stored leveraging the {@link Preferences}
      * api.  Roles will be stored under /role/theGroupName/theGroupNameChild
-     * when given the full path name /theRoleName/theRoleNameChild.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleNameChild).
+     * when given the full path name theRoleName.theRoleNameChild.
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleNameChild).
      * @throws Throws a security exception.
      */
     void removeRole(String roleFullPathName) throws SecurityException;
 
     /**
      * <p>Whether or not a role exists.</p>
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node. (e.g. /theRoleName/theRoleNameChild)
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleNameChild).
      * @return Whether or not a role exists.
      */
     boolean roleExists(String roleFullPathName);
 
     /**
      * <p>Get a role {@link Role} for a given role full path name.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleNameChild).
      * @return The {@link Preferences} node.
      * @throws Throws a security exception if the role does not exist.
      */
@@ -79,8 +84,8 @@ public interface RoleManager
     /**
      * <p>A collection of {@link User} for all the users
      * in a specific role.</p>
-     * @param roleFullPathName The role full path relative to
-     *                         the /role node (e.g. /theRoleName/theRoleChildName)..
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleNameChild).
      * @return A Collection of {@link User}.
      * @throws Throws a security exception if the role does not exist.
      */
@@ -88,9 +93,9 @@ public interface RoleManager
 
     /**
      * <p>A collection of {@link Role} for all the roles
-     * associated to a specific group.
-     * @param groupFullPathName The group full path relative to the 
-     *                         /group node (e.g. /theGroupName/theGroupChildName).
+     * associated to a specific group.</p>
+     * @param groupFullPathName The group full path
+     *                          (e.g. theGroupName.theGroupChildName).
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
@@ -98,9 +103,9 @@ public interface RoleManager
 
     /**
      * <p>A collection of {@link Group} for all the groups
-     * in a specific role.
-     * @param roleFullPathName The role full path relative to
-     *                         the /role node (e.g. /theRoleName/theRoleChildName)..
+     * in a specific role.</p>
+     * @param roleFullPathName The role full path
+     *                         (e.g. theRoleName.theRoleChildName)..
      * @return A Collection of {@link Group}.
      * @throws Throws a security exception if the role does not exist.
      */
@@ -109,8 +114,8 @@ public interface RoleManager
     /**
      * <p>Add a role to a user.</p>
      * @param username The user name.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleChildName).
      * @throws Throws a security exception if the role or the user do not exist.
      */
     void addRoleToUser(String username, String roleFullPathName) throws SecurityException;
@@ -127,8 +132,8 @@ public interface RoleManager
     /**
      * <p>Whether or not a user is in a role.</p>
      * @param username The user name.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleChildName).
      * @return Whether or not a user is in a role.
      * @throws Throws a security exception if the role or the user does not exist.
      */
@@ -136,30 +141,30 @@ public interface RoleManager
 
     /**
      * <p>Add a role to a group.</p>
-     * @param roleFullPathName The role full path relative to the 
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
-     * @param groupFullPathName The group name full path relative to the
-     *                          /group node (e.g. /theGroupName/theGroupChildName).
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleChildName).
+     * @param groupFullPathName The group name full path
+     *                          (e.g. theGroupName.theGroupChildName).
      * @throws Throws a security exception.
      */
     void addRoleToGroup(String roleFullPathName, String groupFullPathName) throws SecurityException;
 
     /**
      * <p>Remove a role from a group.</p>
-     * @param roleFullPathName The role full path relative to the 
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
-     * @param groupFullPathName The group name full path relative to the
-     *                          /group node (e.g. /theGroupName/theGroupChildName).
+     * @param roleFullPathName The role name full path 
+     *                         (e.g. theRoleName.theRoleChildName).
+     * @param groupFullPathName The group name full path
+     *                          (e.g. theGroupName.theGroupChildName).
      * @throws Throws a security exception.
      */
     void removeRoleFromGroup(String roleFullPathName, String groupFullPathName) throws SecurityException;
 
     /**
      * <p>Whether or not a role is in a group.</p>
-     * @param groupFullPathName The group name full path relative to the
-     *                          /group node (e.g. /theGroupName/theGroupChildName).
-     * @param roleFullPathName The role full path relative to the 
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
+     * @param groupFullPathName The group name full path
+     *                          (e.g. theGroupName.theGroupChildName).
+     * @param roleFullPathName The role name full path
+     *                         (e.g. theRoleName.theRoleChildName).
      * @return Whether or not a role is in a group.
      * @throws Throws a security exception if the role or the group does not exist.
      */

@@ -163,7 +163,7 @@ public class TestUserManager extends AbstractComponentAwareTestCase
         assertEquals(
             "expected user principal full path == /user/test",
             "/user/test",
-            SecurityHelper.getPrincipalFullPath(userPrincipal));
+            SecurityHelper.getPreferencesFullPath(userPrincipal));
         assertEquals("expected user principal name == test", "test", userPrincipal.getName());
 
         // Test the User Preferences.

@@ -79,7 +79,7 @@ public class PermissionManagerImpl implements PermissionManager
      */
     public Permissions getPermissions(Principal principal)
     {
-        String fullPath = SecurityHelper.getPrincipalFullPath(principal);
+        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
         ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
@@ -134,7 +134,7 @@ public class PermissionManagerImpl implements PermissionManager
         while (principalsIterator.hasNext())
         {
             Principal principal = (Principal) principalsIterator.next();
-            String fullPath = SecurityHelper.getPrincipalFullPath(principal);
+            String fullPath = SecurityHelper.getPreferencesFullPath(principal);
             if (null != fullPath)
             {
                 principalsFullPath.add(fullPath);
@@ -218,7 +218,7 @@ public class PermissionManagerImpl implements PermissionManager
      */
     public void removePermissions(Principal principal) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPrincipalFullPath(principal);
+        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
         ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" }, "removePermission(java.security.Principal)");
 
         // Remove permissions on principal.
@@ -257,7 +257,7 @@ public class PermissionManagerImpl implements PermissionManager
      */
     public void grantPermission(Principal principal, Permission permission) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPrincipalFullPath(principal);
+        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
         ArgUtil.notNull(
             new Object[] { fullPath, permission },
             new String[] { "fullPath", "permission" },
@@ -308,7 +308,7 @@ public class PermissionManagerImpl implements PermissionManager
      */
     public void revokePermission(Principal principal, Permission permission) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPrincipalFullPath(principal);
+        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
         ArgUtil.notNull(
             new Object[] { fullPath, permission },
             new String[] { "fullPath", "permission" },

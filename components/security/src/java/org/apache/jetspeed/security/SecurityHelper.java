@@ -85,7 +85,13 @@ public class SecurityHelper
         return principal;
     }
 
-    public static String getPrincipalFullPath(Principal principal)
+    /**
+     * <p>Utility method used to retrieve the Preferences API absolute/full
+     * path from a given principal.</p>
+     * @param principal The principal.
+     * @return The Preferences absolute/full path.
+     */
+    public static String getPreferencesFullPath(Principal principal)
     {
         
         if ((UserPrincipal.class).isInstance(principal))

@@ -42,6 +42,9 @@ import org.apache.jetspeed.util.ArgUtil;
  * <p>Role hierarchy elements are being returned as a {@link Role}
  * collection.  The backing implementation must appropriately map 
  * the role hierarchy to a preferences sub-tree.</p> 
+ * <p>The convention {principal}.{subprincipal} has been chosen to name
+ * roles hierachies in order to support declarative security.  Implementation
+ * follow the conventions enforced by the {@link Preferences} API.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
