@@ -23,9 +23,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.Transaction;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
@@ -51,12 +54,122 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
 
     private PersistenceStore persistenceStore;
 
+    private PortletRegistryComponent registry;
+
     
 
-    public PortletEntityAccessComponentImpl(PersistenceStore persistenceStore)
+    /**
+     * 
+     * @param persistenceStore
+     * @param registry
+     */
+    public PortletEntityAccessComponentImpl(PersistenceStore persistenceStore, PortletRegistryComponent registry)
     {
         this.persistenceStore = persistenceStore;
+        this.registry = registry;
     }
+    
+
+    /**
+     * <p>
+     * generateEntityFromFragment
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment, java.security.Principal)
+     * @param fragment
+     * @param principal
+     * @return
+     */
+    public MutablePortletEntity generateEntityFromFragment( Fragment fragment, String principal ) throws PortletEntityNotGeneratedException
+    {       
+        PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
+        ObjectID entityKey = generateEntityKey(fragment, principal);
+        
+        if (pd == null)
+        {
+            throw new PortletEntityNotGeneratedException("Failed to retrieve Portlet Definition for " + fragment.getName());
+        }
+        MutablePortletEntity portletEntity = newPortletEntityInstance(pd);
+        if (portletEntity == null)
+        {
+            throw new PortletEntityNotGeneratedException("Failed to create Portlet Entity for " + fragment.getName());
+        }
+        portletEntity.setId(entityKey.toString());
+              
+        return portletEntity;
+    }
+    
+    /**
+     * <p>
+     * generateEntityFromFragment
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment)
+     * @param fragment
+     * @return
+     * @throws PortletEntityNotGeneratedException
+     */
+    public MutablePortletEntity generateEntityFromFragment( Fragment fragment )
+            throws PortletEntityNotGeneratedException
+    {
+        return generateEntityFromFragment(fragment, null);
+    }
+    
+    /**
+     * <p>
+     * getPortletEntityForFragment
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntityForFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String)
+     * @param fragment
+     * @param principal
+     * @return
+     */
+    public MutablePortletEntity getPortletEntityForFragment( Fragment fragment, String principal )
+    {
+        return getPortletEntity(generateEntityKey(fragment, principal));
+    }
+    
+    /**
+     * <p>
+     * getPortletEntityForFragment
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntityForFragment(org.apache.jetspeed.om.page.Fragment)
+     * @param fragment
+     * @return
+     */
+    public MutablePortletEntity getPortletEntityForFragment( Fragment fragment )
+    {
+        return getPortletEntity(generateEntityKey(fragment, null));
+    }
+    
+    /**
+     * 
+     * <p>
+     * generateEntityKey
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityKey(org.apache.jetspeed.om.page.Fragment, java.lang.String)
+     * @param fragment
+     * @param principal
+     * @return
+     */
+    public ObjectID generateEntityKey(Fragment fragment, String principal)
+    {
+        StringBuffer key = new StringBuffer();
+        if (principal != null && principal.length() > 0)
+        {
+            key.append(principal);
+            key.append("/");
+        }
+        key.append(fragment.getId());
+        return JetspeedObjectID.createFromString(key.toString());
+    }
+    
+    
+    
+    
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.common.ObjectID)
      * 
@@ -88,21 +201,6 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         }
     }
 
-    /**
-     * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.portlet.PortletDefinition, java.lang.String)
-     *
-    public StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String entityName)
-    {
-        ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, entityName);
-        PortletEntity portletEntity = getPortletEntity(entityId);
-        if (portletEntity == null)
-        {
-            portletEntity = newPortletEntityInstance(portletDefinition);
-            ((PortletEntityCtrl) portletEntity).setId(entityId.toString());
-        }
-        return (StoreablePortletEntityDelegate)portletEntity; //wrapEntity(portletEntity);
-    }
-    */
     
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#newPortletEntityInstance(org.apache.pluto.om.portlet.PortletDefinition)
@@ -235,5 +333,10 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         List list =(List) ((PreferenceSetImpl)entity.getPreferenceSet()).getInnerCollection();
         return new StoreablePortletEntityDelegate(entity, entity, list, getPersistenceStore());
     }
+    
+
+    
+    
+    
 
 }
