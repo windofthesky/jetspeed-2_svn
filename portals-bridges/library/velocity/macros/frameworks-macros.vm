@@ -30,10 +30,14 @@
 #set ($eflag = "")
 #end
   <tr colspan="4" align="right">
-    <td width="5%" class="portlet-msg-error" align="left">#if ($!eflag == "") #else x #end</td>
-    <td nowrap class="portlet-form-field-label" align="right">$!MESSAGES.getString($label):&nbsp;</td>
-    <td class="portlet-form-input-field" align="left">
-      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value">
+  #if ($!eflag == "")
+    <td width="5%" align="left">&nbsp;</td>
+  #else
+    <td width="5%" class="portlet-msg-error" align="left">&nbsp;</td>  
+  #end
+    <td nowrap class="portlet-section-alternate" align="right">$!MESSAGES.getString($label):&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input id="$!id" type="text" name="$!id" size="$!size" value="$!value" class="portlet-form-label-field">
     </td>
     <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
   </tr>
@@ -52,12 +56,39 @@ $msg<br/>
 #end
 #end
 
-#macro (Preference $prefs $name)
-#set ($pall = $prefs.get($name))
-#foreach ($x in $pall)
-#set ($extraction = $x)
+#macro (OnePref $pf)
+#set ($pv = $pf.Value)
+#foreach ($x in $pv)
+#set ($extr = $x)
 #end
-$extraction
+$pf.Key $!extr
+#end
+
+#macro (prefField $key $values $size)
+#if ($ERRORS)
+#set ($eflag = "$!ERRORS.get($id)")
+#else
+#set ($eflag = "")
+#end
+#set ($pv = $pf.Value)
+#foreach ($x in $pv)
+#set ($extr = $x)
+#end
+#foreach ($x in $values)
+#set ($extr = $x)
+#end
+  <tr colspan="4" align="right">
+  #if ($!eflag == "")
+    <td width="5%" align="left">&nbsp;</td>
+  #else
+    <td width="5%" class="portlet-msg-error" align="left">&nbsp;</td>  
+  #end
+    <td nowrap class="portlet-section-alternate" align="right">$!key:&nbsp;</td>
+    <td class="portlet-section-body" align="left">
+      <input id="$!id" type="text" name="$!key" size="$!size" value="$!extr" class="portlet-form-label-field">
+    </td>
+    <td width="5%" class="portlet-form-label" align="left">&nbsp;</td>
+  </tr>
 #end
 
 #macro (form4ColumnCell $label $value $size $id)
