@@ -51,6 +51,8 @@ import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.services.information.InformationProviderService;
+import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.defaults.DefaultPicoContainer;
 import org.picocontainer.defaults.ObjectReference;
 import org.picocontainer.defaults.SimpleReference;
 
@@ -76,7 +78,6 @@ public class JetspeedEngine implements Engine
     // private final HashMap requestContextPerThread = new HashMap();
 
     private boolean useInternalJNDI;
-
     /**
      * Initializes the engine with a commons configuration, starting all early
      * initable services.
@@ -101,6 +102,8 @@ public class JetspeedEngine implements Engine
             context.setConfiguration(configuration);
             useInternalJNDI = configuration.getBoolean(JNDI_SUPPORT_FLAG_KEY,
                     true);
+            
+            configuration.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             
             
             System.out.println("JNDI System Property flag "+System.getProperty(JNDI_SUPPORT_FLAG_KEY));
@@ -232,7 +235,7 @@ public class JetspeedEngine implements Engine
                 container.shutdown();
             }
 
-            componentManager.killContainer();
+            componentManager.stop();
         }
         catch (PortletContainerException e)
         {
@@ -334,10 +337,11 @@ public class JetspeedEngine implements Engine
                 "jetspeed.root.assembly", "/WEB-INF/assembly/jetspeed.groovy");
 
         File containerAssembler = new File(applicationRoot + assemblyScript);
-        componentManager = new ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef,
-                null, "PORTAL_SCOPE");
+        ObjectReference bootContainerRef = new SimpleReference();
+        MutablePicoContainer bootContainer = new DefaultPicoContainer();        
+        bootContainer.registerComponentInstance("portal_configuration", configuration);
+              
+        componentManager = new  ComponentManager(containerAssembler, bootContainer, "PORTAL_SCOPE");
 
         try
         {
