@@ -261,9 +261,11 @@ public class GenericServletPortlet extends GenericPortlet
     {
         String editPage = this.defaultEditPage;
         if (this.allowPreferences == true)
-        {
+        {                       
             PortletPreferences prefs = request.getPreferences();
-            if (prefs != null)
+            // Allow EditPage override by the request
+            editPage = request.getParameter(PARAM_EDIT_PAGE);
+            if (prefs != null && editPage == null)
             {
                 editPage = prefs.getValue(PARAM_EDIT_PAGE, this.defaultEditPage);
             }
@@ -291,8 +293,11 @@ public class GenericServletPortlet extends GenericPortlet
         String helpPage = this.defaultHelpPage;
         if (this.allowPreferences == true)
         {
+
             PortletPreferences prefs = request.getPreferences();
-            if (prefs != null)
+            // Allow HelpPage override by the request
+            helpPage = request.getParameter(PARAM_EDIT_PAGE);
+            if (prefs != null && helpPage == null)
             {
                 helpPage = prefs.getValue(PARAM_HELP_PAGE, this.defaultHelpPage);
             }
