@@ -1,0 +1,2 @@
+- copy jetspeed-cornerstone-jmx-1.0.jar into .maven/repository/jetspeed2/jars
+- maven
