@@ -30,7 +30,9 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 
+import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -337,5 +339,19 @@ public interface RequestContext
      * @return The PortletRequest.USER_INFO map.
      */
     Map getUserInfoMap(ObjectID oid);
+    
+    /**
+     * 
+     * <p>
+     * getPreferedLanguage
+     * </p>
+     * Returns the Language object for the <code>portlet</code> which most
+     * closely matches the prefences of the currently requesting client.
+     * 
+     * @param portlet
+     * @return <code>Language</code> that matches, as closely as possible, that of
+     * the requesting client.
+     */
+    Language getPreferedLanguage( PortletDefinition portlet );
         
 }
