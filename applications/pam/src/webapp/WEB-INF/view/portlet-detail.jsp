@@ -173,13 +173,43 @@ limitations under the License.
 
 <c:if test="${selectedPortletTab.id == 'pd_languages'}">
 	<c:set var="langSet" value="${selectedPDef.languageSet}"/>
-	<c:forEach var="lang" items="${langSet.innerCollection}">
-		<c:out value="${lang.title}"/> | <c:out value="${lang.shortTitle}"/> | 
-		<c:forEach var="keyword" items="${lang.keywords}">
-			<c:out value="${keyword}"/> , 
-		</c:forEach>
-		| <c:out value="${lang.locale}"/> <br />
+	
+	<table>
+		<tr>
+			<th>&nbsp;</th>
+			<th><fmt:message key="pam.details.title"/></th>
+			<th><fmt:message key="pam.details.short_title"/></th>
+			<th><fmt:message key="pam.details.keyword"/></th>
+			<th><fmt:message key="pam.details.locale"/></th>
+		</tr>
+	<c:forEach var="lang" items="${langSet.innerCollection}" varStatus="status">
+		<tr>
+			<td>
+				<input type="checkbox" name="language_remove_id" value="<c:out value="${status.index}"/>"/>
+			</td>
+			<td>
+				<c:out value="${lang.title}"/>
+			</td>
+			<td>
+				<c:out value="${lang.shortTitle}"/>
+			</td>
+			<td>
+				<table>
+				<c:forEach var="keyword" items="${lang.keywords}">
+					<tr>
+						<td>
+							<c:out value="${keyword}"/>
+						</td>
+					</tr>
+				</c:forEach>
+				</table>
+			</td>
+			<td>
+				<c:out value="${lang.locale}"/>
+			</td>
+		</tr>
 	</c:forEach>
+	</table>
 </c:if>
 
 <c:if test="${selectedPortletTab.id == 'pd_parameters'}">
