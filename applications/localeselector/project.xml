@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id$
+-->
+<project>
+  <extend>${basedir}/./../project.xml</extend>
+  <id>localeselector</id>
+  <name>Jetspeed-2 Language Selector Portlet</name>
+  <description>Jetspeed-2 Language Selector Portlet</description>
+  <shortDescription>Language Selector Portlet</shortDescription>
+
+  <repository>                 
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2/applications/localeselector</connection>
+    <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/applications/localeselector/</url>
+  </repository>
+
+  <dependencies>
+     <dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>pluto</id>
+      <version>1.0.1-SNAPSHOT</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+      
+      <dependency>
+      <id>portlet-api</id>
+      <groupId>portlet-api</groupId>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jstl</id>
+      <version>1.0.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.0.4</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties> 
+    </dependency>
+    <dependency>
+      <id>jetspeed-commons</id>
+      <groupId>jetspeed2</groupId>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+    
+     <!--
+      <dependency>
+      <id>veltag</id>
+      <groupId>velocity</groupId>
+      <version>0.01-dev</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+     </dependency>      
+    -->
+   </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/java/</directory>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+  <reports>
+    <report>maven-jdepend-plugin</report>
+<!--
+    <report>maven-checkstyle-plugin</report>
+-->
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
+</project>

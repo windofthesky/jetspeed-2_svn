@@ -35,6 +35,9 @@ limitations under the License.
 <a href="/jetspeed/portal/perl-portlet">Perl Portlets</a>
 </p>
 <p>
+<a href="/jetspeed/portal/localeselector">Locale Selector</a>
+</p>
+<p>
 Portlet Mode is <b><%= renderRequest.getPortletMode().toString() %></b> <br/>
 Window State is <b><%= renderRequest.getWindowState().toString() %></b> <br/>
 </p>

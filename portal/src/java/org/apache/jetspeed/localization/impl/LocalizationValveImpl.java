@@ -22,6 +22,7 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -41,8 +42,15 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
      */
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
+        // TODO Get the prefered locale from user's persistent storage if not anon user
 
-        Locale locale = request.getRequest().getLocale();
+        Locale locale =
+            (Locale) request.getRequest().getSession().getAttribute(JetspeedRequestContext.PREFERED_LOCALE_SESSION_KEY);
+
+        if (locale == null)
+        {
+            locale = request.getRequest().getLocale();
+        }
 
         if (locale == null)
         {

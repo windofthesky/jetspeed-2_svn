@@ -15,10 +15,12 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletConfig;
 
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -47,6 +49,21 @@ public class ServletRequestFactoryImpl
     {
         // TODO: use pool here
         HttpServletRequest servletRequest = new ServletRequestImpl(request, window);
+
+        // Set page encoding in order to parse the form data correctly        
+        String preferedEnc = (String) request.getAttribute(JetspeedRequestContext.PREFERED_CHARACTERENCODING_KEY);
+        if (preferedEnc != null)
+        {
+            try
+            {
+                servletRequest.setCharacterEncoding(preferedEnc);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                ;
+            }
+        }
+
         return servletRequest;
     }
     

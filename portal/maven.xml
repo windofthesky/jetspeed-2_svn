@@ -331,6 +331,18 @@ limitations under the License.
  	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
+  <goal name="pam.localeselectordeploy">
+  	<!--
+ 	<j:set var="pam.app.name" value="localeselector"/>
+ 	<j:set var="pam.app.war" value="../applications/localeselector/target/localeselector.war"/>
+ 	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/localeselector/target" /> 	
+ 	<j:set var="maven.war.final.name" value="localeselector.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+  </goal>
+
   <goal name="pam.undeploy">
  	<j:set var="pam.app.name" value="HW_App"/>
  	<j:set var="pam.app.type" value="webapp"/>
@@ -369,6 +381,12 @@ limitations under the License.
   
   <goal name="pam.perlundeploy">
  	<j:set var="pam.app.name" value="perl"/>
+ 	<j:set var="pam.app.type" value="webapp"/>
+ 	<attainGoal name="pam.template.undeploy"/>
+  </goal>
+
+  <goal name="pam.localeselectorundeploy">
+ 	<j:set var="pam.app.name" value="localeselector"/>
  	<j:set var="pam.app.type" value="webapp"/>
  	<attainGoal name="pam.template.undeploy"/>
   </goal>
@@ -432,6 +450,7 @@ limitations under the License.
      <attainGoal name="pam.securitydeploy" />
      <attainGoal name="pam.phpdeploy" />
      <attainGoal name="pam.perldeploy" />
+     <attainGoal name="pam.localeselectordeploy" />
 
      <attainGoal name="db.entities" />
   </goal>
@@ -590,6 +609,7 @@ limitations under the License.
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/localeselector"/>
   </goal>
 
 </project>

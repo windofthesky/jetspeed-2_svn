@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.request;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
@@ -61,6 +60,7 @@ public class JetspeedRequestContext implements RequestContext
 {
     public static final String PREFERED_LANGUAGE_SESSION_KEY = "org.apache.jetspeed.prefered.language";
     public static final String PREFERED_LOCALE_SESSION_KEY = "org.apache.jetspeed.prefered.locale";
+    public static final String PREFERED_CHARACTERENCODING_KEY = "org.apache.jetspeed.prefered.characterencoding";
 
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -274,6 +274,13 @@ public class JetspeedRequestContext implements RequestContext
      */
     public void setCharacterEncoding( String enc )
     {
+        String preferedEnc = (String) request.getSession().getAttribute(PREFERED_CHARACTERENCODING_KEY);
+
+        if (preferedEnc == null || !enc.equals(preferedEnc))
+        {
+            request.setAttribute(PREFERED_CHARACTERENCODING_KEY, enc);
+        }
+        
         this.encoding = enc;
     }
 
@@ -292,17 +299,6 @@ public class JetspeedRequestContext implements RequestContext
                 .getFactory(javax.servlet.http.HttpServletRequest.class);
         HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
         
-        if (getCharacterEncoding() != null)
-        {
-            try
-            {
-                requestWrapper.setCharacterEncoding(getCharacterEncoding());
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                ;
-            }
-        }                
         return requestWrapper;
     }
 

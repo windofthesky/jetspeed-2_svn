@@ -16,10 +16,12 @@
 package org.apache.jetspeed.engine.servlet;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -42,6 +44,7 @@ import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.util.Enumerator;
 import org.apache.pluto.util.NamespaceMapperAccess;
 
 /**
@@ -252,4 +255,61 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         }
         return value;
     }
+    
+    /**
+     * @see javax.servlet.ServletRequest#getLocale()
+     */
+    public Locale getLocale()
+    {
+        Locale preferedLocale = (Locale) getSession().getAttribute(JetspeedRequestContext.PREFERED_LOCALE_SESSION_KEY);
+        if (preferedLocale != null)
+        {
+            return preferedLocale;
+        }
+        
+        return super.getLocale();
+    }
+
+    /**
+     * @see javax.servlet.ServletRequest#getLocales()
+     */
+    public Enumeration getLocales()
+    {
+        Locale preferedLocale = (Locale) getSession().getAttribute(JetspeedRequestContext.PREFERED_LOCALE_SESSION_KEY);
+        if (preferedLocale != null)
+        {
+            ArrayList locales = new ArrayList();
+            locales.add(preferedLocale);
+            Enumeration enum = super.getLocales();
+            while (enum.hasMoreElements())
+            {
+                locales.add(enum.nextElement());
+            }
+            Iterator i =locales.iterator();
+            return new Enumerator(locales);
+        }
+
+        return super.getLocales();
+    }
+
+    /**
+     * @see javax.servlet.http.HttpServletRequest#getHeader(java.lang.String)
+     */
+    public String getHeader(String name)
+    {
+        // TODO: replace accept-language header
+        
+        return super.getHeader(name);
+    }
+
+    /**
+     * @see javax.servlet.http.HttpServletRequest#getHeaders(java.lang.String)
+     */
+    public Enumeration getHeaders(String name)
+    {
+        // TODO: replace accept-language header
+
+        return super.getHeaders(name);
+    }
+
 }
