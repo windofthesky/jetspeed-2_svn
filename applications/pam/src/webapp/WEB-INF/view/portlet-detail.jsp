@@ -26,16 +26,52 @@ limitations under the License.
 
 <br />
 
-<c:if test="${selectedPortletTab.id == 'Details'}">
-	Expiration Cache: <c:out value="${selectedPDef.expirationCache}"/> <br />
-	Portlet ID: <c:out value="${selectedPDef.portletIdentifier}"/> <br />
-	Unique Name: <c:out value="${selectedPDef.uniqueName}"/> <br />
-	PreferenceValidator: <c:out value="${selectedPDef.preferenceValidatorClassname}"/> <br />
-	ClassName: <c:out value="${selectedPDef.className}"/> <br />
-	
+<c:if test="${selectedPortletTab.id == 'pd_details'}">
+	<table>
+		<tr>
+			<td	>
+				<fmt:message key="pam.details.expiration_cache"/>
+			</td>
+			<td>
+				<c:out value="${selectedPDef.expirationCache}"/>
+			</td>
+		</tr>
+		</tr>
+			<td>
+				<fmt:message key="pam.details.id"/>
+			</td>
+			<td>
+				<c:out value="${selectedPDef.portletIdentifier}"/>
+			</td>
+		</tr>
+		</tr>
+			<td>
+				<fmt:message key="pam.details.unique_name"/>
+			</td>
+			<td>
+				<c:out value="${selectedPDef.uniqueName}"/>
+			</td>
+		</tr>
+		</tr>
+			<td>
+				<fmt:message key="pam.details.preference_validator"/>
+			</td>
+			<td>
+				<c:out value="${selectedPDef.preferenceValidatorClassname}"/>
+			</td>
+		</tr>
+		</tr>
+			<td>
+				<fmt:message key="pam.details.class_name"/>
+			</td>
+			<td>
+				<c:out value="${selectedPDef.className}"/>
+			</td>
+		</tr>
+	</table>
 </c:if>
 
-<c:if test="${selectedPortletTab.id == 'Metadata'}">
+<c:if test="${selectedPortletTab.id == 'pd_metadata'}">
 	<div id="portlet_metadata">
 			
 		<c:set var="md" value="${selectedPDef.metadata}"/>
@@ -47,7 +83,7 @@ limitations under the License.
 	</div>
 </c:if>
 
-<c:if test="${selectedPortletTab.id == 'Preferences'}">
+<c:if test="${selectedPortletTab.id == 'pd_preferences'}">
 	<c:set var="prefSet" value="${selectedPDef.preferenceSet}"/>
 	<%
 		PreferenceSetComposite comp = (PreferenceSetComposite)pageContext.findAttribute("prefSet");
@@ -63,7 +99,7 @@ limitations under the License.
 	</c:forEach>
 </c:if>
 
-<c:if test="${selectedPortletTab.id == 'Languages'}">
+<c:if test="${selectedPortletTab.id == 'pd_languages'}">
 	<c:set var="langSet" value="${selectedPDef.languageSet}"/>
 	<c:forEach var="lang" items="${langSet.innerCollection}">
 		<c:out value="${lang.title}"/> | <c:out value="${lang.shortTitle}"/> | 
@@ -74,7 +110,7 @@ limitations under the License.
 	</c:forEach>
 </c:if>
 
-<c:if test="${selectedPortletTab.id == 'Parameters'}">
+<c:if test="${selectedPortletTab.id == 'pd_parameters'}">
 	<c:set var="paramSet" value="${selectedPDef.initParameterSet}"/>
 	
 	<%--
@@ -85,14 +121,14 @@ limitations under the License.
 		<c:out value="${theparam.name}"/> | <c:out value="${theparam.value}"/> <br />
 	</c:forEach>
 </c:if>
-<c:if test="${selectedPortletTab.id == 'Security'}">
+<c:if test="${selectedPortletTab.id == 'pd_security'}">
 	<c:set var="roleSet" value="${selectedPDef.initSecurityRoleRefSet}"/>
 	<c:forEach var="therole" items="${roleSet.innerCollection}">
 		<c:out value="${therole.roleName}"/>  <br />
 	</c:forEach>
 </c:if>
 
-<c:if test="${selectedPortletTab.id == 'ContentType'}">
+<c:if test="${selectedPortletTab.id == 'pd_content_type'}">
 	<c:set var="contentTypeSet" value="${selectedPDef.contentTypeSet}"/>
 	<c:forEach var="contentType" items="${contentTypeSet.innerCollection}">
 		<c:out value="${contentType.contentType}"/> | 

@@ -12,27 +12,66 @@ limitations under the License.
 --%>
 <form name="Edit_Metatdata_Form" action="<c:out value="${edit_metadata_link}"/>">
 	<input type="hidden" name="portlet_action" value=""/>
+	<table>
+		<tr>
+			<th>&nbsp;</th>
+			<th><fmt:message key="pam.details.name"/></th>
+			<th><fmt:message key="pam.details.locale"/></th>
+			<th><fmt:message key="pam.details.value"/></th>
+		</tr>
 	<c:forEach var="field" items="${md.fields}">
-			
-		<input type="checkbox" name="metadata_id" value="<c:out value="${field.id}"/>"/>
+		<tr>
+			<td>
+				<input type="checkbox" name="metadata_id" value="<c:out value="${field.id}"/>"/>
+			</td>
+			<td>	
+				<c:out value="${field.name}"/>
+			</td>
+			<td align="center">
+				<c:out value="${field.locale}"/> 
 				
-		<c:out value="${field.name}"/> | <c:out value="${field.value}"/> | <c:out value="${field.locale}"/> 
-		<%--TODO:  value needs to escaped, or use textarea--%>
-				
-		<input type="text" name="<c:out value="${field.id}"/>:value" value="<c:out value="${field.value}"/>"/>
-					
-		<br />	
+			</td>
+			<td>
+				<%--TODO:  value needs to escaped, or use textarea--%>
+				<input type="text" name="<c:out value="${field.id}"/>:value" value="<c:out value="${field.value}"/>" size="50"/>
+			</td>
+		</tr>
 	</c:forEach>
+	</table>
 			
-	<input type="submit" value="Edit" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>edit_metadata'"/>
-	<input type="submit" value="Remove Selected" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>remove_metadata'"/>
+	<input type="submit" value="<fmt:message key="pam.details.edit"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>edit_metadata'"/>
+	<input type="submit" value="<fmt:message key="pam.details.remove"/>" onClick="this.form.portlet_action.value = '<c:out value="${action_prefix}"/>remove_metadata'"/>
 </form>
 		
 <form action="<c:out value="${edit_metadata_link}"/>">
 	<input type="hidden" name="portlet_action" value="<c:out value="${action_prefix}"/>add_metadata"/>
-			
-	Name: <input type="text" name="name" value=""/> <br />
-	Value: <input type="text" name="value" value=""/> <br />
-	Locale: <input type="text" name="locale" value=""/> <br />
-	<input type="submit" value="Add Metadata"/>
+	<div>
+		<table>
+			<tr>
+				<td>
+					<span class="portlet-form-label"><fmt:message key="pam.details.name"/></span>
+				</td>
+				<td>
+					<input type="text" name="name" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="portlet-form-label"><fmt:message key="pam.details.value"/></span>
+				</td>
+				<td>
+					<input type="text" name="value" value=""/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="portlet-form-label"><fmt:message key="pam.details.locale"/></span>
+				</td>
+				<td>
+					<input type="text" name="locale" value=""/>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<input type="submit" value="<fmt:message key="pam.details.add_metadata"/>"/>
 </form>

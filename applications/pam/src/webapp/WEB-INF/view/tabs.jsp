@@ -31,7 +31,7 @@ limitations under the License.
   	         </portlet:actionURL>
 		                     
   	        <a href="<c:out value="${select_portlet_tab_link}"/>">
-  	            <c:out value="${tab.description}"/>
+  				<fmt:message>pam.details.tabs.<c:out value="${tab.id}"/></fmt:message>
   	        </a>
   	    </td>
   	    <td <c:if test="${tab == currentTab}"> class="LTabRight" </c:if>
