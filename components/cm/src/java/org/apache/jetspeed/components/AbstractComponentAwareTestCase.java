@@ -1,8 +1,17 @@
 /*
- * Created on Feb 22, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.jetspeed.components;
 
@@ -17,15 +26,16 @@ import org.picocontainer.MutablePicoContainer;
 import junit.framework.TestCase;
 
 /**
- * @author Sweaver
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @version $Id$
+ *  
  */
 public abstract class AbstractComponentAwareTestCase extends TestCase
 {
     private ComponentManager ncm;
     private MutablePicoContainer container;
+    private String log4jFile = "./src/webapp/WEB-INF/conf/Log4j.properties";
     
     /**
      * @param arg0
@@ -34,6 +44,17 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
     {
         super(arg0);
     }
+    
+    /**
+     * @param arg0
+     */
+    public AbstractComponentAwareTestCase(String arg0, String log4jFile)
+    {
+        super(arg0);
+        this.log4jFile = log4jFile;
+    }
+    
+    
     /**
      * @return Returns the ncm.
      */
@@ -68,16 +89,10 @@ public abstract class AbstractComponentAwareTestCase extends TestCase
         this.container = container;
     }
 
-    public static final String LOG4J_CONFIG_FILE = "log4j.file";
-	// TODO: make this relative, move it into script
-    public static final String LOG4J_CONFIG_FILE_DEFAULT = "src/webapp/WEB-INF/conf/Log4j.properties";
-    
     protected void setUp() throws Exception
     {
         super.setUp();
         
-        System.out.println("MAIN --------------");
-        String log4jFile = LOG4J_CONFIG_FILE_DEFAULT;
         Properties p = new Properties();
         try
         {
