@@ -108,7 +108,7 @@ class TagsSupport
     {
         url = getContextRelativeURL(pageContext,url,false);
         String contextPath = ((HttpServletRequest)pageContext.getRequest()).getContextPath();
-        if (url.startsWith(contextPath))
+        if (url.startsWith(contextPath + "/"))
         {
             url = url.substring(contextPath.length());
         }
