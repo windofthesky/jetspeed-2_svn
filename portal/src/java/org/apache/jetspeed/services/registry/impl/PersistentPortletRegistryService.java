@@ -64,27 +64,27 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.exception.RegistryException;
-import org.apache.jetspeed.om.common.BaseLanguage;
-import org.apache.jetspeed.om.common.BasePreference;
+import org.apache.jetspeed.om.common.LanguageImpl;
+import org.apache.jetspeed.om.common.PreferenceImpl;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.PreferenceComposite;
-import org.apache.jetspeed.om.common.portlet.BaseContentType;
-import org.apache.jetspeed.om.common.portlet.BasePortletApplicationDefinition;
-import org.apache.jetspeed.om.common.portlet.BasePortletDefinition;
+import org.apache.jetspeed.om.common.portlet.ContentTypeImpl;
+import org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.servlet.BaseWebApplicationDefinition;
+import org.apache.jetspeed.om.common.servlet.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.services.perisistence.LookupCriteria;
 import org.apache.jetspeed.services.perisistence.PersistencePlugin;
 import org.apache.jetspeed.services.perisistence.PersistenceService;
 import org.apache.jetspeed.services.registry.PortletRegistryService;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
@@ -92,9 +92,9 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 public class PersistentPortletRegistryService extends BaseService implements PortletRegistryService
 {
     private PersistencePlugin plugin;
-    
+
     private PersistencePlugin originalPlugin;
-    
+
     private String originalAlias;
 
     private static final Log log = LogFactory.getLog(PortletRegistryService.class);
@@ -106,8 +106,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
     {
         if (!isInitialized())
         {
-            PersistenceService ps =
-                (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
 
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
 
@@ -122,20 +121,20 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#getAllPortletDefinitions()
      */
     public List getAllPortletDefinitions()
-    {        
+    {
         try
         {
             LookupCriteria crit = plugin.newLookupCriteria();
-            Collection pColl = plugin.getCollectionByQuery(BasePortletDefinition.class, 
-                                                           plugin.generateQuery(BasePortletDefinition.class, crit));
+            Collection pColl =
+                plugin.getCollectionByQuery(PortletDefinitionImpl.class, plugin.generateQuery(PortletDefinitionImpl.class, crit));
             return new ArrayList(pColl);
         }
         catch (Throwable e)
-        {            
+        {
             log.fatal("Unable retrieve portlet definitions.", e);
             throw (RuntimeException) e;
         }
-        
+
     }
 
     /**
@@ -143,12 +142,13 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutablePortletApplication getPortletApplication(ObjectID id)
     {
+
+        ArgUtil.notNull(new Object[] { id }, new String[] { "id" }, "getPortletApplication(ObjectID)");
+
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("id", id);
-        Object query = plugin.generateQuery(BasePortletApplicationDefinition.class, c);
-        return (MutablePortletApplication) plugin.getObjectByQuery(
-            BasePortletApplicationDefinition.class,
-            query);
+        Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
+        return (MutablePortletApplication) plugin.getObjectByQuery(PortletApplicationDefinitionImpl.class, query);
     }
 
     /**
@@ -156,12 +156,13 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutablePortletApplication getPortletApplication(String name)
     {
+
+        ArgUtil.notNull(new Object[] { name }, new String[] { "name" }, "getPortletApplication(String)");
+
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("name", name);
-        Object query = plugin.generateQuery(BasePortletApplicationDefinition.class, c);
-        return (MutablePortletApplication) plugin.getObjectByQuery(
-            BasePortletApplicationDefinition.class,
-            query);
+        Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
+        return (MutablePortletApplication) plugin.getObjectByQuery(PortletApplicationDefinitionImpl.class, query);
     }
 
     /**
@@ -171,17 +172,13 @@ public class PersistentPortletRegistryService extends BaseService implements Por
     {
         try
         {
-            Object query =
-                plugin.generateQuery(
-                    BasePortletApplicationDefinition.class,
-                    plugin.newLookupCriteria());
-            return new ArrayList(
-                plugin.getCollectionByQuery(BasePortletApplicationDefinition.class, query));
+            Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, plugin.newLookupCriteria());
+            return new ArrayList(plugin.getCollectionByQuery(PortletApplicationDefinitionImpl.class, query));
         }
         catch (RuntimeException e)
-        {            
-           log.fatal("failed to retreive portlet application list: "+e.getMessage(), e);
-           throw e;
+        {
+            log.fatal("failed to retreive portlet application list: " + e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -191,7 +188,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
     public ContentTypeComposite newContentType()
     {
 
-        return new BaseContentType();
+        return new ContentTypeImpl();
     }
 
     /**
@@ -199,7 +196,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutableLanguage newLanguage()
     {
-        return new BaseLanguage();
+        return new LanguageImpl();
     }
 
     /**
@@ -207,7 +204,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutablePortletApplication newPortletApplication()
     {
-        return new BasePortletApplicationDefinition();
+        return new PortletApplicationDefinitionImpl();
     }
 
     /**
@@ -215,7 +212,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public PortletDefinitionComposite newPortletDefinition()
     {
-        return new BasePortletDefinition();
+        return new PortletDefinitionImpl();
     }
 
     /**
@@ -223,15 +220,20 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutableWebApplication newWebApplication()
     {
-        return new BaseWebApplicationDefinition();
+        return new WebApplicationDefinitionImpl();
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public void registerPortletApplication(PortletApplicationDefinition newApp)
-        throws RegistryException
+    public void registerPortletApplication(PortletApplicationDefinition newApp) throws RegistryException
     {
+
+        ArgUtil.notNull(
+            new Object[] { newApp },
+            new String[] { "newApp" },
+            "registerPortletApplication(PortletApplicationDefinition)");
+
         // use default plugin to register this application
         registerPortletApplication(newApp, plugin);
     }
@@ -250,9 +252,10 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public void removeApplication(PortletApplicationDefinition app)
     {
-    	System.out.println("Removing portlet application "+app);    	
-        plugin.delete(app);        
+        ArgUtil.notNull(new Object[] { app }, new String[] { "app" }, "removeApplication(PortletApplicationDefinition)");
 
+        log.info("Removing portlet application " + ((MutablePortletApplication) app).getName());
+        plugin.delete(app);
     }
 
     /**
@@ -260,40 +263,42 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public PortletDefinitionComposite getPortletDefinitionByUniqueName(String name)
     {
+
+        ArgUtil.notNull(new Object[] { name }, new String[] { "name" }, "getPortletDefinitionByUniqueName(String)");
+
         // TODO: we may need to lookup on appname + name
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("name", name);
-        Object query = plugin.generateQuery(BasePortletDefinition.class, c);
-        return (PortletDefinitionComposite) plugin.getObjectByQuery(
-            BasePortletDefinition.class,
-            query);        
+        Object query = plugin.generateQuery(PortletDefinitionImpl.class, c);
+        return (PortletDefinitionComposite) plugin.getObjectByQuery(PortletDefinitionImpl.class, query);
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#createLanguage(java.util.Locale, java.lang.String, java.lang.String, java.lang.String)
      */
-    public Language createLanguage(
-        Locale locale,
-        String title,
-        String shortTitle,
-        String description,
-        Collection keywords)
+    public Language createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords)
     {
-       MutableLanguage lc = newLanguage();
-       lc.setLocale(locale);       
-       lc.setTitle( title);
-       lc.setShortTitle(shortTitle);
-       lc.setKeywords(keywords);
-       
-       return lc;
+
+        ArgUtil.notNull(
+            new Object[] { locale },
+            new String[] { "locale" },
+            "createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords");
+
+        MutableLanguage lc = newLanguage();
+        lc.setLocale(locale);
+        lc.setTitle(title);
+        lc.setShortTitle(shortTitle);
+        lc.setKeywords(keywords);
+
+        return lc;
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#newPreference()
      */
     public PreferenceComposite newPreference()
-    {        
-        return new BasePreference();
+    {
+        return new PreferenceImpl();
     }
 
     /**
@@ -301,12 +306,12 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public MutablePortletApplication getPortletApplicationByIndetifier(String ident)
     {
+        ArgUtil.notNull(new Object[] { ident }, new String[] { "ident" }, "getPortletApplicationByIndetifier(String ident)");
+
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("applicationIdentifier", ident);
-        Object query = plugin.generateQuery(BasePortletApplicationDefinition.class, c);
-        return (MutablePortletApplication) plugin.getObjectByQuery(
-            BasePortletApplicationDefinition.class,
-            query);
+        Object query = plugin.generateQuery(PortletApplicationDefinitionImpl.class, c);
+        return (MutablePortletApplication) plugin.getObjectByQuery(PortletApplicationDefinitionImpl.class, query);
     }
 
     /**
@@ -314,13 +319,15 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public PortletDefinitionComposite getPortletDefinitionByIndetifier(String ident)
     {
+        ArgUtil.notNull(new Object[] { ident }, new String[] { "ident" }, "getPortletDefinitionByIndetifier(String ident)");
+
         Iterator appItr = getAllPortletDefinitions().iterator();
         ArrayList portlets = new ArrayList();
-        while(appItr.hasNext())
+        while (appItr.hasNext())
         {
             PortletDefinitionComposite pd = (PortletDefinitionComposite) appItr.next();
-            
-            if(pd.getPortletIdentifier() != null && pd.getPortletIdentifier().equals(ident))
+
+            if (pd.getPortletIdentifier() != null && pd.getPortletIdentifier().equals(ident))
             {
                 return pd;
             }
@@ -332,7 +339,9 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#portletApplicationExists(java.lang.String)
      */
     public boolean portletApplicationExists(String appIentity)
-    {        
+    {
+        ArgUtil.notNull(new Object[] { appIentity }, new String[] { "appIentity" }, "portletApplicationExists(String appIentity)");
+
         return getPortletApplicationByIndetifier(appIentity) != null;
     }
 
@@ -340,7 +349,12 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#portletDefinitionExists(java.lang.String)
      */
     public boolean portletDefinitionExists(String portletIndentity)
-    {        
+    {
+        ArgUtil.notNull(
+            new Object[] { portletIndentity },
+            new String[] { "portletIndentity" },
+            "portletDefinitionExists(String portletIndentity)");
+
         return getPortletDefinitionByIndetifier(portletIndentity) != null;
     }
 
@@ -349,21 +363,29 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public boolean portletDefinitionExists(String portletName, MutablePortletApplication app)
     {
+        ArgUtil.notNull(
+            new Object[] { portletName, app },
+            new String[] { "portletName", "app" },
+            "portletDefinitionExists(String portletName, MutablePortletApplication app)");
+
         return app.getPortletDefinitionByName(portletName) != null;
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition, java.lang.String)
      */
-    public void registerPortletApplication(PortletApplicationDefinition newApp, String system)
-        throws RegistryException
+    public void registerPortletApplication(PortletApplicationDefinition newApp, String system) throws RegistryException
     {
-        PersistenceService ps =
-                (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+        ArgUtil.notNull(
+            new Object[] { newApp, system },
+            new String[] { "newApp", "system" },
+            "registerPortletApplication(PortletApplicationDefinition newApp, String system)");
+
+        PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
         PersistencePlugin usePlugin = ps.getPlugin(system);
-        registerPortletApplication(newApp, usePlugin);        
+        registerPortletApplication(newApp, usePlugin);
     }
-    
+
     /**
      * Uses a specific pluging to register/deploy the portlet application
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#registerPortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
@@ -371,18 +393,22 @@ public class PersistentPortletRegistryService extends BaseService implements Por
     protected void registerPortletApplication(PortletApplicationDefinition newApp, PersistencePlugin usePlugin)
         throws RegistryException
     {
+        ArgUtil.notNull(
+            new Object[] { newApp, usePlugin },
+            new String[] { "newApp", "usePlugin" },
+            "registerPortletApplication(PortletApplicationDefinition newApp, PersistencePlugin usePlugin)");
+
         LookupCriteria c = usePlugin.newLookupCriteria();
         MutablePortletApplication pac = (MutablePortletApplication) newApp;
         c.addEqualTo("applicationIdentifier", pac.getApplicationIdentifier());
         Object test =
-        usePlugin.getObjectByQuery(
-                BasePortletApplicationDefinition.class,
-        usePlugin.generateQuery(BasePortletApplicationDefinition.class, c));
+            usePlugin.getObjectByQuery(
+                PortletApplicationDefinitionImpl.class,
+                usePlugin.generateQuery(PortletApplicationDefinitionImpl.class, c));
 
         if (test != null)
         {
-            String message =
-                "A Portlet Application with the identifier, " + pac.getApplicationIdentifier() + " already exists.";
+            String message = "A Portlet Application with the identifier, " + pac.getApplicationIdentifier() + " already exists.";
             log.error(message);
             throw new RegistryException(message);
         }
@@ -393,30 +419,25 @@ public class PersistentPortletRegistryService extends BaseService implements Por
 
     }
 
-
-
-
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#setDeploymentSystem(java.lang.String, java.lang.String)
      */
     public void setDeploymentSystem(String system, String alias)
     {
-        
-        if(system != null)
+
+        if (system != null)
         {
-            PersistenceService ps =
-                                    (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
-            originalPlugin = this.plugin; 
-                    this.plugin = ps.getPlugin(system);
+            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            originalPlugin = this.plugin;
+            this.plugin = ps.getPlugin(system);
         }
-        
-       
-        if(alias != null)
-        {   
-            this.originalAlias = plugin.getDbAlias();         
-            this.plugin.setDbAlias(alias); 
+
+        if (alias != null)
+        {
+            this.originalAlias = plugin.getDbAlias();
+            this.plugin.setDbAlias(alias);
         }
-        
+
     }
 
     /**
@@ -424,12 +445,12 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public void resetDeploymentSystem()
     {
-        if(originalPlugin != null)
+        if (originalPlugin != null)
         {
             plugin = originalPlugin;
         }
-        
-        if(originalAlias != null)
+
+        if (originalAlias != null)
         {
             plugin.setDbAlias(originalAlias);
         }
