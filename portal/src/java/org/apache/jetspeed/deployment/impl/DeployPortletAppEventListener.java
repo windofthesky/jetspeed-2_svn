@@ -20,8 +20,10 @@ import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
+import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
+import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -85,6 +87,11 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                         log.info("Portlet application \"" + id + "\"" + " already been registered.  Skipping initial deployment.");
                         // still need to register the filename to the app name so undeploy works correctly
 						appNameToFile.put(handler.getFile().getName(), id);
+						if(isLocal)
+						{
+						    PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id );
+	                         JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));						    
+						}
                         return;
                     }
 
@@ -94,6 +101,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     {
                          log.info(handler.getFile().getName()+" will be registered as a local portlet applicaiton.");
                          pam.register(id, id, handler.getPath());
+                         PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id );
+                         JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                     }
                     else
                     {
