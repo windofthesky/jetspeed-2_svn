@@ -55,8 +55,8 @@ package org.apache.jetspeed.services.information;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;
@@ -67,7 +67,7 @@ import org.apache.pluto.services.information.StaticInformationProvider;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class InformationProviderServiceImpl extends BaseService implements Factory, InformationProviderServiceService
+public class InformationProviderServiceImpl extends BaseCommonService implements Factory, InformationProviderServiceService
 {
     private javax.servlet.ServletConfig servletConfig;
     private static final Log log = LogFactory.getLog(InformationProviderServiceImpl.class);
@@ -157,7 +157,7 @@ public class InformationProviderServiceImpl extends BaseService implements Facto
     /**
      * @see org.apache.fulcrum.Service#init()
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (!isInitialized())
         {

@@ -60,8 +60,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.om.profile.BasePSMLDocument;
 import org.apache.jetspeed.om.profile.BaseProfile;
 import org.apache.jetspeed.om.profile.BaseProfileLocator;
@@ -101,7 +101,7 @@ import org.apache.jetspeed.services.psml.PsmlManager;
  * @version $Id$
  */
 
-public class JetspeedProfilerService  extends BaseService 
+public class JetspeedProfilerService  extends BaseCommonService 
     implements ProfilerService
 {
 
@@ -165,7 +165,7 @@ public class JetspeedProfilerService  extends BaseService
      * @exception throws a <code>InitializationException</code> if the service
      * fails to initialize
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (isInitialized()) 
         {
@@ -381,7 +381,7 @@ public class JetspeedProfilerService  extends BaseService
      * @exception throws a <code>InitializationException</code> if the service
      * fails to initialize
      */
-    private void initConfiguration() throws InitializationException
+    private void initConfiguration() throws CPSInitializationException
     {
         resourceDefault = getConfiguration().getString( CONFIG_RESOURCE_DEFAULT, DEFAULT_CONFIG_RESOURCE_DEFAULT );
 

@@ -53,7 +53,7 @@
  */
 package org.apache.jetspeed.services.entity;
 
-import org.apache.jetspeed.util.ServiceUtil;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -81,7 +81,7 @@ public class PortletEntityAccess
 
     protected static PortletEntityService getService()
     {
-        return (PortletEntityService) ServiceUtil.getServiceByName(PortletEntityService.SERVICE_NAME);
+        return (PortletEntityService) CommonPortletServices.getPortalService(PortletEntityService.SERVICE_NAME);
     }
 
 }

@@ -58,7 +58,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
@@ -76,9 +75,7 @@ import org.apache.regexp.RE;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class CapabilityServiceImpl
-    extends BaseCommonService
-    implements CapabilityService
+public class CapabilityServiceImpl extends BaseCommonService implements CapabilityService
 {
     private PersistencePlugin plugin;
 
@@ -87,35 +84,40 @@ public class CapabilityServiceImpl
     private String originalAlias;
 
     private static final Log log = LogFactory.getLog(CapabilityServiceImpl.class);
-    
+
     public static final String DEFAULT_AGENT = "Mozilla/4.0";
 
     public static final String AGENT_XML = "agentxml/1.0";
-    
+
     private Collection clients = null;
-    
+
     private Class clientClass;
-    
-    
-    /* (non-Javadoc)
+
+    /**
+     *  
+     * <p>
+     * init
+     * </p>
+     * 
      * @see org.apache.fulcrum.Service#init()
+     * @throws CPSInitializationException
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (!isInitialized())
         {
-            PersistenceService ps = (PersistenceService)CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
+            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
 
             plugin = ps.getPersistencePlugin(pluginName);
 
             String className = getConfiguration().getString("client.impl", null);
-            
+
             if (null == className)
             {
                 throw new CPSInitializationException("Factory class properties not found in configuration.");
             }
-            
+
             try
             {
                 clientClass = createClass(className);
@@ -124,23 +126,21 @@ public class CapabilityServiceImpl
             {
                 throw new CPSInitializationException("Could not preload client implementation class.", e);
             }
-            
+
             setInit(true);
         }
     }
-    
+
     /**
      * @param className
      * @return
      * @throws ClassNotFoundException
      */
-    private Class createClass(String className)
-    throws ClassNotFoundException
+    private Class createClass(String className) throws ClassNotFoundException
     {
         return Class.forName(className);
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.capability.CapabilityService#getCapabilityMap(java.lang.String)
      */
@@ -165,7 +165,7 @@ public class CapabilityServiceImpl
             {
                 if (log.isDebugEnabled())
                 {
-                    log.debug("CapabilityMap: useragent "+ userAgent + "unknown, falling back to default");
+                    log.debug("CapabilityMap: useragent " + userAgent + "unknown, falling back to default");
                 }
                 // LEFT OFF HERE: map = getDefaultCapabilityMap();
             }
@@ -175,7 +175,6 @@ public class CapabilityServiceImpl
             // LEFT OFF HERE: map = new BaseCapabilityMap(userAgent, entry);
         }
 
-
         if (log.isDebugEnabled())
         {
             log.debug("CapabilityMap: User-agent: " + userAgent + " mapped to " + map);
@@ -183,7 +182,7 @@ public class CapabilityServiceImpl
 
         return map;
     }
-    
+
     /**
      * Returns the client which matches the given useragent string.
      *
@@ -198,12 +197,12 @@ public class CapabilityServiceImpl
 
         if (log.isDebugEnabled())
         {
-            log.debug( "ClientRegistry: Looking for client with useragent :" + userAgent );
+            log.debug("ClientRegistry: Looking for client with useragent :" + userAgent);
         }
 
         while (clients.hasNext())
         {
-            ClientEntry client = (ClientEntry)clients.next();
+            ClientEntry client = (ClientEntry) clients.next();
             if (client.getUseragentpattern() != null)
             {
                 try
@@ -216,31 +215,33 @@ public class CapabilityServiceImpl
 
                         if (log.isDebugEnabled())
                         {
-                            log.debug( "ClientRegistry: " + userAgent + " matches " + client.getUseragentpattern() );
+                            log.debug("ClientRegistry: " + userAgent + " matches " + client.getUseragentpattern());
                         }
 
                         return client;
                     }
                     else
                     {
-                        if ( log.isDebugEnabled() )
+                        if (log.isDebugEnabled())
                         {
-                            log.debug( "ClientRegistry: " + userAgent + " does not match " + client.getUseragentpattern() );
+                            log.debug("ClientRegistry: " + userAgent + " does not match " + client.getUseragentpattern());
                         }
                     }
                 }
                 catch (org.apache.regexp.RESyntaxException e)
                 {
-                    String message = "ClientRegistryService: UserAgentPattern not valid : " 
-                                        + client.getUseragentpattern() + " : " + e.getMessage();
-                    log.error( message, e );
+                    String message =
+                        "ClientRegistryService: UserAgentPattern not valid : "
+                            + client.getUseragentpattern()
+                            + " : "
+                            + e.getMessage();
+                    log.error(message, e);
                 }
             }
         }
 
         return clientEntry;
     }
-    
 
     /**
      * @return
@@ -251,7 +252,7 @@ public class CapabilityServiceImpl
         {
             this.clients = plugin.getExtent(ClientEntryImpl.class);
         }
-        
+
         return this.clients.iterator();
     }
 }

@@ -53,8 +53,7 @@
  */
 package org.apache.jetspeed.services.information;
 
-import org.apache.jetspeed.util.ServiceUtil;
-
+import org.apache.jetspeed.cps.CommonPortletServices;
 
 /**
  * InformationProviderManager
@@ -68,6 +67,7 @@ public class InformationProviderManager
 
     public static final InformationProviderServiceService getService()
     {
-        return (InformationProviderServiceService) ServiceUtil.getServiceByName(InformationProviderServiceService.SERVICE_NAME);
+        return (InformationProviderServiceService) CommonPortletServices.getPortalService(
+            InformationProviderServiceService.SERVICE_NAME);
     }
 }

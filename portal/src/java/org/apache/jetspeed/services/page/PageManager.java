@@ -56,11 +56,11 @@ package org.apache.jetspeed.services.page;
 
 import java.util.List;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.util.ServiceUtil;
 
 /**
  * Convenience static wrapper around <code>PageManagerService</code>
@@ -71,8 +71,7 @@ public class PageManager
 {
     private static final PageManagerService getService()
     {
-        return (PageManagerService) ServiceUtil.getServiceByName(
-            PageManagerService.SERVICE_NAME);
+        return (PageManagerService) CommonPortletServices.getPortalService(PageManagerService.SERVICE_NAME);
     }
 
     /**
@@ -140,4 +139,3 @@ public class PageManager
     }
 
 }
-

@@ -55,7 +55,7 @@ package org.apache.jetspeed.services.profiler;
 
 import java.util.Iterator;
 
-import org.apache.jetspeed.services.JetspeedServices;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.profile.Profile;
 import org.apache.jetspeed.om.profile.ProfileLocator;
 import org.apache.jetspeed.om.profile.QueryLocator;
@@ -63,7 +63,6 @@ import org.apache.jetspeed.om.profile.ProfileException;
 import org.apache.jetspeed.om.profile.Portlets;
 import org.apache.jetspeed.request.RequestContext;
 
-import org.apache.jetspeed.services.profiler.ProfilerService;
 
 public class Profiler
 {
@@ -86,7 +85,7 @@ public class Profiler
      */
     public static ProfilerService getService()
     {
-        return (ProfilerService)JetspeedServices
+        return (ProfilerService)CommonPortletServices
             .getInstance().getService(ProfilerService.SERVICE_NAME);
     }
 

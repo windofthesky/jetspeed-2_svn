@@ -75,8 +75,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 
 /**
  * 
@@ -190,7 +190,7 @@ import org.apache.fulcrum.InitializationException;
  * @version $Id$
  *
  */
-public class JetspeedJMXService extends BaseService
+public class JetspeedJMXService extends BaseCommonService
 {
     public static final String SERVICE_NAME = "JMXService";
     private MBeanServer server;
@@ -213,7 +213,7 @@ public class JetspeedJMXService extends BaseService
         isLocked = false;
     }
 
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (isInitialized())
         {
@@ -248,7 +248,8 @@ public class JetspeedJMXService extends BaseService
                 File mbeanFile = new File(getRealPath(descriptor));
                 if (!mbeanFile.exists())
                 {
-                    throw new InitializationException("MBean descriptor " + mbeanFile.getCanonicalPath() + " could not be found.");
+                    throw new CPSInitializationException(
+                        "MBean descriptor " + mbeanFile.getCanonicalPath() + " could not be found.");
                 }
                 stream = new BufferedInputStream(new FileInputStream(mbeanFile));
             }
@@ -263,7 +264,7 @@ public class JetspeedJMXService extends BaseService
             }
             catch (Exception e)
             {
-                throw new InitializationException("Failed to load registry: " + descriptor);
+                throw new CPSInitializationException("Failed to load registry: " + descriptor);
             }
 
             server = Registry.getServer();
@@ -332,13 +333,13 @@ public class JetspeedJMXService extends BaseService
             log.fatal("Unable to start JMX service", e);
             // roll back all registered beans
             removeAllMBeans();
-            if (e instanceof InitializationException)
+            if (e instanceof CPSInitializationException)
             {
-                throw (InitializationException) e;
+                throw (CPSInitializationException) e;
             }
             else
             {
-                throw new InitializationException("Unable to start JMX service", e);
+                throw new CPSInitializationException("Unable to start JMX service", e);
             }
 
         }
@@ -348,7 +349,7 @@ public class JetspeedJMXService extends BaseService
         }
     }
 
-    protected void initRemoteAccess(Configuration conf) throws InitializationException
+    protected void initRemoteAccess(Configuration conf) throws CPSInitializationException
     {
         // Create a MBeanServer
         try
@@ -413,7 +414,7 @@ public class JetspeedJMXService extends BaseService
         {
             String msg = "Unable to start Jetspeed JMX remote services.";
             log.error(msg, e);
-            throw new InitializationException(msg, e);
+            throw new CPSInitializationException(msg, e);
         }
 
     }

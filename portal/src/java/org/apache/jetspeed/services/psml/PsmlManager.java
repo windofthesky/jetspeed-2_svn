@@ -56,7 +56,7 @@ package org.apache.jetspeed.services.psml;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.jetspeed.services.JetspeedServices;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.profile.PSMLDocument;
 import org.apache.jetspeed.om.profile.ProfileLocator;
 import org.apache.jetspeed.om.profile.QueryLocator;
@@ -79,7 +79,7 @@ public class PsmlManager
      */
     public static PsmlManagerService getService()
     {
-        return (PsmlManagerService)JetspeedServices
+        return (PsmlManagerService)CommonPortletServices
             .getInstance().getService(PsmlManagerService.SERVICE_NAME);
     }
 

@@ -66,12 +66,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.om.profile.BasePSMLDocument;
 import org.apache.jetspeed.om.profile.PSMLDocument;
 import org.apache.jetspeed.om.profile.Portlets;
@@ -100,7 +100,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:sgala@apache.org">Santiago Gala</a>
  * @version $Id$
  */
-public class CastorPsmlManagerService extends BaseService 
+public class CastorPsmlManagerService extends BaseCommonService 
                                       implements FileCacheEventListener,
                                                  PsmlManagerService
 {
@@ -158,7 +158,7 @@ public class CastorPsmlManagerService extends BaseService
      * This is the early initialization method called by the
      * Turbine <code>Service</code> framework
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (isInitialized()) 
         {
@@ -551,7 +551,7 @@ public class CastorPsmlManagerService extends BaseService
     }
 
     protected void loadMapping()
-        throws InitializationException
+        throws CPSInitializationException
     {
         // test the mapping file and create the mapping object
 
@@ -574,12 +574,12 @@ public class CastorPsmlManagerService extends BaseService
                 catch (Exception e)
                 {
                     log.error("PSMLManager: Error in psml mapping creation",e);
-                    throw new InitializationException("Error in mapping",e);
+                    throw new CPSInitializationException("Error in mapping",e);
                 }
             }
             else
             {
-                throw new InitializationException("PSML Mapping not found or not a file or unreadable: "+mapFile);
+                throw new CPSInitializationException("PSML Mapping not found or not a file or unreadable: "+mapFile);
             }
         }
     }

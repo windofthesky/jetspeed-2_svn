@@ -56,7 +56,7 @@ package org.apache.jetspeed.services.page;
 
 import java.util.List;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -68,7 +68,7 @@ import org.apache.jetspeed.om.page.Property;
  *
  * @version $Id$
  */
-public interface PageManagerService extends Service
+public interface PageManagerService extends CommonService
 {
     /** The name of the service */
     public String SERVICE_NAME = "PageManager";

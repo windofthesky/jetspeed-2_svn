@@ -56,9 +56,10 @@ package org.apache.jetspeed.container.services.log;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.LogConfigurationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.pluto.services.log.LogService;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+
 
 /**
  * Implements the logging service adaptor for the Pluto container 
@@ -73,7 +74,7 @@ import org.apache.fulcrum.InitializationException;
  * @version $Id$  
  */
 public class ContainerLogAdaptorServiceImpl
-    extends BaseService
+    extends BaseCommonService
     implements ContainerLogAdaptorService, LogService 
 {
     private final static Log defaultLog = LogFactory.getLog(ContainerLogAdaptorServiceImpl.class);
@@ -90,7 +91,7 @@ public class ContainerLogAdaptorServiceImpl
      * fails to initialize
      */
     public void init() 
-        throws InitializationException 
+        throws CPSInitializationException 
     {
         defaultLog.info("ContainerLogAdaptor init");
         

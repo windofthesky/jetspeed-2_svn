@@ -58,7 +58,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -77,7 +77,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public interface PortletRegistryService extends Service
+public interface PortletRegistryService extends CommonService
 {
 
     /** The name of this service */

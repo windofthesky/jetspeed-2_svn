@@ -71,8 +71,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.om.registry.Registry;
 import org.apache.jetspeed.om.registry.RegistryEntry;
 import org.apache.jetspeed.om.registry.RegistryException;
@@ -117,7 +117,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:sgala@apache.org">Santiago Gala</a>
  * @version $Id$
  */
-public class CastorRegistryService extends BaseService
+public class CastorRegistryService extends BaseCommonService
 implements RegistryService, FileRegistry
 {
     protected final static Log log =
@@ -364,7 +364,7 @@ implements RegistryService, FileRegistry
      * This is the early initialization method called by the
      * Turbine <code>Service</code> framework
      */
-    public void initConfiguration() throws InitializationException
+    public void initConfiguration() throws CPSInitializationException
     {
         String mapFile = null;
         Vector names = new Vector();
@@ -405,7 +405,7 @@ implements RegistryService, FileRegistry
         catch (Exception e)
         {
             log.error("RegistryService: Registry init error", e);
-            throw new InitializationException("Unable to initialize CastorRegistryService, invalid registries definition");
+            throw new CPSInitializationException("Unable to initialize CastorRegistryService, invalid registries definition");
         }
  ////
         // create the serializer output format
@@ -430,12 +430,12 @@ implements RegistryService, FileRegistry
                 catch (Exception e)
                 {
                     log.error("RegistryService: Error in mapping creation", e);
-                    throw new InitializationException("Error in mapping", e);
+                    throw new CPSInitializationException("Error in mapping", e);
                 }
             }
             else
             {
-                throw new InitializationException(
+                throw new CPSInitializationException(
                 "Mapping not found or not a file or unreadable: "
                 + mapFile);
             }
@@ -520,7 +520,7 @@ implements RegistryService, FileRegistry
         
     }
     
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         log.info( "Initalizing service");
         

@@ -55,7 +55,7 @@ package org.apache.jetspeed.services.profiler;
 
 import java.util.Iterator;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.om.profile.Portlets;
 import org.apache.jetspeed.om.profile.Profile;
 import org.apache.jetspeed.om.profile.ProfileException;
@@ -72,7 +72,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @version $Id$
  */
 
-public interface ProfilerService extends Service
+public interface ProfilerService extends CommonService
 {
 
     /** The name of this service */

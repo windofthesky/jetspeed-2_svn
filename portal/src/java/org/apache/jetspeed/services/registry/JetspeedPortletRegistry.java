@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -65,7 +66,6 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 
-import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -255,7 +255,7 @@ public class JetspeedPortletRegistry
 
     private static final PortletRegistryService getService()
     {
-        return (PortletRegistryService) ServiceUtil.getServiceByName(
+        return (PortletRegistryService) CommonPortletServices.getPortalService(
             PortletRegistryService.SERVICE_NAME);
     }
 

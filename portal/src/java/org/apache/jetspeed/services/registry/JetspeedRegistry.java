@@ -56,11 +56,10 @@ package org.apache.jetspeed.services.registry;
 
 import java.util.Enumeration;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.om.registry.Registry;
 import org.apache.jetspeed.om.registry.RegistryEntry;
 import org.apache.jetspeed.om.registry.RegistryException;
-import org.apache.jetspeed.services.JetspeedServices;
-import org.apache.jetspeed.om.registry.Registry;
-
 
 /**
  * <P>This is a commodity static accessor class around the
@@ -79,9 +78,7 @@ public class JetspeedRegistry
      */
     private static RegistryService getService()
     {
-        return (RegistryService)JetspeedServices
-                .getInstance()
-                .getService(RegistryService.SERVICE_NAME);
+        return (RegistryService) CommonPortletServices.getInstance().getService(RegistryService.SERVICE_NAME);
     }
 
     /**
@@ -95,41 +92,40 @@ public class JetspeedRegistry
     /**
      * @see RegistryService#get
      */
-    public static Registry get( String regName )
+    public static Registry get(String regName)
     {
-        return getService().get( regName );
+        return getService().get(regName);
     }
 
     /**
      * @see RegistryService#createEntry
      */
-    public static RegistryEntry createEntry( String regName )
+    public static RegistryEntry createEntry(String regName)
     {
-        return getService().createEntry( regName );
-	}
+        return getService().createEntry(regName);
+    }
 
     /**
      * @see RegistryService#getEntry
      */
-    public static RegistryEntry getEntry( String regName, String entryName )
+    public static RegistryEntry getEntry(String regName, String entryName)
     {
-        return getService().getEntry( regName, entryName );
+        return getService().getEntry(regName, entryName);
     }
 
     /**
      * @see RegistryService#addEntry
      */
-    public static void addEntry( String regName, RegistryEntry value )
-        throws RegistryException
+    public static void addEntry(String regName, RegistryEntry value) throws RegistryException
     {
-        getService().addEntry( regName, value );
+        getService().addEntry(regName, value);
     }
 
     /**
      * @see RegistryService#removeEntry
      */
-    public static void removeEntry( String regName, String entryName )
+    public static void removeEntry(String regName, String entryName)
     {
-        getService().removeEntry( regName, entryName );
+        getService().removeEntry(regName, entryName);
     }
 }

@@ -54,10 +54,11 @@
 package org.apache.jetspeed.services.idgenerator;
 
 
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 
 /**
  * Simple implementation of the IdGeneratorService.
@@ -65,7 +66,7 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public class JetspeedIdGeneratorService extends BaseService
+public class JetspeedIdGeneratorService extends BaseCommonService
     implements IdGeneratorService
 {
     private final static Log log = LogFactory.getLog(JetspeedIdGeneratorService.class);
@@ -94,7 +95,7 @@ public class JetspeedIdGeneratorService extends BaseService
      * fails to initialize
      */
     public void init() 
-        throws InitializationException 
+        throws CPSInitializationException 
     {
         log.info( "JetspeedIdGeneratorService init");
         
@@ -127,7 +128,7 @@ public class JetspeedIdGeneratorService extends BaseService
      * @exception throws a <code>InitializationException</code> if the service
      * fails to initialize
      */
-    private void initConfiguration() throws InitializationException
+    private void initConfiguration() throws CPSInitializationException
     {
         peidPrefix = getConfiguration().getString( CONFIG_PEID_PREFIX, DEFAULT_CONFIG_PEID_PREFIX );
         peidSuffix = getConfiguration().getString( CONFIG_PEID_SUFFIX, DEFAULT_CONFIG_PEID_SUFFIX );

@@ -53,8 +53,8 @@
  */
 package org.apache.jetspeed.services.entity;
 
-import org.apache.fulcrum.Service;
 
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -68,7 +68,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public interface PortletEntityService extends Service
+public interface PortletEntityService extends CommonService
 {
     String SERVICE_NAME = "PortletEntityService";
 

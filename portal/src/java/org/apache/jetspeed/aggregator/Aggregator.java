@@ -53,9 +53,10 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import org.apache.fulcrum.Service;
 
 
+
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -65,7 +66,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface Aggregator extends Service
+public interface Aggregator extends CommonService
 {
     public String SERVICE_NAME = "Aggregator";
 

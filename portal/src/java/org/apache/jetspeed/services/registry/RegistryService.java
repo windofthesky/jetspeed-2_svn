@@ -55,7 +55,7 @@ package org.apache.jetspeed.services.registry;
 
 import java.util.Enumeration;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.om.registry.RegistryEntry;
 import org.apache.jetspeed.om.registry.RegistryException;
 import org.apache.jetspeed.om.registry.Registry;
@@ -68,7 +68,7 @@ import org.apache.jetspeed.om.registry.Registry;
  * @version $Id$
  *
  */
-public interface RegistryService extends Service
+public interface RegistryService extends CommonService
 {
     /** Default Skin Registry name */
     public static String SKIN = "Skin";

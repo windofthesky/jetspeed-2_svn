@@ -53,7 +53,8 @@
  */
 package org.apache.jetspeed.services.idgenerator;
 
-import org.apache.jetspeed.services.JetspeedServices;
+import org.apache.jetspeed.cps.CommonPortletServices;
+
 
 /**
  * Static accessor for the IdGeneatorService
@@ -72,7 +73,7 @@ public abstract class JetspeedIdGenerator
      */
     protected static IdGeneratorService getService()
     {
-        return (IdGeneratorService)JetspeedServices
+        return (IdGeneratorService)CommonPortletServices
             .getInstance().getService(IdGeneratorService.SERVICE_NAME);
     }
 

@@ -55,14 +55,14 @@ package org.apache.jetspeed.services.entity;
 
 import java.util.HashMap;
 
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.entity.impl.PortletEntityImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
@@ -77,7 +77,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public class PortletEntityServiceImpl extends BaseService implements PortletEntityService
+public class PortletEntityServiceImpl extends BaseCommonService implements PortletEntityService
 {
 
     // TODO: this should eventually use a system cach like JCS
@@ -88,11 +88,11 @@ public class PortletEntityServiceImpl extends BaseService implements PortletEnti
     /**
      * @see org.apache.fulcrum.Service#init()
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (!isInitialized())
         {
-            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
             autoCreateNewEntities = getConfiguration().getBoolean("autocreate", false);
             plugin = ps.getPersistencePlugin(pluginName);

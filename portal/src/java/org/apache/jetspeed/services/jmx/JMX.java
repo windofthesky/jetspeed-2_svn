@@ -55,9 +55,9 @@ package org.apache.jetspeed.services.jmx;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
 import org.apache.commons.modeler.ManagedBean;
-import org.apache.jetspeed.util.ServiceUtil;
+import org.apache.jetspeed.cps.CommonPortletServices;
+
 
 
 /**
@@ -92,7 +92,7 @@ public class JMX
     
     private static JetspeedJMXService getService()
     {
-        return (JetspeedJMXService) ServiceUtil.getServiceByName(JetspeedJMXService.SERVICE_NAME);
+        return (JetspeedJMXService) CommonPortletServices.getPortalService(JetspeedJMXService.SERVICE_NAME);
     }
     public static String[] getManagedBeans()
     {

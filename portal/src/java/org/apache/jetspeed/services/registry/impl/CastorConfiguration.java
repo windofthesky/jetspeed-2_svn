@@ -72,7 +72,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.CPSInitializationException;
 
 /**
  ** CastorConfiguration class normalizes access to string attributes set within the Castor Configuration,
@@ -125,7 +125,7 @@ public class CastorConfiguration
      * @return InputSource The input source to the memory image of the normalized XML configuration.
      */    
     public InputSource load(String configPath)
-        throws InitializationException
+        throws CPSInitializationException
     {
         this.configurationName = configPath;
         boolean normalizedUrl = false;
@@ -213,7 +213,7 @@ public class CastorConfiguration
         catch (Throwable t)
         {        
             t.printStackTrace();            
-            throw new InitializationException(t.toString());
+            throw new CPSInitializationException(t.toString());
         }
         return inputSource;
     }

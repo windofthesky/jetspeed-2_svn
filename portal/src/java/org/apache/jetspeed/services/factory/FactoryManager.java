@@ -53,9 +53,9 @@
  */
 package org.apache.jetspeed.services.factory;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.factory.FactoryManagerService;
-import org.apache.jetspeed.services.JetspeedServices;
 
 
 /**
@@ -76,7 +76,7 @@ public abstract class FactoryManager
      */
     protected static FactoryManagementService getServiceImpl()
     {
-        return (FactoryManagementService)JetspeedServices
+        return (FactoryManagementService)CommonPortletServices
             .getInstance().getService(FactoryManagementService.SERVICE_NAME);
     }
 

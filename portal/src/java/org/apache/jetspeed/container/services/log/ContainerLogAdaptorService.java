@@ -53,7 +53,8 @@
  */
 package org.apache.jetspeed.container.services.log;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
+
 
 /**
  * Defines the adaptor interface between Pluto's container logging and Jetspeed (Commons) logging.
@@ -63,7 +64,7 @@ import org.apache.fulcrum.Service;
  * @version $Id$
  */
 public interface ContainerLogAdaptorService
-    extends Service
+    extends CommonService
 {
     public String SERVICE_NAME = "logadaptor";
 }

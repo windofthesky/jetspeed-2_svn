@@ -53,7 +53,8 @@
  */
 package org.apache.jetspeed.services.idgenerator;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
+
 
 /**
  * This service handles the generation of unique identifiers
@@ -61,7 +62,7 @@ import org.apache.fulcrum.Service;
  * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public interface IdGeneratorService extends Service
+public interface IdGeneratorService extends CommonService
 {
     public String SERVICE_NAME = "IdGenerator";
 

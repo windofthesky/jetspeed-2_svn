@@ -57,8 +57,8 @@ package org.apache.jetspeed.aggregator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.services.JetspeedServices;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -79,8 +79,7 @@ public class AggregatorValve
     {
         try
         {
-            Aggregator aggregator = (Aggregator)JetspeedServices
-                .getInstance().getService(Aggregator.SERVICE_NAME);
+            Aggregator aggregator = (Aggregator)CommonPortletServices.getPortalService(Aggregator.SERVICE_NAME);
   
             aggregator.build(request);
         }

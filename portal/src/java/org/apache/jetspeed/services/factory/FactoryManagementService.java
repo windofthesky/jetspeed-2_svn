@@ -53,7 +53,7 @@
  */
 package org.apache.jetspeed.services.factory;
 
-import org.apache.fulcrum.Service;
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.pluto.factory.Factory;
 
 /**
@@ -65,7 +65,7 @@ import org.apache.pluto.factory.Factory;
  * @version $Id$
  */
 public interface FactoryManagementService 
-    extends Service
+    extends CommonService
 {
     public String SERVICE_NAME = "factory";
     

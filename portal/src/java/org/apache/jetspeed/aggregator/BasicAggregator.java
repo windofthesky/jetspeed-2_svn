@@ -57,8 +57,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.om.profile.Entry;
 import org.apache.jetspeed.om.profile.PSMLDocument;
 import org.apache.jetspeed.om.profile.Portlets;
@@ -68,6 +66,8 @@ import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 import org.apache.jetspeed.container.PortletContainerFactory;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.PortletContainer;
@@ -79,7 +79,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class BasicAggregator extends BaseService 
+public class BasicAggregator extends BaseCommonService 
     implements Aggregator
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
@@ -99,7 +99,7 @@ public class BasicAggregator extends BaseService
      * @exception throws a <code>InitializationException</code> if the service
      * fails to initialize
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (isInitialized()) 
         {
@@ -121,7 +121,7 @@ public class BasicAggregator extends BaseService
 
      }
 
-    private void initConfiguration() throws InitializationException
+    private void initConfiguration() throws CPSInitializationException
     {
         String defaultStrategy = getConfiguration().getString(DEFAULT_STRATEGY, 
                                                         CONFIG_STRATEGY_SEQUENTIAL);

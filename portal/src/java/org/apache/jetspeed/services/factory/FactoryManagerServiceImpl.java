@@ -60,8 +60,6 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import javax.servlet.ServletConfig;
 
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.configuration.Configuration;
@@ -71,6 +69,8 @@ import org.apache.pluto.services.factory.FactoryManagerService;
 import org.apache.pluto.util.StringUtils;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 
 /**
  * Manages the life-time of factories registered during container startup.
@@ -81,7 +81,7 @@ import org.apache.jetspeed.Jetspeed;
  * @version $Id$
  */
 public class FactoryManagerServiceImpl 
-    extends BaseService
+    extends BaseCommonService
     implements FactoryManagementService, FactoryManagerService
 {
     private final static Log log = LogFactory.getLog(FactoryManagerServiceImpl.class);
@@ -100,7 +100,7 @@ public class FactoryManagerServiceImpl
      * fails to initialize
      */
     public void init() 
-        throws InitializationException 
+        throws CPSInitializationException 
     {
         log.info("FactoryManagerService init");
         
@@ -154,7 +154,7 @@ public class FactoryManagerServiceImpl
 
    // protected void initConfiguration (ServletConfig config, Properties aProperties) throws Exception
     protected void initConfiguration () 
-        throws InitializationException
+        throws CPSInitializationException
     {
         ServletConfig servletConfig = Jetspeed.getEngine().getServletConfig();
         Configuration config = Jetspeed.getContext().getConfiguration();
@@ -235,26 +235,26 @@ public class FactoryManagerServiceImpl
             {
                 String msg = "FactoryManager: A factory implementation with name " + factoryImplName + " cannot be found."; 
                 log.error(msg, exc);
-                throw new InitializationException(msg, exc);
+                throw new CPSInitializationException(msg, exc);
             }
             catch (ClassCastException exc)
             {
                 String msg = "FactoryManager: Factory implementation " 
                     + factoryImplName + " is not a factory of the required type.";
                 log.error (msg, exc);
-                throw new InitializationException(msg, exc);
+                throw new CPSInitializationException(msg, exc);
             }
             catch (InstantiationException exc)
             {
                 String msg = "FactoryManager: Factory implementation " + factoryImplName + " cannot be instantiated."; 
                 log.error(msg , exc);
-                throw new InitializationException(msg, exc);
+                throw new CPSInitializationException(msg, exc);
             }
             catch (Exception exc)
             {
                 String msg = "FactoryManager: An unidentified error occurred";                
                 log.error(msg, exc);
-                throw new InitializationException(msg, exc);
+                throw new CPSInitializationException(msg, exc);
             }
 
             if (factory != null)

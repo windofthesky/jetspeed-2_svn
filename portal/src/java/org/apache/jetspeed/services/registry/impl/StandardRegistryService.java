@@ -53,7 +53,7 @@
  */
 
 package org.apache.jetspeed.services.registry.impl;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.om.registry.RegistryEntry;
 import org.apache.jetspeed.om.registry.RegistryException;
 
@@ -151,7 +151,7 @@ public class StandardRegistryService extends CastorRegistryService
         super.removeEntry(regName, entryName);          
     }
         
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
 
         if (isInitialized())

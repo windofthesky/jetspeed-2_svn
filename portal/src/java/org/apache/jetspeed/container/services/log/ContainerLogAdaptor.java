@@ -53,7 +53,8 @@
  */
 package org.apache.jetspeed.container.services.log;
 
-import org.apache.jetspeed.services.JetspeedServices;
+
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.pluto.services.log.LogService;
 
 /**
@@ -72,7 +73,7 @@ public abstract class ContainerLogAdaptor
      */
     protected static ContainerLogAdaptorService getServiceImpl()
     {
-        return (ContainerLogAdaptorService)JetspeedServices
+        return (ContainerLogAdaptorService)CommonPortletServices
             .getInstance().getService(ContainerLogAdaptorService.SERVICE_NAME);
     }
 

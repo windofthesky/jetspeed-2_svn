@@ -61,8 +61,9 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -81,7 +82,6 @@ import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.services.registry.PortletRegistryService;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -89,7 +89,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public class PersistentPortletRegistryService extends BaseService implements PortletRegistryService
+public class PersistentPortletRegistryService extends BaseCommonService implements PortletRegistryService
 {
     private PersistencePlugin plugin;
 
@@ -102,12 +102,12 @@ public class PersistentPortletRegistryService extends BaseService implements Por
     /**
      * @see org.apache.fulcrum.Service#init()
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (!isInitialized())
         {
-            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
-
+            // PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
 
             plugin = ps.getPersistencePlugin(pluginName);
@@ -383,7 +383,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
             new String[] { "newApp", "system" },
             "registerPortletApplication(PortletApplicationDefinition newApp, String system)");
 
-        PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         PersistencePlugin usePlugin = ps.getPersistencePlugin(system);
         registerPortletApplication(newApp, usePlugin);
     }
@@ -429,7 +429,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
 
         if (system != null)
         {
-            PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             originalPlugin = this.plugin;
             this.plugin = ps.getPersistencePlugin(system);
         }

@@ -55,11 +55,13 @@ package org.apache.jetspeed.services.psml;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.jetspeed.cps.CommonService;
 import org.apache.jetspeed.om.profile.PSMLDocument;
 import org.apache.jetspeed.om.profile.ProfileLocator;
 import org.apache.jetspeed.om.profile.QueryLocator;
 import org.apache.jetspeed.om.profile.Profile;
-import org.apache.fulcrum.Service;
+
 
 /**
  * This service is responsible for loading and saving PSML documents.
@@ -69,7 +71,7 @@ import org.apache.fulcrum.Service;
  *
  * @version $Id$
  */
-public interface PsmlManagerService extends Service
+public interface PsmlManagerService extends CommonService
 {
     /** The name of the service */
     public String SERVICE_NAME = "PsmlManager";

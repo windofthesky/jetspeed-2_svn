@@ -57,9 +57,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.services.registry.PortletRegistryService;
-import org.apache.jetspeed.util.ServiceUtil;
 
 /**
  * 
@@ -95,8 +95,9 @@ public class RegistryMBeanImpl implements RegistryMBean
      * @see org.apache.jetspeed.mbeans.registry.RegistryMBean#getPortletList()
      */
     public List getPortlets()
-    {        
-        PortletRegistryService prs = (PortletRegistryService) ServiceUtil.getServiceByName(PortletRegistryService.SERVICE_NAME);
+    {
+        PortletRegistryService prs =
+            (PortletRegistryService) CommonPortletServices.getPortalService(PortletRegistryService.SERVICE_NAME);
         List portlets = prs.getAllPortletDefinitions();
         ArrayList list = new ArrayList(portlets.size());
         Iterator itr = portlets.iterator();

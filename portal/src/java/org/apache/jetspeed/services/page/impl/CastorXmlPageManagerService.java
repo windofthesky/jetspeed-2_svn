@@ -65,12 +65,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fulcrum.BaseService;
-import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -98,19 +98,17 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class CastorXmlPageManagerService extends BaseService
-                                         implements FileCacheEventListener,
-                                                    PageManagerService
+public class CastorXmlPageManagerService extends BaseCommonService implements FileCacheEventListener, PageManagerService
 {
     // configuration keys
-    protected final static String CONFIG_ROOT             = "root";
-    protected final static String CONFIG_EXT              = "ext";
-    protected final static String CONFIG_SCAN_RATE        = "scanRate";
-    protected final static String CONFIG_CACHE_SIZE       = "cacheSize";
+    protected final static String CONFIG_ROOT = "root";
+    protected final static String CONFIG_EXT = "ext";
+    protected final static String CONFIG_SCAN_RATE = "scanRate";
+    protected final static String CONFIG_CACHE_SIZE = "cacheSize";
 
     // default configuration values
-    public final static String DEFAULT_ROOT             = "/WEB-INF/pages";
-    public final static String DEFAULT_EXT              = ".psml";
+    public final static String DEFAULT_ROOT = "/WEB-INF/pages";
+    public final static String DEFAULT_EXT = ".psml";
 
     // the root psml resource directory
     protected String root;
@@ -144,7 +142,7 @@ public class CastorXmlPageManagerService extends BaseService
      * This is the early initialization method called by the
      * Turbine <code>Service</code> framework
      */
-    public void init() throws InitializationException
+    public void init() throws CPSInitializationException
     {
         if (isInitialized())
         {
@@ -152,11 +150,11 @@ public class CastorXmlPageManagerService extends BaseService
         }
 
         // get the PSML Root Directory
-        this.root = getConfiguration().getString( CONFIG_ROOT, DEFAULT_ROOT );
+        this.root = getConfiguration().getString(CONFIG_ROOT, DEFAULT_ROOT);
         this.rootDir = new File(root);
 
         //If the rootDir does not exist, treat it as context relative
-        if ( !rootDir.exists() )
+        if (!rootDir.exists())
         {
             try
             {
@@ -180,7 +178,7 @@ public class CastorXmlPageManagerService extends BaseService
         }
 
         // get default extension
-        this.ext = getConfiguration().getString( CONFIG_EXT, DEFAULT_EXT );
+        this.ext = getConfiguration().getString(CONFIG_EXT, DEFAULT_EXT);
 
         // create the serializer output format
         this.format = new OutputFormat();
@@ -188,12 +186,12 @@ public class CastorXmlPageManagerService extends BaseService
         format.setIndent(4);
 
         // psml castor mapping file
-        mapFile = getConfiguration().getString("mapping",DEFAULT_MAPPING);
-        mapFile = Jetspeed.getRealPath( mapFile );
+        mapFile = getConfiguration().getString("mapping", DEFAULT_MAPPING);
+        mapFile = Jetspeed.getRealPath(mapFile);
         loadMapping();
 
         this.scanRate = getConfiguration().getLong(CONFIG_SCAN_RATE, this.scanRate);
-        this.cacheSize= getConfiguration().getInt(CONFIG_CACHE_SIZE, this.cacheSize);
+        this.cacheSize = getConfiguration().getInt(CONFIG_CACHE_SIZE, this.cacheSize);
 
         pages = new FileCache(this.scanRate, this.cacheSize);
         pages.addListener(this);
@@ -255,18 +253,18 @@ public class CastorXmlPageManagerService extends BaseService
         if (id == null)
         {
             String message = "PageManager: Must specify an id";
-            log.error( message );
-            throw new IllegalArgumentException( message );
+            log.error(message);
+            throw new IllegalArgumentException(message);
         }
 
         if (log.isDebugEnabled())
         {
-            log.debug( "Asked for PageID=" + id );
+            log.debug("Asked for PageID=" + id);
         }
 
         Page page = null;
 
-        page = (Page)pages.getDocument(id);
+        page = (Page) pages.getDocument(id);
 
         if (page == null)
         {
@@ -283,31 +281,37 @@ public class CastorXmlPageManagerService extends BaseService
             {
                 reader = new FileReader(f);
                 Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-                page = (Page)unmarshaller.unmarshal(reader);
+                page = (Page) unmarshaller.unmarshal(reader);
             }
             catch (IOException e)
             {
-                log.error("Could not load the file "+f.getAbsolutePath(), e);
+                log.error("Could not load the file " + f.getAbsolutePath(), e);
                 page = null;
             }
             catch (MarshalException e)
             {
-                log.error("Could not unmarshal the file "+f.getAbsolutePath(), e);
+                log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
                 page = null;
             }
             catch (MappingException e)
             {
-                log.error("Could not unmarshal the file "+f.getAbsolutePath(), e);
+                log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
                 page = null;
             }
             catch (ValidationException e)
             {
-                log.error("Document "+f.getAbsolutePath()+" is not valid", e);
+                log.error("Document " + f.getAbsolutePath() + " is not valid", e);
                 page = null;
             }
             finally
             {
-                try { reader.close(); } catch (IOException e) {}
+                try
+                {
+                    reader.close();
+                }
+                catch (IOException e)
+                {
+                }
             }
 
             synchronized (pages)
@@ -333,18 +337,17 @@ public class CastorXmlPageManagerService extends BaseService
     public List listPages()
     {
         ArrayList results = new ArrayList();
-        File[] files = this.rootDir.listFiles(
-            new FilenameFilter()
-            {
-                public boolean accept(File dir, String file)
-                {
-                    return file.endsWith(CastorXmlPageManagerService.this.ext);
-                }
-            });
-
-        for (int i=0; i < files.length; i++)
+        File[] files = this.rootDir.listFiles(new FilenameFilter()
         {
-            String id = files[i].getName().substring(0,files[i].getName().length()-this.ext.length());
+            public boolean accept(File dir, String file)
+            {
+                return file.endsWith(CastorXmlPageManagerService.this.ext);
+            }
+        });
+
+        for (int i = 0; i < files.length; i++)
+        {
+            String id = files[i].getName().substring(0, files[i].getName().length() - this.ext.length());
             results.add(id);
         }
 
@@ -386,32 +389,38 @@ public class CastorXmlPageManagerService extends BaseService
         }
         catch (MarshalException e)
         {
-            log.error("Could not marshal the file "+f.getAbsolutePath(), e);
+            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
             throw new JetspeedException(e);
         }
         catch (MappingException e)
         {
-            log.error("Could not marshal the file "+f.getAbsolutePath(), e);
+            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
             throw new JetspeedException(e);
         }
         catch (ValidationException e)
         {
-            log.error("Document "+f.getAbsolutePath()+" is not valid", e);
+            log.error("Document " + f.getAbsolutePath() + " is not valid", e);
             throw new JetspeedException(e);
         }
         catch (IOException e)
         {
-            log.error("Could not save the file "+f.getAbsolutePath(), e);
+            log.error("Could not save the file " + f.getAbsolutePath(), e);
             throw new JetspeedException(e);
         }
         catch (Exception e)
         {
-            log.error("Error while saving  "+f.getAbsolutePath(), e);
+            log.error("Error while saving  " + f.getAbsolutePath(), e);
             throw new JetspeedException(e);
         }
         finally
         {
-            try { writer.close(); } catch (IOException e) {}
+            try
+            {
+                writer.close();
+            }
+            catch (IOException e)
+            {
+            }
         }
 
         // update it in cache
@@ -460,8 +469,7 @@ public class CastorXmlPageManagerService extends BaseService
 
     }
 
-    protected void loadMapping()
-        throws InitializationException
+    protected void loadMapping() throws CPSInitializationException
     {
         // test the mapping file and create the mapping object
 
@@ -470,26 +478,26 @@ public class CastorXmlPageManagerService extends BaseService
             File map = new File(mapFile);
             if (log.isDebugEnabled())
             {
-                log.debug("Loading psml mapping file "+mapFile);
+                log.debug("Loading psml mapping file " + mapFile);
             }
             if (map.exists() && map.isFile() && map.canRead())
             {
                 try
                 {
                     mapping = new Mapping();
-                    InputSource is = new InputSource( new FileReader(map) );
-                    is.setSystemId( mapFile );
-                    mapping.loadMapping( is );
+                    InputSource is = new InputSource(new FileReader(map));
+                    is.setSystemId(mapFile);
+                    mapping.loadMapping(is);
                 }
                 catch (Exception e)
                 {
-                    log.error("Error in psml mapping creation",e);
-                    throw new InitializationException("Error in mapping",e);
+                    log.error("Error in psml mapping creation", e);
+                    throw new CPSInitializationException("Error in mapping", e);
                 }
             }
             else
             {
-                throw new InitializationException("PSML Mapping not found or not a file or unreadable: "+mapFile);
+                throw new CPSInitializationException("PSML Mapping not found or not a file or unreadable: " + mapFile);
             }
         }
     }

@@ -53,41 +53,37 @@
  */
 package org.apache.jetspeed.engine;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Properties;
-import java.io.FileInputStream;
-import java.io.File;
 
 import javax.servlet.ServletConfig;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Log4jFactory;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.commons.configuration.Configuration;
-import org.apache.fulcrum.ServiceManager;
-import org.apache.jetspeed.services.JetspeedServices;
-import org.apache.fulcrum.InitializationException;
-
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.services.information.InformationProviderService;
-
+import org.apache.jetspeed.JetspeedPortalContext;
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.container.services.JetspeedContainerServices;
-
-import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.JetspeedPortalContext;
-import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
+import org.apache.jetspeed.cps.CPSInitializationException;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.descriptor.PipelineDescriptor;
 import org.apache.jetspeed.descriptor.XmlReader;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.services.log.ContainerLogAdaptor;
 import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.services.information.InformationProviderManager;
 import org.apache.jetspeed.services.information.InformationProviderServiceService;
 import org.apache.jetspeed.services.jmx.JMX;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.pluto.PortletContainer;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.services.information.InformationProviderService;
 
 /**
  * Jetspeed Engine implementation
@@ -223,7 +219,7 @@ public class JetspeedEngine implements Engine
 
     public void shutdown() throws JetspeedException
     {
-        JetspeedServices.getInstance().shutdownServices();
+        CommonPortletServices.getInstance().shutdownServices();
         try
         {
             PortletContainer container = PortletContainerFactory.getPortletContainer();
@@ -284,33 +280,35 @@ public class JetspeedEngine implements Engine
 
     }
 
-    private void initServices() throws InitializationException
+    private void initServices() throws CPSInitializationException
     {
-        // Get the instance of the service manager
-        ServiceManager serviceManager = JetspeedServices.getInstance();
+        // Get the instance of the service manager        
+        // ServiceManager serviceManager = JetspeedServices.getInstance();
+        CommonPortletServices cps = CommonPortletServices.getInstance();
 
         // Set the service managers application root. In our
         // case it is the webapp context.
-        serviceManager.setApplicationRoot(context.getApplicationRoot());
+        cps.init(this.getContext().getConfiguration(), context.getApplicationRoot(), false);
+        //serviceManager.setApplicationRoot(context.getApplicationRoot());
 
-        serviceManager.setConfiguration(this.getContext().getConfiguration());
+        //serviceManager.setConfiguration(this.getContext().getConfiguration());
 
         // Initialize the service manager. Services
         // that have its 'earlyInit' property set to
         // a value of 'true' will be started when
         // the service manager is initialized.
-        serviceManager.init();
+        //serviceManager.init();
 
     }
 
-    private void createPipeline() throws InitializationException
+    private void createPipeline() throws CPSInitializationException
     {
         String clazz = this.getContext().getConfiguration().getString(PIPELINE_CLASS, null);
         String descriptorName = this.getContext().getConfiguration().getString(PIPELINE_DESCRIPTOR, null);
 
         if (null == clazz || null == descriptorName)
         {
-            throw new InitializationException("Failed to initialize pipeline, missing params");
+            throw new CPSInitializationException("Failed to initialize pipeline, missing params");
         }
 
         Pipeline pipeline;
@@ -322,7 +320,7 @@ public class JetspeedEngine implements Engine
         }
         catch (Exception e)
         {
-            throw new InitializationException("Failed to initialize pipeline, couldnt create pipeline class");
+            throw new CPSInitializationException("Failed to initialize pipeline, couldnt create pipeline class");
         }
         try
         {
@@ -332,7 +330,7 @@ public class JetspeedEngine implements Engine
         }
         catch (Exception e)
         {
-            throw new InitializationException("Failed to read pipeline descriptor from deployment");
+            throw new CPSInitializationException("Failed to read pipeline descriptor from deployment");
         }
         pipeline.setDescriptor(descriptor);
         try
@@ -341,7 +339,7 @@ public class JetspeedEngine implements Engine
         }
         catch (Exception e)
         {
-            throw new InitializationException("Failed to initialize pipeline: ", e);
+            throw new CPSInitializationException("Failed to initialize pipeline: ", e);
         }
 
         this.pipeline = pipeline;
