@@ -24,11 +24,8 @@ import java.util.Properties;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.persistence.store.util.PersistenceSupportedTestCase;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
