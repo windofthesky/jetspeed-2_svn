@@ -6,6 +6,11 @@
  */
 package org.apache.jetspeed.dbutil;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.hsqldb.Server;
 
 
@@ -20,6 +25,11 @@ public class HSQLServer
 
     public static void main(String[] args)
     {
+        if(args[0].equals("kill"))
+        {
+            kill(Integer.parseInt(args[1]), args[2], args[3]);
+            return;
+        }
         
         try
         {
@@ -31,6 +41,26 @@ public class HSQLServer
             
         }
     }
+    
+    private static void kill(int port, String user, String password)
+    {
+        try
+        {
+            Class.forName("org.hsqldb.jdbcDriver");
+            String url = "jdbc:hsqldb:hsql://127.0.0.1:" + port;
+            Connection con = DriverManager.getConnection(url, user, password);
+            String sql = "SHUTDOWN";
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate(sql);
+            stmt.close();
+        }
+        catch (Exception e)
+        {
+           
+        }
+        
+        
+    }
 }
 
 class HSQLServerThread extends Thread
@@ -40,6 +70,7 @@ class HSQLServerThread extends Thread
 
     HSQLServerThread(String args[])
     {
+       
         this.args = args; 
         setDaemon(true);
       
@@ -54,4 +85,6 @@ class HSQLServerThread extends Thread
         Server.main(args);
         
     }
+    
+   
 }

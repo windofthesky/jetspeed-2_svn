@@ -180,15 +180,18 @@
   <postGoal name="allBuild">
   	<echo message="====================================" />
   	<echo message="        Stopping HSQL server        " />  	
-  	<echo message="====================================" />  	
-  	<sql driver="${database.test.driver}"
-         classpathref="maven.dependency.classpath"
-         url="${database.test.url}"
-         userid="${database.test.username}"
-         password="${database.test.password}">
-         <!-- SQL command to shut down the server -->
-         SHUTDOWN
-    </sql>
+  	<echo message="====================================" />
+  	<java classname="org.apache.jetspeed.dbutil.HSQLServer" fork="true" >
+       <classpath>
+         <path refid="maven.dependency.classpath"/>
+         <pathelement path="${maven.build.dest}"/>
+        </classpath>
+         <arg value="kill" />
+         <arg value="9001" />     
+         <arg value="sa" />
+         <arg value="" />
+      </java>   	
+  	
   </postGoal>
 
 </project>
