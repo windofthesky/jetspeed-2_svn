@@ -112,7 +112,7 @@
 
      <maven:reactor
                basedir="${basedir}/applications/demo"
-               includes="applications/demo/project.xml"
+               includes="project.xml"
                excludes="applications/project.xml"
                goals="war:install"
                banner="Build and Install the Demo application WAR"
@@ -121,7 +121,7 @@
 
      <maven:reactor
                basedir="${basedir}/applications/pam"
-               includes="applications/pam/project.xml"
+               includes="project.xml"
                excludes="applications/project.xml"
                goals="war:install"
                banner="Build and Install the PAM application WAR"
