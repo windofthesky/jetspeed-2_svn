@@ -1,45 +1,17 @@
     <dependency>
       <id>cglib</id>
-      <version>2.0.1</version>
+      <version>full-2.0.2</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
-      <id>springframework:spring-core</id>
-      <version>1.1.1</version>
+      <id>springframework:spring</id>
+      <version>1.1.5</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
-    </dependency>
-    <dependency>
-      <id>springframework:spring-aop</id>
-      <version>1.1.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-     <dependency>
-      <id>springframework:spring-context</id>
-      <version>1.1.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>springframework:spring-dao</id>
-      <version>1.1.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>springframework:spring-orm</id>
-      <version>1.1.1</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
+    </dependency>   
     <dependency>
       <id>aopalliance</id>
       <version>1.0</version>
