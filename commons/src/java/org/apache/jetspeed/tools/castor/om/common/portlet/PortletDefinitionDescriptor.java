@@ -55,10 +55,12 @@ package org.apache.jetspeed.tools.castor.om.common.portlet;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionImpl;
 import org.apache.jetspeed.om.common.preference.PreferenceSetImpl;
 import org.apache.jetspeed.tools.castor.om.common.LanguageSetDescriptor;
+import org.apache.jetspeed.tools.castor.om.common.PreferenceDescriptor;
 import org.apache.jetspeed.tools.castor.om.common.PreferenceSetDescriptor;
 import org.apache.jetspeed.om.common.LanguageSetImpl;
 
@@ -140,6 +142,12 @@ public class PortletDefinitionDescriptor extends PortletDefinitionImpl
     public void postLoad(Object parameter) throws Exception
     {
         LanguageSetDescriptor language = (LanguageSetDescriptor)this.getLanguageSet();
-        language.postLoad(parameter);                    
+        language.postLoad(parameter);
+        Iterator prefs = getCastorPreferences().iterator();
+        while (prefs.hasNext())
+        {
+            PreferenceDescriptor pd  = (PreferenceDescriptor)prefs.next();
+            pd.setCastorValues(pd.getCastorValues());
+        }
     }
 }
