@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<js:folder xmlns:dc="http://www.purl.org/dc"
-	       xmlns:js="http://portals.apache.org/jetspeed" 
->
-  <dc:title >Jetspeed Administrative Portlets</dc:title>
-  <dc:title xml:lang="fr">Jetspeed Portlets Administratif</dc:title>
-</js:folder>
+<folder>
+  <title >Jetspeed Administrative Portlets</title>  
+  <metadata name="title" xml:lang="fr">Jetspeed Portlets Administratif</metadata>
+</folder>

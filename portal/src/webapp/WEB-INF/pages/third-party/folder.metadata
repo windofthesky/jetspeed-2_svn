@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<js:folder xmlns:dc="http://www.purl.org/dc"
-	       xmlns:js="http://portals.apache.org/jetspeed" 
->
-  <dc:title >Third Party Portlets</dc:title>
-  <dc:title xml:lang="fr">Portlets de contributeurs externes</dc:title>  
-</js:folder>
+<folder>
+  <title >Third Party Portlets</title>  
+  <metadata name="title" xml:lang="fr">Portlets de contributeurs externes</metadata>
+</folder>
