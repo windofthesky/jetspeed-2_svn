@@ -27,7 +27,7 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-
+import org.apache.pluto.om.portlet.PortletDefinition;
 /**
  * This portlet is a browser over all the portlet applications in the system.
  *
@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 public class PortletApplicationDetail extends ServletPortlet
 {
     private final String VIEW_PA = "portletApplication"; 
+    private final String VIEW_PD = "portletDefinition";
 
     private PortletContext context;
     private PortletRegistryComponent registry;
@@ -66,11 +67,25 @@ public class PortletApplicationDetail extends ServletPortlet
         if (null != pa)
         {
             request.setAttribute(VIEW_PA, new PortletApplicationBean(pa));
+            
+            PortletDefinition pdef = (PortletDefinition) request.getPortletSession().getAttribute("select_portlet");
+            
+            request.setAttribute(VIEW_PD, pdef);
+            
         }
         super.doView(request, response);
-     }
-	public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
+    }
+    
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
-		System.out.println("PorletApplicationDetail: processAction()");
+        System.out.println("PorletApplicationDetail: processAction()");
+        
+        String selectedPortlet = actionRequest.getParameter("select_portlet");
+        MutablePortletApplication pa = (MutablePortletApplication)
+        	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+                                                 PortletSession.APPLICATION_SCOPE);
+        
+        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
+        actionRequest.getPortletSession().setAttribute("select_portlet", pdef);
 	}
 }
