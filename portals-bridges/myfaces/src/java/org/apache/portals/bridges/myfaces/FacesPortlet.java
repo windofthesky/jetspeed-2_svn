@@ -32,6 +32,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
@@ -68,7 +69,10 @@ public class FacesPortlet extends GenericServletPortlet
 
     /** The JSF_VIEW_ID used to maintain the state of the view action. */
     public static final String JSF_VIEW_ID = "jsf_viewid";
-
+    public static final String JSF_EDIT_ID = "jsf_editid";
+    public static final String JSF_HELP_ID = "jsf_helpid";
+    public static final String JSF_CUSTOM_ID = "jsf_customid";
+    
     /** Name of portlet preference for Action page. */
     public static final String PARAM_ACTION_PAGE = "ActionPage";
 
@@ -234,7 +238,7 @@ public class FacesPortlet extends GenericServletPortlet
      */
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        process(request, response, defaultEditPage, FacesPortlet.EDIT_REQUEST);
+        process(request, response, defaultEditPage, FacesPortlet.EDIT_REQUEST, JSF_EDIT_ID);
     }
 
     /**
@@ -249,7 +253,7 @@ public class FacesPortlet extends GenericServletPortlet
         }
         else
         {
-            process(request, response, defaultHelpPage, FacesPortlet.HELP_REQUEST);
+            process(request, response, defaultHelpPage, FacesPortlet.HELP_REQUEST, JSF_HELP_ID);
         }
     }
 
@@ -261,7 +265,7 @@ public class FacesPortlet extends GenericServletPortlet
      */
     public void doCustom(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        process(request, response, defaultCustomPage, FacesPortlet.CUSTOM_REQUEST);
+        process(request, response, defaultCustomPage, FacesPortlet.CUSTOM_REQUEST, JSF_CUSTOM_ID);
     }
 
     /**
@@ -270,7 +274,7 @@ public class FacesPortlet extends GenericServletPortlet
      */
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        process(request, response, defaultViewPage, FacesPortlet.VIEW_REQUEST);
+        process(request, response, defaultViewPage, FacesPortlet.VIEW_REQUEST, JSF_VIEW_ID);
     }
 
     /**
@@ -279,7 +283,20 @@ public class FacesPortlet extends GenericServletPortlet
      */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-        process(request, response, defaultActionPage, FacesPortlet.ACTION_REQUEST);
+        String viewId = JSF_CUSTOM_ID;
+        if (request.getPortletMode().equals(PortletMode.VIEW))
+        {
+            viewId = JSF_VIEW_ID;            
+        }
+        else if (request.getPortletMode().equals(PortletMode.EDIT))
+        {
+            viewId = JSF_EDIT_ID;                        
+        }
+        else if (request.getPortletMode().equals(PortletMode.HELP))
+        {
+            viewId = JSF_HELP_ID;                        
+        }
+        process(request, response, defaultActionPage, FacesPortlet.ACTION_REQUEST, viewId);
     }
 
     /**
@@ -383,7 +400,7 @@ public class FacesPortlet extends GenericServletPortlet
      * @throws PortletException Throws a {@link PortletException}.
      * @throws IOException Throws an {@link IOException}.
      */
-    private void process(PortletRequest request, PortletResponse response, String defaultPage, String requestType)
+    private void process(PortletRequest request, PortletResponse response, String defaultPage, String requestType, String viewId)
             throws PortletException, IOException
     {
         boolean actionRequest = (request instanceof ActionRequest);
@@ -403,7 +420,7 @@ public class FacesPortlet extends GenericServletPortlet
                 request, response, getLifecycle());
 
         // Restore view if available.
-        setDefaultView(context, defaultPage);
+        setDefaultView(context, defaultPage, viewId);
         if (log.isTraceEnabled())
         {
             log.trace("Begin Executing phases");
@@ -424,11 +441,11 @@ public class FacesPortlet extends GenericServletPortlet
                 // The view should have been restore.
                 // Pass it to the render request. 
                                 
-                request.getPortletSession().setAttribute(createViewRootKey(context, defaultPage), context.getViewRoot());
+                request.getPortletSession().setAttribute(createViewRootKey(context, defaultPage, viewId), context.getViewRoot());
                 ActionResponse actionResponse = (ActionResponse)response;
                                 
-                // actionResponse.setRenderParameter(JSF_VIEW_ID, context.getViewRoot().getViewId()); // get the navigation change
-                request.getPortletSession().setAttribute(JSF_VIEW_ID, context.getViewRoot().getViewId(), PortletSession.PORTLET_SCOPE);
+                // actionResponse.setRenderParameter(viewId, context.getViewRoot().getViewId()); // get the navigation change
+                request.getPortletSession().setAttribute(viewId, context.getViewRoot().getViewId(), PortletSession.PORTLET_SCOPE);
             }
             else if (renderRequest)
             {
@@ -486,11 +503,11 @@ public class FacesPortlet extends GenericServletPortlet
     }
     
     
-    private String createViewRootKey(FacesContext context, String defaultView)
+    private String createViewRootKey(FacesContext context, String defaultView, String viewId)
     {
         PortletRequest portletRequest = (PortletRequest) context.getExternalContext().getRequest();
-        // String view = portletRequest.getParameter(JSF_VIEW_ID);
-        String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+        // String view = portletRequest.getParameter(viewId);
+        String view = (String)portletRequest.getPortletSession().getAttribute(viewId, PortletSession.PORTLET_SCOPE);
         
         if (view == null)
         {
@@ -518,29 +535,29 @@ public class FacesPortlet extends GenericServletPortlet
      * @param defaultView The default view identifier.
      * @return The default view.
      */
-    private void setDefaultView(FacesContext facesContext, String defaultView)
+    private void setDefaultView(FacesContext facesContext, String defaultView, String viewId)
     {
         // Need to be able to transport viewId between actionRequest and
         // renderRequest.
         PortletRequest portletRequest = (PortletRequest) facesContext.getExternalContext().getRequest();
         if (portletRequest instanceof ActionRequest)
         {
-            String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+            String view = (String)portletRequest.getPortletSession().getAttribute(viewId, PortletSession.PORTLET_SCOPE);
             
             if ((null != facesContext.getViewRoot()) && (null != facesContext.getViewRoot().getViewId()))
             {
                 defaultView = facesContext.getViewRoot().getViewId();
             }
-            //else if (null != portletRequest.getParameter(JSF_VIEW_ID))
+            //else if (null != portletRequest.getParameter(viewId))
             else if (null != view)
             {
-                //defaultView = portletRequest.getParameter(JSF_VIEW_ID);
+                //defaultView = portletRequest.getParameter(viewId);
                 defaultView = view;
             }
             
             UIViewRoot viewRoot = (UIViewRoot)portletRequest.
                                     getPortletSession().
-                                    getAttribute(createViewRootKey(facesContext, defaultView));
+                                    getAttribute(createViewRootKey(facesContext, defaultView, viewId));
             if (viewRoot != null)
             {
                 facesContext.setViewRoot(viewRoot);
@@ -551,8 +568,8 @@ public class FacesPortlet extends GenericServletPortlet
         }
         else if (portletRequest instanceof RenderRequest)
         {
-            // String view = portletRequest.getParameter(JSF_VIEW_ID);
-            String view = (String)portletRequest.getPortletSession().getAttribute(JSF_VIEW_ID, PortletSession.PORTLET_SCOPE);
+            // String view = portletRequest.getParameter(viewId);
+            String view = (String)portletRequest.getPortletSession().getAttribute(viewId, PortletSession.PORTLET_SCOPE);
             
             if (null == facesContext.getViewRoot())
             {                
@@ -562,7 +579,7 @@ public class FacesPortlet extends GenericServletPortlet
                 }
                 UIViewRoot viewRoot = (UIViewRoot)portletRequest.
                                         getPortletSession().
-                                        getAttribute(createViewRootKey(facesContext, view));
+                                        getAttribute(createViewRootKey(facesContext, view, viewId));
                 if (null != viewRoot)
                 {
                     facesContext.setViewRoot(viewRoot);
@@ -573,7 +590,7 @@ public class FacesPortlet extends GenericServletPortlet
                     facesContext.setViewRoot(new UIViewRoot());
                     facesContext.getViewRoot().setViewId(view);
                     facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-                    portletRequest.getPortletSession().setAttribute(createViewRootKey(facesContext, view), viewRoot);
+                    portletRequest.getPortletSession().setAttribute(createViewRootKey(facesContext, view, viewId), viewRoot);
                 }                	
             }
             portletRequest.setAttribute(REQUEST_SERVLET_PATH, view.replaceAll(".jsp", ".jsf"));
