@@ -38,21 +38,26 @@ import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
-
 
 /**
  * JetspeedTransactionalProfiler
  * 
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class JetspeedProfilerImpl extends
-        InitablePersistenceBrokerDaoSupport implements Profiler
+public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport implements Profiler
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
+
+    /**
+     * This is the princapl that is used if there are no principal to rule
+     * associations for the current principal
+     */
+    public final static Principal DEFAULT_RULE_PRINCIPAL = new UserPrincipalImpl("*");
 
     /** The default locator class implementation */
     private Class locatorClass = JetspeedProfileLocator.class;
@@ -69,8 +74,8 @@ public class JetspeedProfilerImpl extends
     private String anonymousUser = "guest";
 
     private Map principalRules = new HashMap();
-    
-    public JetspeedProfilerImpl(String repositoryPath)
+
+    public JetspeedProfilerImpl( String repositoryPath )
     {
         super(repositoryPath);
     }
@@ -86,20 +91,20 @@ public class JetspeedProfilerImpl extends
      * impl
      * 
      * @param properties
-     *            Properties for this component described above
+     *                     Properties for this component described above
      * @throws ClassNotFoundException
-     *             if any the implementation classes defined within the
-     *             <code>properties</code> argument could not be found.
-     */    
-    public JetspeedProfilerImpl(String repositoryPath, Properties properties)
-    throws ClassNotFoundException    
+     *                    if any the implementation classes defined within the
+     *                    <code>properties</code> argument could not be found.
+     */
+    public JetspeedProfilerImpl( String repositoryPath, Properties properties ) throws ClassNotFoundException
     {
         this(repositoryPath);
         this.defaultRule = properties.getProperty("defaultRule", "j1");
         this.anonymousUser = properties.getProperty("anonymousUser", "guest");
-        initModelClasses(properties); // TODO: move this to start()        
+        initModelClasses(properties); // TODO: move this to
+        // start()
     }
-    
+
     private void initModelClasses( Properties properties ) throws ClassNotFoundException
     {
         String modelName = "";
@@ -121,9 +126,8 @@ public class JetspeedProfilerImpl extends
             profilingRuleClass = Class.forName(modelName);
         }
     }
-    
-    public ProfileLocator getProfile(RequestContext context, String locatorName) 
-    throws ProfilerException
+
+    public ProfileLocator getProfile( RequestContext context, String locatorName ) throws ProfilerException
     {
         // get the principal representing the currently logged on user
         Subject subject = context.getSubject();
@@ -160,21 +164,45 @@ public class JetspeedProfilerImpl extends
         // create a profile locator for given rule
         return rule.apply(context, this);
     }
+    
+    public ProfileLocator getDefaultProfile( RequestContext context, String locatorName ) throws ProfilerException
+    {
+       
+        ProfilingRule rule = getRuleForPrincipal(DEFAULT_RULE_PRINCIPAL, locatorName);
+        if (null == rule)
+        {
+            log.warn("Could not find profiling rule for principal: " + DEFAULT_RULE_PRINCIPAL);
+            rule = this.getDefaultRule();
+        }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.Profiler#getProfile(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.ProfilingRule)
+        if (null == rule)
+        {
+            String msg = "Couldn't find any profiling rules including default rule for principal " + DEFAULT_RULE_PRINCIPAL;
+            log.error(msg);
+            throw new ProfilerException(msg);
+        }
+        // create a profile locator for given rule
+        return rule.apply(context, this);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.profiler.Profiler#getProfile(org.apache.jetspeed.request.RequestContext,
+     *          org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public ProfileLocator getProfile(RequestContext context, ProfilingRule rule)
-            throws ProfilerException
+    public ProfileLocator getProfile( RequestContext context, ProfilingRule rule ) throws ProfilerException
     {
         // create a profile locator for given rule
         return rule.apply(context, this);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#createLocator(org.apache.jetspeed.request.RequestContext)
      */
-    public ProfileLocator createLocator(RequestContext context)
+    public ProfileLocator createLocator( RequestContext context )
     {
         try
         {
@@ -189,10 +217,12 @@ public class JetspeedProfilerImpl extends
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#createProfiledPageContext(java.util.Map)
      */
-    public ProfiledPageContext createProfiledPageContext(Map locators)
+    public ProfiledPageContext createProfiledPageContext( Map locators )
     {
         try
         {
@@ -207,11 +237,13 @@ public class JetspeedProfilerImpl extends
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.Profiler#getRuleForPrincipal(java.security.Principal, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.profiler.Profiler#getRuleForPrincipal(java.security.Principal,
+     *          java.lang.String)
      */
-    public ProfilingRule getRuleForPrincipal(Principal principal,
-            String locatorName)
+    public ProfilingRule getRuleForPrincipal( Principal principal, String locatorName )
     {
         // lookup the rule for the given principal in our user/rule table
         PrincipalRule pr = lookupPrincipalRule(principal.getName(), locatorName);
@@ -226,21 +258,21 @@ public class JetspeedProfilerImpl extends
         return pr.getProfilingRule();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.Profiler#setRuleForPrincipal(java.security.Principal, org.apache.jetspeed.profiler.rules.ProfilingRule, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.profiler.Profiler#setRuleForPrincipal(java.security.Principal,
+     *          org.apache.jetspeed.profiler.rules.ProfilingRule, java.lang.String)
      */
-    public void setRuleForPrincipal(Principal principal, 
-                                    ProfilingRule rule,
-                                    String locatorName)
+    public void setRuleForPrincipal( Principal principal, ProfilingRule rule, String locatorName )
     {
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal);
         c.addEqualTo("locatorName", locatorName);
 
-        PrincipalRule pr = (PrincipalRule)  
-                getPersistenceBrokerTemplate().getObjectByQuery(
+        PrincipalRule pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(principalRuleClass, c));
-                
+
         if (pr == null)
         {
             pr = new PrincipalRuleImpl(); // TODO: factory
@@ -252,21 +284,21 @@ public class JetspeedProfilerImpl extends
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(), locatorName), pr);
     }
-    
-    private String makePrincipalRuleKey(String principal, String locator)
+
+    private String makePrincipalRuleKey( String principal, String locator )
     {
         return principal + ":" + locator;
     }
-    
+
     /**
      * Helper function to lookup principal rule associations by principal
      * 
      * @param principal
-     *            The string representation of the principal name.
+     *                     The string representation of the principal name.
      * @return The found PrincipalRule associated with the principal key or null
-     *         if not found.
+     *                if not found.
      */
-    private PrincipalRule lookupPrincipalRule(String principal, String locatorName)
+    private PrincipalRule lookupPrincipalRule( String principal, String locatorName )
     {
         PrincipalRule pr = (PrincipalRule) principalRules.get(makePrincipalRuleKey(principal, locatorName));
         if (pr != null)
@@ -277,15 +309,16 @@ public class JetspeedProfilerImpl extends
         c.addEqualTo("principalName", principal);
         c.addEqualTo("locatorName", locatorName);
 
-        pr = (PrincipalRule)  
-                getPersistenceBrokerTemplate().getObjectByQuery(
+        pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(principalRuleClass, c));
-        
+
         principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
         return pr;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getDefaultRule()
      */
     public ProfilingRule getDefaultRule()
@@ -293,7 +326,9 @@ public class JetspeedProfilerImpl extends
         return getRule(this.defaultRule);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getRules()
      */
     public Collection getRules()
@@ -302,21 +337,24 @@ public class JetspeedProfilerImpl extends
                 QueryFactory.newQuery(profilingRuleClass, new Criteria()));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getRule(java.lang.String)
      */
-    public ProfilingRule getRule(String id)
+    public ProfilingRule getRule( String id )
     {
         // TODO: implement caching
         Criteria c = new Criteria();
         c.addEqualTo("id", id);
 
-        return (ProfilingRule)  
-                getPersistenceBrokerTemplate().getObjectByQuery(
+        return (ProfilingRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(profilingRuleClass, c));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getAnonymousUser()
      */
     public String getAnonymousUser()
@@ -324,89 +362,117 @@ public class JetspeedProfilerImpl extends
         return this.anonymousUser;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getLocatorNamesForPrincipal(java.security.Principal)
      */
-    public String[] getLocatorNamesForPrincipal(Principal principal)
+    public String[] getLocatorNamesForPrincipal( Principal principal )
     {
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
-        
+
         Collection result = getPersistenceBrokerTemplate().getCollectionByQuery(
-                QueryFactory.newQuery(principalRuleClass, c));        
+                QueryFactory.newQuery(principalRuleClass, c));
         if (result.size() == 0)
         {
             return new String[]{};
         }
-        String [] names = new String[result.size()];
+        String[] names = new String[result.size()];
         Iterator it = result.iterator();
         int ix = 0;
         while (it.hasNext())
         {
-            PrincipalRule pr = (PrincipalRule)it.next();
+            PrincipalRule pr = (PrincipalRule) it.next();
             names[ix] = pr.getLocatorName();
             ix++;
         }
         return names;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#getRulesForPrincipal(java.security.Principal)
      */
-    public Collection getRulesForPrincipal(Principal principal)
+    public Collection getRulesForPrincipal( Principal principal )
     {
         Criteria c = new Criteria();
         c.addEqualTo("principalName", principal.getName());
-        return getPersistenceBrokerTemplate().getCollectionByQuery(
-                QueryFactory.newQuery(principalRuleClass, c));        
+        return getPersistenceBrokerTemplate().getCollectionByQuery(QueryFactory.newQuery(principalRuleClass, c));
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.Profiler#getProfileLocators(org.apache.jetspeed.request.RequestContext, java.security.Principal)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.profiler.Profiler#getProfileLocators(org.apache.jetspeed.request.RequestContext,
+     *          java.security.Principal)
      */
-    public Map getProfileLocators(RequestContext context, Principal principal)
-            throws ProfilerException
+    public Map getProfileLocators( RequestContext context, Principal principal ) throws ProfilerException
     {
         Map locators = new HashMap();
-        Iterator it = getRulesForPrincipal(principal).iterator();
+        Collection rules = getRulesForPrincipal(principal);
+    
+        Iterator it = rules.iterator();
         while (it.hasNext())
         {
-            PrincipalRule pr = (PrincipalRule)it.next();
-            locators.put(pr.getLocatorName(), getProfile(context, pr.getLocatorName()));   
+            PrincipalRule pr = (PrincipalRule) it.next();
+            locators.put(pr.getLocatorName(), getProfile(context, pr.getLocatorName()));
         }
         return locators;
     }
 
-    /* (non-Javadoc)
+    public Map getDefaultProfileLocators( RequestContext context) throws ProfilerException
+    {
+        Map locators = new HashMap();
+
+        Collection rules = getRulesForPrincipal(DEFAULT_RULE_PRINCIPAL);
+
+        Iterator it = rules.iterator();
+        while (it.hasNext())
+        {
+            PrincipalRule pr = (PrincipalRule) it.next();
+            locators.put(pr.getLocatorName(), getDefaultProfile(context, pr.getLocatorName()));
+        }
+        return locators;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#storeProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public void storeProfilingRule(ProfilingRule rule) throws ProfilerException
+    public void storeProfilingRule( ProfilingRule rule ) throws ProfilerException
     {
         getPersistenceBrokerTemplate().store(rule);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#deleteProfilingRule(org.apache.jetspeed.profiler.rules.ProfilingRule)
      */
-    public void deleteProfilingRule(ProfilingRule rule)
-            throws ProfilerException
+    public void deleteProfilingRule( ProfilingRule rule ) throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#storePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
      */
-    public void storePrincipalRule(PrincipalRule rule) throws ProfilerException
+    public void storePrincipalRule( PrincipalRule rule ) throws ProfilerException
     {
         getPersistenceBrokerTemplate().store(rule);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.jetspeed.profiler.Profiler#deletePrincipalRule(org.apache.jetspeed.profiler.rules.PrincipalRule)
      */
-    public void deletePrincipalRule(PrincipalRule rule)
-            throws ProfilerException
+    public void deletePrincipalRule( PrincipalRule rule ) throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
     }

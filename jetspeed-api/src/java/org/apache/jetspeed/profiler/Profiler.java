@@ -43,6 +43,8 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface Profiler
 {
+    
+    
     /**
      *  Get the Profile object using the request parameters.
      *
@@ -51,6 +53,19 @@ public interface Profiler
      * @return a new Profile Locator object or null if failed to find a appropriate locator.
      */
     ProfileLocator getProfile(RequestContext context, String locatorName) throws ProfilerException;
+    
+    /**
+     * 
+     * <p>
+     * getDefaultProfile
+     * </p>
+     * Intstead of using the princpal found within the request, the DEFAULT_RULE_PRINCIPAL is used.
+     *
+     * @param context The request context
+     * @param locatorName The name of the profile locator to find i.e. "page", "docset", ...
+     * @return a new Profile Locator object or null if failed to find a appropriate locator.
+     */
+    ProfileLocator getDefaultProfile(RequestContext context, String locatorName) throws ProfilerException;
 
     /**
      *  Get the Profile object using the request parameters and the rule.
@@ -151,6 +166,18 @@ public interface Profiler
      */
     Map getProfileLocators(RequestContext context, Principal principal)
     throws ProfilerException;
+    
+    /**
+     * 
+     * <p>
+     * getDefaultProfileLocators
+     * </p>
+     * Gets all the supported locators for the DEFAULT_RULE_PRINCIPAL
+     * @param context
+     * @return
+     * @throws ProfilerException
+     */
+    Map getDefaultProfileLocators( RequestContext context) throws ProfilerException;
     
     /*
      * Persist a profiling rule to the persistent store.

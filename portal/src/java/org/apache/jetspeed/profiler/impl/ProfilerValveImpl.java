@@ -17,7 +17,6 @@ package org.apache.jetspeed.profiler.impl;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -47,19 +46,21 @@ import org.apache.jetspeed.security.UserPrincipal;
  */
 public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
-    protected Log log = LogFactory.getLog(ProfilerValveImpl.class);
+    protected Log log = LogFactory.getLog(ProfilerValveImpl.class);   
 
     public static final String PROFILED_PAGE_CONTEXT_ATTR_KEY = "org.apache.jetspeed.profiledPageContext";
 
     private Profiler profiler;
     private PageManager pageManager;
+   
 
     public ProfilerValveImpl( Profiler profiler, PageManager pageManager )
     {
         this.profiler = profiler;
         this.pageManager = pageManager;
     }
-
+    
+ 
     /*
      * (non-Javadoc)
      * 
@@ -84,6 +85,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
 
             // get all locators for the current user
             Map locators = profiler.getProfileLocators(request, principal);
+            
+            if (locators.size() == 0)
+            {
+                locators = profiler.getDefaultProfileLocators(request);                
+            }
+            
             if (locators.size() == 0)
             {
                 locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));

@@ -49,7 +49,7 @@ import org.apache.jetspeed.security.UserPrincipal;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class JetspeedProfiler implements Profiler
+public class JetspeedProfiler implements Profiler 
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(JetspeedProfiler.class);
@@ -466,5 +466,15 @@ public class JetspeedProfiler implements Profiler
         {
             throw new ProfilerException("failed to delete: " + rule.getLocatorName(), e);
         }        
+    }
+    public ProfileLocator getDefaultProfile( RequestContext context, String locatorName ) throws ProfilerException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Map getDefaultProfileLocators( RequestContext context ) throws ProfilerException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
