@@ -34,9 +34,5 @@ limitations under the License.
 
     <!-- include ojb internal mappings here -->
     &internal;
-    
-    <!-- include jetspeed registry mapping here -->
-    &prefs;
-
 
 </descriptor-repository>
