@@ -99,7 +99,7 @@
     </dependency>
     <dependency>
       <id>ojb</id>
-      <version>1.0.rc3-PATCHED</version>
+      <version>1.0.rc4</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
