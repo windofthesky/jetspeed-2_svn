@@ -519,7 +519,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     {
         value = StringUtils.replace(value,"-","/");
         value = StringUtils.replace(value,"_","=");
-        return new String(Base64.decodeBase64(value.getBytes(characterEncoding)));
+        return new String(Base64.decodeBase64(value.getBytes(characterEncoding)), characterEncoding);
     }
 
     /** 
