@@ -53,75 +53,40 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import java.lang.reflect.Constructor;
+import javax.servlet.ServletConfig;
 
-import javax.portlet.PortletException;
-import javax.servlet.ServletContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.invoker.PortletInvoker;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.ContainerRequest;
-import org.apache.jetspeed.container.ContainerResponse;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * Portlet Invoker Factory creates portlet invokers based on the servlet context.
+ * JetspeedPortletInvoker extends Pluto's portlet invoker and extends it
+ * with lifecycle management. Portlet Invokers can be pooled, and activated
+ * and passivated per request cycle.
+ * TODO: I'd like to refactor activate and passivate, hopefully with a IOC service framework
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletInvokerFactory
+public interface JetspeedPortletInvoker extends PortletInvoker
 {
-    private static String invokerClassName = null;
-    private static Class invokerClass = null;
-
-    private final static Log log = LogFactory.getLog(PortletInvokerFactory.class);
-
-    private final static String FACTORY_INVOKER_SERVLET = "factory.invoker.servlet";
-
     /**
-     * Factory method to create Portlet Requests
-     *
+     * Activating an invoker makes it ready to invoke portlets.
+     * If an invoker's state is not activated, it can not invoke.
+     * 
+     * @param portletDefinition The portlet's definition that is being invoked.
+     * @param servletConfig The servlet configuration of the portal. 
      */
-    public static PortletInvoker getInstance(ContainerRequest request,
-                                             ContainerResponse response,
-                                             ServletContext   jetspeedContext)
-        throws PortletException
-    {          
-        PortletInvoker invoker = null;
+    void activate(PortletDefinition portletDefinition, ServletConfig servletConfig);
     
-        try
-        {
-            if (null == invokerClass)
-            {
-                PortalContext pc = Jetspeed.getContext();
-                invokerClassName = pc.getConfigurationProperty(FACTORY_INVOKER_SERVLET);
-                System.out.println("invoker class = " + invokerClassName);
-                //invokerClass = pc.getClass().forName(invokerClassName);
-                invokerClass = Class.forName(invokerClassName);
-            }
-
-            // TODO: we could use a pooled object implementation here:
-
-            Constructor constructor = invokerClass.getConstructor(new Class[] 
-                          {ContainerRequest.class, ContainerResponse.class, ServletContext.class});
-            invoker = (PortletInvoker) constructor.newInstance(new Object[] 
-                                                               {request, 
-                                                                response,
-                                                                jetspeedContext});
-
-        }
-        catch(Throwable e)
-        {
-            String msg = "PortletInvokerFactory: Failed to create a Class object for PortletInvoker: " + e.toString();
-            log.error(msg);
-            throw new PortletException(msg, e);
-        }
-
-        return invoker;
-    } 
-
+    /**
+     * Passivates an invoker, freeing it back to the invoker pool.
+     * If an invoker's state is passivated, it cannot be used to invoke portlets.
+     */
+    void passivate();
+    
+    /**
+     * Returns true if the state of this invoke is 'activated', and false if it is 'passivated'.
+     * @return True if the current state of the invoker is 'activated' otherwise false.
+     */
+    boolean isActivated();
 }
-

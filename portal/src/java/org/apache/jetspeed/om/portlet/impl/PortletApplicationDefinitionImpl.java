@@ -99,7 +99,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
 
     private PortletDefinitionListImpl portlets;
 
-    private int applicationType = MutablePortletApplication.PORTLET_APP;
+    private int applicationType = MutablePortletApplication.WEBAPP;
     
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()

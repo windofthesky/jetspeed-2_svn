@@ -87,6 +87,8 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * -Daction={deploy|undeploy|start|stop|reload}
      * -DPortletAppName= Name of the Portlet application
      * -DApplicationServer={Catalina}
+     * -DApplicationType={webapp|local}
+     *    (default webapp)
      *
      *Notes: The deploy action requires the WarFileName. If no ApplicationServer 
      *       is defined it requires in additionthe WebappDir.
@@ -108,6 +110,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         String strPortletAppName = "";
         String strAppServer = "";
         String strPortalName = "jetspeed";
+        String applicationType = "webapp";
 
         while (i < args.length && args[i].startsWith("-"))
         {
@@ -119,49 +122,48 @@ public class PortletApplicationManager implements JetspeedEngineConstants
                 if (i < args.length)
                     strPortletAppName = args[i++];
             }
-            else
-                if (arg.equalsIgnoreCase("-Action"))
+            else if (arg.equalsIgnoreCase("-Action"))
+            {
+                if (i < args.length)
+                    strAction = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-WebAppDir"))
+            {
+                if (i < args.length)
+                    strWebAppDir = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-WarFileName"))
+            {
+                if (i < args.length)
+                    strWarFileName = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-ApplicationServer"))
+            {
+                if (i < args.length)
+                    strAppServer = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-PortalName"))
+            {
+                if (i < args.length)
+                    strPortalName = args[i++];
+            }
+            else if (arg.equalsIgnoreCase("-ApplicationType"))
+            {
+                if (i < args.length)
                 {
-                    if (i < args.length)
-                        strAction = args[i++];
-                }
-                else
-                    if (arg.equalsIgnoreCase("-WebAppDir"))
-                    {
-                        if (i < args.length)
-                            strWebAppDir = args[i++];
-                    }
-                    else
-                        if (arg.equalsIgnoreCase("-WarFileName"))
-                        {
-                            if (i < args.length)
-                                strWarFileName = args[i++];
-                        }
-                        else
-                            if (arg.equalsIgnoreCase("-ApplicationServer"))
-                            {
-                                if (i < args.length)
-                                    strAppServer = args[i++];
-                            }
-                            else
-                                if (arg.equalsIgnoreCase("-PortalName"))
-                                {
-                                    if (i < args.length)
-                                        strPortalName = args[i++];
-                                }
-                                else
-                                    if (arg.equalsIgnoreCase("-h"))
-                                    {
-                                        helpScreen();
-                                        return;
-                                    }
-                                    else
-                                        if (arg.equalsIgnoreCase("-?"))
-                                        {
-                                            helpScreen();
-                                            return;
-                                        }
-
+                    applicationType = args[i++];
+                }                
+            }
+            else if (arg.equalsIgnoreCase("-h"))
+            {
+                helpScreen();
+                return;
+            }
+            else if (arg.equalsIgnoreCase("-?"))
+            {
+                helpScreen();
+                return;
+            }
         }
 
         // Portlet Application Name and action are required by all functions. 
@@ -175,9 +177,10 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             return;
         }
 
+        String strAppRoot = strWebAppDir + strPortalName;
+
         try
         {
-            String strAppRoot = strWebAppDir + "/" + strPortalName;
             // Start the registry service -- it's needed by many actions
             Configuration properties =
                 (Configuration) new PropertiesConfiguration(strAppRoot + "/WEB-INF/conf/jetspeed.properties");
@@ -209,17 +212,24 @@ public class PortletApplicationManager implements JetspeedEngineConstants
             {
                 if (strAppServer.length() == 0)
                 {
-                    // Requires WebAppDir
-                    if (strWebAppDir.length() == 0)
+                    if (applicationType.equals("local"))
                     {
-                        System.out.println(
-                            "\nDeploy action requires the definition of the ApplicationServer or the Web application directory.");
-                        return;
+                        String portletAppRoot = strAppRoot + "/WEB-INF/apps/";
+                        deploy(portletAppRoot, strWarFileName, strPortletAppName);
                     }
-
-                    // File deploy uses Directory and warfile
-                    deploy(strWebAppDir, strWarFileName, strPortletAppName);
-
+                    else
+                    {
+                        // Requires WebAppDir
+                        if (strWebAppDir.length() == 0)
+                        {
+                            System.out.println(
+                                "\nDeploy action requires the definition of the ApplicationServer or the Web application directory.");
+                            return;
+                        }
+    
+                        // File deploy uses Directory and warfile
+                        deploy(strWebAppDir, strWarFileName, strPortletAppName);
+                    }
                 }
                 else
                 {
@@ -280,6 +290,7 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         System.out.println("\t-WebAppDir\t\t{Path to target WebApp directory}\n");
         System.out.println("\t-WarFileName\t\t{Path to war file to deploy}\n");
         System.out.println("\t-ApplicationServer\t{Application server}\n");
+        System.out.println("\t-ApplicationType\t{webapp|local}\n");
 
         System.out.println("\nNotes:");
         System.out.println("-Each command requires at least the action and the PortletAppName options.");

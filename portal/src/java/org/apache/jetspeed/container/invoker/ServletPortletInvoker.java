@@ -74,11 +74,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletContextFactory;
-import org.apache.jetspeed.engine.servlet.ServletObjectAccess;
-import org.apache.pluto.core.CoreUtils;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.core.impl.PortletConfigImpl;
-import org.apache.pluto.invoker.PortletInvoker;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -87,7 +84,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletPortletInvoker implements PortletInvoker
+public class ServletPortletInvoker implements JetspeedPortletInvoker
 {
     public static final String MVC_ENTRY_SERVLET = "/container";
 
@@ -95,15 +92,39 @@ public class ServletPortletInvoker implements PortletInvoker
 
     protected ServletContext jetspeedContext;
     protected ServletConfig jetspeedConfig;
-    private PortletDefinition portletDefinition;
+    protected PortletDefinition portletDefinition;
+    protected boolean activated = false;
 
-    public ServletPortletInvoker(PortletDefinition portletDefinition, ServletConfig servletConfig)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#passivate()
+     */
+    public void passivate()
     {
-        System.out.println("%%% invoker.portletdef = " + portletDefinition);
+        activated = false;    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#isActivated()
+     */
+    public boolean isActivated()
+    {
+        return activated;
+    }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
+     */
+    public void activate(PortletDefinition portletDefinition, ServletConfig servletConfig)
+    {
         this.jetspeedConfig = servletConfig;
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
+        activated = true;        
+    }
+
+
+    public ServletPortletInvoker()
+    {
     }
 
     /**
@@ -142,6 +163,9 @@ public class ServletPortletInvoker implements PortletInvoker
     }
 
     /**
+     * Creates a servlet request dispatcher to dispatch to another web application to render the portlet.
+     * NOTE: this method requires that your container supports cross-context dispatching.
+     * Cross-context dispatching is known to work on Tomcat, Catalina, Tomcat-5.
      * 
      * @param portletRequest
      * @param portletResponse
@@ -152,10 +176,10 @@ public class ServletPortletInvoker implements PortletInvoker
     protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID)
         throws PortletException, IOException
     {
-        PortletApplicationDefinition app = portletDefinition.getPortletApplicationDefinition();
-        System.out.println("%%% invoker.pa = " + app);
+        MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
 
         String portletApplicationName = app.getWebApplicationDefinition().getContextRoot();
+        System.out.println("%%% webapp invoker.pa = " + portletApplicationName);
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
@@ -193,14 +217,13 @@ public class ServletPortletInvoker implements PortletInvoker
             PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
             PortletConfig portletConfig = new PortletConfigImpl(this.jetspeedConfig, portletContext, portletDefinition);
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
-
             dispatcher.include(servletRequest, servletResponse);
         }
         catch (Exception e)
         {
             String message =
                 "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + MVC_ENTRY_SERVLET;
-            log.error(message, e);
+            log.error(message, e);            
             throw new PortletException(message, e);
         }
         finally
@@ -211,6 +234,7 @@ public class ServletPortletInvoker implements PortletInvoker
             servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
             servletRequest.removeAttribute(ContainerConstants.PORTLET_ENTITY);
         }
+        
     }
 
 }

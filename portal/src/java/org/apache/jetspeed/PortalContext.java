@@ -62,7 +62,7 @@ import org.apache.jetspeed.engine.Engine;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PortalContext
+public interface PortalContext extends javax.portlet.PortalContext
 {
     public Engine getEngine();
 

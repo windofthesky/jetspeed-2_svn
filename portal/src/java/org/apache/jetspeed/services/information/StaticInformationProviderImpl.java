@@ -54,6 +54,7 @@
 package org.apache.jetspeed.services.information;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;
@@ -100,21 +101,21 @@ public class StaticInformationProviderImpl
      * @see org.apache.pluto.services.information.StaticInformationProvider#getPortalContextProvider()
      * @return
      */
-        public PortalContextProvider getPortalContextProvider()
+    public PortalContextProvider getPortalContextProvider()
+    {
+        ServletContext context = config.getServletContext();
+
+        PortalContextProvider provider =
+            (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
+
+        if (provider == null)
         {
-            javax.servlet.ServletContext context = config.getServletContext();
-
-            PortalContextProvider provider =
-                (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
-
-            if (provider == null)
-            {
-                provider = new PortalContextProviderImpl();
-                context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
-            }
-
-            return provider;
+            provider = new PortalContextProviderImpl();
+            context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
         }
+
+        return provider;
+    }
 
     /** 
      * <p>

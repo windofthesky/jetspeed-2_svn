@@ -53,9 +53,13 @@
  */
 package org.apache.jetspeed;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
+import org.apache.pluto.services.information.PortalContextProvider;
+import org.apache.pluto.util.Enumerator;
 
 /**
  * Implementation of Portal Context associated with running thread of the engine
@@ -176,5 +180,63 @@ public class JetspeedPortalContext implements PortalContext
         attributes.put(name, value);
     }
 
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getProperty(java.lang.String)
+     */
+    public String getProperty(String name)
+    {
+        return getPortalContextProvider().getProperty(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getPropertyNames()
+     */
+    public Enumeration getPropertyNames()
+    {
+        return new Enumerator(getPortalContextProvider().getPropertyNames());
+    }
+ 
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getSupportedPortletModes()
+     */
+    public Enumeration getSupportedPortletModes()
+    {
+        return new Enumerator(getPortalContextProvider().getSupportedPortletModes());
+    }
 
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getSupportedWindowStates()
+     */
+    public Enumeration getSupportedWindowStates()
+    {
+        return new Enumerator(getPortalContextProvider().getSupportedWindowStates());        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortalContext#getPortalInfo()
+     */
+    public String getPortalInfo()
+    {
+        return getPortalContextProvider().getPortalInfo();        
+    }
+   
+    /**
+     * TODO: need to refactor context provider, move implementation directly into here since it comes back here anyway
+     * @return
+     */
+    private PortalContextProvider getPortalContextProvider()
+    {        
+        javax.servlet.ServletContext context = engine.getServletConfig().getServletContext();
+
+        PortalContextProvider provider =
+            (PortalContextProvider) context.getAttribute("org.apache.jetspeed.engine.core.PortalContextProvider");
+
+        if (provider == null)
+        {
+            provider = new PortalContextProviderImpl();
+            context.setAttribute("org.apache.jetspeed.engine.core.PortalContextProvider", provider);
+        }
+
+        return provider;        
+    }
 }

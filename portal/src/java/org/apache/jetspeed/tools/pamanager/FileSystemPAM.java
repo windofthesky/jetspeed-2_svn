@@ -61,6 +61,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
+import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
@@ -129,7 +130,14 @@ public class FileSystemPAM implements Deployment
                 rollback(nState, webAppsDir, paName, app);
                 return;
             }
-
+            if (webAppsDir.startsWith(JetspeedPortletContext.LOCAL_PA_ROOT))
+            {
+                app.setApplicationType(MutablePortletApplication.LOCAL);
+            }
+            else
+            {
+                app.setApplicationType(MutablePortletApplication.WEBAPP);                
+            }
             // create the web application 
             MutableWebApplication webapp = new WebApplicationDefinitionImpl();
             if (paName.startsWith("/"))

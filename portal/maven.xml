@@ -50,6 +50,28 @@
             <arg value="jetspeed" />            
         </java>
   </goal>
+
+  <!-- testing out Portlet App within Jetspeed -->
+ <goal name="pam.padeploy">
+         <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
+          <classpath>
+            <path refid="maven.dependency.classpath"/>
+            <pathelement path="${maven.build.dest}"/>
+          </classpath>
+            <arg value="-action" />
+            <arg value="deploy" />
+            <arg value="-PortletAppName" />
+            <arg value="pam" />
+            <arg value="-warfilename" />
+            <arg value="../applications/pam/target/pam.war" />
+            <arg value="-webappDir" />
+            <arg value="${pam.deploy.dir}/" />            
+            <arg value="-PortalName" />
+            <arg value="jetspeed" />            
+            <arg value="-ApplicationType" />
+            <arg value="local" />            
+        </java>
+  </goal>
   
   <goal name="pam.undeploy">
          <java classname="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" fork="yes">
