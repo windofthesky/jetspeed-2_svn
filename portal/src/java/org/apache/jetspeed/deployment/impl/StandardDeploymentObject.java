@@ -16,127 +16,126 @@
 package org.apache.jetspeed.deployment.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.jetspeed.deployment.DeploymentObject;
-import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.util.FileSystemHelper;
-import org.apache.jetspeed.util.JarHelper;
 
 /**
- * @author scott
- *
+ * <p>
+ * DeploymentObject
+ * </p>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @version $Id$
  */
 public class StandardDeploymentObject implements DeploymentObject
 {
-    protected FileSystemHelper fsh;
-    
+    protected File    deploymentObject;
+    protected ZipFile zipFile;
+
     /**
      * @throws IOException
-     * 
      */
-    public StandardDeploymentObject(File deploymentObject) throws IOException, FileNotDeployableException
+    public StandardDeploymentObject(File deploymentObject) throws FileNotDeployableException
     {
-        super();
-        if(deploymentObject.isDirectory())
+        if (verifyExtension(deploymentObject))
         {
-            fsh = new DirectoryHelper(deploymentObject);
-        }
-        else if(verifyExtension(deploymentObject))
-        {
-            boolean deleteOnClose = !deploymentObject.getName().startsWith("jetspeed-");           
-            fsh = new JarHelper(deploymentObject, deleteOnClose);
+            this.deploymentObject = deploymentObject;
         }
         else
         {
-            throw new FileNotDeployableException("File type for "+deploymentObject.getName()+" is not supported by StandardDeploymentObject.");
+            throw new FileNotDeployableException("File type for " + deploymentObject.getName()
+                                                 + " is not supported by StandardDeploymentObject.");
         }
-        
+
     }
 
     /**
      * <p>
      * close
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentObject#close()
      * @throws IOException
      */
     public void close() throws IOException
     {
-        fsh.close();
-
+        if (zipFile != null)
+        {
+            zipFile.close();
+            zipFile = null;
+        }
     }
 
     /**
      * <p>
      * getConfiguration
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentObject#getConfiguration(java.lang.String)
      * @param configPath
      * @return
      * @throws IOException
      */
-    public InputStream getConfiguration( String configPath ) throws IOException
-    {       
-        try
+    public InputStream getConfiguration(String configPath) throws IOException
+    {
+        ZipFile zipFile = getZipFile();
+        ZipEntry entry = zipFile.getEntry(configPath);
+        if (entry != null)
         {
-            return new FileInputStream(new File(fsh.getRootDirectory(), configPath));
+            return zipFile.getInputStream(entry);
         }
-        catch (FileNotFoundException e)
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
      * <p>
      * getName
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentObject#getName()
      * @return
      */
     public String getName()
-    {        
-        return fsh.getRootDirectory().getName();
+    {
+        return deploymentObject.getName();
     }
 
     /**
      * <p>
      * getPath
      * </p>
-     *
+     * 
      * @see org.apache.jetspeed.deployment.DeploymentObject#getPath()
      * @return
      */
     public String getPath()
     {
-        return fsh.getSourcePath();
+        return deploymentObject.getAbsolutePath();
     }
 
-    /**
-     * <p>
-     * getFileObject
-     * </p>
-     *
-     * @see org.apache.jetspeed.deployment.DeploymentObject#getFileObject()
-     * @return
-     */
-    public FileSystemHelper getFileObject()
+    public ZipFile getZipFile() throws IOException
     {
-        return fsh;
+        if (zipFile == null)
+        {
+            zipFile = new ZipFile(deploymentObject);
+        }
+        return zipFile;
     }
-    
+
+    public File getFile()
+    {
+        return deploymentObject;
+    }
+
     protected boolean verifyExtension(File file)
     {
         String fileName = file.getName();
         int dot = fileName.lastIndexOf('.');
-        if(dot != -1)
+        if (dot != -1)
         {
             String ext = fileName.substring(dot);
             return ext.equals(".war") || ext.equals(".jar") || ext.equals(".zip");
@@ -145,8 +144,6 @@ public class StandardDeploymentObject implements DeploymentObject
         {
             return false;
         }
-        
-       
     }
 
 }

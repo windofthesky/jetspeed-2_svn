@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.deployment.impl;
 
+import org.apache.jetspeed.deployment.DeploymentException;
+
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
@@ -23,7 +25,7 @@ package org.apache.jetspeed.deployment.impl;
  * 
  * Thrown when attempting to deploy a file that cannot be deployed.
  */
-public class FileNotDeployableException extends Exception
+public class FileNotDeployableException extends DeploymentException
 {
 
     /**

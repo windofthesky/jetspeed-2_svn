@@ -30,11 +30,9 @@ import org.apache.jetspeed.deployment.DeploymentObject;
  */
 public class DeploymentEventImpl implements DeploymentEvent
 {
-	
-	private String type;
 	private DeploymentObject handler;
 	private String deploymentRoot;
-	private int status=-1;
+	private int status = STATUS_EVAL;
 	protected String name;
 	protected String path;
 	
@@ -42,40 +40,29 @@ public class DeploymentEventImpl implements DeploymentEvent
     /**
      * 
      */
-    public DeploymentEventImpl(String type, DeploymentObject handler, String depRoot)
+    public DeploymentEventImpl(DeploymentObject handler, String depRoot)
     {
         super();
-        this.type = type;
         this.handler = handler;
         this.deploymentRoot = depRoot;
         this.name = handler.getName();
 		this.path = handler.getPath();       
     }
     
-	public DeploymentEventImpl(String type, DeploymentObject handler)
+	public DeploymentEventImpl(DeploymentObject handler)
 	{
 		super();
-		this.type = type;
 		this.handler = handler;
 		this.name = handler.getName();
 		this.path = handler.getPath();
 	}
 	
-	public DeploymentEventImpl(String type, String name, String path)
+	public DeploymentEventImpl(String name, String path)
 	{
 		super();
-		this.type = type;
 		this.name = name;
 		this.path = path;
 	}
-
-    /**
-     * @see org.apache.jetspeed.deployment.DeploymentEvent#getEventType()
-     */
-    public String getEventType()
-    {        
-        return this.type;
-    }
 
     /**
      * @see org.apache.jetspeed.deployment.DeploymentEvent#getDeploymentObject()
