@@ -1,0 +1,34 @@
+<project default="java:jar"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+  <!-- Target of maven test:single test -->
+  <property name='testcase' value='org.apache.jetspeed.security.TestLoginModule'/> 
+    
+  <goal name="deployJar">
+  	<attainGoal name="jar:install"/>
+
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
+  </goal>
+  
+  <!-- ================================================================ -->
+  <!-- Merge OJB desriptor with Jetspeed main OJB descriptor            -->
+  <!-- ================================================================ -->
+  <goal name="ojb.registry">
+    <copy  file="${basedir}/src/java/repository_security.xml" tofile="${basedir}/../../portal/target/classes/repository_security.xml"/>
+    <copy  file="${basedir}/src/java/repository_security.xml" tofile="${basedir}/../../portal/target/test-classes/repository_security.xml"/>
+   </goal>
+
+  <goal name="deployJar">
+  	<attainGoal name="jar:install"/>
+
+  	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
+  </goal>
+  
+  <goal name="build.security">
+  	<attainGoal name="ojb.registry"/>
+  	<attainGoal name="jar:install"/>
+</goal>
+
+</project>
