@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --%>
-<%@ taglib uri="struts-html.tld" prefix="html" %>
-<%@ taglib uri="struts-portlet.tld" prefix="sp" %>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+<%@ taglib uri="http://struts.apache.org/tags-portlet" prefix="sp" %>
 
 <sp:form action="/addUser" focus="username">
 <table>
