@@ -1,0 +1,100 @@
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project default="java:jar"
+         xmlns:j="jelly:core"
+         xmlns:maven="jelly:maven"
+         xmlns:ant="jelly:ant">
+         
+ <preGoal name="plugin:deploy">
+ 	 <attainGoal name="copyDb" />
+ 	 <attainGoal name="copyPortlaWebApp" />
+ </preGoal>        
+ 
+  <preGoal name="plugin:install">
+ 	 <attainGoal name="copyDb" />
+ 	 <attainGoal name="copyPortlaWebApp" />
+ </preGoal>   
+
+   <goal name="copyDb">
+	 <copy todir="src/plugin-resources" overwrite="true" failonerror="true">
+         <fileset dir="../src/database/hsql" >         	
+         	<include name="Empty.script"/>
+         	<include name="Production.properties"/>
+         </fileset>
+    </copy>
+     
+     
+     <copy todir="src/plugin-resources/" overwrite="true" failonerror="true">
+         <fileset dir="../target/src/sql" />   
+         <fileset dir="../src/sql" >
+         	 <include name="*.sql" />
+         </fileset>          	       	       
+     </copy>
+     
+     <move file="${basedir}/src/plugin-resources/Empty.script" tofile="${basedir}/src/plugin-resources/Production.script" overwrite="true"/>
+	 
+	<j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:src/plugin-resources/Production"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="org.hsqldb.jdbcDriver"/>
+    <j:set var="org.apache.jetspeed.database.user" value="sa"/>
+    <j:set var="org.apache.jetspeed.database.password" value=""/>
+    <j:set var="org.apache.jetspeed.database.default.name" value="hsql" />
+    <attainGoal name="db.create" />	 
+</goal>
+
+<goal name="copyPortlaWebApp">
+	 <copy todir="src/plugin-resources/webapp" overwrite="true" failonerror="true">
+         <fileset dir="../portal/src/webapp" />            	       	       
+     </copy>
+     <copy todir="src/plugin-resources/" overwrite="true" failonerror="true">
+         <fileset dir="../portal/src/resources" />            	       	       
+     </copy>		
+</goal>
+
+  <goal name="db.execute">
+    <sql driver="${org.apache.jetspeed.database.driver}"
+         url="${org.apache.jetspeed.database.url}"
+         userid="${org.apache.jetspeed.database.user}"
+         password="${org.apache.jetspeed.database.password}"
+         src="${database.arg.script}">
+      <classpath>
+        <path refid="maven.dependency.classpath"/>
+        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+      </classpath>
+    </sql>
+  </goal>
+  
+    <goal name="db.create">
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/populate-db-default.sql" />
+    <attainGoal name="db.execute" />
+    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
+    <attainGoal name="db.execute" />
+  </goal>
+  
+
+  
+</project>
