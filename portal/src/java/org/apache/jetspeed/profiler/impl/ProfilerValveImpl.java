@@ -25,8 +25,8 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -79,7 +79,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             context.invokeNext(request);
 
         }
-        catch (PageNotFoundException e)
+        catch (NodeNotFoundException e)
         {
             log.error(e.getMessage(), e);
             try
