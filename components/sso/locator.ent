@@ -1,0 +1,10 @@
+<!-- Project dependencies -->
+<!ENTITY pico-nano-groovy SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
+<!ENTITY db-ojb-deps SYSTEM "file:../../etc/project-dependencies/db-ojb-deps.xml">
+
+<!-- Project resources -->
+<!ENTITY db-ojb-resources SYSTEM "file:../../etc/project-resources/db-ojb-resources.xml">
+<!ENTITY log4j-resources SYSTEM "file:../../etc/project-resources/log4j-resources.xml">	
+
+<!-- Project reports -->
+<!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">
