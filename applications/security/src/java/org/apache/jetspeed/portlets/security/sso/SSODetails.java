@@ -95,7 +95,7 @@ public class SSODetails extends BrowserPortlet
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
             resultSetTitleList.add("Remote");
             
-            String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
+            String selectedSite = (String)PortletMessaging.receive(request, "site", "selectedUrl");
             if (selectedSite != null)
             {
                 site = sso.getSite(selectedSite);
@@ -127,7 +127,7 @@ public class SSODetails extends BrowserPortlet
             this.clearBrowserIterator(request);
         }
         Context context = this.getContext(request);        
-        String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
+        String selectedSite = (String)PortletMessaging.receive(request, "site", "selectedUrl");
         if (selectedSite != null)
         {        
             context.put("currentSite", selectedSite);
@@ -182,7 +182,7 @@ public class SSODetails extends BrowserPortlet
                 {
                     try
                     {
-                        String siteName = (String)PortletMessaging.receive(request, "site", "selected");                        
+                        String siteName = (String)PortletMessaging.receive(request, "site", "selectedUrl");                        
                         SSOSite site = sso.getSite(siteName);
                         User user = userManager.getUser(portalPrincipal);                        
                         if (site != null && user != null)

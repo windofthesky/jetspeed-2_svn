@@ -76,7 +76,9 @@ public class SSOBrowser extends BrowserPortlet
             //
             
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
+            resultSetTypeList.add(String.valueOf(Types.VARCHAR));
             resultSetTitleList.add("Site");
+            resultSetTitleList.add("Url");
 
             //subPopulate(rundata, qResult, repo, folder, null);
 
@@ -84,13 +86,17 @@ public class SSOBrowser extends BrowserPortlet
             List list = new ArrayList();
             while (sites.hasNext())
             {
+                List row = new ArrayList(2);
                 SSOSite site = (SSOSite)sites.next();
-                list.add(site.getName());
+                row.add(0, site.getSiteURL());                     
+                row.add(1, site.getName());
+                list.add(row);
             }            
             BrowserIterator iterator = new DatabaseBrowserIterator(
                     list, resultSetTitleList, resultSetTypeList,
                     windowSize);
             setBrowserIterator(request, iterator);
+            iterator.sort("Site");
         }
         catch (Exception e)
         {
@@ -103,13 +109,13 @@ public class SSOBrowser extends BrowserPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String selectedSite = (String)PortletMessaging.receive(request, "site", "selected");
+        String selectedSite = (String)PortletMessaging.receive(request, "site", "selectedUrl");
         if (selectedSite != null)
         {        
             Context context = this.getContext(request);
-            context.put("currentSite", selectedSite);
-            String selectedUrl = (String)PortletMessaging.receive(request, "site", "selectedUrl");
-            context.put("currentUrl", selectedUrl);            
+            context.put("currentUrl", selectedSite);
+            String selectedName = (String)PortletMessaging.receive(request, "site", "selectedName");
+            context.put("currentName", selectedName);            
         }
         super.doView(request, response);
     }
@@ -125,8 +131,8 @@ public class SSOBrowser extends BrowserPortlet
                 SSOSite site = sso.getSite(selectedSite);
                 if (site != null)
                 {
-                    PortletMessaging.publish(request, "site", "selected", selectedSite);
-                    PortletMessaging.publish(request, "site", "selectedUrl", site.getSiteURL());
+                    PortletMessaging.publish(request, "site", "selectedUrl", selectedSite);
+                    PortletMessaging.publish(request, "site", "selectedName", site.getName());
                     PortletMessaging.publish(request, "site", "change", selectedSite);
                 }
             }
@@ -151,14 +157,14 @@ public class SSOBrowser extends BrowserPortlet
                     try
                     {
                         SSOSite site = null;
-                        String oldName = (String)PortletMessaging.receive(request, "site", "selected");
-                        if (oldName != null)
+                        String old = (String)PortletMessaging.receive(request, "site", "selectedUrl");
+                        if (old != null)
                         {
-                            site = sso.getSite(oldName);
+                            site = sso.getSite(old);
                         }
                         else
                         {
-                            site = sso.getSite(siteName);
+                            site = sso.getSite(siteUrl);
                         }                        
                         if (site != null)
                         {
@@ -166,7 +172,7 @@ public class SSOBrowser extends BrowserPortlet
                             site.setSiteURL(siteUrl);
                             sso.updateSite(site);
                             this.clearBrowserIterator(request);
-                            PortletMessaging.publish(request, "site", "selected", siteName);
+                            PortletMessaging.publish(request, "site", "selectedName", siteName);
                             PortletMessaging.publish(request, "site", "selectedUrl", siteUrl);                            
                         }
                         else

@@ -26,20 +26,21 @@ limitations under the License.
 <table cellpadding=0 cellspacing=1 border=0 width='100%' >
   <tr>
     <td width='12' class="jetdbHeadNoLink"></td>      
-    #foreach ($column in $title)
+    #set ($column = $title.get(1))
 	  #set ($columnLink = $renderResponse.createRenderURL())
 	  $columnLink.setParameter("js_dbcolumn",$column)
 ##      <td align='center' class="jetdbHeadNoLink" width="40%" nowrap onClick="window.location.href='$columnLink'">
       <td align='center' class="jetdbHeadNoLink" width="40%" nowrap>
         $column
       </td>
-    #end
     <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
     <td class=""></td>        
   </tr>
-  #foreach ( $ssoName in $table )
+  #foreach ( $ssoItem in $table )
   <tr>
-     #if ($currentSite == $ssoName)
+     #set ($ssoName = $ssoItem.get(1))
+     #set ($ssoUrl = $ssoItem.get(0))
+     #if ($currentUrl == $ssoUrl)
        #set ($rowstyle = "jetdbLight")
        <td class="$rowstyle" nowrap width='12'>
          <img src="/security/images/selected.gif" width="7" height="12" border="0" vspace="2"/>
@@ -52,7 +53,7 @@ limitations under the License.
 	 #end   	 
       <td class="$rowstyle" nowrap width="40%">
         #set ($action = $renderResponse.createActionURL())
-        $action.setParameter('ssoSite', $ssoName)
+        $action.setParameter('ssoSite', $ssoUrl)
         <div align="center"><a href='$action'>$ssoName</a></div>
       </td>
        <td class="$rowstyle" nowrap width='24' align='center'>
@@ -63,12 +64,8 @@ limitations under the License.
   #end
   <tr>
     <td width='12' class="jetdbHeadNoLink"></td>      
-    #foreach ($column in $title)
-	  #set ($columnLink = $renderResponse.createRenderURL())
-	  $columnLink.setParameter("js_dbcolumn",$column)
       <td align='center' class="jetdbHeadNoLink" width="75%" nowrap>
       </td>
-    #end
     <td width='24' class="jetdbHeadNoLink">&nbsp;</td>    
     <td class=""></td>        
   </tr>
@@ -79,7 +76,7 @@ limitations under the License.
   <tr colspan="2" align="right">
     <td nowrap class="portlet-section-alternate" align="right">Site Name:&nbsp;</td>
     <td class="portlet-section-body" align="left">
-      <input type="text" name="site.name" size="40" value="$!currentSite" class="portlet-form-field-label">
+      <input type="text" name="site.name" size="40" value="$!currentName" class="portlet-form-field-label">
     </td>
   </tr>
   <tr colspan="2" align="right">
