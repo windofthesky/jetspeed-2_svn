@@ -137,15 +137,16 @@ public abstract class AbstractPluginFactory extends BaseCommonService
         }
         catch (Exception e)
         {
-            String message = "Unable to initialize PersistenceService. "+CauseExtractor.getCompositeMessage(e);
+            String message = "Unable to initialize PersistenceService. ";
             log.fatal(message, e);
-            if (!(e instanceof InitializationException))
+            if (e instanceof InitializationException)
             {
-                throw new InitializationException(message, e);
+				throw (InitializationException) e;
             }
             else
             {
-                throw (InitializationException) e;
+                
+				throw new InitializationException(message, e);
             }
         }
     }
@@ -198,16 +199,16 @@ public abstract class AbstractPluginFactory extends BaseCommonService
         }
         catch (Exception e)
         {
-            String message = "Unable to create Plugin.Cause: " + e.getMessage();
+            String message = "Unable to create Plugin.Cause: " + e.toString();
             log.fatal(message, e);
-            log.fatal(CauseExtractor.getCompositeMessage(e));
-            if (!(e instanceof PluginInitializationException))
+            
+            if (e instanceof PluginInitializationException)
             {
-                throw new PluginInitializationException(message, e);
+				throw (PluginInitializationException) e;
             }
             else
             {
-                throw (PluginInitializationException) e;
+				throw new PluginInitializationException(message, e);                
             }
         }
     }
@@ -217,7 +218,15 @@ public abstract class AbstractPluginFactory extends BaseCommonService
      */
     public Plugin getPlugin(String type, String name)
     {
-        return (Plugin) plugins.get(type + "." + name);
+		Plugin plugin =(Plugin) plugins.get(type + "." + name);
+		if (plugin == null)
+		{
+			String msg = "No plugin has been defined for type:name " + type+":"+name;
+			log.error(msg);
+			throw new PluginRuntimeException(msg);
+		}		
+		
+        return plugin;
     }
 
     public Plugin getDefaultPlugin(String type)
@@ -225,7 +234,9 @@ public abstract class AbstractPluginFactory extends BaseCommonService
         Plugin plugin = (Plugin) defaultPlugins.get(type);
         if (plugin == null)
         {
-            log.warn("No default plugin has been defined for type " + type);
+            String msg = "No default plugin has been defined for type " + type;
+            log.error(msg);
+            throw new PluginRuntimeException(msg);
         }
         return plugin;
     }
