@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.DublinCore;
+import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.util.JetspeedObjectID;
 
@@ -37,7 +38,7 @@ import org.apache.pluto.om.common.ObjectID;
 public class DublinCoreImpl implements DublinCore
 {
     private int id;
-    
+    /*
     private Collection titles = null;
     private Collection creators = null;
     private Collection subjects = null;
@@ -53,13 +54,38 @@ public class DublinCoreImpl implements DublinCore
     private Collection relations = null;
     private Collection coverages = null;
     private Collection rights = null;
+    */
+    public static final String TITLES = "titles";
+    public static final String CONTRIBUTORS = "contributors";
+    public static final String COVERAGES = "coverages";
+    public static final String CREATORS = "creators";
+    public static final String DESCRIPTIONS = "descriptions";
+    public static final String FORMATS = "formats";
+    public static final String IDENTIFIERS = "identifiers";
+    public static final String LANGUAGES = "languages";
+    public static final String PUBLISHERS = "publishers";
+    public static final String RELATIONS = "relations";
+    public static final String RIGHTS = "rights";
+    public static final String SOURCES = "sources";
+    public static final String SUBJECTS = "subjects";
+    public static final String TYPES = "types";
     
+    GenericMetadata metadata = null;
+    
+    /**
+     * @param md
+     */
+    public DublinCoreImpl(GenericMetadata md) {
+        
+        this.metadata = md;
+    }
+
     /** 
      * @return Returns the titles
      */
     public Collection getTitles()
     {
-        return titles;
+        return metadata.getFields(TITLES);
     }
 
     /** 
@@ -67,334 +93,273 @@ public class DublinCoreImpl implements DublinCore
      */
     public void setTitles(Collection titles)
     {
-        this.titles = titles;
+        metadata.setFields(TITLES, titles);
     }
 
     /**
      * @return Returns the contributors.
      */
     public Collection getContributors() {
-        return contributors;
+        return metadata.getFields(CONTRIBUTORS);
     }
 
     /**
      * @param contributors The contributors to set.
      */
     public void setContributors(Collection contributors) {
-        this.contributors = contributors;
+        metadata.setFields(CONTRIBUTORS, contributors);
     }
 
     /**
      * @return Returns the coverages.
      */
     public Collection getCoverages() {
-        return coverages;
+        return metadata.getFields(COVERAGES);
     }
 
     /**
      * @param coverages The coverages to set.
      */
     public void setCoverages(Collection coverages) {
-        this.coverages = coverages;
+        metadata.setFields(COVERAGES, coverages);
     }
 
     /**
      * @return Returns the creators.
      */
     public Collection getCreators() {
-        return creators;
+        return metadata.getFields(CREATORS);
     }
 
     /**
      * @param creators The creators to set.
      */
     public void setCreators(Collection creators) {
-        this.creators = creators;
+        metadata.setFields(CREATORS, creators);
     }
 
     /**
      * @return Returns the descriptions.
      */
     public Collection getDescriptions() {
-        return descriptions;
+        return metadata.getFields(DESCRIPTIONS);
     }
 
     /**
      * @param descriptions The descriptions to set.
      */
     public void setDescriptions(Collection descriptions) {
-        this.descriptions = descriptions;
+        metadata.setFields(DESCRIPTIONS, descriptions);
     }
 
     /**
      * @return Returns the formats.
      */
     public Collection getFormats() {
-        return formats;
+        return metadata.getFields(FORMATS);
     }
 
     /**
      * @param formats The formats to set.
      */
     public void setFormats(Collection formats) {
-        this.formats = formats;
+        metadata.setFields(FORMATS, formats);
     }
 
     /**
      * @return Returns the identifiers.
      */
     public Collection getIdentifiers() {
-        return identifiers;
+        return metadata.getFields(IDENTIFIERS);
     }
 
     /**
      * @param identifiers The identifiers to set.
      */
     public void setIdentifiers(Collection identifiers) {
-        this.identifiers = identifiers;
+        metadata.setFields(IDENTIFIERS, identifiers);
     }
 
     /**
      * @return Returns the languages.
      */
     public Collection getLanguages() {
-        return languages;
+        return metadata.getFields(LANGUAGES);
     }
 
     /**
      * @param languages The languages to set.
      */
     public void setLanguages(Collection languages) {
-        this.languages = languages;
+        metadata.setFields(LANGUAGES, languages);
     }
 
     /**
      * @return Returns the publishers.
      */
     public Collection getPublishers() {
-        return publishers;
+        return metadata.getFields(PUBLISHERS);
     }
 
     /**
      * @param publishers The publishers to set.
      */
     public void setPublishers(Collection publishers) {
-        this.publishers = publishers;
+        metadata.setFields(PUBLISHERS, publishers);
     }
 
     /**
      * @return Returns the relations.
      */
     public Collection getRelations() {
-        return relations;
+        return metadata.getFields(RELATIONS);
     }
 
     /**
      * @param relations The relations to set.
      */
     public void setRelations(Collection relations) {
-        this.relations = relations;
+        metadata.setFields(RELATIONS, relations);
     }
 
     /**
      * @return Returns the rights.
      */
     public Collection getRights() {
-        return rights;
+        return metadata.getFields(RIGHTS);
     }
 
     /**
      * @param rights The rights to set.
      */
     public void setRights(Collection rights) {
-        this.rights = rights;
+        metadata.setFields(RIGHTS, rights);
     }
 
     /**
      * @return Returns the sources.
      */
     public Collection getSources() {
-        return sources;
+        return metadata.getFields(SOURCES);
     }
 
     /**
      * @param sources The sources to set.
      */
     public void setSources(Collection sources) {
-        this.sources = sources;
+        metadata.setFields(SOURCES, sources);
     }
 
     /**
      * @return Returns the subjects.
      */
     public Collection getSubjects() {
-        return subjects;
+        return metadata.getFields(SUBJECTS);
     }
 
     /**
      * @param subjects The subjects to set.
      */
     public void setSubjects(Collection subjects) {
-        this.subjects = subjects;
+        metadata.setFields(SUBJECTS, subjects);
     }
 
     /**
      * @return Returns the types.
      */
     public Collection getTypes() {
-        return types;
+        return metadata.getFields(TYPES);
     }
 
     /**
      * @param types The types to set.
      */
     public void setTypes(Collection types) {
-        this.types = types;
+        metadata.setFields(TYPES, types);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addContributor(java.util.Locale, java.lang.String)
      */
     public void addContributor(Locale locale, String contributor) {
-        if(contributors == null)
-        {
-            contributors = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(contributors, locale, contributor);
+        metadata.addField(locale, CONTRIBUTORS, contributor);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addCoverage(java.util.Locale, java.lang.String)
      */
     public void addCoverage(Locale locale, String coverage) {
-        if(coverages == null)
-        {
-            coverages = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(coverages, locale, coverage);
+        metadata.addField(locale, COVERAGES, coverage);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addCreator(java.util.Locale, java.lang.String)
      */
     public void addCreator(Locale locale, String creator) {
-        if(creators == null)
-        {
-            creators = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(creators, locale, creator);
+        metadata.addField(locale, CREATORS, creator);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addDescription(java.util.Locale, java.lang.String)
      */
     public void addDescription(Locale locale, String description) {
-        if(descriptions == null)
-        {
-            descriptions = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(descriptions, locale, description);
+        metadata.addField(locale, DESCRIPTIONS, description);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addFormat(java.util.Locale, java.lang.String)
      */
     public void addFormat(Locale locale, String format) {
-        if(formats == null)
-        {
-            formats = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(formats, locale, format);
+        metadata.addField(locale, FORMATS, format);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addIdentifier(java.util.Locale, java.lang.String)
      */
     public void addIdentifier(Locale locale, String identifier) {
-        if(identifiers == null)
-        {
-            identifiers = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(identifiers, locale, identifier);
+        metadata.addField(locale, IDENTIFIERS, identifier);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addLanguage(java.util.Locale, java.lang.String)
      */
     public void addLanguage(Locale locale, String language) {
-        if(languages == null)
-        {
-            languages = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(languages, locale, language);
+        metadata.addField(locale, LANGUAGES, language);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addPublisher(java.util.Locale, java.lang.String)
      */
     public void addPublisher(Locale locale, String publisher) {
-        if(publishers == null)
-        {
-            publishers = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(publishers, locale, publisher);
+        metadata.addField(locale, PUBLISHERS, publisher);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addRelation(java.util.Locale, java.lang.String)
      */
     public void addRelation(Locale locale, String relation) {
-        if(relations == null)
-        {
-            relations = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(relations, locale, relation);
+        metadata.addField(locale, RELATIONS, relation);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addRight(java.util.Locale, java.lang.String)
      */
     public void addRight(Locale locale, String right) {
-        if(rights == null)
-        {
-            rights = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(rights, locale, right);
+        metadata.addField(locale, RIGHTS, right);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addSource(java.util.Locale, java.lang.String)
      */
     public void addSource(Locale locale, String source) {
-        if(sources == null)
-        {
-            sources = new ArrayList();
-        }
-        
-        addLocalizedFieldToCollection(sources, locale, source);
+        metadata.addField(locale, SOURCES, source);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addSubject(java.util.Locale, java.lang.String)
      */
     public void addSubject(Locale locale, String subject) {
-        if (subjects == null)
-        {
-            subjects = new ArrayList();
-        }
-        //descCollWrapper.setInnerCollection(descriptions);
-        
-        addLocalizedFieldToCollection(subjects, locale, subject);
+        metadata.addField(locale, SUBJECTS, subject);
         
     }
     
@@ -402,25 +367,14 @@ public class DublinCoreImpl implements DublinCore
      * @see org.apache.jetspeed.om.common.DublinCore#addDisplayName(java.util.Locale, java.lang.String)
      */
     public void addTitle(Locale locale, String title) {
-        if (titles == null)
-        {
-            titles = new ArrayList();
-        }
-        //descCollWrapper.setInnerCollection(descriptions);
-        
-        addLocalizedFieldToCollection(titles, locale, title);
+        metadata.addField(locale, TITLES, title);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.DublinCore#addType(java.util.Locale, java.lang.String)
      */
     public void addType(Locale locale, String type) {
-        if (types == null)
-        {
-            types = new ArrayList();
-        }
-
-        addLocalizedFieldToCollection(types, locale, type);
+        metadata.addField(locale, TYPES, type);
     }
     
     private void addLocalizedFieldToCollection(Collection fields, Locale locale, String value)
