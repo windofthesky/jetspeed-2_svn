@@ -3,9 +3,6 @@
          xmlns:define="jelly:define"
          xmlns:reactor="reactor">
 
-  <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager'/> 
-
   <preGoal name="test:test">
   	<!-- Create a DB for or tests -->
   	<attainGoal name="db.recreate"/>
