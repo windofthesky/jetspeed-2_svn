@@ -1,0 +1,48 @@
+--------------------------------------
+  Portlet Preference Lookup Algorithm
+--------------------------------------
+
+(a) Look for authenticated principal's PortletPreference for the given entity
+if Found 
+    Return PortletPreference
+End if
+
+(b) Look for PortletPreference for this entity window, not associated to a principal
+if Found
+    Return PortletPreference
+End
+
+(c) Look for default PortletPreference for the portlet
+if Found
+    Return default PortletPreference
+End
+
+Return Not Found
+
+
+-----------------------------
+  Model
+-----------------------------
+
+Page 1 has 
+
+Portlet-1, entity id = 51
+Portlet-2, entity id = 52
+Portlet-3, entity id = 53
+Portlet-1, entity id = 54
+
+Username = David
+
+RELATIONSHIPS
+
+(a) Stored in PREF_NODE table with NODE_NAME = 
+   for entity 51:  /user/David/portletprefs/51
+              52:  /user/David/portletprefs/52
+              53:  /user/David/portletprefs/53
+              54:  /user/David/portletprefs/54
+
+(b) Considering window 51, the pref doesn't exist for user David,
+    Stored in PREF_NODE table with NODE_NAME = 
+   for entity 51:  /entities/51
+
+(c) fallback to Portlet Registry
