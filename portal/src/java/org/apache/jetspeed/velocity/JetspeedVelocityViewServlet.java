@@ -30,6 +30,8 @@ import org.apache.velocity.util.SimplePool;
  * <p>
  * JetspeedVelocityViewServlet
  * </p>
+ * Extends <code>VelocityViewServlet</code> to allow us to put portle-specific
+ * information into the Velocity context.
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
