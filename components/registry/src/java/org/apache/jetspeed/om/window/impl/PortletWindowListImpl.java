@@ -45,7 +45,7 @@ public class PortletWindowListImpl implements PortletWindowList, PortletWindowLi
      */
     public java.util.Iterator iterator()
     {
-        return windows.entrySet().iterator();
+        return windows.values().iterator();
     }
 
     /**
