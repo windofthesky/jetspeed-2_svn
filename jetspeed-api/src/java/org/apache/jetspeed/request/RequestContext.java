@@ -201,7 +201,7 @@ public interface RequestContext
      * accurately represents that PortletWindow's request parameters
      *
      *
-     * @param window PortetlWindow that we are build a request for
+     * @param window PortletWindow that we are build a request for
      * @return HttpServletRequest that wraps the existing servlet
      * container's request that can interpret encoded portlet information
      * for this PortletWindow
@@ -219,7 +219,7 @@ public interface RequestContext
      * accurately represents that PortletWindow's request parameters.
      *
      *
-     * @param window PortetlWindow that we are build a response for
+     * @param window PortletWindow that we are build a response for
      * @return HttpServletRequest that wraps the existing servlet
      * container's request that can interpret encoded portlet information
      * for this PortletWindow
