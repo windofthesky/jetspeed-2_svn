@@ -77,6 +77,13 @@
                banner="Build and Install the services - registry jar"
                postProcessing="false"
                ignoreFailures="false"/>
+    <maven:reactor
+               basedir="${basedir}"
+               includes="services/security/project.xml"
+               goals="db.test.recreate,db.recreate,jar:install"
+               banner="Build and Install the services - security jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
 
      <!-- Build war files -->
      <maven:reactor
