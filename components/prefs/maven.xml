@@ -20,7 +20,14 @@ limitations under the License.
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.prefs.TestPropertyManager'/>
+  <property name='testcase' value='org.apache.jetspeed.prefs.TestPreferences'/>
+  
+  <preGoal name="test:test">
+    <attainGoal name="dbsetup"/>
+  </preGoal>
+  <preGoal name="test:single">
+    <attainGoal name="dbsetup"/>
+  </preGoal>
 
   <!-- ================================================================ -->
   <!-- Merge OJB desriptor with Jetspeed main OJB descriptor            -->
@@ -38,9 +45,9 @@ limitations under the License.
   <goal name="build.prefs">
   	<attainGoal name="ojb.registry"/>
   	<attainGoal name="jar:install"/>
-</goal>
+  </goal>
 
-  <preGoal name="test:test">
+  <goal name="dbsetup">
     <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
     <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
     <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
@@ -53,6 +60,6 @@ limitations under the License.
 
     <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
     <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
-  </preGoal>
+  </goal>
 
 </project>
