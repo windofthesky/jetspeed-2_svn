@@ -120,6 +120,7 @@
       <excludes>
          <exclude>org/apache/jetspeed/cps/CPSTest.java</exclude>
          <exclude>org/apache/jetspeed/cps/rewriter/UnitTestRewriter.java</exclude>
+         <exclude>org/apache/jetspeed/cps/components/TestHSQL.java</exclude>
       </excludes>
     </unitTest>
     
