@@ -123,6 +123,7 @@ public class HelloWorld extends GenericPortlet
     throws PortletException, IOException
     {
         PortletContext context = getPortletContext();
+        response.setContentType("text/html");
         response.getWriter().println("<br/><b>Init Param 'Hello' = " + this.getInitParameter("hello") +  "</b>");
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
         rd.include(request, response);        
