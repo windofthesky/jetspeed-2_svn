@@ -83,17 +83,17 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
-               basedir="${basedir}/commons"
-               includes="project.xml"
-               goals="jar:install"
-               banner="Build and Install the common jar"
-               postProcessing="false"
-               ignoreFailures="false"/>
-    <maven:reactor
                basedir="${basedir}/jetspeed-api"
                includes="project.xml"
                goals="jar:install"
                banner="Build and Install the portlet commons services jar"
+               postProcessing="false"
+               ignoreFailures="false"/>               
+    <maven:reactor
+               basedir="${basedir}/commons"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the common jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
