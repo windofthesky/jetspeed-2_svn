@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,11 +39,12 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SessionNavigationalState
+public class SessionNavigationalState 
     extends
         AbstractNavigationalState
     implements 
-        NavigationalState 
+        NavigationalState,
+        Serializable
 {    
     private Map states;
     private Map modes;

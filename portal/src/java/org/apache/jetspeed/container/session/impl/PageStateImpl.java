@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.container.session.PageState;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -24,7 +26,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PageStateImpl implements PageState
+public class PageStateImpl implements PageState, Serializable
 {
     private PortletWindow maximized = null;
 
