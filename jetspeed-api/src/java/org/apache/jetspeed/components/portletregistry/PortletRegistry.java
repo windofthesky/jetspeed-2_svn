@@ -119,6 +119,17 @@ public interface PortletRegistry
      * is alreay registered, <code>false</code> if it has not.
      */
     boolean portletApplicationExists( String appIentity );
+    
+    /**
+     * 
+     * <p>
+     * namedPortletApplicationExists
+     * </p>
+     *
+     * @param appName
+     * @return
+     */
+    boolean namedPortletApplicationExists( String appName );
 
     /**
      * Checks whether or not a portlet with this identity has all ready

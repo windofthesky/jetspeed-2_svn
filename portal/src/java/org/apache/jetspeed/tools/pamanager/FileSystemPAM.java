@@ -387,6 +387,12 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
             // save it to the registry
             log.info("Saving the portlet.xml in the registry...");
          
+            if(registry.namedPortletApplicationExists(app.getName()))
+            {
+                log.warn("Deployment has found an app with the application name, "+app.getName()+
+                        ".  The existing app will be removed in favor of this one.");
+                undeploy(paWar);
+            }
             registry.registerPortletApplication(app);
             log.info("Committing registry changes...");
             

@@ -51,6 +51,12 @@ import org.springframework.dao.DataAccessException;
  */
 public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerDaoSupport implements PortletRegistry
 {
+    
+    /**
+     * The separator used to create a unique portlet name as
+     * {portletApplication}::{portlet}
+     */
+    static final String PORTLET_UNIQUE_NAME_SEPARATOR = "::";
 
     /**
      *  
@@ -167,6 +173,11 @@ public class PersistenceBrokerPortletRegistry extends InitablePersistenceBrokerD
     public boolean portletApplicationExists( String appIdentity )
     {
         return getPortletApplicationByIdentifier(appIdentity) != null;
+    }
+    
+    public boolean namedPortletApplicationExists( String appName )
+    {
+        return getPortletApplication(appName) != null;
     }
 
     public boolean portletDefinitionExists( String portletName, MutablePortletApplication app )
