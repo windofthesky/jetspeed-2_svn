@@ -638,6 +638,24 @@ public class JetspeedPowerTool implements ViewTool
             actions.add(createAction(ACTION_MAXIMIZE));
             actions.add(createAction(ACTION_NORMAL));                        
         }
+        
+        PortletMode mode = getPortletMode();
+        String m = mode.toString();
+        if (m.equals(PortletMode.VIEW.toString()))
+        {
+            actions.add(createAction(ACTION_EDIT));
+            actions.add(createAction(ACTION_HELP));            
+        }
+        else if (m.equals(PortletMode.EDIT.toString()))
+        {
+            actions.add(createAction(ACTION_VIEW));
+            actions.add(createAction(ACTION_HELP));                        
+        }
+        else // help 
+        {
+            actions.add(createAction(ACTION_VIEW));
+            actions.add(createAction(ACTION_EDIT));                        
+        }
         return actions;
     }
     
@@ -660,6 +678,15 @@ public class JetspeedPowerTool implements ViewTool
             case ACTION_NORMAL:
                 url.setWindowState(WindowState.NORMAL);
                 break;
+            case ACTION_VIEW:
+                url.setPortletMode(PortletMode.VIEW);
+                break;
+            case ACTION_EDIT:
+                url.setPortletMode(PortletMode.EDIT);
+                break;
+            case ACTION_HELP:
+                url.setPortletMode(PortletMode.HELP);
+                break;                                
         }
         
         action.setAction(url.toString());
