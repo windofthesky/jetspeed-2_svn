@@ -165,7 +165,7 @@ container.registerComponentImplementation(PortletRenderer,
 // Aggregator
 //
 // NanoQuickAssembler.assemble(cl, "org/apache/jetspeed/containers/aggregator-container.groovy", container)
-strategy = PageAggregatorImpl.STRATEGY_PARALLEL
+strategy = PageAggregatorImpl.STRATEGY_SEQUENTIAL
 container.registerComponentImplementation(PageAggregator, 
                                            PageAggregatorImpl,
                               new Parameter[] {new ComponentParameter(PortletRenderer), 
