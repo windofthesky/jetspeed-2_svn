@@ -26,7 +26,6 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -56,7 +55,7 @@ public abstract class AbstractPortalURL implements PortalURL
     private boolean secure;
     private String characterEncoding;
     
-    public AbstractPortalURL(RequestContext context, NavigationalState navState)
+    public AbstractPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
     {
         if ( navStateParameter == null )
         {
@@ -66,10 +65,8 @@ public abstract class AbstractPortalURL implements PortalURL
         }
         
         this.navState = navState;
-        this.characterEncoding = context.getCharacterEncoding();
+        this.characterEncoding = characterEncoding;
 
-        HttpServletRequest request = context.getRequest();
-        
         if (null != request)
         {
             decodeBaseURL(request);

@@ -164,10 +164,11 @@ public class TestNavigationalState extends TestCase
         request.setPathInfo("stuff");
         request.setRequestURI("/jetspeed/portal/stuff");
 
-        JetspeedRequestContext context = new JetspeedRequestContext(request, response, config, component, null );
+        JetspeedRequestContext context = new JetspeedRequestContext(request, response, config, null );
         
         // create base PortletURL
-        PortalURL url = component.createURL(context);
+        PortalURL url = component.createURL(context.getRequest(), context.getCharacterEncoding());
+        context.setPortalURL(url);
 
         PortletWindow window = new PortletWindowImpl("111");
         PortletWindow window2 = new PortletWindowImpl("222");
@@ -189,9 +190,10 @@ public class TestNavigationalState extends TestCase
             request.setPathInfo(portletURL.substring(portletURL.indexOf("/portal")+7));
         }
         
-        context = new JetspeedRequestContext(request, response, config, component, null );
+        context = new JetspeedRequestContext(request, response, config, null );
                 
-        url = component.createURL(context);
+        url = component.createURL(context.getRequest(), context.getCharacterEncoding());
+        context.setPortalURL(url);
         NavigationalState nav = url.getNavigationalState();
 
         // Check that they come out correctly

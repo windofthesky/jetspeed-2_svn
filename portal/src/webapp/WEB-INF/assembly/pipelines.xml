@@ -30,6 +30,11 @@ limitations under the License.
    </constructor-arg>
   </bean> 
   
+  <bean id="portalURLValve"
+        class="org.apache.jetspeed.container.url.impl.PortalURLValveImpl"
+        init-method="initialize"
+  /> 
+  
   <bean id="securityValve"
         class="org.apache.jetspeed.security.impl.SecurityValveImpl"
         init-method="initialize"
@@ -106,6 +111,7 @@ limitations under the License.
     <list>
     	<ref bean="localizationValve"/>
     	<ref bean="capabilityValve"/>
+      <ref bean="portalURLValve"/>
     	<ref bean="securityValve"/>
     	<ref bean="profilerValve"/>
     	<ref bean="containerValve"/>
@@ -127,6 +133,7 @@ limitations under the License.
     <list>
     	<ref bean="localizationValve"/>
     	<ref bean="capabilityValve"/>
+      <ref bean="portalURLValve"/>
     	<ref bean="containerValve"/>
     	<ref bean="actionValve"/>
     </list>
@@ -144,6 +151,7 @@ limitations under the License.
     <list>
     	<ref bean="localizationValve"/>
     	<ref bean="capabilityValve"/>
+      <ref bean="portalURLValve"/>
     	<ref bean="containerValve"/>
     	<ref bean="portletValve"/>
     </list>

@@ -336,7 +336,6 @@ limitations under the License.
    <bean id="org.apache.jetspeed.request.RequestContextComponent" 
   	   class="org.apache.jetspeed.request.JetspeedRequestContextComponent"
   >  	   
-  	   <constructor-arg ><ref bean="org.apache.jetspeed.container.state.NavigationalStateComponent" /></constructor-arg>
   	   <constructor-arg ><value>org.apache.jetspeed.request.JetspeedRequestContext</value></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>  	   
   </bean>

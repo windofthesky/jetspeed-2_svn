@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
@@ -86,7 +85,7 @@ public class JetspeedRequestContext implements RequestContext
      * @param config
      */
     public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
-            NavigationalStateComponent navcomponent, UserInfoManager userInfoMgr )
+            UserInfoManager userInfoMgr )
     {
         this.request = request;
         this.response = response;
@@ -100,12 +99,6 @@ public class JetspeedRequestContext implements RequestContext
         {
             this.request.setAttribute(RequestContext.REQUEST_PORTALENV, this);
         }
-
-        if (navcomponent != null)
-        {
-            url = navcomponent.createURL(this);
-        }
-
     }
 
     private JetspeedRequestContext()
@@ -431,6 +424,15 @@ public class JetspeedRequestContext implements RequestContext
             this.requestPath = getPortalURL().getPath();
         }
         return this.requestPath;
+    }
+    
+    public void setPortalURL(PortalURL url)
+    {
+        if ( this.url != null )
+            throw new IllegalStateException("PortalURL already set");
+        if ( url == null )
+            throw new IllegalArgumentException("PortalURL may not be nullified");
+        this.url = url;
     }
 
     public PortalURL getPortalURL()

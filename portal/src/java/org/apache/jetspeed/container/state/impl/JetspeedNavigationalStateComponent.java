@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,6 @@ import org.apache.jetspeed.container.state.FailedToCreatePortalUrlException;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**
@@ -138,16 +138,16 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     * @param context
     * @return
     */
-    public PortalURL createURL( RequestContext context )
+    public PortalURL createURL( HttpServletRequest request, String characterEncoding )
     {
         PortalURL url = null;
 
         try
         {
-            Constructor constructor = urlClass.getConstructor(new Class[]{RequestContext.class,
+            Constructor constructor = urlClass.getConstructor(new Class[]{HttpServletRequest.class, String.class,
                     NavigationalState.class});
 
-            url = (PortalURL) constructor.newInstance(new Object[]{context, create()});
+            url = (PortalURL) constructor.newInstance(new Object[]{request, characterEncoding, create()});
             return url;
         }
         catch (Exception e)

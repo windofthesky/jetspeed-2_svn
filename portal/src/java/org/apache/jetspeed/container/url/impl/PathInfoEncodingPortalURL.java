@@ -20,7 +20,6 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * PathInfoEncodingPortalURL encodes the NavigationalState as PathInfo element
@@ -30,9 +29,9 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PathInfoEncodingPortalURL extends AbstractPortalURL
 {
-    public PathInfoEncodingPortalURL(RequestContext context, NavigationalState navState)
+    public PathInfoEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState)
     {
-        super(context, navState);
+        super(request, characterEncoding, navState);
     }
     
     protected void decodePathAndNavigationalState(HttpServletRequest request)

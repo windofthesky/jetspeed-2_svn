@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -37,20 +36,18 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
 {
     private String contextClassName = null;
     private Class contextClass = null;
-    private NavigationalStateComponent nav;
     /** The user info manager. */
     private UserInfoManager userInfoMgr;
 
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
-    public JetspeedRequestContextComponent(NavigationalStateComponent nav, String contextClassName)
+    public JetspeedRequestContextComponent(String contextClassName)
     {
-        this(nav, contextClassName, null);
+        this(contextClassName, null);
     }
 
-    public JetspeedRequestContextComponent(NavigationalStateComponent nav, String contextClassName, UserInfoManager userInfoMgr)
+    public JetspeedRequestContextComponent(String contextClassName, UserInfoManager userInfoMgr)
     {
-        this.nav = nav;
         this.contextClassName = contextClassName;
         this.userInfoMgr = userInfoMgr;
     }
@@ -73,9 +70,8 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
                         HttpServletRequest.class,
                         HttpServletResponse.class,
                         ServletConfig.class,
-                        NavigationalStateComponent.class,
                         UserInfoManager.class });
-            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, nav, userInfoMgr });
+            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr });
 
         }
         catch (Exception e)

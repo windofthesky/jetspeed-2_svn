@@ -164,6 +164,15 @@ public interface RequestContext
     public PortalURL getPortalURL();
     
     /**
+     * Sets the Portal URL for the current request.
+     * 
+     * @throws IllegalStateException if <code>portalUrl</code>
+     * has been set already.
+     * @throws IllegalArgumentException if a null value is passed in.
+     */
+    public void setPortalURL(PortalURL portalUrl);
+    
+    /**
      * Get the target Action Window
      *
      * @return PortletWindow The target portlet action window

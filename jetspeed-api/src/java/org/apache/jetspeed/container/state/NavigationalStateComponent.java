@@ -17,9 +17,9 @@ package org.apache.jetspeed.container.state;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * NavigationalState
@@ -44,12 +44,13 @@ public interface NavigationalStateComponent
     /**
      * Creates a Portal URL representing the URL of the request.
      * 
-     * @param context The ubiqitious request context.
+     * @param request The ubiqitious request.
+     * @param characterEncoding String containing the name of the chararacter encoding
      * @return A new Portal URL.  This method will never return <code>null</code>;
      * @throws FailedToCreatePortalUrlException if the portelt url could not be created.  Under normal
      * circumstances, this should not happen.
      */
-    PortalURL createURL(RequestContext context);
+    PortalURL createURL(HttpServletRequest request, String characterEncoding);
     
     /**
      * Given a window state name, look up its object.
