@@ -6,11 +6,14 @@
   #set($BOTTOM_TO_TOP = "BottomToTop")
 #end
 
-#* Includes a navigation component *#
-#macro (includeNavigation $name $_nodeSet $orientation)
- #parse($jetspeed.getTemplate("${name}/${orientation}.vm", "navigation").appRelativePath)
-#end
-
 #macro (defineConfig $name $type)
   #set($_navConfig =$jetspeed.getTypeConfiguration("navigation", $name))
 #end
+
+#* Includes a navigation component *#
+#macro (includeNavigation $name $_nodeSet $orientation)
+ #defineConfig($name "navigation")
+ #set($_ext = $_navConfig.getString("template.extension"))
+ #parse($jetspeed.getTemplate("${name}/${orientation}${_ext}", "navigation").appRelativePath)
+#end
+

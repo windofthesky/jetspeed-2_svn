@@ -67,6 +67,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.services.information.PortletURLProviderImpl;
+import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.Constants;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentTypeSet;
@@ -486,6 +487,8 @@ public class JetspeedPowerTool implements ViewTool
     
     public Configuration getTypeConfiguration(String type, String name) throws Exception
     {
+        ArgUtil.assertNotNull(String.class, type, this, "getTypeConfiguration(String type, String name)");
+        ArgUtil.assertNotNull(String.class, name, this, "getTypeConfiguration(String type, String name)");
         try
         {
             TemplateDescriptor locator = getTemplate(name+"/"+type+".properties", type);
