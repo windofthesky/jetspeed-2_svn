@@ -260,6 +260,7 @@ public class PortletDescriptorUtilities
         }
         catch (Throwable t)
         {
+            t.printStackTrace();
             String msg = "Could not unmarshal \"" + pathPortletXML+"\".  "+t.toString();
             log.error(msg, t);
             throw new PortletApplicationException(msg, t);

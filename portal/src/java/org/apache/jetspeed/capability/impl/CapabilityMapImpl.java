@@ -128,15 +128,23 @@ class CapabilityMapImpl implements CapabilityMap
     {
         // Return the value that matches the preferredMimeType defined in the Client
         int prefMimeTypeId = this.client.getPreferredMimeTypeId();
+System.out.println("+++ MIMETYPE ID is " + prefMimeTypeId);
+System.out.println("+++ CLIENT is " + client.getName());        
+
         MimeType mt = null;
 
+System.out.println("+++ MIMETYPE MAP SIZE is " + mimeTypeMap.values().size());        
+        
         Iterator e = this.mimeTypeMap.values().iterator();
         while (e.hasNext())
-        {
+        {            
             mt = (MimeType) e.next();
+System.out.println("+++ MT ID is " + mt.getMimetypeId());        
+            
             if (mt.getMimetypeId() == prefMimeTypeId)
                 return mt;
         }
+System.out.println("+++ NEVER " + prefMimeTypeId);        
 
         // Should never reach this point. A preferred value needs to be set
         return null; // TODO: NEVER RETURN NULL

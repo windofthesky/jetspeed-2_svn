@@ -137,6 +137,8 @@ public class JetspeedCapabilities implements Capabilities, Startable
      */
     public CapabilityMap getCapabilityMap(String userAgent)
     {
+        log.error("*****************************HELLO*****************");
+        
         CapabilityMap map = null;
         boolean bClientFound = false;
 
@@ -214,8 +216,6 @@ public class JetspeedCapabilities implements Capabilities, Startable
                 }
 
                 //Set preferred Mimetype
-                MimeType mimeType = map.getPreferredType();
-
                 MediaType mtEntry =
                     getMediaTypeForMimeType(map.getPreferredType().getName());
 
@@ -386,9 +386,10 @@ public class JetspeedCapabilities implements Capabilities, Startable
      * @return MediaTypeEntry that matches the lookup in the MEDIATYPE_TO_MIMETYPE table
      */
     public MediaType getMediaTypeForMimeType(String mimeTypeName)
-    {
+    {               
         //Find the MediaType by matching the Mimetype
         PersistenceStore store = getPersistenceStore();
+        
         Filter filter = store.newFilter();        
         filter.addEqualTo("mimetypes.name", mimeTypeName);
         Object query = store.newQuery(mediaTypeClass, filter);        
