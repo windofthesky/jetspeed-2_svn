@@ -77,6 +77,8 @@ import org.apache.jetspeed.cps.rewriter.rules.Tag;
  */
 public class TestRewriterRules extends CPSTest
 {
+    private RewriterService service;
+
     /**
       * Defines the testcase name for JUnit.
       *
@@ -97,9 +99,11 @@ public class TestRewriterRules extends CPSTest
         junit.awtui.TestRunner.main( new String[] { TestRewriterRules.class.getName() } );
     }
 
-    public void setup() 
+    public void setUp() 
     {
         System.out.println("Setup: Testing Rewriter rules");
+        super.setUp();
+        service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
     }
 
     public static Test suite()
@@ -110,8 +114,7 @@ public class TestRewriterRules extends CPSTest
 
     public void testFactories()
               throws Exception
-    { 
-        RewriterService service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
+    {         
         assertNotNull("rewriter service is null", service);
         Rewriter basic = service.createRewriter();
         assertNotNull("basic rewriter is null", basic);
@@ -128,7 +131,7 @@ public class TestRewriterRules extends CPSTest
     public void testRules()
               throws Exception
     { 
-        RewriterService service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
+        
         assertNotNull("rewriter service is null", service);
         FileReader reader = getTestReader("test-rewriter-rules.xml");  
         Ruleset ruleset = service.loadRuleset(reader);
@@ -227,7 +230,7 @@ public class TestRewriterRules extends CPSTest
     public void testRewriting()
               throws Exception
     { 
-        RewriterService service = (RewriterService)CommonPortletServices.getPortalService(RewriterService.SERVICE_NAME);
+        
         assertNotNull("rewriter service is null", service);
         
         FileReader reader = getTestReader("test-remove-rules.xml");  
@@ -285,16 +288,7 @@ public class TestRewriterRules extends CPSTest
     {
         String cwd = System.getProperty("user.dir");
         String path;
-        
-        if (cwd.endsWith("jakarta-jetspeed-2"))
-        {
-            path = "./cps/test/rewriter/" + filename;             
-        }
-        else
-        {
-            path = "./test/rewriter/" + filename;             
-        }
-        return new FileReader(path);
+        return new FileReader(service.getRealPath("rewriter/" + filename));
     }
 
     /**
@@ -313,16 +307,7 @@ public class TestRewriterRules extends CPSTest
     {
         String cwd = System.getProperty("user.dir");
         String path;
-        
-        if (cwd.endsWith("jakarta-jetspeed-2"))
-        {
-            path = "./cps/test/rewriter/" + filename;             
-        }
-        else
-        {
-            path = "./test/rewriter/" + filename;             
-        }
-        return new FileWriter(path);
+        return new FileWriter(service.getRealPath("rewriter/" + filename));
     }
         
 }
