@@ -39,19 +39,37 @@ import org.jdom.output.XMLOutputter;
 public class JetspeedDeploy 
 {
     public static void main(String[] args) throws Exception 
-    {
-        if (args.length != 2) {
-            System.out.println("Usage: java -jar jsdeploy.jar INPUT OUTPUT");
+    {        
+        if (args.length < 2 || args.length > 3) 
+        {
+            System.out.println("Usage: java -jar jsdeploy.jar [-r] INPUT OUTPUT");
+            System.out.println("       -r Register at Init");
             System.exit(1);
             return;
         }
-
-        new JetspeedDeploy(args[0], args[1]);
+        if (args.length == 3)
+        {
+            if (args[0].equalsIgnoreCase("-r"))
+            {
+                new JetspeedDeploy(args[1], args[2], true);
+            }
+            else
+            {
+                System.out.println("Usage: java -jar jsdeploy.jar [-r] INPUT OUTPUT");
+                System.out.println("       -r Register at Init");
+                System.exit(1);
+                return;                
+            }
+        }
+        else
+        {
+            new JetspeedDeploy(args[0], args[1], false);
+        }
     }
 
     private final byte[] buffer = new byte[4096];
     
-    public JetspeedDeploy(String inputName, String outputName) throws Exception 
+    public JetspeedDeploy(String inputName, String outputName, boolean registerAtInit) throws Exception 
     {
         JarInputStream jin = null;
         JarOutputStream jout = null;
@@ -95,7 +113,7 @@ public class JetspeedDeploy
                 throw new IllegalArgumentException("WEB-INF/portlet.xml");
             }
             
-            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, true);
+            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, registerAtInit);
             rewriter.processWebXML();
             
             // mung the web.xml
