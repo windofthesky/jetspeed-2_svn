@@ -53,13 +53,14 @@
  */
 package org.apache.jetspeed.services.page.impl;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
-import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 
 /**
  * AbstractPageManagerService
@@ -74,6 +75,7 @@ public abstract class AbstractPageManagerService
     protected Class fragmentClass = null;
     protected Class pageClass = null;
     protected Class propertyClass = null;
+    protected IdGenerator generator = null;
     
     /* (non-Javadoc)
      * @see org.apache.fulcrum.Service#init()
@@ -82,7 +84,11 @@ public abstract class AbstractPageManagerService
     {
         pageClass = loadModelClass("page.impl");
         fragmentClass = loadModelClass("fragment.impl");
-        propertyClass = loadModelClass("property.impl"); 
+        propertyClass = loadModelClass("property.impl");
+        
+        // TODO: get the IdGenerator during construction (i'll be getting to this next)
+        IdGenerator generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");
+         
     }
     
     /* (non-Javadoc)
@@ -95,11 +101,11 @@ public abstract class AbstractPageManagerService
         {
             // factory create the page
             page = (Page)createObject(this.pageClass);            
-            page.setId(JetspeedIdGenerator.getNextPeid());
+            page.setId(generator.getNextPeid());
             
             // create the default fragment
             Fragment fragment = (Fragment)createObject(this.fragmentClass);
-            fragment.setId(JetspeedIdGenerator.getNextPeid());
+            fragment.setId(generator.getNextPeid());
             fragment.setType(Fragment.LAYOUT);
             page.setRootFragment(fragment);            
         }
@@ -120,7 +126,7 @@ public abstract class AbstractPageManagerService
         try
         {
             fragment = (Fragment)createObject(this.fragmentClass);
-            fragment.setId(JetspeedIdGenerator.getNextPeid());
+            fragment.setId(generator.getNextPeid());
             fragment.setType(Fragment.LAYOUT);
             
         }

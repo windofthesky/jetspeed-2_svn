@@ -51,85 +51,82 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.idgenerator;
 
-package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.idgenerator.IdGenerator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.picocontainer.Startable;
 
 /**
+ * Simple implementation of the IdGeneratorService.
  *
+ * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public abstract class AbstractBaseElement implements java.io.Serializable
+public class JetspeedIdGenerator implements IdGenerator, Startable
 {
+    private final static Log log = LogFactory.getLog(JetspeedIdGenerator.class);
 
-    private String id = null;
+    // default configuration values
+    private final static long DEFAULT_CONFIG_COUNTER_START = 0x10000;
+    private final static String DEFAULT_CONFIG_PEID_PREFIX = "P-";
+    private final static String DEFAULT_CONFIG_PEID_SUFFIX = "";
 
-    private String name = null;
+    // configuration parameters
+    private String peidPrefix = null;
+    private String peidSuffix = null;
+    protected long idCounter;
 
-    private String acl = null;
-
-    private String title = null;
-
-    public String getId()
+    public JetspeedIdGenerator()
     {
-        if (this.id==null)
-        {
-            // FIXME: not sure how yet, but this shouldn't be here
-            // components should have their dependencies wired on construction
-            IdGenerator generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");
-            this.id = generator.getNextPeid();
-        }
-        return this.id;
+        this.idCounter = DEFAULT_CONFIG_COUNTER_START;
+        this.peidPrefix = DEFAULT_CONFIG_PEID_PREFIX;
+        this.peidSuffix = DEFAULT_CONFIG_PEID_SUFFIX;         
     }
 
-    public void setId(String id)
+    public JetspeedIdGenerator(long counterStart)
     {
-        this.id = id;
+        this.idCounter = counterStart;
+        this.peidPrefix = DEFAULT_CONFIG_PEID_PREFIX;
+        this.peidSuffix = DEFAULT_CONFIG_PEID_SUFFIX; 
     }
 
-    public String getName()
+    public JetspeedIdGenerator(long counterStart, String prefix, String suffix)
     {
-        return this.name;
+        this.idCounter = counterStart;
+        this.peidPrefix = prefix;
+        this.peidSuffix = suffix; 
     }
-
-    public void setName(String name)
+    
+    public void start() 
     {
-        this.name = name;
-    }
+        log.info( "Start JetspeedIdGenerator");        
+     }
 
-    public String getAcl()
+    public void stop() 
     {
-        return this.acl;
-    }
-
-    public void setAcl(String aclName)
-    {
-        this.acl = aclName;
-    }
-
-    public String getTitle()
-    {
-        return this.title;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
+        log.info( "Shutdown for JetspeedIdGenerator called. idCounter = "
+             + idCounter + " (" + Long.toHexString(idCounter) + ")" ); 
     }
 
     /**
-     * Create a clone of this object
+     * Generate a Unique PEID
+     * @return Unique PEID
      */
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
+    public String getNextPeid()
     {
-        Object cloned = super.clone();
+        long newid;
 
-        // TBD
-
-        return cloned;
-
-    }   // clone
+        synchronized(JetspeedIdGenerator.class)
+        {
+            newid = idCounter++;
+        }
+        
+        return peidPrefix + Long.toHexString(System.currentTimeMillis()) + "-" 
+               + Long.toHexString(newid) + peidSuffix;
+    }
+    
 }

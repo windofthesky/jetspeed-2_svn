@@ -1,19 +1,8 @@
 import org.picocontainer.defaults.DefaultPicoContainer
-import org.apache.jetspeed.locator.JetspeedTemplateLocator
-import org.apache.jetspeed.components.ComponentAssemblyTestCase
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
-import org.apache.jetspeed.Jetspeed
-
-applicationRoot = Jetspeed.getRealPath("/")
 
 // create the root container
 container = new DefaultPicoContainer()
-
-//
-// Template Locator component assembly
-//
-roots = [ applicationRoot + "/WEB-INF/templates" ]
-container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots))
 
 //
 // ID Generator
@@ -24,3 +13,4 @@ peidSuffix = ""
 container.registerComponentInstance("IdGenerator", new JetspeedIdGenerator(counterStart, peidPrefix, peidSuffix))
 
 return container
+

@@ -73,7 +73,6 @@ import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
@@ -340,7 +339,7 @@ public class CastorXmlPageManagerService extends AbstractPageManagerService impl
 
         if (id == null)
         {
-            page.setId(JetspeedIdGenerator.getNextPeid());
+            page.setId(generator.getNextPeid());
             id = page.getId();
             log.warn("Page with no Id, created new Id : " + id);
         }

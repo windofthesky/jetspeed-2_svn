@@ -51,85 +51,23 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.apache.jetspeed.idgenerator;
 
-package org.apache.jetspeed.om.page.psml;
-
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.idgenerator.IdGenerator;
 
 /**
+ * This service handles the generation of unique identifiers
  *
+ * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public abstract class AbstractBaseElement implements java.io.Serializable
+public interface IdGenerator
 {
-
-    private String id = null;
-
-    private String name = null;
-
-    private String acl = null;
-
-    private String title = null;
-
-    public String getId()
-    {
-        if (this.id==null)
-        {
-            // FIXME: not sure how yet, but this shouldn't be here
-            // components should have their dependencies wired on construction
-            IdGenerator generator = (IdGenerator)Jetspeed.getComponentManager().getComponent("IdGenerator");
-            this.id = generator.getNextPeid();
-        }
-        return this.id;
-    }
-
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    public String getName()
-    {
-        return this.name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getAcl()
-    {
-        return this.acl;
-    }
-
-    public void setAcl(String aclName)
-    {
-        this.acl = aclName;
-    }
-
-    public String getTitle()
-    {
-        return this.title;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
     /**
-     * Create a clone of this object
-     */
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        Object cloned = super.clone();
-
-        // TBD
-
-        return cloned;
-
-    }   // clone
+     * Generate a Unique Portlet Entity ID
+     *
+     * @return Unique Portlet Entity ID
+     */    
+    public String getNextPeid();
+    
 }
+

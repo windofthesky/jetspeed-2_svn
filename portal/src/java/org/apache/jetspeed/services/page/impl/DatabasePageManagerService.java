@@ -67,7 +67,6 @@ import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.services.page.PageManagerService;
 import org.apache.jetspeed.services.page.PageNotRemovedException;
 import org.apache.jetspeed.services.page.PageNotUpdatedException;
@@ -163,7 +162,7 @@ public class DatabasePageManagerService extends AbstractPageManagerService imple
 
         if (id == null)
         {
-            page.setId(JetspeedIdGenerator.getNextPeid());
+            page.setId(generator.getNextPeid());
             id = page.getId();
             log.warn("Page with no Id, created new Id : " + id);
         }

@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.services.idgenerator;
+package org.apache.jetspeed.idgenerator;
 
 // Java imports
 import java.util.HashMap;
@@ -59,8 +59,7 @@ import java.util.HashMap;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.apache.jetspeed.components.ComponentAssemblyTestCase;
 
 /**
  * TestIdGenerator
@@ -68,7 +67,7 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @author <a href="paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public class TestIdGenerator extends JetspeedTest 
+public class TestIdGenerator extends ComponentAssemblyTestCase
 {
     
     private static int ID_TEST_TRIES = 10000;
@@ -83,6 +82,11 @@ public class TestIdGenerator extends JetspeedTest
         super( name );
     }
     
+    public String getBaseProject()
+    {
+        return "components/jetspeed";
+    }
+    
     /**
      * Start the tests.
      *
@@ -93,9 +97,6 @@ public class TestIdGenerator extends JetspeedTest
         junit.awtui.TestRunner.main( new String[] { TestIdGenerator.class.getName() } );
     }
  
-    public void setup() 
-    {
-    }
     /**
      * Creates the test suite.
      *
@@ -105,7 +106,7 @@ public class TestIdGenerator extends JetspeedTest
     public static Test suite() 
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite( TestIdGenerator.class );
+        return new TestSuite( TestIdGenerator.class );
     }
     
     /**
@@ -119,6 +120,9 @@ public class TestIdGenerator extends JetspeedTest
      */
     public void testVerifyUniquePeid() throws Exception
     {
+        IdGenerator generator = (IdGenerator)componentManager.getComponent("IdGenerator");
+        assertNotNull("idgenerator is null", generator);            
+ 
         HashMap generatedIds = new HashMap( ID_TEST_TRIES + 1);
         String  newId;
         
@@ -127,7 +131,7 @@ public class TestIdGenerator extends JetspeedTest
         
         for (int counter = 1; counter <= ID_TEST_TRIES; counter++)
         {
-            newId = JetspeedIdGenerator.getNextPeid();
+            newId = generator.getNextPeid();
             assertTrue( "PEID already generated. PEID = " + newId, !generatedIds.containsKey(newId));
             generatedIds.put(newId, null);
         }
@@ -141,12 +145,15 @@ public class TestIdGenerator extends JetspeedTest
      */
     public void testVerifyIncreasingPeid() throws Exception
     {
+        IdGenerator generator = (IdGenerator)componentManager.getComponent("IdGenerator");
+        assertNotNull("idgenerator service is null", generator);            
+        
         String  newId;
         String  lastId = null;
         
         for (int counter = 1; counter <= ID_TEST_TRIES; counter++)
         {
-            newId = JetspeedIdGenerator.getNextPeid();
+            newId = generator.getNextPeid();
             if (lastId == null)
             {
                 lastId = newId;

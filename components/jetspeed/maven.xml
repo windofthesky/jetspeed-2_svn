@@ -4,7 +4,7 @@
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.rewriter.TestRewriterController'/> 
+  <property name='testcase' value='org.apache.jetspeed.idgenerator.TestIdGenerator'/> 
   
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
