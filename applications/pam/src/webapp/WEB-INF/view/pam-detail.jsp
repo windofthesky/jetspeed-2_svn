@@ -13,7 +13,7 @@ limitations under the License.
 <%@ page language="java" session="true" %>
 <%@ page import="javax.portlet.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="org.apache.jetspeed.portlets.pam.beans.TabBean" %>
+<%@ page import="org.apache.portals.bridges.beans.TabBean" %>
 <%@ page import="org.apache.jetspeed.om.common.preference.*" %>
 <%@ page import="org.apache.jetspeed.om.common.*" %>
 <%@ page import="org.apache.jetspeed.om.common.portlet.*" %>
