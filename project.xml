@@ -35,13 +35,13 @@ limitations under the License.
   <description>Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.</description>
   <shortDescription>Enterprise Information Portal</shortDescription>
   <url>http://jakarta.apache.org/jetspeed</url>
-  <issueTrackingUrl>http://jakarta.apache.org/jetspeed</issueTrackingUrl>
+  <issueTrackingUrl>http://nagoya.apache.org/jira/secure/BrowseProject.jspa?id=10492</issueTrackingUrl>
   <siteAddress>http://jakarta.apache.org/jetspeed</siteAddress>
   <siteDirectory></siteDirectory>
   <distributionDirectory></distributionDirectory>
 
   <repository>                 
-    <connection>scm:cvs::pserver:anoncvs@cvs.apache.org:/home/cvspublic</connection>
+    <connection>scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-jetspeed-2</connection>
     <url>http://cvs.apache.org/viewcvs/jakarta-jetspeed-2/</url>
   </repository>
 
