@@ -430,11 +430,16 @@ limitations under the License.
           <attainGoal name="db.execute" />		  
       </j:when>   	
      </j:choose>	 
+    <j:choose>
+      <j:when test="${nodots == 'oracle'}" >		
+<!--          <attainGoal name="dropdrops" />		  -->
+      </j:when>   	
+     </j:choose>	 	 
   </goal>
 
   <goal name="db.drop.oracle">
-    <attainGoal name="db.test.properties"/>
-      <j:set var="database.arg.script" value="./src/sql/oracle/drop2.sql" />
+    <attainGoal name="db.production.properties"/>
+      <j:set var="database.arg.script" value="./src/sql/oracle/drop.sql" />
       <attainGoal name="db.execute" />		      	
   </goal>
   <!-- ================================================================ -->
