@@ -5,6 +5,53 @@
   "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
+	
+  <filter>
+    <filter-name>ContentServer</filter-name>
+    <filter-class>org.apache.jetspeed.contentserver.ContentFilter</filter-class>
+     <init-param>
+        <param-name>content.directory</param-name>
+        <param-value>
+           WEB-INF/decorations
+        </param-value>
+    </init-param>
+     <init-param>
+        <param-name>url.hint</param-name>
+        <param-value>
+           content/
+        </param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.gif</url-pattern>    
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.jpg</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.jpeg</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.png</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.js</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.html</url-pattern>    
+  </filter-mapping>
+ <filter-mapping>
+    <filter-name>ContentServer</filter-name>
+    <url-pattern>*.css</url-pattern>    
+  </filter-mapping>
+	
 
   <servlet>
     <servlet-name>jetspeed</servlet-name>
@@ -84,7 +131,7 @@
         <servlet-name>JetspeedContainer</servlet-name>
         <url-pattern>/container/*</url-pattern>
     </servlet-mapping>
-
+    
   <!-- The Usual Welcome File List -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
