@@ -98,6 +98,11 @@ limitations under the License.
         <war.bundle.jar>false</war.bundle.jar>
       </properties> 
     </dependency>
+    <dependency>
+      <groupId>struts-portlet</groupId>
+      <artifactId>struts-portlet-spi</artifactId>
+      <version>0.1</version>
+    </dependency>
     <!-- we need ojb because of the ManageableCollection interface -->
     <!--
     <dependency>
