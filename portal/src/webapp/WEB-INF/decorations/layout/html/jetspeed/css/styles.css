@@ -90,17 +90,18 @@
 	
 	/** Always use relative path ! **/
 	background:  url(content/metal/images/titleleft.gif);
+	
 }
 
 .Metal .PTitle
 {
-	/**
-	Specify the height of the image used
-	else it will use the text height	
-	**/
+	/**Specify the height of the image usedelse it will use the text height**/
 	height:16px;
 	color:#FFFFFF;
-	background:  url(content/metal/images/title.gif);
+	background: url(content/metal/images/title.gif);
+	font-family : monospace;
+	font-weight:bold;
+	font-size:12pt;
 }
  
 .Metal .PTitleRight
@@ -117,11 +118,13 @@
 {
 	width:10px;
 	background:  url(content/metal/images/contentleft.gif);
+	height : 100%;
+	
 }
 
 .Metal .PContent
 {
-
+	padding-left:5px;
 }
 
 .Metal .PContentRight
