@@ -154,6 +154,7 @@ public class ServletPortlet extends GenericPortlet
         this.defaultCustomPage = config.getInitParameter(PARAM_CUSTOM_PAGE);
         this.defaultEditPage = config.getInitParameter(PARAM_EDIT_PAGE);
         this.defaultViewPage = config.getInitParameter(PARAM_VIEW_PAGE);
+        this.defaultHelpPage = config.getInitParameter(PARAM_HELP_PAGE);
         String allowPreferencesString = config.getInitParameter(PARAM_ALLOW_PREFERENCES);
         if (allowPreferencesString != null)
         {
@@ -164,6 +165,7 @@ public class ServletPortlet extends GenericPortlet
         (this.defaultCustomPage == null) &&
         (this.defaultEditPage == null) &&
         (this.defaultViewPage == null) &&
+        (this.defaultHelpPage == null) &&
         (this.allowPreferences == false) )
         {
             // This portlet is configured to do nothing!
