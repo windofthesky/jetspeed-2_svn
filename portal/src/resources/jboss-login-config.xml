@@ -1,0 +1,8 @@
+    <application-policy name="Jetspeed">
+      <authentication>
+        <login-module code="org.apache.jetspeed.security.impl.DefaultLoginModule"
+          flag="required">
+          <module-option name="unauthenticatedIdentity">guest</module-option>
+        </login-module>
+      </authentication>
+    </application-policy>
