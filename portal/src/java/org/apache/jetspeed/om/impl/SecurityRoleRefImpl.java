@@ -56,10 +56,10 @@ package org.apache.jetspeed.om.impl;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
-import org.apache.jetspeed.om.impl.*;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -80,8 +80,6 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     protected long portletId;
     private String link;
     private String name;
-    private String description;
-
     private MutableDescriptionSet descriptions;
 
     /**
@@ -166,18 +164,6 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @deprecated
-     * @see org.apache.pluto.om.common.SecurityRoleRefCtrl#setDescription(java.lang.String)
-     */
-    public void setDescription(String arg0)
-    {
-        // TODO Is this really needed anymore???
-        System.out.println("Setting description for sec ref..." + arg0);
-        addDescription(new DescriptionImpl(Locale.getDefault(), arg0, MutableDescription.TYPE_SEC_ROLE_REF));
-        System.out.println("Description Set for sec ref " + arg0);
-    }
-
-    /**
      * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#setDescriptionSet(org.apache.pluto.om.common.DescriptionSet)
      */
     public void setDescriptionSet(DescriptionSet descriptions)
@@ -188,19 +174,14 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
 
     /**
      * We should be using one of the more locale-specific methods.
-     * This is here only preserver unit testing until Castor is re-mapped.
      * 
-     * @deprecated
-     * @return
+     * 
+     * @see org.apache.pluto.om.common.SecurityRoleRefCtrl#setDescription(java.lang.String)
+     * @param arg0
      */
-    public String getDescription()
+    public void setDescription(String arg0)
     {
-        Description desc = getDescription(Locale.getDefault());
-        if (desc != null)
-        {
-            return desc.getDescription();
-        }
-        return null;
+       DescriptionImpl di = new DescriptionImpl(Jetspeed.getDefaultLocale(), arg0, MutableDescription.TYPE_SEC_ROLE_REF);
     }
 
 }
