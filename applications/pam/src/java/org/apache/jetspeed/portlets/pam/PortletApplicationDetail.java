@@ -33,7 +33,6 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
@@ -51,7 +50,7 @@ import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
-import org.apache.pluto.om.portlet.PortletDefinition;
+
 /**
  * This portlet is a browser over all the portlet applications in the system.
  *
@@ -116,15 +115,18 @@ public class PortletApplicationDetail extends ServletPortlet
     {
         response.setContentType("text/html");
         
-        MutablePortletApplication pa = (MutablePortletApplication)
-                request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
-                                                         PortletSession.APPLICATION_SCOPE);
+        String paName = (String)
+        	request.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
+                                             PortletSession.APPLICATION_SCOPE);
+        
+        MutablePortletApplication pa = registry.getPortletApplication(paName);
         
         if (null != pa)
         {
             request.setAttribute(VIEW_PA, new PortletApplicationBean(pa));
             
-            PortletDefinition pdef = (PortletDefinition) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+            String pdefName = (String) request.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+            PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
             
             request.setAttribute(VIEW_PD, pdef);
             
@@ -157,15 +159,16 @@ public class PortletApplicationDetail extends ServletPortlet
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
 	{
         //System.out.println("PorletApplicationDetail: processAction()");
-        MutablePortletApplication pa = (MutablePortletApplication)
+        String paName = (String)
     	actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_PA, 
                                              PortletSession.APPLICATION_SCOPE);
+        
+        MutablePortletApplication pa = registry.getPortletApplication(paName);
         
         String selectedPortlet = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_PORTLET);
         if(selectedPortlet != null)
         {
-	        PortletDefinition pdef = pa.getPortletDefinitionByName(selectedPortlet);
-	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef, PortletSession.APPLICATION_SCOPE);
+	        actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, selectedPortlet, PortletSession.APPLICATION_SCOPE);
         }
         
         String selectedTab = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_TAB);
@@ -202,7 +205,8 @@ public class PortletApplicationDetail extends ServletPortlet
             else if(isPortletAction(action))
             {
                 action = getAction(PORTLET_ACTION_PREFIX, action);
-                PortletDefinitionComposite pdef = (PortletDefinitionComposite) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+                String pdefName = (String) actionRequest.getPortletSession().getAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, PortletSession.APPLICATION_SCOPE);
+                PortletDefinitionComposite pdef = (PortletDefinitionComposite) pa.getPortletDefinitionByName(pdefName);
                 
                 if(action.endsWith("metadata"))
                 {
@@ -261,8 +265,6 @@ public class PortletApplicationDetail extends ServletPortlet
     {
         if(action.equals("edit_user_attribute"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             Iterator userAttrIter = pa.getUserAttributes().iterator();
             while (userAttrIter.hasNext())
             {
@@ -284,8 +286,6 @@ public class PortletApplicationDetail extends ServletPortlet
             String userAttrDesc = actionRequest.getParameter("user_attr_desc");
             if(userAttrName != null)
             {
-                registry.getPersistenceStore().getTransaction().begin();
-            
                 //TODO: should this come from a factory??
                 UserAttribute userAttribute = new UserAttributeImpl();
                 userAttribute.setName(userAttrName);
@@ -301,8 +301,6 @@ public class PortletApplicationDetail extends ServletPortlet
 
             if(userAttrNames != null)
             {
-                registry.getPersistenceStore().getTransaction().begin();
-                                
 	            Iterator userAttrIter = pa.getUserAttributes().iterator();
 	            while (userAttrIter.hasNext())
 	            {
@@ -338,8 +336,6 @@ public class PortletApplicationDetail extends ServletPortlet
         {
             Iterator fieldsIter = md.getFields().iterator();
             
-            registry.getPersistenceStore().getTransaction().begin();
-            
             while (fieldsIter.hasNext())
             {
                 LocalizedField field = (LocalizedField) fieldsIter.next();
@@ -363,7 +359,6 @@ public class PortletApplicationDetail extends ServletPortlet
             
             if(ids != null)
             {
-	            registry.getPersistenceStore().getTransaction().begin();
 	            while (fieldsIter.hasNext())
 	            {
 	                LocalizedField field = (LocalizedField) fieldsIter.next();
@@ -384,10 +379,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("add_metadata"))
         {
-            PersistenceStore store = registry.getPersistenceStore();
-            System.out.println("Transcation is open: " + store.getTransaction().isOpen());
-            store.getTransaction().begin();
-            System.out.println("Transcation is open: " + store.getTransaction().isOpen());
             String name = actionRequest.getParameter("name");
             String value = actionRequest.getParameter("value");
             String localeParam = actionRequest.getParameter("locale");
@@ -399,7 +390,7 @@ public class PortletApplicationDetail extends ServletPortlet
             
             md.addField(locale, name, value);
             
-            store.getTransaction().commit();
+            registry.getPersistenceStore().getTransaction().commit();
         }
     }
     
@@ -430,8 +421,6 @@ public class PortletApplicationDetail extends ServletPortlet
     {
         if(action.equals("add_preference"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String name = actionRequest.getParameter("name");
             String value = actionRequest.getParameter("value");
             
@@ -449,8 +438,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("edit_preference"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String[] prefNames = actionRequest.getParameterValues("pref_edit_id");
             for (int i = 0; i < prefNames.length; i++)
             {
@@ -472,8 +459,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("remove_preference"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String[] prefNames = actionRequest.getParameterValues("pref_remove_id");
             
             Iterator prefIter = portlet.getPreferenceSet().iterator();
@@ -508,8 +493,6 @@ public class PortletApplicationDetail extends ServletPortlet
     {
          if(action.equals("add_language"))
          {
-             registry.getPersistenceStore().getTransaction().begin();
-
              String title = actionRequest.getParameter("title");
              String shortTitle = actionRequest.getParameter("short_title");
              String keywords = actionRequest.getParameter("keyword");
@@ -530,8 +513,6 @@ public class PortletApplicationDetail extends ServletPortlet
 
              if(removeIds != null)
              {
-                 registry.getPersistenceStore().getTransaction().begin();
-
                  int id = 0;
                  Iterator langIter = portlet.getLanguageSet().iterator();
                  while (langIter.hasNext())
@@ -560,8 +541,6 @@ public class PortletApplicationDetail extends ServletPortlet
 
              if(editIds != null)
              {
-                 registry.getPersistenceStore().getTransaction().begin();
-
                  //technically, the size and set of edit ids should be 
                  //equal to the size and set of the language set
 
@@ -621,8 +600,6 @@ public class PortletApplicationDetail extends ServletPortlet
     {
         if(action.equals("add_parameter"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String name = actionRequest.getParameter("name");
             String value = actionRequest.getParameter("value");
             String description = actionRequest.getParameter("description");
@@ -634,8 +611,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("edit_parameter"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String[] paramIds = actionRequest.getParameterValues("parameter_edit_id");
             
             if(paramIds != null)
@@ -657,8 +632,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("remove_parameter"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String[] paramIds = actionRequest.getParameterValues("parameter_remove_id");
             
             if(paramIds != null)
@@ -699,8 +672,6 @@ public class PortletApplicationDetail extends ServletPortlet
             
             if(name != null)
             {
-                registry.getPersistenceStore().getTransaction().begin();
-                
                 String link = actionRequest.getParameter("link");
 	            
 	            SecurityRoleRefComposite securityRoleRef = (SecurityRoleRefComposite) portlet.getInitSecurityRoleRefSet().get(name);
@@ -730,8 +701,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("edit_security"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             Iterator securityIter = portlet.getInitSecurityRoleRefSet().iterator();
             while (securityIter.hasNext())
             {
@@ -775,8 +744,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("remove_security"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
-            
             String[] securityIds = actionRequest.getParameterValues("security_remove_id");
             if(securityIds != null)
             {
@@ -822,8 +789,6 @@ public class PortletApplicationDetail extends ServletPortlet
             String contentType = actionRequest.getParameter("content_type");
             if(contentType != null)
             {
-	            registry.getPersistenceStore().getTransaction().begin();
-	            
 	            ContentTypeImpl contentTypeImpl = new ContentTypeImpl();
 	            contentTypeImpl.setContentType(contentType);
 	            
@@ -852,7 +817,6 @@ public class PortletApplicationDetail extends ServletPortlet
         }
         else if(action.equals("edit_content_type"))
         {
-            registry.getPersistenceStore().getTransaction().begin();
             registry.getPersistenceStore().getTransaction().commit();
         }
         else if(action.equals("remove_content_type"))
@@ -860,8 +824,6 @@ public class PortletApplicationDetail extends ServletPortlet
             String[] contentIds = actionRequest.getParameterValues("content_type_remove_id");
             if(contentIds != null)
             {
-                registry.getPersistenceStore().getTransaction().begin();
-                
                 Iterator contentIter = portlet.getContentTypeSet().iterator();
                 while (contentIter.hasNext())
                 {

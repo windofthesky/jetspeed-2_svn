@@ -73,10 +73,10 @@ public class PortletApplicationBrowser extends ServletPortlet
     {
         response.setContentType("text/html");
         
-        List apps = registry.getPortletApplications();
         TreeControl control = (TreeControl) request.getPortletSession().getAttribute("j2_tree");
         if(control == null)
         {
+            List apps = registry.getPortletApplications();
         	control = buildTree(apps, request.getLocale());
         	request.getPortletSession().setAttribute("j2_tree", control);
         }
@@ -130,7 +130,7 @@ public class PortletApplicationBrowser extends ServletPortlet
 			            if(pa != null)
 			            {
 			                PortletDefinition pdef = pa.getPortletDefinitionByName(child.getName());
-			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef, PortletSession.APPLICATION_SCOPE);
+			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_PORTLET, pdef.getName(), PortletSession.APPLICATION_SCOPE);
 			                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, new TabBean("pa_portlets"), PortletSession.APPLICATION_SCOPE);
 			            }
 				    }
@@ -141,9 +141,7 @@ public class PortletApplicationBrowser extends ServletPortlet
 				    
 				    if (pa != null)
 		            {
-				        
-		                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa, PortletSession.APPLICATION_SCOPE);
-		                
+		                actionRequest.getPortletSession().setAttribute(PortletApplicationResources.PAM_CURRENT_PA, pa.getName(), PortletSession.APPLICATION_SCOPE);
 		            }
 			    }
 			}
