@@ -399,28 +399,71 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             if (log.isDebugEnabled())
                 log.debug("generateProfilingPageSearchPaths(), locatorPath = " + locator.getLocatorPath(locatorProperties));
             
-            // get folder and page path elements
-            StringBuffer path = new StringBuffer("/");
+            // get folder and page locator path elements
+            List locatorPaths = new ArrayList();
+            locatorPaths.add(new StringBuffer("/"));
+            int lastLocatorPathsCount = 0;
+            String lastLocatorPropertyName = null;
+            int lastLocatorPropertyValueLength = 0;
             for (int i = 0; (i < locatorProperties.length); i++)
             {
                 if (locatorProperties[i].isControl())
                 {
-                    // construct folder path with control properties
+                    // skip null control values
                     if (locatorProperties[i].getValue() != null)
                     {
-                        path.append(PROFILE_PROPERTY_FOLDER_PREFIX);
-                        path.append(locatorProperties[i].getName().toLowerCase());
-                        path.append('/');
-                        path.append(locatorProperties[i].getValue().toLowerCase());
-                        path.append('/');
+                        // fold control names and values to lower case
+                        String locatorPropertyName = locatorProperties[i].getName().toLowerCase();
+                        String locatorPropertyValue = locatorProperties[i].getValue().toLowerCase();
+
+                        // detect duplicate control names which indicates multiple
+                        // values: must duplicate locator paths for each value; different
+                        // control values are simply appended to all locator paths
+                        if (locatorPropertyName.equals(lastLocatorPropertyName))
+                        {
+                            // duplicate last locator paths set, stripping last matching
+                            // control value from each, appending nevw value, and adding new
+                            // valued set to collection of locatorPaths
+                            ArrayList multipleValueLocatorPaths = new ArrayList(lastLocatorPathsCount);
+                            Iterator locatorPathsIter = locatorPaths.iterator();
+                            for (int count = 0; (locatorPathsIter.hasNext() && (count < lastLocatorPathsCount)); count++)
+                            {
+                                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
+                                StringBuffer multipleValueLocatorPath = new StringBuffer(locatorPath.toString());
+                                multipleValueLocatorPath.setLength(multipleValueLocatorPath.length() - lastLocatorPropertyValueLength - 1);
+                                multipleValueLocatorPath.append(locatorPropertyValue);
+                                multipleValueLocatorPath.append('/');
+                                multipleValueLocatorPaths.add(multipleValueLocatorPath);
+                            }
+                            locatorPaths.addAll(multipleValueLocatorPaths);
+                        }
+                        else
+                        {
+                            // construct locator path folders with control properties
+                            Iterator locatorPathsIter = locatorPaths.iterator();
+                            while (locatorPathsIter.hasNext())
+                            {
+                                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
+                                locatorPath.append(PROFILE_PROPERTY_FOLDER_PREFIX);
+                                locatorPath.append(locatorPropertyName);
+                                locatorPath.append('/');
+                                locatorPath.append(locatorPropertyValue);
+                                locatorPath.append('/');
+                            }
+
+                            // reset last locator property vars
+                            lastLocatorPathsCount = locatorPaths.size();
+                            lastLocatorPropertyName = locatorPropertyName;
+                            lastLocatorPropertyValueLength = locatorPropertyValue.length();
+                        }
                     }
                 }
                 else if (! forceRequestPath)
                 {
-                    // set page path with page/path properties, assumes
-                    // page names and relative paths are relative to
-                    // request path and that any page paths with no url
-                    // separator should have the page extension appended
+                    // set locator page path with page/path properties, assumes
+                    // page names and relative paths are relative to request path
+                    // and that any page paths with no url separator should have
+                    // the page extension appended
                     if (locatorProperties[i].getValue() != null)
                     {
                         // get locator path property
@@ -463,13 +506,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 }
             }
             
-            // append page path to folder path and record
-            if (pagePath != null)
-                if (pagePath.startsWith("/"))
-                    path.append(pagePath.substring(1));
-                else
-                    path.append(pagePath);
-            paths.add(path.toString());
+            // append page path to locator path folders and record
+            Iterator locatorPathsIter = locatorPaths.iterator();
+            while (locatorPathsIter.hasNext())
+            {
+                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
+                if (pagePath != null)
+                    if (pagePath.startsWith("/"))
+                        locatorPath.append(pagePath.substring(1));
+                    else
+                        locatorPath.append(pagePath);
+                paths.add(locatorPath.toString());
+            }
         }
 
         // append default page path with no locator path
