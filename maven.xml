@@ -150,7 +150,9 @@ limitations under the License.
         
     <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
-  	<attainGoal name="db.create.test"/>
+    <j:if test="${maven.test.skip == false}">
+    	<attainGoal name="db.create.test"/>
+    </j:if>
   	
     <!-- Build jars files-->
     <attainGoal name="jetspeed2:jar:install"/>  
@@ -167,8 +169,6 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
                
-     <!-- Dependency copying -->
-     <attainGoal name="copy.shared.deps" />
   </goal>
 
   <goal name="copy.shared.deps">
@@ -449,46 +449,76 @@ limitations under the License.
   <goal name="db.recreate">
     <attainGoal name="db.create.production" />
   </goal>
+  
+    <goal name="doStart">
+      <maven:property name="deployType" defaultValue="fullDeploy"/>
+      <maven:property name="recreateDB" defaultValue="true"/>
+
+      <j:if test="${recreateDB}">
+        <attainGoal name="db.recreate" />
+      </j:if>
+      
+        <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml"
+               goals="remove.wars"
+               banner="Remove war files, make sure to shutdown server first"
+               postProcessing="false"
+               ignoreFailures="false"/>
+
+        <!-- Dependency copying -->
+
+        <attainGoal name="copy.shared.deps" />
+
+        <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml"
+               goals="${deployType}"
+               banner="Deploying basic Jetspeed portal suite"
+               postProcessing="false"
+               ignoreFailures="false"/>
+
+    </goal>
 
     <goal name="quickStart"
-        description="Creates the production DB and calls portal/maven fulDeploy">
-        <attainGoal name="db.recreate" />
-        <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="remove.wars"
-               banner="Remove war files, make sure to shutdown server first"
-               postProcessing="false"
-               ignoreFailures="false"/>        
-        <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="fullDeploy"
-               banner="Deploying basic Jetspeed portal suite"
-               postProcessing="false"
-               ignoreFailures="false"/>
+        description="Creates the production DB and calls portal/maven fullDeploy">
+        <j:set var="deployType" value="fullDeploy"/>
+        <attainGoal name="doStart"/>
     </goal>
     
-    <goal name="minStart"
-        description="Creates the production DB and calls portal/maven fulDeploy">
-        <attainGoal name="db.recreate" />
-        <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="remove.wars"
-               banner="Remove war files, make sure to shutdown server first"
-               postProcessing="false"
-               ignoreFailures="false"/>        
-        <maven:reactor
-               basedir="${basedir}"
-               includes="portal/project.xml"
-               goals="minDeploy"
-               banner="Deploying basic Jetspeed portal suite"
-               postProcessing="false"
-               ignoreFailures="false"/>
+    <goal name="nodbQuickStart"
+        description="Don't create a new production DB but call portal/maven fullDeploy">
+        <j:set var="deployType" value="nodbfullDeploy"/>
+        <j:set var="recreateDB" value="false"/>
+        <attainGoal name="doStart"/>
     </goal>
-    
 
+    <goal name="minStart"
+        description="Creates the production DB and calls portal/maven minDeploy">
+        <j:set var="deployType" value="minDeploy"/>
+        <attainGoal name="doStart"/>
+    </goal>
+    
+    <goal name="nodbMinStart"
+        description="Don't create a new production DB but call portal/maven minDeploy">
+        <j:set var="deployType" value="nodbMinDeploy"/>
+        <j:set var="recreateDB" value="false"/>
+        <attainGoal name="doStart"/>
+    </goal>
+    
+    <goal name="basicStart"
+        description="Creates the production DB and calls portal/maven basicDeploy">
+        <j:set var="deployType" value="minDeploy"/>
+        <attainGoal name="doStart"/>
+    </goal>
+    
+    <goal name="nodbBasicStart"
+        description="Don't create a new production DB but call portal/maven nodbBasicDeploy">
+        <j:set var="deployType" value="nodbBasicDeploy"/>
+        <j:set var="recreateDB" value="false"/>
+        <attainGoal name="doStart"/>
+    </goal>
+    
    <goal name="dropdrops">
     <attainGoal name="java:compile"/>
     <attainGoal name="db.test.properties"/>
