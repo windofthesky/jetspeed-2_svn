@@ -61,7 +61,12 @@ public class PortletAggregatorImpl implements PortletAggregator, Startable
         Fragment fragment = new FragmentImpl(); // TODO: fragment factory
         fragment.setType(Fragment.PORTLET);
         fragment.setName(context.getRequestParameter(PortalReservedParameters.PORTLET));
-        fragment.setId(context.getRequestParameter(PortalReservedParameters.PORTLET_ENTITY));            
+        String entity = context.getRequestParameter(PortalReservedParameters.PORTLET_ENTITY);
+        if (entity == null)
+        {
+            entity = (String)context.getAttribute(PortalReservedParameters.PORTLET_ENTITY);          
+        }
+        fragment.setId(entity);            
         renderer.renderNow(fragment, context);
     }
 }
