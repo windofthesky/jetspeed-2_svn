@@ -154,6 +154,15 @@ limitations under the License.
         <column name="DESCRIPTION" size="150" type="VARCHAR"/>
     </table>
 
+	<!--
+       Jetspeed Service
+    -->
+    <table name="JETSPEED_SERVICE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>
+        <column name="NAME" size="150" type="VARCHAR"/>
+    </table>
+
     
     <!-- 
        Localized Descriptions
