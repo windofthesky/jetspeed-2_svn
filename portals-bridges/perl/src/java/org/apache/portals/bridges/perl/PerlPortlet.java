@@ -18,12 +18,20 @@ package org.apache.portals.bridges.perl;
 import javax.portlet.GenericPortlet;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -44,11 +52,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.portals.bridges.common.ScriptPostProcess;
+import org.apache.jetspeed.rewriter.JetspeedRewriterController;
+import org.apache.jetspeed.rewriter.RewriterController;
+import org.apache.jetspeed.rewriter.RewriterException;
+import org.apache.jetspeed.rewriter.RulesetRewriter;
+import org.apache.jetspeed.rewriter.html.SwingParserAdaptor;
+import org.apache.jetspeed.rewriter.rules.Ruleset;
+import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
 
 
 /**
 * This portlet is executes a Perl/cgi files in a portlet.
+* 
+* Note:
+* The Perl Portlet uses the rewriter component that requires config xml files.
+* Make sre that the portlet application using the Perl Portlet has the following files included
+* in WEB-INF/conf: rewriter-rules-mapping.xml and default-rewriter-rules.xml
 *
 * @author <a href="mailto:rogerrut@apache.org">Roger Ruttimann</a>
 * @version $Id$
@@ -101,6 +120,13 @@ public class PerlPortlet extends GenericPortlet {
     
     // Cache the last generated page
     String lastPage = null;
+    
+    /* PerlContent rewriter */
+    RulesetRewriter		rewriter = null;
+    RewriterController	rewriteController = null;
+    
+    /** Default encoding */
+    public String defaultEncoding = "iso-8859-1";
     
     
     public void init(PortletConfig config) throws PortletException
@@ -273,12 +299,12 @@ public class PerlPortlet extends GenericPortlet {
         String path = portletApplication.getRealPath("/WEB-INF");
         String contextPath = path + "/";
  
-        contextPath += scriptPath;
+        String fullScriptPath = contextPath + scriptPath;
     
     	// Build full path to scripts
     	if (perlScript.startsWith("/") == false )
-    		contextPath += "/";
-    	contextPath += perlScript;
+    	    fullScriptPath += "/";
+    	fullScriptPath += perlScript;
     	
     	// command to execute
     	String command = null;
@@ -286,7 +312,7 @@ public class PerlPortlet extends GenericPortlet {
     	// Open the script and read the first line to get the executable !/usr/bin/perl OR !c:\bin\perl\perl.exe
     	try
 		{
-    		BufferedReader in= new BufferedReader(new FileReader(contextPath));
+    		BufferedReader in= new BufferedReader(new FileReader(fullScriptPath));
     		String lnExecutable = in.readLine();
     		
     		if (lnExecutable != null )
@@ -313,16 +339,16 @@ public class PerlPortlet extends GenericPortlet {
     		
     		StringBuffer commandBuffer = new StringBuffer();
     		if (perlExecutable == null)
-    			commandBuffer.append(contextPath);
+    			commandBuffer.append(fullScriptPath);
     		else
-    			commandBuffer.append(perlExecutable).append(' ').append(contextPath);
+    			commandBuffer.append(perlExecutable).append(' ').append(fullScriptPath);
     		
     		command = new String(commandBuffer.toString());
     		
 		}
     	catch(FileNotFoundException e)
 		{
-    		writer.println("<P><B>File doesn't exist (" + contextPath + ")</B></P>");
+    		writer.println("<P><B>File doesn't exist (" + fullScriptPath + ")</B></P>");
 		}
     	catch(IOException e)
 		{
@@ -343,7 +369,7 @@ public class PerlPortlet extends GenericPortlet {
 			// Script info. This is for the Demo only
 			writer.println("<P>The portlet executes the perl script defined by the init-params. If you don't get an output make sure that the perl executable defined in the script is valid.");
 			writer.println("The executable is defined on the first line of your script.</P>Examples<ul><li><B>UNIX/Linux:</B>!/usr/bin/perl</li><li><B>Windows:</B>!c:\\bin\\perl\\perl.exe</li></ul>");
-			writer.println("<B><P>Perl Script:</B>" + contextPath + "<BR>");
+			writer.println("<B><P>Perl Script:</B>" + fullScriptPath + "<BR>");
 			writer.println("<B>Perl executable:</B>" + perlExecutable + "<BR>");
 			writer.println("<B>Query String:</B>" + query + "</P>");
 		}   	
@@ -397,11 +423,56 @@ public class PerlPortlet extends GenericPortlet {
 				}
 				// Close stream
 				perlResult.close();	
-				
-				// Post Process for generated page
-				// Any HREFs and Form actions should be extended with the ActionURL
+					
+				/*
+				 * Use rewriter for replacing all URL's with portlet actions
+				 */
+		        if (rewriteController == null)
+		        {
+		            try
+		            {
+		                // Create rewriter adaptor
+		                rewriteController = getController(contextPath);
+		            }
+		            catch (Exception e)
+		            {
+		                // Failed to create rewriter controller
+		                throw new PortletException("WebContentProtlet failed to create rewriter controller. Error:"
+		                        + e.getMessage());
+		            }
+		        }
+		        
+		        //	Any HREFs and Form actions should be extended with the ActionURL
 				PortletURL actionURL = response.createActionURL();
+				byte[] content = this.doWebContent(page, actionURL, PerlParameters.ACTION_PARAMETER_PERL);
+				ByteArrayInputStream bais = new ByteArrayInputStream(content);
+				OutputStream oswriter = response.getPortletOutputStream();
 				
+				int BLOCK_SIZE = 4096;
+				byte[] bytes = new byte[BLOCK_SIZE];
+		        try
+		        {
+		            int length = bais.read(bytes);
+		            while (length != -1)
+		            {
+		                if (length != 0)
+		                {
+		                    oswriter.write(bytes, 0, length);
+		                }
+		                length = bais.read(bytes);
+		            }
+		        }
+		        finally
+		        {
+		            bytes = null;
+		        }
+				
+				//	Cache page
+				lastPage = new String(content);
+				
+				
+				/*
+				// Post Process for generated page				
 				ScriptPostProcess processor = new ScriptPostProcess();
 				processor.setInitalPage(page);
 				processor.postProcessPage(actionURL, PerlParameters.ACTION_PARAMETER_PERL);
@@ -410,8 +481,10 @@ public class PerlPortlet extends GenericPortlet {
 				// Write the page
 				writer.println(finalPage);
 				
+				
 				// Cache page
 				lastPage = new String(finalPage);
+				*/
 			}
 			catch(IOException ioe)
 			{
@@ -419,5 +492,63 @@ public class PerlPortlet extends GenericPortlet {
 			}
 		}	
 	} 
+    
+    /*
+     * Generate a rewrite controller using the basic rules file
+     */
+    private RewriterController getController(String contextPath) throws Exception
+    {
+        Class[] rewriterClasses = new Class[]
+        { PerlContentRewriter.class, PerlContentRewriter.class};
+        
+        Class[] adaptorClasses = new Class[]
+        { SwingParserAdaptor.class, SaxParserAdaptor.class};
+        RewriterController rwc = new JetspeedRewriterController(contextPath + "conf/rewriter-rules-mapping.xml", Arrays
+                .asList(rewriterClasses), Arrays.asList(adaptorClasses));
+
+        FileReader reader = new FileReader(contextPath + "conf/default-rewriter-rules.xml");
+
+        Ruleset ruleset = rwc.loadRuleset(reader);
+        reader.close();
+        rewriter = rwc.createRewriter(ruleset);
+        return rwc;
+    }
+    
+    protected byte[] doWebContent(StringBuffer perlRenderedPage, PortletURL actionURL, String actionParameterName)
+    throws PortletException
+	{
+		// Initialization
+		Writer htmlWriter = null;
+		
+		ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		
+		try
+		{
+		    htmlWriter = new OutputStreamWriter(byteOutputStream, this.defaultEncoding);
+		
+		    // Set the action URL in the rewriter
+		   
+		   ((PerlContentRewriter) rewriter).setActionURL(actionURL);
+		   ((PerlContentRewriter) rewriter).setActionParameterName(actionParameterName);
+		   
+		    StringReader perlReader = new StringReader(perlRenderedPage.toString());
+		    rewriter.rewrite(rewriteController.createParserAdaptor("text/html"), perlReader, htmlWriter);
+		    htmlWriter.flush();
+		}
+		catch (UnsupportedEncodingException ueex)
+		{
+		    throw new PortletException("Encoding " + defaultEncoding + " not supported. Error: " + ueex.getMessage());
+		}
+		catch (RewriterException rwe)
+		{
+		    throw new PortletException("Failed to rewrite Perl ouput. Error: " + rwe.getMessage());
+		}
+		catch (Exception e)
+		{
+		    throw new PortletException("Exception while rewritting Perl output. Error: " + e.getMessage());
+		}
+		
+		return byteOutputStream.toByteArray();
+	}
 }
 	
