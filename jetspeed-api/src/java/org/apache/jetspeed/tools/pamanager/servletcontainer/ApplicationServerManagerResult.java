@@ -13,28 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.tools.pamanager;
-
-import javax.servlet.ServletContext;
-
-import org.apache.jetspeed.exception.RegistryException;
-import org.apache.jetspeed.util.FileSystemHelper;
-
+package org.apache.jetspeed.tools.pamanager.servletcontainer;
 
 /**
- * Jetspeed Deployment Registration
+ * ApplicationServerManagerResult
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public interface DeploymentRegistration
+public class ApplicationServerManagerResult
 {
-    boolean registerPortletApplication(
-            FileSystemHelper fileSystem, 
-            String portletApplicationName)
-        throws RegistryException;    
+    private boolean ok;
+    private String  message;
+    private String  response;
     
-    boolean registerPortletApplication(String portletApplicationName, String contextName, ServletContext context)
-        throws RegistryException;
+    public ApplicationServerManagerResult(boolean ok, String message, String response)
+    {
+        this.ok = ok;
+        this.message = message;
+        this.response = response;
+    }
     
+    public boolean isOk()
+    {
+        return ok;
+    }
+    
+    public String getMessage()
+    {
+        return message;
+    }
+    
+    public String getResponse()
+    {
+        return response;
+    }
 }
