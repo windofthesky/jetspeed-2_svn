@@ -21,17 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.impl.GenericMetadataImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.ojb.broker.PersistenceBroker;
-import org.apache.ojb.broker.PersistenceBrokerAware;
-import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.ojb.broker.query.Criteria;
-import org.apache.ojb.broker.query.Query;
-import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -68,7 +60,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     protected long webApplicationId;
     
     /** Metadata property */
-    private GenericMetadata metadata = new GenericMetadataImpl();
+    private GenericMetadata metadata = new PortletApplicationMetadataImpl();
     
     private Collection metadataFields = null;
     
@@ -250,14 +242,25 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
      */
-    public GenericMetadata getMetadata() {
+    public GenericMetadata getMetadata()
+    {
+        if(metadata.getFields() == null)
+        {
+            if(metadataFields == null)
+            {
+                metadataFields = new ArrayList();
+            }
+            metadata.setFields(metadataFields);
+        }
+        
         return metadata;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
-    public void setMetadata(GenericMetadata metadata) {
+    public void setMetadata(GenericMetadata metadata)
+    {
         this.metadata = metadata;
         this.metadataFields = metadata.getFields();     
     }
