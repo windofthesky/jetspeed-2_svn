@@ -150,6 +150,13 @@ limitations under the License.
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/portals-bridges/myfaces"
+               includes="project.xml"
+               goals="jar:install"
+               banner="Build and Install the Portals Bridges MyFaces jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/jetspeed-api"
                includes="project.xml"
                goals="jar:install"
