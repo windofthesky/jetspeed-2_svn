@@ -44,12 +44,13 @@ limitations under the License.
   </developers>
   <dependencies>
   <dependency>
-      <id>itgroundwork</id>
+      <id>itgroundwork:phpportlet</id>
+      <version>1.0</version>
+      <type>jar</type>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
-      <jar>phpportlet.jar</jar>
-    </dependency>
+    </dependency>	
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
