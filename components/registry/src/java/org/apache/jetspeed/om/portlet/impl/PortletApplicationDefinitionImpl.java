@@ -19,9 +19,11 @@ package org.apache.jetspeed.om.portlet.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
+import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -39,7 +41,7 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  * @since 1.0
  */
-public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable
+public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable, Support
 { 
     /**
      * Unique id of the application.  This serves as the primary key in database
@@ -371,4 +373,17 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
         this.checksumLong = checksum;
         this.checksum = Long.toString(checksum);
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.Support#postLoad(java.lang.Object)
+     */
+    public void postLoad(Object parameter) throws Exception
+    {
+        Iterator portletDefinitions = getPortletDefinitions().iterator();
+        while (portletDefinitions.hasNext())
+        {
+            ((Support) portletDefinitions.next()).postLoad(this);
+        }
+    }
+
 }

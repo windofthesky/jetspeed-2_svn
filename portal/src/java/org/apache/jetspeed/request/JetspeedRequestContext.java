@@ -26,7 +26,6 @@ import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
@@ -483,34 +482,33 @@ public class JetspeedRequestContext implements RequestContext
      * @param portlet
      * @return
      */
-    public Language getPreferedLanguage( PortletDefinition portlet )
+    public Language getPreferedLanguage(PortletDefinition portlet)
     {
-        HttpSession session = request.getSession();
-        Map languageMap = (Map) session.getAttribute(PREFERED_LANGUAGE_SESSION_KEY);
-        Language language = (Language) languageMap.get(portlet);
-        if(language != null)
-        {
-            return language;
-        }
-        
+        // TODO cannot get a proper Language when changing a locale by Locale Selector
+        // HttpSession session = request.getSession();
+        // Map languageMap = (Map) session.getAttribute(PREFERED_LANGUAGE_SESSION_KEY);
+        // Language language = (Language) languageMap.get(portlet);
+        // if(language != null)
+        // {
+        //     return language;
+        // }
         LanguageSet languageSet = portlet.getLanguageSet();
-        language = languageSet.get(locale);        
+        Language language = languageSet.get(locale);
         
         Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements() && language != null)
+        while (locales.hasMoreElements() && language == null)
         {
             Locale aLocale = (Locale) locales.nextElement();
             language = languageSet.get(aLocale);            
         }
 
         Iterator langItr = languageSet.iterator();
-        if (langItr.hasNext() && language != null)
+        if (langItr.hasNext() && language == null)
         {
             language = (Language) langItr.next();
-            
         }
         
-        if(language == null)
+        if (language == null)
         {
             MutableLanguage languageCtl = new LanguageImpl();
             languageCtl.setLocale(locale);
@@ -519,7 +517,7 @@ public class JetspeedRequestContext implements RequestContext
             language = languageCtl;
         }
         
-        languageMap.put(portlet, language);
+        // languageMap.put(portlet, language);
         return language;
     }
 

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
@@ -92,7 +93,8 @@ public class PortletApplicationDescriptor
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-name", "name");
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-class", "className");
             digester.addBeanPropertySetter("portlet-app/portlet/expiration-cache", "expirationCache");
-           
+            digester.addBeanPropertySetter("portlet-app/portlet/resource-bundle", "resourceBundle");
+            digester.addCallMethod("portlet-app/portlet/supported-locale", "addSupportedLocale", 0);
             
             digester.addObjectCreate("portlet-app/portlet/display-name", PortletDisplayNameImpl.class);
             digester.addSetProperties("portlet-app/portlet/display-name", "lang", "language");
@@ -154,11 +156,15 @@ public class PortletApplicationDescriptor
             Iterator portletDefs = pd.getPortletDefinitions().iterator();
             while(portletDefs.hasNext())
             {
-                PortletDefinitionComposite portletDef = (PortletDefinitionComposite) portletDefs.next();
+                Object obj = portletDefs.next();
+                PortletDefinitionComposite portletDef = (PortletDefinitionComposite) obj;
                 if(portletDef.getPortletIdentifier() == null)
                 {
                     portletDef.setPortletIdentifier(portletDef.getName());
                 }
+                
+                //TODO is pd a proper argument?
+                ((Support)obj).postLoad(pd);
             }
             
             return pd;

@@ -21,14 +21,13 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentObject;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
@@ -217,6 +216,21 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 {                
                     portletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                 }
+                else
+                {
+                    try
+                    {
+                        ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
+                        if (classloader != null)
+                        {
+                            portletFactory.addClassLoader(classloader);
+                        }
+                    }
+                    catch (IOException e1)
+                    {
+                        log.info("Could not add Portlet Class Loader: " + id);
+                    }
+                }
                 return;
             }
 
@@ -235,6 +249,18 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 {
                     log.info("Deploying portlet applicaion WAR " + fileName);
                     pam.deploy(paWar);
+                    try
+                    {
+                        ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
+                        if (classloader != null)
+                        {
+                            portletFactory.addClassLoader(classloader);
+                        }
+                    }
+                    catch (IOException e1)
+                    {
+                        log.info("Could not add Portlet Class Loader: " + id);
+                    }
                 }
             }
             else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
@@ -288,5 +314,23 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     public void invokeRedeploy( DeploymentEvent event ) throws DeploymentException
     {
         doDeploy(event);
+    }
+    
+    /**
+     * <p>
+     * createPortletClassloader
+     * </p>
+     * 
+     * @param parent
+     * @param id
+     * @return
+     * @throws IOException
+     */
+    private ClassLoader createPortletClassloader(ClassLoader parent, String id) throws IOException
+    {
+        String portletAppDirectory = pam.getDeploymentPath(id);
+        FileSystemHelper target = new DirectoryHelper(new File(portletAppDirectory));
+        PortletApplicationWar targetWar = new PortletApplicationWar(target, id, "/" + id);
+        return targetWar.createClassloader(parent);
     }
 }

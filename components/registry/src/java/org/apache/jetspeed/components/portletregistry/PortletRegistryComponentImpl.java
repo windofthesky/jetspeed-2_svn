@@ -29,6 +29,7 @@ import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.om.common.MutableLanguage;
+import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
@@ -150,7 +151,19 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-        return new ArrayList(store.getExtent(portletDefClass));
+        Collection pds = store.getExtent(portletDefClass);
+        Iterator itrPds = pds.iterator();
+        while (itrPds.hasNext())
+        {
+            try
+            {
+                ((Support) itrPds.next()).postLoad(this);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        return new ArrayList(pds);
     }
 
     public PersistenceStore getPersistenceStore()
@@ -174,7 +187,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         Filter filter = store.newFilter();
         filter.addEqualTo("id", new Long(id.toString()));
         Object query = store.newQuery(portletAppClass, filter);
-        return (MutablePortletApplication) store.getObjectByQuery(query);
+        return (MutablePortletApplication) postLoad(store.getObjectByQuery(query));
     }
 
     private void prepareTransaction(PersistenceStore store)
@@ -201,7 +214,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         Filter filter = store.newFilter();
         filter.addEqualTo("name", name);
         Object query = store.newQuery(portletAppClass, filter);
-        return (MutablePortletApplication) store.getObjectByQuery(query);
+        return (MutablePortletApplication) postLoad(store.getObjectByQuery(query));
     }
 
     /**
@@ -220,7 +233,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         Filter filter = store.newFilter();
         filter.addEqualTo("applicationIdentifier", ident);
         Object query = store.newQuery(portletAppClass, filter);
-        return (MutablePortletApplication) store.getObjectByQuery(query);
+        return (MutablePortletApplication) postLoad(store.getObjectByQuery(query));
     }
 
     /**
@@ -235,7 +248,19 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
-        return new ArrayList(store.getExtent(portletAppClass));
+        Collection pas = store.getExtent(portletAppClass);
+        Iterator itrPas = pas.iterator();
+        while (itrPas.hasNext())
+        {
+            try
+            {
+                ((Support) itrPas.next()).postLoad(this);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        return new ArrayList(pas);
     }
 
     /**
@@ -264,7 +289,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
-            return getStoreableInstance(portlet);
+            return getStoreableInstance((PortletDefinitionComposite) postLoad(portlet));
         }
         else
         {
@@ -312,7 +337,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
                 }
                 portlet.setPortletApplicationDefinition(app);
             }
-            return getStoreableInstance(portlet);
+            return getStoreableInstance((PortletDefinitionComposite)postLoad(portlet));
         }
         else
         {
@@ -514,5 +539,25 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         {
             return null;
         }
+    }
+    
+    private Object postLoad(Object obj)
+    {
+        if (obj == null)
+        {
+            return obj;
+        }
+
+        if (obj instanceof Support)
+        {
+            try
+            {
+                ((Support) obj).postLoad(obj);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        return obj;
     }
 }

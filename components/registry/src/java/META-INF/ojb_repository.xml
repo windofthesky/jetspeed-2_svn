@@ -341,6 +341,12 @@ limitations under the License.
       />
       
       <field-descriptor
+         name="resourceBundle"
+         column="RESOURCE_BUNDLE"
+         jdbc-type="VARCHAR"
+      />
+      
+      <field-descriptor
          name="preferenceValidatorClassname"
          column="PREFERENCE_VALIDATOR"
          jdbc-type="VARCHAR"

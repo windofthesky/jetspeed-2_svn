@@ -18,7 +18,10 @@ package org.apache.jetspeed.om.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -26,6 +29,7 @@ import java.util.StringTokenizer;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Language;
+import org.apache.pluto.util.Enumerator;
 
 /**
  * 
@@ -47,10 +51,11 @@ import org.apache.pluto.om.common.Language;
 public class LanguageImpl implements MutableLanguage, Serializable
 {
 
-    private Locale locale = new Locale("en");
+    private Locale locale; // new Locale("en");
     private String title;
     private String shortTitle;
     private Collection keywords;
+    private ResourceBundle resourceBundle;
 
     /**
      * This field can be used by persistence tools for storing PK info
@@ -60,16 +65,32 @@ public class LanguageImpl implements MutableLanguage, Serializable
 
     protected long portletId;
 
-    protected static final String RESOURCE_BUNDLE_NAME = "portlet";
-
     public LanguageImpl()
     {
+        this(Locale.getDefault(), null, "", "", "");
     }
 
     public LanguageImpl(Locale locale, String title)
     {
+        this(locale, null, "", "", "");
+    }
+
+    public LanguageImpl(
+        Locale locale,
+        ResourceBundle bundle,
+        String defaultTitle,
+        String defaultShortTitle,
+        String defaultKeyWords)
+    {
+        this.resourceBundle =
+            new ResourceBundleImpl(
+                bundle,
+                new DefaultsResourceBundle(defaultTitle, defaultShortTitle, defaultKeyWords));
+
         this.locale = locale;
-        this.title = title;
+        setTitle(this.resourceBundle.getString("javax.portlet.title"));
+        setShortTitle(this.resourceBundle.getString("javax.portlet.short-title"));
+        setKeywords(this.resourceBundle.getString("javax.portlet.keywords"));
     }
 
     /**
@@ -115,7 +136,8 @@ public class LanguageImpl implements MutableLanguage, Serializable
      */
     public ResourceBundle getResourceBundle()
     {
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, getLocale(), Thread.currentThread().getContextClassLoader());
+        
+        return resourceBundle;
     }
 
     /**
@@ -195,6 +217,73 @@ public class LanguageImpl implements MutableLanguage, Serializable
         while (tok.hasMoreTokens())
         {
             keywords.add(tok.nextToken());
+        }
+    }
+
+    private static class DefaultsResourceBundle extends ListResourceBundle
+    {
+        private Object[][] resources;
+
+        public DefaultsResourceBundle(String defaultTitle, String defaultShortTitle, String defaultKeyWords)
+        {
+            if (defaultTitle == null)
+            {
+                defaultTitle = "";
+            }
+            if (defaultShortTitle == null)
+            {
+                defaultShortTitle = "";
+            }
+            if (defaultKeyWords == null)
+            {
+                defaultKeyWords = "";
+            }
+            resources = new Object[][] { { "javax.portlet.title", defaultTitle }, {
+                    "javax.portlet.short-title", defaultShortTitle }, {
+                    "javax.portlet.keywords", defaultKeyWords
+                }
+            };
+        }
+
+        protected Object[][] getContents()
+        {
+            return resources;
+        }
+    }
+
+    private static class ResourceBundleImpl extends ResourceBundle
+    {
+        private HashMap data;
+
+        public ResourceBundleImpl(ResourceBundle bundle, ResourceBundle defaults)
+        {
+            data = new HashMap();
+
+            importData(defaults);
+            importData(bundle);
+        }
+
+        private void importData(ResourceBundle bundle)
+        {
+            if (bundle != null)
+            {
+                for (Enumeration enum = bundle.getKeys(); enum.hasMoreElements();)
+                {
+                    String key = (String) enum.nextElement();
+                    Object value = bundle.getObject(key);
+                    data.put(key, value);
+                }
+            }
+        }
+
+        protected Object handleGetObject(String key)
+        {
+            return data.get(key);
+        }
+
+        public Enumeration getKeys()
+        {
+            return new Enumerator(data.keySet());
         }
     }
 

@@ -19,7 +19,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.ListResourceBundle;
 
 import javax.servlet.ServletConfig;
 import javax.portlet.PortletConfig;
@@ -28,6 +27,8 @@ import javax.portlet.PortletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -46,14 +47,12 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     private ServletConfig servletConfig;
     private PortletContext portletContext;
     private PortletDefinition portletDefinition;
-    private ResourceBundle resources;
 
     public JetspeedPortletConfig(ServletConfig servletConfig, PortletContext portletContext, PortletDefinition portletEntity)
     {
         this.servletConfig = servletConfig;
         this.portletContext = portletContext;
         this.portletDefinition = portletEntity;
-        this.resources = new Resources(this);
     }
 
     public String getPortletName()
@@ -68,7 +67,16 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public ResourceBundle getResourceBundle(Locale locale)
     {
-        return this.resources;
+        LanguageSet languageSet = portletDefinition.getLanguageSet();
+        Language lang = languageSet.get(locale);
+                                                                                
+        if (lang == null)
+        {
+            Locale defaultLocale = languageSet.getDefaultLocale();
+            lang = languageSet.get(defaultLocale);
+        }
+                                                                                
+        return lang.getResourceBundle();
     }
 
     public String getInitParameter(java.lang.String name)
@@ -119,27 +127,6 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     public PortletDefinition getPortletDefinition()
     {
         return portletDefinition;
-    }
-
-    private static class Resources extends ListResourceBundle
-    {
-        private Object[][] resources = null;
-
-        public Resources(PortletConfig config) // TODO: PortletInfo info
-        {
-            // once Portlet Info is sorted out and implemented, change this to use
-            // portlet info
-            resources = new Object[][] { { "javax.portlet.title", config.getPortletName()}, {
-                    "javax.portlet.short-title", config.getPortletName()
-                    }, {
-                    "javax.portlet.keywords", "no keywords" }
-            };
-        }
-
-        public Object[][] getContents()
-        {
-            return resources;
-        }
     }
 
 }

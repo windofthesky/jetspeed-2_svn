@@ -23,15 +23,20 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.portlet.Portlet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -76,7 +81,7 @@ import org.odmg.DList;
  * @version $Id$
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable
+public class PortletDefinitionImpl implements PortletDefinitionComposite, Serializable, Support
 {
     private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
     private long id;
@@ -98,6 +103,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private DisplayNameSetImpl DNListWrapper = new DisplayNameSetImpl();
     private Collection descriptions;
     private DescriptionSetImpl descListWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_PORTLET);
+    private String resourceBundle;
+    private ArrayList supportedLocales;
 
     private Collection contentTypes;
     private ContentTypeSetImpl ctListWrapper = new ContentTypeSetImpl();
@@ -124,6 +131,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
             //userAttributeSet = new ArrayList();
             //userAttributeRefSet = new ArrayList();
             contentTypes = new ArrayList();
+            supportedLocales= new ArrayList();
         }
         catch (RuntimeException e)
         {
@@ -168,6 +176,22 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         if ( languageSet != null )
             langListWrapper.setInnerCollection(languageSet);
+        try
+        {
+            Portlet portlet = JetspeedPortletFactoryProxy.loadPortletClass(getClassName());
+            if (portlet != null)
+            {
+                setPortletClassLoader(portlet.getClass().getClassLoader());
+                langListWrapper.setClassLoader(getPortletClassLoader());
+            }
+        }
+        catch (InstantiationException e)
+        {
+        }
+        catch (IllegalAccessException e)
+        {
+        }
+
         return langListWrapper;
     }
 
@@ -765,4 +789,58 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     {
         this.metadataFields = metadataFields;
     }
+    
+    /**
+     * @return
+     */
+    public String getResourceBundle()
+    {
+        return resourceBundle;
+    }
+
+    /**
+     * @param string
+     */
+    public void setResourceBundle(String string)
+    {
+        resourceBundle = string;
+    }
+
+    public void addSupportedLocale(String locale)
+    {
+        // parse locale String
+        StringTokenizer tokenizer = new StringTokenizer(locale, "_");
+        String[] localeDef = new String[3];
+        for (int i = 0; i < 3; i++)
+        {
+            if (tokenizer.hasMoreTokens())
+            {
+                localeDef[i] = tokenizer.nextToken();
+            }
+            else
+            {
+                localeDef[i] = "";
+            }
+        }
+        supportedLocales.add(new Locale(localeDef[0], localeDef[1], localeDef[2]));
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.Support#postLoad(java.lang.Object)
+     */
+    public void postLoad(Object parameter) throws Exception
+    {
+        if (resourceBundle != null)
+        {
+            langListWrapper.setResources(resourceBundle);
+        }
+        Portlet portlet = JetspeedPortletFactoryProxy.loadPortletClass(getClassName());
+        if (portlet != null)
+        {
+            setPortletClassLoader(portlet.getClass().getClassLoader());
+            langListWrapper.setClassLoader(getPortletClassLoader());
+        }
+        langListWrapper.postLoad(this.supportedLocales);
+    }
+
 }
