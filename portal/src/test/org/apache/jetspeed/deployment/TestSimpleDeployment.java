@@ -22,9 +22,9 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
@@ -56,7 +56,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *  
  */
-public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
+public class TestSimpleDeployment extends RegistrySupportedTestCase
 {
     protected static final String TEST_PORTLET_APP_NAME = "HW_App";
     protected String webAppsDir;
@@ -76,14 +76,6 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
     protected PortletFactory portletFactory;
     protected ApplicationServerManager manager;
  
-
-    /**
-     * @param testName
-     */
-    public TestSimpleDeployment( String testName )
-    {
-        super(testName);
-    }
 
     /**
      * Start the tests.
@@ -497,4 +489,5 @@ public class TestSimpleDeployment extends AbstractPrefsSupportedTestCase
 
     }
 
+    
 }

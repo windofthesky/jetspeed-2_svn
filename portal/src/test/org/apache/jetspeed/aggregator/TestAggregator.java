@@ -36,16 +36,6 @@ public class TestAggregator extends TestRenderer
     private PageAggregator pageAggregator;
     
     /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestAggregator(String name)
-    {
-        super(name);
-    }
-
-    /**
      * Start the tests.
      *
      * @param args the arguments. Not used

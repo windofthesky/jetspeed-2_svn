@@ -17,7 +17,7 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.page.PageManager;
@@ -53,7 +53,7 @@ public class TestSpringEngine extends AbstractEngineTest
     {
         System.out.println(System.getProperty("org.apache.jetspeed.database.user"));
         keysToCheck = new Object[] {"IdGenerator", "DecorationLocator", "TemplateLocator", "IdGenerator", "PageFileCache", PageManager.class, 
-                                     PersistenceStore.class, PortletRegistryComponent.class, PortletEntityAccessComponent.class, "PortalServices",
+                                     PersistenceStore.class, PortletRegistry.class, PortletEntityAccessComponent.class, "PortalServices",
                                      Profiler.class, Capabilities.class, PropertyManager.class, PreferencesProvider.class, UserManager.class,
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
                                      UserInfoManager.class, NavigationalStateComponent.class, RequestContextComponent.class, PortletWindowAccessor.class,

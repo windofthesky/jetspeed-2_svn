@@ -31,16 +31,7 @@ public class TestRenderer extends AbstractPortalContainerTestCase
 {
     protected PortletRenderer renderer;
     
-    /**
-     * Defines the testcase name for JUnit.
-     *
-     * @param name the testcase's name.
-     */
-    public TestRenderer(String name)
-    {
-        super(name);
-    }
-
+   
     /**
      * Start the tests.
      *
