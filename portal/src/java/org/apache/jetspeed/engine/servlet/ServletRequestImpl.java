@@ -40,6 +40,7 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.Enumerator;
 import org.apache.pluto.util.NamespaceMapper;
@@ -70,7 +71,16 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
         super(servletRequest);
         nameSpaceMapper = NamespaceMapperAccess.getNamespaceMapper();
         this.portletWindow = window;        
-        webAppId = portletWindow.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition().getWebApplicationDefinition().getId();
+        PortletDefinition portletDef = portletWindow.getPortletEntity().getPortletDefinition();
+        if(portletDef != null)
+        {
+            webAppId = portletDef.getPortletApplicationDefinition().getWebApplicationDefinition().getId();
+        }
+        else
+        {
+            // This happens when an entity is referencing a non-existent portlet
+            webAppId = window.getId();
+        }
     }
 
     protected HttpServletRequest _getHttpServletRequest()
