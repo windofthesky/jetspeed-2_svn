@@ -136,6 +136,11 @@ public class PortletInvokerFactoryImpl
         JetspeedPortletInvoker invoker = null;
 
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
+        if(app == null)
+        {
+        	throw new IllegalStateException("Portlet definition \""+portletDefinition.getName()+"\" is not assigned to a portlet application.");
+        }
+        
         if (app.getApplicationType() == MutablePortletApplication.LOCAL)
         {
             // create a local portlet invoker
