@@ -238,10 +238,16 @@ limitations under the License.
 
 
   <goal name="pam.register">
+  	<!--
+  		
   	<j:set var="pam.action" value="register"/>
  	<j:set var="pam.app.name" value="jetspeed"/>
  	<j:set var="pam.app.war" value="target/jetspeed.war"/>
  	<attainGoal name="pam.template.register"/>
+ 	-->
+ 	<j:set var="maven.build.dir" value="../layout-portlets/target" /> 	
+ 	<j:set var="maven.war.final.name" value="jetspeed-layouts.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="pam.unregister">
@@ -252,33 +258,65 @@ limitations under the License.
   </goal>
 
   <goal name="pam.deploy">
+  	<!--
  	<j:set var="pam.app.name" value="HW_App"/>
  	<j:set var="pam.app.war" value="../applications/demo/target/demo.war"/>
  	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="pam.pamdeploy">
+  	<!--
  	<j:set var="pam.app.name" value="pam"/>
  	<j:set var="pam.app.war" value="../applications/pam/target/pam.war"/>
  	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/pam/target" /> 	
+ 	<j:set var="maven.war.final.name" value="pam.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="pam.tsdeploy">
+  	<!--
  	<j:set var="pam.app.name" value="testsuite"/>
  	<j:set var="pam.app.war" value="../../jakarta-pluto/testsuite/target/testsuite.war"/>
+ 	
  	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	<j:set var="maven.build.dir" value="../../jakarta-pluto/testsuite/target" /> 	
+ 	<j:set var="maven.war.final.name" value="testsuite.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
+ 	
+ 	
   </goal>
 
   <goal name="pam.strutsdeploy">
+  	<!--
  	<j:set var="pam.app.name" value="struts-demo"/>
  	<j:set var="pam.app.war" value="../struts-portlet/demo/target/struts-demo.war"/>
  	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../struts-portlet/demo/target" /> 	
+ 	<j:set var="maven.war.final.name" value="struts-demo.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="pam.securitydeploy">
+  	<!--
  	<j:set var="pam.app.name" value="security"/>
  	<j:set var="pam.app.war" value="../applications/security/target/security.war"/>
  	<attainGoal name="pam.template.deploy"/>
+ 	-->
+ 	
+ 	<j:set var="maven.build.dir" value="../applications/security/target" /> 	
+ 	<j:set var="maven.war.final.name" value="security.war" />
+ 	<attainGoal name="jetspeed2:deploy" />
   </goal>
 
   <goal name="pam.undeploy">
@@ -361,12 +399,14 @@ limitations under the License.
   <!-- Does all three deployment steps at once                                                                        -->
   <!-- ================================================================ -->
   <goal name="fullDeploy">
+
   	 <attainGoal name="deploy" />
   	 <attainGoal name="pam.register" />
   	 <attainGoal name="pam.deploy" />
   	 <attainGoal name="pam.pamdeploy" />  	 
      <attainGoal name="pam.strutsdeploy" />
      <attainGoal name="pam.securitydeploy" />
+
      <attainGoal name="db.entities" />
   </goal>
 
@@ -489,6 +529,7 @@ limitations under the License.
   <goal name="db.entities">
     <j:set var="dbase" value="${org.apache.jetspeed.production.database.default.name}"/>
     <attainGoal name="db.production.properties"/>
+    <!--
     <j:choose>
 	    <j:when test="${dbase == 'mysql'}" >
         	<j:set var="database.arg.script" value="../src/sql/mysql/populate-entities-for-default-psml.sql" />
@@ -497,7 +538,9 @@ limitations under the License.
         	<j:set var="database.arg.script" value="../src/sql/populate-entities-for-default-psml.sql" />
 	    </j:otherwise>
   	</j:choose>
+  	
     <attainGoal name="db.execute" />
+    -->
     <j:choose>
       <j:when test="${dbase == 'mysql'}" >
         	<j:set var="database.arg.script" value="../src/sql/mysql/populate-userinfo-for-default-psml.sql" />
