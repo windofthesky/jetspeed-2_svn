@@ -53,30 +53,29 @@
  */
 package org.apache.jetspeed.om.entity.impl;
 
+import java.util.Collection;
 import java.util.Locale;
-
-import javax.portlet.PreferencesValidator;
-
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletApplicationEntity;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.util.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.entity.InitablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
-
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
-
-import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.services.entity.PortletEntityAccess;
 import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.common.Description;
+import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.entity.PortletEntityCtrl;
+import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.window.PortletWindowList;
+import org.apache.pluto.util.StringUtils;
 
 /**
  * Portlet Entity default implementation. 
@@ -85,22 +84,10 @@ import org.apache.jetspeed.util.JetspeedObjectID;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class PortletEntityImpl implements InitablePortletEntity
+public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, PersistenceBrokerAware
 {
 
-    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
-
     private JetspeedObjectID oid;
-
-    protected PreferenceSetComposite preferences;
-
-    private PortletApplicationEntity applicationEntity = null;
-
-    private PortletWindowList portletWindows = new PortletWindowListImpl();
-
-    private PortletEntity modifiedObject = null;
-
-    private PortletDefinitionComposite portletDefinition = null;
 
     public ObjectID getId()
     {
@@ -111,6 +98,19 @@ public class PortletEntityImpl implements InitablePortletEntity
     {
         this.oid = JetspeedObjectID.createFromString(id);
     }
+
+    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
+
+    protected PreferenceSetComposite preferences = new PreferenceSetImpl();
+    protected PreferenceSetComposite originalPreferences;
+
+    private PortletApplicationEntity applicationEntity = null;
+
+    private PortletWindowList portletWindows = new PortletWindowListImpl();
+
+    private PortletEntity modifiedObject = null;
+
+    private PortletDefinitionComposite portletDefinition = null;
 
     public PreferenceSet getPreferenceSet()
     {
@@ -134,15 +134,17 @@ public class PortletEntityImpl implements InitablePortletEntity
 
     public void store() throws java.io.IOException
     {
-        // TODO: implement this PortletEntityRegistry.store();
-
-        //save preferences as original preferences     
+        PortletEntityAccess.storePortletEntity(this);
 
     }
 
     public void reset() throws java.io.IOException
     {
-
+        ((Collection) preferences).clear();
+        if (originalPreferences != null)
+        {
+            ((Collection) preferences).addAll((Collection) originalPreferences);
+        }
     }
 
     // internal methods used for debugging purposes only
@@ -186,36 +188,119 @@ public class PortletEntityImpl implements InitablePortletEntity
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.entity.ServiceablePortletEntity#init(org.apache.pluto.om.portlet.PortletDefinition, java.lang.String)
+     * <p>
+     * setPortletDefinition
+     * </p>
+     * 
+     * @param composite
+     * 
      */
-    public void init(PortletDefinition portletDefinition, String instanceName)
+    public void setPortletDefinition(PortletDefinition composite)
     {
-        ArgUtil.notNull(
-            new Object[] { portletDefinition, instanceName },
-            new String[] { "portletDefinition", "instanceName" },
-            "init()");
+        portletDefinition = (PortletDefinitionComposite) composite;
+    }
 
-        this.portletDefinition = (PortletDefinitionComposite) portletDefinition;
-        oid = JetspeedObjectID.createPortletEntityId(portletDefinition, instanceName);
-        preferences = new PreferenceSetImpl();
-        if (this.portletDefinition.getPreferenceValidatorClassname() != null)
-        {
-            String className = this.portletDefinition.getPreferenceValidatorClassname();
-            log.info("Loading PreferenceValidator " + className);
-            try
-            {
-                Class clazz = Class.forName(className);
-                preferences.setPreferenceValidator((PreferencesValidator) clazz.newInstance());
-            }
-            catch (Exception e)
-            {
-                log.error(
-                    "Unable create PreferenceValidator for portlet " + this.getPortletDefinition().getName() + ": " + e.toString(),
-                    e);
-            }
+    /** 
+     * <p>
+     * afterDelete
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+       
 
-        }
+    }
 
+    /** 
+     * <p>
+     * afterInsert
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+       
+
+    }
+
+    /** 
+     * <p>
+     * afterLookup
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        ((Collection) originalPreferences).addAll((Collection) preferences);
+    }
+
+    /** 
+     * <p>
+     * afterUpdate
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        
+
+    }
+
+    /** 
+     * <p>
+     * beforeDelete
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        
+
+    }
+
+    /** 
+     * <p>
+     * beforeInsert
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+       
+
+    }
+
+    /** 
+     * <p>
+     * beforeUpdate
+     * </p>
+     * 
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     * @param arg0
+     * @throws org.apache.ojb.broker.PersistenceBrokerException
+     */
+    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+      
     }
 
 }
