@@ -14,6 +14,8 @@
 */
 package org.apache.jetspeed.sso;
 
+import java.util.Iterator;
+
 import javax.security.auth.Subject;
 
 
@@ -47,5 +49,7 @@ public interface SSOProvider
     throws SSOException;
     
 	void removeCredentialsForSite(Subject subject, String site)  
-        throws SSOException; 
+        throws SSOException;
+    
+    Iterator getSites(String filter);
 }

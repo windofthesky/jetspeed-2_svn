@@ -15,10 +15,13 @@
  */
 package org.apache.jetspeed.sso.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -38,6 +41,7 @@ import org.apache.jetspeed.sso.impl.SSOPrincipalImpl;
 
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
@@ -45,6 +49,7 @@ import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
 
 import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
@@ -70,7 +75,14 @@ public class PersistenceBrokerSSOProvider extends
        super(repositoryPath);
     }
 
-	
+	public Iterator getSites(String filter)
+    {
+        Criteria queryCriteria = new Criteria();
+        Query query = QueryFactory.newQuery(SSOSiteImpl.class, queryCriteria);
+        Iterator result = getPersistenceBrokerTemplate().getIteratorByQuery(query);
+        return result;
+    }
+    
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.sso.SSOProvider#hasSSOCredentials(javax.security.auth.Subject, java.lang.String)
 	 */
