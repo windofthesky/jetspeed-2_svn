@@ -16,6 +16,7 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentHandler;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.tools.pamanager.Deployment;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
@@ -83,7 +84,14 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     if(id == null)
                     {
 						throw new PortletApplicationException("<portlet-app> requires a unique \"id\" attribute.");
-                    }             
+                    }
+                                 
+                    if(JetspeedPortletRegistry.getPortletApplicationByIndetifier(id) != null)
+                    {
+						log.info("Portlet application \""+id+"\"" +" already been registered.  Skipping initial deployment.");
+						return;
+                    }
+                    
                     log.info("Preparing to deploy portlet app \""+id+"\"");
                     if(dbAalias != null)
                     {
@@ -100,7 +108,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             catch (Exception e1)
             {
 
-                throw new DeploymentException("Error deploying portlet app: " + e1.toString(), e1);
+                String msg = "Error deploying portlet app: " + e1.toString();                
+                throw new DeploymentException(msg, e1);
             }
         }
 
