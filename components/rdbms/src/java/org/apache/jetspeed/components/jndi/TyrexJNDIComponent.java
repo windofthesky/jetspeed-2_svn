@@ -89,6 +89,7 @@ public class TyrexJNDIComponent implements JNDIComponent
      */
 	public void bindObject(String bindToName, Object obj) throws NamingException
 	{
+	    log.debug("Binding "+obj+" to name "+bindToName);
 		Context ctx = getRootContext();
 		ctx.bind(bindToName, obj);
 	}
