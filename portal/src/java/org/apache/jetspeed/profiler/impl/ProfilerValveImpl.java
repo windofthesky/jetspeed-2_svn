@@ -134,9 +134,17 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         catch (SecurityException se)
         {
+            if (request.getRequest().getUserPrincipal() == null &&
+                request.getPath() != null &&
+                !request.getPath().equals("/"))
+            {
+                request.setPath("/");
+                invoke(request, context); 
+                return;
+            }
             log.error(se.getMessage(), se);
             try
-            {
+            {                
                 request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, se.getMessage());
             }
             catch (IOException ioe)
