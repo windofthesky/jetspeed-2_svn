@@ -348,13 +348,19 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             Folder folder = (Folder) entry.getDocument();            
             entry.setDocument(getFolder(folder.getPath(), false));
+            if(folder.getParent() != null)
+            {
+                FileCacheEntry parentEntry = (FileCacheEntry)fileCache.get(folder.getParent().getPath());
+                refresh(parentEntry);                
+            }
         }
         else if(entry.getDocument() instanceof Document)
         {
             Document doc = (Document) entry.getDocument();
             if(doc.getType().equals(FolderMetaData.DOCUMENT_TYPE))
             {
-                addToCache(doc.getParent().getPath(), getFolder(doc.getParent().getPath(), false));
+                FileCacheEntry folderEntry = fileCache.get(doc.getParent().getPath());
+                refresh(folderEntry);
             }
         }
 
