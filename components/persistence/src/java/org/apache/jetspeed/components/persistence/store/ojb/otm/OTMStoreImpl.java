@@ -120,8 +120,10 @@ public class OTMStoreImpl implements PersistenceStore
             {
                 tx.commit();
             }
-
-            OTMConn.close();
+            if (OTMConn != null)
+            {
+                OTMConn.close();
+            }
         }
         catch (RuntimeException re)
         {
