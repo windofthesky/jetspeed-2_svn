@@ -74,6 +74,7 @@ public interface MutableDescription extends Description
     String TYPE_PORTLET_APP = "portlet application";
     String TYPE_WEB_APP = "web application";
     String TYPE_PORTLET = "portlet";
+    String TYPE_PORTLET_ENTITY = "portlet entity";
     String TYPE_PARAMETER = "parameter";
     String TYPE_PREFERENCE = "preference";
     String TYPE_SEC_ROLE_REF = "security role ref";
@@ -81,7 +82,7 @@ public interface MutableDescription extends Description
     void setDescription(String description);
 
     void setLocale(Locale locale);
-    
+
     String getType();
 
 }
