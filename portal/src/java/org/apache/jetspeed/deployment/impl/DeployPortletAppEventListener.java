@@ -195,42 +195,40 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
             }
 
             PortletApplicationWar paWar = new PortletApplicationWar(deploymentObj.getFileObject(), id, "/" + id );
+            PortletApplicationDefinition pa = registry.getPortletApplicationByIdentifier(id);
+            boolean registered = (pa != null); 
+            File deploymentPath = (isLocal ? deploymentObj.getFileObject().getRootDirectory() : new File(pam.getDeploymentPath(id)));
+            boolean deployed = deploymentPath.exists();
+            log.info("Portlet application \"" + id + "\"" + ": registered=" + registered + ", deployed=" + deployed);
 
-            if ((registry.getPortletApplicationByIdentifier(id) != null) &&
-                event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+            if (registered && deployed && event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
             {
-                log.info("Portlet application \"" + id + "\""
-                         + " already been registered.  Skipping initial deployment.");
+                log.info("Portlet application \"" + id + "\"" + " already registered.  Skipping initial deployment.");
                 pam.register(paWar);
             }
-            else
+            else if (!registered || event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
             {
-                log.info("Preparing to (re) deploy portlet app \"" + id + "\"");
-                
-                if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+                if (isLocal)
                 {
-                    if (isLocal)
-                    {
-                        log.info(fileName + " will be registered as a local portlet application.");                    
-                        pam.register(paWar);
-                    }
-                    else
-                    {
-                        log.info("Deploying portlet application WAR " + fileName);
-                        pam.deploy(paWar);
-                    }
+                    log.info("Deploying portlet app \"" + id + "\": " + fileName + " will be registered as a local portlet application.");
+                    pam.register(paWar);
                 }
-                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+                else
                 {
-                    if (isLocal)
-                    {
-                        //TODO: get this working                    
-                    }
-                    else
-                    {
-                        log.info("Re-deploying portlet application WAR " + fileName);
-                        pam.redeploy(paWar);
-                    }
+                    log.info("Deploying portlet app \"" + id + "\": " + "portlet application WAR " + fileName);
+                    pam.deploy(paWar);
+                }
+            }
+            else if (deployed || event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+            {
+                if (isLocal)
+                {
+                    log.error("Redeploying portlet app \"" + id + "\" from " + fileName + " as a local portlet application is not implemented.");
+                }
+                else
+                {
+                    log.info("Redeploying portlet app \"" + id + "\": " + "portlet application WAR " + fileName);
+                    pam.redeploy(paWar);
                 }
             }
             appNameToFile.put(deploymentObj.getPath(), id);
