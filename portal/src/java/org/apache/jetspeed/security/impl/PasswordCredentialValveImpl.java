@@ -98,7 +98,7 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
                     {
                         long expirationTime = pwdCredential.getExpirationDate().getTime();
                         long lastAuthTime = pwdCredential.getLastAuthenticationDate().getTime();
-                        int lastAuthDaysBeforeExpiration = (int)(expirationTime-lastAuthTime)/(24*60*60*1000);
+                        int lastAuthDaysBeforeExpiration = (int)((expirationTime-lastAuthTime)/(24*60*60*1000));
                         if (  lastAuthDaysBeforeExpiration < 1 )
                         {
                             passwordDaysValid = new Integer(1);
@@ -110,7 +110,7 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
                             {
                                 prevAuthTime = pwdCredential.getPreviousAuthenticationDate().getTime();
                             }
-                            int prevAuthDaysBeforeExpiration = (int)(expirationTime-prevAuthTime)/(24*60*60*1000);
+                            int prevAuthDaysBeforeExpiration = (int)((expirationTime-prevAuthTime)/(24*60*60*1000));
                             if ( prevAuthDaysBeforeExpiration > lastAuthDaysBeforeExpiration )
                             {
                                 for ( int i = 0; i < expirationWarningDays.length; i++ )
