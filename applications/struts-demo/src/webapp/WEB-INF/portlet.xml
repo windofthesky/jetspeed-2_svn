@@ -24,7 +24,7 @@
       <portlet-mode>HELP</portlet-mode>
     </supports>
     <portlet-info>
-      <title>StrutsPortletTitle</title>
+      <title>Struts MailReader Demo</title>
       <short-title>This is the short title</short-title>
       <keywords>Struts</keywords>
     </portlet-info>

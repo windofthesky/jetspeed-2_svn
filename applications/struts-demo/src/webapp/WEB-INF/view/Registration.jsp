@@ -189,6 +189,6 @@
         dynamicJavascript="true"
          staticJavascript="false" cdata="false"/>
 
-<html:script src="/staticJavascript.jsp"/>
+<script language="Javascript1.1" src="<html:rewrite href="/staticJavascript.jsp" resourceURL="true"/>"/>
 
 <jsp:include page="footer.jsp" />
