@@ -27,7 +27,6 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
-import org.apache.jetspeed.container.url.*;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
@@ -48,17 +47,20 @@ public class PortalControlParameter
     private Map stateFullControlParameter = null;
     private Map stateLessControlParameter = null;
     private NavigationalStateComponent nav;
-    private PortalURL url;
+    private PathPortalURL url;
 
-    public PortalControlParameter(PortalURL url, NavigationalStateComponent nav)
+    public PortalControlParameter(PathPortalURL url, NavigationalStateComponent nav)
     {
         this.nav = nav;
         this.url = url;
-        url.setControlParameter(this);        
-        stateFullControlParameter = ((PortalURLImpl)this.url).getClonedStateFullControlParameter();
-        stateLessControlParameter = ((PortalURLImpl) this.url).getClonedStateLessControlParameter();
     }
 
+    public void init()
+    {
+        stateFullControlParameter = ((PathPortalURL)this.url).getClonedStateFullControlParameter();
+        stateLessControlParameter = ((PathPortalURL) this.url).getClonedStateLessControlParameter();        
+    }
+    
     public void clearRenderParameters(PortletWindow portletWindow)
     {
         String prefix = getRenderParamKey(portletWindow);
@@ -81,16 +83,11 @@ public class PortalControlParameter
 
     public PortletMode getMode(PortletWindow window)
     {
-        String mode = (String) stateFullControlParameter.get(getModeKey(window));
+        String mode = (String) stateFullControlParameter.get(url.getModeKey(window));
         if (mode != null)
             return new PortletMode(mode);
         else
             return PortletMode.VIEW;
-    }
-
-    private String getModeKey(PortletWindow window)
-    {
-        return nav.getNavigationKey(NavigationalStateComponent.MODE) + "_" + window.getId().toString();
     }
 
     public PortletWindow getPortletWindowOfAction() 
@@ -206,7 +203,7 @@ public class PortalControlParameter
 
     public WindowState getState(PortletWindow window)
     {
-        String state = (String) stateFullControlParameter.get(getStateKey(window));
+        String state = (String) stateFullControlParameter.get(url.getStateKey(window));
         if (state != null)
             return new WindowState(state);
         else
@@ -216,11 +213,6 @@ public class PortalControlParameter
     public Map getStateFullControlParameter()
     {
         return stateFullControlParameter;
-    }
-
-    private String getStateKey(PortletWindow window)
-    {
-        return nav.getNavigationKey(NavigationalStateComponent.STATE) + "_" + window.getId().toString();
     }
 
     public Map getStateLessControlParameter()
@@ -252,11 +244,11 @@ public class PortalControlParameter
 
     public void setMode(PortletWindow window, PortletMode mode)
     {
-        Object prevMode = stateFullControlParameter.get(getModeKey(window));
+        Object prevMode = stateFullControlParameter.get(url.getModeKey(window));
         if (prevMode != null)
             stateFullControlParameter.put(getPrevModeKey(window), prevMode);
         // set current mode
-        stateFullControlParameter.put(getModeKey(window), mode.toString());
+        stateFullControlParameter.put(url.getModeKey(window), mode.toString());
     }
 
     public void setRenderParam(PortletWindow window, String name, String[] values)
@@ -280,10 +272,10 @@ public class PortalControlParameter
 
     public void setState(PortletWindow window, WindowState state)
     {
-        Object prevState = stateFullControlParameter.get(getStateKey(window));
+        Object prevState = stateFullControlParameter.get(url.getStateKey(window));
         if (prevState != null)
             stateFullControlParameter.put(getPrevStateKey(window), prevState);
-        stateFullControlParameter.put(getStateKey(window), state.toString());
+        stateFullControlParameter.put(url.getStateKey(window), state.toString());
     }
 
     public String getPIDValue()

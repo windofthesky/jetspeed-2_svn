@@ -29,6 +29,9 @@ public abstract class AbstractNavigationalState
     protected RequestContext context;
     protected NavigationalStateComponent nav;
     
+    public static final String HTTP = "http";
+    public static final String HTTPS = "https";
+        
     public AbstractNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
         this.context = context;

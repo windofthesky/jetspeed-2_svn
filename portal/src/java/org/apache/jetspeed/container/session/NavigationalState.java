@@ -15,8 +15,6 @@
  */
 package org.apache.jetspeed.container.session;
 
-import java.util.Iterator;
-
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
@@ -30,40 +28,52 @@ import org.apache.pluto.om.window.PortletWindow;
  */
 public interface NavigationalState 
 {
+    /**
+     * Gets the window state for given portlet window.
+     * 
+     * @param window
+     * @return
+     */
     WindowState getState(PortletWindow window);
     
+    /**
+     * Sets the window state for the given portlet window.
+     * 
+     * @param window
+     * @param state
+     */
     void setState(PortletWindow window, WindowState state);
     
+    /**
+     * Gets the portlet mode for the given portlet window.
+     * 
+     * @param window
+     * @return
+     */
     PortletMode getMode(PortletWindow window);
     
+    /**
+     * Sets the portlet mode for the given portlet window.
+     * 
+     * @param window
+     * @param mode
+     */
     void setMode(PortletWindow window, PortletMode mode);
     
+    /**
+     * Gets the previous portlet mode for the given portlet window.
+     * 
+     * @param window
+     * @return
+     */
     PortletMode getPreviousMode(PortletWindow window);
     
-    WindowState getPreviousState(PortletWindow window);
-    
-    ///////////////////////////////////////////////
-    
-    boolean isNavigationalParameter(String token);
+    /**
+     * Get the previous window state for the given portlet window.
+     * 
+     * @param window
+     * @return
+     */
+    WindowState getPreviousState(PortletWindow window);        
         
-    Iterator getRenderParamNames(PortletWindow window);
-    
-    String[] getRenderParamValues(PortletWindow window, String paramName);
-
-    PortletWindow getPortletWindowOfAction();
-    
-    void clearRenderParameters(PortletWindow portletWindow);
-    
-    void setAction(PortletWindow window);
-    
-    void setRequestParam(String name, String[] values);
-    
-    void setRenderParam(PortletWindow window, String name, String[] values);
-    
-    String toString();
-    
-    String toString(boolean secure);
-    
-    String getBaseURL();
-    
 }

@@ -6,15 +6,23 @@
  */
 package org.apache.jetspeed.container.url;
 
-import org.apache.jetspeed.container.url.impl.PortalControlParameter;
+import java.util.Iterator;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * <p>
- * PortalURL
+ * PortalURL defines the interface for manipulating Jetspeed Portal URLs.
+ * These URLs are used internally by the portal and are not available to
+ * Portlet Applications.
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  *
  */
@@ -25,54 +33,58 @@ public interface PortalURL
 
     /** HTTPS protocol. */
     public static final String HTTPS = "https";
+    
+    void init(RequestContext context);
+    
+    /**
+     * Gets the Base URL for this portal.
+     * 
+     * @return The Base URL of the portal.
+     */
+    String getBaseURL();   
+    
+    /**
+     * Encodes a window state for the given window on the URL.
+     * 
+     * @param window The targeted window having its state set.
+     * @param state The state being encoded into the URL.
+     */
+    void setState(PortletWindow window, WindowState state);
+    
+    /**
+     * Encodes a portlet mode for the given window on the URL.
+     * 
+     * @param window The targeted window having its mode set.
+     * @param mode The portlet mode being encoded into the URL.
+     */    
+    void setMode(PortletWindow window, PortletMode mode);
+    
+    WindowState getState(PortletWindow window);        
+    PortletMode getMode(PortletWindow window);        
+    PortletMode getPreviousMode(PortletWindow window);    
+    WindowState getPreviousState(PortletWindow window);        
+    
+    ///////////////////////////////////////////////
+    
+    boolean isNavigationalParameter(String token);
+        
+    Iterator getRenderParamNames(PortletWindow window);
+    
+    String[] getRenderParamValues(PortletWindow window, String paramName);
 
-    void setControlParameter(PortalControlParameter pcp);
+    PortletWindow getPortletWindowOfAction();
     
-    PortalControlParameter getControlParameter();
+    void clearRenderParameters(PortletWindow portletWindow);
     
-    public abstract void init(RequestContext context);
-    /**
-     * Adds a navigational information pointing to a portal part, e.g. PageGroups
-     * or Pages
-     * 
-     * @param nav    the string pointing to a portal part
-     */
-    //public abstract void addGlobalNavigation(String nav);
-    /**
-     * Sets the local navigation. Because the local navigation is always handled
-     * by the Browser, therefore the local navigation cleared.
-     */
-    //public abstract void setLocalNavigation();
-    /**
-     * Adds a navigational information pointing to a local portal part inside
-     * of a global portal part, e.g. a portlet on a page
-     * 
-     * @param nav    the string pointing to a local portal part
-     */
-    //public abstract void addLocalNavigation(String nav);
-    /**
-     * Returns true if the given string is part of the global navigation of this URL
-     * 
-     * @param nav    the string to check
-     * @return true, if the string is part of the navigation
-     */
-    //public abstract boolean isPartOfGlobalNavigation(String nav);
-    /**
-     * Returns true if the given string is part of the local navigation of this URL
-     * 
-     * @param nav    the string to check
-     * @return true, if the string is part of the navigation
-     */
-    //public abstract boolean isPartOfLocalNavigation(String nav);
-    //public abstract String getGlobalNavigationAsString();
-    //public abstract String getLocalNavigationAsString();
-    //public abstract String getControlParameterAsString(PortalControlParameter controlParam);
-    //public abstract String getRequestParameterAsString(PortalControlParameter controlParam);
-    //public abstract String toString();
-    public abstract String toString(PortalControlParameter controlParam, Boolean p_secure);
-    // public abstract void analyzeControlInformation(PortalControlParameter control);
-    // public abstract void setRenderParameter(PortletWindow portletWindow, String name, String[] values);
-    // public abstract void clearRenderParameters(PortletWindow portletWindow);
-    public abstract String getBaseURL();
-    //public abstract String getContext();
+    void setAction(PortletWindow window);
+    
+    void setRequestParam(String name, String[] values);
+    
+    void setRenderParam(PortletWindow window, String name, String[] values);
+    
+    String toString();
+    
+    String toString(boolean secure);
+    
+    
 }

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.container.session;
 
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -51,6 +52,15 @@ public interface NavigationalStateComponent
      */
     void store(RequestContext context, NavigationalState navContext);
      
+    
+    /**
+     * Creates a Portlet URL representing the URL of the request.
+     * 
+     * @param context The ubiqitious request context.
+     * @return A new Portal URL
+     */
+    PortalURL createURL(RequestContext context);
+    
     /**
      * Keys for URL encoding
      * @return
@@ -66,6 +76,14 @@ public interface NavigationalStateComponent
     static public final int KEY_DELIM = 8;
     static public final int NAV_MAX = 9;        
     
-    String getNavigationKey(int key);
+    /**
+     * All navigation strings are configurable.
+     * Use this method to lookup the name of a navigation key
+     * used in Portlet URLs.
+     * 
+     * @param key
+     * @return the configured name of the navigation key in the URL
+     */
+    String getNavigationKey(int key);       
     
 }

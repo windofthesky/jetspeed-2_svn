@@ -22,33 +22,34 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.url.*;
+import org.apache.jetspeed.container.session.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextComponent;
 
 /**
- * As part of its content, a portlet may need to create URLs that reference the portlet itself.
- * For example, when a user acts on a URL that references a portlet (i.e., by clicking a link
- * or submitting a form) the result is a new client request to the portal targeted to the portlet.
- * Those URLs are called portlet URLs.
- * 
- * NOTE: parts of this code was borrowed from Pluto's portal implementation.
+ * PortalURL defines the interface for manipulating Jetspeed Portal URLs.
+ * These URLs are used internally by the portal and are not available to
+ * Portlet Applications. This implementation is compatible with Pluto
+ * portal URLs. All navigational state is stored in the URL.
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * 
  * @version $Id$
  */
-public class PortalURLImpl implements PortalURL
+public class PathPortalURL 
+    extends
+        AbstractPortalURL
+    implements 
+        PortalURL
 {
-    private static final Log log = LogFactory.getLog(PortalURLImpl.class);
+    private static final Log log = LogFactory.getLog(PathPortalURL.class);
 
-    private RequestContext context;
     private List startGlobalNavigation = new ArrayList();
     private List startLocalNavigation = new ArrayList();
     private HashMap startControlParameter = new HashMap();
@@ -57,59 +58,19 @@ public class PortalURLImpl implements PortalURL
     private boolean secure;
     private PortalControlParameter pcp;
 
-    private String serverName;
-    private String serverScheme;
-    private String contextPath;
-    private String basePath;
-    private int serverPort;
 
-    /**
-     * Creates and URL pointing to the home of the portal
-     * 
-     * @param env     the portal environment
-     */
-    public PortalURLImpl(RequestContext context)
-    {
-        this.context = context;
-        init(context);
+    public PathPortalURL(RequestContext context, NavigationalStateComponent nsc)
+    {        
+        super(context, nsc);
+        pcp = new PortalControlParameter(this, nsc);
+        pcp.init();
     }
 
-    public void setControlParameter(PortalControlParameter pcp)
-    {
-        this.pcp = pcp;
-    }
-    
     public PortalControlParameter getControlParameter()
     {
         return this.pcp;
     }
-    
-    
-    public void init(RequestContext context)
-    {
-        if (null != context.getRequest())
-        {
-            this.serverName = context.getRequest().getServerName();
-            this.serverPort = context.getRequest().getServerPort();
-            this.serverScheme = context.getRequest().getScheme();
-            this.contextPath = context.getRequest().getContextPath();
-            this.basePath = contextPath + context.getRequest().getServletPath();
-        }
-    }
-
-    /**
-     * Creates and URL pointing to the home of the portal
-     * 
-     * @param request     the servlet request
-     */
-    public PortalURLImpl(HttpServletRequest request)
-    {
-        // TODO: assemble this
-        RequestContextComponent rcc = (RequestContextComponent)Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
-        this.context = rcc.getRequestContext(request);
-        init(context);
-    }
-
+        
     /**
      * Adds a navigational information pointing to a portal part, e.g. PageGroups
      * or Pages
@@ -265,11 +226,17 @@ public class PortalURLImpl implements PortalURL
         return "";
     }
 
+    
     public String toString()
     {
-        return toString(null, null);
+        return toString(false);
     }
 
+    public String toString(boolean secure)
+    {        
+        return toString(pcp, new Boolean(secure));
+    }
+    
     public String toString(PortalControlParameter controlParam, Boolean p_secure)
     {
         StringBuffer buffer = getBaseURLBuffer();
@@ -388,26 +355,6 @@ public class PortalURLImpl implements PortalURL
 
     }
 
-    public void clearRenderParameters(PortletWindow portletWindow)
-    {
-        String prefix = pcp.getRenderParamKey(portletWindow);
-        Iterator keyIterator = startControlParameter.keySet().iterator();
-
-        while (keyIterator.hasNext())
-        {
-            String name = (String) keyIterator.next();
-            if (name.startsWith(prefix))
-            {
-                keyIterator.remove();
-            }
-        }
-    }
-
-    public String getBaseURL()
-    {
-        return getBaseURLBuffer().toString();
-    }
-
     public String getContext()
     {
         StringBuffer result = getBaseURLBuffer();
@@ -415,19 +362,74 @@ public class PortalURLImpl implements PortalURL
         return result.toString();
     }
 
-    private StringBuffer getBaseURLBuffer()
+    public Iterator getRenderParamNames(PortletWindow window)
     {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.serverScheme);
-        buffer.append("://");
-        buffer.append(this.serverName);
-        if ((this.serverScheme.equals(HTTP) && this.serverPort != 80)
-            || (this.serverScheme.equals(HTTPS) && this.serverPort != 443))
-        {
-            buffer.append(":");
-            buffer.append(this.serverPort);
-        }
-        return buffer;
+        return pcp.getRenderParamNames(window);
+    }
+    
+    public String[] getRenderParamValues(PortletWindow window, String paramName)
+    {
+        return pcp.getRenderParamValues(window, paramName);
     }
 
+    public PortletWindow getPortletWindowOfAction()
+    {
+        return pcp.getPortletWindowOfAction();
+    }
+    
+    public void clearRenderParameters(PortletWindow portletWindow)
+    {
+        pcp.clearRenderParameters(portletWindow);
+    }
+        
+    public void setAction(PortletWindow window)
+    {
+        pcp.setAction(window);
+    }
+    
+    public void setRequestParam(String name, String[] values)
+    {
+        pcp.setRequestParam(name, values);
+    }
+    
+    public void setRenderParam(PortletWindow window, String name, String[] values)
+    {
+        pcp.setRenderParam(window, name, values);
+    }
+    
+    public void setMode(PortletWindow window, PortletMode mode) 
+    {
+        pcp.setMode(window, mode);
+    }
+    
+    public void setState(PortletWindow window, WindowState state) 
+    {
+        pcp.setState(window, state);
+    }
+        
+    public PortletMode getPortletMode(PortletWindow window)
+    {
+        return pcp.getMode(window);
+    }
+    
+    public WindowState getState(PortletWindow window)
+    {
+        return pcp.getState(window);
+    }
+    
+    public PortletMode getMode(PortletWindow window)
+    {
+        return pcp.getMode(window);
+    }
+    
+    public PortletMode getPreviousMode(PortletWindow window)
+    {
+        return pcp.getPrevMode(window);
+    }
+    
+    public WindowState getPreviousState(PortletWindow window)
+    {
+        return pcp.getPrevState(window);
+    }
+        
 }

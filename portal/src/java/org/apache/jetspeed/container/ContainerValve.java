@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.session.NavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -46,8 +46,8 @@ public class ContainerValve
         {  
             //PortletContainerServices.prepare();
             
-            NavigationalState nav = request.getNavigationalState();
-            PortletWindow actionWindow = nav.getPortletWindowOfAction();
+            PortalURL url = request.getPortalURL();
+            PortletWindow actionWindow = url.getPortletWindowOfAction();
             if (null == actionWindow)
             {
                 // set to null to denote that no action was requested

@@ -15,16 +15,12 @@
  */
 package org.apache.jetspeed.container.session.impl;
 
-import java.util.Iterator;
-
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.container.url.impl.PortalControlParameter;
-import org.apache.jetspeed.container.url.impl.PortalURLImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -33,6 +29,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * PathNavigationalStateContext is based on Pluto navigational state.
  * All nav state is stored as path parameters in the URL.
  * This implementation does not currently support persisting navigational state
+ * and is simply a facade delegating to the Portal URL for all state information.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -44,7 +41,8 @@ public class PathNavigationalState
         NavigationalState 
 {
     private PortalURL url;
-    private PortalControlParameter pcp;
+        
+    static public final boolean SESSION_BASED = false;
     
     public PathNavigationalState(RequestContext context, NavigationalStateComponent nav)
     {
@@ -54,87 +52,37 @@ public class PathNavigationalState
     
     public void init(RequestContext context)
     {
-        this.url = new PortalURLImpl(context);               
-        this.pcp = new PortalControlParameter(url, nav);        
+        this.url = context.getPortalURL();               
     }
     
     public WindowState getState(PortletWindow window) 
     {
-        return pcp.getState(window);
+        return url.getState(window);
     }
     
     public void setState(PortletWindow window, WindowState state) 
     {
-        pcp.setState(window, state);
+        url.setState(window, state);
     }
     
     public PortletMode getMode(PortletWindow window) 
     {
-        return pcp.getMode(window);
+        return url.getMode(window);
     }
     
     public void setMode(PortletWindow window, PortletMode mode) 
     {
-        pcp.setMode(window, mode);
+        url.setMode(window, mode);
     }
     
     public PortletMode getPreviousMode(PortletWindow window) 
     {
-        return pcp.getPrevMode(window);
+        return url.getPreviousMode(window);
     }
     
     public WindowState getPreviousState(PortletWindow window) 
     {
-        return pcp.getPrevState(window);
+        return url.getPreviousState(window);
     }
         
-    public Iterator getRenderParamNames(PortletWindow window)
-    {
-        return pcp.getRenderParamNames(window);
-    }
-    
-    public String[] getRenderParamValues(PortletWindow window, String paramName)
-    {
-        return pcp.getRenderParamValues(window, paramName);
-    }
-
-    public PortletWindow getPortletWindowOfAction()
-    {
-        return pcp.getPortletWindowOfAction();
-    }
-    
-    public void clearRenderParameters(PortletWindow portletWindow)
-    {
-        pcp.clearRenderParameters(portletWindow);
-    }
-    
-    public void setAction(PortletWindow window)
-    {
-        pcp.setAction(window);
-    }
-    
-    public void setRequestParam(String name, String[] values)
-    {
-        pcp.setRequestParam(name, values);
-    }
-    
-    public void setRenderParam(PortletWindow window, String name, String[] values)
-    {
-        pcp.setRenderParam(window, name, values);
-    }
-    
-    public String toString()
-    {
-        return toString(false);
-    }
-
-    public String toString(boolean secure)
-    {        
-        return url.toString(pcp, new Boolean(secure));
-    }
-    
-    public String getBaseURL()
-    {
-        return url.getBaseURL();
-    }
 }
