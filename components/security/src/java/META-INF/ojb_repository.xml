@@ -79,7 +79,7 @@ limitations under the License.
 	        auto-delete="object"
 	    >
 	        <documentation>This is the reference to security credentials.</documentation>
-	        <inverse-foreignkey field-ref="credentialId"/>
+	        <inverse-foreignkey field-ref="principalId"/>
 	    </collection-descriptor>
 	    <collection-descriptor
 	        name="rolePrincipals"
