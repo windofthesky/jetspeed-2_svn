@@ -15,7 +15,7 @@
  */
 package org.apache.jetspeed.tools.castor.om.common;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 
@@ -33,12 +33,12 @@ public class PreferenceDescriptor extends DefaultPreferenceImpl
      
     }
 
-    public Collection getCastorValues()
+    public List getCastorValues()
     {
         return this.values;
     }
 
-    public void setCastorValues(Collection value)
+    public void setCastorValues(List value)
     {
         setValues(value);
     }
