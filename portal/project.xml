@@ -474,6 +474,12 @@ limitations under the License.
         <war.bundle.jar>false</war.bundle.jar>
       </properties>
     </dependency>
+    <dependency>
+        <groupId>jetspeed2</groupId>
+        <artifactId>maven-jetspeed2-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <type>plugin</type>
+    </dependency>
 
   </dependencies>
   <build>
