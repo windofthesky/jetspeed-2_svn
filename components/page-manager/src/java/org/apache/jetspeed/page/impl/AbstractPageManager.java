@@ -27,7 +27,6 @@ import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.page.PageManager;
-import org.picocontainer.Startable;
 
 /**
  * AbstractPageManagerService
