@@ -56,6 +56,7 @@ package org.apache.jetspeed.om.common.portlet;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -82,6 +83,10 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  */
 public interface MutablePortletApplication extends PortletApplicationDefinition, Serializable
 {
+    DublinCore getDublinCore();
+    
+    void setDublinCore(DublinCore dublinCore);
+    
     void setWebApplicationDefinition(WebApplicationDefinition wad);
 
     void setName(String name);
