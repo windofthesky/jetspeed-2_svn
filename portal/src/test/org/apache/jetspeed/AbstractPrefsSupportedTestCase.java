@@ -33,6 +33,9 @@ import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 public class AbstractPrefsSupportedTestCase extends RegistrySupportedTestCase
 {
 
+    protected PreferencesProviderImpl prefsProvider;
+    protected PropertyManagerImpl propertyManager;
+
     /**
      * 
      */
@@ -52,9 +55,9 @@ public class AbstractPrefsSupportedTestCase extends RegistrySupportedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
-        PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
-        provider.start();
+        propertyManager = new PropertyManagerImpl(persistenceStore);
+        prefsProvider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
+        prefsProvider.start();
     }
 
 }
