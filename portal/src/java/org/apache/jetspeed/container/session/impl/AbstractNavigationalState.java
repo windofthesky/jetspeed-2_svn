@@ -17,6 +17,7 @@ package org.apache.jetspeed.container.session.impl;
 
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * BaseNavigationalState
@@ -40,6 +41,7 @@ public abstract class AbstractNavigationalState
         
     public void init(RequestContext context)
     {
+        ArgUtil.assertNotNull(RequestContext.class, context, this, "init()");
         this.context = context;
     }
     

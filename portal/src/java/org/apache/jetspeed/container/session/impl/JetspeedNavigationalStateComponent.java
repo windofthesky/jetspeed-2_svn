@@ -26,6 +26,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.container.session.FailedToCreateNavStateException;
+import org.apache.jetspeed.container.session.FailedToCreatePortalUrlException;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -34,46 +36,49 @@ import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * JetspeedNavigationalStateComponent
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @version $Id: JetspeedNavigationalStateComponent.java,v 1.10 2004/07/20
+ *          13:52:01 weaver Exp $
  */
 public class JetspeedNavigationalStateComponent implements NavigationalStateComponent
 {
-    static private final String PREFIX = "_";    
+    static private final String PREFIX = "_";
     static private final String ACTION = "ac";
     static private final String MODE = "md";
     static private final String STATE = "st";
     static private final String RENDER_PARAM = "rp";
-    static private final String PORTLET_ID = "pid";    
+    static private final String PORTLET_ID = "pid";
     static private final String PREV_MODE = "pm";
     static private final String PREV_STATE = "ps";
     static private final String KEY_DELIMITER = ":";
-    
+
     private String navClassName = null;
     private String urlClassName = null;
     private Class navClass = null;
     private Class urlClass = null;
     private String navigationKeys;
-    private String navigationKeyNames[] = new String[]
-    {
-            PREFIX, ACTION, MODE, STATE, RENDER_PARAM, PORTLET_ID, PREV_MODE, PREV_STATE, KEY_DELIMITER
-    };
-    
+    private String navigationKeyNames[] = new String[]{PREFIX, ACTION, MODE, STATE, RENDER_PARAM, PORTLET_ID,
+            PREV_MODE, PREV_STATE, KEY_DELIMITER};
+
     private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
 
     private static final String SESSION_BASED_FIELD = "SESSION_BASED";
     private static final String NAVSTATE_SESSION_KEY = "org.apache.jetspeed.navstate";
-    
-    
+
     /**
-     * @param navClassName  name of the class implementing Navigational State instances
-     * @param urlClassName  name of the class implementing Portal URL instances
-     * @param navigationsKeys comma-separated list of navigation keys
-     * @throws ClassNotFoundException if <code>navClassName</code> or <code>urlClassName</code>
-     * do not exist.
+     * @param navClassName
+     *            name of the class implementing Navigational State instances
+     * @param urlClassName
+     *            name of the class implementing Portal URL instances
+     * @param navigationsKeys
+     *            comma-separated list of navigation keys
+     * @throws ClassNotFoundException
+     *             if <code>navClassName</code> or <code>urlClassName</code>
+     *             do not exist.
      */
-    public JetspeedNavigationalStateComponent(String navClassName, String urlClassName, String navigationKeys) throws ClassNotFoundException 
+    public JetspeedNavigationalStateComponent( String navClassName, String urlClassName, String navigationKeys )
+            throws ClassNotFoundException
     {
         ArgUtil.assertNotNull(String.class, navClassName, this);
         ArgUtil.assertNotNull(String.class, urlClassName, this);
@@ -81,9 +86,9 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         this.urlClass = Class.forName(urlClassName);
         this.navClass = Class.forName(navClassName);
         this.navClassName = navClassName;
-        this.urlClassName  = urlClassName;
+        this.urlClassName = urlClassName;
         this.navigationKeys = navigationKeys;
-        
+
         StringTokenizer tokenizer = new StringTokenizer(navigationKeys, ", ");
         for (int ix = 0; tokenizer.hasMoreTokens() && ix < NavigationalStateComponent.NAV_MAX; ix++)
         {
@@ -91,107 +96,125 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             navigationKeyNames[ix] = token;
         }
     }
-        
-    public NavigationalState create(RequestContext context)
+
+    /**
+     * 
+     * <p>
+     * create
+     * </p>
+     * 
+     * @see org.apache.jetspeed.container.session.NavigationalStateComponent#create(org.apache.jetspeed.request.RequestContext)
+     * @param context
+     * @return @throws
+     *         FailedToCreateNavStateException if the nav state could not be
+     *         created. Under normal circumstances, this should not happen.
+     */
+    public NavigationalState create( RequestContext context ) throws FailedToCreateNavStateException
     {
+        ArgUtil.assertNotNull(RequestContext.class, context, this, "create()");
         NavigationalState state = null;
+
+        boolean sessionBased = false;
+
         try
         {
-            boolean sessionBased = false;
-            
-            if (null == navClass)
-            {
-                navClass = Class.forName(navClassName);
-            }
-            
             Field field = navClass.getField(SESSION_BASED_FIELD);
             if (field != null)
             {
                 sessionBased = field.getBoolean(null);
             }
-            
+
             HttpSession session = context.getRequest().getSession();
-            
+
             if (sessionBased && session != null)
             {
-                state = (NavigationalState)session.getAttribute(NAVSTATE_SESSION_KEY);
+                state = (NavigationalState) session.getAttribute(NAVSTATE_SESSION_KEY);
             }
-            
+
             if (state == null)
             {
-                Constructor constructor = navClass.getConstructor(new Class[] {RequestContext.class, NavigationalStateComponent.class});            
-                state = (NavigationalState) constructor.newInstance(new Object[] {context, this});
+                Constructor constructor = navClass.getConstructor(new Class[]{RequestContext.class,
+                        NavigationalStateComponent.class});
+                state = (NavigationalState) constructor.newInstance(new Object[]{context, this});
             }
             else
             {
                 state.init(context);
             }
-            
+
             if (sessionBased && session != null)
             {
                 session.setAttribute(NAVSTATE_SESSION_KEY, state);
-            }                                    
-            
+            }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            String msg = "JetspeedNavigationalStateComponent: Failed to create a Class object for " + navClassName + ": " + e.toString();
-            System.out.println(msg);
-            log.error(msg);
+            throw new FailedToCreateNavStateException("Error invoking create() method.  "
+                    + "There is more than likely a problem invoking navClass " + navClassName);
+
         }
+
         return state;
     }
 
-    public PortalURL createURL(RequestContext context)
+   /**
+    * 
+    * <p>
+    * createURL
+    * </p>
+    *
+    * @see org.apache.jetspeed.container.session.NavigationalStateComponent#createURL(org.apache.jetspeed.request.RequestContext)
+    * @param context
+    * @return
+    */
+    public PortalURL createURL( RequestContext context )
     {
         PortalURL url = null;
         try
         {
-            if (null == urlClass)
-            {
-                urlClass = Class.forName(urlClassName);
-            }
 
-            Constructor constructor = urlClass.getConstructor(new Class[] {RequestContext.class, NavigationalStateComponent.class});
-            
-            url = (PortalURL) constructor.newInstance(new Object[] {context, this});
-            
+            Constructor constructor = urlClass.getConstructor(new Class[]{RequestContext.class,
+                    NavigationalStateComponent.class});
+
+            url = (PortalURL) constructor.newInstance(new Object[]{context, this});
+            return url;
+
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            String msg = "JetspeedNavigationalStateComponent: Failed to create a Class object for " + urlClassName + ": " + e.toString();
-            System.out.println(msg);
-            log.error(msg);
-        }
-        return url;
+           throw new FailedToCreatePortalUrlException("Error invoking createURL() method.  "
+                    + "There is more than likely a problem invoking urlClass " + urlClassName);
+        
+        }       
     }
-    
 
-    public void store(RequestContext context, NavigationalState navContext)
+    public void store( RequestContext context, NavigationalState navContext )
     {
         // TODO: implement
     }
 
-    public void release(NavigationalState navContext)
+    public void release( NavigationalState navContext )
     {
-        
+
     }
-    
-    public String getNavigationKey(int key)
+
+    public String getNavigationKey( int key )
     {
         if (key < NavigationalStateComponent.NAV_MAX && key >= 0)
         {
             return navigationKeyNames[key];
         }
-        return "";        
+        return "";
     }
 
     /**
-     * Given a navigational key, such as s_14 (state_windowid), return the window id
+     * Given a navigational key, such as s_14 (state_windowid), return the
+     * window id
+     * 
      * @param key
      * @return The window id from the key
      */
-    public String getWindowIdFromKey(String key)
+    public String getWindowIdFromKey( String key )
     {
         String delimiter = navigationKeyNames[NavigationalStateComponent.PREFIX];
         StringTokenizer tokenizer = new StringTokenizer(key, delimiter);
@@ -199,11 +222,11 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             return null;
         tokenizer.nextToken(); // navigational directive
         if (!tokenizer.hasMoreTokens())
-            return null;        
-        return tokenizer.nextToken();                
+            return null;
+        return tokenizer.nextToken();
     }
-        
-    public WindowState lookupWindowState(String name)
+
+    public WindowState lookupWindowState( String name )
     {
         if (name.equals(WindowState.MAXIMIZED.toString()))
         {
@@ -220,12 +243,12 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         return new WindowState(name);
     }
 
-    public PortletMode lookupPortletMode(String name)
+    public PortletMode lookupPortletMode( String name )
     {
         if (name.equals(PortletMode.VIEW.toString()))
         {
             return PortletMode.VIEW;
-        }        
+        }
         else if (name.equals(PortletMode.EDIT.toString()))
         {
             return PortletMode.EDIT;
@@ -233,11 +256,11 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         else if (name.equals(PortletMode.HELP.toString()))
         {
             return PortletMode.HELP;
-        }        
+        }
         return new PortletMode(name);
     }
-    
-    public boolean hasPortalParameter(HttpServletRequest request, int parameterType)
+
+    public boolean hasPortalParameter( HttpServletRequest request, int parameterType )
     {
         String key = getNavigationKey(NavigationalStateComponent.PREFIX) + getNavigationKey(parameterType);
         String pathInfo = request.getPathInfo();
@@ -262,7 +285,7 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             }
             if (token.startsWith(key))
             {
-                return true;            
+                return true;
             }
         }
         return false;
