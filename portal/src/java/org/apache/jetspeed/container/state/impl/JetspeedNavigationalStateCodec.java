@@ -519,7 +519,14 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     {
         value = StringUtils.replace(value,"-","/");
         value = StringUtils.replace(value,"_","=");
-        return new String(Base64.decodeBase64(value.getBytes(characterEncoding)), characterEncoding);
+        if ( characterEncoding != null )
+        {
+            return new String(Base64.decodeBase64(value.getBytes(characterEncoding)), characterEncoding);
+        }
+        else
+        {
+            return new String(Base64.decodeBase64(value.getBytes()));
+        }
     }
 
     /** 
@@ -535,7 +542,14 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected String encodeParameters(String value, String characterEncoding)
     throws UnsupportedEncodingException
     {
-        value = new String(Base64.encodeBase64(value.getBytes(characterEncoding)));
+        if ( characterEncoding != null )
+        {
+            value = new String(Base64.encodeBase64(value.getBytes(characterEncoding)));
+        }
+        else
+        {
+            value = new String(Base64.encodeBase64(value.getBytes()));
+        }
         value = StringUtils.replace(value,"/","-");
         value = StringUtils.replace(value,"=","_");
         return value;
