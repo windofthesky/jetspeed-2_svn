@@ -33,6 +33,7 @@ import org.picocontainer.MutablePicoContainer;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
 import com.mockrunner.mock.web.MockServletConfig;
 
 /**
@@ -91,21 +92,22 @@ public class TestNavigationalState extends AbstractComponentAwareTestCase
     }
 
     public void testBasic()
-    {
+    {        
+        System.out.println("Starting nav state test");
         assertNotNull("nav state component is null", navState);
         assertNotNull("request context component is null", rcc);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        HttpServletResponse response = new MockHttpServletResponse();
+        MockHttpSession session = new MockHttpSession();
+        HttpServletResponse response = new MockHttpServletResponse();        
         ServletConfig config = new MockServletConfig();
+        request.setSession(session);
         request.setPathInfo("/stuff/");
         RequestContext context = rcc.create(
                                                 (HttpServletRequest)request, 
                                                 response, 
                                                 config);
-        
-System.out.println("$$$ context = " + context);
-        
+                
         PortletWindow window = new PortletWindowImpl("33");
         PortletWindow window2 = new PortletWindowImpl("222");
         
@@ -117,7 +119,7 @@ System.out.println("$$$ context = " + context);
         assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.HELP));
         assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
         assertTrue("window mode is not set", nav.getMode(window2).equals(PortletMode.VIEW));
-        
+        System.out.println("Ending nav state test");
     }
     
 }
