@@ -57,7 +57,7 @@ import org.xml.sax.InputSource;
  * disk
  * 
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta </a>
- * @author <a href="mailto:weaver@apache.org">Scott T Weaver</a>
+ * @author <a href="mailto:weaver@apache.org">Scott T Weaver </a>
  * @version $Id$
  */
 public class CastorXmlPageManager extends AbstractPageManager implements FileCacheEventListener, PageManager, Startable
@@ -108,12 +108,9 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         this.pages = fileCache;
     }
 
-    public CastorXmlPageManager(IdGenerator generator,
-                                FileCache fileCache, 
-                                String root,                                        
-                                List modelClasses,
-                                String extension) throws FileNotFoundException 
-                                       
+    public CastorXmlPageManager( IdGenerator generator, FileCache fileCache, String root, List modelClasses,
+            String extension ) throws FileNotFoundException
+
     {
         this(generator, fileCache, root, modelClasses);
         this.ext = extension;
@@ -201,70 +198,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
 
         if (page == null)
         {
-            File f = null;
-            if (id.endsWith(this.ext))
-            {
-                f = new File(this.rootDir, id);
-            }
-            else
-            {
-                f = new File(this.rootDir, id + this.ext);
-            }
-
-            if (!f.exists())
-            {
-                throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
-            }
-
-            FileReader reader = null;
-
-            try
-            {
-                reader = new FileReader(f);
-                Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-                page = (Page) unmarshaller.unmarshal(reader);
-                page.setId(id);
-
-            }
-            catch (IOException e)
-            {
-                throw new PageNotFoundException("Could not load the file " + f.getAbsolutePath(), e);
-            }
-            catch (MarshalException e)
-            {
-                throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            }
-            catch (MappingException e)
-            {
-                throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            }
-            catch (ValidationException e)
-            {
-                throw new PageNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
-            }
-            finally
-            {
-                try
-                {
-                    reader.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-
-            if (page == null)
-            {
-                throw new PageNotFoundException("Page not found: " + id);
-            }
-
+            page = buildPage(id);
+           
             synchronized (pages)
             {
                 // store the document in the hash and reference it to the
                 // watcher
                 try
                 {
-                    pages.put(id, page);
+                    pages.put(id, page, this.rootDir);
                     int lastSlash = id.indexOf("/");
                     if (lastSlash > -1)
                     {
@@ -288,20 +230,112 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         return page;
     }
 
+    /**
+     * <p>
+     * buildPage
+     * </p>
+     * 
+     * @param id
+     * @param page
+     * @return @throws
+     *         PageNotFoundException
+     */
+    protected Page buildPage( String id ) throws PageNotFoundException
+    {
+        Page page = null;
+        File f = null;
+        if (id.endsWith(this.ext))
+        {
+            f = new File(this.rootDir, id);
+        }
+        else
+        {
+            f = new File(this.rootDir, id + this.ext);
+        }
+
+        if (!f.exists())
+        {
+            throw new PageNotFoundException("Jetspeed PSML page not found: " + id);
+        }
+
+        FileReader reader = null;
+
+        try
+        {
+            reader = new FileReader(f);
+            Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
+            page = (Page) unmarshaller.unmarshal(reader);
+            page.setId(id);
+
+        }
+        catch (IOException e)
+        {
+            throw new PageNotFoundException("Could not load the file " + f.getAbsolutePath(), e);
+        }
+        catch (MarshalException e)
+        {
+            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
+        }
+        catch (MappingException e)
+        {
+            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
+        }
+        catch (ValidationException e)
+        {
+            throw new PageNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
+        }
+        finally
+        {
+            try
+            {
+                reader.close();
+            }
+            catch (IOException e)
+            {
+            }
+        }
+
+        if (page == null)
+        {
+            throw new PageNotFoundException("Page not found: " + id);
+        }
+        else
+        {
+            return page;
+        }
+    }
+
     public Folder getFolder( String folderPath ) throws IOException
     {
         Folder folder = (Folder) pages.getDocument(folderPath);
 
         if (folder == null)
         {
-            File f = new File(this.rootDir, folderPath);
+            folder = buildFolder(folderPath);
+        }
+        return folder;
+    }
 
-            if (f.exists())
-            {
-                folder = new FolderImpl(f, folderPath, this );
-                pages.put(folderPath, folder);
+    /**
+     * <p>
+     * buildFolder
+     * </p>
+     *
+     * @param folderPath
+     * @param folder
+     * @return
+     * @throws IOException
+     */
+    protected Folder buildFolder( String folderPath ) throws IOException
+    {
+        File f = new File(this.rootDir, folderPath);
+        Folder folder = null;
 
-            }
+        if (f.exists())
+        {
+            folder = new FolderImpl(f, folderPath, this);
+            pages.put(folderPath, folder, this.rootDir);
+
         }
         return folder;
     }
@@ -403,7 +437,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
         {
             try
             {
-                pages.put(id, page);
+                pages.put(id, page, this.rootDir);
             }
             catch (IOException e)
             {
@@ -458,7 +492,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
             mapping = new Mapping();
 
             InputSource is = new InputSource(stream);
-           
+
             is.setSystemId(mapFileResource);
             mapping.loadMapping(is);
         }
@@ -474,10 +508,24 @@ public class CastorXmlPageManager extends AbstractPageManager implements FileCac
      * 
      * @param entry
      *            the entry being refreshed.
+     * @throws Exception
      */
-    public void refresh( FileCacheEntry entry )
+    public void refresh( FileCacheEntry entry ) throws Exception
     {
         log.debug("Entry is refreshing: " + entry.getFile().getName());
+        
+        if(entry.getDocument() instanceof Page)
+        {
+            Page page = (Page) entry.getDocument();
+            entry.setDocument(buildPage(page.getId()));
+        }
+        else if(entry.getDocument() instanceof Folder)
+        {
+            Folder folder = (Folder) entry.getDocument();
+            entry.setDocument(buildFolder(folder.getName()));
+        }
+            
+
     }
 
     /**
