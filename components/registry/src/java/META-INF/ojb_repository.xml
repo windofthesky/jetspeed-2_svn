@@ -1293,7 +1293,6 @@ limitations under the License.
   -->
      <class-descriptor
    	  class="org.apache.jetspeed.om.impl.SecurityRoleRefImpl"
-   	  proxy="dynamic"
    	  table="SECURITY_ROLE_REFERENCE"
    >
       
@@ -1384,7 +1383,6 @@ limitations under the License.
    -->                                                               
      <class-descriptor                                               
          class="org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl"
-         proxy="dynamic"                                             
          table="SECURITY_ROLE"                                       
    >                                                                 
         <field-descriptor                                            

@@ -215,12 +215,19 @@ public class ServletRequestImpl extends HttpServletRequestWrapper
                 if (null != portletAppDef)
                 {
                     // PortletApplicationDefinition portletAppDef = portletAppEntity.getPortletApplicationDefinition();
-                    value = context.getUserInfoMap(portletAppDef.getId()); 
-                    System.out.println("_____________HERE0: " + ((Map) value).size());
+                    value = context.getUserInfoMap(portletAppDef.getId());
+                    if ( value != null )
+                    {
+                        System.out.println("_____________HERE0: " + ((Map) value).size());
+                    }
+                    else
+                    {
+                        System.out.println("_____________HERE1: UserInfoMap NULL");
+                    }
                 }
                 else
                 {                    
-                    System.out.println("_____________HERE1: Entity is null!!!! " + entityID);
+                    System.out.println("_____________HERE2: Entity is null!!!! " + entityID);
                 }
                   
             }

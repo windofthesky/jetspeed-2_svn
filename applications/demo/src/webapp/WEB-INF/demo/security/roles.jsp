@@ -57,12 +57,12 @@ limitations under the License.
       	<td><%= request.isUserInRole("User") %></td>
     	</tr>
     </table>
+    <br><br>
+    <b>Portlet Request - User info:</b>
+    <br>Render request: <%= renderRequest.getAttribute(PortletRequest.USER_INFO) %>
+    <br>Request: <%= request.getAttribute(PortletRequest.USER_INFO) %>
   </c:otherwise>
 
 </c:choose>
-<br><br>
-<b>Portlet Request - User info:</b>
-<br>Render request: <%= renderRequest.getAttribute(PortletRequest.USER_INFO) %>
-<br>Request: <%= request.getAttribute(PortletRequest.USER_INFO) %>
 <br>
 For help on role configuration select the help icon.
