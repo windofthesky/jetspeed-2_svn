@@ -3,5 +3,4 @@
   <title>Users Admin Pages</title>
   <name>user-admin</name>
   <documentPath>/Administrative/user-mgt.psml</documentPath>
-  <documentPath>/Administrative/users-jsf.psml</documentPath>
 </documentSet>
