@@ -1,23 +1,21 @@
-/*
- * Copyright 2000-2004 The Apache Software Foundation.
+/**
+ * Created on Jan 13, 2004
+ *
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * @author
  */
 package org.apache.jetspeed.deployment;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.portlet.Portlet;
 
@@ -25,25 +23,26 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.StandardFileSystemManager;
+import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
-import org.apache.jetspeed.deployment.impl.AutoDeploymentManager;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
 import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener;
+import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
+import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
-import org.apache.jetspeed.util.DirectoryUtils;
+import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.JarHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
+import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.common.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -70,7 +69,6 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
     private PortletApplicationWar paWar3;
     protected File webAppsDirFile;
     protected File copyFrom;
-    protected StandardFileSystemManager fsManager;
     protected PortletWindowAccessor windowAccess;
 
     /**
@@ -105,46 +103,36 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         return new TestSuite(TestSimpleDeployment.class);
     }
     
-    public void testFileSystemManagerOnWar() throws Exception
+    public void testFileSystemHelperOnWar() throws Exception
     {
         File demoApp = new File(deploySrc, "demo.war");
+           
+        JarHelper jarHelper = new JarHelper(demoApp, true);
+        File rootDirectory = jarHelper.getRootDirectory();
+        File webXml = new File(rootDirectory, "WEB-INF/web.xml");
+        assertTrue(webXml.exists());
+        jarHelper.close();          
+        assertFalse(webXml.exists());
         
-        FileObject fsObject = fsManager.toFileObject(demoApp);
-        assertEquals(FileType.FILE, fsObject.getType());
-        FileObject testObj = fsManager.createFileSystem(fsObject);
-        assertEquals(FileType.FOLDER, testObj.getType());
-        // assertEquals("org.apache.commons.vfs.provider.jar.JarFileSystem", testObj.getFileSystem().getClass().getName());
-        FileObject webXml = testObj.resolveFile("WEB-INF/web.xml");
-        assertNotNull(webXml);
-        assertNotNull(webXml.getContent().getInputStream());
-        //testObj.close();
-        //fsManager.close();
-        
-        //demoApp.delete();
-        System.out.println("Done");
+        // Test for keeping jar temp files around
+        jarHelper = new JarHelper(demoApp, false);
+        assertTrue(webXml.exists());
+        jarHelper.close();          
+        assertTrue(webXml.exists());
     }
     
     public void testFileSystemManagerOnDir() throws Exception
     {
         File demoApp = new File("./test/testdata/deploy/webapp");
         assertTrue(demoApp.exists());
-        FileObject testObj = fsManager.toFileObject(demoApp);
-        assertEquals(FileType.FOLDER, testObj.getType());
-        // assertEquals("org.apache.commons.vfs.provider.jar.JarFileSystem", testObj.getFileSystem().getClass().getName());
-        FileObject webXml = testObj.resolveFile("WEB-INF/web.xml");
-        assertNotNull(webXml);
-        assertNotNull(webXml.getContent().getInputStream());
-        fsManager.getFilesCache().close();        
+        
+        DirectoryHelper dirHelper = new DirectoryHelper(demoApp);
+        File webXml = new File(dirHelper.getRootDirectory(), "WEB-INF/web.xml");
+        assertTrue(webXml.exists());
+             
     }
     
-    public void testFileSystemManagerForJars() throws Exception
-    {
-        File demoApp = new File(deploySrc, "portletstd.jar");
-        FileObject testObj = fsManager.createFileSystem(fsManager.toFileObject(demoApp));
-        assertEquals("org.apache.commons.vfs.provider.jar.JarFileSystem", testObj.getFileSystem().getClass().getName());
-        fsManager.getFilesCache().close();
-    }
-
+    
     public void testDeploy() throws Exception
     {
 
@@ -155,12 +143,12 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
                 .getAbsolutePath());
 
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, VFS.getManager(), entityAccess, windowAccess), portletRegistry, VFS.getManager());
+                webAppsDir, portletRegistry, entityAccess, windowAccess), portletRegistry );
         ArrayList eventListeners = new ArrayList(2);
         eventListeners.add(ddel);
         eventListeners.add(dpal);
         // Use a -1 delay to disable auto scan
-        AutoDeploymentManager autoDeployment = new AutoDeploymentManager(deploySrc.getAbsolutePath(), -1, eventListeners, fsManager);
+        StandardDeploymentManager autoDeployment = new StandardDeploymentManager(deploySrc.getAbsolutePath(), -1, eventListeners );
         
         autoDeployment.start();
         autoDeployment.fireDeploymentEvent();
@@ -168,7 +156,8 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         File decoratorVm = new File(deployRootFile.getAbsolutePath() + File.separator + "html" + File.separator
                 + "portletstd" + File.separator + "decorator.vm");
         
-        File demoApp = new File(webAppsDirFile, TEST_PORTLET_APP_NAME);
+        File demoAppDeployed = new File(webAppsDirFile, TEST_PORTLET_APP_NAME);
+        File demoApp = demoAppDeployed;
         File securityApp = new File(webAppsDirFile, "TestSecurityRoles");
 
         assertTrue(decoratorVm.getCanonicalPath() + " was not created!", decoratorVm.exists());
@@ -212,7 +201,133 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         autoDeployment.fireUndeploymentEvent();
         verifyDemoAppDeleted(TEST_PORTLET_APP_NAME, demoApp);
         
+        // test redeploy
+        
+        // So, first deploy the typical demo.war we have been using before.
+        copyDeployables();
+        autoDeployment.fireDeploymentEvent();
+        verifyDemoAppCreated(TEST_PORTLET_APP_NAME, demoApp);
+        DirectoryHelper demoAppDeployedDir = new DirectoryHelper(demoAppDeployed);
+        long beforeSize = new File(demoAppDeployedDir.getRootDirectory(), "WEB-INF/portlet.xml").length();
+        
+        // Trigger re-deployment using a demo.war that has a slightly larger portlet.xml
+        // then the one we just deployed.  We will use size comparisons as or litmus test.
+        File redeployDemoWar = new File("./test/deployment/redeploy/demo.war");
+        FileChannel srcDemoWarChannel = new FileInputStream(redeployDemoWar).getChannel();
+        FileChannel dstDemoWarChannel = new FileOutputStream(demoWar).getChannel();
+        dstDemoWarChannel.transferFrom(srcDemoWarChannel, 0, srcDemoWarChannel.size());
+        srcDemoWarChannel.close();
+        dstDemoWarChannel.close();
+        
+        // Make sure the demo.war that will trigger redeploy has a larger portlet.xml then the current one
+        JarHelper rdDemoWar = new JarHelper(demoWar, true);
+        assertTrue(new File(rdDemoWar.getRootDirectory(), "WEB-INF/portlet.xml").length() > beforeSize);
+        
+        // Need to slow it down so the timestamp check works
+        Thread.sleep(500);
+        demoWar.setLastModified(System.currentTimeMillis());
+        autoDeployment.fireRedeploymentEvent();
+      
+        long afterSize = new File(demoAppDeployedDir.getRootDirectory(), "WEB-INF/portlet.xml").length();
+        // The portlet.xml in re-deploy has an additional portlet entry in portlet.xml, so it should be bigger
+        assertTrue(afterSize > beforeSize);
         autoDeployment.stop();
+        
+    }
+    
+    
+    public void testUndeployVersusRedeploy() throws Exception
+    {
+        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
+                webAppsDir, portletRegistry, entityAccess, windowAccess), portletRegistry );
+        ArrayList eventListeners = new ArrayList(1);
+        
+        eventListeners.add(dpal);
+        
+        // Use a -1 delay to disable auto scan
+        StandardDeploymentManager autoDeployment = new StandardDeploymentManager(deploySrc.getAbsolutePath(), -1, eventListeners );        
+        autoDeployment.start();
+
+        buildEntityTestData(autoDeployment);       
+        
+        
+        MutablePortletEntity entity = entityAccess.getPortletEntity("testEnity");
+        
+        PreferenceSetCtrl prefs = (PreferenceSetCtrl) entity.getPreferenceSet();
+        List values = new ArrayList(1);
+        values.add("some value");
+        prefs.add("pref1", values);
+        
+        entity.store();
+        
+        assertNotNull(entity);
+        
+        Preference pref = entity.getPreferenceSet().get("pref1");
+        
+        assertNotNull(pref);
+        
+        //test entity removal via undeploy
+        File demoWar = new File(deploySrc, "demo.war");
+        demoWar.delete();
+        
+        autoDeployment.fireUndeploymentEvent();
+        
+                
+        entity = entityAccess.getPortletEntity("testEnity");
+        
+        assertNull(entity);
+        
+        // Now test that redploy DOES NOT kill the entity
+        buildEntityTestData(autoDeployment);
+        
+        entity = entityAccess.getPortletEntity("testEnity");
+        
+        assertNotNull(entity);
+        
+        pref = entity.getPreferenceSet().get("pref1");
+        
+        assertNull("Preference was not deleted with last undeploy",pref);
+        
+        demoWar.setLastModified(System.currentTimeMillis());
+        
+        autoDeployment.fireRedeploymentEvent();        
+        
+        entity = entityAccess.getPortletEntity("testEnity");
+        
+        assertNotNull(entity);
+        
+    }
+   
+
+    /**
+     * <p>
+     * buildEntityTestData
+     * </p>
+     *
+     * @param autoDeployment
+     * @throws IOException
+     * @throws PortletEntityNotStoredException
+     */
+    protected void buildEntityTestData( StandardDeploymentManager autoDeployment ) throws Exception
+    {
+        copyDeployables();
+        
+        File demoApp = new File(webAppsDirFile, TEST_PORTLET_APP_NAME);
+                
+        autoDeployment.fireDeploymentEvent();
+        
+        verifyDemoAppCreated(TEST_PORTLET_APP_NAME, demoApp);
+        
+        MutablePortletApplication app = portletRegistry.getPortletApplication(TEST_PORTLET_APP_NAME);
+        
+        PortletDefinition portlet = (PortletDefinition) app.getPortletDefinitionList().iterator().next();
+        
+        MutablePortletEntity entity = entityAccess.newPortletEntityInstance(portlet);
+        entity.setId("testEnity");
+        
+        entityAccess.storePortletEntity(entity);
+        
+        
         
     }
 
@@ -266,13 +381,13 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
             webAppsDirFile.mkdirs();
 
             webAppsDir = webAppsDirFile.getCanonicalPath();
-            testDb = new File("./test/db/hsql/Registry").getCanonicalPath();
-            fsManager = new StandardFileSystemManager();
-            fsManager.setConfiguration("./src/webapp/WEB-INF/conf/vfs-providers.xml");
-            fsManager.init();
+            testDb = new File("./test/db/hsql/Registry").getCanonicalPath();           
             
             copyDeployables();
-            windowAccess = new PortletWindowAccessorImpl(entityAccess);         
+            windowAccess = new PortletWindowAccessorImpl(entityAccess);   
+            
+            PropertyManagerImpl pms = new PropertyManagerImpl(persistenceStore);
+            PreferencesProviderImpl provider = new PreferencesProviderImpl(persistenceStore, "org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl", false);
             
 
         }
@@ -288,20 +403,49 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
      * <p>
      * copyDeployables
      * </p>
-     *
-     * @throws FileSystemException
+     * @throws IOException
      */
-    protected void copyDeployables() throws FileSystemException
+    protected void copyDeployables() throws IOException
     {      
         
-        FileObject copyFromObj = fsManager.toFileObject(copyFrom);
-        FileObject deploySrcObj = fsManager.toFileObject(deploySrc);
-        fsManager.getFilesCache().clear(deploySrcObj.getFileSystem());
-        deploySrcObj.copyFrom(copyFromObj, new AllFileSelector());
-        copyFromObj.close();
-        deploySrcObj.close();  
-        fsManager.getFilesCache().removeFile(deploySrcObj.getFileSystem(), deploySrcObj.getName());
-        fsManager.getFilesCache().removeFile(copyFromObj.getFileSystem(), copyFromObj.getName());
+  
+        copyFiles(copyFrom, deploySrc);
+        
+    }
+    
+    
+
+    /**
+     * <p>
+     * copyFiles
+     * </p>
+     *
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    protected void copyFiles(File srcDir, File dstDir) throws IOException, FileNotFoundException
+    {
+        File[] children = srcDir.listFiles();
+        for(int i=0; i<children.length; i++)
+        {
+            File child = children[i];
+            if(child.isFile())
+            {
+                File toFile = new File(dstDir, child.getName());
+                toFile.createNewFile();
+                FileChannel srcChannel = new FileInputStream(child).getChannel();
+                FileChannel dstChannel = new FileOutputStream(toFile).getChannel();
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+                srcChannel.close();
+                dstChannel.close();
+            }
+            else
+            {
+                File newSubDir = new File(dstDir, child.getName());
+                newSubDir.mkdir();
+                copyFiles(child, newSubDir);
+            }
+        }
     }
 
     /**
@@ -309,12 +453,13 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
      */
     public void tearDown() throws Exception
     {
-        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, VFS.getManager(), entityAccess, windowAccess);
+        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess);
 
         try
         {
-            paWar1 = new PortletApplicationWar(webAppsDir + "/" + TEST_PORTLET_APP_NAME, TEST_PORTLET_APP_NAME, "/"
-                    + TEST_PORTLET_APP_NAME, VFS.getManager());
+            DirectoryHelper dirHelper = new DirectoryHelper(new File(webAppsDir + "/" + TEST_PORTLET_APP_NAME));
+            paWar1 = new PortletApplicationWar(dirHelper, TEST_PORTLET_APP_NAME, "/"
+                    + TEST_PORTLET_APP_NAME);
             pam.undeploy(paWar1);
         }
         catch (Exception e1)
@@ -326,7 +471,8 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
 
         try
         {
-            paWar3 = new PortletApplicationWar(webAppsDir + "/TestSecurityRoles", "TestSecurityRoles", "/TestSecurityRoles", VFS.getManager());
+            DirectoryHelper dirHelper = new DirectoryHelper(new File(webAppsDir + "/TestSecurityRoles"));
+            paWar3 = new PortletApplicationWar(dirHelper, "TestSecurityRoles", "/TestSecurityRoles" );
 
             pam.undeploy(paWar3);
         }
@@ -335,8 +481,8 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
 
         }
 
-        DirectoryUtils.rmdir(new File("./target/deployment"));
-        fsManager.getFilesCache().close();
+        // DirectoryUtils.rmdir(new File("./target/deployment"));
+        new DirectoryHelper(new File("./target/deployment")).remove();
         super.tearDown();
 
     }
