@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -28,6 +30,9 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.picocontainer.Startable;
 
 /**
  * <p>
@@ -38,9 +43,10 @@ import org.apache.commons.httpclient.methods.PutMethod;
  * @version $Id$
  *
  */
-public class TomcatManager
+public class TomcatManager implements ApplicationServerManager, Startable
 {
     private static final String DEFUALT_MANAGER_APP_PATH = "/manager";
+    protected static final Log log = LogFactory.getLog("deployment");
 
     private String hostUrl;
     private int hostPort;
@@ -70,27 +76,21 @@ public class TomcatManager
 
     private HttpMethod install;
 
+    protected GetMethod testConnectionMethod;
+
     public TomcatManager(String hostName, int hostPort, String userName, String password) throws HttpException, IOException
     {
         super();
-        init(hostName, hostPort, userName, password);
-    }
-
-    /**
-     * do nothing constructor
-     *
-     */
-    protected TomcatManager()
-    {
-        super();
-    }
-
-    protected void init(String hostName, int hostPort, String userName, String password) throws IOException, HttpException
-    {
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;
-        this.password = password;
+        this.password = password;        
+    }
+
+  
+
+    public void start() 
+    {     
 
         client = new HttpClient();
 
@@ -102,8 +102,7 @@ public class TomcatManager
         client.getState().setAuthenticationPreemptive(true);
         client.getState().setCredentials(null, hostUrl, new UsernamePasswordCredentials(userName, password));
 
-        // perform a test, we can use this to close a
-        GetMethod test = new GetMethod(serverInfoPath);
+        testConnectionMethod = new GetMethod(serverInfoPath);
         //        try
         //        {
         //            client.executeMethod(test);
@@ -266,4 +265,61 @@ public class TomcatManager
         return hostUrl;
     }
 
+    /**
+     * <p>
+     * isConnected
+     * </p>
+     *
+     * @see org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager#isConnected()
+     * @return
+     */
+    public boolean isConnected()
+    {
+        Socket checkSocket = null;
+        try
+        {
+            checkSocket = new Socket(hostUrl, hostPort);
+            return true;
+        }
+        catch (UnknownHostException e1)
+        {
+            log.warn("Unknown server, CatalinaPAM will only function as FileSystemPAM: " + e1.toString());
+
+            return false;
+        }
+        catch (IOException e1)
+        {
+            log.warn("IOException, CatalinaPAM will only function as FileSystemPAM: " + e1.toString());
+
+            return false;
+        }
+        finally
+        {
+            try
+            {
+                // close the server check
+                if (checkSocket != null)
+                {
+                    checkSocket.close();
+                }
+            }
+            catch (IOException e2)
+            {
+                // do nothing
+            }
+        }
+    }
+    /**
+     * <p>
+     * stop
+     * </p>
+     * 
+     * @see org.picocontainer.Startable#stop()
+     *  
+     */
+    public void stop()
+    {
+        
+
+    }
 }
