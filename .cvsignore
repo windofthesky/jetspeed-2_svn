@@ -7,3 +7,5 @@ bin
 *.log*
 .checkclipse
 .encoding
+.settings
+build.properties
