@@ -541,7 +541,7 @@
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
-         access="anonymous"
+
          
       />
       <field-descriptor
@@ -608,7 +608,6 @@
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
-         access="anonymous"
          
       />
       <field-descriptor

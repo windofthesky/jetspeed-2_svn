@@ -89,6 +89,8 @@ public abstract class AbstractPreference implements PreferenceComposite
     protected String name;
 
     protected boolean readOnly;
+    
+    protected int id;
 
     /** a collection of <code>PreferenceValueObjects</code>
          * that can be persisted in a unique fashion.
