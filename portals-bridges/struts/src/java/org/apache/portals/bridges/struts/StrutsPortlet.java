@@ -164,31 +164,31 @@ public class StrutsPortlet extends GenericPortlet
     public void doEdit(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        process(request, response, defaultEditPage, StrutsPortlet.EDIT_REQUEST);
+        processRequest(request, response, defaultEditPage, StrutsPortlet.EDIT_REQUEST);
     }
     public void doHelp(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        process(request, response, defaultHelpPage, StrutsPortlet.HELP_REQUEST);
+        processRequest(request, response, defaultHelpPage, StrutsPortlet.HELP_REQUEST);
     }
     public void doCustom(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        process(request, response, defaultCustomPage,
+        processRequest(request, response, defaultCustomPage,
                 StrutsPortlet.CUSTOM_REQUEST);
     }
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
-        process(request, response, defaultViewPage, StrutsPortlet.VIEW_REQUEST);
+        processRequest(request, response, defaultViewPage, StrutsPortlet.VIEW_REQUEST);
     }
     public void processAction(ActionRequest request, ActionResponse response)
             throws PortletException, IOException
     {
-        process(request, response, defaultActionPage,
+        processRequest(request, response, defaultActionPage,
                 StrutsPortlet.ACTION_REQUEST);
     }
-    private void process(PortletRequest request, PortletResponse response,
+    protected void processRequest(PortletRequest request, PortletResponse response,
             String defaultPage, String requestType) throws PortletException,
             IOException
     {
