@@ -79,7 +79,7 @@ public abstract class AbstractPortalURL implements PortalURL
             this.contextPath = (String)context.getRequest().getAttribute(ContainerConstants.PORTAL_CONTEXT); 
             if (contextPath == null)
             {
-                context.getRequest().getContextPath();
+                contextPath = context.getRequest().getContextPath();
             }
             if (contextPath == null)
             {
