@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
+import org.apache.pluto.om.window.PortletWindowListCtrl;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.jetspeed.util.JetspeedObjectID;
@@ -94,6 +95,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
     public void setPortletEntity(PortletEntity portletEntity)
     {
         this.portletEntity = portletEntity;
+        ((PortletWindowListCtrl)portletEntity.getPortletWindowList()).add(this);
     }
 
 }
