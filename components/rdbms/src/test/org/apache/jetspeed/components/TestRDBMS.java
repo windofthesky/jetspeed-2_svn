@@ -21,11 +21,14 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
 import org.apache.jetspeed.components.jndi.JNDIComponent;
+import org.apache.jetspeed.components.util.DatasourceTestCase;
 import org.picocontainer.MutablePicoContainer;
 /**
  * <p>
@@ -36,13 +39,12 @@ import org.picocontainer.MutablePicoContainer;
  * @version $ $
  *  
  */
-public class TestRDBMS extends AbstractComponentAwareTestCase
+public class TestRDBMS extends DatasourceTestCase
 {
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestRDBMS.class);
-        suite.setScript("org/apache/jetspeed/containers/rdbms.container.groovy");
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestRDBMS.class);
     }
     /**
      * Defines the testcase name for JUnit.
@@ -52,27 +54,25 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
      */
     public TestRDBMS(String name)
     {
-        super(name, "./src/test/Log4j.properties");
+        super(name);
     }
     
     public void testDBCP_1() throws Exception
     {
         assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));
-        MutablePicoContainer defaultContainer = getComponentManager().getRootContainer();
-        DatasourceComponent dsc = (DatasourceComponent) defaultContainer
-        .getComponentInstance(DatasourceComponent.class);
+
         InitialContext context = new InitialContext();
         //look up from jndi
         assertNotNull(context.lookup("java:comp/env/jdbc/jetspeed"));
-        assertNotNull(dsc);
-        DataSource ds = dsc.getDatasource();
+        assertNotNull(datasourceComponent);
+        DataSource ds = datasourceComponent.getDatasource();
         assertNotNull(ds);
         Connection conn = ds.getConnection();
         assertNotNull(conn);
         assertFalse(conn.isClosed());
         conn.close();
-        ((BoundDBCPDatasourceComponent)dsc).stop();
-        JNDIComponent jndi = (JNDIComponent)defaultContainer.getComponentInstance(JNDIComponent.class);
+        ((BoundDBCPDatasourceComponent)datasourceComponent).stop();
+        
         
         try
         {
