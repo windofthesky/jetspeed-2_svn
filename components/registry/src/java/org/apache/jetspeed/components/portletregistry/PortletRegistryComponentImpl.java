@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
@@ -34,10 +36,6 @@ import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.StoreablePortletDefinitionDelegate;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-
 import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
@@ -45,6 +43,12 @@ import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
+
+import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+
 
 /**
  * <p>
@@ -172,7 +176,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
         Filter filter = store.newFilter();
-        filter.addEqualTo("id", id);
+        filter.addEqualTo("id", new Long(id.toString()));
         Object query = store.newQuery(portletAppClass, filter);
         return (MutablePortletApplication) store.getObjectByQuery(query);
     }
