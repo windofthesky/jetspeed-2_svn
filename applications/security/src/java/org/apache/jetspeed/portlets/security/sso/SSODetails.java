@@ -175,7 +175,6 @@ public class SSODetails extends BrowserPortlet
             {
                 // Roger: here is the principal type
                 String principalType = request.getParameter("principal.type");
-                System.out.println("principal.type = " + principalType);
                 String portalPrincipal = request.getParameter("portal.principal");                
                 String remotePrincipal = request.getParameter("remote.principal");
                 String remoteCredential = request.getParameter("remote.credential");
