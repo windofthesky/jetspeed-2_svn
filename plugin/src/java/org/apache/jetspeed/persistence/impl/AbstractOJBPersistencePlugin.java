@@ -338,7 +338,6 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
                 // URL ojbPropUrl = contextClassLoader.getSystemResource("OJB.properties");
                 URL ojbPropUrl = urlClassLoader.getResource("OJB.properties");
                 log.info("Loading OJB.properties from: " + ojbPropUrl.toString());
-                System.out.println(ojbPropUrl);
             }
             catch (MalformedURLException e1)
             {
