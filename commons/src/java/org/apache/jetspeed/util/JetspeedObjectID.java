@@ -57,6 +57,7 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * 
@@ -70,73 +71,78 @@ import org.apache.pluto.om.common.ObjectID;
  */
 public class JetspeedObjectID implements ObjectID, java.io.Serializable
 {
-    private String  stringOID = null;
-    private int     intOID;
+    private String stringOID = null;
+    private int intOID;
 
-    public JetspeedObjectID (int oid)
+    public JetspeedObjectID(int oid)
     {
-        stringOID = String.valueOf (oid);
-        intOID    = oid;
+        stringOID = String.valueOf(oid);
+        intOID = oid;
     }
 
-        
-    public JetspeedObjectID (int oid, String stringOID)
+    public JetspeedObjectID(int oid, String stringOID)
     {
         this.stringOID = stringOID;
-        intOID    = oid;
-    }   
-    
+        intOID = oid;
+    }
 
-    public boolean equals (Object object)
+    public boolean equals(Object object)
     {
         boolean result = false;
 
-        if (object instanceof JetspeedObjectID)            
-            result = (intOID == ((JetspeedObjectID) object).intOID);  
+        if (object instanceof JetspeedObjectID)
+            result = (intOID == ((JetspeedObjectID) object).intOID);
         else if (object instanceof String)
-            result = stringOID.equals (object);
+            result = stringOID.equals(object);
         else if (object instanceof Integer)
-            result = (intOID == ((Integer)object).intValue());        
+            result = (intOID == ((Integer) object).intValue());
         return (result);
     }
 
-    public int hashCode ()
+    public int hashCode()
     {
         return (intOID);
     }
 
-    public String toString ()
+    public String toString()
     {
         return (stringOID);
     }
 
-    public int intValue ()
+    public int intValue()
     {
         return (intOID);
     }
 
-    private void readObject (ObjectInputStream stream) throws IOException, ClassNotFoundException
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException
     {
-        intOID = stream.readInt ();
+        intOID = stream.readInt();
 
-        stringOID = String.valueOf (intOID);
+        stringOID = String.valueOf(intOID);
     }
 
-    private void writeObject (ObjectOutputStream stream) throws IOException
+    private void writeObject(ObjectOutputStream stream) throws IOException
     {
-        stream.write (intOID);
+        stream.write(intOID);
     }
 
     static public JetspeedObjectID createFromString(String idStr)
     {
         char[] id = idStr.toCharArray();
-        int _id  = 1;
-        for (int i=0; i<id.length; i++)
+        int _id = 1;
+        for (int i = 0; i < id.length; i++)
         {
-            if ((i%2)==0)   _id *= id[i];
-            else            _id ^= id[i];
+            if ((i % 2) == 0)
+                _id *= id[i];
+            else
+                _id ^= id[i];
             _id = Math.abs(_id);
         }
         return new JetspeedObjectID(_id, idStr);
+    }
+
+    public static JetspeedObjectID createPortletEntityId(PortletDefinition portletDefinition, String instanceName)
+    {
+        return createFromString(portletDefinition.getName() + ":" + portletDefinition.getId().toString() + ":" + instanceName);
     }
 }
