@@ -258,10 +258,7 @@ public class TestPreferences extends JetspeedTest
         Preferences prefs1 = Preferences.userRoot().node(fullPropertySetPath);
         prefs1.put("propertyName00", "true");
         String prop1 = prefs1.get("propertyName00", null);
-        if (!prop1.equals("true"))
-        {
-            assertTrue(false);
-        }
+        assertTrue("expected prop1 == true, " + prop1, prop1.equals("true"));
         
         // Test remove property.
         prefs1.remove("propertyName00");
