@@ -60,7 +60,6 @@ import java.util.Locale;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDescriptionSet;
 import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.jetspeed.om.impl.*;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
@@ -172,6 +171,17 @@ public class ParameterImpl implements ParameterComposite, Serializable
         }
 
         descriptions.addDescription(new DescriptionImpl(locale, desc, MutableDescription.TYPE_PARAMETER));
+
+    }
+
+    public void addDescription(Description desc)
+    {
+        if (descriptions == null)
+        {
+            descriptions = new DescriptionSetImpl(MutableDescription.TYPE_PARAMETER);
+        }
+
+        descriptions.addDescription(desc);
 
     }
 
