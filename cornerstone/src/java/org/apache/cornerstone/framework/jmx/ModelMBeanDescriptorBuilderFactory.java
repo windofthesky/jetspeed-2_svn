@@ -16,9 +16,7 @@
 
 package org.apache.cornerstone.framework.jmx;
 
-import org.apache.cornerstone.framework.api.singleton.ISingletonManager;
 import org.apache.cornerstone.framework.factory.BaseFactory;
-import org.apache.cornerstone.framework.init.Cornerstone;
 import org.apache.log4j.Logger;
 
 /**
