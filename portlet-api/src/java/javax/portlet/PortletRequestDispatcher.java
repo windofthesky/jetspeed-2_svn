@@ -73,7 +73,8 @@ package javax.portlet;
  *
  */
  
-public interface PortletRequestDispatcher {
+public interface PortletRequestDispatcher 
+{
 
 
     /**
@@ -86,23 +87,23 @@ public interface PortletRequestDispatcher {
      * or set headers; any attempt to make a change is ignored.
      *
      *
-     * @param request 			a {@link RenderRequest} object 
-     *					that contains the client request
+     * @param request             a {@link RenderRequest} object 
+     *                    that contains the client request
      *
-     * @param response 			a {@link RenderResponse} object 
-     * 					that contains the render response
+     * @param response             a {@link RenderResponse} object 
+     *                     that contains the render response
      *
-     * @exception PortletException 	if the included resource throws a ServletException, 
+     * @exception PortletException     if the included resource throws a ServletException, 
      *                                  or other exceptions that are not Runtime-
      *                                  or IOExceptions.
      *
-     * @exception java.io.IOException	if the included resource throws this exception
+     * @exception java.io.IOException    if the included resource throws this exception
      *
      *
      */
      
     public void include(RenderRequest request, RenderResponse response)
-	throws PortletException, java.io.IOException;
+    throws PortletException, java.io.IOException;
 
 
 

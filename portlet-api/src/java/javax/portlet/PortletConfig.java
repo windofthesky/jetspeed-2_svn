@@ -126,13 +126,13 @@ public interface PortletConfig
    * Returns a String containing the value of the named initialization parameter, 
    * or null if the parameter does not exist.
    *
-   * @param name	a <code>String</code> specifying the name
-   *			of the initialization parameter
+   * @param name    a <code>String</code> specifying the name
+   *            of the initialization parameter
    *
-   * @return		a <code>String</code> containing the value 
-   *			of the initialization parameter
+   * @return        a <code>String</code> containing the value 
+   *            of the initialization parameter
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 
@@ -144,9 +144,9 @@ public interface PortletConfig
    * <code>Enumeration</code> of String objects, or an empty <code>Enumeration</code> if the 
    * portlet has no initialization parameters.    
    *
-   * @return		an <code>Enumeration</code> of <code>String</code> 
-   *			objects containing the names of the portlet 
-   *			initialization parameters, or an empty <code>Enumeration</code> if the 
+   * @return        an <code>Enumeration</code> of <code>String</code> 
+   *            objects containing the names of the portlet 
+   *            initialization parameters, or an empty <code>Enumeration</code> if the 
    *                    portlet has no initialization parameters. 
    */
 

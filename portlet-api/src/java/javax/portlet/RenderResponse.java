@@ -192,9 +192,9 @@ public interface RenderResponse extends PortletResponse
    * <p>See <a href="http://ds.internic.net/rfc/rfc2045.txt">RFC 2047</a>
    * for more information about character encoding and MIME.
    *
-   * @return		a <code>String</code> specifying the
-   *			name of the charset, for
-   *			example, <code>ISO-8859-1</code>
+   * @return        a <code>String</code> specifying the
+   *            name of the charset, for
+   *            example, <code>ISO-8859-1</code>
    *
    */
   
@@ -213,13 +213,13 @@ public interface RenderResponse extends PortletResponse
    * called to write the body, not both.
    *
    * @return    a <code>PrintWriter</code> object that 
-   *		can return character data to the portal
+   *        can return character data to the portal
    *
    * @exception  java.io.IOException
    *                 if an input or output exception occurred
    * @exception  java.lang.IllegalStateException
    *                 if the <code>getPortletOutputStream</code> method
-   * 		     has been called on this response, 
+   *              has been called on this response, 
    *                 or if no content type was set using the
    *                 <code>setContentType</code> method.
    *
@@ -249,17 +249,17 @@ public interface RenderResponse extends PortletResponse
    * does not support buffering, this method may throw an 
    * <code>IllegalStateException</code>.
    *
-   * @param size 	the preferred buffer size
+   * @param size     the preferred buffer size
    *
-   * @exception  java.lang.IllegalStateException 	
+   * @exception  java.lang.IllegalStateException     
    *                    if this method is called after
-   *			content has been written, or the
+   *            content has been written, or the
    *                    portlet container does not support buffering
    *
-   * @see 		#getBufferSize
-   * @see 		#flushBuffer
-   * @see 		#isCommitted
-   * @see 		#reset
+   * @see         #getBufferSize
+   * @see         #flushBuffer
+   * @see         #isCommitted
+   * @see         #reset
    */
 
   public void setBufferSize(int size);
@@ -269,12 +269,12 @@ public interface RenderResponse extends PortletResponse
    * Returns the actual buffer size used for the response.  If no buffering
    * is used, this method returns 0.
    *
-   * @return	 	the actual buffer size used
+   * @return         the actual buffer size used
    *
-   * @see 		#setBufferSize
-   * @see 		#flushBuffer
-   * @see 		#isCommitted
-   * @see 		#reset
+   * @see         #setBufferSize
+   * @see         #flushBuffer
+   * @see         #isCommitted
+   * @see         #reset
    */
 
   public int getBufferSize();
@@ -287,10 +287,10 @@ public interface RenderResponse extends PortletResponse
    *
    * @exception  java.io.IOException  if an error occured when writing the output
    *
-   * @see 		#setBufferSize
-   * @see 		#getBufferSize
-   * @see 		#isCommitted
-   * @see 		#reset
+   * @see         #setBufferSize
+   * @see         #getBufferSize
+   * @see         #isCommitted
+   * @see         #reset
    */
 
   public void flushBuffer() throws java.io.IOException;
@@ -301,13 +301,13 @@ public interface RenderResponse extends PortletResponse
    * clearing properties set. If the response has been committed, 
    * this method throws an <code>IllegalStateException</code>.
    *
-   * @exception  IllegalStateException 	if this method is called after
-   *					response is comitted
+   * @exception  IllegalStateException     if this method is called after
+   *                    response is comitted
    *
-   * @see 		#setBufferSize
-   * @see 		#getBufferSize
-   * @see 		#isCommitted
-   * @see 		#reset
+   * @see         #setBufferSize
+   * @see         #getBufferSize
+   * @see         #isCommitted
+   * @see         #reset
    */
 
   public void resetBuffer();
@@ -317,13 +317,13 @@ public interface RenderResponse extends PortletResponse
    * Returns a boolean indicating if the response has been
    * committed.
    *
-   * @return		a boolean indicating if the response has been
-   *  		committed
+   * @return        a boolean indicating if the response has been
+   *          committed
    *
-   * @see 		#setBufferSize
-   * @see 		#getBufferSize
-   * @see 		#flushBuffer
-   * @see 		#reset
+   * @see         #setBufferSize
+   * @see         #getBufferSize
+   * @see         #flushBuffer
+   * @see         #reset
    */
 
   public boolean isCommitted();
@@ -337,10 +337,10 @@ public interface RenderResponse extends PortletResponse
    * @exception java.lang.IllegalStateException  if the response has already been
    *                                   committed
    *
-   * @see 		#setBufferSize
-   * @see 		#getBufferSize
-   * @see 		#flushBuffer
-   * @see 		#isCommitted
+   * @see         #setBufferSize
+   * @see         #getBufferSize
+   * @see         #flushBuffer
+   * @see         #isCommitted
    */
 
   public void reset();
@@ -359,14 +359,14 @@ public interface RenderResponse extends PortletResponse
    * <p>
    * Either this method or {@link #getWriter} may be called to write the body, not both.
    *
-   * @return	a <code>OutputStream</code> for writing binary data	
+   * @return    a <code>OutputStream</code> for writing binary data    
    *
    * @exception java.lang.IllegalStateException   if the <code>getWriter</code> method
-   * 					has been called on this response, or
+   *                     has been called on this response, or
    *                                    if no content type was set using the
    *                                    <code>setContentType</code> method.
    *
-   * @exception java.io.IOException 	if an input or output exception occurred
+   * @exception java.io.IOException     if an input or output exception occurred
    *
    * @see #setContentType
    * @see #getWriter

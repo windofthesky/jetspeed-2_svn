@@ -80,15 +80,15 @@ public class UnavailableException extends PortletException
      * message indicating that the portlet is permanently
      * unavailable.
      *
-     * @param text 	a <code>String</code> specifying the
+     * @param text     a <code>String</code> specifying the
      *                  descriptive message
      *
      */
 
     public UnavailableException(String text) {
-	super(text);
+    super(text);
 
-	permanent = true;
+    permanent = true;
     }
 
     /**
@@ -102,26 +102,26 @@ public class UnavailableException extends PortletException
      * to be restored to functionality. This can be indicated with
      * a negative or zero value for the <code>seconds</code> argument.
      *
-     * @param text	a <code>String</code> specifying the
+     * @param text    a <code>String</code> specifying the
      *                  descriptive message. This message can be written
      *                  to a log file or displayed for the user.
      *
-     * @param seconds	an integer specifying the number of seconds
-     * 			for which the portlet expects to be unavailable; if
-     *			this is zero or negative, it indicates that the portlet
-     *			cannot make an estimate.
+     * @param seconds    an integer specifying the number of seconds
+     *             for which the portlet expects to be unavailable; if
+     *            this is zero or negative, it indicates that the portlet
+     *            cannot make an estimate.
      *
      */
     
     public UnavailableException(String text, int seconds) {
-	super(text);
+    super(text);
 
-	if (seconds <= 0)
-	    this.seconds = -1;
-	else
-	    this.seconds = seconds;
+    if (seconds <= 0)
+        this.seconds = -1;
+    else
+        this.seconds = seconds;
 
-	permanent = false;
+    permanent = false;
     }
 
     /**
@@ -131,15 +131,15 @@ public class UnavailableException extends PortletException
      * If so, something is wrong with the portlet, and the
      * system administrator must take some corrective action.
      *
-     * @return		<code>true</code> if the portlet is
-     *			permanently unavailable; <code>false</code>
-     *			if the portlet is temporarily
-     *			unavailable.
+     * @return        <code>true</code> if the portlet is
+     *            permanently unavailable; <code>false</code>
+     *            if the portlet is temporarily
+     *            unavailable.
      *
      */
      
     public boolean isPermanent() {
-	return permanent;
+    return permanent;
     }
   
 
@@ -156,15 +156,15 @@ public class UnavailableException extends PortletException
      * is permanently unavailable or cannot provide an estimate of
      * how long it will be unavailable. 
      *
-     * @return		an integer specifying the number of seconds
-     *			the portlet will be temporarily unavailable,
-     *			or zero or a negative number if the portlet is permanently
-     *			unavailable or cannot make an estimate.
+     * @return        an integer specifying the number of seconds
+     *            the portlet will be temporarily unavailable,
+     *            or zero or a negative number if the portlet is permanently
+     *            unavailable or cannot make an estimate.
      *
      */
      
     public int getUnavailableSeconds() {
-	return permanent ? -1 : seconds;
+    return permanent ? -1 : seconds;
     }
 
 

@@ -82,7 +82,7 @@ public interface PortalContext
    *
    * @return  portal property with key <code>name</code>
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 

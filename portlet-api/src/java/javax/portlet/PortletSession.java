@@ -122,13 +122,13 @@ public interface PortletSession
    * under the <code>PORTLET_SCOPE</code>, or <code>null</code> if no 
    * object is bound under the name in that scope.
    *
-   * @param name		a string specifying the name of the object
+   * @param name        a string specifying the name of the object
    *
-   * @return			the object with the specified name for
+   * @return            the object with the specified name for
    *                            the <code>PORTLET_SCOPE</code>.
    *
-   * @exception java.lang.IllegalStateException	if this method is called on an
-   *					invalidated session.
+   * @exception java.lang.IllegalStateException    if this method is called on an
+   *                    invalidated session.
    * @exception  java.lang.IllegalArgumentException 
    *                            if name is <code>null</code>.
    */
@@ -140,13 +140,13 @@ public interface PortletSession
    * Returns the object bound with the specified name in this session, 
    * or <code>null</code> if no object is bound under the name in the given scope.
    *
-   * @param name		a string specifying the name of the object
+   * @param name        a string specifying the name of the object
    * @param scope               session scope of this attribute
    *
-   * @return			the object with the specified name
+   * @return            the object with the specified name
    *
-   * @exception java.lang.IllegalStateException	if this method is called on an
-   *					invalidated session
+   * @exception java.lang.IllegalStateException    if this method is called on an
+   *                    invalidated session
    * @exception  java.lang.IllegalArgumentException 
    *                            if name is <code>null</code>.
    */
@@ -159,14 +159,14 @@ public interface PortletSession
    * all the objects bound to this session under the <code>PORTLET_SCOPE</code>, or an
    * empty <code>Enumeration</code> if no attributes are available.
    *
-   * @return			an <code>Enumeration</code> of 
-   *				<code>String</code> objects specifying the
-   *				names of all the objects bound to
-   *				this session, or an empty <code>Enumeration</code> 
+   * @return            an <code>Enumeration</code> of 
+   *                <code>String</code> objects specifying the
+   *                names of all the objects bound to
+   *                this session, or an empty <code>Enumeration</code> 
    *                if no attributes are available.
    *
-   * @exception java.lang.IllegalStateException	if this method is called on an
-   *					invalidated session   
+   * @exception java.lang.IllegalStateException    if this method is called on an
+   *                    invalidated session   
    */
   
   public java.util.Enumeration getAttributeNames();
@@ -180,14 +180,14 @@ public interface PortletSession
    *
    * @param scope               session scope of the attribute names
    *
-   * @return			an <code>Enumeration</code> of 
-   *				<code>String</code> objects specifying the
-   *				names of all the objects bound to
-   *				this session, or an empty <code>Enumeration</code> 
+   * @return            an <code>Enumeration</code> of 
+   *                <code>String</code> objects specifying the
+   *                names of all the objects bound to
+   *                this session, or an empty <code>Enumeration</code> 
    *                            if no attributes are available in the given scope.
    *
-   * @exception java.lang.IllegalStateException	if this method is called on an
-   *					invalidated session   
+   * @exception java.lang.IllegalStateException    if this method is called on an
+   *                    invalidated session   
    */
   
   public java.util.Enumeration getAttributeNames(int scope);
@@ -196,13 +196,13 @@ public interface PortletSession
    * Returns the time when this session was created, measured in 
    * milliseconds since midnight January 1, 1970 GMT.  
    *
-   * @return				a <code>long</code> specifying
-   * 					when this session was created,
-   *					expressed in 
-   *					milliseconds since 1/1/1970 GMT
+   * @return                a <code>long</code> specifying
+   *                     when this session was created,
+   *                    expressed in 
+   *                    milliseconds since 1/1/1970 GMT
    *
-   * @exception java.lang.IllegalStateException	if this method is called on an
-   *					invalidated session
+   * @exception java.lang.IllegalStateException    if this method is called on an
+   *                    invalidated session
    */
 
   public long getCreationTime();
@@ -211,8 +211,8 @@ public interface PortletSession
   /**
    * Returns a string containing the unique identifier assigned to this session. 
    *
-   * @return				a string specifying the identifier
-   *					assigned to this session
+   * @return                a string specifying the identifier
+   *                    assigned to this session
    */
   
   public java.lang.String getId();
@@ -226,11 +226,11 @@ public interface PortletSession
    * a value associated with the session, do not affect the access
    * time.
    *
-   * @return				a <code>long</code>
-   *					representing the last time 
-   *					the client sent a request associated
-   *					with this session, expressed in 
-   *					milliseconds since 1/1/1970 GMT
+   * @return                a <code>long</code>
+   *                    representing the last time 
+   *                    the client sent a request associated
+   *                    with this session, expressed in 
+   *                    milliseconds since 1/1/1970 GMT
    */
   
   public long getLastAccessedTime();
@@ -244,11 +244,11 @@ public interface PortletSession
    * with the <code>setMaxInactiveInterval</code> method.
    * A negative time indicates the session should never timeout.
    *
-   * @return		an integer specifying the number of
-   *			seconds this session remains open
-   *			between client requests
+   * @return        an integer specifying the number of
+   *            seconds this session remains open
+   *            between client requests
    *
-   * @see		#setMaxInactiveInterval
+   * @see        #setMaxInactiveInterval
    */
 
   public int getMaxInactiveInterval();
@@ -260,8 +260,8 @@ public interface PortletSession
    * Invalidating the portlet session will result in invalidating the underlying
    * <code>HttpSession</code>
    *
-   * @exception java.lang.IllegalStateException	if this method is called on a
-   *					session which has already been invalidated
+   * @exception java.lang.IllegalStateException    if this method is called on a
+   *                    session which has already been invalidated
    */
 
   public void invalidate();
@@ -272,12 +272,12 @@ public interface PortletSession
    * Returns true if the client does not yet know about the session or 
    * if the client chooses not to join the session. 
    *
-   * @return 				<code>true</code> if the 
-   *					server has created a session, 
-   *					but the client has not joined yet.
+   * @return                 <code>true</code> if the 
+   *                    server has created a session, 
+   *                    but the client has not joined yet.
    *
-   * @exception java.lang.IllegalStateException	if this method is called on a
-   *					session which has already been invalidated
+   * @exception java.lang.IllegalStateException    if this method is called on a
+   *                    session which has already been invalidated
    *
    */
 
@@ -342,13 +342,13 @@ public interface PortletSession
    * <code>removeAttribute()</code>.
    *
    *
-   * @param name		the name to which the object is bound under
+   * @param name        the name to which the object is bound under
    *                            the <code>PORTLET_SCOPE</code>;
-   *				this cannot be <code>null</code>.
-   * @param value		the object to be bound
+   *                this cannot be <code>null</code>.
+   * @param value        the object to be bound
    *
-   * @exception java.lang.IllegalStateException	if this method is called on a
-   *					session which has been invalidated
+   * @exception java.lang.IllegalStateException    if this method is called on a
+   *                    session which has been invalidated
    * @exception  java.lang.IllegalArgumentException 
    *                            if name is <code>null</code>.
    */
@@ -375,13 +375,13 @@ public interface PortletSession
    * <code>removeAttribute()</code>.
    *
    *
-   * @param name		the name to which the object is bound;
-   *				this cannot be <code>null</code>.
-   * @param value		the object to be bound
+   * @param name        the name to which the object is bound;
+   *                this cannot be <code>null</code>.
+   * @param value        the object to be bound
    * @param scope               session scope of this attribute
    *
-   * @exception java.lang.IllegalStateException	if this method is called on a
-   *					session which has been invalidated
+   * @exception java.lang.IllegalStateException    if this method is called on a
+   *                    session which has been invalidated
    * @exception  java.lang.IllegalArgumentException 
    *                            if name is <code>null</code>.
    */
@@ -394,8 +394,8 @@ public interface PortletSession
    * portlet container invalidates this session. A negative time
    * indicates the session should never timeout.
    *
-   * @param interval		An integer specifying the number
-   * 				of seconds 
+   * @param interval        An integer specifying the number
+   *                 of seconds 
    */
 
   public void setMaxInactiveInterval(int interval);

@@ -143,13 +143,13 @@ public interface PortletContext
    * <code>PortletRequestDispatcher</code> for any reason.
    *
    *
-   * @param name 	a <code>String</code> specifying the name
-   *			of a servlet to be wrapped
+   * @param name     a <code>String</code> specifying the name
+   *            of a servlet to be wrapped
    *
-   * @return 		a <code>PortletRequestDispatcher</code> object
-   *			that acts as a wrapper for the named servlet
+   * @return         a <code>PortletRequestDispatcher</code> object
+   *            that acts as a wrapper for the named servlet
    *
-   * @see 		PortletRequestDispatcher
+   * @see         PortletRequestDispatcher
    *
    */
 
@@ -207,9 +207,9 @@ public interface PortletContext
    *
    *
    * @param   file    a <code>String</code> specifying the name
-   *			of a file
+   *            of a file
    *
-   * @return 		a <code>String</code> specifying the MIME type of the file
+   * @return         a <code>String</code> specifying the MIME type of the file
    *
    */
 
@@ -229,9 +229,9 @@ public interface PortletContext
    * to a real path for any reason (such as when the content is
    * being made available from a <code>.war</code> archive).
    *
-   * @param path 	a <code>String</code> specifying a virtual path
+   * @param path     a <code>String</code> specifying a virtual path
    *
-   * @return 		a <code>String</code> specifying the real path,
+   * @return         a <code>String</code> specifying the real path,
    *                    or null if the transformation cannot be performed.
    */
   
@@ -303,15 +303,15 @@ public interface PortletContext
    * which looks up resources based on a class loader. This
    * method does not use class loaders.
    * 
-   * @param path 				a <code>String</code> specifying
-   *						the path to the resource
+   * @param path                 a <code>String</code> specifying
+   *                        the path to the resource
    *
-   * @return 					the resource located at the named path,
-   * 						or <code>null</code> if there is no resource
-   *						at that path
+   * @return                     the resource located at the named path,
+   *                         or <code>null</code> if there is no resource
+   *                        at that path
    *
-   * @exception MalformedURLException 	        if the pathname is not given in 
-   * 						the correct form
+   * @exception MalformedURLException             if the pathname is not given in 
+   *                         the correct form
    *
    */
     
@@ -335,17 +335,17 @@ public interface PortletContext
    * and <code>sun.*</code>.
    *
    *
-   * @param name 	a <code>String</code> specifying the name 
-   *			of the attribute
+   * @param name     a <code>String</code> specifying the name 
+   *            of the attribute
    *
-   * @return 		an <code>Object</code> containing the value 
-   *			of the attribute, or <code>null</code>
-   *			if no attribute exists matching the given
-   *			name
+   * @return         an <code>Object</code> containing the value 
+   *            of the attribute, or <code>null</code>
+   *            if no attribute exists matching the given
+   *            name
    *
-   * @see 		#getAttributeNames
+   * @see         #getAttributeNames
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 
@@ -359,9 +359,9 @@ public interface PortletContext
    * {@link #getAttribute} method with an attribute name
    * to get the value of an attribute.
    *
-   * @return 		an <code>Enumeration</code> of attribute names
+   * @return         an <code>Enumeration</code> of attribute names
    *
-   * @see		#getAttribute
+   * @see        #getAttribute
    */
 
   public java.util.Enumeration getAttributeNames();
@@ -373,16 +373,16 @@ public interface PortletContext
    * This method provides configuration information which may be useful for 
    * an entire "portlet application".
    *
-   * @param	name	a <code>String</code> containing the name of the
+   * @param    name    a <code>String</code> containing the name of the
    *                    requested parameter 
    * 
-   * @return 		a <code>String</code> containing the value
-   *			of the initialization parameter, or 
+   * @return         a <code>String</code> containing the value
+   *            of the initialization parameter, or 
    *                    <code>null</code> if the parameter does not exist.
    *
    * @see  #getInitParameterNames
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 
@@ -394,7 +394,7 @@ public interface PortletContext
    * <code>Enumeration</code> of String objects, or an empty Enumeration if the context 
    * has no initialization parameters.
    *
-   * @return 	      an <code>Enumeration</code> of <code>String</code> 
+   * @return           an <code>Enumeration</code> of <code>String</code> 
    *                  objects containing the names of the context
    *                  initialization parameters
    *
@@ -412,8 +412,8 @@ public interface PortletContext
    * The portlet container may in addition log this message in a
    * portlet container specific log file.
    *
-   * @param msg 	a <code>String</code> specifying the 
-   *			message to be written to the log file
+   * @param msg     a <code>String</code> specifying the 
+   *            message to be written to the log file
    */
 
   public void log(java.lang.String msg);
@@ -429,10 +429,10 @@ public interface PortletContext
    * The portlet container may in addition log this message in a
    * portlet container specific log file.
    *
-   * @param message 		a <code>String</code> that 
-   *				describes the error or exception
-   * @param throwable 	        the <code>Throwable</code> error 
-   *				or exception
+   * @param message         a <code>String</code> that 
+   *                describes the error or exception
+   * @param throwable             the <code>Throwable</code> error 
+   *                or exception
    */
 
   public void log(java.lang.String message, java.lang.Throwable throwable);
@@ -444,10 +444,10 @@ public interface PortletContext
    * {@link #getAttribute} to retrieve the attribute's value
    * will return <code>null</code>.
    *
-   * @param name	a <code>String</code> specifying the name 
-   * 			of the attribute to be removed
+   * @param name    a <code>String</code> specifying the name 
+   *             of the attribute to be removed
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 
@@ -467,12 +467,12 @@ public interface PortletContext
    * matching <code>java.*</code>, <code>javax.*</code>, and
    * <code>sun.*</code>.
    *
-   * @param name 	a <code>String</code> specifying the name 
-   *			of the attribute
-   * @param object 	an <code>Object</code> representing the
-   *			attribute to be bound
+   * @param name     a <code>String</code> specifying the name 
+   *            of the attribute
+   * @param object     an <code>Object</code> representing the
+   *            attribute to be bound
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if name is <code>null</code>.
    */
 

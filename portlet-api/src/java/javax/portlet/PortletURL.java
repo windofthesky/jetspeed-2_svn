@@ -204,7 +204,7 @@ public interface PortletURL
    *                      in the parameter map must be of type
    *                      String array (<code>String[]</code>).
    *
-   * @exception	java.lang.IllegalArgumentException 
+   * @exception    java.lang.IllegalArgumentException 
    *                      if parameters is <code>null</code>, if
    *                      any of the key/values in the Map are <code>null</code>, 
    *                      if any of the keys is not a String, or if any of 

@@ -114,14 +114,14 @@ public interface Portlet
    * </ol>
    *
    *
-   * @param config			a <code>PortletConfig</code> object 
-   *					containing the portlet's
-   * 					configuration and initialization parameters
+   * @param config            a <code>PortletConfig</code> object 
+   *                    containing the portlet's
+   *                     configuration and initialization parameters
    *
-   * @exception PortletException 	if an exception has occurred that
-   *					interferes with the portlet's normal
-   *					operation.
-   * @exception UnavailableException 	if the portlet cannot perform the initialization at this time.
+   * @exception PortletException     if an exception has occurred that
+   *                    interferes with the portlet's normal
+   *                    operation.
+   * @exception UnavailableException     if the portlet cannot perform the initialization at this time.
    *
    *
    */
@@ -160,7 +160,7 @@ public interface Portlet
    * @exception  PortletException
    *                   if the portlet has problems fulfilling the
    *                   request
-   * @exception  UnavailableException 	
+   * @exception  UnavailableException     
    *                   if the portlet is unavailable to process the action at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons
@@ -184,7 +184,7 @@ public interface Portlet
    * @exception   PortletException
    *              if the portlet has problems fulfilling the
    *              rendering request
-   * @exception  UnavailableException 	
+   * @exception  UnavailableException     
    *                   if the portlet is unavailable to perform render at this time
    * @exception  PortletSecurityException  
    *                   if the portlet cannot fullfill this request because of security reasons

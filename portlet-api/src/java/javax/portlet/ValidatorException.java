@@ -98,7 +98,7 @@ public class ValidatorException extends PortletException
   {
     super (text);
     if ( failedKeys != null )
-	    failedKeyVector.addAll(failedKeys);
+        failedKeyVector.addAll(failedKeys);
   }
 
   /**
@@ -126,7 +126,7 @@ public class ValidatorException extends PortletException
   {
     super(text, cause);
     if ( failedKeys != null )
-	    failedKeyVector.addAll(failedKeys);
+        failedKeyVector.addAll(failedKeys);
   }
 
   /**
@@ -147,7 +147,7 @@ public class ValidatorException extends PortletException
   {
     super(cause);
     if ( failedKeys != null )
-	    failedKeyVector.addAll(failedKeys);
+        failedKeyVector.addAll(failedKeys);
   }
 
 

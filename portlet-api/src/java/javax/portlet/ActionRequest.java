@@ -108,11 +108,11 @@ public interface ActionRequest extends PortletRequest
    * This method only sets the character set for the Reader that the
    * {@link #getReader} method returns.
    *
-   * @param	enc	a <code>String</code> containing the name of 
-   *			the chararacter encoding.
+   * @param    enc    a <code>String</code> containing the name of 
+   *            the chararacter encoding.
    *
-   * @exception		java.io.UnsupportedEncodingException if this is not a valid encoding
-   * @exception		java.lang.IllegalStateException      if this method is called after 
+   * @exception        java.io.UnsupportedEncodingException if this is not a valid encoding
+   * @exception        java.lang.IllegalStateException      if this method is called after 
    *                                   reading request parameters or reading input using 
    *                                   <code>getReader()</code>
    */
@@ -134,15 +134,15 @@ public interface ActionRequest extends PortletRequest
    * as this data has been already processed by the 
    * portal/portlet-container and is available as request parameters.
    *
-   * @return	a <code>BufferedReader</code>
-   *		containing the body of the request	
+   * @return    a <code>BufferedReader</code>
+   *        containing the body of the request    
    *
-   * @exception  java.io.UnsupportedEncodingException 	
+   * @exception  java.io.UnsupportedEncodingException     
    *                 if the character set encoding used is 
-   * 		     not supported and the text cannot be decoded
-   * @exception  java.lang.IllegalStateException   	
+   *              not supported and the text cannot be decoded
+   * @exception  java.lang.IllegalStateException       
    *                 if {@link #getPortletInputStream} method
-   * 		     has been called on this request,  it is a 
+   *              has been called on this request,  it is a 
    *                   HTTP POST data of type application/x-www-form-urlencoded.
    * @exception  java.io.IOException
    *                 if an input or output exception occurred
@@ -159,9 +159,9 @@ public interface ActionRequest extends PortletRequest
    * This method returns <code>null</code> if the request
    * does not specify a character encoding.
    *
-   * @return		a <code>String</code> containing the name of 
-   *			the chararacter encoding, or <code>null</code>
-   *			if the request does not specify a character encoding.
+   * @return        a <code>String</code> containing the name of 
+   *            the chararacter encoding, or <code>null</code>
+   *            if the request does not specify a character encoding.
    */
   
   public java.lang.String getCharacterEncoding();
@@ -172,8 +172,8 @@ public interface ActionRequest extends PortletRequest
    * Returns the MIME type of the body of the request, 
    * or null if the type is not known.
    *
-   * @return		a <code>String</code> containing the name 
-   *			of the MIME type of the request, or null 
+   * @return        a <code>String</code> containing the name 
+   *            of the MIME type of the request, or null 
    *                    if the type is not known.
    */
 
@@ -186,8 +186,8 @@ public interface ActionRequest extends PortletRequest
    * length is not known. 
    *
    *
-   * @return		an integer containing the length of the 
-   * 			request body or -1 if the length is not known
+   * @return  an integer containing the length of the 
+   *             request body or -1 if the length is not known
    *
    */
 

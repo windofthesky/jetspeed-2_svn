@@ -77,10 +77,10 @@ public class PortletSessionUtil
    * <code>PORTLET_SCOPE</code>. If the attribute is in the
    * <code>APPLICATION_SCOPE</code> it returns the attribute name unchanged.
    *
-   * @param name		a string specifying the name of the
+   * @param name        a string specifying the name of the
    *                            encoded portlet attribute
    *
-   * @return			the decoded attribute name
+   * @return            the decoded attribute name
    */
 
   public static java.lang.String decodeAttributeName(java.lang.String name)
@@ -88,7 +88,7 @@ public class PortletSessionUtil
     if (name.startsWith(PORTLET_SCOPE_NAMESPACE)) {
       int index = name.indexOf('?');
       if (index>-1) {
-	name = name.substring(index+1);
+    name = name.substring(index+1);
       }
     }
     return name;
@@ -104,10 +104,10 @@ public class PortletSessionUtil
    * <li><code>PortletSession.PORTLET_SCOPE</code></li>
    * </ul>
    *
-   * @param name		a string specifying the name of the
+   * @param name        a string specifying the name of the
    *                            encoded portlet attribute
    *
-   * @return			the decoded attribute scope
+   * @return            the decoded attribute scope
    * @see PortletSession
    */
 
@@ -117,7 +117,7 @@ public class PortletSessionUtil
     if (name.startsWith(PORTLET_SCOPE_NAMESPACE)) {
       int index = name.indexOf('?');
       if (index>-1) {
-	scope = PortletSession.PORTLET_SCOPE; // PORTLET
+    scope = PortletSession.PORTLET_SCOPE; // PORTLET
       }
     }
     return scope;

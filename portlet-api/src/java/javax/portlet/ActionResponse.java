@@ -159,11 +159,11 @@ public interface ActionResponse extends PortletResponse
    * <li>setRenderParameters
    * </ul>
    *
-   * @param		location	the redirect location URL
+   * @param        location    the redirect location URL
    *
-   * @exception	java.io.IOException	
+   * @exception    java.io.IOException    
    *                    if an input or output exception occurs.
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                    if a relative path URL is given
    * @exception java.lang.IllegalStateException
    *                    if the method is invoked after any of above mentioned methods of 
@@ -195,7 +195,7 @@ public interface ActionResponse extends PortletResponse
    *                      in the parameter map must be of type
    *                      String array (<code>String[]</code>).
    *
-   * @exception	java.lang.IllegalArgumentException 
+   * @exception    java.lang.IllegalArgumentException 
    *                      if parameters is <code>null</code>, if
    *                      any of the key/values in the Map are <code>null</code>, 
    *                      if any of the keys is not a String, or if any of 
@@ -223,7 +223,7 @@ public interface ActionResponse extends PortletResponse
    * @param  key    key of the render parameter
    * @param  value  value of the render parameter
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if key or value are <code>null</code>.
    * @exception java.lang.IllegalStateException
    *                    if the method is invoked after <code>sendRedirect</code> has been called.
@@ -248,7 +248,7 @@ public interface ActionResponse extends PortletResponse
    * @param  key     key of the render parameter
    * @param  values  values of the render parameter
    *
-   * @exception	java.lang.IllegalArgumentException	
+   * @exception    java.lang.IllegalArgumentException    
    *                      if key or value are <code>null</code>.
    * @exception java.lang.IllegalStateException
    *                    if the method is invoked after <code>sendRedirect</code> has been called.
