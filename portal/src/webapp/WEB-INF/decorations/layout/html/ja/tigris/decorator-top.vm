@@ -63,7 +63,7 @@ limitations under the License.
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)�?�戻る</a>
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)へ戻る</a>
 #end
         &nbsp;
       </div>
@@ -78,7 +78,7 @@ limitations under the License.
     <td>
       <div class="toolgroup">    
         <div class="label">
-          フォルダ�?�ページ
+          フォルダ＆ページ
         </div>
         <div class="body">
 #includeNavigation("folders" $profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
