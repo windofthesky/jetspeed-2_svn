@@ -2,7 +2,7 @@ import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.apache.jetspeed.components.jndi.JNDIComponent
 import org.apache.jetspeed.components.jndi.TyrexJNDIComponent
-import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent
+import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent
 import org.apache.jetspeed.components.datasource.DatasourceComponent
 import org.hsqldb.jdbcDriver
 import org.apache.commons.pool.impl.GenericObjectPool
@@ -23,9 +23,9 @@ import java.io.File
 container = new DefaultPicoContainer()
 
 // This JNDI component helps us publish the datasource
-Class jndiClass = Class.forName("org.apache.jetspeed.components.jndi.JNDIComponent")
-Class tyrexJndiClass = Class.forName("org.apache.jetspeed.components.jndi.TyrexJNDIComponent")
-container.registerComponentImplementation(jndiClass, tyrexJndiClass)
+Class jndiClass = JNDIComponent
+JNDIComponent jndiImpl = new TyrexJNDIComponent()
+container.registerComponentInstance(jndiClass, jndiImpl)
 
 // Create a datasource based on the HSQL server we just created
 Class dsClass = Class.forName("org.apache.jetspeed.components.datasource.DatasourceComponent")
@@ -34,7 +34,7 @@ String driver = System.getProperty("org.apache.jetspeed.database.driver")
 String user = System.getProperty("org.apache.jetspeed.database.user")
 String password = System.getProperty("org.apache.jetspeed.database.password")
 
-container.registerComponentInstance(dsClass, new DBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true))
+container.registerComponentInstance(dsClass, new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000, GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndiImpl))
 
 
 

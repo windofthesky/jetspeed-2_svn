@@ -95,24 +95,11 @@ public class DatasourceEnabledTestSuite extends TestSuite
 
 
     protected void initDatasource()throws Exception
-    {
-       System.out.println("========= JDBC Driver "+System.getProperty("org.apache.jetspeed.database.driver"));
-        System.out.println("========================= DatasourceEnabledTestSuite start RDBMS container ");
+    {        
         Reader composition = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
         script));
         cm = new ComponentManager(composition, ComponentManager.GROOVY);
-       	MutablePicoContainer container = cm.getRootContainer();	
-        
-		JNDIComponent jndi = (JNDIComponent) container.getComponentInstanceOfType(JNDIComponent.class);
-		DatasourceComponent dsc = (DatasourceComponent) container.getComponentInstanceOfType(DatasourceComponent.class);
-		try
-        {
-            jndi.bindObject("comp/env/jdbc/jetspeed", dsc.getDatasource());
-        }
-        catch (NamingException e)
-        {
-            throw new RuntimeException(e.toString());
-        }
+       	MutablePicoContainer container = cm.getRootContainer();       
     }
 
     /**
@@ -123,10 +110,8 @@ public class DatasourceEnabledTestSuite extends TestSuite
         try
         {
             initDatasource();            
-            super.run(arg0);
-            System.out.println("========================= DatasourceEnabledTestSuite stopping RDBMS container ");            
+            super.run(arg0);                        
             cm.getRootContainer().stop();
-           // Thread.sleep(2000);
         }
         catch(Throwable e)
         {
@@ -141,8 +126,7 @@ public class DatasourceEnabledTestSuite extends TestSuite
      * @see junit.framework.TestSuite#runTest(junit.framework.Test, junit.framework.TestResult)
      */
     public void runTest(Test arg0, TestResult arg1)
-    {
-        System.out.println("========================= DatasourceEnabledTestSuite running test "+arg0);
+    {        
         
         if(arg0 instanceof AbstractComponentAwareTestCase)
         {
