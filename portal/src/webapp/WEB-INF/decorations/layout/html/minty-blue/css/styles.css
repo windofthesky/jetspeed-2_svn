@@ -1,0 +1,253 @@
+/*
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+
+.MintyBlue .PTitleLeft
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	
+	/** Always use relative path ! **/
+	background:  url(content/minty-blue/images/titleleft.gif);
+	
+}
+
+.MintyBlue .PTitle
+{
+	/**Specify the height of the image usedelse it will use the text height**/
+	height:16px;
+	color:#FFFFFF;
+	background: url(content/minty-blue/images/title.gif);
+	font-family : monospace;
+	font-weight:bold;
+	font-size:12pt;
+}
+ 
+.MintyBlue .PTitleRight
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	background:  url(content/minty-blue/images/titleright.gif);
+}
+
+.MintyBlue .PContentLeft
+{
+	width:10px;
+	background:  url(content/minty-blue/images/contentleft.gif);
+	height : 100%;
+	
+}
+
+.MintyBlue .PContent
+{
+	padding-left:5px;
+}
+
+.MintyBlue .PContentRight
+{
+	width:10px;
+	background:  url(content/minty-blue/images/contentright.gif);
+}
+
+.MintyBlue .PBottomLeft
+{
+	width:10px;
+	background:  url(content/minty-blue/images/bottomleft.gif);
+}
+
+.MintyBlue .PBottom
+{
+	/**
+	Specify the height of the image used
+	else it won't appear
+	**/
+	height:13px;
+	background:  url(content/minty-blue/images/bottom.gif);
+}
+
+.MintyBlue .PBottomRight
+{
+	width:10px;
+	background:  url(content/minty-blue/images/bottomright.gif);
+}
+
+
+
+/* --------------------------------- */
+
+
+
+/* --------------------------------- */
+/* PLT.C.1 Links (Anchor)            */
+/* --------------------------------- */
+
+.MintyBlue A:link, 
+.MintyBlue A:visited {
+    text-decoration: none;
+}
+
+.MintyBlue A:hover, 
+.MintyBlue A:active {
+    text-decoration: underline;
+}
+
+
+
+/* --------------------------------- */
+/* PLT.C.2 Fonts                     */
+/* --------------------------------- */
+
+.MintyBlue .portlet-font {
+ color: black;
+}
+.MintyBlue .portlet-font-dim {
+ color: gray;
+}
+
+
+
+
+/* --------------------------------- */
+/* PLT.C.3 Messages                  */
+/* --------------------------------- */
+.MintyBlue .portlet-msg-status {
+    font-style:italic;
+    font-family: courier, serif;
+}
+.MintyBlue .portlet-msg-info {
+}
+.MintyBlue .portlet-msg-error {
+    color:#FF0000;
+}
+.MintyBlue .portlet-msg-alert {
+    color:#CCCC00;
+    font-style:italic;
+}
+.MintyBlue .portlet-msg-success {
+    color:#00CC33;
+}
+
+/* --------------------------------- */
+/* PLT.C.4 Sections                  */
+/* --------------------------------- */
+.MintyBlue .portlet-section-header {
+    font-weight:bold;
+    background-color:#0000CC;
+    color:yellow;
+    padding:2px;
+}
+.MintyBlue .portlet-section-body {
+    background-color:#66FF66;
+    text-align:left;
+}
+.MintyBlue .portlet-section-alternate {
+    background-color:#C0C0C0;
+    text-align:left;
+}
+.MintyBlue .portlet-section-selected {
+    background-color:#0000CC;
+    color:white;
+    font-weight:bold;
+    text-align:left;
+}
+.MintyBlue .portlet-section-subheader {
+    background-color:#0066CC;
+    color:white;
+    font-weight:bold;
+    font-style:italic;
+    padding:1px;
+}
+.MintyBlue .portlet-section-footer {
+    background-color:#0066CC;
+    color:white;
+    font-family: courier, serif;
+    text-align:center;
+}
+.MintyBlue .portlet-section-text {
+    text-decoration:underline;
+}
+
+/* --------------------------------- */
+/* PLT.C.5 Forms                     */
+/* --------------------------------- */
+.MintyBlue .portlet-form-label {
+    font-weight:bold;
+}
+.MintyBlue .portlet-form-input-field {
+    font-family: arial, "lucida console", sans-serif;
+    background-color:#66CCFF;
+}
+.MintyBlue .portlet-form-button {
+    font-family: arial, "lucida console", sans-serif;
+}
+.MintyBlue .portlet-icon-label {
+    /* XXX */
+}
+.MintyBlue .portlet-dlg-icon-label {
+    /* XXX */
+}
+.MintyBlue .portlet-form-field-label {
+    font-family: arial, "lucida console", sans-serif;
+}
+.MintyBlue .portlet-form-field {
+    background-color:transparent;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus                     */
+/* --------------------------------- */
+.MintyBlue .portlet-menu {
+    background-color:#00CC66;
+}
+.MintyBlue .portlet-menu-item {
+    background-color:#00CC66;
+}
+.MintyBlue .portlet-menu-item-selected {
+    background-color:#0000CC;
+    color:white;
+}
+
+.MintyBlue .portlet-menu-item-hover {
+    background-color:#003366;
+    color:#FFFFFF;
+}
+.MintyBlue .portlet-menu-item-hover-selected {
+    background-color:#003366;
+    color:#FFFFFF;
+}
+.MintyBlue .portlet-menu-cascade-item {
+    background-color:#00CC66;
+    color:black;
+    text-decoration:none;
+}
+.MintyBlue .portlet-menu-cascade-item-selected {
+    background-color:#0000CC;
+    color:white;
+}
+.MintyBlue .portlet-menu-description {
+    background-color:#F0F8FF;
+}
+.MintyBlue .portlet-menu-caption {
+    /* XXX */
+}
+
