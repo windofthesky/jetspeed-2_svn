@@ -20,7 +20,10 @@ import java.io.File;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
+import org.apache.jetspeed.components.ContainerDeployerTestSuite;
+import org.apache.jetspeed.locator.LocatorDescriptor;
+import org.apache.jetspeed.locator.TemplateDescriptor;
+import org.apache.jetspeed.locator.TemplateLocator;
 
 /**
  * TestTemplateLocator
@@ -49,19 +52,20 @@ public class TestTemplateLocator extends AbstractComponentAwareTestCase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestTemplateLocator.class);
-        
-        return suite;
+        //NanoDeployerBasedTestSuite suite = new NanoDeployerBasedTestSuite(TestTemplateLocator.class)
+        return new ContainerDeployerTestSuite(TestTemplateLocator.class, new String[]{"Locator"});
     }
             
     public void testLocateTemplate()
           throws Exception
     {
+        
         File appRoot = new File(System.getProperty("org.apache.jetspeed.application_root"));
         
         assertTrue("The application root, "+appRoot+", could not be located.", appRoot.exists());
-        
-        TemplateLocator component = (TemplateLocator)getContainer().getComponentInstance("TemplateLocator");
+        Object obj =  getContainer().getComponentInstance("TemplateLocator");
+        ClassLoader testCl = TemplateLocator.class.getClassLoader();
+        TemplateLocator component = (TemplateLocator)obj;
         assertNotNull("template service is null", component);            
         LocatorDescriptor locator = component.createLocatorDescriptor("email");
         locator.setName("test.vm");
