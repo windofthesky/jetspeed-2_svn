@@ -112,6 +112,7 @@ public class TestPreferences extends JetspeedTest
     public void setUp() throws Exception
     {
         super.setUp();
+        destroyRootNodes();
         destroyPropertySetDefTestObject();
     }
 
@@ -389,6 +390,20 @@ public class TestPreferences extends JetspeedTest
         catch (PropertyException pex)
         {
         }
+    }
+
+    /**
+     * <p>Destroy possible existing root nodes.</p>
+     */
+    protected void destroyRootNodes() throws Exception
+    {
+        // Remove user, group and role root nodes.
+        Preferences groupRootPrefs = Preferences.userRoot().node("/group");
+        groupRootPrefs.removeNode();
+        Preferences roleRootPrefs = Preferences.userRoot().node("/role");
+        roleRootPrefs.removeNode();
+        Preferences userRootPrefs = Preferences.userRoot().node("/user");
+        userRootPrefs.removeNode();
     }
 
 }
