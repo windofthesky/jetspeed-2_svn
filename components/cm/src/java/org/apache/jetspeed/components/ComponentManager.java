@@ -17,7 +17,6 @@ package org.apache.jetspeed.components;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,75 +38,33 @@ import org.picocontainer.defaults.SimpleReference;
  * @version $Id$
  *
  */
-public class ComponentManager extends NanoContainer implements ComponentManagement, ContainerManagement
-{
-    private MutablePicoContainer rootContainer;
+public class ComponentManager implements ComponentManagement, ContainerManagement
+{    
+    protected ScriptedContainerBuilder containerBuilder;
+    protected ObjectReference rootContainerRef;
+    protected MutablePicoContainer rootContainer;
 
     /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @throws java.io.IOException
-     * @throws java.lang.ClassNotFoundException
+     * 
+     * @param assemblyFile
+     * @param parent
+     * @param scope
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public ComponentManager(File arg0, PicoContainer arg1, ClassLoader arg2) throws IOException, ClassNotFoundException
+    public ComponentManager( File assemblyFile, PicoContainer parent, String scope) throws IOException, ClassNotFoundException 
     {
-        super(arg0, arg1, arg2);        
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @throws java.io.IOException
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(File arg0, PicoContainer arg1) throws IOException, ClassNotFoundException
-    {
-        super(arg0, arg1);        
-    }
-
-    /**
-     * @param arg0
-     * @throws java.io.IOException
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(File arg0) throws IOException, ClassNotFoundException
-    {
-        super(arg0);        
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(Reader arg0, String arg1, ClassLoader arg2) throws ClassNotFoundException
-    {
-        super(arg0, arg1, arg2);        
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(Reader arg0, String arg1) throws ClassNotFoundException
-    {
-        super(arg0, arg1);        
-    }
-
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @throws java.lang.ClassNotFoundException
-     */
-    public ComponentManager(Reader arg0, String arg1, PicoContainer arg2, ClassLoader arg3) throws ClassNotFoundException
-    {
-        super(arg0, arg1, arg2, arg3);
-        
+        rootContainerRef = new SimpleReference();
+        NanoContainer nano = new NanoContainer(assemblyFile);
+        ObjectReference parentRef = null;
+        if(parent != null)
+        {
+            parentRef = new SimpleReference();
+            parentRef.set(parent);            
+        }
+        containerBuilder = nano.getContainerBuilder();
+        containerBuilder.buildContainer(rootContainerRef, parentRef, scope); 
+        this.rootContainer = (MutablePicoContainer) rootContainerRef.get();
     }
 
     /**
@@ -120,15 +77,7 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
     }
 
     public MutablePicoContainer getRootContainer()
-    {
-        if(rootContainer == null)
-        {
-            ObjectReference containerRef = new SimpleReference();
-            ScriptedContainerBuilder scb = this.getContainerBuilder();
-            scb.buildContainer(containerRef, null, "jetspeed");
-            rootContainer = (MutablePicoContainer) containerRef.get();            
-        }
-        
+    {       
         return rootContainer;
     }
 
@@ -172,4 +121,17 @@ public class ComponentManager extends NanoContainer implements ComponentManageme
         return list;
     }
 
+    /**
+     * <p>
+     * stop
+     * </p>
+     *
+     * @see org.apache.jetspeed.components.ContainerManagement#stop()
+     * 
+     */
+    public void stop()
+    {
+        containerBuilder.killContainer(rootContainerRef);
+
+    }
 }

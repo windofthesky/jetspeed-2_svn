@@ -16,8 +16,6 @@
 package org.apache.jetspeed.components;
 
 import java.io.File;
-import org.picocontainer.defaults.ObjectReference;
-import org.picocontainer.defaults.SimpleReference;
 
 import junit.framework.TestCase;
 
@@ -85,12 +83,11 @@ public abstract class ComponentAssemblyTestCase extends TestCase
         String applicationRoot = getApplicationRoot(getBaseProject(), getRelativePath());
         File containerAssembler = new File(applicationRoot + "/assembly/" + getTestName() + getAssemblyScriptType());
         assertTrue(containerAssembler.exists());
-        componentManager = new  ComponentManager(containerAssembler);
-        ObjectReference rootContainerRef = new SimpleReference();       
-                            
-        componentManager.getContainerBuilder().buildContainer(rootContainerRef, null, "TEST_SCOPE");
         
-        assertNotNull(rootContainerRef.get());
+        componentManager = new  ComponentManager(containerAssembler, null, "TEST_SCOPE");     
+        
+        
+        assertNotNull(componentManager.getRootContainer());
             
     }
     
