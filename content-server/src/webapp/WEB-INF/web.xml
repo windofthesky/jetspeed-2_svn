@@ -36,6 +36,12 @@ limitations under the License.
            content/
         </param-value>
     </init-param>
+    <init-param>
+        <param-name>use.caching</param-name>
+        <param-value>
+           true
+        </param-value>
+    </init-param>
   </filter>
 
   <filter-mapping>
