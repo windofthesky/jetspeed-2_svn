@@ -18,7 +18,8 @@ limitations under the License.
          xmlns:define="jelly:define"
          xmlns:reactor="reactor"
          xmlns:maven="jelly:maven"
-         xmlns:ant="jelly:ant">
+         xmlns:ant="jelly:ant"
+         xmlns:util="jelly:util">
 
   <goal name="jetspeed2:deploy">
  	 <copy file="${maven.build.dir}/${maven.war.final.name}" todir="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy" overwrite="true" failonerror="true" />
@@ -103,13 +104,17 @@ limitations under the License.
   
 
   
-  <goal name="jetspeed2:build.portal">  	
+  <goal name="jetspeed2:build.portal"> 
   	
+  	<j:set var="portal_project_desc_path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml" /> 	
+  	 	
+  	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
+
   	<attainGoal name="war:webapp" />
   	<j:set var="webapp.build.webinf" value="${maven.war.webapp.dir}/WEB-INF"/>
   	<j:set var="webapp.build.lib" value="${webapp.build.webinf}/lib"/>
   	
-  	 <j:forEach var="lib" items="${plugin.artifacts}">
+  	 <j:forEach var="lib" items="${portal_project.artifacts}">
       <j:set var="dep" value="${lib.dependency}"/>
       <j:if test="${dep.getProperty('war.bundle')=='true'}">                                                                                
          <j:if test="${dep.type =='jar'}">
@@ -145,16 +150,21 @@ limitations under the License.
   
   <goal name='jetspeed2:deploy.shared'>
     <echo>Copying from ${maven.repo.local} to ${org.apache.jetspeed.server.shared}...</echo>
-    <!--<copy file="${maven.repo.local}/pluto-container/jars/pluto-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>-->
-    <copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-SNAPSHOT.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/commons-lang/jars/commons-lang-2.0.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/commons-logging/jars/commons-logging-1.0.3.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/commons-configuration/jars/commons-configuration-1.0-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/log4j/jars/log4j-1.2.8.jar" todir="${org.apache.jetspeed.server.shared}"/>
+    
+    <j:set var="portal_project_desc_path" value="${org.apache.jetspeed.plugin.root}/plugin-resources/portal_project.xml" /> 	
+  	 	
+  	<maven:pom projectDescriptor="${portal_project_desc_path}" var="portal_project" />
+    
+    <copy file="${portal_project.getDependencyPath('pluto')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
+    <copy file="${portal_project.getDependencyPath('commons-lang')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
+    <copy file="${portal_project.getDependencyPath('commons-logging')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
+    <copy file="${portal_project.getDependencyPath('commons-configuration')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
+    <copy file="${portal_project.getDependencyPath('log4j')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>
+    <!-- <copy file="${portal_project.getDependencyPath('struts-portlet')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>    -->
     <copy file="${maven.repo.local}/struts-portlet/jars/struts-portlet-spi-0.1.jar" todir="${org.apache.jetspeed.server.shared}"/>    
-    <copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-commons-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>
-    <copy file="${maven.repo.local}/portlet-api/jars/portlet-api-1.0.jar" todir="${org.apache.jetspeed.server.shared}"/>  	  
-    <copy file="${maven.repo.local}/jetspeed2/jars/jetspeed-api-2.0-a1-dev.jar" todir="${org.apache.jetspeed.server.shared}"/>    
+    <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-commons')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true" />
+    <copy file="${portal_project.getDependencyPath('portlet-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>  	  
+    <copy file="${portal_project.getDependencyPath('jetspeed2:jetspeed-api')}" todir="${org.apache.jetspeed.server.shared}" failonerror="true" overwrite="true"/>    
   </goal>
   
   <goal name="jetspeed2:deploy.portal">  	

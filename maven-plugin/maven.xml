@@ -21,24 +21,18 @@ limitations under the License.
  <preGoal name="plugin:deploy">
  	 <attainGoal name="copyDb" />
  	 <attainGoal name="copyPortlaWebApp" />
+     <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
  </preGoal>        
  
   <preGoal name="plugin:install">
  	 <attainGoal name="copyDb" />
  	 <attainGoal name="copyPortlaWebApp" />
+ 	 <copy file="../portal/project.xml" tofile="${basedir}/target/classes/plugin-resources/portal_project.xml" overwrite="true" failonerror="true"/> 
  </preGoal>   
  
- <preGoal name="clean">
-
- 	<delete includeEmptyDirs="true">
-       <fileset dir="src/plugin-resources">
-       	  <filename name="**/*"/>
-       </fileset>	  
-    </delete>
- </preGoal>
 
    <goal name="copyDb">
-	 <copy todir="src/plugin-resources" overwrite="true" failonerror="true">
+	 <copy todir="target/classes/plugin-resources" overwrite="true" failonerror="true">
          <fileset dir="../src/database/hsql" >         	
          	<include name="Empty.script"/>
          	<include name="Production.properties"/>
@@ -46,16 +40,16 @@ limitations under the License.
     </copy>
      
      
-     <copy todir="src/plugin-resources/" overwrite="true" failonerror="true">
+     <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
          <fileset dir="../target/src/sql" />   
          <fileset dir="../src/sql" >
          	 <include name="*.sql" />
          </fileset>          	       	       
      </copy>
      
-     <move file="${basedir}/src/plugin-resources/Empty.script" tofile="${basedir}/src/plugin-resources/Production.script" overwrite="true"/>
+     <move file="${basedir}/target/classes/plugin-resources/Empty.script" tofile="${basedir}/target/classes/plugin-resources/Production.script" overwrite="true"/>
 	 <echo>Initializing HSQL Production.script with basic portal info.......</echo>
-	<j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:src/plugin-resources/Production"/>
+	<j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:target/classes/plugin-resources/Production"/>
     <j:set var="org.apache.jetspeed.database.driver" value="org.hsqldb.jdbcDriver"/>
     <j:set var="org.apache.jetspeed.database.user" value="sa"/>
     <j:set var="org.apache.jetspeed.database.password" value=""/>
@@ -64,13 +58,13 @@ limitations under the License.
 </goal>
 
 <goal name="copyPortlaWebApp">
-	 <copy todir="src/plugin-resources/webapp" overwrite="true" failonerror="true">
+	 <copy todir="target/classes/plugin-resources/webapp" overwrite="true" failonerror="true">
          <fileset dir="../portal/src/webapp" />            	       	       
      </copy>
-     <copy todir="src/plugin-resources/" overwrite="true" failonerror="true">
+     <copy todir="target/classes/plugin-resources/" overwrite="true" failonerror="true">
          <fileset dir="../portal/src/resources" />            	       	       
      </copy>
-     <copy file="../layout-portlets/target/jetspeed-layouts.war" todir="src/plugin-resources/webapp/WEB-INF/deploy" overwrite="true" failonerror="true" />
+     <copy file="../layout-portlets/target/jetspeed-layouts.war" todir="target/classes/plugin-resources/webapp/WEB-INF/deploy" overwrite="true" failonerror="true" />
 </goal>
 
   <goal name="db.execute">
@@ -87,19 +81,19 @@ limitations under the License.
   </goal>
   
     <goal name="db.create">
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/populate-db-default.sql" />
+    <j:set var="database.arg.script" value="./target/classes/plugin-resources/populate-db-default.sql" />
     <attainGoal name="db.execute" />
    </goal>
   
