@@ -269,7 +269,7 @@ limitations under the License.
 					<fmt:message key="pam.details.locale"/>
 				</td>
 				<td>
-					<input type="text" name="locale" value=""/>
+					<input type="text" name="locale" value="" size="2"/>
 				</td>
 				<td>
 					<fmt:message key="pam.details.locale.description"/>
@@ -361,7 +361,7 @@ limitations under the License.
 					<fmt:message key="pam.details.locale"/>
 				</td>
 				<td>
-					<input type="text" name="locale" value=""/>
+					<input type="text" name="locale" value="" size="2"/>
 				</td>
 				<td>
 					<fmt:message key="pam.details.locale.description"/>
@@ -387,6 +387,7 @@ limitations under the License.
 				<th>&nbsp;</th>
 				<th><fmt:message key="pam.details.role_name"/></th>
 				<th><fmt:message key="pam.details.role_link"/></th>
+				<th><fmt:message key="pam.details.locale"/> / <fmt:message key="pam.details.description"/></th>
 			</tr>
 		<c:forEach var="therole" items="${roleSet.innerCollection}">
 			<tr>
@@ -399,6 +400,25 @@ limitations under the License.
 				</td>
 				<td>
 					<input type="text" name="<c:out value="${therole.roleName}"/>:link" value="<c:out value="${therole.roleLink}"/>"/>
+				</td>
+				<td>
+					<%
+						SecurityRoleRefComposite ref = (SecurityRoleRefComposite)pageContext.findAttribute("therole");
+						pageContext.setAttribute("description_set", ref.getDescriptionSet());
+					%>
+					<table>
+					<c:forEach var="description" items="${description_set.innerCollection}" varStatus="descStatus">
+						<tr>
+							<td>
+								<c:out value="${description.locale}"/>
+							</td>
+							<td>
+								<input type="text" name="<c:out value="${therole.roleName}"/>:description:<c:out value="${descStatus.index}"/>"
+									value="<c:out value="${description.description}"/>"/>
+							</td>
+						</tr>
+					</c:forEach>
+					</table>
 				</td>
 			</tr>
 		</c:forEach>
@@ -433,6 +453,28 @@ limitations under the License.
 				</td>
 				<td>
 					<fmt:message key="pam.details.role_link.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.description"/>
+				</td>
+				<td>
+					<input type="text" name="description" value=""/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.description.description"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fmt:message key="pam.details.locale"/>
+				</td>
+				<td>
+					<input type="text" name="locale" value="" size="2"/>
+				</td>
+				<td>
+					<fmt:message key="pam.details.locale.description"/>
 				</td>
 			</tr>
 		</table>

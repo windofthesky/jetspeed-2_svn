@@ -37,6 +37,7 @@ import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
@@ -579,10 +580,6 @@ public class PortletApplicationDetail extends ServletPortlet
                          lang.setTitle(title);
                      }
 
-                     //TODO:  is there a better way to do this?
-                     //setting the keywords like this will cause all the old keywords
-                     //to be delted from the db and re-inserted
-                     
                      Iterator keywordIter = lang.getKeywords();
                      int keywordIndex = 0;
                      ArrayList keywordList = new ArrayList();
@@ -699,18 +696,35 @@ public class PortletApplicationDetail extends ServletPortlet
         if(action.equals("add_security"))
         {
             String name = actionRequest.getParameter("name");
-            String link = actionRequest.getParameter("link");
             
-            if(name != null && link != null)
+            if(name != null)
             {
-	            registry.getPersistenceStore().getTransaction().begin();
+                registry.getPersistenceStore().getTransaction().begin();
+                
+                String link = actionRequest.getParameter("link");
 	            
-	            SecurityRoleRefImpl securityRoleRef = new SecurityRoleRefImpl();
-	            securityRoleRef.setRoleName(name);
-	            securityRoleRef.setRoleLink(link);
-	            //securityRoleRef.addDescription(description);
-	            portlet.addSecurityRoleRef(securityRoleRef);
+	            SecurityRoleRefComposite securityRoleRef = (SecurityRoleRefComposite) portlet.getInitSecurityRoleRefSet().get(name);
+	            if(securityRoleRef == null && link != null)
+	            {
+		            securityRoleRef = new SecurityRoleRefImpl();
+		            securityRoleRef.setRoleName(name);
+		            securityRoleRef.setRoleLink(link);
+		            portlet.addSecurityRoleRef(securityRoleRef);
+	            }
 	            
+	            if(securityRoleRef != null)
+	            {
+		            String description = actionRequest.getParameter("description");
+		            if(description != null && description.length() > 0)
+		            {
+			            String locale = actionRequest.getParameter("locale");
+			            if(locale == null)
+			            {
+			                locale = "en";
+			            }
+			            securityRoleRef.addDescription(new Locale(locale), description);
+		            }
+	            }
 	            registry.getPersistenceStore().getTransaction().commit();
             }
         }
@@ -732,8 +746,30 @@ public class PortletApplicationDetail extends ServletPortlet
                 {
                     secRef.setRoleLink(link);
                 }
+                
+                int index = 0;
+                Iterator descIter = secRef.getDescriptionSet().iterator();
+                while (descIter.hasNext())
+                {
+                    MutableDescription description = (MutableDescription) descIter.next();
+                    String descParam = actionRequest.getParameter(name + ":description:" + index);
+                    //changing locale not allowed.
+                    
+                    if(descParam != null)
+                    {
+                        if(descParam.length() == 0)
+                        {
+                            descIter.remove();
+                        }
+                        else if(!descParam.equals(description.getDescription()))
+                        {
+                            description.setDescription(descParam);
+                        }
+                    }
+                    
+                    index++;
+                }
             }
-            
             
             registry.getPersistenceStore().getTransaction().commit();
         }
