@@ -27,7 +27,7 @@ public interface FrameworkConstants
     /**
      * Use this post parameter name for your actions
      */
-    final String BRIDGES_ACTION = "velocity.action";
+    final String BRIDGES_ACTION = "portlet.action";
 
     /**
      * The name of the forward tool

@@ -6,7 +6,7 @@
 <h2 class="portlet-section-header">$MESSAGES.getString('folder.details')</h2>
 
 <form action="$renderResponse.createActionURL()" method="post">
-<input type='hidden' name='velocity.action' value='processSaveFolderAction'/>
+<input type='hidden' name='portlet.action' value='processSaveFolderAction'/>
 <table>
     #formField('Title' "$!folderBean.Title" "40" 'title' $MESSAGES $ERRORS)
 </table>
