@@ -98,11 +98,11 @@ public class PortletServlet extends ActionServlet
         
         String newProcessorClassName = null;
         
-        if ((needTilesProcessor && !PortletTilesRequestProcessor.class.isAssignableFrom(processorClass)))
+        if (needTilesProcessor && !PortletTilesRequestProcessor.class.isAssignableFrom(processorClass))
         {
             newProcessorClassName = PortletTilesRequestProcessor.class.getName();
         }
-        else if (!PortletRequestProcessor.class.isAssignableFrom(processorClass))
+        else if (!needTilesProcessor && !PortletRequestProcessor.class.isAssignableFrom(processorClass))
         {
             newProcessorClassName = PortletRequestProcessor.class.getName();
         }
