@@ -89,6 +89,14 @@ public class PortletApplicationManager implements JetspeedEngineConstants
      * -DApplicationServer={Catalina}
      * -DApplicationType={webapp|local}
      *    (default webapp)
+     * -DServer={host name of the target server}
+     *   (optional: required for if deploying to Catalina)
+     * -DServerPort={port of the target server. Default: localhost}
+     *   (optional: required for if deploying to Catalina. Default: 8080)
+     * -DUserName={User name to access the servers management system}
+     *   (optional: required for if deploying to Catalina)
+     * -DPassword={Password to access the servers management system}
+     *   (optional: required for if deploying to Catalina)
      *
      *Notes: The deploy action requires the WarFileName. If no ApplicationServer
      *       is defined it requires in additionthe WebappDir.
