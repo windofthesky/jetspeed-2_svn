@@ -178,28 +178,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             langListWrapper.setInnerCollection(languageSet);
         }
-        /* DTX
-           Shinsuke: this code was crashing the aggregation engine, when rendering the PAM page
-                     also, it was bypassing the portlet cache 
-                     i think we are guaranteed at this point to have a class loader
-                     but i need to test against a resource bundle
-            
-        try
-        {
-            Portlet portlet = JetspeedPortletFactoryProxy.getPortlet(config, this);    //loadPortletClass(getClassName());
-            if (portlet != null)
-            {
-                setPortletClassLoader(portlet.getClass().getClassLoader());
-                langListWrapper.setClassLoader(getPortletClassLoader());
-            }
-        }
-        catch (InstantiationException e)
-        {
-        }
-        catch (IllegalAccessException e)
-        {
-        }
-*/
         langListWrapper.setClassLoader(getPortletClassLoader());
         
         return langListWrapper;
@@ -844,18 +822,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             langListWrapper.setResources(resourceBundle);
         }
-        /* DTX
-           Shinsuke: this code was crashing the aggregation engine, when rendering the PAM page
-                     also, it was bypassing the portlet cache 
-                     i think we are guaranteed at this point to have a class loader
-                     but i need to test against a resource bundle
-        Portlet portlet = JetspeedPortletFactoryProxy.loadPortletClass(getClassName());
-        if (portlet != null)
-        {
-            setPortletClassLoader(portlet.getClass().getClassLoader());
-            langListWrapper.setClassLoader(getPortletClassLoader());
-        }
-        */
         langListWrapper.setClassLoader(getPortletClassLoader());        
         langListWrapper.postLoad(this.supportedLocales);
     }
