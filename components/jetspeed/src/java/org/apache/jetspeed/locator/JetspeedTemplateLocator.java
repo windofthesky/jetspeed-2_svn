@@ -40,6 +40,9 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
 
     /** the template root directories, all application root relative */
     private List roots;
+    
+    /** Root of the application running this locator */
+    private String appRoot;
        
     /** the Template class is factory created */     
     private Class  templateClass = JetspeedTemplateDescriptor.class;
@@ -64,11 +67,14 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
     /**
      * Minimal assembly with a list of resource directory roots.
      * 
-     * @param roots A list of resource root directories where templates are located. 
+     * @param roots A list of resource root directories where templates are located.
+     * @param appRoot  Root from where this application runs
      */
-    public JetspeedTemplateLocator(List roots) 
+    public JetspeedTemplateLocator(List roots, String appRoot) 
     {
-        this.roots = roots;        
+        this.roots = roots;   
+        this.appRoot = appRoot;
+        
     }
 
     /**
@@ -80,9 +86,11 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
      *                           Any value is allowed. Use locator types to group templates together. 
      */
     public JetspeedTemplateLocator(List roots, 
-                                        String defaultLocatorType)
+                                        String defaultLocatorType,
+                                        String appRoot)
     {
         this.roots = roots;        
+        this.appRoot = appRoot;
         this.defaultLocatorType = defaultLocatorType;
     }
 
@@ -98,10 +106,12 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
      */
     public JetspeedTemplateLocator(List roots, 
                                    List omClasses,
-                                   String defaultLocatorType)
+                                   String defaultLocatorType,
+                                   String appRoot)
     {
         System.out.println("Initializing template locator component: " + locatorClass); 
         this.roots = roots;
+        this.appRoot = appRoot;
         this.defaultLocatorType = defaultLocatorType;
         if (omClasses.size() > 0)
         {
@@ -183,7 +193,12 @@ public class JetspeedTemplateLocator implements TemplateLocator, Startable
                                 + " returning "
                                 + workingPath);
                 }
-                return createTemplateFromPath(path, templateName, realPath, "/WEB-INF/templates" + workingPath);
+                int appRootLength = appRoot.length();
+                // remove the application root path from the reall path to
+                // give us a app relative path
+                String appRelativePath = realPath.substring(appRootLength, realPath.length());
+                // return createTemplateFromPath(path, templateName, realPath, "/WEB-INF/templates" + workingPath);
+                return createTemplateFromPath(path, templateName, realPath, appRelativePath);
             }
             // else strip path of one of its components and loop
             int pt = path.lastIndexOf(PATH_SEPARATOR);

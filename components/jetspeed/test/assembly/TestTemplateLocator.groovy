@@ -18,6 +18,6 @@ omClasses = [ org.apache.jetspeed.locator.JetspeedTemplateDescriptor,
               org.apache.jetspeed.locator.JetspeedLocatorDescriptor ]
 defaultType = "email"
 container.registerComponentInstance("TemplateLocator", 
-                                    new JetspeedTemplateLocator(roots, omClasses, defaultType))
+                                    new JetspeedTemplateLocator(roots, omClasses, defaultType, applicationRoot))
 
 return container

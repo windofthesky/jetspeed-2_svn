@@ -46,7 +46,10 @@ container = new DefaultPicoContainer()
 // Template Locator component assembly
 //
 roots = [ applicationRoot + "WEB-INF/templates" ]
-container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots))
+container.registerComponentInstance("TemplateLocator", new JetspeedTemplateLocator(roots, applicationRoot))
+
+decorationRoots = [ applicationRoot + "WEB-INF/decorations" ]
+container.registerComponentInstance("DecorationLocator", new JetspeedTemplateLocator(decorationRoots, applicationRoot))
 
 //
 // ID Generator
