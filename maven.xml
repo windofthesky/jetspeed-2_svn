@@ -150,7 +150,7 @@ limitations under the License.
         
     <attainGoal name="check.required.properties"/>
   	<attainGoal name="db.scripts.gen"/>
-    <j:if test="${maven.test.skip == false}">
+    <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
     	<attainGoal name="db.create.test"/>
     </j:if>
   	
