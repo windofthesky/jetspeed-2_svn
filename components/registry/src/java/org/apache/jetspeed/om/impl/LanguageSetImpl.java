@@ -59,8 +59,7 @@ public class LanguageSetImpl implements LanguageSet, Serializable, Support
 
     public LanguageSetImpl()
     {
-        super();
-        this.innerCollection = new ArrayList();
+        this(new ArrayList());
     }
 
     /**
