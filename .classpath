@@ -94,10 +94,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/springframework/jars/spring-core-1.1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-2.0.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/itgroundwork/jars/phpportlet-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-jsf-api-1.0.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-extensions-1.0.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-impl-1.0.8.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-1.0.8-PATCHED.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jstl/jars/jstl-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/pluto/jars/pluto-1.0.1-rc1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/lucene/jars/lucene-1.4.1.jar"/>
