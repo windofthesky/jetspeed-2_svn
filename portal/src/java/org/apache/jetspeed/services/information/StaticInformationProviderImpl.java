@@ -56,12 +56,13 @@ package org.apache.jetspeed.services.information;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import org.apache.pluto.services.information.PortalContextProvider;
-import org.apache.pluto.services.information.StaticInformationProvider;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
+import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.jetspeed.engine.core.PortalContextProviderImpl;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
+import org.apache.pluto.services.information.PortalContextProvider;
+import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
  * Provides static information to Pluto Container:
@@ -72,8 +73,7 @@ import org.apache.jetspeed.registry.JetspeedPortletRegistry;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class StaticInformationProviderImpl
-    implements StaticInformationProvider
+public class StaticInformationProviderImpl implements StaticInformationProvider
 {
     private ServletConfig config = null;
 
@@ -90,9 +90,11 @@ public class StaticInformationProviderImpl
      */
     public PortletDefinition getPortletDefinition(String uniqueId)
     {
-        return JetspeedPortletRegistry.getPortletDefinitionByIndetifier(uniqueId); 
+        PortletRegistryComponent regsitry =
+            (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+        return regsitry.getPortletDefinitionByIndetifier(uniqueId);
     }
-    
+
     /** 
      * <p>
      * getPortalContextProvider
