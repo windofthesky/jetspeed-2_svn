@@ -26,7 +26,7 @@ code {font-size: 10pt;}
   <li><a href="http://ant.apache.org/bindownload.cgi">Ant 1.5</a> or higher</li>
   <li><a href="http://maven.apache.org/start/download.html">Maven 1.0-beta-10</a> 
     or higher</li>
-  <li>Java 1.3 or higher</li>
+  <li>Java 1.4 or higher</li>
   <li>Servlet 2.3:<br>
     Tomcat 4.1.18-LE w/JDK 1.4<br>
     <b>or</b> <br>
@@ -34,6 +34,7 @@ code {font-size: 10pt;}
 </ul>
 <h2>1. Get Maven Ready</h2>
 <p>If you have not already done so, download and install Maven.</p>
+<!--
 <p><strong>NOTE!</strong>: There are 2 jars required by Jetspeed that are <b>NOT 
   </b>available direct through Maven which you will have to download manually.<br>
 </p>
@@ -54,7 +55,7 @@ code {font-size: 10pt;}
       copied to your ${MAVEN_REPOSITORY}/jta/jars directory.</td>
   </tr>
   <tr>
-    <td width="34%"><a href="http://java.sun.com/products/JavaManagement/download.html">jxmri 
+    <td width="34%"><a href="http://java.sun.com/products/JavaManagement/download.html">jmxri 
       and jmxtools</a></td>
     <td width="66%"> 
       <ol>
@@ -65,36 +66,9 @@ code {font-size: 10pt;}
     </td>
   </tr>
 </table>
-<p><strong>NOTE!</strong>: <b>Maven Beta 0.9:</b> eation section</p>
-<pre>
-  &lt;j:set var=&quot;extensionList&quot; value=&quot;&quot;/&gt;
-  
-  &lt;j:forEach var=&quot;artifact&quot; items=&quot;${pom.artifacts}&quot;&gt;
-    &lt;j:set var=&quot;dep&quot; value=&quot;${artifact.dependency}&quot;/&gt;
-    &lt;j:set var=&quot;extensionList&quot; value=&quot;${extensionList},${dep.artifactId}&quot;/&gt;
-  &lt;/j:forEach&gt; 
-  
-  &lt;j:if test=&quot;${extensionList.length() != 0}&quot;&gt;
-    &lt;j:set var=&quot;extensionList&quot; value=&quot;${extensionList.substring(1)}&quot;/&gt;
-    &lt;ant:attribute name=&quot;Extension-List&quot; value=&quot;${extensionList}&quot;/&gt;
-  &lt;/j:if&gt;
-
-  &lt;j:forEach var=&quot;artifact&quot; items=&quot;${pom.artifacts}&quot;&gt;
-    &lt;j:set var=&quot;dep&quot; value=&quot;${artifact.dependency}&quot;/&gt;
-    &lt;ant:attribute name=&quot;${dep.artifactId}-Extension-Name&quot; value=&quot;${dep.artifactId}&quot;/&gt;
-    &lt;ant:attribute name=&quot;${dep.artifactId}-Implementation-Version&quot; value=&quot;${dep.version}&quot;/&gt;
-    &lt;ant:attribute name=&quot;${dep.artifactId}-Implementation-URL&quot; value=&quot;http://www.ibiblio.org/maven${artifact.urlPath}&quot;/&gt;
-  &lt;/j:forEach&gt; 
-</pre>
-<p><strong>NOTE!</strong>: <b>Maven Beta 0.9 and greater:</b> </p>
-<p>In ${jetspeed-2-home}/portal:<br>
-</p>
-<ol>
-  <li> Rename the existing <code>maven.xml </code>file to <code>maven-0.8.xml</code></li>
-  <li>Rename <code>maven-0.9-and-up.xml </code>to <code>maven.xml</code></li>
-</ol>
+-->
 <h2>2. build.properties settings:</h2>
-<p>Please set these values in your ${USER_HOME}/b<code>uild.properties</code> 
+<p>Please set these values in your ${USER_HOME}/<code>build.properties</code> 
   file:</p>
 <table width="650" border="1" cellspacing="0" cellpadding="3">
   <tr> 
@@ -119,18 +93,7 @@ code {font-size: 10pt;}
       Jetspeed information like registries and user info.</s></td>
   </tr>
 </table>
-<h2>Step 3 is no longer required as we are accomplishing this with an additional 
-  jetspeed.xml file copied to the webapps directory at deploy time.<br>
-  <s>3. Changes to Tomcat's server.xml</s></h2>
-<p><s><font color='red'> <b>NOTE:</b> This step is no longer necessary if you 
-  use the "deploy" goal from the portal project. The "deploy" goal handles adding 
-  the cross context property.</font></s></p>
-<p><s>Edit ${CATALINA_BASE}/conf/server.xml, add this line:<br>
-  (this only needs to be done once)</s></p>
-<p> <s><code>&lt;Context path=&quot;/jetspeed&quot; docBase=&quot;jetspeed&quot; 
-  crossContext=&quot;true&quot;/&gt;</code></s></p>
-<p><s>This will allow the jetspeed app to load your deployed portlet applications.</s></p>
-<h2>4. Build .jar and .war files</h2>
+<h2>3. Build .jar and .war files</h2>
 <p>There are two procedures you can follow that will yeild the same results which 
   are to build and install the required jetspeed jars into Maven (for build purposes).</p>
 <table width="650" border="1" cellspacing="0" cellpadding="3" valign="top">
@@ -165,23 +128,23 @@ code {font-size: 10pt;}
   </tr>
 </table>
 <h2><br>
-  5. Deploying Jetspeed 2</h2>
+  4. Deploying Jetspeed 2</h2>
 <p><b>Deploy Jetspeed Portal WAR into Catalina</b></p>
 <ol>
   <li>cd ${jetspeed-2-home}/portal</li>
   <li>maven deploy</li>
 </ol>
 <p>This will unpack the newly created jetspeed.war file into Tomcat/Catalina</p>
-<h2>6. Deploying the demo application</h2>
+<h2>5. Deploying the demo application</h2>
 <p><b>Install the demo web application into Catalina</b></p>
 <ol>
   <li>cd ${jetspeed-2-home}/portal</li>
   <li>maven pam.register </li>
   <li>maven pam.deploy </li>
 </ol>
-<p><strong>NOTE:</strong> Steps 5 and 6 have been combined into the ${jetspeed-2-home}/portal 
+<p><strong>NOTE:</strong> Steps 4 and 5 have been combined into the ${jetspeed-2-home}/portal 
   <code>&quot;<b>maven fullDeploy</b>&quot;</code> goal.</p>
-<h2>7. Start Tomcat</h2>
+<h2>6. Start Tomcat</h2>
 <p>Run Tomcat, go to http://localhost:8080/jetspeed.</p>
 <h2>(Optional) How to undeploy the demo application</h2>
 <p><b>To undeploy the demo app</b></p>
@@ -193,10 +156,6 @@ code {font-size: 10pt;}
 </ol>
 <p>&nbsp;</p>
 <h2>Addendum</h2>
-<p>Some users have experienced a problem where the portlet-container jar isn't 
-  the latest one copied into the HW_APP webapp<br>
-  this causes HelloPortlet to not display any info<br>
-  Its easily fixed by manually copying <br>
-  ${MAVEN_REPOSITORY}/jetspeed2/jars/jetspeed-container-2.0-a1-dev.jar ${catalina.home}/webapps/HW_APP/WEB-INF/lib/</p>
+<p></p>
 </body>
 </html>
