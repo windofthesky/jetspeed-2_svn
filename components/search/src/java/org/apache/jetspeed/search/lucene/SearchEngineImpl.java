@@ -110,7 +110,7 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#add(java.util.Collection)
      */
-    public boolean add(Collection objects)
+    public synchronized boolean add(Collection objects)
     {
         boolean result = false;
         
@@ -241,7 +241,7 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#remove(java.util.Collection)
      */
-    public boolean remove(Collection objects)
+    public synchronized boolean remove(Collection objects)
     {
         boolean result = false;
         
@@ -304,7 +304,7 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#update(java.util.Collection)
      */
-    public boolean update(Collection objects)
+    public synchronized boolean update(Collection objects)
     {
         boolean result = false;
         
@@ -339,7 +339,7 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#optimize()
      */
-    public boolean optimize()
+    public synchronized boolean optimize()
     {
         boolean result = false;
 
