@@ -70,6 +70,10 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         // Get user.
         Criteria filter = new Criteria();
         filter.addEqualTo("fullPath", fullPath);
+        // The isMappingOnly must not be true.
+        // We don't need the mapping only user, mapping user can't be authenticated with this provider. 
+        // we just need the true user.
+        filter.addEqualTo("isMappingOnly", Boolean.FALSE);
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
         return getPersistenceBrokerTemplate().getCount(query) == 1;
     }
