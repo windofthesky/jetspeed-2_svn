@@ -39,7 +39,7 @@ public class DatasourceEnabledTestSuite extends TestSuite
     
     public static final String DEFAULT_CONTAINER = "org/apache/jetspeed/containers/rdbms.container.groovy";
     
-    public ComponentManager cm;
+    private ComponentManager cm;
 
     private String script;
 
@@ -122,13 +122,13 @@ public class DatasourceEnabledTestSuite extends TestSuite
         {
             initDatasource();            
             super.run(arg0);
-            System.out.println("========================= DatasourceEnabledTestSuite stopping RDBMS container ");
-            cm.killContainer();
+            System.out.println("========================= DatasourceEnabledTestSuite stopping RDBMS container ");            
+            cm.getRootContainer().stop();
            // Thread.sleep(2000);
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
-            cm.killContainer();
+            cm.getRootContainer().stop();
             e.printStackTrace();
             throw new IllegalStateException("Unable to start RDBMS container: "+e.toString());
         }

@@ -55,11 +55,14 @@ package org.apache.jetspeed.components;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import javax.sql.DataSource;
+
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
-
+import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
+import org.apache.jetspeed.components.datasource.DatasourceComponent;
 import org.hsqldb.jdbcDriver;
+import org.picocontainer.MutablePicoContainer;
 /**
  * <p>
  * TestJNDIComponent
@@ -69,12 +72,12 @@ import org.hsqldb.jdbcDriver;
  * @version $ $
  *  
  */
-public class TestHSQL extends AbstractComponentAwareTestCase
+public class TestRDBMS extends AbstractComponentAwareTestCase
 {
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new DatasourceEnabledTestSuite(TestHSQL.class);
+        return new DatasourceEnabledTestSuite(TestRDBMS.class);
     }
     /**
      * Defines the testcase name for JUnit.
@@ -82,7 +85,7 @@ public class TestHSQL extends AbstractComponentAwareTestCase
      * @param name
      *            the testcase's name.
      */
-    public TestHSQL(String name)
+    public TestRDBMS(String name)
     {
         super(name);
     }
@@ -94,4 +97,19 @@ public class TestHSQL extends AbstractComponentAwareTestCase
         assertFalse(conn.isClosed());
         conn.close();
     }
+    public void testDBCP_1() throws Exception
+    {
+        assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));
+        MutablePicoContainer defaultContainer = getComponentManager().getRootContainer();
+        DatasourceComponent dsc = (DatasourceComponent) defaultContainer
+        .getComponentInstance(DatasourceComponent.class);
+        assertNotNull(dsc);
+        DataSource ds = dsc.getDatasource();
+        assertNotNull(ds);
+        Connection conn = ds.getConnection();
+        assertNotNull(conn);
+        assertFalse(conn.isClosed());
+        conn.close();
+    }
+
 }
