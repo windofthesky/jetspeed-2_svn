@@ -311,6 +311,20 @@ public class TestRegistry extends JetspeedTest
 
         }
 
+        PreferenceComposite pref1 = (PreferenceComposite) pdc.getPreferenceSet().get("preference 1");
+
+        assertNotNull("could not locate \"preference 1\" ", pref1);
+
+        Iterator valItr = pref1.getValues();
+        int valueCount = 0;
+        while (valItr.hasNext())
+        {
+            valueCount++;
+			valItr.next();
+        }
+
+        assertTrue("\"preference 1\" should have 2 values not " + valueCount, valueCount == 2);
+        
         assertTrue(count == 1);
     }
 
