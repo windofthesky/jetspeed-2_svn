@@ -31,14 +31,15 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletContextFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactoryProxy;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.core.impl.PortletConfigImpl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
@@ -206,7 +207,8 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
-            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest)servletRequest).getContextPath());
+            RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
             JetspeedPortletFactoryProxy.setCurrentPortletDefinition(portletDefinition);                        
             
