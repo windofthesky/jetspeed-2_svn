@@ -27,9 +27,11 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
+import org.apache.pluto.om.common.SecurityRole;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -52,7 +54,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PortletFactory        portletFactory;
     protected PortletRegistry       registry;
     protected PortletWindowAccessor windowAccess;
-    protected SearchEngine searchEngine;
+    protected SearchEngine          searchEngine;
+    protected RoleManager           roleManager;
+    protected boolean               autoCreateRoles;
 
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -65,6 +69,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		this.entityAccess	    = entityAccess;
 		this.windowAccess	    = windowAccess;
 	}
+    
+    public void setRoleManager(RoleManager roleManager)
+    {
+        this.roleManager = roleManager;
+    }
+    
+    public void setAutoCreateRoles(boolean autoCreateRoles)
+    {
+        this.autoCreateRoles = autoCreateRoles;
+    }
 
 	public void setSearchEngine(SearchEngine searchEngine)
 	{
@@ -236,6 +250,28 @@ public class PortletApplicationManager implements PortletApplicationManagement
 				searchEngine.add(pa.getPortletDefinitions());
 				log.info("Registered the portlet application in the search engine... " + paName);
 			}
+            
+            if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getSecurityRoles() != null )
+            {
+                try
+                {
+                    Iterator rolesIter = pa.getWebApplicationDefinition().getSecurityRoles().iterator();
+                    SecurityRole sr;
+                    while ( rolesIter.hasNext() )
+                    {
+                        sr = (SecurityRole)rolesIter.next();
+                        if ( !roleManager.roleExists(sr.getRoleName()) )
+                        {
+                            roleManager.addRole(sr.getRoleName());
+                            log.info("AutoCreated role: "+sr.getRoleName()+" from portlet application "+paName+" its web definition");
+                        }
+                    }
+                }
+                catch (SecurityException sex)
+                {
+                    log.warn("Failed to autoCreate roles for portlet application " + paName+": "+sex.getMessage(), sex);
+                }
+            }
 
 			return pa;
 		}
@@ -248,7 +284,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				try
 				{
-					registry.removeApplication(pa);
+					unregisterPortletApplication(pa, local);
 				}
 				catch (Exception re)
 				{
