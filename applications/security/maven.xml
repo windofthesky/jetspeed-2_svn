@@ -5,7 +5,7 @@
 
   <!-- ================================================================ -->
   <!-- Hot Deploy for mundane everyday development under Catalina       -->
-  <!-- ================================================================ -->
+  <!-- ================================================================ -->  
   <goal name="hotdeploy">
     <echo message="Hot Deploying ${org.apache.jetspeed.portlet.app.name} to ${org.apache.jetspeed.deploy.war.dir}"/>
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/WEB-INF/classes">
@@ -13,10 +13,10 @@
         </fileset>
     </copy>
     <copy todir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portlet.app.name}/">
-      <fileset dir="${maven.war.src}">
-      </fileset>
+      <fileset dir="./src/webapp"/>
     </copy>
   </goal>
+  
 
   <preGoal name="hotdeploy">
    <attainGoal name= "java:compile"/>
