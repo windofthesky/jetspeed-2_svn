@@ -13,6 +13,7 @@
   <dependencies>
 	 <dependency>
       <id>portlet-api</id>
+      <groupId>portlet-api</groupId>
       <version>1.0</version>
       <properties>
         <war.bundle.jar>false</war.bundle.jar>

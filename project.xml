@@ -35,7 +35,7 @@
     <mailingList>
       <name>Jetspeed 2 Developer List</name>
       <subscribe>jetspeed-2-dev-subscribe@bluesunrise.com</subscribe>
-      <unsubscribe>jetspeed=2-dev-unsubscribe@bluesunrise.com</unsubscribe>
+      <unsubscribe>jetspeed-2-dev-unsubscribe@bluesunrise.com</unsubscribe>
     </mailingList>
   </mailingLists>
 
@@ -69,7 +69,7 @@
 
     <developer>
       <name>Paul Spencer</name>
-      <id>paul</id>
+      <id>paulsp</id>
       <email>paulsp@apache.org</email>
       <roles>
         <role>Java Developer</role>
@@ -78,7 +78,7 @@
 
     <developer>
       <name>Scott Weaver</name>
-      <id>scott</id>
+      <id>weaver</id>
       <email>Sweaver@rippe.com</email>
       <roles>
         <role>Java Developer</role>
