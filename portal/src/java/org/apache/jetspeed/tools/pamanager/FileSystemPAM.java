@@ -40,8 +40,11 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.util.ChecksumHelper;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
+import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
+import org.apache.jetspeed.util.descriptor.MetaDataException;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.jetspeed.util.descriptor.WebApplicationDescriptor;
@@ -724,11 +727,9 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         PortletApplicationException, 
         IOException
     {
-        Reader portletXmlReader = null;        
+        Reader portletXmlReader = null;  
         MutablePortletApplication portletApp = null;
         InputStream is = null;
-        
-        
         
         try
         {
@@ -738,37 +739,44 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
                 throw new PortletApplicationException("Failed to find Portlet XML");
             }
             portletXmlReader = new InputStreamReader(is);       
-            
+              
             PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
             portletApp = paDescriptor.createPortletApplication();
-            // validate(portletApplication);
-            /*
-            Reader extMetaDataXml = null;
+            portletApp.setChecksum(ChecksumHelper.getChecksum(is));
+
+            Reader extendedXmlReader = null;
+            InputStream eis = null;           
             try
             {
-                extMetaDataXml = getReader(EXTENDED_PORTLET_XML_PATH);
-                if (extMetaDataXml != null)
+                eis = context.getResourceAsStream("WEB-INF/jetspeed-portlet.xml");
+                extendedXmlReader = new InputStreamReader(eis);       
+
+                if (extendedXmlReader != null)
                 {
-                    ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
+                    ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extendedXmlReader, portletApp);
                     extMetaData.load();
                 }
-            }
-            catch (IOException e)
-            {
-                log.info("Did not load exteneded metadata as it most likely does not exist.  " + e.toString());
             }
             catch (MetaDataException e)
             {
                 log.warn("Failed to load existing metadata.  " + e.toString(), e);
             }
+            catch (Exception e)
+            {
+                log.info("Did not load exteneded metadata as it most likely does not exist.  " + e.toString());
+            }
             finally
             {
-                if (null != extMetaDataXml)
+                if (eis != null)
                 {
-                    extMetaDataXml.close();
+                    eis.close();
+                }
+                 
+                if (null != extendedXmlReader)
+                {
+                    extendedXmlReader.close();
                 }
             }
-*/
             return portletApp;
         }
         finally
