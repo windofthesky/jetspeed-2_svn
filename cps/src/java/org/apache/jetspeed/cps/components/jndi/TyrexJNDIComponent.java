@@ -14,8 +14,7 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.cps.components.datasource.DatasourceComponent;
-import org.picocontainer.Startable;
+import org.apache.jetspeed.components.datasource.DatasourceComponent;
 
 import tyrex.naming.MemoryContext;
 import tyrex.tm.RuntimeContext;
