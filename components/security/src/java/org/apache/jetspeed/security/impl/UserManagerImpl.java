@@ -235,9 +235,24 @@ public class UserManagerImpl implements UserManager
                 atnProviderProxy.addUserPrincipal(userPrincipal);
                 if (password != null)
                 {
-                    // Set private password credential
-                    atnProviderProxy.setPassword(username, null, password,
-                            atnProviderName);
+                    try
+                    {
+                        // Set private password credential
+                        atnProviderProxy.setPassword(username, null, password,atnProviderName);
+                    }
+                    catch (SecurityException se1)
+                    {
+                        try
+                        {
+                            // rollback created user
+                            atnProviderProxy.removeUserPrincipal(userPrincipal);
+                        }
+                        catch (SecurityException se2)
+                        {
+                            log.error("Failed to rollback created user after its password turned out to be invalid", se2);
+                        }
+                        throw se1;
+                    }
                 }
                 if (log.isDebugEnabled())
                 {
@@ -246,10 +261,7 @@ public class UserManagerImpl implements UserManager
             }
         } catch (SecurityException se)
         {
-            KeyedMessage msg = SecurityException.UNEXPECTED.create("UserManager.addUser",
-                                                                   "UserSecurityHandler",
-                                                                   se.getMessage());
-            log.error(msg, se);
+            log.error(se.getMessage(), se);
 
             // Remove the preferences node.
             try
@@ -259,7 +271,7 @@ public class UserManagerImpl implements UserManager
             {
                 bse.printStackTrace();
             }
-            throw new SecurityException(msg, se);
+            throw se;
         }
     }
 
