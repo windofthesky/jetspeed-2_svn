@@ -107,6 +107,13 @@ limitations under the License.
        Profiler
     -->
 
+    <table name="PROFILING_RULE">
+        <column name="RULE_ID" primaryKey="true" required="true"
+            size="80" type="VARCHAR"/>
+        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
+        <column name="TITLE" size="100" type="VARCHAR"/>
+    </table>
+
     <table name="RULE_CRITERION">
         <column name="CRITERION_ID" primaryKey="true" required="true"
             size="80" type="VARCHAR"/>
@@ -120,18 +127,11 @@ limitations under the License.
             <index-column name="RULE_ID" />
             <index-column name="FALLBACK_ORDER" />
         </index>
-        <foreign-key foreignTable="PROFILING_RULE">
+        <foreign-key foreignTable="PROFILING_RULE" onDelete="cascade">
             <reference foreign="RULE_ID" local="RULE_ID"/>
         </foreign-key>           
     </table>
-    
-    <table name="PROFILING_RULE">
-        <column name="RULE_ID" primaryKey="true" required="true"
-            size="80" type="VARCHAR"/>
-        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
-        <column name="TITLE" size="100" type="VARCHAR"/>
-    </table>
-      
+          
     <table name="PRINCIPAL_RULE_ASSOC">
         <column name="PRINCIPAL_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>
         <column name="LOCATOR_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>

@@ -25,100 +25,19 @@ limitations under the License.
     <!--
        Create Site to Principals association Table
     -->
-    
-    <table name="SSO_SITE_TO_PRINCIPALS">
-    	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+    <!--
+       Create Security Principal Table
+    -->
+    <table name="SECURITY_PRINCIPAL">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-         <foreign-key foreignTable="SSO_SITE">
-            <reference foreign="SITE_ID" local="SITE_ID"/>
-        </foreign-key>
-       <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!--
-       Create Principals to Remote Principals association Table
-    -->
-    
-    <table name="SSO_PRINCIPAL_TO_REMOTE_PRINCIPAL">
-    	<column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="REMOTE_PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-         <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
-        </foreign-key>
-       <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="REMOTE_PRINCIPAL_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!--
-       Create SiteTable
-    -->
-    <table name="SSO_SITE">
-        <column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="NAME" required="true" size="254" type="VARCHAR"/>
-        <column name="URL" required="true" size="254" type="VARCHAR"/>
-        <column name="ALLOW_USER_SET" default="0" type="BIT"/>
-        <column name="REQUIRES_CERTIFICATE" default="0" type="BIT"/>
-    </table>
-     
-    <!--
-       Create Security User Role Table
-    -->
-    <table name="SECURITY_USER_ROLE">
-        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!-- 
-       Create Security User Group Table
-    -->
-    <table name="SECURITY_USER_GROUP">
-        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!--
-       Create Security Group Role Table
-    -->
-    <table name="SECURITY_GROUP_ROLE">
-        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
-        </foreign-key>
+        <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
+        <column name="IS_MAPPING_ONLY" required="true" type="BIT"/>
+        <column name="IS_ENABLED" required="true" type="BIT"/>
+        <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
+        <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
+        <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
     </table>
 
-    <!--
-       Create Security Principal Permission Table
-    -->
-    <table name="PRINCIPAL_PERMISSION">
-        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PERMISSION_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PERMISSION">
-            <reference foreign="PERMISSION_ID" local="PERMISSION_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
-            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
-        </foreign-key>
-    </table>
-    
     <!--
        Create Security Permission Table
     -->
@@ -131,6 +50,20 @@ limitations under the License.
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
     </table>
     
+    <!--
+       Create Security Principal Permission Table
+    -->
+    <table name="PRINCIPAL_PERMISSION">
+        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PERMISSION_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="SECURITY_PERMISSION" onDelete="cascade">
+            <reference foreign="PERMISSION_ID" local="PERMISSION_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>
+    </table>
+        
     <!--
        Create Security Credential Table
     -->
@@ -150,23 +83,92 @@ limitations under the License.
         <column name="PREV_AUTH_DATE" required="false" type="TIMESTAMP"/>
         <column name="LAST_AUTH_DATE" required="false" type="TIMESTAMP"/>
         <column name="EXPIRATION_DATE" required="false" type="DATE"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL">
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>
+    </table>
+	
+
+    <!--
+       Create SiteTable
+    -->
+    <table name="SSO_SITE">
+        <column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="NAME" required="true" size="254" type="VARCHAR"/>
+        <column name="URL" required="true" size="254" type="VARCHAR"/>
+        <column name="ALLOW_USER_SET" default="0" type="BIT"/>
+        <column name="REQUIRES_CERTIFICATE" default="0" type="BIT"/>
+    </table>
+	
+	
+    <table name="SSO_SITE_TO_PRINCIPALS">
+    	<column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+         <foreign-key foreignTable="SSO_SITE" onDelete="cascade">
+            <reference foreign="SITE_ID" local="SITE_ID"/>
+        </foreign-key>
+       <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>
     </table>
     
     <!--
-       Create Security Principal Table
+       Create Principals to Remote Principals association Table
     -->
-    <table name="SECURITY_PRINCIPAL">
-        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
-        <column name="IS_MAPPING_ONLY" required="true" type="BIT"/>
-        <column name="IS_ENABLED" required="true" type="BIT"/>
-        <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
-        <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
-        <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
+    
+    <table name="SSO_PRINCIPAL_TO_REMOTE">
+    	<column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="REMOTE_PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+         <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>
+       <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="REMOTE_PRINCIPAL_ID"/>
+        </foreign-key>
+    </table>
+         
+    <!--
+       Create Security User Role Table
+    -->
+    <table name="SECURITY_USER_ROLE">
+        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
+        </foreign-key>
     </table>
     
+    <!-- 
+       Create Security User Group Table
+    -->
+    <table name="SECURITY_USER_GROUP">
+        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
+        </foreign-key>
+    </table>
+    
+    <!--
+       Create Security Group Role Table
+    -->
+    <table name="SECURITY_GROUP_ROLE">
+        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
+        </foreign-key>
+    </table>
+
+        
     
 </database>
