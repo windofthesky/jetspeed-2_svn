@@ -6,18 +6,17 @@
  */
 package org.apache.jetspeed.cps.jndi;
 
-import java.util.Hashtable;
+
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.cps.BaseCommonService;
+import org.apache.jetspeed.cps.components.jndi.*;
 
-import tyrex.naming.MemoryContext;
-import tyrex.tm.RuntimeContext;
+
 
 /**
  * <p>
@@ -30,43 +29,21 @@ import tyrex.tm.RuntimeContext;
  */
 public class TyrexJNDIService extends BaseCommonService implements JNDIService
 {
-
-    private static final Log log = LogFactory.getLog(TyrexJNDIService.class);
-
-	private MemoryContext rootJNDIContext;
+	protected JNDIComponent jndiComponent;
 
     /**
      * @see org.apache.fulcrum.Service#init()
      */
     public void init() throws InitializationException
     {
-        Context ctx = null;
-       
-
-        try
+		try
         {
-            //		Construct a non-shared memory context
-            Hashtable env = new Hashtable();
-            env.put( Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory" );
-            rootJNDIContext = new MemoryContext(null);
-            ctx = rootJNDIContext.createSubcontext("comp");
-            ctx = ctx.createSubcontext("env");
-            ctx = ctx.createSubcontext("jdbc");
-            
-            //		Associate the memory context with a new
-            //		runtime context and associate the runtime context
-            //		with the current thread
-			bindToCurrentThread();
-            setInit(true);
-            log.info("JNDI successfully initiallized");
+            jndiComponent = new TyrexJNDIComponent();     
         }
-        catch (Exception e)
+        catch (NamingException e)
         {
-            String msg = "Unable to initialize JNDI: "+e.toString();
-            log.error(msg, e);
-            throw new InitializationException(msg, e);
-        }
-
+            throw new InitializationException("jndi naming exception "+e.toString(), e);
+        }   
     }
 
     /**
@@ -74,7 +51,7 @@ public class TyrexJNDIService extends BaseCommonService implements JNDIService
      */
     public Context getRootContext()
     {
-		return rootJNDIContext;
+		return jndiComponent.getRootContext();
     }
 
     /**
@@ -82,8 +59,37 @@ public class TyrexJNDIService extends BaseCommonService implements JNDIService
      */
     public void bindToCurrentThread() throws NamingException
     {		 
-		RuntimeContext runCtx = RuntimeContext.newRuntimeContext(rootJNDIContext, null);
-		RuntimeContext.setRuntimeContext(runCtx);
+		jndiComponent.bindToCurrentThread();
+    }
+
+    /** 
+     * <p>
+     * bindObject
+     * </p>
+     * 
+     * @see org.apache.jetspeed.cps.jndi.JNDIComponent#bindObject(java.lang.String, java.lang.Object)
+     * @param bindToName
+     * @param obj
+     * @throws NamingException
+     */
+    public void bindObject(String bindToName, Object obj) throws NamingException
+    {
+        jndiComponent.bindObject(bindToName, obj);
+
+    }
+
+    /** 
+     * <p>
+     * unbindFromCurrentThread
+     * </p>
+     * 
+     * @see org.apache.jetspeed.cps.components.jndi.JNDIComponent#unbindFromCurrentThread()
+     * @throws NamingException
+     */
+    public void unbindFromCurrentThread() throws NamingException
+    {
+        jndiComponent.unbindFromCurrentThread();
+
     }
 
 }
