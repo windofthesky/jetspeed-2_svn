@@ -15,7 +15,6 @@ limitations under the License.
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/pam.tld" prefix="pam" %>
 <portlet:defineObjects/>
-
 <p>This page was invoked from a LOCAL portlet app</P>
 <a href='/snipet.html'>somelink</a>
 <p>renderURL</p>
@@ -30,28 +29,13 @@ limitations under the License.
 <a href="<portlet:actionURL windowState="normal" portletMode="view" />">My Action!!!</a>
 <a href="<portlet:actionURL windowState="normal" portletMode="view" />">Invoke My Action!!!</a>
 </p>
-
 <br>
-
-<table>
-<%
- List apps = (List) renderRequest.getAttribute("apps");
- for (Iterator i = apps.iterator(); i.hasNext();)
- {
-   MutablePortletApplication pa = (MutablePortletApplication) i.next();
-   out.println("<tr><td>" + pa.getName() + "</td>");
-   out.println("<td>" + pa.getDescription() + "</td></tr>"); 
- }
-%>
-</table>
 
 <portlet:actionURL windowState="normal" portletMode="view"  var="nodeLink" >
 	<portlet:param name="node" value="${name}" />
 </portlet:actionURL>
 
-<c:out value="${nodeLink}"/>
-
-<pam:tree tree="j2_tree" images="/pam/images"
+<pam:tree tree="j2_tree" images="/pam/images" scope="portlet_request"
           action="<%= nodeLink %>"
   />
   
