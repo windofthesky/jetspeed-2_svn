@@ -5,7 +5,6 @@
     <classpathentry excluding="**/CVS/*" kind="src" path="portlet-api/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
     <classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
-    <classpathentry excluding="**/CVS*" kind="src" path="plugin/src/java"/>
     <classpathentry excluding="**/CVS*" kind="src" path="portal/src/test"/>
     <classpathentry excluding="**/CVS*" kind="src" path="content-server/src/java"/>
     <classpathentry kind="src" path="applications/pam/src/java"/>
