@@ -38,12 +38,10 @@ import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
-import org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
@@ -90,16 +88,6 @@ public class PortletDescriptorUtilities
             //    application Name if it was not defined
 
             app.setName(appName);
-
-            // More post-processing comes here
-            PortletDefinitionList portletsList = app.getPortletDefinitionList();
-            Iterator it = portletsList.iterator();
-            int count = 0;
-            while (it.hasNext())
-            {
-                PortletDefinitionDescriptor portlet = (PortletDefinitionDescriptor) it.next();
-                portlet.postLoad(null);
-            }
 
             return app;
         }

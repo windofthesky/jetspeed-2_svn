@@ -33,11 +33,11 @@ import org.xml.sax.Attributes;
 public class LocalizedFieldRule extends Rule
 {
     protected final static Log log = LogFactory.getLog(LocalizedFieldRule.class);
+    
     /**
      * Handle the beginning of an XML element.
      *
      * @param attributes The attributes of this element
-     *
      * @exception Exception if a processing error occurs
      */
     public void begin(String namespace, String name, Attributes attributes)

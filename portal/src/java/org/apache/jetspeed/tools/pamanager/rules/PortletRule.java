@@ -21,17 +21,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
-
 /**
  * This class helps load the portlet's metadata onto the digester stack
- *
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * 
+ * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
  * @version $Id$
  */
 public class PortletRule extends Rule
 {
     protected final static Log log = LogFactory.getLog(PortletRule.class);
-    
+
     private MutablePortletApplication app;
 
     public PortletRule(MutablePortletApplication app)
@@ -39,23 +38,17 @@ public class PortletRule extends Rule
         this.app = app;
     }
 
-    public void body(String namespace, String name, String text)
-    throws Exception
+    public void body(String namespace, String name, String text) throws Exception
     {
-        //PortletDefinitionComposite def = (PortletDefinitionComposite) digester.peek(0);
-        //if(def == null)
+        log.debug("Found portlet name " + name);
+        PortletDefinitionComposite def = (PortletDefinitionComposite) app.getPortletDefinitionByName(text);
+        if (def != null)
         {
-            log.debug("Found portlet name " +name);
-            PortletDefinitionComposite def = (PortletDefinitionComposite)app.getPortletDefinitionByName(text);
-            if(def != null)
-            {    
-                digester.push(def.getMetadata());
-            }
-            else
-            {
-                //push a null object onto the stack to prevent fields being placed onto another metadata object
-                digester.push(null);
-            }
+            digester.push(def.getMetadata());
+        }
+        else
+        {
+            digester.push(null);
         }
     }
 }

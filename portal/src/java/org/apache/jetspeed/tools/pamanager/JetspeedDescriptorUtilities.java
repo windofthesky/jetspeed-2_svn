@@ -33,8 +33,9 @@ import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 public class JetspeedDescriptorUtilities
 {
     protected final static Log log = LogFactory.getLog(JetspeedDescriptorUtilities.class);
+
     /**
-     * Load a portlet.xml file into a Portlet Application tree
+     * Load jetspeed-portlet.xml file into a Portlet Application tree
      *
      * @param pathPortletXML The path to the portlet.xml file
      * @return Application The Java object tree representing portlet.xml
@@ -49,61 +50,12 @@ public class JetspeedDescriptorUtilities
             FileReader reader = new java.io.FileReader(pathPortletXML);
         
             Digester digester = new Digester();
-            //digester.setLogger(log);
             digester.setValidating(false);
             digester.setNamespaceAware(true);
             digester.push(app.getMetadata());
             
             digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
-            /*
-            digester.addRule("portlet-app/title", new LocalizedFieldRule());
-            digester.addRule("portlet-app/contributor", new LocalizedFieldRule());
-            digester.addRule("portlet-app/creator", new LocalizedFieldRule());
-            digester.addRule("portlet-app/coverage", new LocalizedFieldRule());
-            digester.addRule("portlet-app/description", new LocalizedFieldRule());
-            digester.addRule("portlet-app/format", new LocalizedFieldRule());
-            digester.addRule("portlet-app/identifier", new LocalizedFieldRule());
-            digester.addRule("portlet-app/language", new LocalizedFieldRule());
-            digester.addRule("portlet-app/publisher", new LocalizedFieldRule());
-            digester.addRule("portlet-app/relation", new LocalizedFieldRule());
-            digester.addRule("portlet-app/right", new LocalizedFieldRule());
-            digester.addRule("portlet-app/source", new LocalizedFieldRule());
-            digester.addRule("portlet-app/subject", new LocalizedFieldRule());
-            digester.addRule("portlet-app/type", new LocalizedFieldRule());
-            digester.addRule("portlet-app/metadata", new LocalizedFieldRule());
-            */
-            
-            //	digester.addSetNext("portlet-app", "setMetadata");
-            
-			//digester.addRule("portlet-app/portlet", new PortletRule(app));
-            
-            /*
-	            This will continually push an object onto the digester stack it will never pop it off.
-	            The only negative effect is increased memory/stack size.  
-	            
-	            This is not a problem because the rules will work with the last object on the stack
-	            to pop the object off the stack, a new rule mapped to portlet-app/portlet would
-	            need to be added that all it did was pop the current object at the portlet end element
-            */
-			digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
-			
-			/*
-			digester.addRule("portlet-app/portlet/title", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/contributor", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/creator", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/coverage", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/description", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/format", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/identifier", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/language", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/publisher", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/relation", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/right", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/source", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/subject", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/type", new LocalizedFieldRule());
-			digester.addRule("portlet-app/portlet/metadata", new LocalizedFieldRule());
-            */
+            digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
 			digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
             
             digester.parse(reader);
@@ -116,7 +68,6 @@ public class JetspeedDescriptorUtilities
         {
             String msg = "Could not unmarshal \"" + pathPortletXML+"\".  "+t.toString();
             log.error(msg, t);
-            //throw new PortletApplicationException(msg, t);
         }
 
         return result;

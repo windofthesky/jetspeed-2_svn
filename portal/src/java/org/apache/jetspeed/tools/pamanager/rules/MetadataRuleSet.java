@@ -36,7 +36,7 @@ public class MetadataRuleSet extends RuleSetBase
         this.prefix = prefix;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.apache.commons.digester.RuleSet#addRuleInstances(org.apache.commons.digester.Digester)
      */
     public void addRuleInstances(Digester digester)
@@ -58,24 +58,6 @@ public class MetadataRuleSet extends RuleSetBase
         digester.addRule(prefix + "subject", fieldRule);
         digester.addRule(prefix + "type", fieldRule);
         digester.addRule(prefix + "metadata", fieldRule);
-        /*
-        digester.addRule(prefix + "title", new LocalizedFieldRule());
-        digester.addRule(prefix + "contributor", new LocalizedFieldRule());
-        digester.addRule(prefix + "creator", new LocalizedFieldRule());
-        digester.addRule(prefix + "coverage", new LocalizedFieldRule());
-        digester.addRule(prefix + "description", new LocalizedFieldRule());
-        digester.addRule(prefix + "format", new LocalizedFieldRule());
-        digester.addRule(prefix + "identifier", new LocalizedFieldRule());
-        digester.addRule(prefix + "language", new LocalizedFieldRule());
-        digester.addRule(prefix + "publisher", new LocalizedFieldRule());
-        digester.addRule(prefix + "relation", new LocalizedFieldRule());
-        digester.addRule(prefix + "right", new LocalizedFieldRule());
-        digester.addRule(prefix + "source", new LocalizedFieldRule());
-        digester.addRule(prefix + "subject", new LocalizedFieldRule());
-        digester.addRule(prefix + "type", new LocalizedFieldRule());
-        digester.addRule(prefix + "metadata", new LocalizedFieldRule());
-        */
-
     }
 
 }
