@@ -6,7 +6,7 @@ Requirements
 -------------
 1. Ant 1.5 or higher
 2. Maven 0.8 or higher
-Maven Beta 9 Note:
+     Maven Beta 9 Note:
 Delete all of these lines from the jar creation section
 
 <j:set var="extensionList" value=""/>
@@ -35,23 +35,27 @@ Delete all of these lines from the jar creation section
 5. Define the following in the user's build.properties
     catalina.shared.lib = ${CATALINA_HOME}/shared/lib/
     deploy.war.dir = ${CATALINA_BASE}/webapps/
-    deployment.db.alias=${CATALINA_BASE}/webapps/jetspeed/WEB-INF/db/hsql/Registry
 
 6.  Edit ${CATALINA_BASE}/conf/server.xml, add this line:
     (this only needs to be done once)
 
      <Context path="/jetspeed" docBase="jetspeed" crossContext="true"/>
+     
+7.  Maven will download all necessary jars into it's repository as needed.  However, there are 2 jars that are not available via maven.
+	
+	JTA 1.0.1 B - This can be downloaded from http://java.sun.com/products/jta.  
+	Install the zip file into ${MAVEN_HOME}/repository/jta/jars as jta1.0.1.jar
+	
+	JDBC 2.0 SE - This can be downloaded from http://java.sun.com/products/jdbc/download.html.  Choose the JDBC(TM) 2.0 Optional Package.
+	Install the jar file into ${MAVEN_HOME}/repository/jdbc-se/jars as jdbc-se2.0.jar
 
 ---------------------------------------------
-Building - instructions as of July 31, 2003
+Building - instructions as of May 26, 2003
 ---------------------------------------------
-You can either run step 1a or 1b.  The end result will be the same.
-
 1a. Build all jars and wars:
      cd {$jetspeed-2-home}
      maven allBuild
 
-OR
 
 1b Build all jars and wars in steps
    1. Build Portlet-API
@@ -79,6 +83,11 @@ OR
     maven catalina:base-shared
     maven catalina:shared
 
+
+!!!! NOTE !!!!! make sure you have defined a property in your local  build.properties
+located in your user directory to point to the correct database alias.
+example: 
+  deployment.db.alias=/C:/webapps/jetspeed2/webapps/jetspeed/WEB-INF/db/hsql/Registry
   
 3. Deploy Jetspeed Portal WAR into Catalina
     cd {$jetspeed-2-home}/portal
