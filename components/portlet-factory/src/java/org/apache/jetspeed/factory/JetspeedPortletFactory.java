@@ -16,7 +16,7 @@
 package org.apache.jetspeed.factory;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.portlet.Portlet;
@@ -48,8 +48,8 @@ public class JetspeedPortletFactory implements PortletFactory
 {
 
     private PortletCache portletCache;
-    private final ArrayList classLoaders;
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
+    private final HashMap classLoaderMap;
 
     /**
      * 
@@ -58,7 +58,7 @@ public class JetspeedPortletFactory implements PortletFactory
     {
         super();
         this.portletCache = portletCache;
-        classLoaders = new ArrayList(); 
+        classLoaderMap = new HashMap();
     }
 
     /**
@@ -71,16 +71,18 @@ public class JetspeedPortletFactory implements PortletFactory
      *
      * @param cl
      */
-    public void addClassLoader( ClassLoader cl )
+    public void addClassLoader(String paId, ClassLoader cl)
     {
-        synchronized(classLoaders)
+        if (paId != null && !paId.equals(""))
         {
-            if (!classLoaders.contains(cl))
+            synchronized (classLoaderMap)
             {
-            classLoaders.add(cl);
+                if (classLoaderMap.get(paId) == null)
+                {
+                    classLoaderMap.put(paId, cl);
+                }
             }
         }
-        
     }
 
     /**
@@ -109,10 +111,10 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         catch (ClassNotFoundException e)
         {
-            synchronized(classLoaders)
+            synchronized (classLoaderMap)
             {
-                Iterator itr = classLoaders.iterator();
-                while(itr.hasNext() && portlet == null)
+                Iterator itr = classLoaderMap.values().iterator();
+                while (itr.hasNext() && portlet == null)
                 {
                     ClassLoader cl = (ClassLoader) itr.next();
                     try
@@ -155,6 +157,7 @@ public class JetspeedPortletFactory implements PortletFactory
         String portletName = portletDefinition.getId().toString();
         //String portletName = portletDefinition.getName();
         String className = portletDefinition.getClassName(); 
+        String paId = portletDefinition.getPortletApplicationDefinition().getWebApplicationDefinition().getId().toString();
 
         try
         {                        
@@ -172,7 +175,16 @@ public class JetspeedPortletFactory implements PortletFactory
                 throw new FileNotFoundException("Could not located portlet "+className+" in any classloader.");
             }
             
+            ClassLoader cl = (ClassLoader) classLoaderMap.get(paId);
+            if (cl != null)
+            {
+                ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(cl);
+            }
+            else
+            {
             ((PortletDefinitionCtrl) portletDefinition).setPortletClassLoader(portlet.getClass().getClassLoader());
+            }
+      
             ServletContext servletContext = servletConfig.getServletContext();
             PortletContext portletContext = 
                         PortalAccessor.createPortletContext(servletContext, 

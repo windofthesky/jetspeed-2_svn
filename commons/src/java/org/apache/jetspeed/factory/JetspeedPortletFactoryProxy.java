@@ -98,12 +98,13 @@ public final class JetspeedPortletFactoryProxy
      * 
      * Adds a ClassLoader to the search path, <code>classLoaders</code>, of the JetspeedPortletFactory.
      *
+     * @param paId
      * @param cl
      */
-    public static void addClassLoader(ClassLoader cl)
+    public static void addClassLoader(String paId, ClassLoader cl)
     {
         verifyState();
-        portletFactory.addClassLoader(cl);
+        portletFactory.addClassLoader(paId, cl);
     }
     
     public static void reset()

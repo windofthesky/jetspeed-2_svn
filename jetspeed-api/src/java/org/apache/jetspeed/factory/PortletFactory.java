@@ -35,7 +35,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public interface PortletFactory
 {
-    void addClassLoader( ClassLoader cl );
+    void addClassLoader(String paId, ClassLoader cl);
 
     Portlet loadPortletClass( String className ) throws InstantiationException, IllegalAccessException;
 

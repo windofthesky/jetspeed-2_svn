@@ -21,6 +21,7 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentObject;
 import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
@@ -214,7 +215,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 appNameToFile.put(deploymentObj.getPath(), id);
                 if (isLocal)
                 {                
-                    portletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+                    portletFactory.addClassLoader(
+                        registry.getPortletApplicationByIdentifier(id).getId().toString(),
+                        paWar.createClassloader(getClass().getClassLoader()));
                 }
                 else
                 {
@@ -223,7 +226,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                         ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
                         if (classloader != null)
                         {
-                            portletFactory.addClassLoader(classloader);
+                            portletFactory.addClassLoader(
+                                registry.getPortletApplicationByIdentifier(id).getId().toString(),
+                                classloader);
                         }
                     }
                     catch (IOException e1)
@@ -243,7 +248,13 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 {
                     log.info(fileName + " will be registered as a local portlet applicaiton.");                    
                     pam.register(paWar);
-                    portletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
+                    MutablePortletApplication mpa = registry.getPortletApplicationByIdentifier(id);
+                    if (mpa != null)
+                    {
+                        portletFactory.addClassLoader(
+                            mpa.getId().toString(),
+                            paWar.createClassloader(getClass().getClassLoader()));
+                    }
                 }
                 else
                 {
@@ -254,7 +265,11 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                         ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
                         if (classloader != null)
                         {
-                            portletFactory.addClassLoader(classloader);
+                            MutablePortletApplication mpa = registry.getPortletApplicationByIdentifier(id);
+                            if (mpa != null)
+                            {
+                                portletFactory.addClassLoader(mpa.getId().toString(), classloader);
+                            }
                         }
                     }
                     catch (IOException e1)
