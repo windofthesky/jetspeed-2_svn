@@ -70,7 +70,7 @@ import java.util.Collection;
 public class DefaultPreferenceImpl extends AbstractPreference implements Serializable
 {
     private static final String CLASS_NAME = DefaultPreferenceImpl.class.getName();
-    private String ojbConcreteClass = CLASS_NAME;
+    protected String ojbConcreteClass = CLASS_NAME;
 
     public Collection getValuesCollection()
     {

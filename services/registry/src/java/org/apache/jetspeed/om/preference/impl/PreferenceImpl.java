@@ -67,6 +67,6 @@ package org.apache.jetspeed.om.preference.impl;
 public class PreferenceImpl extends AbstractPreference
 {
     private static final String CLASS_NAME = PreferenceImpl.class.getName();
-    private String ojbConcreteClass = CLASS_NAME;
+    protected String ojbConcreteClass = CLASS_NAME;
 
 }
