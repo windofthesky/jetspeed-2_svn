@@ -96,9 +96,25 @@ public class TestNanoComponentManager extends TestCase
         return new TestSuite(TestNanoComponentManager.class);
     }
     
+    public String getApplicationRoot()
+    {
+        String applicationRoot = "test";
+        File testPath = new File(applicationRoot);
+        if (!testPath.exists())
+        {
+            testPath = new File( "cps" + File.separator + applicationRoot);
+            if (testPath.exists())
+            {
+                applicationRoot = testPath.getAbsolutePath();
+            }
+        }
+        return applicationRoot;
+    }
+    
     public void testLoadGroovy() throws Exception
     {
-    	File containerAssembler = new File("./test/WEB-INF/conf/container.groovy");
+        String applicationRoot = getApplicationRoot();
+    	File containerAssembler = new File(applicationRoot + "/WEB-INF/conf/container.groovy");
     	assertTrue(containerAssembler.exists());
     	NanoComponentManager containerManager = new  NanoComponentManager(containerAssembler);
     	ObjectReference rootContainerRef = new SimpleReference();    	
