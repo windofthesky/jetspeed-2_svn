@@ -138,8 +138,11 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 request.getPath() != null &&
                 !request.getPath().equals("/"))
             {
-                request.setPath("/");
-                invoke(request, context); 
+                try 
+                {
+                    request.getResponse().sendRedirect(request.getRequest().getContextPath());
+                }
+                catch (IOException ioe){}
                 return;
             }
             log.error(se.getMessage(), se);
