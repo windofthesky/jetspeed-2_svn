@@ -17,6 +17,7 @@ package org.apache.jetspeed.security.spi;
 import java.util.Set;
 
 import org.apache.jetspeed.security.HierarchyResolver;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * <p>
@@ -81,15 +82,28 @@ public interface SecurityMappingHandler
     
     /**
      * <p>
-     * Sets the roles principals on a given user.  The provided set replaces
-     * any set that may already have been set on the user.
+     * Sets the role principal on a given user.
      * </p>
      * 
-     * @param username The user to add the roles principals to.
-     * @param rolePrincipals The roles principals to add.
+     * @param username The user to add the role principal to.
+     * @param roleFullPathName The full path of the role principal to add.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the user does not exist.
      */
-    void setRolePrincipals(String username, Set rolePrincipals);
+    void setRolePrincipal(String username, String roleFullPathName) throws SecurityException;
     
+    /**
+     * <p>
+     * Removes the role principal on a given user.
+     * </p>
+     * 
+     * @param username The user to remove the role principal from.
+     * @param roleFullPathName The full path of the role principal to remove.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the user does not exist.
+     */
+    void removeRolePrincipal(String username, String roleFullPathName) throws SecurityException;
+
     /**
      * <p>
      * Gets the role principals for the given group according to the relevant hierarchy
@@ -100,6 +114,30 @@ public interface SecurityMappingHandler
      * @return A set of <code>Principal</p>
      */
     Set getRolePrincipalsInGroup(String groupFullPathName);
+    
+    /**
+     * <p>
+     * Sets the role principal on a given user.
+     * </p>
+     * 
+     * @param groupFullPathName The group to add the role principal to.
+     * @param roleFullPathName The full path of the role principal to add.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the group does not exist.
+     */
+    void setRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException;
+    
+    /**
+     * <p>
+     * Removes the role principal on a given user.
+     * </p>
+     * 
+     * @param groupFullPathName The group to remove the role principal from.
+     * @param roleFullPathName The full path of the role principal to remove.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the group does not exist.
+     */
+    void removeRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException;
     
     /**
      * <p>
@@ -142,5 +180,29 @@ public interface SecurityMappingHandler
      * @return A set of <code>Principal</p>
      */   
     Set getUserPrincipalsInGroup(String groupFullPathName);
+    
+    /**
+     * <p>
+     * Sets the user principal in the given group.
+     * </p>
+     * 
+     * @param username The user to add to the group principal.
+     * @param groupFullPathName The full path of the group principal.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the user does not exist.
+     */
+    void setUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException;
+    
+    /**
+     * <p>
+     * Removes the user principal from the given group.
+     * </p>
+     * 
+     * @param username The user to remove from the group principal.
+     * @param groupFullPathName The full path of the group principal.
+     * @throws SecurityException Throws a {@link SecurityException}.  An exeption needs to be
+     * 							 thrown if the user does not exist.
+     */
+    void removeUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException;
 
 }

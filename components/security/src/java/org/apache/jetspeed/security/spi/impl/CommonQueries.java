@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -103,8 +104,10 @@ public class CommonQueries
     {
         try
         {
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.lockForWrite(internalUser);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
         }
         catch (Exception e)
         {
@@ -128,8 +131,10 @@ public class CommonQueries
         try
         {
             // Remove user.
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.deletePersistent(internalUser);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
             if (log.isDebugEnabled())
             {
                 log.debug("Deleted user: " + internalUser.getFullPath());
@@ -174,8 +179,10 @@ public class CommonQueries
     {
         try
         {
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.lockForWrite(internalRole);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
         }
         catch (Exception e)
         {
@@ -199,8 +206,10 @@ public class CommonQueries
         try
         {
             // Remove role.
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.deletePersistent(internalRole);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
             if (log.isDebugEnabled())
             {
                 log.debug("Deleted role: " + internalRole.getFullPath());
@@ -209,81 +218,12 @@ public class CommonQueries
         }
         catch (Exception e)
         {
-            String msg = "Unable to lock Role for update.";
+            String msg = "Unable to lock role for delete.";
             log.error(msg, e);
             persistenceStore.getTransaction().rollback();
             throw new SecurityException(msg, e);
         }
         
-        /*InternalRolePrincipal omParentRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null != omParentRole)
-        {
-            PersistenceStore store = getPersistenceStore();
-            Filter filter = store.newFilter();
-            filter.addLike((Object) new String("fullPath"), (Object) (omParentRole.getFullPath() + "/*"));
-            Object query = store.newQuery(InternalRolePrincipalImpl.class, filter);
-            Collection omRoles = store.getCollectionByQuery(query);
-            if (null == omRoles)
-            {
-                omRoles = new ArrayList();
-            }
-            omRoles.add(omParentRole);
-            // Remove each role in the collection.
-            Iterator omRolesIterator = omRoles.iterator();
-            while (omRolesIterator.hasNext())
-            {
-                InternalRolePrincipal omRole = (InternalRolePrincipal) omRolesIterator.next();
-                // TODO This should be managed in a transaction.
-                Collection omUsers = omRole.getUserPrincipals();
-                if (null != omUsers)
-                {
-                    omUsers.clear();
-                }
-                Collection omGroups = omRole.getGroupPrincipals();
-                if (null != omGroups)
-                {
-                    omGroups.clear();
-                }
-                Collection omPermissions = omRole.getPermissions();
-                if (null != omPermissions)
-                {
-                    omPermissions.clear();
-                }
-
-                try
-                {
-                    // TODO Can this be done in one shot?
-                    // Remove dependencies.
-                    store.lockForWrite(omRole);
-                    omRole.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                    omRole.setUserPrincipals(omUsers);
-                    omRole.setGroupPrincipals(omGroups);
-                    omRole.setPermissions(omPermissions);
-                    store.getTransaction().checkpoint();
-
-                    // Remove role.
-                    store.deletePersistent(omRole);
-                    store.getTransaction().checkpoint();
-                }
-                catch (Exception e)
-                {
-                    String msg = "Unable to lock Role for update.";
-                    log.error(msg, e);
-                    store.getTransaction().rollback();
-                    throw new SecurityException(msg, e);
-                }
-                // Remove preferences
-                Preferences preferences = Preferences.userRoot().node(omRole.getFullPath());
-                try
-                {
-                    preferences.removeNode();
-                }
-                catch (BackingStoreException bse)
-                {
-                    bse.printStackTrace();
-                }
-            }
-        }*/
     }
 
     /**
@@ -301,6 +241,65 @@ public class CommonQueries
         Object query = persistenceStore.newQuery(InternalGroupPrincipalImpl.class, filter);
         InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) persistenceStore.getObjectByQuery(query);
         return internalGroup;
+    }
+    
+    /**
+     * <p>
+     * Sets the given {@link InternalGroupPrincipal}.
+     * </p>
+     * 
+     * @param internalGroup The {@link internalGroupPrincipal}.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    public void setInternalGroupPrincipal(InternalGroupPrincipal internalGroup) throws SecurityException
+    {
+        try
+        {
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
+            persistenceStore.lockForWrite(internalGroup);
+            tx.commit();
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to lock group for update.";
+            log.error(msg, e);
+            persistenceStore.getTransaction().rollback();
+            throw new SecurityException(msg, e);
+        }
+    }
+    
+    /**
+     * <p>
+     * Remove the given {@link InternalGroupPrincipal}.
+     * </p>
+     * 
+     * @param internalGroup The {@link InternalGroupPrincipal}.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    public void removeInternalGroupPrincipal(InternalGroupPrincipal internalGroup) throws SecurityException
+    {
+        try
+        {
+            // Remove role.
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
+            persistenceStore.deletePersistent(internalGroup);
+            tx.commit();
+            if (log.isDebugEnabled())
+            {
+                log.debug("Deleted group: " + internalGroup.getFullPath());
+            }
+
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to lock group for delete.";
+            log.error(msg, e);
+            persistenceStore.getTransaction().rollback();
+            throw new SecurityException(msg, e);
+        }
+        
     }
 
 }

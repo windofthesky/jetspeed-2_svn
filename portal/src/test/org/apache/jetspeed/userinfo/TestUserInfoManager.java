@@ -109,8 +109,8 @@ public class TestUserInfoManager extends AbstractPrefsSupportedTestCase
         SecurityProvider securityProvider = new SecurityProviderImpl(ch, ush, rsh, gsh, smh);
         
         ums = new UserManagerImpl(securityProvider);
-        gms = new GroupManagerImpl(persistenceStore);
-        rms = new RoleManagerImpl(persistenceStore);
+        gms = new GroupManagerImpl(securityProvider);
+        rms = new RoleManagerImpl(securityProvider);
         
         ums = new UserManagerImpl(securityProvider);
         uim = new UserInfoManagerImpl(ums, portletRegistry); 

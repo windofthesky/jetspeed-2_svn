@@ -15,7 +15,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,16 +24,11 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.Filter;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
-import org.apache.jetspeed.security.om.InternalGroupPrincipal;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
@@ -56,7 +50,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
-public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
+public class GroupManagerImpl implements GroupManager
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(GroupManagerImpl.class);
@@ -68,19 +62,10 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
     private SecurityMappingHandler securityMappingHandler = null;
 
     /**
-     * @param persistenceStore
-     */
-    public GroupManagerImpl(PersistenceStore persistenceStore)
-    {
-        super(persistenceStore);
-    }
-
-    /**
      * @param securityProvider The security provider.
      */
-    public GroupManagerImpl(PersistenceStore persistenceStore, SecurityProvider securityProvider)
+    public GroupManagerImpl(SecurityProvider securityProvider)
     {
-        super(persistenceStore);
         this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
     }
@@ -93,32 +78,47 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
                 "addGroup(java.lang.String)");
 
-        GroupPrincipal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);
-        String fullPath = groupPrincipal.getFullPath();
         // Check if group already exists.
         if (groupExists(groupFullPathName))
         {
             throw new SecurityException(SecurityException.GROUP_ALREADY_EXISTS + " " + groupFullPathName);
         }
 
-        // If does not exist, create.
-        InternalGroupPrincipal omGroup = new InternalGroupPrincipalImpl(fullPath);
+        GroupPrincipal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);
+        String fullPath = groupPrincipal.getFullPath();
+        // Add the preferences.
         Preferences preferences = Preferences.userRoot().node(fullPath);
-        PersistenceStore store = getPersistenceStore();
+        if (log.isDebugEnabled())
+        {
+            log.debug("Added group preferences node: " + fullPath);
+        }
         try
         {
             if ((null != preferences) && preferences.absolutePath().equals(fullPath))
             {
-                store.lockForWrite(omGroup);
-                store.getTransaction().checkpoint();
+                // Add role principal.
+                groupSecurityHandler.setGroupPrincipal(groupPrincipal);
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Added group: " + fullPath);
+                }
             }
         }
-        catch (Exception e)
+        catch (SecurityException se)
         {
-            String msg = "Unable to lock Group for update.";
-            log.error(msg, e);
-            store.getTransaction().rollback();
-            throw new SecurityException(msg, e);
+            String msg = "Unable to create the role.";
+            log.error(msg, se);
+
+            // Remove the preferences node.
+            try
+            {
+                preferences.removeNode();
+            }
+            catch (BackingStoreException bse)
+            {
+                bse.printStackTrace();
+            }
+            throw new SecurityException(msg, se);
         }
     }
 
@@ -130,71 +130,35 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
                 "removeGroup(java.lang.String)");
 
-        InternalGroupPrincipal omParentGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null != omParentGroup)
+        // Resolve the group hierarchy.
+        Preferences prefs = Preferences.userRoot().node(
+                GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
+        String[] groups = securityMappingHandler.getGroupHierarchyResolver().resolveChildren(prefs);
+        for (int i = 0; i < groups.length; i++)
         {
-            PersistenceStore store = getPersistenceStore();
-            Filter filter = store.newFilter();
-            filter.addLike("fullPath", omParentGroup.getFullPath() + "/*");
-            Object query = store.newQuery(InternalGroupPrincipalImpl.class, filter);
-            Collection omGroups = store.getCollectionByQuery(query);
-            if (null == omGroups)
+            try
             {
-                omGroups = new ArrayList();
+                groupSecurityHandler.removeGroupPrincipal(new GroupPrincipalImpl(GroupPrincipalImpl
+                        .getPrincipalNameFromFullPath((String) groups[i])));
             }
-            omGroups.add(omParentGroup);
-            // Remove each group in the collection.
-            Iterator omGroupsIterator = omGroups.iterator();
-            while (omGroupsIterator.hasNext())
+            catch (Exception e)
             {
-                InternalGroupPrincipal omGroup = (InternalGroupPrincipal) omGroupsIterator.next();
-                // TODO This should be managed in a transaction.
-                Collection omUsers = omGroup.getUserPrincipals();
-                if (null != omUsers)
-                {
-                    omUsers.clear();
-                }
-                Collection omRoles = omGroup.getRolePrincipals();
-                if (null != omRoles)
-                {
-                    omRoles.clear();
-                }
-                Collection omPermissions = omGroup.getPermissions();
-                if (null != omPermissions)
-                {
-                    omPermissions.clear();
-                }
-                try
-                {
-                    // TODO Can this be done in one shot?
-                    // Remove dependencies.
-                    store.lockForWrite(omGroup);
-                    omGroup.setUserPrincipals(omUsers);
-                    omGroup.setRolePrincipals(omRoles);
-                    omGroup.setPermissions(omPermissions);
-                    store.getTransaction().checkpoint();
-
-                    // Remove group.
-                    store.deletePersistent(omGroup);
-                    store.getTransaction().checkpoint();
-                }
-                catch (Exception e)
-                {
-                    String msg = "Unable to lock Group for update.";
-                    log.error(msg, e);
-                    store.getTransaction().rollback();
-                    throw new SecurityException(msg, e);
-                }
-                // Remove preferences
-                Preferences preferences = Preferences.userRoot().node(omGroup.getFullPath());
-                try
-                {
-                    preferences.removeNode();
-                }
-                catch (BackingStoreException bse)
-                {
-                    bse.printStackTrace();
-                }
+                String msg = "Unable to remove group: "
+                        + GroupPrincipalImpl.getPrincipalNameFromFullPath((String) groups[i]);
+                log.error(msg, e);
+                throw new SecurityException(msg, e);
+            }
+            // Remove preferences
+            Preferences groupPref = Preferences.userRoot().node((String) groups[i]);
+            try
+            {
+                groupPref.removeNode();
+            }
+            catch (BackingStoreException bse)
+            {
+                String msg = "Unable to remove group preferences: " + groups[i];
+                log.error(msg, bse);
+                throw new SecurityException(msg, bse);
             }
         }
     }
@@ -289,41 +253,18 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
                 "addUserToGroup(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
-
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
+        // Get the group principal to add to user.
+        Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        if (null == groupPrincipal)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
         }
-
-        Collection omUserGroups = omUser.getGroupPrincipals();
-        if (null == omUserGroups)
+        // Get the user groups.
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
+        // Add group to user.
+        if (!groupPrincipals.contains(groupPrincipal))
         {
-            omUserGroups = new ArrayList();
-        }
-        if (!omUserGroups.contains(omGroup))
-        {
-            omUserGroups.add(omGroup);
-            PersistenceStore store = getPersistenceStore();
-            try
-            {
-                store.lockForWrite(omUser);
-                omUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                omUser.setGroupPrincipals(omUserGroups);
-                store.getTransaction().checkpoint();
-            }
-            catch (Exception e)
-            {
-                String msg = "Unable to lock User for update.";
-                log.error(msg, e);
-                store.getTransaction().rollback();
-                throw new SecurityException(msg, e);
-            }
+            securityMappingHandler.setUserPrincipalInGroup(username, groupFullPathName);
         }
     }
 
@@ -336,33 +277,11 @@ public class GroupManagerImpl extends BaseSecurityImpl implements GroupManager
         ArgUtil.notNull(new Object[] { username, groupFullPathName }, new String[] { "username", "groupFullPathName" },
                 "removeUserFromGroup(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        // TODO This should be managed in a transaction.
-        if (null != omUser)
+        // Get the group principal to remove.
+        Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        if (null != groupPrincipal)
         {
-            Collection omGroups = omUser.getGroupPrincipals();
-            if (null != omGroups)
-            {
-                Collection newOmGroups = super.removeGroup(omGroups, groupFullPathName);
-                if (newOmGroups.size() < omGroups.size())
-                {
-                    PersistenceStore store = getPersistenceStore();
-                    try
-                    {
-                        store.lockForWrite(omUser);
-                        omUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                        omUser.setGroupPrincipals(newOmGroups);
-                        store.getTransaction().checkpoint();
-                    }
-                    catch (Exception e)
-                    {
-                        String msg = "Unable to lock User for update.";
-                        log.error(msg, e);
-                        store.getTransaction().rollback();
-                        throw new SecurityException(msg, e);
-                    }
-                }
-            }
+            securityMappingHandler.removeUserPrincipalInGroup(username, groupFullPathName);
         }
     }
 

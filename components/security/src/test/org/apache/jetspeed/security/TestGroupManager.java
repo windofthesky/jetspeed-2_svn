@@ -217,13 +217,12 @@ public class TestGroupManager extends AbstractSecurityTestcase
         {
             gms.removeGroup("testgroup1.group1");
             Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
-            // because of hierarchical groups
-            //
-            //assertEquals(
-            //    "principal size should be == 3 after removing testgroup1.group1,
-            // for principals: " + principals.toString(),
-            //    3,
-            //    principals.size());
+            // because of hierarchical groups with generalization strategy as default. Was 5 groups + 1 user, should now be 5
+            // (4 groups + 1 user).
+            assertEquals(
+                "principal size should be == 5 after removing testgroup1.group1, for principals: " + principals.toString(),
+                5,
+                principals.size());
             assertFalse("anonuser2 should not contain testgroup1.group1", principals.contains(new GroupPrincipalImpl(
                     "testgroup1.group1")));
         }

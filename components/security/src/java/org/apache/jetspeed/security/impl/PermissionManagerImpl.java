@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
+import org.apache.jetspeed.components.persistence.store.Transaction;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
@@ -203,8 +204,10 @@ public class PermissionManagerImpl implements PermissionManager
                 .getName(), permission.getActions());
         try
         {
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.lockForWrite(internalPermission);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
         }
         catch (Exception e)
         {
@@ -229,8 +232,10 @@ public class PermissionManagerImpl implements PermissionManager
             try
             {
                 // Remove permission.
+                Transaction tx = persistenceStore.getTransaction();
+                tx.begin();
                 persistenceStore.deletePersistent(internalPermission);
-                persistenceStore.getTransaction().checkpoint();
+                tx.commit();
             }
             catch (Exception e)
             {
@@ -262,10 +267,12 @@ public class PermissionManagerImpl implements PermissionManager
             }
             try
             {
+                Transaction tx = persistenceStore.getTransaction();
+                tx.begin();
                 persistenceStore.lockForWrite(internalPrincipal);
                 internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                 internalPrincipal.setPermissions(internalPermissions);
-                persistenceStore.getTransaction().checkpoint();
+                tx.commit();
             }
             catch (Exception e)
             {
@@ -311,10 +318,12 @@ public class PermissionManagerImpl implements PermissionManager
         }
         try
         {
+            Transaction tx = persistenceStore.getTransaction();
+            tx.begin();
             persistenceStore.lockForWrite(internalPrincipal);
             internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
             internalPrincipal.setPermissions(internalPermissions);
-            persistenceStore.getTransaction().checkpoint();
+            tx.commit();
         }
         catch (Exception e)
         {
@@ -377,14 +386,16 @@ public class PermissionManagerImpl implements PermissionManager
                 {
                     try
                     {
+                        Transaction tx = persistenceStore.getTransaction();
+                        tx.begin();
                         persistenceStore.lockForWrite(internalPrincipal);
                         internalPrincipal.setModifiedDate(new Timestamp(System.currentTimeMillis()));
                         internalPrincipal.setPermissions(newInternalPermissions);
-                        persistenceStore.getTransaction().checkpoint();
+                        tx.commit();
                     }
                     catch (Exception e)
                     {
-                        String msg = "Unable to lock Principal for update.";
+                        String msg = "Unable to lock principal for update.";
                         log.error(msg, e);
                         persistenceStore.getTransaction().rollback();
                         throw new SecurityException(msg, e);

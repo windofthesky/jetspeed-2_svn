@@ -16,6 +16,9 @@ package org.apache.jetspeed.security.spi;
 
 import java.security.Principal;
 
+import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.SecurityException;
+
 /**
  * <p>
  * This interface encapsulates the persistence of security groups.
@@ -43,5 +46,25 @@ public interface GroupSecurityHandler
      * @return The <code>Principal</p>
      */
     Principal getGroupPrincipal(String groupFullPathName);
+    
+    /**
+     * <p>
+     * Sets the group principal in the backing store.
+     * </p>
+     * 
+     * @param groupPrincipal The <code>GroupPrincipal</code>.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void setGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException;
+    
+    /**
+     * <p>
+     * Removes the group principal.
+     * </p>
+     * 
+     * @param groupPrincipal The <code>GroupPrincipal</code>.
+     * @throws SecurityException Throws a {@link SecurityException}.
+     */
+    void removeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException;
 
 }

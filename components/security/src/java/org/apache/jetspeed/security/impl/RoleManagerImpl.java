@@ -15,7 +15,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,15 +24,11 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
-import org.apache.jetspeed.security.om.InternalGroupPrincipal;
-import org.apache.jetspeed.security.om.InternalRolePrincipal;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.util.ArgUtil;
@@ -55,7 +50,7 @@ import org.apache.jetspeed.util.ArgUtil;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
-public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
+public class RoleManagerImpl implements RoleManager
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
@@ -67,19 +62,10 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     private SecurityMappingHandler securityMappingHandler = null;
 
     /**
-     * @param persistenceStore
-     */
-    public RoleManagerImpl(PersistenceStore persistenceStore)
-    {
-        super(persistenceStore);
-    }
-
-    /**
      * @param securityProvider The security provider.
      */
-    public RoleManagerImpl(PersistenceStore persistenceStore, SecurityProvider securityProvider)
+    public RoleManagerImpl(SecurityProvider securityProvider)
     {
-        super(persistenceStore);
         this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
     }
@@ -267,40 +253,18 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
                 "addUserToRole(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        if (null == omUser)
-        {
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
-        }
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
+        // Get the role principal to add to user.
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null == rolePrincipal)
         {
             throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
         }
-
-        Collection omUserRoles = omUser.getRolePrincipals();
-        if (null == omUserRoles)
+        // Get the user roles.
+        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
+        // Add role to user.
+        if (!rolePrincipals.contains(rolePrincipal))
         {
-            omUserRoles = new ArrayList();
-        }
-        if (!omUserRoles.contains(omRole))
-        {
-            omUserRoles.add(omRole);
-            PersistenceStore store = getPersistenceStore();
-            try
-            {
-                store.lockForWrite(omUser);
-                omUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                omUser.setRolePrincipals(omUserRoles);
-                store.getTransaction().checkpoint();
-            }
-            catch (Exception e)
-            {
-                String msg = "Unable to lock User for update.";
-                log.error(msg, e);
-                store.getTransaction().rollback();
-                throw new SecurityException(msg, e);
-            }
+            securityMappingHandler.setRolePrincipal(username, roleFullPathName);
         }
     }
 
@@ -313,33 +277,11 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
                 "removeRoleFromUser(java.lang.String, java.lang.String)");
 
-        InternalUserPrincipal omUser = super.getJetspeedUserPrincipal(username);
-        // TODO This should be managed in a transaction.
-        if (null != omUser)
+        // Get the role principal to remove.
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null != rolePrincipal)
         {
-            Collection omRoles = omUser.getRolePrincipals();
-            if (null != omRoles)
-            {
-                Collection newOmRoles = super.removeRole(omRoles, roleFullPathName);
-                if (newOmRoles.size() < omRoles.size())
-                {
-                    PersistenceStore store = getPersistenceStore();
-                    try
-                    {
-                        store.lockForWrite(omUser);
-                        omUser.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                        omUser.setRolePrincipals(newOmRoles);
-                        store.getTransaction().checkpoint();
-                    }
-                    catch (Exception e)
-                    {
-                        String msg = "Unable to lock User for update.";
-                        log.error(msg, e);
-                        store.getTransaction().rollback();
-                        throw new SecurityException(msg, e);
-                    }
-                }
-            }
+            securityMappingHandler.removeRolePrincipal(username, roleFullPathName);
         }
     }
 
@@ -372,42 +314,13 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
                 "groupFullPathName" }, "addRoleToGroup(java.lang.String, java.lang.String)");
 
-        InternalRolePrincipal omRole = super.getJetspeedRolePrincipal(roleFullPathName);
-        if (null == omRole)
+        // Get the role principal to add to group.
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null == rolePrincipal)
         {
             throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST + " " + roleFullPathName);
         }
-
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        if (null == omGroup)
-        {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
-        }
-
-        Collection omGroupRoles = omGroup.getRolePrincipals();
-        if (null == omGroupRoles)
-        {
-            omGroupRoles = new ArrayList();
-        }
-        if (!omGroupRoles.contains(omRole))
-        {
-            omGroupRoles.add(omRole);
-            PersistenceStore store = getPersistenceStore();
-            try
-            {
-                store.lockForWrite(omGroup);
-                omGroup.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                omGroup.setRolePrincipals(omGroupRoles);
-                store.getTransaction().checkpoint();
-            }
-            catch (Exception e)
-            {
-                String msg = "Unable to lock Group for update.";
-                log.error(msg, e);
-                store.getTransaction().rollback();
-                throw new SecurityException(msg, e);
-            }
-        }
+        securityMappingHandler.setRolePrincipalInGroup(groupFullPathName, roleFullPathName);
     }
 
     /**
@@ -418,34 +331,12 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
     {
         ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
                 "groupFullPathName" }, "removeRoleFromGroup(java.lang.String, java.lang.String)");
-
-        InternalGroupPrincipal omGroup = super.getJetspeedGroupPrincipal(groupFullPathName);
-        // TODO This should be managed in a transaction.
-        if (null != omGroup)
+        
+        // Get the role principal to remove.
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        if (null != rolePrincipal)
         {
-            Collection omRoles = omGroup.getRolePrincipals();
-            if (null != omRoles)
-            {
-                Collection newOmRoles = super.removeRole(omRoles, roleFullPathName);
-                if (newOmRoles.size() < omRoles.size())
-                {
-                    PersistenceStore store = getPersistenceStore();
-                    try
-                    {
-                        store.lockForWrite(omGroup);
-                        omGroup.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-                        omGroup.setRolePrincipals(newOmRoles);
-                        store.getTransaction().checkpoint();
-                    }
-                    catch (Exception e)
-                    {
-                        String msg = "Unable to lock Group for update.";
-                        log.error(msg, e);
-                        store.getTransaction().rollback();
-                        throw new SecurityException(msg, e);
-                    }
-                }
-            }
+            securityMappingHandler.removeRolePrincipalInGroup(groupFullPathName, roleFullPathName);
         }
     }
 
@@ -466,7 +357,7 @@ public class RoleManagerImpl extends BaseSecurityImpl implements RoleManager
         {
             isGroupInRole = true;
         }
-        
+
         return isGroupInRole;
     }
 

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.security.HierarchyResolver;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
@@ -143,12 +144,39 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipals(java.lang.String, java.util.Set)
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipals(java.lang.String, java.lang.String)
      */
-    public void setRolePrincipals(String username, Set rolePrincipals)
+    public void setRolePrincipal(String username, String roleFullPathName) throws SecurityException
     {
-        // TODO Auto-generated method stub
-
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
+        if (null == internalUser)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
+        Collection internalRoles = internalUser.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
+                .getFullPathFromPrincipalName(roleFullPathName));
+        internalRoles.add(internalRole);
+        internalUser.setRolePrincipals(internalRoles);
+        commonQueries.setInternalUserPrincipal(internalUser);
+    }
+        
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeRolePrincipal(java.lang.String, java.lang.String)
+     */
+    public void removeRolePrincipal(String username, String roleFullPathName) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
+        if (null == internalUser)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
+        Collection internalRoles = internalUser.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
+                .getFullPathFromPrincipalName(roleFullPathName));
+        internalRoles.remove(internalRole);
+        internalUser.setRolePrincipals(internalRoles);
+        commonQueries.setInternalUserPrincipal(internalUser);
     }
     
     /**
@@ -184,6 +212,41 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             }
         }
         return rolePrincipals;
+    }
+       
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipalInGroup(java.lang.String, java.lang.String)
+     */
+    public void setRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
+    {
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
+        if (null == internalGroup)
+        {
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + groupFullPathName);
+        }
+        Collection internalRoles = internalGroup.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName));
+        internalRoles.add(internalRole);
+        internalGroup.setRolePrincipals(internalRoles);
+        commonQueries.setInternalGroupPrincipal(internalGroup);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeRolePrincipalInGroup(java.lang.String, java.lang.String)
+     */
+    public void removeRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
+    {
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
+        if (null == internalGroup)
+        {
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST + " " + internalGroup);
+        }
+        Collection internalRoles = internalGroup.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
+                .getFullPathFromPrincipalName(roleFullPathName));
+        internalRoles.remove(internalRole);
+        internalGroup.setRolePrincipals(internalRoles);
+        commonQueries.setInternalGroupPrincipal(internalGroup);
     }
     
     /**
@@ -319,5 +382,40 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             }
         }
         return userPrincipals;
+    }
+      
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setUserPrincipalInGroup(java.lang.String, java.lang.String)
+     */
+    public void setUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
+        if (null == internalUser)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
+        Collection internalGroups = internalUser.getGroupPrincipals();
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
+        internalGroups.add(internalGroup);
+        internalUser.setGroupPrincipals(internalGroups);
+        commonQueries.setInternalUserPrincipal(internalUser);
+    }
+    
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeUserPrincipalInGroup(java.lang.String, java.lang.String)
+     */
+    public void removeUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException
+    {
+        InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
+        if (null == internalUser)
+        {
+            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST + " " + username);
+        }
+        Collection internalGroups = internalUser.getGroupPrincipals();
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
+        internalGroups.remove(internalGroup);
+        internalUser.setGroupPrincipals(internalGroups);
+        commonQueries.setInternalUserPrincipal(internalUser);
     }
 }

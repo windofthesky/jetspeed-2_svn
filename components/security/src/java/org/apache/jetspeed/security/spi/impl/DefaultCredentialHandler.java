@@ -115,10 +115,8 @@ public class DefaultCredentialHandler implements CredentialHandler
                 if (credential.getType() == type)
                 {
                     // PasswordCredential support.
-                    //Commenting out to fix LoginPortlet
-                    //DLS:  please verify this logic...  It's failing currently.
-                    //if ((null != credential.getClassname())
-                      //      && (credential.getClassname().equals((PasswordCredential.class).getName())))
+                    if ((null != credential.getClassname())
+                            && (credential.getClassname().equals((PasswordCredential.class).getName())))
                     {
                         PasswordCredential pwdCred = new PasswordCredential(username, credential.getValue()
                                 .toCharArray());

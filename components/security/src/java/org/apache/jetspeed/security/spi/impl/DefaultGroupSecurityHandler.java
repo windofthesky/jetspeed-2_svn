@@ -17,8 +17,10 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.Principal;
 
 import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 
 /**
@@ -53,4 +55,28 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
         }
         return groupPrincipal;
     }
+    
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#setGroupPrincipal(org.apache.jetspeed.security.GroupPrincipal)
+     */
+    public void setGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
+    {
+        String fullPath = groupPrincipal.getFullPath();
+        InternalGroupPrincipal internalGroup = new InternalGroupPrincipalImpl(fullPath);
+        commonQueries.setInternalGroupPrincipal(internalGroup);   
+    }
+    
+    /**
+     * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#removeGroupPrincipal(org.apache.jetspeed.security.GroupPrincipal)
+     */
+    public void removeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
+    {
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupPrincipal.getFullPath());
+        if (null != internalGroup)
+        {
+            commonQueries.removeInternalGroupPrincipal(internalGroup);
+        }
+    }
+    
 }

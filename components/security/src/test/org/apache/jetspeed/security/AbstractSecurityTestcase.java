@@ -99,8 +99,8 @@ public class AbstractSecurityTestcase extends PersistenceSupportedTestCase
         Policy policy = new RdbmsPolicy(pms);
         securityProvider = new SecurityProviderImpl(policy, ch, ush, rsh, gsh, smh);
         ums = new UserManagerImpl(securityProvider);
-        gms = new GroupManagerImpl(persistenceStore, securityProvider);
-        rms = new RoleManagerImpl(persistenceStore, securityProvider);
+        gms = new GroupManagerImpl(securityProvider);
+        rms = new RoleManagerImpl(securityProvider);
         
         new AuthenticationProviderImpl("login.conf", ums);
     }
