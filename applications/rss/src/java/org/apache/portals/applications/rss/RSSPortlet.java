@@ -141,10 +141,9 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
         parser = docfactory.newDocumentBuilder(); 
         parser.setEntityResolver(this);
 
-        URL u = new URL(url);        
-        InputSource isrc = new InputSource(u.openStream());
+        Reader rdr = openURL(url);
+        InputSource isrc = new InputSource(rdr);
         isrc.setSystemId(url);
-        isrc.setEncoding("UTF-8"); 
         this.document = parser.parse(isrc);
         return document;        
     }
