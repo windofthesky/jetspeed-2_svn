@@ -313,5 +313,17 @@
 <!--    <attainGoal name="db.drop" /> -->
     <attainGoal name="db.create" />
   </goal>
+  
+    <goal name="quickStart"
+        description="Creates the production DB and calls portal/maven fulDeploy">
+        <attainGoal name="db.recreate" />
+        <maven:reactor
+               basedir="${basedir}"
+               includes="portal/project.xml"
+               goals="fullDeploy"
+               banner="Deploying basic Jetspeed portal suite"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    </goal>        
 
 </project>
