@@ -70,44 +70,6 @@ public class DefaultPasswordCredentialProvider implements PasswordCredentialProv
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#postLoadInternalCredential(java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
-     */
-    public boolean postLoadInternalCredential(String userName, InternalCredential credential) throws SecurityException
-    {
-        boolean updated = false;
-        if (!credential.isEncoded() && getEncoder() != null)
-        {
-            if ( getValidator() != null)
-            {
-                getValidator().validate(credential.getValue());
-            }            
-            credential.setValue(getEncoder().encode(userName,credential.getValue()));
-            credential.setEncoded(true);
-            updated = true;
-        }
-        return updated;
-    }
-    
-    /**
-     * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#postLoadInternalCredential(java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
-     */
-    public boolean postAuthenticateInternalCredential(String userName, InternalCredential credential) throws SecurityException
-    {
-        boolean updated = false;
-        if (!credential.isEncoded() && getEncoder() != null)
-        {
-            if ( getValidator() != null)
-            {
-                getValidator().validate(credential.getValue());
-            }            
-            credential.setValue(getEncoder().encode(userName,credential.getValue()));
-            credential.setEncoded(true);
-            updated = true;
-        }
-        return updated;
-    }
-    
-    /**
      * @see org.apache.jetspeed.security.spi.PasswordCredentialProvider#create(java.lang.String, java.lang.String)
      */
     public PasswordCredential create(String userName, String password) throws SecurityException
