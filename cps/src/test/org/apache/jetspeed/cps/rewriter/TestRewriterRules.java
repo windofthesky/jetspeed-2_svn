@@ -246,7 +246,7 @@ public class TestRewriterRules extends CPSTest
 
         // validate result        
         FileReader testReader = new FileReader("./test/rewriter/test-001-output.html");  
-        TestRewriter testRewriter = new TestRewriter();
+        UnitTestRewriter testRewriter = new UnitTestRewriter();
         testRewriter.parse(service.createParserAdaptor("text/html"), testReader);
         assertTrue("1st rewritten anchor: " + testRewriter.getAnchorValue("1"), 
                     testRewriter.getAnchorValue("1").equals("http://www.bluesunrise.com/suffix"));

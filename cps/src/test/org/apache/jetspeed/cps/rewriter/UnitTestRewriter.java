@@ -62,7 +62,7 @@ import java.util.Map;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestRewriter extends BasicRewriter
+public class UnitTestRewriter extends BasicRewriter
 {    
     private Map anchors = new HashMap();
     private String paragraph = null;

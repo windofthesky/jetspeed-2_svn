@@ -70,6 +70,7 @@
     <unitTest>
       <excludes>
          <exclude>org/apache/jetspeed/cps/CPSTest.java</exclude>
+         <exclude>org/apache/jetspeed/cps/rewriter/UnitTestRewriter.java</exclude>
       </excludes>
     </unitTest>
     
