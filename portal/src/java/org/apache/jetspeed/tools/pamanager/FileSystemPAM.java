@@ -120,7 +120,7 @@ public class FileSystemPAM implements Deployment
 
             // load the portlet.xml
             System.out.println("Loading " + portletXMLPath + " into memory....");
-            app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletApplicationTree(portletXMLPath, paName);
+            app = (MutablePortletApplication) PortletDescriptorUtilities.loadPortletDescriptor(portletXMLPath, paName);
 
             if (app == null)
             {
