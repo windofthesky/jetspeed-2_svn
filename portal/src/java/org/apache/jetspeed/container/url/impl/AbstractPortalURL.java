@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.session.NavigationalStateComponent;
 import org.apache.jetspeed.container.url.PortalControlParameter;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -75,17 +76,15 @@ public abstract class AbstractPortalURL implements PortalURL
             this.serverName = context.getRequest().getServerName();
             this.serverPort = context.getRequest().getServerPort();
             this.serverScheme = context.getRequest().getScheme();
-            this.contextPath = context.getRequest().getContextPath();
+            this.contextPath = (String)context.getRequest().getAttribute(ContainerConstants.PORTAL_CONTEXT); 
+            if (contextPath == null)
+            {
+                context.getRequest().getContextPath();
+            }
             if (contextPath == null)
             {
                 contextPath = "";
-            }
-            
-            // NOTE: i will remove this as soon as I figure out why 
-            // weblogic is return the PA context instead of the portal context
-            // will remove it by end of day today
-            contextPath = "/jetspeed"; 
-            
+            }                        
             String servletPath = context.getRequest().getServletPath();
             if (servletPath == null)
             {
