@@ -511,6 +511,9 @@ limitations under the License.
   	</j:choose>
     <attainGoal name="db.execute" />
     <j:choose>
+      <j:when test="${dbase == 'mysql'}" >
+        	<j:set var="database.arg.script" value="../src/sql/mysql/populate-userinfo-for-default-psml.sql" />
+      </j:when>   
       <j:when test="${dbase == 'oracle'}" >
           <j:set var="database.arg.script" value="../src/sql/oracle/populate-userinfo-for-default-psml.sql" />
       </j:when>
