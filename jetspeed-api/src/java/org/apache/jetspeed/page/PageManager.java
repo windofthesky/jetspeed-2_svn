@@ -16,7 +16,10 @@
 
 package org.apache.jetspeed.page;
 
+import java.util.Map;
+
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -26,6 +29,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.profiler.ProfiledPageContext;
@@ -42,7 +46,6 @@ public interface PageManager
     /** The name of the service */
     public String SERVICE_NAME = "PageManager";
     
-
     /**
      * Creates a new empty Page instance
      *
@@ -78,7 +81,33 @@ public interface PageManager
     */
     public Page getPage(String id) throws PageNotFoundException, NodeException;
     
+   /**
+    * 
+    * <p>
+    * getLink
+    * </p>
+    *
+    * Returns a Link document for the given path
+    *
+    * @param name The path of the document to be retrieved.
+    * @throws PageNotFoundException if the page cannot be found
+    * @throws NodeException
+    */
     public Link getLink(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
+
+   /**
+    * 
+    * <p>
+    * getDocumentSet
+    * </p>
+    *
+    * Returns a DocumentSet document for the given path
+    *
+    * @param name The path of the document to be retrieved.
+    * @throws PageNotFoundException if the page cannot be found
+    * @throws NodeException
+    */
+    public DocumentSet getDocumentSet(String name) throws DocumentNotFoundException, UnsupportedDocumentTypeException, FolderNotFoundException, NodeException;
     
     /**
      * 
@@ -97,53 +126,36 @@ public interface PageManager
     Folder getFolder(String folderPath) throws FolderNotFoundException, InvalidFolderException, NodeException;
 
     /**
-     * 
      * <p>
-     * getProfiledPageContext
+     * Compute profiled page context elements based on named profile
+     * locators associated with a session/principal in supplied
+     * context instance.
      * </p>
      *
-     * @param locator
-     * @return profiled page context
+     * @param page
      * @throws PageNotFoundException if the page cannot be found.
      * @throws DocumentException
      * @throws NodeException
      */
-    public ProfiledPageContext getProfiledPageContext(ProfileLocator locator) throws PageNotFoundException, DocumentException, NodeException;
+    public void computeProfiledPageContext(ProfiledPageContext pageContext) throws PageNotFoundException, DocumentException, NodeException;
 
-    /**
-     * 
-     * <p>
-     * getPage
-     * </p>
+    /** Store the page on disk
      *
-     * @param locator
-     * @return located Page instance
-     * @throws PageNotFoundException if the page cannot be found.
-     * @throws DocumentException
-     * @throws NodeException
-     */
-    public Page getPage(ProfileLocator locator) throws PageNotFoundException, DocumentException, NodeException;
-
-    /** Store the PSML document on disk, using its locator
-     *
-     * @param profile the profile locator description.
-     * @return true if the operation succeeded
+     * @param page The page to be stored.
      */
     public void registerPage(Page page) throws JetspeedException;
 
     /** Update a page in persistent storage
      *
-     * @param locator The description of the profile to be removed.
+     * @param page The page to be updated.
      */
     public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException;
 
     /** Remove a document.
      *
-     * @param locator The description of the profile to be removed.
-     * @throws UnsupportedDocumentTypeException
-     * @throws FailedToDeleteDocumentException
-     * @throws DocumentNotFoundException
+     * @param page The page to be removed.
      */
+    public void removePage(Page page) throws JetspeedException, PageNotRemovedException;
 
 }
 

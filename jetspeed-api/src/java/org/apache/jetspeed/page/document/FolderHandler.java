@@ -107,4 +107,26 @@ public interface FolderHandler
     
     String[] listAll(String folderPath) throws FolderNotFoundException;
 
+    /**
+     * <p>
+     * getNodes
+     * </p>
+     * <p>
+     * Returns a set of nodes relative to the <code>folder</code> argument of the type
+     * indicated by the <code>documentType</code> argument. The <code>folder</code> argument
+     * may include regular expressions if indicated by the <code>regex</code> argument. The
+     * returned set is unordered.
+     * </p>
+     *
+     * @param path Path from which to locate documents
+     * @param regexp Flag indicating whether regexp should be expanded in path
+     * @param documentType document type to filter on.
+     * @return NodeSet of documents and folders located under the <code>path</code> argument.
+     * @throws FolderNotFoundException if folder under the <code>path</code> does not actually exist.
+     * @throws DocumentException if an error is encountered reading the folders.
+     * @throws InvalidFolderException
+     * @throws NodeException
+     */
+    NodeSet getNodes(String path, boolean regexp, String documentType) throws FolderNotFoundException, InvalidFolderException, NodeException;
+    
 }

@@ -73,10 +73,10 @@ public interface Profiler
       * the specified locator and can be managed by the current
       * Profiler implementation
       *
-      * @param locator ProfileLocator object used to select page
+      * @param locators Map of ProfileLocator objects used to select page
       * @return A new ProfiledPageContext object
       */
-    ProfiledPageContext createProfiledPageContext(ProfileLocator locator);
+    ProfiledPageContext createProfiledPageContext(Map locators);
         
     /**
      * For a given principal, lookup the associated profiling rule to that principal name.

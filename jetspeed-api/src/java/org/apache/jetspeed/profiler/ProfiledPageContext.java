@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.jetspeed.om.folder.DocumentSet;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -33,16 +37,17 @@ public interface ProfiledPageContext
      * Initialize this page context.
      *
      * @param profiler The profiler initializing this page context.
-     * @param locator The profile locator used to create this page context.
+     * @param locators The map of profile locators by locator name
+     *                 used to create this page context.
      */
-    void init(Profiler profiler, ProfileLocator locator);
+    void init(Profiler profiler, Map locators);
 
     /**
-     * Return ProfileLocator used to generate this page context.
+     * Return Map of ProfileLocator instances used to generate this page context.
      *  
-     * @return The ProfileLocator instance.
+     * @return The Map of ProfileLocator instances by locator name.
      */
-    ProfileLocator getLocator();
+    Map getLocators();
 
     /**
      * Return profiled Page.
@@ -141,4 +146,43 @@ public interface ProfiledPageContext
      * @param links The root Link set.
      */
     void setRootLinks(NodeSet links);
+
+    /**
+     * Return profiled document set used for menu navigation. The
+     * returned value may or may not be equivalent to the result of
+     * accessing documents relative to other documents returned as part
+     * of this profiled context.
+     *  
+     * @param name The name of the document set.
+     * @return The document set.
+     */
+    DocumentSet getDocumentSet(String name);
+
+    /**
+     * Return profiled document set used for menu navigation. This is
+     * a set of folders and documents defined by the document set
+     * related to the profiled page. The returned values may or may not
+     * be equivalent to the result of accessing documents relative to
+     * other documents returned as part of this profiled context.
+     *  
+     * @param name The name of the document set.
+     * @return The expanded document set nodes.
+     */
+    NodeSet getDocumentSetNodes(String name);
+
+    /**
+     * Return profiled document set names.
+     *  
+     * @return An iterator over document set names.
+     */
+    Iterator getDocumentSetNames();
+
+    /**
+     * Set a named document set and expanded nodes.
+     *  
+     * @param name The name of the document set.
+     * @param documentSet The document set.
+     * @param nodes The expanded document set nodes.
+     */
+    void setDocumentSet(String name, DocumentSet documentSet, NodeSet nodes);
 }

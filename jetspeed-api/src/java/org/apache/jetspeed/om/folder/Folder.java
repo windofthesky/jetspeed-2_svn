@@ -128,6 +128,18 @@ public interface Folder extends Node
     /**
      * 
      * <p>
+     * getDocumentSets
+     * </p>
+     *
+     * @return
+     * @throws DocumentException
+     * @throws NodeException
+     */    
+    NodeSet getDocumentSets() throws NodeException;
+    
+    /**
+     * 
+     * <p>
      * getAllNodes
      * </p>
      *

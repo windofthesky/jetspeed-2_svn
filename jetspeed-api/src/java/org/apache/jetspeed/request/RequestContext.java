@@ -27,7 +27,6 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 
 import org.apache.pluto.om.common.Language;
@@ -75,18 +74,18 @@ public interface RequestContext
     public ServletConfig getConfig();
 
     /**
-     * Gets the profile locator for this request
+     * Gets the profile locators for this request
      *
-     * @return Profile
+     * @return Profile locators by locator name
      */
-    public ProfileLocator getProfileLocator();
+    public Map getProfileLocators();
 
     /**
-     * Sets the target page profile for this request
+     * Sets the target page profile locators for this request
      *
-     * @param profile The target profile
+     * @param locators The target profile locators by locator name
      */
-    public void setProfileLocator(ProfileLocator locator);
+    public void setProfileLocators(Map locators);
 
     /**
      * Gets the target page for this request

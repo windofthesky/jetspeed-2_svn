@@ -153,12 +153,4 @@ public interface ProfileLocator
      * @return The request path.
      */
     String getRequestPath();
-
-    /**
-      * Creates a new ProfiledPageContext object that can be
-      * managed by the current Profiler implementation
-      *
-      * @return A new ProfiledPageContext object
-      */
-    ProfiledPageContext createProfiledPageContext();
 }

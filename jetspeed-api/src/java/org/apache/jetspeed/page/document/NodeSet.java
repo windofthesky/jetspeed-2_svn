@@ -50,7 +50,7 @@ public interface NodeSet
     Iterator iterator();
     
     NodeSet subset(String type);
-    
+
     NodeSet inclusiveSubset(String regex);
     
     NodeSet exclusiveSubset(String regex);

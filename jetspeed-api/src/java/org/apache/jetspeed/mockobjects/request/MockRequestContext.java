@@ -30,7 +30,6 @@ import org.apache.jetspeed.container.session.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -52,7 +51,7 @@ public class MockRequestContext implements RequestContext
     private Map requestAttributes = new HashMap();
     private Map sessionAttributes = new HashMap();
     private String path;
-    private ProfileLocator locator;
+    private Map locators;
     private Subject subject;
     private Locale locale;
     private String mediaType;
@@ -214,11 +213,11 @@ public class MockRequestContext implements RequestContext
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getProfileLocator()
+     * @see org.apache.jetspeed.request.RequestContext#getProfileLocators()
      */
-    public ProfileLocator getProfileLocator()
+    public Map getProfileLocators()
     {
-        return locator;
+        return locators;
     }
 
     /*
@@ -366,11 +365,11 @@ public class MockRequestContext implements RequestContext
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.request.RequestContext#setProfileLocator(org.apache.jetspeed.profiler.ProfileLocator)
+     * @see org.apache.jetspeed.request.RequestContext#setProfileLocators(java.util.Map)
      */
-    public void setProfileLocator( ProfileLocator locator )
+    public void setProfileLocators( Map locators )
     {
-        this.locator = locator;
+        this.locators = locators;
 
     }
 
