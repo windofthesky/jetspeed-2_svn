@@ -170,3 +170,78 @@ limitations under the License.
 	width:10px;
 	background:  url(content/metal/images/bottomright.gif);
 }
+
+.MintyBlue .PTitleLeft
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	
+	/** Always use relative path ! **/
+	background:  url(content/minty-blue/images/titleleft.gif);
+	
+}
+
+.MintyBlue .PTitle
+{
+	/**Specify the height of the image usedelse it will use the text height**/
+	height:16px;
+	color:#FFFFFF;
+	background: url(content/minty-blue/images/title.gif);
+	font-family : monospace;
+	font-weight:bold;
+	font-size:12pt;
+}
+ 
+.MintyBlue .PTitleRight
+{
+	/**
+	Needs to specify the width of image used
+	otherwise it won't show !
+	**/
+	width:10px;
+	background:  url(content/minty-blue/images/titleright.gif);
+}
+
+.MintyBlue .PContentLeft
+{
+	width:10px;
+	background:  url(content/minty-blue/images/contentleft.gif);
+	height : 100%;
+	
+}
+
+.MintyBlue .PContent
+{
+	padding-left:5px;
+}
+
+.MintyBlue .PContentRight
+{
+	width:10px;
+	background:  url(content/minty-blue/images/contentright.gif);
+}
+
+.MintyBlue .PBottomLeft
+{
+	width:10px;
+	background:  url(content/minty-blue/images/bottomleft.gif);
+}
+
+.MintyBlue .PBottom
+{
+	/**
+	Specify the height of the image used
+	else it won't appear
+	**/
+	height:13px;
+	background:  url(content/minty-blue/images/bottom.gif);
+}
+
+.MintyBlue .PBottomRight
+{
+	width:10px;
+	background:  url(content/minty-blue/images/bottomright.gif);
+}
