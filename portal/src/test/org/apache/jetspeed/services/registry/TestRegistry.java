@@ -77,7 +77,7 @@ import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.ParameterSetCtrl;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
-
+import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 /**
  * 
  * TestRegistry runs a suite tests creating, updating, retreiving and deleting
