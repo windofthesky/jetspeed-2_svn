@@ -18,8 +18,13 @@ package org.apache.jetspeed.tools.pamanager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
+
+import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +41,11 @@ import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
+import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
+import org.apache.jetspeed.util.descriptor.MetaDataException;
+import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
+import org.apache.jetspeed.util.descriptor.WebApplicationDescriptor;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -612,6 +621,159 @@ public class FileSystemPAM implements PortletApplicationManagement, DeploymentRe
         return true;
     }    
 
+    public boolean registerPortletApplication(String portletApplicationName, String contextName, ServletContext context)
+    throws
+        RegistryException
+    {
+        MutablePortletApplication app;
+        PersistenceStore store = registry.getPersistenceStore();
+  
+        try
+        {
+            app = createPortletApp(portletApplicationName, context);            
+            if (app == null)
+            {
+                String msg = "Error loading portlet.xml: ";
+                log.error(msg);
+                throw new RegistryException(msg);
+            }
+
+            app.setApplicationType(MutablePortletApplication.WEBAPP);
+            //app.setChecksum(checksum);
+
+            // load the web.xml
+            log.info("Loading web.xml into memory...."
+                            + portletApplicationName);
+            MutableWebApplication webapp = createWebApp(contextName, context);
+            app.setWebApplicationDefinition(webapp);
+
+            // save it to the registry
+            log.info("Saving the portlet.xml in the registry..."
+                    + portletApplicationName);
+            store.getTransaction().begin();
+            registry.registerPortletApplication(app);
+            log.info("Committing registry changes..." + portletApplicationName);
+            store.getTransaction().commit();
+        } 
+        catch (Exception e)
+        {
+            String msg = "Unable to register portlet application, " + portletApplicationName
+                    + ", through the portlet registry: " + e.toString();
+            log.error(msg, e);
+            store.getTransaction().rollback();
+            throw new RegistryException(msg, e);
+        }
+        
+        return true;
+    }
     
+    public MutableWebApplication createWebApp(String contextName, ServletContext context) 
+        throws 
+            PortletApplicationException, 
+            IOException
+    {        
+        MutableWebApplication webApp = null;
+        Reader webXmlReader = null;
+        InputStream is = null;
+        
+        try
+        {
+            is = context.getResourceAsStream("WEB-INF/web.xml");
+            if (is == null)
+            {
+                throw new PortletApplicationException("Failed to find Web XML");
+            }
+            
+            webXmlReader = new InputStreamReader(is);       
+            WebApplicationDescriptor webAppDescriptor = new WebApplicationDescriptor(webXmlReader, contextName);
+            webApp = webAppDescriptor.createWebApplication();
+            return webApp;
+        }
+
+        finally
+        {
+            try
+            {
+                if (is != null)
+                {
+                    is.close();
+                }
+                if (webXmlReader != null)
+                {
+                    webXmlReader.close();
+                }
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
+        }
+
+    }
     
+    public MutablePortletApplication createPortletApp(String paName, ServletContext context) 
+        throws 
+        PortletApplicationException, 
+        IOException
+    {
+        Reader portletXmlReader = null;        
+        MutablePortletApplication portletApp = null;
+        InputStream is = null;
+        
+        
+        
+        try
+        {
+            is = context.getResourceAsStream("WEB-INF/portlet.xml");
+            if (is == null)
+            {
+                throw new PortletApplicationException("Failed to find Portlet XML");
+            }
+            portletXmlReader = new InputStreamReader(is);       
+            
+            PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
+            portletApp = paDescriptor.createPortletApplication();
+            // validate(portletApplication);
+            /*
+            Reader extMetaDataXml = null;
+            try
+            {
+                extMetaDataXml = getReader(EXTENDED_PORTLET_XML_PATH);
+                if (extMetaDataXml != null)
+                {
+                    ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(extMetaDataXml, portletApp);
+                    extMetaData.load();
+                }
+            }
+            catch (IOException e)
+            {
+                log.info("Did not load exteneded metadata as it most likely does not exist.  " + e.toString());
+            }
+            catch (MetaDataException e)
+            {
+                log.warn("Failed to load existing metadata.  " + e.toString(), e);
+            }
+            finally
+            {
+                if (null != extMetaDataXml)
+                {
+                    extMetaDataXml.close();
+                }
+            }
+*/
+            return portletApp;
+        }
+        finally
+        {
+            if (is != null)
+            {
+                is.close();
+            }
+            if (portletXmlReader != null)
+            {
+                portletXmlReader.close();
+            }
+        }
+    }
+   
 }

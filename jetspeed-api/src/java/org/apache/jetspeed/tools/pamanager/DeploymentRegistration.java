@@ -15,6 +15,8 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
+import javax.servlet.ServletContext;
+
 import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.util.FileSystemHelper;
 
@@ -31,4 +33,8 @@ public interface DeploymentRegistration
             FileSystemHelper fileSystem, 
             String portletApplicationName)
         throws RegistryException;    
+    
+    boolean registerPortletApplication(String portletApplicationName, String contextName, ServletContext context)
+        throws RegistryException;
+    
 }
