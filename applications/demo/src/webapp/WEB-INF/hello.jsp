@@ -22,3 +22,6 @@ limitations under the License.
 <p>
 <a href="/jetspeed/portal/pam">Portlet Application Manager</a>
 </p>
+<p>
+<a href="/jetspeed/portal/struts-demo">Struts Portlet Demo</a>
+</p>
