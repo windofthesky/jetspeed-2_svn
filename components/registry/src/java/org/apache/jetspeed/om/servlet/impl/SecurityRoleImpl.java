@@ -83,7 +83,14 @@ public class SecurityRoleImpl implements SecurityRole, MutableSecurityRole, Seri
      */
     public boolean equals(Object obj) {
         if ( obj != null && obj instanceof SecurityRoleImpl ) {
-            return getRoleName().equals(((SecurityRoleImpl)obj).getRoleName());
+            //TODO: Because of a bug in OJB 1.0.rc4 fields seems not have been set
+            //      before this object is put into a HashMap.
+            //      Therefore, for the time being, check against null values is
+            //      required.
+            //      Once 1.0rc5 or higher can be used the following line should be
+            //      used again.
+            //return getRoleName().equals(((SecurityRoleImpl)obj).getRoleName());
+            return getRoleName() != null && getRoleName().equals(((SecurityRoleImpl)obj).getRoleName());
         }
         return false;
     }
@@ -92,6 +99,13 @@ public class SecurityRoleImpl implements SecurityRole, MutableSecurityRole, Seri
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
-        return getRoleName().hashCode();
+        //TODO: Because of a bug in OJB 1.0.rc4 fields seems not have been set
+        //      before this object is put into a HashMap.
+        //      Therefore, for the time being, check against null values is
+        //      required.
+        //      Once 1.0rc5 or higher can be used the following line should be
+        //      used again.
+        //return getRoleName().hashCode();
+        return getRoleName() != null ? getRoleName().hashCode() : 0;
     }
 }

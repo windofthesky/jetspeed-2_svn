@@ -90,7 +90,14 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
         if (obj != null && obj instanceof SecurityRoleRef)
         {
             SecurityRoleRef aRef = (SecurityRoleRef) obj;
-            return this.getRoleName().equals(aRef.getRoleName());
+            //TODO: Because of a bug in OJB 1.0.rc4 fields seems not have been set
+            //      before this object is put into a HashMap.
+            //      Therefore, for the time being, check against null values is
+            //      required.
+            //      Once 1.0rc5 or higher can be used the following line should be
+            //      used again.
+            //return this.getRoleName().equals(aRef.getRoleName());
+            return getRoleName() != null && getRoleName().equals(aRef.getRoleName());
         }
 
         return false;
