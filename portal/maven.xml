@@ -5,7 +5,7 @@
          xmlns:maven="jelly:maven">
 
   <!-- Target of maven test:single test -->
-<property name='testcase' value='org.apache.jetspeed.page.TestCastorXmlPageManager'/>
+<property name='testcase' value='org.apache.jetspeed.profiler.TestProfiler'/>
 
   <!-- ================================================================ -->
   <!-- Set System properties for junit                                  -->
@@ -419,5 +419,4 @@
         </java>
   </goal>
 
- 
 </project>

@@ -58,7 +58,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfilerService;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
@@ -77,9 +77,9 @@ public class RoleFallbackProfilingRule
     protected final static Log log = LogFactory.getLog(RoleFallbackProfilingRule.class);
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.ProfilerService)
+     * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.Profiler)
      */
-    public ProfileLocator apply(RequestContext context, ProfilerService service)
+    public ProfileLocator apply(RequestContext context, Profiler service)
     {
         StringBuffer key = new StringBuffer();
         int count = 0;

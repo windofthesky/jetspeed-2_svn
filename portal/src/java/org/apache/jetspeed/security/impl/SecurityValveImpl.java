@@ -61,6 +61,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -87,6 +88,8 @@ public class SecurityValveImpl
     {
         try
         {        
+            Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
+            
             // simple place holder, waiting on security service impl       
             Principal principal = request.getRequest().getUserPrincipal();
             Subject subject = (Subject)
@@ -96,7 +99,7 @@ public class SecurityValveImpl
                 Set principals = new HashSet();
                 if (principal == null)
                 {
-                    principal = new UserPrincipalImpl(Profiler.getAnonymousUser());
+                    principal = new UserPrincipalImpl(profiler.getAnonymousUser());
                 }                
                 principals.add(principal);
                 subject = new Subject(true, principals, new HashSet(), new HashSet());

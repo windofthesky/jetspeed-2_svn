@@ -53,6 +53,7 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -77,8 +78,10 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         throws PipelineException
     {
         try
-        {            
-            ProfileLocator locator = Profiler.getProfile(request);
+        {
+            Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
+            
+            ProfileLocator locator = profiler.getProfile(request);
             request.setProfileLocator(locator);
         }
         catch (ProfilerException e)

@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfilerService;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
@@ -124,9 +124,9 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.ProfilerService)
+     * @see org.apache.jetspeed.profiler.rules.ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.Profiler)
      */
-    public abstract ProfileLocator apply(RequestContext context, ProfilerService service);
+    public abstract ProfileLocator apply(RequestContext context, Profiler service);
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#getRuleCriterion()

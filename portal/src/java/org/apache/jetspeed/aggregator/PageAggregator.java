@@ -58,11 +58,12 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.cps.CPSInitializationException;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.profiler.ProfilerService;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Fragment;
@@ -137,7 +138,7 @@ public class PageAggregator extends BaseCommonService implements Aggregator
     {
 
         PortletRenderer renderer = (PortletRenderer)CommonPortletServices.getPortalService(PortletRenderer.SERVICE_NAME);
-        ProfilerService profiler = (ProfilerService)CommonPortletServices.getPortalService(ProfilerService.SERVICE_NAME);
+        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
         
         ProfileLocator locator = context.getProfileLocator();
         if (null == locator)

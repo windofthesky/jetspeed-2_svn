@@ -55,7 +55,7 @@ package org.apache.jetspeed.profiler.rules;
 
 import java.util.Collection;
 import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.ProfilerService;
+import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -126,7 +126,7 @@ public interface ProfilingRule
      * @param service
      * @return
      */
-    ProfileLocator apply(RequestContext context, ProfilerService service);
+    ProfileLocator apply(RequestContext context, Profiler service);
     
     /**
      * Returns a sorted map (ordered) of rule criteria.

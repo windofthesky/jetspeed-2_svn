@@ -60,8 +60,8 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.test.JetspeedTest;
@@ -110,6 +110,8 @@ public class TestSecurityHelper extends JetspeedTest
     
     public void testHelpers() throws Exception
     {
+        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
+        
         Principal principal = new UserPrincipalImpl("anon");
         Set principals = new HashSet();
         principals.add(principal);
@@ -120,7 +122,7 @@ public class TestSecurityHelper extends JetspeedTest
         assertNotNull("found principal is null", found);
         assertTrue("found principal should be anon", found.getName().equals("anon"));
         System.out.println("found = " + found.getName());
-        String defaultAnon = Profiler.getAnonymousUser();
+        String defaultAnon = profiler.getAnonymousUser();
         System.out.println("default anon = " + defaultAnon);
     }
     

@@ -157,7 +157,9 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
         {
             throw new JetspeedException("Failed to find ProfileLocator in BasicAggregator.build");
         }
-        Page page = Profiler.getPage(locator);
+
+        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);        
+        Page page = profiler.getPage(locator);
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin BasicAggregator.build");

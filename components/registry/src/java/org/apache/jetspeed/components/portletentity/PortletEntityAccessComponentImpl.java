@@ -96,7 +96,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     public PortletEntityAccessComponentImpl(PersistenceStoreContainer pContainer, String storeId)
     {
         this.pContainer = pContainer;
-
+        this.storeName = storeId;
     }
     /**
      * @see org.apache.jetspeed.entity.PortletEntityAccessComponent#getPortletEntity(org.apache.pluto.om.common.ObjectID)

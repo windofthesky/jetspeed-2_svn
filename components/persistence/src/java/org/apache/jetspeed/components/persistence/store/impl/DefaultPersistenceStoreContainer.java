@@ -114,6 +114,7 @@ public class DefaultPersistenceStoreContainer
         }
         catch (Throwable e)
         {            
+            e.printStackTrace();
             log.error(e.toString(), e);
             throw new IllegalStateException(e.toString());
         }

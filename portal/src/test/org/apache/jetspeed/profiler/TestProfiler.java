@@ -64,11 +64,11 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
+import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
@@ -77,8 +77,7 @@ import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.test.JetspeedTestSuite;
+import org.picocontainer.MutablePicoContainer;
 
 /**
  * TestProfiler
@@ -86,9 +85,10 @@ import org.apache.jetspeed.test.JetspeedTestSuite;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestProfiler extends JetspeedTest
+public class TestProfiler extends AbstractComponentAwareTestCase
 {
-    private ProfilerService service = null;
+    private Profiler profiler = null;
+    private MutablePicoContainer container;
     
     /**
      * Defines the testcase name for JUnit.
@@ -110,9 +110,11 @@ public class TestProfiler extends JetspeedTest
         junit.awtui.TestRunner.main(new String[] { TestProfiler.class.getName()});
     }
 
-    public void setup()
+    protected void setUp() throws Exception
     {
-        getService();
+        super.setUp();
+        container = (MutablePicoContainer) getContainer();
+        profiler = (Profiler) container.getComponentInstance(Profiler.class);        
     }
 
     /**
@@ -123,17 +125,9 @@ public class TestProfiler extends JetspeedTest
      */
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new JetspeedTestSuite(TestProfiler.class);
-    }
-
-    protected ProfilerService getService()
-    {
-        if (service == null)
-        {
-            service = (ProfilerService) CommonPortletServices.getPortalService(ProfilerService.SERVICE_NAME);
-        }
-        return service;
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestProfiler.class);
+        suite.setScript("org/apache/jetspeed/profiler/containers/profiler-container.groovy");
+        return suite;
     }
 
     private static final String DEFAULT_RULE = "j1";
@@ -150,24 +144,23 @@ public class TestProfiler extends JetspeedTest
      */
     public void testRules() throws Exception
     {
-        service = getService();               
-        assertNotNull("profiler service is null", service);
+        assertNotNull("profiler service is null", profiler);
         
         // Test Default Rule        
-        ProfilingRule rule = service.getDefaultRule();
+        ProfilingRule rule = profiler.getDefaultRule();
         assertNotNull("Default profiling rule is null", rule);
         assertTrue("default rule unexpected, = " + rule.getId(), rule.getId().equals(DEFAULT_RULE));
         assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
 
         // Test anonymous principal-rule
-        ProfilingRule anonRule = service.getRuleForPrincipal(new UserPrincipalImpl("anon"));
+        ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserPrincipalImpl("anon"));
         assertNotNull("anonymous rule is null", anonRule);
         assertTrue("anonymous rule is j1", anonRule.getId().equals(DEFAULT_RULE));
         
         // Test Retrieving All Rules
         int standardCount = 0;
         int fallbackCount = 0;        
-        Iterator rules = service.getRules().iterator();
+        Iterator rules = profiler.getRules().iterator();
         while (rules.hasNext())
         {
             rule = (ProfilingRule)rules.next();
@@ -286,8 +279,7 @@ public class TestProfiler extends JetspeedTest
     public void testStandardRule()
         throws Exception
     {
-        service = getService();               
-        assertNotNull("profiler service is null", service);
+        assertNotNull("profiler service is null", profiler);
 
         PortalContext pc = Jetspeed.getContext();
         RequestContext request = new MockRequestContext(pc, "default-other");
@@ -300,7 +292,7 @@ public class TestProfiler extends JetspeedTest
         params.put("page", "default-other");
         params.put("path", "/sports/football/nfl/chiefs");
         
-        ProfileLocator locator = service.getProfile(request);
+        ProfileLocator locator = profiler.getProfile(request);
         assertNotNull("rule test on getProfile returned null", locator);
         String path = locator.getLocatorPath();
         System.out.println("locator = " + path);        
@@ -342,7 +334,7 @@ public class TestProfiler extends JetspeedTest
         assertTrue("fallback count = 4, " + count, count == 4);
         
         // create a simple locator
-        ProfileLocator locator2 = service.createLocator();
+        ProfileLocator locator2 = profiler.createLocator();
         locator2.add("page", "test");
         fallback = locator2.iterator();
         count = 0;
@@ -358,7 +350,7 @@ public class TestProfiler extends JetspeedTest
         assertTrue("fallback count = 1, " + count, count == 1);
 
         // create an empty locator
-        ProfileLocator locator3 = service.createLocator();
+        ProfileLocator locator3 = profiler.createLocator();
         fallback = locator3.iterator();
         count = 0;
         while (fallback.hasNext())
@@ -380,8 +372,7 @@ public class TestProfiler extends JetspeedTest
 
     public void testPage() throws Exception
     {
-        service = getService();               
-        assertNotNull("profiler service is null", service);
+        assertNotNull("profiler service is null", profiler);
 
         PortalContext pc = Jetspeed.getContext();
         RequestContext request = new MockRequestContext(pc);
@@ -393,23 +384,22 @@ public class TestProfiler extends JetspeedTest
         Map params = request.getParameterMap();
         // params.put("page", "default");
     
-        ProfileLocator locator = service.getProfile(request);
+        ProfileLocator locator = profiler.getProfile(request);
         assertNotNull("rule test on getProfile returned null", locator);
         System.out.println("page = " + locator.getValue("page"));
         
-        Page page = service.getPage(locator);
+        Page page = profiler.getPage(locator);
         assertNotNull("page is null", page);                
     }
    
     public void testPath() throws Exception
     {
-        service = getService();               
-        assertNotNull("profiler service is null", service);
+        assertNotNull("profiler service is null", profiler);
 
         PortalContext pc = Jetspeed.getContext();
         RequestContext request = new MockRequestContext(pc, "/football/nfl/chiefs");
-        ProfilingRule rule = service.getRule("path");            
-        ProfileLocator locator = service.getProfile(request, rule);
+        ProfilingRule rule = profiler.getRule("path");            
+        ProfileLocator locator = profiler.getProfile(request, rule);
         assertNotNull("rule test on getProfile returned null", locator);
         String path = locator.getLocatorPath();
         System.out.println("locator = " + path);

@@ -54,8 +54,8 @@
 package org.apache.jetspeed.aggregator;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 
@@ -108,10 +108,11 @@ public class TestAggregator extends JetspeedTest
     public void testAggregator() throws Exception
     {
         Aggregator aggregator = (Aggregator) CommonPortletServices.getPortalService(Aggregator.SERVICE_NAME);
+        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
 
         RequestContext request = RequestContextFactory.getInstance(null, null, null);
 
-        ProfileLocator locator = Profiler.getProfile(request);
+        ProfileLocator locator = profiler.getProfile(request);
         request.setProfileLocator(locator);
 
         aggregator.build(request);
