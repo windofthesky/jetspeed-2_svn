@@ -54,7 +54,7 @@ limitations under the License.
   	<copy file="${basedir}/../portal/src/webapp/WEB-INF/conf/jetspeed.properties" todir="${install.src}/resources" overwrite="true" />
   	
   	<!-- Stuff that goes in shared/lib -->
-  	<copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-rc1.jar" todir="${install.src}/resources"/>
+  	<copy file="${maven.repo.local}/pluto/jars/pluto-1.0.1-rc2.jar" todir="${install.src}/resources"/>
     <copy file="${maven.repo.local}/portals-bridges/jars/portals-bridges-common-0.1.jar" todir="${install.src}/resources"/>
     <copy file="../commons/target/jetspeed-commons-2.0-a1-dev.jar" todir="${install.src}/resources"/>
     <copy file="../jetspeed-api/target/jetspeed-api-2.0-a1-dev.jar" todir="${install.src}/resources"/>
