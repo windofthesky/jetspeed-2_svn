@@ -22,8 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
+import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
@@ -73,8 +75,9 @@ public class PortletRendererImpl implements PortletRenderer, Startable
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
+     * @throws FailedToRenderFragmentException
      */
-    public void renderNow(Fragment fragment, RequestContext request)
+    public void renderNow(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException
     {
         //
         // create the portlet window and render the portlet
@@ -94,9 +97,9 @@ public class PortletRendererImpl implements PortletRenderer, Startable
             // should we decorate here instead of rendering Portlet ?
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }
-        catch (Throwable t)
+        catch (Exception e)
         {            
-            log.error("Failed to service portlet, portlet exception: " + t.toString(), t);
+            throw new FailedToRenderFragmentException("Unable to render fragment because: "+e.toString(), e);
         }
         finally
         {
@@ -112,8 +115,9 @@ public class PortletRendererImpl implements PortletRenderer, Startable
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
+     * @throws FailedToRenderFragmentException
      */
-    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response)
+    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) throws FailedToRenderFragmentException
     {
         //
         // create the portlet window and render the portlet
@@ -123,21 +127,31 @@ public class PortletRendererImpl implements PortletRenderer, Startable
             PortletWindow portletWindow = getPortletWindow(fragment);
             container.renderPortlet(portletWindow, request, response);
         }
-        catch (Throwable t)
+        catch (Exception e)
         {            
-            log.error("Failed to service portlet, portlet exception: " + t.toString(), t);
+            throw new FailedToRenderFragmentException("Unable to render fragment because: "+e.toString(), e);
         }
     }
 
     /** Render the specified Page fragment.
         The method returns before rendering is complete, rendered content can be
         accessed through the ContentDispatcher
+     * @throws UnknownPortletDefinitionException
+     * @throws FailedToRetrievePortletWindow
     */
-    public void render(Fragment fragment, RequestContext request) throws UnknownPortletDefinitionException
+    public void render(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException
     {
         RenderingJob rJob = new RenderingJob();
 
-        PortletWindow portletWindow = getPortletWindow(fragment);
+        PortletWindow portletWindow;
+        try
+        {
+            portletWindow = getPortletWindow(fragment);
+        }
+        catch (FailedToRetrievePortletWindow e)
+        {
+           throw new FailedToRenderFragmentException("Unable to render fragment because: "+e.toString(), e);
+        }
         ContentDispatcherCtrl dispatcher = getDispatcherCtrl(request,true);
 
         HttpServletRequest servletRequest = request.getRequestForWindow(portletWindow);
@@ -173,14 +187,14 @@ public class PortletRendererImpl implements PortletRenderer, Startable
         return (ContentDispatcherCtrl)request.getContentDispatcher();
     }
 
-    protected PortletWindow getPortletWindow(Fragment fragment) throws UnknownPortletDefinitionException
+    protected PortletWindow getPortletWindow(Fragment fragment) throws  FailedToRetrievePortletWindow
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
                         
         PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
         if (portletWindow == null)
         {
-            throw new UnknownPortletDefinitionException("Portlet Window creation failed for fragment: " + fragment.getId() + ", " + fragment.getName());
+            throw new FailedToRetrievePortletWindow("Portlet Window creation failed for fragment: " + fragment.getId() + ", " + fragment.getName());
         }
         PortletEntity portletEntity = portletWindow.getPortletEntity();
 

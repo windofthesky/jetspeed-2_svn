@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
@@ -67,8 +68,9 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
      * of the request fragment.
      * If the fragment rendered content is not yet available, the method will
      * hold until it's completely rendered.
+     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
      */
-    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp)
+    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp) throws FailedToRenderFragmentException 
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
 
@@ -168,8 +170,9 @@ public class ContentDispatcherImpl implements ContentDispatcher, ContentDispatch
      * of the request fragment.
      * If the fragment rendered content is not yet available, the method will
      * hold until it's completely rendered.
+     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
      */
-    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp)
+    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp) throws FailedToRenderFragmentException
     {
         ObjectID oid = JetspeedObjectID.createFromString(fragment.getId());
 

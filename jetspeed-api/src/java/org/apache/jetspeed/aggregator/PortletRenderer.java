@@ -17,6 +17,7 @@ package org.apache.jetspeed.aggregator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -34,24 +35,25 @@ public interface PortletRenderer
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
+     * @throws FailedToRenderFragmentException
      */
-    public void renderNow(Fragment fragment, RequestContext request);
+    public void renderNow(Fragment fragment, RequestContext request) throws FailedToRenderFragmentException;
 
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
+     * @throws FailedToRenderFragmentException
      */
-    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response);
+    public void renderNow(Fragment fragment, HttpServletRequest request, HttpServletResponse response) throws FailedToRenderFragmentException;
 
     /** 
      * 
      * Render the specified Page fragment.
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
-     * @throws UnknownPortletDefintionException is the PortletDefinition represented by this
-     * fragment does not exist     .
+     * @throws FailedToRenderFragmentException if the Fragment could not be rendered.
      */
-    public void render(Fragment fragment, RequestContext request) throws UnknownPortletDefinitionException;
+    public void render(Fragment fragment, RequestContext request) throws  FailedToRenderFragmentException;
 
     /**
      * Retrieve the ContentDispatcher for the specified request

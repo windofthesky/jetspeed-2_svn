@@ -34,16 +34,18 @@ public interface ContentDispatcher
      * of the request fragment.
      * If the fragment rendered content is not yet available, the method will
      * hold until it's completely rendered.
+     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
      */
-    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp);
+    public void include(Fragment fragment, HttpServletRequest req, HttpServletResponse rsp) throws FailedToRenderFragmentException;
     
     /**
      * Include in the provided PortletResponse output stream the rendered content
      * of the request fragment.
      * If the fragment rendered content is not yet available, the method will
      * hold until it's completely rendered.
+     * @throws FailedToRenderFragmentException if the Fragment to include could not be rendered.
      */
-    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp);
+    public void include(Fragment fragment, javax.portlet.RenderRequest req, javax.portlet.RenderResponse rsp) throws FailedToRenderFragmentException;
     
     /**
      * Sequentially wait on content generation for the given fragment.
