@@ -19,7 +19,6 @@ import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.components.ComponentManagement;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;

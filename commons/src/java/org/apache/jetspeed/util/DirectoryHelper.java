@@ -21,9 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.channels.FileChannel;
-import java.util.zip.CheckedInputStream;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>

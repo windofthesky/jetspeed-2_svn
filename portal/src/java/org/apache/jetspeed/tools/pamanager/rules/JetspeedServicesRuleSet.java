@@ -19,7 +19,6 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.RuleSetBase;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 
 /**
  * This class helps load the jetspeed portlet extension service declarations.

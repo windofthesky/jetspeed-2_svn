@@ -21,8 +21,6 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
-import org.apache.jetspeed.tools.pamanager.rules.JetspeedServiceRule;
 
 import org.apache.jetspeed.tools.pamanager.rules.JetspeedServicesRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;

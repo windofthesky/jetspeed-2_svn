@@ -34,8 +34,6 @@ import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.prefs.impl.PreferencesProviderImpl;
-import org.apache.jetspeed.prefs.impl.PropertyManagerImpl;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;

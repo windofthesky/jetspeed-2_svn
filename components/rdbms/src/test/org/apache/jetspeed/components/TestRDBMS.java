@@ -21,15 +21,12 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
-import org.apache.jetspeed.components.jndi.JNDIComponent;
 import org.apache.jetspeed.components.util.DatasourceTestCase;
-import org.picocontainer.MutablePicoContainer;
 /**
  * <p>
  * TestJNDIComponent

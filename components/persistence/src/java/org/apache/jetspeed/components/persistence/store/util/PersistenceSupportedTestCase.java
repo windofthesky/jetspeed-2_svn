@@ -9,7 +9,6 @@ package org.apache.jetspeed.components.persistence.store.util;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore;
 import org.apache.jetspeed.components.util.DatasourceTestCase;
-import org.apache.ojb.broker.PersistenceBrokerFactory;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
