@@ -30,7 +30,7 @@ limitations under the License.
     </init-param>
     	<portlet-name>perl-demo</portlet-name>
     	<display-name>Perl demo Portlet</display-name>
-    	<portlet-class>org.apache.jetspeed.portlets.perl.PerlPortlet</portlet-class>
+    	<portlet-class>org.apache.portals.bridges.perl.PerlPortlet</portlet-class>
 	    <expiration-cache>-1</expiration-cache>
     	<supports>
 	      <mime-type>text/html</mime-type>
@@ -56,7 +56,7 @@ limitations under the License.
     </init-param>
     	<portlet-name>perl-demo2</portlet-name>
     	<display-name>Perl demo2 Portlet</display-name>
-    	<portlet-class>org.apache.jetspeed.portlets.perl.PerlPortlet</portlet-class>
+    	<portlet-class>org.apache.portals.bridges.perl.PerlPortlet</portlet-class>
 	    <expiration-cache>-1</expiration-cache>
     	<supports>
 	      <mime-type>text/html</mime-type>

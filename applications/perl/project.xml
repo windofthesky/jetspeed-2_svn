@@ -4,7 +4,8 @@
 -->
 <project>
   <extend>${basedir}/./../project.xml</extend>
-  <id>perl</id>
+  <artifactId>perl</artifactId>
+  <groupId>perl</groupId>
   <currentVersion>2.0-a1-dev</currentVersion>
   <name>Jetspeed-2 perl Portlet Application</name>
   <description>perl Portlet</description>
@@ -16,6 +17,14 @@
   </repository>
 
   <dependencies>
+	  <dependency>
+		<id>portals-bridges:portals-bridges-perl</id>
+	    <version>0.1</version>
+	     <type>jar</type>
+	    <properties>
+	    	<war.bundle>true</war.bundle>
+	    </properties>
+	</dependency> 
     <dependency>
       <id>portlet-api</id>
       <groupId>portlet-api</groupId>
