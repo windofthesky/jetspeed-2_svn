@@ -73,7 +73,7 @@ public class SecurityException extends JetspeedException
     public static final KeyedMessage ANONYMOUS_USER_PROTECTED = new KeyedMessage("The user {0} is protected.");
 
     /** <p>The anonymous user is protected exception message.</p> */
-    public static final KeyedMessage UNEXPECTED = new KeyedMessage("Unexpected security error at {0} from {1}: {3}.");
+    public static final KeyedMessage UNEXPECTED = new KeyedMessage("Unexpected security error at {0} from {1}: {2}");
 
     /**
      * <p>Default Constructor.</p>
