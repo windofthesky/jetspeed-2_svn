@@ -73,14 +73,14 @@
     <maven:reactor
                basedir="${basedir}"
                includes="services/registry/project.xml"
-               goals="db.test.recreate,db.recreate,jar:install"
+               goals="db.recreate,db.test.recreate,jar:install"
                banner="Build and Install the services - registry jar"
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
                basedir="${basedir}"
                includes="services/security/project.xml"
-               goals="db.test.recreate,db.recreate,jar:install"
+               goals="db.recreate,db.test.recreate,jar:install"
                banner="Build and Install the services - security jar"
                postProcessing="false"
                ignoreFailures="false"/>
@@ -89,7 +89,7 @@
      <maven:reactor
                basedir="${basedir}"
                includes="portal/project.xml"
-               goals="db.test.recreate,db.recreate,ojb.registry,war:install"
+               goals="db.recreate,db.test.recreate,ojb.registry,war:install"
                banner="Build and Install the Portlet WAR"
                postProcessing="false"
                ignoreFailures="false"/>
