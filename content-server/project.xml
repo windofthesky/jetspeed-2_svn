@@ -2,7 +2,7 @@
 
 <project>
   <pomVersion>3</pomVersion>
-  <id>jetspeed2-content-server</id>
+  <id>content-server</id>
   <name>Jetspeed 2 Enterprise Portal Content Server</name>
   <groupId>jetspeed2</groupId>
   <currentVersion>2.0-a1-dev</currentVersion>
@@ -96,11 +96,25 @@
 
     </developers>
    <dependencies>
+   	  <dependency>
+      <id>commons-io</id>
+      <version>0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+   	  <dependency>
+      <id>commons-lang</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
      <dependency>
       <id>commons-logging</id>
       <version>1.0.2</version>
       <properties>
-        <war.bundle.jar>false</war.bundle.jar>
+        <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
       <dependency>
@@ -114,8 +128,9 @@
 
   <build>
     <nagEmailAddress>david@bluesunrise.com</nagEmailAddress>
-    <!--
+
     <sourceDirectory>src/java</sourceDirectory>
+    <!--
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <aspectSourceDirectory></aspectSourceDirectory>
     -->
@@ -123,9 +138,7 @@
       <includes>
         <include>**/*Test*.java</include>
       </includes>
-      <excludes>
-        <exclude>**/BaseTestCase.java</exclude>
-      </excludes>
+
     </unitTest>
   </build>
 </project>
