@@ -80,13 +80,12 @@ limitations under the License.
          </fileset>          	       	       
      </copy>
 
-    <util:file name="../src/sql" var="sqlSrcDir"/>
+    <util:file name="${basedir}/../src/sql" var="sqlSrcDir"/>
     <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlSrcDirFile">
-      <available file="../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql" property="populate.script.available"/>
-      <j:if test="${populate.script.available}">
-        <copy file="../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql" toDir="target/classes/plugin-resources/${sqlSrcDirFile.name}/populate"/>
+      <util:file name="${basedir}/../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql" var="dbSpecificPopulateScript"/>
+      <j:if test="${dbSpecificPopulateScript.exists()}">
+        <copy file="${dbSpecificPopulateScript.absolutePath}" toDir="target/classes/plugin-resources/${sqlSrcDirFile.name}/populate"/>
       </j:if>
-      <j:remove var="populate.script.available"/>
     </j:forEach>
 
      <!--
