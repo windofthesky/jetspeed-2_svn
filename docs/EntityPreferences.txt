@@ -43,7 +43,7 @@ RELATIONSHIPS
 
 (b) Considering window 51, the pref doesn't exist for user David,
     Stored in PREF_NODE table with NODE_NAME = 
-   for entity 51:  /entities/51
+   for entity 51:  /System/Jetspeed/entities/51
 
 (c) fallback to Portlet Registry
 
