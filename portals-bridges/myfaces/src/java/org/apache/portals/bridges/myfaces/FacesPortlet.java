@@ -451,13 +451,8 @@ public class FacesPortlet extends GenericServletPortlet
             {
                 //    getLifecycle().execute(context);
                 String vi = context.getViewRoot().getViewId();
-                if (null == context.getApplication().getViewHandler().restoreView(context, vi))
-                {
-                    context.setViewRoot(new UIViewRoot());
-                    context.getViewRoot().setViewId(vi);
-                    context.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-                    request.getPortletSession().setAttribute(createViewRootKey(context, vi, viewId), context.getViewRoot());                    
-                }
+                context.getApplication().getViewHandler().restoreView(context, vi);
+                
                 getLifecycle().render(context);
                 if (log.isTraceEnabled())
                 {
@@ -582,22 +577,9 @@ public class FacesPortlet extends GenericServletPortlet
                 {
                     view = defaultView;
                 }
-                UIViewRoot viewRoot = null;
-                try 
-                {
-                    viewRoot = (UIViewRoot)portletRequest.
+                UIViewRoot viewRoot = (UIViewRoot)portletRequest.
                                         getPortletSession().
                                         getAttribute(createViewRootKey(facesContext, view, viewId));
-                }
-                catch (Exception e)
-                {
-                    viewRoot = new UIViewRoot();
-                    facesContext.setViewRoot(viewRoot);
-                    facesContext.getViewRoot().setViewId(view);
-                    facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-                    portletRequest.getPortletSession().setAttribute(createViewRootKey(facesContext, view, viewId), viewRoot);
-                    
-                }
                 if (null != viewRoot)
                 {
                     facesContext.setViewRoot(viewRoot);
@@ -609,7 +591,7 @@ public class FacesPortlet extends GenericServletPortlet
                     facesContext.getViewRoot().setViewId(view);
                     facesContext.getViewRoot().setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
                     portletRequest.getPortletSession().setAttribute(createViewRootKey(facesContext, view, viewId), viewRoot);
-                }                	
+                }                   
             }
             portletRequest.setAttribute(REQUEST_SERVLET_PATH, view.replaceAll(".jsp", ".jsf"));
         }

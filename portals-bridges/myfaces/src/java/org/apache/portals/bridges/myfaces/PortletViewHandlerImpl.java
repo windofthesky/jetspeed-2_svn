@@ -131,18 +131,10 @@ public class PortletViewHandlerImpl extends ViewHandler
      */
     public UIViewRoot restoreView(FacesContext facesContext, String viewId)
     {
-        UIViewRoot root = null;
-        try
+        UIViewRoot root = handler.restoreView(facesContext, viewId);
+        if (root != null)
         {
-            root = handler.restoreView(facesContext, viewId);
-            if (root != null)
-            {
-                facesContext.setViewRoot(root);
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("Exception restoring view: " + e);
+            facesContext.setViewRoot(root);
         }
         return root;
     }
