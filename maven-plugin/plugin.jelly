@@ -165,8 +165,8 @@ limitations under the License.
           <filter token="=" value="autodeployment.catalina.version.major=${org.apache.jetspeed.catalina.version.major}"/>
         </filterset>
       </copy>
-
-    
+      
+         
     <attainGoal name="war:war" />
   </goal>
   
@@ -234,6 +234,26 @@ limitations under the License.
 	          
      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
      <unwar src="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}" dest="${org.apache.jetspeed.deploy.war.dir}/${maven.war.web.app.name}"/>
+     
+     <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
+      <echo>Build jetspeed.xml for Tomcat version ${catalina_version_major}</echo>
+      <j:choose>
+        <j:when test="${catalina_version_major == '5'}" >
+          <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
+        </j:when>
+        <j:otherwise>
+          <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
+        </j:otherwise>
+      </j:choose>
+      
+      <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/jetspeed.xml" tofile="${context_dir}/jetspeed.xml" overwrite="true">
+        <filterset begintoken="@" endtoken="@">
+          <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
+          <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
+          <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
+          <filter token="URL" value="${org.apache.jetspeed.production.database.url}"/>
+        </filterset>
+      </copy>
      
 
   </goal>
