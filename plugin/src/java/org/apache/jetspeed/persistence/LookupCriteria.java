@@ -115,7 +115,7 @@ public interface LookupCriteria
     /**
      * @see org.apache.ojb.broker.query.Criteria#addOrCriteria(org.apache.ojb.broker.query.Criteria)
      */
-    public abstract void addOrCriteria(Criteria arg0);
+    public abstract void addOrCriteria(LookupCriteria arg0);
     /**
      * @see org.apache.ojb.broker.query.Criteria#addOrderByAscending(java.lang.String)
      */
