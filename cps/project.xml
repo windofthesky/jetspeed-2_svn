@@ -27,6 +27,20 @@
       </properties>
     </dependency>
     <dependency>
+      <id>commons-pool</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-dbcp</id>
+      <version>1.1-dev.20021231.055112</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>   
+    <dependency>
       <id>junit</id>
       <version>3.8.1</version>
       <properties>
@@ -60,6 +74,21 @@
       <version>0.9.4.3</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     	<!-- We only use Tyrex for JNDI naming -->
+    <dependency>
+      <id>tyrex</id>
+      <version>1.0.1</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>hsqldb</id>
+      <version>1.7.1</version>
+      <properties>
+        <war.bundle.jar>false</war.bundle.jar>
       </properties>
     </dependency>
 
