@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.cornerstone.framework.api.factory.CreationException;
 import org.apache.cornerstone.framework.api.factory.IFactory;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.implementation.ImplementationException;
 import org.apache.cornerstone.framework.bean.visitor.BeanPrinter;
 import org.apache.cornerstone.framework.demo.bo.api.IGroup;
@@ -39,21 +40,22 @@ public class DemoPersistence
 
         Cornerstone.init();
 
-        IFactory groupFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+        IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+        IFactory groupFactory = (IFactory) implementationManager.createImplementation(
         	IFactory.class,
         	"cornerstone.demo.groupFactory"
         );
         IGroup group = (IGroup) groupFactory.createInstance(new Integer(100));
         System.out.println("group=" + BeanPrinter.getPrintString(group));
 
-		IFactory userFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+		IFactory userFactory = (IFactory) implementationManager.createImplementation(
 			IFactory.class,
 			"cornerstone.demo.userFactory"
 		);
 		IUser user = (IUser) userFactory.createInstance(new Integer(101));
 		System.out.println("user=" + BeanPrinter.getPrintString(user));
 
-		IFactory userListFactory = (IFactory) Cornerstone.getImplementationManager().createImplementation(
+		IFactory userListFactory = (IFactory) implementationManager.createImplementation(
 			IFactory.class,
 			"cornerstone.demo.userListFactory"
 		);

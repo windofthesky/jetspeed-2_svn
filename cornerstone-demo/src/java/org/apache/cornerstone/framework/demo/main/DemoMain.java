@@ -17,7 +17,9 @@ package org.apache.cornerstone.framework.demo.main;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.cornerstone.framework.api.context.IContext;
+import org.apache.cornerstone.framework.api.implementation.IImplementationManager;
 import org.apache.cornerstone.framework.api.service.IService;
+import org.apache.cornerstone.framework.api.service.IServiceManager;
 import org.apache.cornerstone.framework.bean.visitor.BeanPrinter;
 import org.apache.cornerstone.framework.context.BaseContext;
 import org.apache.cornerstone.framework.init.Cornerstone;
@@ -47,7 +49,8 @@ public class DemoMain
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/cornerstone.demo.service/cornerstone.demo.getDate.reg.properties
         // for the definition of this service
         String serviceName = "cornerstone.demo.getDate";
-        IService service = Cornerstone.getServiceManager().createServiceByName(serviceName);
+        IServiceManager serviceManager = (IServiceManager) Cornerstone.getImplementation(IServiceManager.class);
+        IService service = serviceManager.createServiceByName(serviceName);
 
 		// call passing no values in context
 		// service will use its defaults
@@ -71,7 +74,7 @@ public class DemoMain
 		// call another instance of DateService which has different configurations
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/cornerstone.demo.service/cornerstone.demo.getDate2.reg.properties
 		serviceName = "cornerstone.demo.getDate2";
-		service = Cornerstone.getServiceManager().createServiceByName(serviceName);
+		service = serviceManager.createServiceByName(serviceName);
 		context = new BaseContext();
 		dateString = (String) service.invoke(context);
 		printDate(serviceName, dateString, context);
@@ -79,7 +82,7 @@ public class DemoMain
 		// call yet another instance of DateService which has different configurations
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/cornerstone.demo.service/cornerstone.demo.getDate3.reg.properties
 		serviceName = "cornerstone.demo.getDate3";
-		service = Cornerstone.getServiceManager().createServiceByName(serviceName);
+		service = serviceManager.createServiceByName(serviceName);
 		context = new BaseContext();
 		dateString = (String) service.invoke(context);
 		printDate(serviceName, dateString, context);
@@ -93,7 +96,7 @@ public class DemoMain
         // services will share the same inputs and output, whihc is not desirable.  This
         // "spreading" is unnecessary if the services in the sequence are of different classes.
 		serviceName = "cornerstone.demo.getDate1x1";     // name of service controller
-        service = Cornerstone.getServiceManager().createServiceByName(serviceName);
+        service = serviceManager.createServiceByName(serviceName);
         context = new BaseContext();
         context.setValue("tz102", "GMT-0800");
         context.setValue("tz103", "GMT+0800");
@@ -114,7 +117,8 @@ public class DemoMain
 
         // get the single implementation of an factory interface
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IAFactory/.reg.properties
-		IAFactory aFactory = (IAFactory) Cornerstone.getImplementationManager().createImplementation(IAFactory.class);
+        IImplementationManager implementationManager = (IImplementationManager) Cornerstone.getImplementation(IImplementationManager.class);
+		IAFactory aFactory = (IAFactory) implementationManager.createImplementation(IAFactory.class);
 		IA a = (IA) aFactory.createInstance();
 		String aPrintString = BeanPrinter.getPrintString(a);
 		System.out.println("a=" + aPrintString);
@@ -122,14 +126,14 @@ public class DemoMain
         // get the "a1_viaInstanceClassName" implementation variant of interface IA
         // This variant defines how an instance should be created by using "instance.className".
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IA/a1_viaInstanceClassName.reg.properties
-        IA a1_viaInstanceClassName = (IA) Cornerstone.getImplementationManager().createImplementation(IA.class, "a1_viaInstanceClassName");
+        IA a1_viaInstanceClassName = (IA) implementationManager.createImplementation(IA.class, "a1_viaInstanceClassName");
         String a1_viaInstanceClassNamePrintString = BeanPrinter.getPrintString(a1_viaInstanceClassName);
         System.out.println("a1_viaInstanceClassName=" + a1_viaInstanceClassNamePrintString);
 
         // get the "a1_viaFactoryClassName" implementation variant of interface IA
         // This variant defines how an instance should be created by using "factory.className".
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IA/a1_viaFactoryClassName.reg.properties
-        IA a1_viaFactoryClassName = (IA) Cornerstone.getImplementationManager().createImplementation(IA.class, "a1_viaFactoryClassName");
+        IA a1_viaFactoryClassName = (IA) implementationManager.createImplementation(IA.class, "a1_viaFactoryClassName");
         String a1_viaFactoryClassNamePrintString = BeanPrinter.getPrintString(a1_viaFactoryClassName);
         System.out.println("a1_viaFactoryClassName=" + a1_viaFactoryClassNamePrintString);
 
@@ -137,7 +141,7 @@ public class DemoMain
         // This variant doesn't specify either instance.className or factory.className but gets that
         // from its parent (another implementation for the same interface) specified by "parent.name".
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IA/a1_viaParentName.reg.properties
-        IA a1_viaParentName = (IA) Cornerstone.getImplementationManager().createImplementation(IA.class, "a1_viaParentName");
+        IA a1_viaParentName = (IA) implementationManager.createImplementation(IA.class, "a1_viaParentName");
         String a1_viaParentNamePrintString = BeanPrinter.getPrintString(a1_viaParentName);
         System.out.println("a1_viaParentName=" + a1_viaParentNamePrintString);
 
@@ -149,7 +153,7 @@ public class DemoMain
         // get the implementation variant "x1y1" of factory interface IXFactory and create an instance
         // the instance of X1 will be associated with an instance of Y1
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IXFactory/x1y1.reg.properties
-        IXFactory xFactory = (IXFactory) Cornerstone.getImplementationManager().createImplementation(IXFactory.class, "x1y1");
+        IXFactory xFactory = (IXFactory) implementationManager.createImplementation(IXFactory.class, "x1y1");
         IX x1y1 = (IX) xFactory.createInstance();
         String x1y1PrintString = BeanPrinter.getPrintString(x1y1);
         System.out.println("x1y1=" + x1y1PrintString);
@@ -157,7 +161,7 @@ public class DemoMain
         // get the implementation variant "x1y2" of factory interface IXFactory and create an instance
         // the instance of X1 will be associated with an instance of Y2
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IXFactory/x1y2.reg.properties
-        xFactory = (IXFactory) Cornerstone.getImplementationManager().createImplementation(IXFactory.class, "x1y2");
+        xFactory = (IXFactory) implementationManager.createImplementation(IXFactory.class, "x1y2");
         IX x1y2 = (IX) xFactory.createInstance();
         String x1y2PrintString = BeanPrinter.getPrintString(x1y2);
         System.out.println("x1y2=" + x1y2PrintString);
@@ -165,7 +169,7 @@ public class DemoMain
         // get the implementation variant "x1y3" of factory interface IXFactory and create an instance
         // the instance of X1 will be associated with an instance of Y3
         // ${CORNERSTONE_RUNTIME_HOME}/registry/implementation/...IXFactory/x1y3.reg.properties
-        xFactory = (IXFactory) Cornerstone.getImplementationManager().createImplementation(IXFactory.class, "x1y3");
+        xFactory = (IXFactory) implementationManager.createImplementation(IXFactory.class, "x1y3");
         IX x1y3 = (IX) xFactory.createInstance();
         String x1y3PrintString = BeanPrinter.getPrintString(x1y3);
         System.out.println("x1y3=" + x1y3PrintString);

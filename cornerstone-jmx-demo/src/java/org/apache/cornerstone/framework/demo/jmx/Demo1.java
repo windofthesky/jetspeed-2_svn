@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.cornerstone.framework.demo.jmx;
 
-import java.io.IOException;
+package org.apache.cornerstone.framework.demo.jmx;
 
 import org.apache.cornerstone.framework.api.jmx.IJMXManager;
 import org.apache.cornerstone.framework.init.Cornerstone;
@@ -38,7 +37,7 @@ public class Demo1
 		LogServiceMetric logServiceMetric = new LogServiceMetric(logService);
 
 		// get hold of JMX manager
-		IJMXManager jmxManager = (IJMXManager) Cornerstone.getManager(IJMXManager.class);
+		IJMXManager jmxManager = (IJMXManager) Cornerstone.getImplementation(IJMXManager.class);
 
 		// let logServiceMetric be managed
 		jmxManager.manage(logServiceMetric);
