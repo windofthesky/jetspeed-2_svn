@@ -32,14 +32,14 @@ public interface FileCacheEventListener
      *
      * @param entry the entry being refreshed.
      */
-    void refresh(FileCacheEntry entry);
+    void refresh(FileCacheEntry entry) throws Exception;
 
     /**
      * Evict event, called when the entry is being evicted out of the cache
      *
      * @param entry the entry being refreshed.
      */
-    void evict(FileCacheEntry entry);
+    void evict(FileCacheEntry entry) throws Exception;
 
 }
 
