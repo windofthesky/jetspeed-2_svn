@@ -107,7 +107,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
     public static final String CACHE = "webcontent.cache";
 
     /** Default encoding */
-    public String defaultEncoding = "iso-8859-1";
+    public String defaultEncoding = "UTF-8";
 
     /* SSO settings */
     boolean isSSOEnabled = false;
@@ -266,7 +266,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
         // drain the stream to the portlet window
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
-        drain(bais, response.getPortletOutputStream());
+        drain(new InputStreamReader(bais, this.defaultEncoding), response.getWriter());
         bais.close();
         
         // Done just save the last URL
@@ -508,7 +508,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
             GetMethod get = new GetMethod(uri);
             int status = client.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
-            return new InputStreamReader(is);
+            // TODO need to parse HTML meta tag to get charset info
+            return new InputStreamReader(is, get.getResponseCharSet());
         }
         catch (IOException e)
         {
