@@ -233,11 +233,11 @@ limitations under the License.
   <bean id="org.apache.jetspeed.security.AuthenticationProvider" 
   	   class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl"
   >  	   
-  	   <constructor-arg><value>DefaultAuthenticator</value></constructor-arg>
-  	   <constructor-arg><value>The default authenticator</value></constructor-arg>
-  	   <constructor-arg><value>login.conf</value></constructor-arg>
-  	   <constructor-arg><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
-  	   <constructor-arg><ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/></constructor-arg>
+  	   <constructor-arg index="0"><value>DefaultAuthenticator</value></constructor-arg>
+  	   <constructor-arg index="1"><value>The default authenticator</value></constructor-arg>
+  	   <constructor-arg index="2"><value>login.conf</value></constructor-arg>
+  	   <constructor-arg index="3"><ref bean="org.apache.jetspeed.security.spi.CredentialHandler"/></constructor-arg>
+  	   <constructor-arg index="4"><ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler"/></constructor-arg>
   </bean>
   
   <!-- Security: Authentication Provider Proxy -->
