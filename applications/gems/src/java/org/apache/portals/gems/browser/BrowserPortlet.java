@@ -34,6 +34,7 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
+import org.apache.portals.gems.util.StatusMessage;
 import org.apache.velocity.context.Context;
 
 /**
@@ -188,6 +189,14 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 
         } catch (Exception e)
         {
+            String msg = e.toString();
+            Throwable cause = e.getCause();
+            if (cause != null)
+            {
+                msg = msg + ", " + cause.getMessage();
+            }
+            
+            context.put("statusMsg", new StatusMessage(msg, StatusMessage.ERROR));
             // log the error msg
             log.error("Exception", e);
 

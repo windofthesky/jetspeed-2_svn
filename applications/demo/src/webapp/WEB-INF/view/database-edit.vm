@@ -11,6 +11,10 @@
 #set ($disableSSO = "")
 #end
 
+#if ($statusMsg)
+#parse ('/WEB-INF/view/status-include.vm')
+#end
+
 <h3 class="portlet-section-header">$MESSAGES.getString('label.prefs')</h3>
 
 <form name='J2DBEdit' action="$renderResponse.createActionURL()" method="post">

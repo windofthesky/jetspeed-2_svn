@@ -33,11 +33,16 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.portals.bridges.util.PreferencesHelper;
+import org.apache.portals.gems.util.StatusMessage;
+import org.apache.portals.messaging.PortletMessaging;
 
 /**
  * DatabaseBrowserPortlet
@@ -212,11 +217,11 @@ public class DatabaseBrowserPortlet
     
 
     /*
-     * Connection Management: TODO: rethink this, current impl is a quick prototype
+     * Connection Management
      */
         
-    public Connection getConnection(RenderRequest request)
-    throws Exception // TODO: switch to Edit Mode on failure
+    public Connection getConnection(PortletRequest request)
+    throws Exception 
     {
         Connection con = null;
         try
@@ -230,8 +235,9 @@ public class DatabaseBrowserPortlet
             if (dsType.equals("jndi"))
             {
                 Context ctx = new InitialContext();
-                DataSource ds = (DataSource)ctx.lookup(prefs.getValue("JndiDatasource", ""));
-//              DataSource ds = (DataSource)ctx.lookup("java:/jdbc/jetspeed");
+                String dsName = prefs.getValue("JndiDatasource", "");
+                Context envContext  = (Context)ctx.lookup("java:/comp/env");
+                DataSource ds = (DataSource)envContext.lookup(dsName);                
                 con = ds.getConnection();
             }
             else if (dsType.equals("dbcp"))
@@ -279,6 +285,18 @@ public class DatabaseBrowserPortlet
         
     }
     
+    public void doEdit(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
+    {
+        response.setContentType("text/html");
+        StatusMessage msg = (StatusMessage)PortletMessaging.consume(request, "dbConnectTest");
+        if (msg != null)
+        {
+            this.getContext(request).put("statusMsg", msg);            
+        }
+        super.doEdit(request, response);
+    }
+    
     
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
@@ -288,8 +306,28 @@ public class DatabaseBrowserPortlet
             String test = request.getParameter("Test");
             if (test != null && test.equals("Test"))
             {
-                // test the connection - TODO: write this tomorrow :)
-                System.out.println("Handle TEST processing");
+                try
+                {
+                    PortletPreferences prefs = request.getPreferences();
+                    PreferencesHelper.requestParamsToPreferences(request);
+                    prefs.store();                    
+                    getConnection(request);
+                    StatusMessage msg = new StatusMessage("Connection made successfully.", StatusMessage.SUCCESS);                    
+                    PortletMessaging.publish(request, "dbConnectTest", msg);                    
+                }
+                catch (Exception e)
+                {
+                    String msg = e.toString();
+                    Throwable cause = e.getCause();
+                    if (cause != null)
+                    {
+                        msg = msg + ", " + cause.getMessage();
+                    }
+                    StatusMessage sm = new StatusMessage(msg, StatusMessage.ERROR);
+                    PortletMessaging.publish(request, "dbConnectTest", sm);
+                }
+                response.setPortletMode(PortletMode.EDIT);
+                return;
             }
         }
         super.processAction(request, response);
