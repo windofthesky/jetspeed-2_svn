@@ -301,7 +301,7 @@ limitations under the License.
     voice-family: "\"}\"";
     voice-family: inherit;
     /*font-size: x-small;*/
-    color: blue;
+    color: #555 !important;
 }
 
 .portlet-tigris .portlet-menu-item-hover {
@@ -356,4 +356,106 @@ limitations under the License.
     voice-family: inherit;
     /*font-size: x-small;*/
 }
+
+/* --------------------------------- */
+/* PLT.C.6 Menus (arrowfolder style) */
+/* --------------------------------- */
+.portlet-tigris .arrowfolder .portlet-menu {
+    background: #efefef;
+    margin-bottom: 6px;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-item {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: blue;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-item-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #555 !important;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-item-hover {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #f30 !important;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-cascade-item {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowfolderclosed1_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(content/tigris/images/icon_arrowfolderopen2_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-description {
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
+.portlet-tigris .arrowfolder .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+    background: #ddd;
+    color: #555;
+    padding: 4px;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    /*font-size: x-small;*/
+}
+
 
