@@ -16,7 +16,7 @@ using the MetadataManager.
 
     <jdbc-connection-descriptor
         jcd-alias="jetspeed"
-        platform="@PLATFORM@"
+        platform="Hsqldb"
         default-connection="true"
         jdbc-level="2.0"
          jndi-datasource-name="java:comp/env/jdbc/jetspeed"

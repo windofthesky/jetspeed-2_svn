@@ -14,16 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project default="java:jar"
-         xmlns:j="jelly:core" 
+         xmlns:j="jelly:core"
          xmlns:define="jelly:define"
+         xmlns:maven="jelly:maven"
          xmlns:reactor="reactor">
 
   <!-- Target of maven test:single test -->
-  <property name='testcase' value='org.apache.jetspeed.idgenerator.TestIdGenerator'/> 
-  
+  <property name='testcase' value='org.apache.jetspeed.idgenerator.TestIdGenerator'/>
+
    <goal name="deployJar">
   	<attainGoal name="jar:install"/>
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
+
+  <preGoal name="test:test">
+    <j:set var="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.test.database.url}"/>
+    <j:set var="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.test.database.driver}"/>
+    <j:set var="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.test.database.user}"/>
+    <j:set var="org.apache.jetspeed.database.password" value="${org.apache.jetspeed.test.database.password}"/>
+
+    <path id="jdbc.drivers.path" path="${org.apache.jetspeed.test.jdbc.drivers.path}"/>
+    <maven:addPath id="maven.dependency.classpath" refid="jdbc.drivers.path"/>
+  </preGoal>
 
 </project>
