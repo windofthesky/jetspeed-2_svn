@@ -1242,6 +1242,7 @@ limitations under the License.
          name="id"
          column="ID"
          jdbc-type="VARCHAR"
+         autoincrement="true"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion" 
       />
       
