@@ -16,6 +16,7 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
+import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,10 +57,11 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
      */
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
+        Subject subject = null;
         try
-        {            
+        {        
             Principal principal = request.getRequest().getUserPrincipal();
-            Subject subject = (Subject) 
+            subject = (Subject) 
                 request.getRequest().getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
             if (null == principal)
             {
@@ -86,15 +88,32 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
                 }
             }
             request.setSubject(subject);
+            
+            final ValveContext vc = context;
+            final RequestContext rc = request;
+            
+            // Pass control to the next Valve in the Pipeline and execute under the current subject
+            Subject.doAs(subject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try 
+                    {
+                        vc.invokeNext(rc);
+                    }
+                    catch (PipelineException e)
+                    {                        
+                    }
+                    return null;                    
+                }
+            });
+            
         }
         catch (Throwable t)
         {
             // TODO: valve exception handling formalized
             t.printStackTrace();
         }
-
-        // Pass control to the next Valve in the Pipeline
-        context.invokeNext(request);
 
     }
 
