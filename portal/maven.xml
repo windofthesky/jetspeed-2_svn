@@ -664,14 +664,23 @@ limitations under the License.
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}"/>
     <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.name}.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/pam"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/pam.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/security"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/security.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/struts-demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/struts-demo.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/PHP"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/PHP.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss"/>	
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/rss.war"/>
     <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore"/>
+    <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war"/>
     <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
     <j:choose>
       <j:when test="${catalina_version_major == '5'}" >
@@ -681,6 +690,7 @@ limitations under the License.
         <j:set var="context_dir" value="${org.apache.jetspeed.deploy.war.dir}"/>
       </j:otherwise>
     </j:choose>
+	<delete file="${context_dir}/${org.apache.jetspeed.portal.name}.xml"/>
 	<delete file="${context_dir}/security.xml"/>
   </goal>
 

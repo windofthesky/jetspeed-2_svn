@@ -20,11 +20,8 @@ import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentObject;
-import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
@@ -49,8 +46,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private PortletApplicationManagement pam;
     private Map appNameToFile;
     protected PortletRegistry registry;
-    private PortletFactory portletFactory;
-
 
     /**
      * 
@@ -61,10 +56,9 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
      *             the <code>webAppDir</code> directory does not exist.
      */
     public DeployPortletAppEventListener( String webAppDir, PortletApplicationManagement pam,
-            PortletRegistry registry, PortletFactory portletFactory  ) throws FileNotFoundException
+                                          PortletRegistry registry) throws FileNotFoundException
     {
         File checkFile = new File(webAppDir);
-        this.portletFactory = portletFactory;
 
         if (checkFile.exists())
         {
@@ -202,95 +196,45 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
 
             PortletApplicationWar paWar = new PortletApplicationWar(deploymentObj.getFileObject(), id, "/" + id );
 
-            if (registry.getPortletApplicationByIdentifier(id) != null
-                    && !event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+            if ((registry.getPortletApplicationByIdentifier(id) != null) &&
+                event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
             {
                 log.info("Portlet application \"" + id + "\""
-                        + " already been registered.  Skipping initial deployment.");
-                // still need to register the filename to the app name so
-                // undeploy works correctly
-                appNameToFile.put(deploymentObj.getPath(), id);
-                if (isLocal)
-                {                
-                    portletFactory.addClassLoader(
-                        registry.getPortletApplicationByIdentifier(id).getId().toString(),
-                        paWar.createClassloader(getClass().getClassLoader()));
-                }
-                else
-                {
-                    try
-                    {
-                        ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
-                        if (classloader != null)
-                        {
-                            portletFactory.addClassLoader(
-                                registry.getPortletApplicationByIdentifier(id).getId().toString(),
-                                classloader);
-                        }
-                    }
-                    catch (IOException e1)
-                    {
-                        log.info("Could not add Portlet Class Loader: " + id);
-                    }
-                }
-                return;
+                         + " already been registered.  Skipping initial deployment.");
+                pam.register(paWar);
             }
-
-            log.info("Preparing to (re) deploy portlet app \"" + id + "\"");
-
-            if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+            else
             {
-
-                if (isLocal)
-                {
-                    log.info(fileName + " will be registered as a local portlet applicaiton.");                    
-                    pam.register(paWar);
-                    MutablePortletApplication mpa = registry.getPortletApplicationByIdentifier(id);
-                    if (mpa != null)
-                    {
-                        portletFactory.addClassLoader(
-                            mpa.getId().toString(),
-                            paWar.createClassloader(getClass().getClassLoader()));
-                    }
-                }
-                else
-                {
-                    log.info("Deploying portlet applicaion WAR " + fileName);
-                    pam.deploy(paWar);
-                    try
-                    {
-                        ClassLoader classloader = createPortletClassloader(getClass().getClassLoader(), id);
-                        if (classloader != null)
-                        {
-                            MutablePortletApplication mpa = registry.getPortletApplicationByIdentifier(id);
-                            if (mpa != null)
-                            {
-                                portletFactory.addClassLoader(mpa.getId().toString(), classloader);
-                            }
-                        }
-                    }
-                    catch (IOException e1)
-                    {
-                        log.info("Could not add Portlet Class Loader: " + id);
-                    }
-                }
-            }
-            else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
-            {
-                if (isLocal)
-                {
-                    //TODO: get this working
-                    
-                }
-                else
-                {
-                    log.info("Re-deploying portlet applicaion WAR " + fileName);
-                    pam.redeploy(paWar);
-                }
+                log.info("Preparing to (re) deploy portlet app \"" + id + "\"");
                 
+                if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_DEPLOY))
+                {
+                    if (isLocal)
+                    {
+                        log.info(fileName + " will be registered as a local portlet application.");                    
+                        pam.register(paWar);
+                    }
+                    else
+                    {
+                        log.info("Deploying portlet application WAR " + fileName);
+                        pam.deploy(paWar);
+                    }
+                }
+                else if (event.getEventType().equals(DeploymentEvent.EVENT_TYPE_REDEPLOY))
+                {
+                    if (isLocal)
+                    {
+                        //TODO: get this working                    
+                    }
+                    else
+                    {
+                        log.info("Re-deploying portlet application WAR " + fileName);
+                        pam.redeploy(paWar);
+                    }
+                }
             }
-
             appNameToFile.put(deploymentObj.getPath(), id);
+
             log.info("Portlet app \"" + id + "\" " + "successfuly (re)deployed.");
         }
         catch (Exception e)
@@ -326,23 +270,5 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     public void invokeRedeploy( DeploymentEvent event ) throws DeploymentException
     {
         doDeploy(event);
-    }
-    
-    /**
-     * <p>
-     * createPortletClassloader
-     * </p>
-     * 
-     * @param parent
-     * @param id
-     * @return
-     * @throws IOException
-     */
-    private ClassLoader createPortletClassloader(ClassLoader parent, String id) throws IOException
-    {
-        String portletAppDirectory = pam.getDeploymentPath(id);
-        FileSystemHelper target = new DirectoryHelper(new File(portletAppDirectory));
-        PortletApplicationWar targetWar = new PortletApplicationWar(target, id, "/" + id);
-        return targetWar.createClassloader(parent);
     }
 }

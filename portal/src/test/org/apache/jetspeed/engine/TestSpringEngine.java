@@ -30,7 +30,6 @@ import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
-import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.services.information.StaticInformationProvider;
 
@@ -56,7 +55,7 @@ public class TestSpringEngine extends AbstractEngineTest
                                      Profiler.class, Capabilities.class, PropertyManager.class, PreferencesProvider.class, UserManager.class,
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
                                      UserInfoManager.class, NavigationalStateComponent.class, RequestContextComponent.class, PortletWindowAccessor.class,
-                                     PortletRenderer.class, PageAggregator.class, PortletAggregator.class, ApplicationServerManager.class, "PAM",
+                                     PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
                                      "deploymentManager", "portletCache", "portletFactory", "portletFactoryProxy", ServletConfig.class, 
                                      StaticInformationProvider.class};
     }

@@ -129,6 +129,7 @@ public class JetspeedContainerServlet extends HttpServlet
         if (attemptRegistration(context, portletApplicationName)) 
         {
             context.log(JCS + "Registered portlet application: name=" + portletApplicationName);
+            return;
         }
 
         context.log(JCS + "Could not registered portlet application; starting back ground thread to register when jetspeed comes online: name=" + portletApplicationName);
@@ -176,7 +177,7 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Exception e)
         {
-            context.log(JCS + "Failed to register PA: " + portletApplicationName);
+            context.log(JCS + "Failed to register PA: " + portletApplicationName, e);
         }
         return false;
     }    

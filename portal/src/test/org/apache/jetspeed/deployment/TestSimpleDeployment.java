@@ -141,7 +141,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
                 .getAbsolutePath());
 
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager), portletRegistry, portletFactory );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, portletFactory, manager), portletRegistry );
         ArrayList eventListeners = new ArrayList(2);
         eventListeners.add(ddel);
         eventListeners.add(dpal);
@@ -239,7 +239,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
         manager = new TomcatManager("", "", 0, "", 0, "", "");
         
         DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(
-                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager), portletRegistry, portletFactory );
+                webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, portletFactory, manager), portletRegistry );
         ArrayList eventListeners = new ArrayList(1);
         
         eventListeners.add(dpal);
@@ -454,7 +454,7 @@ public class TestSimpleDeployment extends RegistrySupportedTestCase
     public void tearDown() throws Exception
     {
         manager = new TomcatManager("", "", 0, "", 0, "", "");
-        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, manager);
+        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, portletFactory, manager);
 
         try
         {
