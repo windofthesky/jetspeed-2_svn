@@ -220,13 +220,36 @@ public class CatalinaPAM extends FileSystemPAM implements Deployment, Lifecycle
             throw new PortletApplicationException(e);
         }
     }
-
+	
+	/**
+	 * 
+	 * @param response
+	 * @throws PortletApplicationException
+	 */
     private void checkResponse(String response) throws PortletApplicationException
     {
         if (response == null || !response.startsWith("OK"))
         {
             throw new PortletApplicationException("Catalina container action failed, \"" + response + "\"");
         }
+    }
+
+    /**
+     * @see org.apache.jetspeed.tools.pamanager.Deployment#deploy(java.lang.String, java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState)
+        throws PortletApplicationException
+    {
+        
+        super.deploy(webAppsDir, warFile, paName, deploymentDbAlias, startState);		
+		try
+		{
+			checkResponse(tomcatManager.install(warFile, paName));
+		}
+		catch (Exception e)
+		{
+			throw new PortletApplicationException(e);
+		}
     }
 
 }

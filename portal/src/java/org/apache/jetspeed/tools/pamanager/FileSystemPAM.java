@@ -88,6 +88,17 @@ public class FileSystemPAM implements Deployment
 
     private String deploymentDbAlias;
     private static final Log log = LogFactory.getLog("deployment");
+    
+    public FileSystemPAM()
+    {
+    	super();
+    }
+    
+    public FileSystemPAM(String deploymentDbAlias)
+    {
+    	this.deploymentDbAlias = deploymentDbAlias;
+    }
+    
 
     /**
      * <p>

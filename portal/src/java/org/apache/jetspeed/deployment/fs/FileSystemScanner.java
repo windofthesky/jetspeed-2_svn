@@ -62,8 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.deployment.DeploymentEvent;
@@ -90,31 +88,25 @@ public class FileSystemScanner extends Thread
     private Map fileDates;
     private boolean started = true;
     private List deployedFiles;
-    private String configPath;
 
     private static final Log log = LogFactory.getLog(FileSystemScanner.class);
 
-    public FileSystemScanner(
-        String directoryToWatch,
-        Map fileTypeHandlers,
-        DeploymentEventDispatcher dispatcher,
-        long delay,
-        String configPath) throws FileNotFoundException, IOException
+    public FileSystemScanner(String directoryToWatch, Map fileTypeHandlers, DeploymentEventDispatcher dispatcher, long delay)
+        throws FileNotFoundException, IOException
     {
         this.directoryToWatch = directoryToWatch;
         this.directoryToWatchFile = new File(directoryToWatch);
-        if(!directoryToWatchFile.exists())
+        if (!directoryToWatchFile.exists())
         {
-        	throw new FileNotFoundException(directoryToWatchFile.getCanonicalFile()+" does not exist.");
+            throw new FileNotFoundException(directoryToWatchFile.getCanonicalFile() + " does not exist.");
         }
         this.fileTypeHandlers = fileTypeHandlers;
         this.delay = delay;
         this.dispatcher = dispatcher;
         this.deployedFiles = new ArrayList();
-        this.configPath = configPath;
 
         Set fileExtensions = fileTypeHandlers.keySet();
-        this.filter = new AllowedFileTypeFilter((String[]) fileExtensions.toArray(new String[1]));        
+        this.filter = new AllowedFileTypeFilter((String[]) fileExtensions.toArray(new String[1]));
         setPriority(MIN_PRIORITY);
     }
 
@@ -159,14 +151,12 @@ public class FileSystemScanner extends Thread
             File aFile = stagedFiles[i];
             if (!isDeployed(aFile))
             {
-                
-                
+
                 try
                 {
-					FSObjectHandler objHandler = getFSObjectHandler(aFile);                    
-                    
-                    DeploymentEvent event =
-                        new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, objHandler);
+                    FSObjectHandler objHandler = getFSObjectHandler(aFile);
+
+                    DeploymentEvent event = new DeploymentEventImpl(DeploymentEvent.EVENT_TYPE_DEPLOY, objHandler);
                     dispatcher.dispatch(event);
                     // we are responsible for reclaiming the FSObject's resource
                     objHandler.close();
@@ -201,7 +191,7 @@ public class FileSystemScanner extends Thread
     protected File[] getStagedFiles()
     {
         return this.directoryToWatchFile.listFiles(this.filter);
-		// return this.directoryToWatchFile.listFiles();
+        // return this.directoryToWatchFile.listFiles();
     }
 
     protected FSObjectHandler getFSObjectHandler(File file) throws Exception
@@ -211,8 +201,8 @@ public class FileSystemScanner extends Thread
         if (extIndex != -1 && (extIndex + 1) < name.length())
         {
             String extension = name.substring(extIndex + 1);
-             Class fsoClass = (Class) fileTypeHandlers.get(extension);
-			FSObjectHandler fso = (FSObjectHandler) fsoClass.newInstance();
+            Class fsoClass = (Class) fileTypeHandlers.get(extension);
+            FSObjectHandler fso = (FSObjectHandler) fsoClass.newInstance();
             fso.setFile(file);
             return fso;
         }

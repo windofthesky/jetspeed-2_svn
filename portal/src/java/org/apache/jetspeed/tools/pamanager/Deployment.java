@@ -87,6 +87,8 @@ public interface Deployment
      */
     public void deploy(String warFile,
                        String paName) throws PortletApplicationException;
+                       
+	public void deploy(String webAppsDir, String warFile, String paName, String deploymentDbAlias, int startState) throws PortletApplicationException;
 
     /**
      * Undeploys application.

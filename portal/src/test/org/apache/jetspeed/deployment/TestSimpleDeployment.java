@@ -7,7 +7,6 @@
 package org.apache.jetspeed.deployment;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 import junit.framework.AssertionFailedError;
@@ -15,7 +14,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
@@ -101,13 +99,13 @@ public class TestSimpleDeployment extends JetspeedTest
         DeploymentEventDispatcher ded = new DeploymentEventDispatcher(deployRoot);
         SimpleRegistry registry = new InMemoryRegistryImpl();
         DeployDecoratorEventListener ddel = new DeployDecoratorEventListener(registry);
-        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, testDb);
+        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, testDb, new FileSystemPAM());
         ded.addDeploymentListener(ddel);
         ded.addDeploymentListener(dpal);
         HashMap handlers = new HashMap();
         handlers.put("jar", JARObjectHandlerImpl.class);
         handlers.put("war", JARObjectHandlerImpl.class);
-        FileSystemScanner fScanner = new FileSystemScanner(delpoySrc, handlers, ded, 500, "decorator.properties");
+        FileSystemScanner fScanner = new FileSystemScanner(delpoySrc, handlers, ded, 500);
         fScanner.start();
         Thread.sleep(10000);
         fScanner.safeStop();        
@@ -138,7 +136,9 @@ public class TestSimpleDeployment extends JetspeedTest
             webAppsDir = new File("./test/deployment/webapps").getCanonicalPath();
             testDb = new File("./test/db/hsql/Registry").getCanonicalPath();
             // remove any prior left overs
-			FileSystemPAM pam = new FileSystemPAM();
+            
+			FileSystemPAM pam = new FileSystemPAM(testDb);
+			
 			pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);	
         }
         catch (Exception e)
@@ -156,7 +156,7 @@ public class TestSimpleDeployment extends JetspeedTest
     {
         
         super.tearDown();
-		FileSystemPAM pam = new FileSystemPAM();
+		FileSystemPAM pam = new FileSystemPAM(testDb);
 		try
         {
             pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);
