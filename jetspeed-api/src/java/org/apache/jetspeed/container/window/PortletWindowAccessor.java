@@ -16,6 +16,7 @@
 package org.apache.jetspeed.container.window;
 
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**
@@ -34,8 +35,38 @@ public interface PortletWindowAccessor
      */
     PortletWindow getPortletWindow(Fragment fragment);
     
+    /**
+     * Get the portlet window for a fragment and given principal
+     * @param fragment
+     * @param principal
+     * @return
+     */
     PortletWindow getPortletWindow(Fragment fragment, String principal);
 
+    /**
+     * Lookup a portlet window in the cache
+     * If not found, return null
+     * 
+     * @param windowId 
+     * @return the window from the cache or null
+     */
     PortletWindow getPortletWindow(String windowId);
-    
+
+    /**
+     * Given a portlet entity, create a portlet window for that entity.
+     * 
+     * @param entity
+     * @param windowId
+     * @return new window
+     */
+    PortletWindow createPortetWindow(PortletEntity entity, String windowId);
+
+    /**
+     * Create a temporary portlet window
+     * This window does not have an entity associated with it.
+     * 
+     * @param windowId
+     * @return
+     */
+    PortletWindow createPortetWindow(String windowId);
 }

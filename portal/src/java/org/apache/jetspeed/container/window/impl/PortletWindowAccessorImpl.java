@@ -32,6 +32,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowCtrl;
 import org.apache.pluto.om.window.PortletWindowList;
@@ -63,6 +64,31 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Startab
     {
     }
 
+    public PortletWindow createPortetWindow(PortletEntity entity, String windowId)
+    {
+        PortletWindow found = getWindowFromCache(windowId);
+        if (found != null)
+        {
+            return found;
+        }
+        
+        PortletWindowImpl window = new PortletWindowImpl(windowId);
+        window.setPortletEntity(entity);
+        windows.put(windowId, window);
+        return window;        
+    }
+
+    public PortletWindow createPortetWindow(String windowId)
+    {
+        PortletWindow found = getWindowFromCache(windowId);
+        if (found != null)
+        {
+            return found;
+        }        
+        PortletWindowImpl window = new PortletWindowImpl(windowId);
+        return window;                
+    }
+    
     public PortletWindow getPortletWindow(String windowId)
     {
         return getWindowFromCache(windowId);

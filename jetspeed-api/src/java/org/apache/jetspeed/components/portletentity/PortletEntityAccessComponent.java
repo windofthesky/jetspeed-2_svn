@@ -43,6 +43,8 @@ public interface PortletEntityAccessComponent
      */
 	MutablePortletEntity getPortletEntity(ObjectID id);
     
+    MutablePortletEntity getPortletEntity(String id);
+    
 	/**
 	 * 
 	 * <p>
