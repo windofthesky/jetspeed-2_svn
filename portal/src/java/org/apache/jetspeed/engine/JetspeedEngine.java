@@ -245,6 +245,9 @@ public class JetspeedEngine implements Engine
     public void shutdown() throws JetspeedException
     {
         CommonPortletServices.getInstance().shutdownServices();
+        
+        // TODO: DST: can I hook into Component Manager shutdown here?
+                
         try
         {
             PortletContainer container = PortletContainerFactory.getPortletContainer();

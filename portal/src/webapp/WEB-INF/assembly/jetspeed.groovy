@@ -2,6 +2,7 @@ import org.picocontainer.defaults.DefaultPicoContainer
 import org.apache.jetspeed.locator.JetspeedTemplateLocator
 import org.apache.jetspeed.components.ComponentAssemblyTestCase
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator
+import org.apache.jetspeed.page.impl.CastorXmlPageManager
 import org.apache.jetspeed.Jetspeed
 
 applicationRoot = Jetspeed.getRealPath("/")
