@@ -11,3 +11,9 @@ component=org.apache.jetspeed.aggregator.PortletAggregator
 org.apache.jetspeed.aggregator.PortletAggregator.key.as.class=true
 org.apache.jetspeed.aggregator.PortletAggregator.is.singleton=true
 org.apache.jetspeed.aggregator.PortletAggregator.classname=org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl
+
+component=org.apache.jetspeed.aggregator.PortletRenderer
+
+org.apache.jetspeed.aggregator.PortletRenderer.key.as.class=true
+org.apache.jetspeed.aggregator.PortletRenderer.is.singleton=true
+org.apache.jetspeed.aggregator.PortletRenderer.classname=org.apache.jetspeed.aggregator.impl.PortletRendererImpl
