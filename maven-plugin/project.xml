@@ -17,8 +17,9 @@ limitations under the License.
 <project>
   <pomVersion>3</pomVersion>
   <id>maven-jetspeed2-plugin</id>
+  <groupId>jetspeed2</groupId>
   <name>Jetspeed 2 Maven Plugin</name>
-  <currentVersion>1.0.0</currentVersion> 
+  <currentVersion>1.0.0-SNAPSHOT</currentVersion> 
   <description>
     Plugin for assisting with portlet development
   </description>
