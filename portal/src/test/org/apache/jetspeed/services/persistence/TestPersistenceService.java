@@ -61,6 +61,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -73,7 +74,6 @@ import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
@@ -280,7 +280,8 @@ public class TestPersistenceService extends JetspeedTest
     {
         if (service == null)
         {
-            service = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            // service = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+            service = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         }
         return service;
     }

@@ -59,11 +59,12 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.Property;
 import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.util.ServiceUtil;
+
 /**
  * TestPageXmlPersistence
  *
@@ -80,9 +81,9 @@ public class TestPageXmlPersistence extends JetspeedTest
      *
      * @param name the testcase's name.
      */
-    public TestPageXmlPersistence( String name )
+    public TestPageXmlPersistence(String name)
     {
-        super( name );
+        super(name);
     }
 
     /**
@@ -92,7 +93,7 @@ public class TestPageXmlPersistence extends JetspeedTest
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main( new String[] { TestPageXmlPersistence.class.getName() } );
+        junit.awtui.TestRunner.main(new String[] { TestPageXmlPersistence.class.getName()});
     }
 
     public void setup()
@@ -109,15 +110,14 @@ public class TestPageXmlPersistence extends JetspeedTest
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite( TestPageXmlPersistence.class );
+        return new TestSuite(TestPageXmlPersistence.class);
     }
-
 
     protected PageManagerService getService()
     {
         if (service == null)
         {
-            service = (PageManagerService) ServiceUtil.getServiceByName("XML"+PageManagerService.SERVICE_NAME);
+            service = (PageManagerService) CommonPortletServices.getPortalService("XML" + PageManagerService.SERVICE_NAME);
         }
         return service;
     }
@@ -173,33 +173,33 @@ public class TestPageXmlPersistence extends JetspeedTest
 
         List children = root.getFragments();
         assertNotNull(children);
-        assertTrue(children.size()==3);
+        assertTrue(children.size() == 3);
 
-        Fragment f = (Fragment)children.get(0);
+        Fragment f = (Fragment) children.get(0);
         assertTrue(f.getId().equals("pe001"));
         assertTrue(f.getName().equals("HelloPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
         List properties = f.getProperties(root.getName());
         assertNotNull(properties);
-        assertTrue(properties.size()==2);
-        assertTrue(((Property)properties.get(0)).getName().equals("row"));
-        assertTrue(((Property)properties.get(0)).getValue().equals("0"));
-        assertTrue(((Property)properties.get(1)).getName().equals("column"));
-        assertTrue(((Property)properties.get(1)).getValue().equals("0"));
+        assertTrue(properties.size() == 2);
+        assertTrue(((Property) properties.get(0)).getName().equals("row"));
+        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
+        assertTrue(((Property) properties.get(1)).getName().equals("column"));
+        assertTrue(((Property) properties.get(1)).getValue().equals("0"));
 
-        f = (Fragment)children.get(1);
+        f = (Fragment) children.get(1);
         assertTrue(f.getId().equals("pe002"));
         assertTrue(f.getName().equals("JMXPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
         properties = f.getProperties(root.getName());
         assertNotNull(properties);
-        assertTrue(properties.size()==2);
-        assertTrue(((Property)properties.get(0)).getName().equals("row"));
-        assertTrue(((Property)properties.get(0)).getValue().equals("0"));
-        assertTrue(((Property)properties.get(1)).getName().equals("column"));
-        assertTrue(((Property)properties.get(1)).getValue().equals("1"));
+        assertTrue(properties.size() == 2);
+        assertTrue(((Property) properties.get(0)).getName().equals("row"));
+        assertTrue(((Property) properties.get(0)).getValue().equals("0"));
+        assertTrue(((Property) properties.get(1)).getName().equals("column"));
+        assertTrue(((Property) properties.get(1)).getValue().equals("1"));
 
         f = testpage.getFragmentById("f002");
         assertNotNull(f);
@@ -208,7 +208,7 @@ public class TestPageXmlPersistence extends JetspeedTest
         assertTrue(f.getType().equals(Fragment.LAYOUT));
         assertTrue(f.getDecorator().equals("Tab"));
         assertNotNull(f.getFragments());
-        assertTrue(f.getFragments().size()==2);
+        assertTrue(f.getFragments().size() == 2);
     }
 
     public void testRegisterPage() throws Exception
@@ -255,11 +255,11 @@ public class TestPageXmlPersistence extends JetspeedTest
         assertTrue(page.getTitle().equals("Registered Page"));
         assertNotNull(page.getRootFragment());
         assertTrue(page.getRootFragment().getName().equals("TestLayout"));
-        assertTrue(page.getRootFragment().getFragments().size()==1);
+        assertTrue(page.getRootFragment().getFragments().size() == 1);
 
-        f = (Fragment)page.getRootFragment().getFragments().get(0);
+        f = (Fragment) page.getRootFragment().getFragments().get(0);
         assertNotNull(f.getProperties("TestLayout"));
-        assertTrue(((Property)f.getProperties("TestLayout").get(0)).getValue().equals("0"));
+        assertTrue(((Property) f.getProperties("TestLayout").get(0)).getValue().equals("0"));
     }
 
     public void testUpdatePage() throws Exception
@@ -288,7 +288,7 @@ public class TestPageXmlPersistence extends JetspeedTest
     {
         PageManagerService pms = getService();
         List pages = pms.listPages();
-        assertTrue(pages.size()==2);
+        assertTrue(pages.size() == 2);
         assertTrue(pages.contains(this.test_id));
         assertTrue(pages.contains("test001"));
     }

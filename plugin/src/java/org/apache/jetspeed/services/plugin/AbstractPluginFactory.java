@@ -63,6 +63,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.BaseService;
 import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.services.plugin.util.CauseExtractor;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -75,7 +76,7 @@ import org.jdom.input.SAXBuilder;
  * @version $Id$
  *
  */
-public abstract class AbstractPluginFactory extends BaseService
+public abstract class AbstractPluginFactory extends BaseCommonService
 {
     protected Map defaultPlugins;
     protected Map plugins;

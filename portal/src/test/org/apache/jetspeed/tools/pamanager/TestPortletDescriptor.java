@@ -63,6 +63,7 @@ import junit.textui.TestRunner;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -73,7 +74,6 @@ import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
-import org.apache.jetspeed.util.ServiceUtil;
 import org.apache.pluto.om.common.DisplayName;
 import org.apache.pluto.om.common.LanguageSet;
 import org.apache.pluto.om.common.ParameterSet;
@@ -313,7 +313,7 @@ public class TestPortletDescriptor extends JetspeedTest
 
         app.setName("HW_App");
         JetspeedPortletRegistry.registerPortletApplication(app);
-        PersistenceService ps = (PersistenceService) ServiceUtil.getServiceByName(PersistenceService.SERVICE_NAME);
+        PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
         plugin.clearCache();
         
