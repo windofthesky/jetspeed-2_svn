@@ -17,10 +17,12 @@ package org.apache.jetspeed.container.session.impl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.StringTokenizer;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -226,5 +228,36 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
             return PortletMode.HELP;
         }        
         return new PortletMode(name);
+    }
+    
+    public boolean hasPortalParameter(HttpServletRequest request, int parameterType)
+    {
+        String key = getNavigationKey(NavigationalStateComponent.PREFIX) + getNavigationKey(parameterType);
+        String pathInfo = request.getPathInfo();
+        if (null == pathInfo)
+        {
+            return false;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
+        StringBuffer path = new StringBuffer();
+        boolean isName = true;
+        while (tokenizer.hasMoreTokens())
+        {
+            String token = tokenizer.nextToken();
+            if (isName)
+            {
+                isName = false;
+            }
+            else
+            {
+                isName = true;
+                continue;
+            }
+            if (token.startsWith(key))
+            {
+                return true;            
+            }
+        }
+        return false;
     }
 }

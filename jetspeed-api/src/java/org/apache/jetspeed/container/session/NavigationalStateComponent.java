@@ -17,6 +17,7 @@ package org.apache.jetspeed.container.session;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
@@ -115,5 +116,25 @@ public interface NavigationalStateComponent
      * @return The corresponding PortletMode object
      */    
     PortletMode lookupPortletMode(String name);
+    
+    /**
+     * <p>
+     * Check to see if the request contains the given request parameter.
+     * Returns true if the request containers the request parameter, false if it does not.
+     * Valid parameter types
+     * </p>
+     * <ul>
+     *      <li>NavigationalStateComponent.ACTION</li>
+     *      <li>NavigationalStateComponent.MODE</li>
+     *      <li>NavigationalStateComponent.STATE</li>
+     *      <li>NavigationalStateComponent.RENDER_PARAM</li>
+     *      <li>NavigationalStateComponent.PREV_STATE</li>
+     *      <li>NavigationalStateComponent.PREV_MODE</li>
+     *
+     * @param request The HTTP request.
+     * @param parameterType The NavigationStateComponent-defined parameter type.
+     * @return boolean true if the specified parameter type exists as a request parameter. 
+     */    
+    boolean hasPortalParameter(HttpServletRequest request, int parameterType);
     
 }

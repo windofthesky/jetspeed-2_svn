@@ -232,9 +232,11 @@ public abstract class AbstractPortalURL implements PortalURL
 
         if (context.getRequest().getPathInfo() != null)
         {
-            String pathInfo = new String(context.getRequest().getPathInfo());            
-            StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/.");
-
+            String pathInfo = new String(context.getRequest().getPathInfo());
+            // DST: TODO: why do we need to parse "." as well as "/"?
+            // this is creating a problem with params like "default.psml"
+            //StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/.");
+            StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");
             int mode = 0; // 0=navigation, 1=control information
             String name = null;
             while (tokenizer.hasMoreTokens())
