@@ -1,8 +1,0 @@
-<resource>
-	<directory>${org.apache.jetspeed.project.home}/etc/db-ojb</directory>
-    <includes>
-    	<include>*.xml</include>
-        <include>*.dtd</include>
-        <include>*.properties</include>
-    </includes>
-</resource>
