@@ -17,7 +17,8 @@ limitations under the License.
          xmlns:j="jelly:core"
          xmlns:maven="jelly:maven"
          xmlns:artifact="artifact"
-         xmlns:ant="jelly:ant">
+         xmlns:ant="jelly:ant"
+         xmlns:util="jelly:util">
          
  <preGoal name="java:jar-resources">
  	 <copy todir="target/classes/plugin-resources/etc/project-dependencies" overwrite="true" failonerror="true">
@@ -60,7 +61,7 @@ limitations under the License.
   
   <goal name="undeploy-plugin">
   	<attainGoal name="plugin:uninstall-now" />
-  	<delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="true" />  
+  	<delete dir="${maven.home.local}/plugins/${maven.final.name}" verbose="false" />  
   </goal>
 
    <goal name="copyDb">
@@ -78,6 +79,16 @@ limitations under the License.
          	 <include name="*.sql" />
          </fileset>          	       	       
      </copy>
+
+    <util:file name="../src/sql" var="sqlSrcDir"/>
+    <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlSrcDirFile">
+      <available file="../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql" property="populate.script.available"/>
+      <j:if test="${populate.script.available}">
+        <copy file="../src/sql/${sqlSrcDirFile.name}/populate-userinfo-for-default-psml.sql" toDir="target/classes/plugin-resources/${sqlSrcDirFile.name}/populate"/>
+      </j:if>
+      <j:remove var="populate.script.available"/>
+    </j:forEach>
+
      <!--
      <move file="${basedir}/target/classes/plugin-resources/Empty.script" tofile="${basedir}/target/classes/plugin-resources/Production.script" overwrite="true"/>
 	 <echo>Initializing HSQL Production.script with basic portal info.......</echo>

@@ -101,9 +101,18 @@ limitations under the License.
     <!-- Run standard non-DB-specific SQL scripts -->
     <util:file name="${org.apache.jetspeed.plugin.root}/plugin-resources" var="sqlSrcDir"/>
     <j:if test="${sqlSrcDir.exists()}">
+      <j:set var="db.src.dir" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}"/>
+      <util:file name="${db.src.dir}/populate/populate-userinfo-for-default-psml.sql" var="dbSpecificPopulateScript"/>
       <j:forEach items="${sqlSrcDir.listFiles()}" var="sqlFile">
         <j:if test="${sqlFile.name.endsWith('.sql')}">
-          <j:set var="database.arg.script" value="${sqlFile.absolutePath}" />
+          <j:choose>
+            <j:when test="${sqlFile.name.equals('populate-userinfo-for-default-psml.sql') and dbSpecificPopulateScript.exists()}">
+              <j:set var="database.arg.script" value="${dbSpecificPopulateScript.absolutePath}"/>
+            </j:when>
+            <j:otherwise>
+              <j:set var="database.arg.script" value="${sqlFile.absolutePath}" />
+            </j:otherwise>
+          </j:choose>
           <attainGoal name="jetspeed2:db.execute" />
         </j:if>
       </j:forEach>
