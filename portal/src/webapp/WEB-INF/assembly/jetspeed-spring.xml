@@ -25,6 +25,13 @@ limitations under the License.
       <value>${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
     </constructor-arg>
   </bean>  
+  
+  <!-- ServletConfig -->
+    <bean id="javax.servlet.ServletConfig"
+        class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean"
+  />             
+
+
    
   <!-- Portlet Services  -->
   <bean id="PortalServices" 
@@ -261,6 +268,28 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.pluto.PortletContainer" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   </bean>
+  
+  <!-- Portlet Cache -->
+  <bean id="portletCache" 
+  	   class="org.apache.jetspeed.cache.PortletCache"  
+  >  	   
+
+  </bean>
+  
+  <!-- Portlet Factory -->
+  <bean id="portletFactory" 
+  	   class="org.apache.jetspeed.factory.JetspeedPortletFactory"  
+  >  	   
+  	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  	   
+  </bean>
+  
+  <!-- Portlet Factory Proxy Accessor-->
+  <bean id="portletFactoryProxy" 
+  	   class="org.apache.jetspeed.factory.JetspeedPortletFactoryProxy"
+  	   destroy-method="reset"  
+  >  	   
+  	   <constructor-arg ><ref bean="portletFactory" /></constructor-arg>  	   
+  </bean>
   	   
   <!-- Aggregation: Page -->
   <bean id="org.apache.jetspeed.aggregator.PageAggregator" 
@@ -307,6 +336,7 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" /></constructor-arg>
+  	   <constructor-arg ><ref bean="portletCache" /></constructor-arg>  
   </bean>
   
   <!-- Portlet Application deployment event listener -->
@@ -316,6 +346,7 @@ limitations under the License.
        <constructor-arg ><value>${autodeployment.staging.dir}</value></constructor-arg>
   	   <constructor-arg ><ref bean="PAM" /></constructor-arg>
   	   <constructor-arg ><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistryComponent" /></constructor-arg>
+  	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
   </bean>
   
   <!-- The deployment manager watches a specific staging directory for
