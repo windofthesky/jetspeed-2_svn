@@ -18,13 +18,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
 import org.apache.jetspeed.cps.BaseCommonService;
-
 import org.apache.jetspeed.deployment.AutoDeploymentService;
 import org.apache.jetspeed.deployment.DeploymentEventDispatcher;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.tools.pamanager.CatalinaPAM;
-import org.apache.jetspeed.tools.pamanager.Deployment;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 
 /**
