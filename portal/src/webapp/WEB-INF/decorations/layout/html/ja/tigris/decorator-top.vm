@@ -15,7 +15,7 @@ limitations under the License.
 *#
 
 #* Add all template constants to the current context *#
-#defineConstants()
+#defineNavigationConstants()
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
 
@@ -59,11 +59,11 @@ limitations under the License.
       </div>
 <!-- Top Tabs -->
       <div class="tabs">
-#includeNavigation("tabs" $profiledPageContext.siblingPages $LEFT_TO_RIGHT)
+#includeTabsNavigation($profiledPageContext.siblingPages $LEFT_TO_RIGHT)
       </div>
       <div id="breadcrumbs">
 #if($parentFolder)
-		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)へ戻る</a>
+		<a href="$jetspeed.getAbsoluteUrl($parentFolder.url)" title="$parentFolder.getTitle($preferedLocale)">$parentFolder.getShortTitle($preferedLocale)�?�戻る</a>
 #end
         &nbsp;
       </div>
@@ -81,7 +81,7 @@ limitations under the License.
           フォルダ＆ページ
         </div>
         <div class="body">
-#includeNavigation("folders" $profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
+#includeFoldersNavigation($profiledPageContext.siblingFolders $TOP_TO_BOTTOM)
 
 #foreach($docSetName in $profiledPageContext.documentSetNames)
   #set($docSet = $profiledPageContext.getDocumentSet($docSetName))
@@ -91,7 +91,7 @@ limitations under the License.
             ${docSet.getShortTitle($preferedLocale)}
             </div>
           </div>
-#includeDocumentSetNavigation("linksWithIcon1" $docSet $docSetNodes $TOP_TO_BOTTOM)
+#includeNestedLinksWithIconNavigation($docSetNodes $docSet.url $TOP_TO_BOTTOM)
 #end
         </div>
       </div>
@@ -105,7 +105,7 @@ limitations under the License.
           追加リンク
         </div>
         <div class="body">
-#includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
+#includeLinksWithIconNavigation($profiledPageContext.rootLinks $TOP_TO_BOTTOM)
         </div>
       </div>
     </td>

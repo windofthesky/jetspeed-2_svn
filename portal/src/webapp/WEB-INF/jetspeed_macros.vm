@@ -1,11 +1,3 @@
-#macro (defineConstants)
-  #* Constants for layout orientation *#	
-  #set($LEFT_TO_RIGHT = "LeftToRight")
-  #set($RIGHT_TO_LEFT = "RightToLeft")
-  #set($TOP_TO_BOTTOM = "TopToBottom")
-  #set($BOTTOM_TO_TOP = "BottomToTop")
-#end
-
 #macro (defineLayoutObjects)
   #set($_layoutDecorator = $myPage.getDefaultDecorator("layout"))
   #set($_layoutDecoratorConfig = $jetspeed.getTypeConfiguration("layout", "${_layoutDecorator}", "decorations"))
@@ -16,29 +8,7 @@
 #* Adds link for all style sheets required by the layout and portlet decorations *#
 #macro (includeStyleSheets)
  #set($cssUrls = $renderRequest.getAttribute("cssUrls"))
- #foreach($cssUrl in $cssUrls)
-    
+ #foreach($cssUrl in $cssUrls)    
 	<link rel="stylesheet" type="text/css" media="all" href="$cssUrl" />
  #end
-#end
-
-#* Includes a nested navigation component *#
-#macro (includeNestedNavigation $_name $_nodeSet $_orientation $_nodePrefix)
-  #parse($jetspeed.getTemplate("${_name}/${_orientation}${_ext}", "navigation").appRelativePath)
-#end
-
-#* Includes a navigation component *#
-#macro (defineConfig $name $type)
-  #set($_navConfig =$jetspeed.getTypeConfiguration("navigation", $name, "templates"))
-#end
-#macro (includeNavigation $_name $_nodeSet $_orientation)
-  #defineConfig($_name "navigation")
-  #set($_ext = $_navConfig.getString("template.extension"))
-  #includeNestedNavigation($_name $_nodeSet $_orientation "")
-#end
-#macro (includeDocumentSetNavigation $_name $_node $_nodeSet $_orientation)
-  #defineConfig($_name "navigation")
-  #set($_ext = $_navConfig.getString("template.extension"))
-  #set($_nodePrefix = $_node.url)
-  #includeNestedNavigation($_name $_nodeSet $_orientation $_nodePrefix)
 #end

@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *#
 
-#* Add all template constants to the current context *#
-#defineConstants()
 #* Add the current layouts configuration values to the context *#
 #defineLayoutObjects()
 
@@ -49,10 +47,10 @@ limitations under the License.
 	 </p>
 	#end
 	
-  #includeNavigation("folders" $profiledPageContext.siblingFolders $LEFT_TO_RIGHT)
+  #includeFoldersNavigation($profiledPageContext.siblingFolders)
 </p>
   <p>
-  #includeNavigation("tabs" $profiledPageContext.siblingPages $LEFT_TO_RIGHT)
+  #includeTabsNavigation($profiledPageContext.siblingPages)
   </p>
 </p>
 	
@@ -64,7 +62,7 @@ limitations under the License.
     <tr>
       <td nowrap>  
         <br>Additional Links:
-        #includeNavigation("linksWithIcon1" $profiledPageContext.rootLinks $TOP_TO_BOTTOM)
+        #includeLinksWithIconNavigation($profiledPageContext.rootLinks)
       </td>
     </tr>
     #end
@@ -74,7 +72,7 @@ limitations under the License.
       <tr>
         <td nowrap>    
           <br><span title="$docSet.getTitle($preferedLocale)">${docSet.getShortTitle($preferedLocale)}</span>:
-          #includeDocumentSetNavigation("linksWithIcon1" $docSet $docSetNodes $TOP_TO_BOTTOM)
+          #includeNestedLinksWithIconNavigation($docSetNodes $docSet.url)
         </td>
       </tr>
     #end
