@@ -135,7 +135,7 @@ public class JetspeedWebApplicationRewriter
                     initParam.addContent(paramName);
                     initParam.addContent(paramValue);
                     jetspeedServletElement.addContent(initParam);                    
-                    Element loadOnStartup = (Element) new Element("load-on-startup").addContent("-1");
+                    Element loadOnStartup = (Element) new Element("load-on-startup").addContent("100");
                     jetspeedServletElement.addContent(loadOnStartup);
                 }
 	            insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
