@@ -331,6 +331,84 @@ limitations under the License.
     </portlet-info>
   </portlet>
 
+    <portlet id="tmtt-main">
+        <portlet-name>IFramePortlet</portlet-name>
+        <display-name>IFrame Portlet</display-name>
+        <description>
+            Prototype of the IFRAME portlet
+        </description>
+        <init-param>
+            <name>viewSource</name>
+            <value>http://portals.apache.org/jetspeed-2/</value>
+            <description>
+                Source URL in view mode.
+            </description>
+        </init-param>
+        <init-param>
+            <name>maximizedViewSource</name>
+            <value>http://portals.apache.org/</value>
+            <description>
+                Source URL in maximized view mode.
+            </description>
+        </init-param>
+        <init-param>
+            <name>editSource</name>
+            <value>http://wiki.apache.org/portals/Jetspeed2</value>
+            <description>
+                Source URL in edit mode.
+            </description>
+        </init-param>
+        <init-param>
+            <name>helpSource</name>
+            <value>http://www.apache.org/</value>
+            <description>
+                Source URL in help mode.
+            </description>
+        </init-param>
+        <init-param>
+            <name>enableSourcePreferences</name>
+            <value>true</value>
+            <description>
+                Enble preferences for all source URL parameters.
+            </description>
+        </init-param>
+        <portlet-class>org.apache.jetspeed.portlet.IFramePortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-preferences>
+            <preference>
+                <name>editSource</name>
+            </preference>
+            <preference>
+                <name>maximizedEditSource</name>
+            </preference>
+            <preference>
+                <name>viewSource</name>
+            </preference>
+            <preference>
+                <name>maximizedViewSource</name>
+            </preference>
+            <preference>
+                <name>helpSource</name>
+            </preference>
+            <preference>
+                <name>maximizedHelpSource</name>
+            </preference>
+        </portlet-preferences>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>IFrame Prototype Portlet</title>
+            <short-title>IFrame</short-title>
+            <keywords>test</keywords>
+        </portlet-info>
+    </portlet>
+
+
   <user-attribute>
 	<description>User Given Name</description>
 	<name>user.name.given</name>
