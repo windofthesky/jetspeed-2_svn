@@ -74,7 +74,7 @@ import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
+import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
@@ -270,7 +270,9 @@ public class PersistentPortletRegistryService extends BaseService implements Por
         LookupCriteria c = plugin.newLookupCriteria();
         c.addEqualTo("name", name);
         Object query = plugin.generateQuery(PortletDefinitionImpl.class, c);
-        return (PortletDefinitionComposite) plugin.getObjectByQuery(PortletDefinitionImpl.class, query);
+        PortletDefinitionComposite pdc = (PortletDefinitionComposite) plugin.getObjectByQuery(PortletDefinitionImpl.class, query);
+
+        return pdc;
     }
 
     /**
@@ -298,7 +300,7 @@ public class PersistentPortletRegistryService extends BaseService implements Por
      */
     public PreferenceComposite newPreference()
     {
-        return new PreferenceImpl();
+        return new DefaultPreferenceImpl();
     }
 
     /**
