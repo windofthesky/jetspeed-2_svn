@@ -38,5 +38,11 @@ public interface UserAttributeRef extends Serializable
     
     /** Setter for the user-attribute-ref name-link. */
     void setNameLink(String nameLink);
+    
+    /** Getter for the user-attribute description. */
+    String getDescription();
+    
+    /** Setter for the user-attribute description. */
+    void setDescription(String description);
 
 }

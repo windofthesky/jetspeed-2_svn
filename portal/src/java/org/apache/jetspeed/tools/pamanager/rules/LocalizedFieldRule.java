@@ -18,61 +18,82 @@ package org.apache.jetspeed.tools.pamanager.rules;
 import java.util.Locale;
 
 import org.apache.commons.digester.Rule;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+
 import org.xml.sax.Attributes;
 
 /**
  * This class helps load internationalized fields
- *
- * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
+ * 
+ * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
  * @version $Id$
  */
 public class LocalizedFieldRule extends Rule
 {
     protected final static Log log = LogFactory.getLog(LocalizedFieldRule.class);
-    
+
     /**
      * Handle the beginning of an XML element.
-     *
-     * @param attributes The attributes of this element
-     * @exception Exception if a processing error occurs
+     * 
+     * @param attributes
+     *            The attributes of this element
+     * @exception Exception
+     *                if a processing error occurs
      */
-    public void begin(String namespace, String name, Attributes attributes)
-    throws Exception {
+    public void begin(String namespace, String name, Attributes attributes) throws Exception
+    {
 
         if (digester.getLogger().isDebugEnabled())
             digester.getLogger().debug("Setting localized field " + name);
         
-        GenericMetadata metadata = (GenericMetadata)digester.peek();
-        if(metadata != null)
-        {        
-	        LocalizedField child = metadata.createLocalizedField(); 
-	
-	        if(name.equals("metadata"))
-	        {
-	            String nameAttr = attributes.getValue("name");
-	            child.setName(nameAttr);
-	        }
-	        else
-	        {
-	            child.setName(name);
-	        }
-	        String language = attributes.getValue("xml:lang");
-	        Locale locale = null;
-	        if(language == null)
-	        {
-	            locale = new Locale("en");
-	        }
-	        else
-	        {
-	            locale = new Locale(language);
-	        }
-	
-	        child.setLocale(locale);
-	        digester.push(child);
+        Object obj = digester.peek();
+        if (null == obj)
+        {
+            digester.push(null);
+            return;
+        }
+        GenericMetadata metadata = null;
+        if (obj instanceof MutablePortletApplication)
+        {
+            metadata = ((MutablePortletApplication) obj).getMetadata();
+        }
+        if (obj instanceof PortletDefinitionComposite)
+        {
+            metadata = ((PortletDefinitionComposite) obj).getMetadata();
+        }
+        if (metadata != null)
+        {
+            LocalizedField child = metadata.createLocalizedField();
+
+            if (name.equals("metadata"))
+            {
+                String nameAttr = attributes.getValue("name");
+                child.setName(nameAttr);
+            }
+            else
+            {
+                child.setName(name);
+            }
+            String language = attributes.getValue("xml:lang");
+            Locale locale = null;
+            if (language == null)
+            {
+                locale = new Locale("en");
+            }
+            else
+            {
+                locale = new Locale(language);
+            }
+
+            child.setLocale(locale);
+            digester.push(child);
         }
         else
         {
@@ -80,24 +101,39 @@ public class LocalizedFieldRule extends Rule
         }
     }
 
-    public void body(String namespace, String name, String text)
-    throws Exception
+    public void body(String namespace, String name, String text) throws Exception
     {
         LocalizedField child = (LocalizedField) digester.peek(0);
-        if(child != null)
-        {    
+        if (child != null)
+        {
             child.setValue(text);
         }
     }
 
-    public void end(String namespace, String name)
-    throws Exception
+    public void end(String namespace, String name) throws Exception
     {
         LocalizedField child = (LocalizedField) digester.pop();
-        if(child != null)
-        {    
-            GenericMetadata metadata = (GenericMetadata)digester.peek();
-            metadata.addField(child);
+        if (child != null)
+        {
+            Object obj = digester.peek();
+            if (null == obj)
+            {
+                digester.push(null);
+                return;
+            }
+            GenericMetadata metadata = null;
+            if (obj instanceof MutablePortletApplication)
+            {
+                metadata = ((MutablePortletApplication) obj).getMetadata();
+            }
+            if (obj instanceof PortletDefinitionComposite)
+            {
+                metadata = ((PortletDefinitionComposite) obj).getMetadata();
+            }
+            if (null != metadata)
+            {
+                metadata.addField(child);
+            }    
         }
     }
 }

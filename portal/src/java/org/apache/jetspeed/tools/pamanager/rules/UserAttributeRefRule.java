@@ -16,32 +16,32 @@
 package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 /**
- * This class helps load the portlet's metadata onto the digester stack
+ * This class helps load the jetspeed portlet extension user attributes.
  * 
- * @author <a href="mailto:jford@apache.org">Jeremy Ford </a>
- * @version $Id$
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class PortletRule extends Rule
+public class UserAttributeRefRule extends Rule
 {
-    protected final static Log log = LogFactory.getLog(PortletRule.class);
+    protected final static Log log = LogFactory.getLog(UserAttributeRefRule.class);
 
     private MutablePortletApplication app;
 
-    public PortletRule(MutablePortletApplication app)
+    public UserAttributeRefRule(MutablePortletApplication app)
     {
         this.app = app;
     }
 
-    public void body(String namespace, String name, String text) throws Exception
+    public void end(String namespace, String name) throws Exception
     {
-        log.debug("Found portlet name " + name);
-        PortletDefinitionComposite def = (PortletDefinitionComposite) app.getPortletDefinitionByName(text);
-        digester.push(def);
+        UserAttributeRef userAttributeRef = (UserAttributeRef) digester.peek(0);
+        app.addUserAttributeRef(userAttributeRef);
     }
 }

@@ -18,11 +18,13 @@ package org.apache.jetspeed.tools.pamanager;
 import java.io.FileReader;
 
 import org.apache.commons.digester.Digester;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.tools.pamanager.rules.MetadataRuleSet;
+import org.apache.jetspeed.tools.pamanager.rules.UserAttributeRefRuleSet;
 import org.apache.jetspeed.tools.pamanager.rules.PortletRule;
 
 /**
@@ -53,18 +55,16 @@ public class JetspeedDescriptorUtilities
             Digester digester = new Digester();
             digester.setValidating(false);
             digester.setNamespaceAware(true);
-            digester.push(app.getMetadata());
-            
+            digester.push(app);
+
             digester.addRuleSet(new MetadataRuleSet("portlet-app/"));
             digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
 			digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
-			
-			//digester.addObjectCreate("portlet-app/user-attribute-ref", UserAttributeRefImpl.class);
-            //digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name", "name");
-            //digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name-link", "nameLink");
-            //digester.addSetNext("portlet-app/user-attribute-ref", "addUserAttributeRef");
+ 
+			digester.addRuleSet(new UserAttributeRefRuleSet(app));
             
             digester.parse(reader);
+            
             result = true;
 
             log.info("finished");

@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
+import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -41,7 +42,6 @@ import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
 import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
@@ -89,7 +89,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     private ParameterSetImpl paramListWrapper = new PortletParameterSetImpl();
     private Collection securityRoleRefSet;
     private SecurityRoleRefSetImpl secListWrapper = new SecurityRoleRefSetImpl();
-    private Collection userAttributeSet;
+    /** User attribute set. **/
+    //private Collection userAttributeSet;
+    /** User attribute ref set. **/
+    //private Collection userAttributeRefSet;
+
     private String preferenceValidatorClassname;
     private Collection displayNames;
     private DisplayNameSetImpl DNListWrapper = new DisplayNameSetImpl();
@@ -103,8 +107,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
 
     /** PortletApplicationDefinition this PortletDefinition belongs to */
     private MutablePortletApplication app;
-    /** UID of the PortletApplicationDefinition */
-    // protected ObjectID appId;
+
     protected long appId;
     private ClassLoader portletClassLoader;
     private String expirationCache;
@@ -119,7 +122,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
         {
             parameterSet = new ArrayList();
             securityRoleRefSet = new ArrayList();
-            userAttributeSet = new ArrayList();
+            //userAttributeSet = new ArrayList();
+            //userAttributeRefSet = new ArrayList();
             contentTypes = new ArrayList();
         }
         catch (RuntimeException e)
@@ -326,38 +330,54 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addUserAttribute(java.lang.String, java.lang.String)
-     */
-    public void addUserAttribute(String name, String description)
-    {
-        UserAttribute userAttribute = new UserAttributeImpl(name, description);
-        this.userAttributeSet.add(userAttribute);
-    }
-
-    /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
      */
-    public void addUserAttribute(UserAttribute userAttribute)
+/*    public void addUserAttribute(UserAttribute userAttribute)
     {
         this.userAttributeSet.add(userAttribute);
     }
 
-    /**
+    *//**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setUserAttributeSet(java.util.Collection)
-     */
+     *//*
     public void setUserAttributeSet(Collection userAttributeSet)
     {
         this.userAttributeSet = userAttributeSet;
     }
 
-    /**
+    *//**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getUserAttributeSet()
-     */
+     *//*
     public Collection getUserAttributeSet()
     {
         return this.userAttributeSet;
     }
 
+    *//**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addUserAttributeRef(org.apache.jetspeed.om.common.UserAttributeRef)
+     *//*
+    public void addUserAttributeRef(UserAttributeRef userAttributeRef)
+    {
+        System.out.println("_______IN addUserAttributeRef");
+        this.userAttributeRefSet.add(userAttributeRef);
+    }
+
+    *//**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setUserAttributeSet(java.util.Collection)
+     *//*
+    public void setUserAttributeRefSet(Collection userAttributeRefSet)
+    {
+        this.userAttributeRefSet = userAttributeRefSet;
+    }
+
+    *//**
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getUserAttributeRefSet()
+     *//*
+    public Collection getUserAttributeRefSet()
+    {
+        return this.userAttributeRefSet;
+    }
+*/
     /**
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String,
      *      java.lang.String, java.lang.String)

@@ -88,5 +88,9 @@ limitations under the License.
 		<js:name>user-name-given</js:name>
 		<js:name-link>user.name.given</js:name-link>
   	</js:user-attribute-ref>
+  	<js:user-attribute-ref>
+		<js:name>user-name-family</js:name>
+		<js:name-link>user.name.family</js:name-link>
+  	</js:user-attribute-ref>
 
 </portlet-app>

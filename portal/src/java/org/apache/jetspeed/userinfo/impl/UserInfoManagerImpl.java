@@ -15,6 +15,7 @@
 package org.apache.jetspeed.userinfo.impl;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.UserAttribute;
+import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -42,9 +45,12 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.ObjectID;
 
 /**
- * <p>Implements the {@link org.apache.jetspeed.userinfo.UserInfoManager} interface.</p>
+ * <p>
+ * Implements the {@link org.apache.jetspeed.userinfo.UserInfoManager}
+ * interface.
+ * </p>
  * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class UserInfoManagerImpl implements UserInfoManager
 {
@@ -52,11 +58,16 @@ public class UserInfoManagerImpl implements UserInfoManager
     /** Logger */
     private static final Log log = LogFactory.getLog(UserInfoManagerImpl.class);
 
-    // TODO Same caching issue as usual.  We should look into JCS. That wil do for now.
+    // TODO Same caching issue as usual. We should look into JCS. That wil do
+    // for now.
     /** Map used to cache user info maps for each mapped portlet application. */
     private static Map userInfoMapCache;
 
-    /** <p>The default user attributes property set.</p> */
+    /**
+     * <p>
+     * The default user attributes property set.
+     * </p>
+     */
     static String USER_INFO_PROPERTY_SET = "userinfo";
 
     /** The user information property set. */
@@ -69,9 +80,14 @@ public class UserInfoManagerImpl implements UserInfoManager
     String oid;
 
     /**
-     * <p>Constructor providing access to the {@link UserManager}.</p>
-     * @param userMgr The user manager.
-     * @param registry The portlet registry component.
+     * <p>
+     * Constructor providing access to the {@link UserManager}.
+     * </p>
+     * 
+     * @param userMgr
+     *            The user manager.
+     * @param registry
+     *            The portlet registry component.
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry)
     {
@@ -82,11 +98,17 @@ public class UserInfoManagerImpl implements UserInfoManager
     }
 
     /**
-     * <p>Constructor providing access to the {@link UserManager} and specifying which 
-     * property set to use for user information.</p>
-     * @param userMgr The user manager.
-     * @param registry The portlet registry component.
-     * @param userInfoPropertySet The user information property set.
+     * <p>
+     * Constructor providing access to the {@link UserManager}and specifying
+     * which property set to use for user information.
+     * </p>
+     * 
+     * @param userMgr
+     *            The user manager.
+     * @param registry
+     *            The portlet registry component.
+     * @param userInfoPropertySet
+     *            The user information property set.
      *  
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistryComponent registry, String userInfoPropertySet)
@@ -98,7 +120,8 @@ public class UserInfoManagerImpl implements UserInfoManager
     }
 
     /**
-     * @see org.apache.jetspeed.userinfo.UserInfoManager#setUserInfoMap(org.apache.jetspeed.om.page.Fragment, org.apache.jetspeed.request.RequestContext)
+     * @see org.apache.jetspeed.userinfo.UserInfoManager#setUserInfoMap(org.apache.jetspeed.om.page.Fragment,
+     *      org.apache.jetspeed.request.RequestContext)
      */
     public Map getUserInfoMap(ObjectID oid, RequestContext context)
     {
@@ -125,22 +148,31 @@ public class UserInfoManagerImpl implements UserInfoManager
             return null;
         }
         Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
-        Collection portletUserAttributes = pa.getUserAttributes();
-        Map userInfoMap = mapUserInfo(userInfoPrefs, portletUserAttributes);
+        Collection userAttributes = pa.getUserAttributes();
+        Collection userAttributeRefs = pa.getUserAttributeRefs();
+        Map userInfoMap = mapUserInfo(userInfoPrefs, userAttributes, userAttributeRefs);
 
         return userInfoMap;
     }
 
     /**
-     * <p>Maps the user info properties retrieved from the user preferences
-     * to the user info attribute declared in the portlet.xml descriptor.</p>
-     * @param userInfoPrefs The user info preferences.
-     * @param portletUserAttributes The declarative portlet user attributes.
+     * <p>
+     * Maps the user info properties retrieved from the user preferences to the
+     * user info attribute declared in the portlet.xml descriptor.
+     * </p>
+     * 
+     * @param userInfoPrefs
+     *            The user info preferences.
+     * @param userAttributes
+     *            The declarative portlet user attributes.
+     * @param userAttributeRefs
+     *            The declarative jetspeed portlet extension user attributes
+     *            reference.
      * @return The user info map.
      */
-    private Map mapUserInfo(Preferences userInfoPrefs, Collection portletUserAttributes)
+    private Map mapUserInfo(Preferences userInfoPrefs, Collection userAttributes, Collection userAttributeRefs)
     {
-        if ((null == portletUserAttributes) || (portletUserAttributes.size() == 0))
+        if ((null == userAttributes) || (userAttributes.size() == 0))
         {
             return null;
         }
@@ -162,17 +194,28 @@ public class UserInfoManagerImpl implements UserInfoManager
             return null;
         }
 
-        Iterator iter = portletUserAttributes.iterator();
+        Collection linkedUserAttributes = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
+        Iterator iter = linkedUserAttributes.iterator();
         while (iter.hasNext())
         {
-            UserAttribute currentAttribute = (UserAttribute) iter.next();
-            if (null != currentAttribute)
+            UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
+            if (null != currentAttributeRef)
             {
                 for (int i = 0; i < propertyKeys.length; i++)
                 {
-                    if ((currentAttribute.getName()).equals(propertyKeys[i]))
+                    if (null != currentAttributeRef.getNameLink())
                     {
-                        userInfoMap.put(propertyKeys[i], userInfoPrefs.get(propertyKeys[i], null));
+                        if ((currentAttributeRef.getNameLink()).equals(propertyKeys[i]))
+                        {
+                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
+                        }
+                    }
+                    else
+                    {
+                        if ((currentAttributeRef.getName()).equals(propertyKeys[i]))
+                        {
+                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
+                        }
                     }
                 }
             }
@@ -184,9 +227,75 @@ public class UserInfoManagerImpl implements UserInfoManager
     }
 
     /**
-     * <p>Gets the user preferences from the user's request.</p>
-     * <p>If no user is logged in, return null.</p>
-     * @param context The request context.
+     * <p>
+     * Return the linked attributes mapping portlet user attributes to portal
+     * user attributes.
+     * </p>
+     * 
+     * @param userAttributes
+     *            The declarative portlet user attributes.
+     * @param userAttributeRefs
+     *            The declarative jetspeed portlet extension user attributes
+     *            reference.
+     * @return The collection of linked attributes.
+     */
+    private Collection mapLinkedUserAttributes(Collection userAttributes, Collection userAttributeRefs)
+    {
+        Collection linkedUserAttributes = new ArrayList();
+        if ((null != userAttributeRefs) && (userAttributeRefs.size() > 0))
+        {
+            Iterator attrIter = userAttributes.iterator();
+            while (attrIter.hasNext())
+            {
+                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
+                boolean linkedAttribute = false;
+                if (null != currentAttribute)
+                {
+                    Iterator attrRefsIter = userAttributeRefs.iterator();
+                    while (attrRefsIter.hasNext())
+                    {
+                        UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
+                        if (null != currentAttributeRef)
+                        {
+                            if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
+                            {
+                                if (log.isDebugEnabled())
+                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
+                                            + "], [linked name, " + currentAttributeRef.getName() + "]]");
+                                linkedUserAttributes.add(currentAttributeRef);
+                                linkedAttribute = true;
+                            }
+                        }
+                    }
+                }
+                if (!linkedAttribute)
+                {
+                    linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+                }
+            }
+        }
+        else
+        {
+            Iterator attrIter = userAttributes.iterator();
+            while (attrIter.hasNext())
+            {
+                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
+                linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+            }
+        }
+        return linkedUserAttributes;
+    }
+
+    /**
+     * <p>
+     * Gets the user preferences from the user's request.
+     * </p>
+     * <p>
+     * If no user is logged in, return null.
+     * </p>
+     * 
+     * @param context
+     *            The request context.
      * @return The user preferences.
      */
     private Preferences getUserPreferences(RequestContext context)

@@ -14,6 +14,7 @@
  */
 package org.apache.jetspeed.om.impl;
 
+import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 
 /**
@@ -44,6 +45,17 @@ public class UserAttributeRefImpl implements UserAttributeRef
          this.name = name;
          this.nameLink = nameLink;
      }
+
+     /**
+      * <p>User attribute ref constructor given a {@link UserAttribute}.</p>
+      * @param The user attribute ref name.
+      * @param The user attribute ref name link.
+      */
+      public UserAttributeRefImpl(UserAttribute userAttribute)
+      {
+          this.name = userAttribute.getName();
+          this.description = userAttribute.getDescription();
+      }
 
     private String name;
 
@@ -79,6 +91,24 @@ public class UserAttributeRefImpl implements UserAttributeRef
     public void setNameLink(String nameLink)
     {
         this.nameLink = nameLink;
+    }
+
+    private String description;
+
+    /**
+     * @see org.apache.jetspeed.om.common.UserAttributeRef#getDescription()
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.common.UserAttributeRef#setDescription(java.lang.String)
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
     /**

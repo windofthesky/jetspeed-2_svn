@@ -99,14 +99,6 @@ limitations under the License.
    - P O R T L E T    A P P L I C A T I O N
 -->	
 
-<!--
-  <class-descriptor
-   	  class="org.apache.jetspeed.om.common.portlet.PortletApplicationDefinitionImpl"
-   >
-     <extent-class class-ref="org.apache.jetspeed.tools.castor.om.common.portlet.PortletDefinitionDescriptor" />  
-  </class-descriptor>
--->
-
    <class-descriptor
    	  class="org.apache.jetspeed.om.common.portlet.MutablePortletApplication"
 

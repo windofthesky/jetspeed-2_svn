@@ -42,8 +42,8 @@ import org.apache.jetspeed.security.impl.PermissionManagerImpl;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.security.impl.RoleManagerImpl;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
-import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.security.impl.UserManagerImpl;
+import org.apache.jetspeed.tools.pamanager.JetspeedDescriptorUtilities;
 import org.apache.jetspeed.tools.pamanager.PortletDescriptorUtilities;
 import org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl;
 
@@ -136,6 +136,7 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
 
         RequestContext request = initRequestContext("anon");
 
+        // Without linked attributes
         // There are no preferences associated to the user profile.
         Map userInfo = uim.getUserInfoMap(app.getId(), request);
         assertNull(PortletRequest.USER_INFO + " is null", userInfo);
@@ -148,7 +149,16 @@ public class TestUserInfoManager extends RegistrySupportedTestCase
         assertEquals("should contain user.name.given", "Test Dude", (String) userInfo.get("user.name.given"));
         assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
-
+        
+        // With linked attributes
+        boolean isLoaded = JetspeedDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/jetspeed-portlet.xml", app);
+        assertTrue("should have loaded jetspeed-portlet.xml.", isLoaded);
+        
+        userInfo = uim.getUserInfoMap(app.getId(), request);
+        assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
+        assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
+        assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
+         
         // remove the app
         try
         {
