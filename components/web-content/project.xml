@@ -43,6 +43,10 @@ limitations under the License.
       <id>jetspeed2:jetspeed-commons</id>
       <version>2.0-a1-dev</version>
     </dependency>
+   	<dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+    </dependency>	
     <dependency>
       <id>commons-httpclient</id>
       <version>2.0</version>

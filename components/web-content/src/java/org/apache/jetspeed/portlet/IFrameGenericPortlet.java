@@ -38,6 +38,7 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  */
 public class IFrameGenericPortlet extends GenericVelocityPortlet
 {
+
     private Map attributes = new HashMap();
 
     private Map maxAttributes = new HashMap();
@@ -83,12 +84,12 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
     private void appendAttribute(PortletPreferences prefs, StringBuffer content, String attribute, Map map)
     {
         String value;
-        
+
         if (map == maxAttributes)
             value = getMaxAttributePreference(prefs, attribute);
         else
             value = getAttributePreference(prefs, attribute);
-        
+
         if (value == null || value == "") { return; }
         content.append(" ").append(attribute).append("=\"").append(value).append("\"");
     }
@@ -110,19 +111,24 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
 
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        response.setContentType("text/html");        
-        doPreferencesEdit(request, response);        
+        response.setContentType("text/html");
+        doPreferencesEdit(request, response);
     }
-    
+
     /**
      * Render IFRAME content
      */
     protected void doIFrame(RenderRequest request, RenderResponse response) throws IOException
     {
         PortletPreferences prefs = request.getPreferences();
+        String source = getURLSource(request, prefs);
         // generate HTML IFRAME content
         StringBuffer content = new StringBuffer(4096);
         content.append("<IFRAME");
+
+        // special case source
+        content.append(" ").append("SRC").append("=\"").append(source).append("\"");
+
         appendAttribute(prefs, content, "SRC");
         appendAttribute(prefs, content, "ALIGN");
         appendAttribute(prefs, content, "CLASS");
@@ -146,8 +152,8 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
             appendAttribute(prefs, content, "STYLE");
         }
         content.append(">");
-        content.append("<P STYLE=\"textAlign:center\"><A HREF=\"").append(getAttributePreference(prefs, "SRC")).append(
-                "\">").append(getAttributePreference(prefs, "SRC")).append("</A></P>");
+        content.append("<P STYLE=\"textAlign:center\"><A HREF=\"").append(source).append("\">").append(source).append(
+                "</A></P>");
         content.append("</IFRAME>");
 
         // set required content type and write HTML IFRAME content
@@ -155,13 +161,20 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         response.getWriter().print(content.toString());
     }
 
+    public String getURLSource(RenderRequest request, PortletPreferences prefs)
+    {
+        String source = getAttributePreference(prefs, "SRC");
+        if (source == null) source = "";
+        return source;
+    }
+
     /**
      * Save the prefs
      */
-    public void processAction(ActionRequest request, ActionResponse actionResponse)
-    throws PortletException, IOException
+    public void processAction(ActionRequest request, ActionResponse actionResponse) throws PortletException,
+            IOException
     {
         processPreferencesAction(request, actionResponse);
     }
-    
+
 }
