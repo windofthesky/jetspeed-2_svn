@@ -72,15 +72,20 @@ import org.apache.pluto.om.window.PortletWindow;
 public interface RequestContext
 {
     /**
-     * Gets the HTTP Servlet Request 
+     * Gets the HTTP Servlet Request.  This is the Servlet 
+     * containers raw request object.  This request should
+     * be wrapped using <code>getPortletRequestForWindow()</code> before
+     * being processed by the portlet container. 
      * 
-     * @return HttpServletRequest
+     * @return HttpServletRequest 
      */
     public HttpServletRequest getRequest();
 
     /**
-     * Gets the HTTP Servlet Response
-     * 
+     * Gets the HTTP Servlet Response.  This is the Servlet 
+     * containers raw response object.  This response should
+     * be wrapped using <code>getPortletResponseForWindow()</code> before
+     * being processed by the portlet container. 
      * @return HttpServletResponse
      */
     public HttpServletResponse getResponse();
@@ -194,5 +199,42 @@ public interface RequestContext
      * @param enc 
      */
     public void setCharacterEncoding(String enc);
+    
+    /**
+     * 
+     * <p>
+     * getRequestForWindow
+     * </p>
+     * 
+     * Takes a PortletWindow and generates a HttpServletRequest that
+     * accurately represents that PortletWindow's request parameters
+     *  
+     * 
+     * @param window PortetlWindow that we are build a request for
+     * @return HttpServletRequest that wraps the existing servlet
+     * container's request that can interpret encoded portlet information
+     * for this PortletWindow
+     *
+     */
+    HttpServletRequest getRequestForWindow(PortletWindow window);
+    
+    /**
+     * 
+     * <p>
+     * getResponseForWindow
+     * </p>
+     * 
+     * Takes a PortletWindow and generates a HttpServletResponse that
+     * accurately represents that PortletWindow's request parameters.
+     *  
+     * 
+     * @param window PortetlWindow that we are build a response for
+     * @return HttpServletRequest that wraps the existing servlet
+     * container's request that can interpret encoded portlet information
+     * for this PortletWindow
+     *
+     *
+     */
+    HttpServletResponse getResponseForWindow(PortletWindow window);
     
 }

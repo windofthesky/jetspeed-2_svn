@@ -59,9 +59,12 @@ import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.om.profile.Profile;
+import org.apache.jetspeed.services.factory.FactoryManager;
 import org.apache.jetspeed.capability.CapabilityMap;
 import org.apache.jetspeed.engine.core.PortalControlParameter;
 import org.apache.jetspeed.engine.core.PortalURL;
+import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
+import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.om.window.PortletWindow;
 
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -82,13 +85,13 @@ public class JetspeedRequestContext implements RequestContext
     private ServletConfig config;
     private Profile profile;
     private PortletDefinition portletDefinition;
-    
-    private CapabilityMap   capabilityMap;
-    private String          mimeType;
-    private String          mediaType;
-    private PortalURL       requestedPortalURL;
-    private PortletWindow   actionWindow;
-    private String          encoding;
+
+    private CapabilityMap capabilityMap;
+    private String mimeType;
+    private String mediaType;
+    private PortalURL requestedPortalURL;
+    private PortletWindow actionWindow;
+    private String encoding;
 
     public final static String REQUEST_PORTALENV = "org.apache.jetspeed.request.RequestContext";
 
@@ -100,22 +103,19 @@ public class JetspeedRequestContext implements RequestContext
      * @param response
      * @param config
      */
-    public JetspeedRequestContext(PortalContext pc,
-                                  HttpServletRequest request,
-                                  HttpServletResponse response,
-                                  ServletConfig config)
+    public JetspeedRequestContext(PortalContext pc, HttpServletRequest request, HttpServletResponse response, ServletConfig config)
     {
         this.pc = pc;
         this.request = request;
         this.response = response;
         this.config = config;
-        
+
         // set context in Request for later use
         if (null != this.request)
         {
             this.request.setAttribute(REQUEST_PORTALENV, this);
-        }        
-        requestedPortalURL = new PortalURL(this);        
+        }
+        requestedPortalURL = new PortalURL(this);
     }
 
     private JetspeedRequestContext()
@@ -131,7 +131,7 @@ public class JetspeedRequestContext implements RequestContext
      */
     public static RequestContext getRequestContext(HttpServletRequest request)
     {
-        return (RequestContext)request.getAttribute(REQUEST_PORTALENV);
+        return (RequestContext) request.getAttribute(REQUEST_PORTALENV);
     }
 
     public PortalContext getPortalContext()
@@ -173,69 +173,69 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.portletDefinition = portletDefinition;
     }
-    
+
     /** Set the capabilityMap. Used by the CapabilityValve
        * 
        * @param capabilityMap 
        */
-      public void setCapabilityMap(CapabilityMap map)
-      {
-          this.capabilityMap = map;
-      }
-    
-      /** get the Capability Map
-       * 
-       */
-      public CapabilityMap getCapabilityMap()
-      {
-          return this.capabilityMap;
-      }
+    public void setCapabilityMap(CapabilityMap map)
+    {
+        this.capabilityMap = map;
+    }
 
-      /** Set the Mimetype. Used by the CapabilityValve
-       * 
-       * @param mimeType 
-       */
-      public void setMimeType(String mimeType)
-      {
-          this.mimeType = mimeType;
-      }
+    /** get the Capability Map
+     * 
+     */
+    public CapabilityMap getCapabilityMap()
+    {
+        return this.capabilityMap;
+    }
 
-      /** get the mimeType for the request
-       * 
-       */
-      public String getMimeType()
-      {
-          return this.mimeType;
-      }
-        
-      /** Set the mediaType. Used by the CapabilityValve
-       * 
-       * @param mediaType 
-       */
-      public void setMediaType(String mediaType)
-      {
-          this.mediaType = mediaType;
-      }
-    
-      /** get the Media Type
-       * 
-       */
-      public String getMediaType()
-      {
-          return this.mediaType;
-      }
+    /** Set the Mimetype. Used by the CapabilityValve
+     * 
+     * @param mimeType 
+     */
+    public void setMimeType(String mimeType)
+    {
+        this.mimeType = mimeType;
+    }
+
+    /** get the mimeType for the request
+     * 
+     */
+    public String getMimeType()
+    {
+        return this.mimeType;
+    }
+
+    /** Set the mediaType. Used by the CapabilityValve
+     * 
+     * @param mediaType 
+     */
+    public void setMediaType(String mediaType)
+    {
+        this.mediaType = mediaType;
+    }
+
+    /** get the Media Type
+     * 
+     */
+    public String getMediaType()
+    {
+        return this.mediaType;
+    }
 
     public PortalURL getRequestedPortalURL()
     {
         return requestedPortalURL;
     }
-    
+
     public void changeRequestedPortalURL(PortalURL url, PortalControlParameter control)
     {
         requestedPortalURL = url;
         requestedPortalURL.analyzeControlInformation(control);
     }
-    
+
     /**
      * Get the target Portlet Action Window
      *
@@ -245,7 +245,7 @@ public class JetspeedRequestContext implements RequestContext
     {
         return actionWindow;
     }
-    
+
     /**
      * Sets the target Portlet Action Window
      * 
@@ -255,7 +255,7 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.actionWindow = portletWindow;
     }
-    
+
     /**
      * get the character encoding
      * 
@@ -265,7 +265,7 @@ public class JetspeedRequestContext implements RequestContext
     {
         return this.encoding;
     }
-    
+
     /**
      * set character encoding
      * 
@@ -275,6 +275,40 @@ public class JetspeedRequestContext implements RequestContext
     {
         this.encoding = enc;
     }
-    
+
+    /** 
+     * <p>
+     * getRequestForWindow
+     * </p>
+     * 
+     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @param window
+     * @return
+     */
+    public HttpServletRequest getRequestForWindow(PortletWindow window)
+    {
+        ServletRequestFactory reqFac =
+            (ServletRequestFactory) FactoryManager.getFactory(javax.servlet.http.HttpServletRequest.class);
+        HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
+        return requestWrapper;
+    }
+
+    /** 
+     * <p>
+     * getResponseForWindow
+     * </p>
+     * 
+     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @param window
+     * @return
+     */
+    public HttpServletResponse getResponseForWindow(PortletWindow window)
+    {
+        return response;
+        // TODO: Get the wrapper worker, as of now, it appears no content type is returned so we get plain text
+        //        ServletResponseFactory rspFac = (ServletResponseFactory) FactoryManager.getFactory(HttpServletResponse.class);
+        //        HttpServletResponse wrappedResponse = rspFac.getServletResponse(response);
+        //        return wrappedResponse;
+    }
 
 }
