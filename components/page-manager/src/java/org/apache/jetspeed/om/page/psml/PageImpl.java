@@ -250,5 +250,17 @@ public class PageImpl extends AbstractBaseElement implements Page
     {
         this.metadataFields = metadataFields;
     }
+    /**
+     * <p>
+     * getName
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getName()
+     * @return
+     */
+    public String getName()
+    {
+        return getId();
+    }
 }
 
