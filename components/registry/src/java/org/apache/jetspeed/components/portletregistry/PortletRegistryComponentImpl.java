@@ -37,6 +37,15 @@ import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
+import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionLocalizedFieldImpl;
+import org.apache.jetspeed.om.impl.LanguageImpl;
+import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
+import org.apache.jetspeed.om.preference.impl.DefaultPreferenceImpl;
+import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
+import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
+
 /**
  * <p>
  * PortletRegistryComponentImpl
@@ -73,7 +82,6 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
     private Class portletDefClass;
     private Class portletAppClass;
 
-
     /**
      *  
      */
@@ -105,7 +113,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
      *         RegistryException
      */
     public Language createLanguage(Locale locale, String title, String shortTitle, String description, Collection keywords)
-    throws RegistryException
+        throws RegistryException
     {
         try
         {
@@ -243,7 +251,8 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         {
             if (portlet.getPortletApplicationDefinition() == null)
             {
-                final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
+                final String msg =
+                    "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
@@ -274,7 +283,7 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         if (split < 1)
         {
             throw new IllegalArgumentException(
-            "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
+                "The unique portlet name, \"" + name + "\";  is not well formed.  No \"::\" delimiter was found.");
         }
         String appName = name.substring(0, split);
         String portletName = name.substring((split + 2), name.length());
@@ -289,9 +298,18 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
         {
             if (portlet.getPortletApplicationDefinition() == null)
             {
-                final String msg = "getPortletDefinitionByUniqueName() returned a PortletDefinition that has no parent PortletApplication.";
-                log.error(msg);
-                throw new IllegalStateException(msg);
+                filter = store.newFilter();
+                filter.addEqualTo("name", appName);
+                query = store.newQuery(portletAppClass, filter);
+                MutablePortletApplication app = (MutablePortletApplication) store.getObjectByQuery(query);
+                if (null == app)
+                {
+                    final String msg =
+                        "getPortletDefinitionByUniqueName() returned a PortletDefinition that has no parent PortletApplication.";
+                    log.error(msg);
+                    throw new IllegalStateException(msg);
+                }
+                portlet.setPortletApplicationDefinition(app);
             }
             return getStoreableInstance(portlet);
         }
@@ -382,17 +400,63 @@ public class PortletRegistryComponentImpl implements PortletRegistryComponent
     {
         PersistenceStore store = getPersistenceStore();
         prepareTransaction(store);
+
+        Filter filter = store.newFilter();
         try
         {
             Iterator portlets = app.getPortletDefinitionList().iterator();
             while (portlets.hasNext())
             {
-                // portlets are getting cascade deleted but
-                // content type and langs asocciated are not
-                store.deletePersistent(portlets.next());
+                PortletDefinitionImpl curPortlet = (PortletDefinitionImpl) portlets.next();
+
+                filter.addEqualTo("parentId", curPortlet.getId());
+                store.deleteAll(store.newQuery(PortletDefinitionLocalizedFieldImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("parentId", curPortlet.getId());
+                store.deleteAll(store.newQuery(PortletDisplayNameImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("portletId", curPortlet.getId());
+                store.deleteAll(store.newQuery(LanguageImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("portletId", curPortlet.getId());
+                store.deleteAll(store.newQuery(ContentTypeImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("parentId", curPortlet.getId());
+                store.deleteAll(store.newQuery(PortletInitParameterImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("parentId", curPortlet.getId());
+                store.deleteAll(store.newQuery(DefaultPreferenceImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("portletId", curPortlet.getId());
+                store.deleteAll(store.newQuery(SecurityRoleRefImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("parentId", curPortlet.getId());
+                store.deleteAll(store.newQuery(PortletDescriptionImpl.class, filter));
+                store.getTransaction().checkpoint();
+
+                filter = store.newFilter();
+                filter.addEqualTo("id", curPortlet.getId());
+                store.deleteAll(store.newQuery(PortletDefinitionImpl.class, filter));
+                store.getTransaction().checkpoint();
             }
-            store.deletePersistent(app);            
-            store.getTransaction().checkpoint();            
+            filter = store.newFilter();
+            filter.addEqualTo("id", app.getId());
+            store.deleteAll(store.newQuery(MutablePortletApplication.class, filter));
+            store.getTransaction().checkpoint();
         }
         catch (LockFailedException e)
         {
