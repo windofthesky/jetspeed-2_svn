@@ -60,6 +60,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -124,7 +125,13 @@ public class HelloWorld extends GenericPortlet
     {
         PortletContext context = getPortletContext();
         response.setContentType("text/html");
+
+        PortletURL url = response.createRenderURL();
+        // url.addParameter("test", "value");
+        
         response.getWriter().println("<br/><b>Init Param 'Hello' = " + this.getInitParameter("hello") +  "</b>");
+        response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
+        
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
         rd.include(request, response);        
     }

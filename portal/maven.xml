@@ -148,7 +148,7 @@
   <!-- Hot Deploy for mundane everyday development under Catalina       -->
   <!-- ================================================================ -->
   <goal name="hotdeploy">
-    <echo message="Hot Deploying ${pom.id}, ${pom.name}"/>
+    <echo message="Hot Deploying ${pom.id}, ${pom.name} ${webapp.dir}"/>
     <copy todir="${deploy.war.dir}/${webapp.name}/WEB-INF/classes">
         <fileset dir="${maven.build.dir}/classes">
         </fileset>
@@ -156,17 +156,6 @@
     <copy todir="${deploy.war.dir}/${webapp.name}/">
       <fileset dir="${webapp.dir}">
          <exclude name="WEB-INF/db/**"/>
-      </fileset>
-    </copy>
-    <copy  todir="${deploy.war.dir}/${webapp.name}/WEB-INF/lib/">
-      <fileset dir="../container/target/">
-        <include name="*.jar"/>      
-      </fileset>
-      <fileset dir="../commons/target/">
-        <include name="*.jar"/>      
-      </fileset>
-      <fileset dir="../portlet-api/target">
-        <include name="*.jar"/>      
       </fileset>
     </copy>
   </goal>

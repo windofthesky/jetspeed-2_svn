@@ -96,12 +96,14 @@ public class ServletPortletInvoker implements PortletInvoker
     private final static Log log = LogFactory.getLog(ServletPortletInvoker.class);
 
     protected ServletContext jetspeedContext;
+    protected ServletConfig jetspeedConfig;
     private PortletDefinition portletDefinition;
 
     public ServletPortletInvoker(PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
         System.out.println("%%% invoker.portletdef = " + portletDefinition);
 
+        this.jetspeedConfig = servletConfig;
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
     }
@@ -196,8 +198,7 @@ public class ServletPortletInvoker implements PortletInvoker
             servletRequest.setAttribute(ContainerConstants.PORTLET_ENTITY, portletDefinition);
 
             PortletContext portletContext = PortletContextFactory.createPortletContext(appContext, app);
-            //TODO: We need to get the ServletConfig somehow!!!
-            PortletConfig portletConfig = new PortletConfigImpl(null, portletContext, portletDefinition);
+            PortletConfig portletConfig = new PortletConfigImpl(this.jetspeedConfig, portletContext, portletDefinition);
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
 
             dispatcher.include(servletRequest, servletResponse);
