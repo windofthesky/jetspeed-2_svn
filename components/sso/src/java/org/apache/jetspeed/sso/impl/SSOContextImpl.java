@@ -27,42 +27,61 @@ import org.apache.jetspeed.sso.SSOContext;
 */
 public class SSOContextImpl implements SSOContext {
 
-	private long	userID;
-	private String password;
-	private String userName;
+	private long	remotePrincipalId;
+	private String remoteCredential;
+	private String remotePrincipal;
+    private String portalPrincipal;
 	
 	/**
 	 * Constructor takes all arguments since members can't be altered
 	 */
-	public SSOContextImpl(long userID, String userName, String pwd) {
-		super();
-		
-		this.userID			=	userID;
-		this.userName	=	userName;
-		this.password		=	pwd;
+	public SSOContextImpl(long remotePrincipalId, String remotePrincipal, String remoteCredential) 
+    {
+		super();		
+		this.remotePrincipalId = remotePrincipalId;
+		this.remotePrincipal = remotePrincipal;
+		this.remoteCredential = remoteCredential;
+	}
+
+    public SSOContextImpl(long remotePrincipalId, String remotePrincipal, String remoteCredential, String portalPrincipal) 
+    {
+        super();        
+        this.remotePrincipalId = remotePrincipalId;
+        this.remotePrincipal = remotePrincipal;
+        this.remoteCredential = remoteCredential;
+        this.portalPrincipal = portalPrincipal;
+    }
+    
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.sso.SSOContext#getRemotePrincipalId()
+	 */
+	public long  getRemotePrincipalId() 
+    {		
+		return this.remotePrincipalId;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.sso.SSOContext#getUserID()
+	 * @see org.apache.jetspeed.sso.SSOContext#getRemotePrincipal()
 	 */
-	public long  getUserID() {
-		
-		return this.userID;
+	public String getRemotePrincipalName() 
+    {
+		return this.remotePrincipal;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.sso.SSOContext#getUserName()
+	 * @see org.apache.jetspeed.sso.SSOContext#getRemoteCredential()
 	 */
-	public String getUserName() {
-		return this.userName;
+	public String getRemoteCredential() 
+    {		
+		return this.remoteCredential;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.sso.SSOContext#getPassword()
-	 */
-	public String getPassword() {
-		
-		return this.password;
-	}
-
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.sso.SSOContext#getPortalPrincipal()
+     */
+    public String getPortalPrincipalName() 
+    {
+        return this.portalPrincipal;
+    }
+    
 }

@@ -16,15 +16,17 @@
 package org.apache.jetspeed.sso;
 
 /**
-* <p>Utility component to handle SSO requests</p>
+* <p>Represents SSO Remote and Portal principal and credentials</p>
 * 
 * @author <a href="mailto:rogerrut@apache.org">Roger Ruttimann</a>
 */
 
-public interface SSOContext {
+public interface SSOContext 
+{
 
 	// Getters only. The interface shouldn't allow any changes
-	public long		getUserID();
-	public String	getUserName();
-	public String	getPassword();
+	public long		getRemotePrincipalId();
+    public String   getPortalPrincipalName();
+	public String	getRemotePrincipalName();
+	public String	getRemoteCredential();
 }

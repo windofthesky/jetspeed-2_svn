@@ -174,10 +174,10 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     	
     	// Test credential update
     	SSOContext ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
-    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword()+ " for site: " + TEST_URL);
+    	System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential()+ " for site: " + TEST_URL);
     	
     	SSOContext ssocontext2 = ssoBroker.getCredentials(subject, TEST_URL2);
-    	System.out.println("SSO Credential: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword() + " for site: " + TEST_URL2);
+    	System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential() + " for site: " + TEST_URL2);
     	
     	try
 		{
@@ -186,7 +186,7 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     		ssoBroker.updateCredentialsForSite(subject, REMOTE_USER , TEST_URL, REMOTE_PWD_2);
     		
     		ssocontext = ssoBroker.getCredentials(subject, TEST_URL);
-    		System.out.println("SSO Credential updated: User:" + ssocontext.getUserName() + " Password: " + ssocontext.getPassword());
+    		System.out.println("SSO Credential updated: User:" + ssocontext.getRemotePrincipalName() + " Password: " + ssocontext.getRemoteCredential());
     		
 		}
     	catch(SSOException ssoex)

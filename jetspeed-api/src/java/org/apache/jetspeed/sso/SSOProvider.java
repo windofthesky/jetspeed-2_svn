@@ -15,6 +15,7 @@
 package org.apache.jetspeed.sso;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.security.auth.Subject;
 
@@ -50,6 +51,15 @@ public interface SSOProvider
     
 	void removeCredentialsForSite(Subject subject, String site)  
         throws SSOException;
+    
+    /**
+     * return a list of SSOContext objects containing 
+     * both the portal principal, remote principal, and credentials
+     * 
+     * @param site
+     * @return list SSOContext objects 
+     */
+    List getPrincipalsForSite(SSOSite site);
     
     Iterator getSites(String filter);
     

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -109,7 +111,7 @@ public class PersistenceBrokerSSOProvider extends
 		    return false;	// no entry
 		
 		// Get remote Principal that matches the site and the principal
-		if (FindRemoteMatch(remoteForPrincipals, remoteForSite) == null )
+		if (findRemoteMatch(remoteForPrincipals, remoteForSite) == null )
 		{
 		    return false;	// No entry
 		}
@@ -181,7 +183,7 @@ public class PersistenceBrokerSSOProvider extends
 		    Collection remoteForSite = ssoSite.getRemotePrincipals();
 		    if ( remoteForSite != null)
 		    {
-		        if (FindRemoteMatch(principal.getRemotePrincipals(), remoteForSite) != null )
+		        if (findRemoteMatch(principal.getRemotePrincipals(), remoteForSite) != null )
 		        {
 		            // Entry exists can't to an add has to call update
 		            throw new SSOException(SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
@@ -262,7 +264,7 @@ public class PersistenceBrokerSSOProvider extends
 			    throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
 			
 			// Get remote Principal that matches the site and the principal
-			if ((remotePrincipal = FindRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
+			if ((remotePrincipal = findRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
 			{
 			    throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
 			}
@@ -339,7 +341,7 @@ public class PersistenceBrokerSSOProvider extends
 			    throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
 			
 			// Get remote Principal that matches the site and the principal
-			if ((remotePrincipal = FindRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
+			if ((remotePrincipal = findRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
 			{
 			    throw new SSOException(SSOException.NO_CREDENTIALS_FOR_SITE);
 			}
@@ -443,7 +445,7 @@ public class PersistenceBrokerSSOProvider extends
 		    return null;	// no entry
 		
 		// Get remote Principal that matches the site and the principal
-		if ((remotePrincipal = FindRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
+		if ((remotePrincipal = findRemoteMatch(remoteForPrincipals, remoteForSite)) == null )
 		{
 		    return null;	// No entry
 		}
@@ -462,16 +464,25 @@ public class PersistenceBrokerSSOProvider extends
 		}
 		
 		//	Create new context
-		String name = remotePrincipal.getFullPath();
-		int ix = name.lastIndexOf('/');
-		if ( ix != -1)
-			name = name.substring(ix + 1);
+		String name = stripPrincipalName(remotePrincipal.getFullPath());
 		
 		SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, credential.getValue());
 		
 		return context;
 	}
 	
+    private String stripPrincipalName(String fullPath)
+    {
+        String name;
+        int ix = fullPath.lastIndexOf('/');
+        if ( ix != -1)
+            name = fullPath.substring(ix + 1);
+        else
+            name = new String(fullPath);
+        
+        return name;        
+    }
+
 	/*
 	 * Get a Collection of remote Principals for the logged in principal identified by the full path
 	 */
@@ -614,7 +625,7 @@ public class PersistenceBrokerSSOProvider extends
 	 * 
 	 * 
 	 */
-	private InternalUserPrincipal FindRemoteMatch(Collection remoteForPrincipals, Collection remoteForSite)
+	private InternalUserPrincipal findRemoteMatch(Collection remoteForPrincipals, Collection remoteForSite)
 	{
 	    // Iterate over the lists and find match
 	    Iterator itRemoteForPrincipals = remoteForPrincipals.iterator();
@@ -714,4 +725,44 @@ public class PersistenceBrokerSSOProvider extends
         }        
     }
         
+    public List getPrincipalsForSite(SSOSite site)
+    {
+        List list = new ArrayList();
+        Iterator principals = site.getRemotePrincipals().iterator();
+        while (principals.hasNext())
+        {
+            InternalUserPrincipal remotePrincipal = (InternalUserPrincipal)principals.next();
+            String fullpath = remotePrincipal.getFullPath();
+            Iterator creds = remotePrincipal.getCredentials().iterator();
+            while (creds.hasNext())
+            {
+                InternalCredential cred = (InternalCredential) creds.next();
+                SSOContext context = new SSOContextImpl(remotePrincipal.getPrincipalId(), 
+                                                stripPrincipalName(remotePrincipal.getFullPath()), 
+                                                cred.getValue(), 
+                                                stripPortalPrincipalName(remotePrincipal.getFullPath()));
+                list.add(context);
+            }
+        }
+        return list;
+    }
+
+    
+    private String stripPortalPrincipalName(String fullPath)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(fullPath, "/");
+        while (tokenizer.hasMoreTokens())
+        {
+            String token = tokenizer.nextToken();
+            if (token.equals("user"))
+            {
+                if (tokenizer.hasMoreTokens())
+                {
+                    return tokenizer.nextToken();
+                }
+            }
+        }
+        return fullPath;        
+    }
+    
 }

@@ -136,8 +136,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
         {
             Subject subject = getSubject();                 
             SSOContext context = sso.getCredentials(subject, site);
-            request.setAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME, context.getUserName());
-            request.setAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD, context.getPassword());
+            request.setAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME, context.getRemotePrincipalName());
+            request.setAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD, context.getRemoteCredential());
         }
         catch (SSOException e)
         {
@@ -166,8 +166,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
             Subject subject = getSubject();                 
             String site = request.getPreferences().getValue("SRC", "");
             SSOContext context = sso.getCredentials(subject, site);
-            getContext(request).put(SSO_FORM_PRINCIPAL, context.getUserName());
-            getContext(request).put(SSO_FORM_CREDENTIAL, context.getPassword());
+            getContext(request).put(SSO_FORM_PRINCIPAL, context.getRemotePrincipalName());
+            getContext(request).put(SSO_FORM_CREDENTIAL, context.getRemoteCredential());
         }
         catch (SSOException e)
         {
