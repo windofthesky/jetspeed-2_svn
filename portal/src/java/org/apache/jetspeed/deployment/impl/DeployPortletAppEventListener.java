@@ -9,11 +9,11 @@ package org.apache.jetspeed.deployment.impl;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.DeploymentEvent;
@@ -21,7 +21,6 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
-import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -45,13 +44,17 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private String webAppDir;
     private  PortletApplicationManagement pam;
     private Map appNameToFile;
+    protected PortletRegistryComponent registry;
+    protected Locale defaultLocale;
 
 
-    public DeployPortletAppEventListener(String webAppDir, PortletApplicationManagement pam)
+    public DeployPortletAppEventListener(String webAppDir, PortletApplicationManagement pam, PortletRegistryComponent registry, Locale defaultLocale)
     {
         this.webAppDir = webAppDir;
         this.pam = pam;
 		this.appNameToFile = new HashMap();
+		this.registry = registry;
+		this.defaultLocale = defaultLocale;
     }
 
     /**
@@ -85,15 +88,15 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                         id = warFileName.substring(0, extensionIdx);
                         log.info("Application id not defined in portlet.xml so using war name "+id);
                     }
-					PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-                    if (regsitry.getPortletApplicationByIdentifier(id) != null)
+					
+                    if (registry.getPortletApplicationByIdentifier(id) != null)
                     {
                         log.info("Portlet application \"" + id + "\"" + " already been registered.  Skipping initial deployment.");
                         // still need to register the filename to the app name so undeploy works correctly
 						appNameToFile.put(handler.getFile().getName(), id);
 						if(isLocal)
 						{
-						    PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id, null );
+						    PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, defaultLocale,  id, null );
 	                         JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));						    
 						}
                         return;
@@ -105,7 +108,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     {
                          log.info(handler.getFile().getName()+" will be registered as a local portlet applicaiton.");
                          pam.register(id, id, handler.getPath());
-                         PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, Jetspeed.getDefaultLocale(),  id, null );
+                         PortletApplicationWar paWar = new PortletApplicationWar(handler.getPath(), id, "/"+id, defaultLocale,  id, null );
                          JetspeedPortletFactory.addClassLoader(paWar.createClassloader(getClass().getClassLoader()));
                     }
                     else
@@ -145,8 +148,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                 	throw new DeploymentException(msg);
                 }
                 
-                PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
-                PortletApplicationDefinition pa = regsitry.getPortletApplicationByIdentifier(paName);
+               
+                PortletApplicationDefinition pa = registry.getPortletApplicationByIdentifier(paName);
                 if(pa != null)
                 {
                     log.info("Removing a portlets from the PortletCache that belong to portlet application "+paName);

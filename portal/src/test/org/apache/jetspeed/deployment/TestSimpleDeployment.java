@@ -9,14 +9,14 @@ package org.apache.jetspeed.deployment;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.portlet.Portlet;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
+import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
@@ -25,10 +25,8 @@ import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
-import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryUtils;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -41,7 +39,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public class TestSimpleDeployment extends JetspeedTest
+public class TestSimpleDeployment extends RegistrySupportedTestCase
 {
     protected static final String TEST_PORTLET_APP_NAME = "HW_App";
     protected String webAppsDir;
@@ -103,9 +101,10 @@ public class TestSimpleDeployment extends JetspeedTest
         }
         System.out.println("Deployment src: " + delpoySrc);
         DeploymentEventDispatcher ded = new DeploymentEventDispatcher(deployRoot);
-        SimpleRegistry registry = new InMemoryRegistryImpl();
-        DeployDecoratorEventListener ddel = new DeployDecoratorEventListener(registry);
-        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM());
+        SimpleRegistry simpleRegistry = new InMemoryRegistryImpl();
+        DeployDecoratorEventListener ddel = new DeployDecoratorEventListener(simpleRegistry);
+        
+        DeployPortletAppEventListener dpal = new DeployPortletAppEventListener(webAppsDir, new FileSystemPAM(portletRegistry, Locale.getDefault()), portletRegistry, Locale.getDefault());
         ded.addDeploymentListener(ddel);
         ded.addDeploymentListener(dpal);
         HashMap handlers = new HashMap();
@@ -120,7 +119,7 @@ public class TestSimpleDeployment extends JetspeedTest
             new File(deployRoot + File.separator + "html" + File.separator + "portletstd" + File.separator + "decorator.vm");
 
         assertTrue(decoratorVm.getCanonicalPath() + " was not created!", decoratorVm.exists());
-		PortletRegistryComponent portletRegistry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+		
         assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
         assertTrue(TEST_PORTLET_APP_NAME+" directory was not created, app not deployed.", new File(webAppsDir+"/"+TEST_PORTLET_APP_NAME).exists());
         MutablePortletApplication jetspeedApp = portletRegistry.getPortletApplicationByIdentifier("jetspeed");
@@ -172,7 +171,7 @@ public class TestSimpleDeployment extends JetspeedTest
             testDb = new File("./test/db/hsql/Registry").getCanonicalPath();
             // remove any prior left overs
             
-			FileSystemPAM pam = new FileSystemPAM();
+			FileSystemPAM pam = new FileSystemPAM(portletRegistry, Locale.getDefault());
 			
 
 	            pam.undeploy(webAppsDir, TEST_PORTLET_APP_NAME);

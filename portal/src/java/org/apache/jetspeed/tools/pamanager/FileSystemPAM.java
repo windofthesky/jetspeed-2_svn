@@ -17,11 +17,11 @@ package org.apache.jetspeed.tools.pamanager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
@@ -52,12 +52,13 @@ public class FileSystemPAM implements PortletApplicationManagement
     //private DeployUtilities util;
     private PortletRegistryComponent registry;
     private String vfsConfigUri = null;
+    protected Locale defaultLocale;
 
-    public FileSystemPAM()
+    public FileSystemPAM(PortletRegistryComponent registry, Locale defaultLocale)
     {
         super();
-        registry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(
-                PortletRegistryComponent.class);
+        this.registry = registry;
+        this.defaultLocale = defaultLocale;
     }
 
     /**
@@ -212,7 +213,7 @@ public class FileSystemPAM implements PortletApplicationManagement
         PortletApplicationWar paWar = null;
         try
         {
-            paWar = new PortletApplicationWar(webAppsDir+"/"+paName, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
+            paWar = new PortletApplicationWar(webAppsDir+"/"+paName, paName, "/"+paName, defaultLocale,  paName, vfsConfigUri );
             paWar.removeWar();
             log.info("FileSystem un-deployment completed successfully.");
 
@@ -273,7 +274,7 @@ public class FileSystemPAM implements PortletApplicationManagement
         PortletApplicationWar paWar = null;
         try
         {
-            paWar = new PortletApplicationWar(warFile, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
+            paWar = new PortletApplicationWar(warFile, paName, "/"+paName, defaultLocale,  paName, vfsConfigUri );
 
             String portletAppDirectory = webAppsDir+"/"+paName;
             log.info("Portlet application deployment target directory is "+portletAppDirectory);
@@ -410,7 +411,7 @@ public class FileSystemPAM implements PortletApplicationManagement
 
             log.info("Rollback: Remove " + portletAppDir + " and all sub-directories.");
 
-            paWar = new PortletApplicationWar(portletAppDir, paName, "/"+paName, Jetspeed.getDefaultLocale(),  paName, vfsConfigUri );
+            paWar = new PortletApplicationWar(portletAppDir, paName, "/"+paName, defaultLocale,  paName, vfsConfigUri );
             paWar.removeWar();
 
         }

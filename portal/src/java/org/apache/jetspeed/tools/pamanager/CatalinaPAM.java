@@ -17,10 +17,12 @@ package org.apache.jetspeed.tools.pamanager;
 
 
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
 
 
@@ -44,6 +46,15 @@ public class CatalinaPAM extends FileSystemPAM implements  Lifecycle
     protected static final Log log = LogFactory.getLog("deployment");
 
 
+    /**
+     * @param registry
+     * @param defaultLocale
+     */
+    public CatalinaPAM( PortletRegistryComponent registry, Locale defaultLocale )
+    {
+        super(registry, defaultLocale);
+        
+    }
     public void connect(Map params)
     throws PortletApplicationException
     {      
