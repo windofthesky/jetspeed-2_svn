@@ -59,10 +59,10 @@ public class JetspeedDescriptorUtilities
             digester.addRule("portlet-app/portlet/portlet-name", new PortletRule(app));
 			digester.addRuleSet(new MetadataRuleSet("portlet-app/portlet/"));
 			
-			digester.addObjectCreate("portlet-app/user-attribute-ref", UserAttributeRefImpl.class);
-            digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name", "name");
-            digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name-link", "nameLink");
-            digester.addSetNext("portlet-app/user-attribute-ref", "addUserAttributeRef");
+			//digester.addObjectCreate("portlet-app/user-attribute-ref", UserAttributeRefImpl.class);
+            //digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name", "name");
+            //digester.addBeanPropertySetter("portlet-app/user-attribute-ref/name-link", "nameLink");
+            //digester.addSetNext("portlet-app/user-attribute-ref", "addUserAttributeRef");
             
             digester.parse(reader);
             result = true;
