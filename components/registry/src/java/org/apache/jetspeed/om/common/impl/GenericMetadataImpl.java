@@ -34,7 +34,7 @@ import org.apache.pluto.om.common.ObjectID;
  * @version $Id$
  *
  */
-public class GenericMetadataImpl implements GenericMetadata
+public abstract class GenericMetadataImpl implements GenericMetadata
 {   
     private Collection fields = null;
     private transient MultiHashMap fieldMap = new MultiHashMap();
