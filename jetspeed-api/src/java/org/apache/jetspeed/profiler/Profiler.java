@@ -139,7 +139,28 @@ public interface Profiler
      * @return
      * @throws ProfilerException
      */
-    public Map getProfileLocators(RequestContext context, Principal principal)
+    Map getProfileLocators(RequestContext context, Principal principal)
+    throws ProfilerException;
+    
+    /*
+     * Persist a new profiling rule to the persistent store.
+     * 
+     */
+    void addProfilingRule(ProfilingRule rule)
+    throws ProfilerException;
+
+    /*
+     * Persist an existing profiling rule to the persistent store.
+     * 
+     */
+    void updateProfilingRule(ProfilingRule rule)
+    throws ProfilerException;
+    
+    /*
+     * Remove a profiling rule from the persistent store.
+     * 
+     */    
+    void removeProfilingRule(ProfilingRule rule)
     throws ProfilerException;
     
 }
