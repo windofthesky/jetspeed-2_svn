@@ -61,4 +61,22 @@ public class ArgUtil
             }
         }
     }
+    
+    /**
+     * 
+     * <p>
+     * notNull
+     * </p>
+     *
+     * @param nonNullObject
+     * @param thisObject
+     * @throws IllegalArgumentException
+     */
+    public static void assertNotNull(Class nonNullClass, Object nonNullObject, Object thisObject) throws IllegalArgumentException
+    {
+        if(nonNullObject == null)
+        {
+            throw new IllegalArgumentException(thisObject.getClass().getName()+" requires a non-null "+nonNullClass.getName()+" as an argument.");
+        }
+    }
 }
