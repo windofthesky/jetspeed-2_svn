@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry including="**/CVS/*" kind="src" path="applications/security/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="components/search/src/test"/>
 	<classpathentry kind="src" path="components/web-content/src/java"/>
