@@ -3,7 +3,7 @@
 
 	<plugin name="essential" default="true">
 		<classname>
-  	 	org.apache.jetspeed.services.persistence.impl.OJBODMGPersistencePlugin
+  	 	org.apache.jetspeed.persistence.impl.OJBODMGPersistencePlugin
   	   </classname>
 	</plugin>	
 
