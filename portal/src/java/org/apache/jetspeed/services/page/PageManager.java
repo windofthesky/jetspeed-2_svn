@@ -52,104 +52,92 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.services.page;
 
+import java.util.Iterator;
+import java.util.List;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.util.ServiceUtil;
 
 /**
- * Bean like implementation of the Parameter interface suitable for
- * Castor serialization.
+ * Convenience static wrapper around <code>PageManagerService</code>
  *
- * @see org.apache.jetspeed.om.registry.PsmlParameter
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PropertyImpl implements Property, java.io.Serializable
+public class PageManager
 {
-
-    private String name;
-    private String value;
-    private String layout;
-
-    public PropertyImpl()
+    private static final PageManagerService getService()
     {
+        return (PageManagerService) ServiceUtil.getServiceByName(
+            PageManagerService.SERVICE_NAME);
     }
 
-    public String getLayout()
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#newPage()
+     */
+    public static Page newPage()
     {
-        return this.layout;
+        return getService().newPage();
     }
 
-    public void setLayout(String layout)
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#newFragment()
+     */
+    public static Fragment newFragment()
     {
-        this.layout = layout;
+        return getService().newFragment();
     }
 
-    public String getName()
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#newProperty()
+     */
+    public static Property newProperty()
     {
-        return this.name;
+        return getService().newProperty();
     }
 
-    public void setName(String name)
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
+     */
+    public static Page getPage(String id)
     {
-        this.name = name;
+        return getService().getPage(id);
     }
 
-    public String getValue()
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
+     */
+    public static List listPages()
     {
-        return this.value;
+        return getService().listPages();
     }
 
-    public void setValue(String value)
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
+     */
+    public static void registerPage(Page page) throws JetspeedException
     {
-        this.value = value;
+        getService().registerPage(page);
     }
 
-
-    public boolean equals(Object object)
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
+     */
+    public static void updatePage(Page page) throws JetspeedException
     {
-        boolean isEqual = true;
-
-        if (object instanceof Property)
-        {
-            if (this.name!=null)
-            {
-                isEqual&=this.name.equals(((Property)object).getName());
-            }
-            else
-            {
-                isEqual&=((Property)object).getName()==null;
-            }
-
-            if (this.value!=null)
-            {
-                isEqual&=this.value.equals(((Property)object).getValue());
-            }
-            else
-            {
-                isEqual&=((Property)object).getValue()==null;
-            }
-
-            if (this.layout!=null)
-            {
-                isEqual&=this.layout.equals(((Property)object).getLayout());
-            }
-            else
-            {
-                isEqual&=((Property)object).getLayout()==null;
-            }
-        }
-        else
-        {
-            isEqual = false;
-        }
-
-        return isEqual;
+        getService().updatePage(page);
     }
 
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
+    /**
+     * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
+     */
+    public static void removePage(Page page)
     {
-        return super.clone();
+        getService().removePage(page);
     }
+
 }
+

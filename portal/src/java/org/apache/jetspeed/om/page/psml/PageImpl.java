@@ -122,7 +122,14 @@ public class PageImpl extends AbstractBaseElement implements Page
                 stack.push(i.next());
             }
 
-            f = (Fragment)stack.pop();
+            if (stack.size()>0)
+            {
+                f = (Fragment)stack.pop();
+            }
+            else
+            {
+                f = null;
+            }
         }
 
         return f;

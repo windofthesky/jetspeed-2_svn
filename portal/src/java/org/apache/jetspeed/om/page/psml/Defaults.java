@@ -91,12 +91,12 @@ public class Defaults
         decoratorMap.put(type,decorator);
     }
 
-    public String getFragmentDecorator()
+    public String getLayoutDecorator()
     {
         return getDecorator("layout");
     }
 
-    public void setFragmentDecorator(String decorator)
+    public void setLayoutDecorator(String decorator)
     {
         setDecorator("layout",decorator);
     }

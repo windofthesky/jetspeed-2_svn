@@ -79,23 +79,6 @@ public interface Page extends java.io.Serializable, Cloneable
     public void setId(String id);
 
     /**
-     * Return the name of this page. This name is a convenient handler
-     * for the page that can be used to locate a page.
-     * It's possible for several pages to have the same name.
-     *
-     * @return the name of this page
-     */
-    public String getName();
-
-    /**
-     * Sets a new name for this page. It must not be null and must not contain
-     * any space or slash character.
-     *
-     * @param name the new document name
-     */
-    public void setName(String name);
-
-    /**
      * Returns the Page title in the default Locale
      *
      * @return the page title

@@ -115,7 +115,6 @@ public class TestPageObjectModel extends JetspeedTest
     {
         PageImpl page = new PageImpl();
         page.setId("MyPageID");
-        page.setName("Test");
 
         Fragment frag = new FragmentImpl();
         frag.setId("Frag1");
@@ -132,7 +131,6 @@ public class TestPageObjectModel extends JetspeedTest
 
         Page page = buildBasePage();
         assertTrue(page.getId().equals("MyPageID"));
-        assertTrue(page.getName().equals("Test"));
         Fragment root = page.getRootFragment();
         assertNotNull(root);
         assertTrue(root.getId().equals("Frag1"));
@@ -140,7 +138,7 @@ public class TestPageObjectModel extends JetspeedTest
         assertNull(root.getTitle());
     }
 
-    public void tesFragmentManipulation() throws Exception
+    public void testFragmentManipulation() throws Exception
     {
         System.out.println("Testing Fragments manipulation");
 
@@ -204,10 +202,10 @@ public class TestPageObjectModel extends JetspeedTest
         frag2.setType(Fragment.PORTLET);
         frag2.setName("P4");
 
-        frag3 = page.getFragmentById("Portlet3");
+        frag3 = page.getFragmentById("F3");
         assertNotNull(frag3);
         f.getFragments().remove(frag3);
-        frag3 = page.getFragmentById("Portlet3");
+        frag3 = page.getFragmentById("F3");
         assertNull(frag3);
         f.getFragments().add(frag2);
         assertTrue(f.getFragments().size()==1);

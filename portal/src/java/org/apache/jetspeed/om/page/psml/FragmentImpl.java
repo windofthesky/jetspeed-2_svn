@@ -54,11 +54,8 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
-import java.util.Hashtable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -79,11 +76,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private String skin = null;
 
-    private Map properties = new Hashtable();
+    private List fragments = new Vector();
 
-    private List fragments = new ArrayList();
-
-    private transient List psmlProperties = new Vector();
+    private List properties = new Vector();
 
     public FragmentImpl()
     {}
@@ -138,85 +133,94 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return this.fragments;
     }
 
-    public Set getLayoutProperties()
+    public List getLayoutProperties()
     {
-        return this.properties.keySet();
-    }
+        List layouts = new ArrayList();
+        Iterator i = this.properties.iterator();
 
-    public Map getProperties(String layoutName)
-    {
-        return (Map)this.properties.get(layoutName);
-    }
-
-    public List getProperties()
-    {
-        synchronized (properties)
+        while(i.hasNext())
         {
-            this.psmlProperties.clear();
-
-            Iterator i = this.properties.keySet().iterator();
-
-            while(i.hasNext())
+            Property p = (Property)i.next();
+            if (!layouts.contains(p.getLayout()))
             {
-                String layout = (String)i.next();
-                Map lprop = (Map)this.properties.get(layout);
-
-                Iterator i2 = lprop.keySet().iterator();
-
-                while(i2.hasNext())
-                {
-                    String name = (String)i.next();
-                    String value = (String)lprop.get(name);
-
-                    Property property = new PropertyImpl();
-                    property.setLayout(layout);
-                    property.setName(name);
-                    property.setValue(value);
-
-                    this.psmlProperties.add(property);
-                }
+                layouts.add(p.getLayout());
             }
         }
 
-        return this.psmlProperties;
+        return layouts;
     }
 
-    public void setProperties(List psmlProperties)
+    public List getProperties(String layoutName)
     {
-        synchronized (properties)
+        List props = new ArrayList();
+        Iterator i = this.properties.iterator();
+
+        if (layoutName == null)
         {
-            this.psmlProperties = psmlProperties;
+            layoutName = "";
+        }
 
-            Iterator i = this.psmlProperties.iterator();
-
-            while(i.hasNext())
+        while(i.hasNext())
+        {
+            Property p = (Property)i.next();
+            if (layoutName.equals(p.getLayout()))
             {
-                Property prop = (Property)i.next();
-
-                String name = prop.getName();
-                String value = prop.getValue();
-
-                if ((name == null)||(value == null))
-                {
-                    continue;
-                }
-
-                String layout = prop.getLayout();
-                if (layout == null)
-                {
-                    layout = "";
-                }
-
-                Map lprop = (Map)this.properties.get(layout);
-                if (lprop == null)
-                {
-                    lprop = new Hashtable();
-                    this.properties.put(layout,lprop);
-                }
-
-                lprop.put(name,value);
+                props.add(p);
             }
         }
+
+        return props;
+    }
+
+    public void addProperty(Property p)
+    {
+        this.properties.add(p);
+    }
+
+    public void removeProperty(Property p)
+    {
+        Iterator i = this.properties.iterator();
+
+        while(i.hasNext())
+        {
+            Property p2 = (Property)i.next();
+
+            if (p2.equals(p))
+            {
+                i.remove();
+            }
+        }
+    }
+
+    public void clearProperties(String layoutName)
+    {
+        if (layoutName == null)
+        {
+            this.properties.clear();
+            return;
+        }
+
+        Iterator i = this.properties.iterator();
+
+        while(i.hasNext())
+        {
+            Property p = (Property)i.next();
+
+            if (layoutName.equals(p.getLayout()))
+            {
+                i.remove();
+            }
+        }
+    }
+
+    public Vector getProperties()
+    {
+        return (Vector)this.properties;
+    }
+
+    public void setProperties(Vector props)
+    {
+        this.properties=props;
     }
 
     public void setFragments(List fragements)

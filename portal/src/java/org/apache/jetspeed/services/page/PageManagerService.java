@@ -52,104 +52,81 @@
  * <http://www.apache.org/>.
  */
 
-package org.apache.jetspeed.om.page.psml;
+package org.apache.jetspeed.services.page;
 
+import java.util.Iterator;
+import java.util.List;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Property;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.fulcrum.Service;
 
 /**
- * Bean like implementation of the Parameter interface suitable for
- * Castor serialization.
+ * This service is responsible for loading and saving Pages into
+ * the selected persistent store.
  *
- * @see org.apache.jetspeed.om.registry.PsmlParameter
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PropertyImpl implements Property, java.io.Serializable
+public interface PageManagerService extends Service
 {
+    /** The name of the service */
+    public String SERVICE_NAME = "PageManager";
 
-    private String name;
-    private String value;
-    private String layout;
+    /**
+     * Creates a new empty Page instance
+     *
+     * @return a newly created Page object
+     */
+    public Page newPage();
 
-    public PropertyImpl()
-    {
-    }
+    /**
+     * Creates a new empty Fragment instance
+     *
+     * @return a newly created Fragment object
+     */
+    public Fragment newFragment();
 
-    public String getLayout()
-    {
-        return this.layout;
-    }
+    /**
+     * Creates a new empty Property instance
+     *
+     * @return a newly created Property object
+     */
+    public Property newProperty();
 
-    public void setLayout(String layout)
-    {
-        this.layout = layout;
-    }
+    /**
+     * Returns a PSML document for the given locator
+     *
+     * @param locator The locator descriptor of the document to be retrieved.
+     */
+    public Page getPage(String id);
 
-    public String getName()
-    {
-        return this.name;
-    }
+    /** Query for a collection of profiles given a profile locator criteria.
+     *
+     * @param locator The profile locator criteria.
+     *
+     * @return A collection of profiles that match the criteria specified in the locator.
+     */
+    public List listPages();
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    /** Store the PSML document on disk, using its locator
+     *
+     * @param profile the profile locator description.
+     * @return true if the operation succeeded
+     */
+    public void registerPage(Page page) throws JetspeedException;
 
-    public String getValue()
-    {
-        return this.value;
-    }
+    /** Update a page in persistent storage
+     *
+     * @param locator The description of the profile to be removed.
+     */
+    public void updatePage(Page page) throws JetspeedException;
 
-    public void setValue(String value)
-    {
-        this.value = value;
-    }
+    /** Remove a document.
+     *
+     * @param locator The description of the profile to be removed.
+     */
+    public void removePage(Page page);
 
-
-    public boolean equals(Object object)
-    {
-        boolean isEqual = true;
-
-        if (object instanceof Property)
-        {
-            if (this.name!=null)
-            {
-                isEqual&=this.name.equals(((Property)object).getName());
-            }
-            else
-            {
-                isEqual&=((Property)object).getName()==null;
-            }
-
-            if (this.value!=null)
-            {
-                isEqual&=this.value.equals(((Property)object).getValue());
-            }
-            else
-            {
-                isEqual&=((Property)object).getValue()==null;
-            }
-
-            if (this.layout!=null)
-            {
-                isEqual&=this.layout.equals(((Property)object).getLayout());
-            }
-            else
-            {
-                isEqual&=((Property)object).getLayout()==null;
-            }
-        }
-        else
-        {
-            isEqual = false;
-        }
-
-        return isEqual;
-    }
-
-    public Object clone()
-        throws java.lang.CloneNotSupportedException
-    {
-        return super.clone();
-    }
 }
+

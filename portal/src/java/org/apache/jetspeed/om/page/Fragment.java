@@ -54,9 +54,7 @@
 
 package org.apache.jetspeed.om.page;
 
-import java.util.Map;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>A <code>Fragment</code> is the basic element handled by the aggregation
@@ -233,22 +231,43 @@ public interface Fragment extends Cloneable, java.io.Serializable
     public List getFragments();
 
     /**
-     * Returns all properties describing this fragment. Only the
-     * implementation of the "classname" knows how to handle the
-     * properties
+     * Returns all layout names for which properties have
+     * been defined.
      *
-     * @return a collection containing Property objects
+     * @return a list of layout names Strings
      */
-    public Set getLayoutProperties();
+    public List getLayoutProperties();
 
     /**
-     * Returns all properties describing this fragment. Only the
-     * implementation of the "classname" knows how to handle the
-     * properties
+     * Returns a list of all properties defined
+     * for the layoutName specified. You can update the properties
+     * but not add or remove them
      *
-     * @return a collection containing Property objects
+     * @return an immutable List of Property objects
      */
-    public Map getProperties(String layoutName);
+    public List getProperties(String layoutName);
+
+    /**
+     * Adds a new property to this fragment
+     *
+     * @param p the new Property to add
+     */
+    public void addProperty(Property p);
+
+    /**
+     * Removes a new property from this fragment
+     *
+     * @param p the Property to remove
+     */
+    public void removeProperty(Property p);
+
+    /**
+     * Clear all the properties for a specific layout,
+     * if layoutName is null, clear all properties.
+     *
+     * @param layoutName the layout for which to remove the properties
+     */
+    public void clearProperties(String layoutName);
 
     /**
      * Test if this fragment is actually a reference to an external fragment.
