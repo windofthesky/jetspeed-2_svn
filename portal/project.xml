@@ -108,6 +108,13 @@ limitations under the License.
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
+    </dependency>    
+    <dependency>
+      <id>jetspeed2:jetspeed-file-cache</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
     </dependency>
 
     <dependency>
