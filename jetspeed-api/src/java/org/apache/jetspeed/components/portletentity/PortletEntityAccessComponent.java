@@ -15,11 +15,13 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -171,5 +173,8 @@ public interface PortletEntityAccessComponent
 	 * @throws PortletEntityNotDeletedException
 	 */
 	void removePortletEntities(PortletDefinition portletDefinition) throws PortletEntityNotDeletedException;
+	
+	
+	void storePreferenceSet(PreferenceSet prefSet, PortletEntity entity) throws IOException;
 
 }
