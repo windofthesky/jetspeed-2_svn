@@ -40,7 +40,10 @@ import org.xml.sax.SAXException;
  */
 public class JetspeedWebApplicationRewriter
 {
+    public static final String REGISTER_AT_INIT = "registerAtInit";
+    public static final String JETSPEED_CONTAINER = "JetspeedContainer";
     public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
+    public static final String REGISTER_AT_INIT_XPATH = "/init-param/param-name[contains(child::text(), \"registerAtInit\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
 
@@ -54,6 +57,7 @@ public class JetspeedWebApplicationRewriter
     private String portletApplication;
     private boolean changed = false;
     private boolean registerAtInit = false;
+    
     
     public JetspeedWebApplicationRewriter(Document doc, String portletApplication, boolean registerAtInit)
     {
@@ -119,7 +123,7 @@ public class JetspeedWebApplicationRewriter
             if (jetspeedServlet == null)
             {
                 Element jetspeedServletElement = new Element("servlet");
-                Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletName = (Element) new Element("servlet-name").addContent(JETSPEED_CONTAINER);
                 Element servletDspName = (Element) new Element("display-name").addContent("Jetspeed Container");
                 Element servletDesc = (Element) new Element("description")
                         .addContent("MVC Servlet for Jetspeed Portlet Applications");
@@ -131,25 +135,22 @@ public class JetspeedWebApplicationRewriter
                 jetspeedServletElement.addContent(servletClass);
                 if (this.registerAtInit)
                 {
-                    Element paramName = (Element) new Element("param-name").addContent("registerAtInit");
-                    Element paramValue = (Element) new Element("param-value").addContent("1"); 
-                    Element initParam = new Element("init-param");
-                    initParam.addContent(paramName);
-                    initParam.addContent(paramValue);
-                    jetspeedServletElement.addContent(initParam);
-                    
-                    Element param2Name = (Element) new Element("param-name").addContent("portletApplication");
-                    Element param2Value = (Element) new Element("param-value").addContent(portletApplication); 
-                    Element init2Param = new Element("init-param");
-                    init2Param.addContent(param2Name);
-                    init2Param.addContent(param2Value);
-                    jetspeedServletElement.addContent(init2Param);                    
-                    
-                    Element loadOnStartup = (Element) new Element("load-on-startup").addContent("100");
-                    jetspeedServletElement.addContent(loadOnStartup);
+                    insertRegisterAtInit(jetspeedServletElement);
                 }
                 insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
                 changed = true;
+            }
+            else
+            {
+                // double check for register at Init
+                if (this.registerAtInit && jetspeedServlet instanceof Element)
+                {
+                    Element jetspeedServletElement =(Element)jetspeedServlet;
+                    if (null == XPath.selectSingleNode(jetspeedServletElement, REGISTER_AT_INIT_XPATH))
+                    {
+                        insertRegisterAtInit(jetspeedServletElement);
+                    }
+                }
             }
     
             if (jetspeedServletMapping == null)
@@ -157,7 +158,7 @@ public class JetspeedWebApplicationRewriter
     
                 Element jetspeedServletMappingElement = new Element("servlet-mapping");
     
-                Element servletMapName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletMapName = (Element) new Element("servlet-name").addContent(JETSPEED_CONTAINER);
                 Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
     
                 jetspeedServletMappingElement.addContent(servletMapName);
@@ -172,6 +173,26 @@ public class JetspeedWebApplicationRewriter
             throw new Exception("Unable to process web.xml for infusion " + e.toString(), e);
         }
     
+    }
+    
+    private void insertRegisterAtInit(Element jetspeedServletElement)
+    {
+        Element paramName = (Element) new Element("param-name").addContent(REGISTER_AT_INIT);
+        Element paramValue = (Element) new Element("param-value").addContent("1"); 
+        Element initParam = new Element("init-param");
+        initParam.addContent(paramName);
+        initParam.addContent(paramValue);
+        jetspeedServletElement.addContent(initParam);
+        
+        Element param2Name = (Element) new Element("param-name").addContent("portletApplication");
+        Element param2Value = (Element) new Element("param-value").addContent(portletApplication); 
+        Element init2Param = new Element("init-param");
+        init2Param.addContent(param2Name);
+        init2Param.addContent(param2Value);
+        jetspeedServletElement.addContent(init2Param);                    
+        
+        Element loadOnStartup = (Element) new Element("load-on-startup").addContent("100");
+        jetspeedServletElement.addContent(loadOnStartup);        
     }
     
     public boolean isChanged()
