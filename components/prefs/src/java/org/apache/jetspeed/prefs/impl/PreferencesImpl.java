@@ -373,10 +373,11 @@ public class PreferencesImpl extends AbstractPreferences
 
         PersistenceStore store = getPersistenceStore();
         Node nodeObj = (Node) store.getObjectByQuery(commonQueries.newNodeQueryById(new Long(this.nodeId)));
-        if (log.isDebugEnabled())
-            log.debug("Fetching keys for node: " + nodeObj.toString());
         if (null != nodeObj)
         {
+            if (log.isDebugEnabled())
+                log.debug("Fetching keys for node: " + nodeObj.toString());
+
             Collection propCol = nodeObj.getNodeProperties();
             if ((null != propCol) && propCol.size() > 0)
             {
