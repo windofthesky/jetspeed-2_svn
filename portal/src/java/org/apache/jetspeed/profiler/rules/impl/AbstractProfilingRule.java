@@ -76,8 +76,6 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     protected String id;
     protected String title;
     protected String ojbConcreteClass;
-
-    protected static final String DEFAULT_RESOLVER = "AbstractProfilingRule.default";
     
     /** Map of profile locators kept around for reuse TODO: evict entries after max size reached */    
     static Map locators = new HashMap();
@@ -87,17 +85,17 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     
     static 
     {
-        RuleCriterionResolver standardResolver = new StandardResolver();
-        resolvers.put(DEFAULT_RESOLVER, standardResolver);
-        resolvers.put(ProfilingRule.STANDARD_DESKTOP, standardResolver);        
-        resolvers.put(ProfilingRule.STANDARD_PAGE, standardResolver);
-        resolvers.put(ProfilingRule.STANDARD_USER, new UserCriterionResolver());
-        resolvers.put(ProfilingRule.STANDARD_ROLE, new RoleCriterionResolver()); 
-        resolvers.put(ProfilingRule.STANDARD_GROUP, new GroupCriterionResolver());          
-        resolvers.put(ProfilingRule.STANDARD_MEDIATYPE, new MediatypeCriterionResolver());
-        resolvers.put(ProfilingRule.STANDARD_LANGUAGE, new LanguageCriterionResolver());
-        resolvers.put(ProfilingRule.STANDARD_COUNTRY, new CountryCriterionResolver());
-        resolvers.put(ProfilingRule.STANDARD_GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());                         
+        resolvers.put(RuleCriterionResolver.REQUEST, new StandardResolver());
+        resolvers.put(RuleCriterionResolver.REQUEST_SESSION, new RequestSessionResolver());
+        resolvers.put(RuleCriterionResolver.PATH, new PathResolver());        
+        resolvers.put(RuleCriterionResolver.HARD_CODED, new HardCodedResolver());
+        resolvers.put(RuleCriterionResolver.USER, new UserCriterionResolver());
+        resolvers.put(RuleCriterionResolver.ROLE, new RoleCriterionResolver()); 
+        resolvers.put(RuleCriterionResolver.GROUP, new GroupCriterionResolver());          
+        resolvers.put(RuleCriterionResolver.MEDIATYPE, new MediatypeCriterionResolver());
+        resolvers.put(RuleCriterionResolver.LANGUAGE, new LanguageCriterionResolver());
+        resolvers.put(RuleCriterionResolver.COUNTRY, new CountryCriterionResolver());
+        resolvers.put(RuleCriterionResolver.GROUP_ROLE_USER, new GroupRoleUserCriterionResolver());                         
     }
     
     protected ProfileLocator getLocatorFromCache(String key)
@@ -121,7 +119,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
 
     public RuleCriterionResolver getDefaultResolver()
     {
-        return (RuleCriterionResolver)resolvers.get(DEFAULT_RESOLVER);
+        return (RuleCriterionResolver)resolvers.get(RuleCriterionResolver.REQUEST);
     }
     
     /* (non-Javadoc)

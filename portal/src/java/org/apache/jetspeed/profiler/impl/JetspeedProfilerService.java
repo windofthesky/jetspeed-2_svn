@@ -167,7 +167,16 @@ public class JetspeedProfilerService
         // create a profile locator for given rule
         return rule.apply(context, this);
     }
-        
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getProfile(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.ProfilingRule)
+     */
+    public ProfileLocator getProfile(RequestContext context, ProfilingRule rule)
+    {        
+        // create a profile locator for given rule
+        return rule.apply(context, this);                
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.ProfilerService#getDefaultRule()
      */
@@ -299,6 +308,17 @@ public class JetspeedProfilerService
     public Collection getRules()
     {
         return plugin.getExtent(profilingRuleClass);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.profiler.ProfilerService#getRule(java.lang.String)
+     */
+    public ProfilingRule getRule(String id)
+    {
+        LookupCriteria criteria = plugin.newLookupCriteria();
+        criteria.addEqualTo("id", id);
+        Object query = plugin.generateQuery(profilingRuleClass, criteria);
+        return (ProfilingRule) plugin.getObjectByQuery(profilingRuleClass, query);        
     }
 
     /* (non-Javadoc)

@@ -100,6 +100,15 @@ public interface ProfilerService extends CommonService
      */
     ProfileLocator getProfile(RequestContext context)
         throws ProfilerException;
+
+    /**
+     *  Get the Profile object using the request parameters and the rule.
+     *
+     * @param context The request context
+     * @return a new Profile Locator object or null if failed to find a appropriate locator.
+     */        
+    ProfileLocator getProfile(RequestContext context, ProfilingRule rule)
+        throws ProfilerException;        
     
     /**
      * @param locator
@@ -147,6 +156,14 @@ public interface ProfilerService extends CommonService
      */
     Collection getRules();
 
+    /**
+     * Given a rule id, get the rule
+     * 
+     * @param id
+     * @return the rule
+     */
+    ProfilingRule getRule(String id);
+    
     /**
      * @return
      */

@@ -59,6 +59,9 @@ import org.apache.jetspeed.request.RequestContext;
 
 /**
  * CountryCriterionResolver
+ * Resolve Rules:
+ *     1. Request Parameter (Standard)
+ *     2. Locale.CountryCode 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$

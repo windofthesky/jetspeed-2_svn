@@ -372,6 +372,46 @@ public class JetspeedRequestContext implements RequestContext
         return request.getAttribute(key);        
     }
     
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getSessionAttribute(java.lang.String)
+     */
+    public Object getSessionAttribute(String key)
+    {
+        return request.getSession().getAttribute(key);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String, java.lang.Object)
+     */
+    public void setSessionAttribute(String key, Object value)
+    {
+        request.getSession().setAttribute(key, value);    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String, java.lang.Object)
+     */
+    public void setAttribute(String key, Object value)
+    {
+        request.setAttribute(key, value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getAttribute(java.lang.String)
+     */
+    public Object getAttribute(String key)
+    {
+        return request.getAttribute(key);    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getPath()
+     */
+    public String getPath()
+    {
+        return request.getPathInfo();
+    }
 }
 
 

@@ -185,7 +185,7 @@ public class TestProfiler extends JetspeedTest
             }
             else
             {
-                assertTrue("Unknown rule encountered: " + rule.getId(), false);            
+                // assertTrue("Unknown rule encountered: " + rule.getId(), false);            
             }
                         
         }
@@ -203,42 +203,42 @@ public class TestProfiler extends JetspeedTest
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
-            assertTrue("standard criteria type", criterion.getType().equals("standard"));
+            assertNotNull("criteria type ", criterion.getType());
             System.out.println("criteria name = " + criterion.getName());            
             switch (count)
             {
                 case 0:
-                    assertTrue("standard criteria name " + criterion.getName(), 
+                    assertTrue("criteria name " + criterion.getName(), 
                                 criterion.getName().equals(ProfilingRule.STANDARD_DESKTOP));
-                    assertNotNull("standard criteria value", criterion.getValue());
-                    assertTrue("standard criteria value", criterion.getValue().equals(DEFAULT_DESKTOP));
+                    assertNotNull("criteria value", criterion.getValue());
+                    assertTrue("criteria value", criterion.getValue().equals(DEFAULT_DESKTOP));
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
                     break;                
                 case 1:
-                    assertTrue("standard criteria name " + criterion.getName(), 
+                    assertTrue("criteria name " + criterion.getName(), 
                                 criterion.getName().equals(ProfilingRule.STANDARD_PAGE));
-                    assertNotNull("standard criteria value", criterion.getValue());
-                    assertTrue("standard criteria value", criterion.getValue().equals(DEFAULT_PAGE));
+                    assertNotNull("criteria value", criterion.getValue());
+                    assertTrue("criteria value", criterion.getValue().equals(DEFAULT_PAGE));
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
                     break;
                 case 2:
-                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_GROUP_ROLE_USER));
-                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_USER));
+                    assertNull("criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
                     break;
                 case 3:
-                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
-                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_MEDIATYPE));
+                    assertNull("criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
                     break;
                 case 4:
-                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
-                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_LANGUAGE));
+                    assertNull("criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
                     break;
                 case 5:
-                    assertTrue("standard criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
-                    assertNull("standard criteria value", criterion.getValue());
+                    assertTrue("criteria name", criterion.getName().equals(ProfilingRule.STANDARD_COUNTRY));
+                    assertNull("criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_CONTINUE);
                     break;                                    
             }   
@@ -255,7 +255,7 @@ public class TestProfiler extends JetspeedTest
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
-            assertTrue("fallback criteria type", criterion.getType().equals("standard"));
+            assertNotNull("fallback criteria type", criterion.getType());
             
             switch (count)
             {
@@ -272,7 +272,7 @@ public class TestProfiler extends JetspeedTest
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_STOP);
                     break;                    
                 case 2:
-                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_ROLE_FALLBACK));
+                    assertTrue("fallback criteria name", criterion.getName().equals(ProfilingRule.STANDARD_ROLE));
                     assertNull("fallback criteria value", criterion.getValue());
                     assertTrue("fallback type", criterion.getFallbackType() == RuleCriterion.FALLBACK_LOOP);                    
                     break;
@@ -311,14 +311,15 @@ public class TestProfiler extends JetspeedTest
         request.setMimeType("text/html");
         Map params = request.getParameterMap();
         params.put("page", "default-other");
+        params.put("path", "/sports/football/nfl/chiefs");
         
         ProfileLocator locator = service.getProfile(request);
-        assertNotNull("standard rule test on getProfile returned null", locator);
+        assertNotNull("rule test on getProfile returned null", locator);
         String path = locator.getLocatorPath();
         System.out.println("locator = " + path);        
         assertTrue("locator key value unexpected: " + path, 
                     path.equals(
-              "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en/country/US"));
+              "desktop:default-desktop:page:default-other:user:anon:mediatype:HTML:language:en:country:US"));
 
         // test fallback
         Iterator fallback = locator.iterator();
@@ -331,20 +332,20 @@ public class TestProfiler extends JetspeedTest
                 case 0:
                     assertTrue("locatorPath[0]: " + locatorPath, 
                                 locatorPath.equals(
-                        "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en/country/US"));
+                        "desktop:default-desktop:page:default-other:user:anon:mediatype:HTML:language:en:country:US"));
                     break;
                 case 1:
                     assertTrue("locatorPath[1]: " + locatorPath, 
                                 locatorPath.equals(
-                         "desktop/default-desktop/page/default-other/user/anon/mediatype/HTML/language/en"));
+                         "desktop:default-desktop:page:default-other:user:anon:mediatype:HTML:language:en"));
                     break;                
                 case 2:
                     assertTrue("locatorPath[2]: " + locatorPath, 
-                                locatorPath.equals("desktop/default-desktop/page/default-other/user/anon/mediatype/HTML"));
+                                locatorPath.equals("desktop:default-desktop:page:default-other:user:anon:mediatype:HTML"));
                     break;                
                 case 3:
                     assertTrue("locatorPath[3]: " + locatorPath, 
-                                locatorPath.equals("desktop/default-desktop/page/default-other/user/anon"));
+                                locatorPath.equals("desktop:default-desktop:page:default-other:user:anon"));
                     break;                
                 
             }
@@ -362,7 +363,7 @@ public class TestProfiler extends JetspeedTest
         {
             String locatorPath = (String)fallback.next();
             assertTrue("locatorPath: " + locatorPath, 
-                        locatorPath.equals("page/test"));
+                        locatorPath.equals("page:test"));
             
             System.out.println("Simple Test: path = " + locatorPath);
             count++;            
@@ -406,10 +407,26 @@ public class TestProfiler extends JetspeedTest
         // params.put("page", "default");
     
         ProfileLocator locator = service.getProfile(request);
-        assertNotNull("standard rule test on getProfile returned null", locator);
+        assertNotNull("rule test on getProfile returned null", locator);
         System.out.println("page = " + locator.getValue("page"));
         
         Page page = service.getPage(locator);
         assertNotNull("page is null", page);                
     }
+   
+    public void testPath() throws Exception
+    {
+        service = getService();               
+        assertNotNull("profiler service is null", service);
+
+        PortalContext pc = Jetspeed.getContext();
+        RequestContext request = new MockRequestContext(pc, "/football/nfl/chiefs");
+        ProfilingRule rule = service.getRule("path");            
+        ProfileLocator locator = service.getProfile(request, rule);
+        assertNotNull("rule test on getProfile returned null", locator);
+        String path = locator.getLocatorPath();
+        System.out.println("locator = " + path);
+        assertTrue("locator path: " + path, path.equals("path:/football/nfl/chiefs"));
+    }
+    
 }

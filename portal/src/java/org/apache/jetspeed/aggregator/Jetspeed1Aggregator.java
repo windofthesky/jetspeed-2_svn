@@ -151,7 +151,7 @@ public class Jetspeed1Aggregator extends BaseCommonService
      */
     public void build(RequestContext request) throws JetspeedException
     {
-        Profile profile = (Profile)request.getRequestAttribute("j1-profile");
+        Profile profile = (Profile)request.getAttribute("j1-profile");
         if (null == profile)
         {
             throw new JetspeedException("Failed to find Profile in BasicAggregator.build");

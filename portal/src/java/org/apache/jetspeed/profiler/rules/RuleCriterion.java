@@ -152,8 +152,7 @@ public interface RuleCriterion
      */        
     void setName(String name);
 
-    String getResolverName();
-    
+   
     /**
      * Gets the value of the parameter, attribute or property in the portal request.
      *  

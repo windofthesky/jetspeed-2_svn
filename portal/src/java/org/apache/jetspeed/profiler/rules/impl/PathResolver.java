@@ -58,27 +58,23 @@ import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
- * Standard Jetspeed-1 style resolver for criterion.
- * It first looks at the value in the request parameters.
- * If it is null, it then falls back to the criterion record..
- * If it is null it gives up and returns null allowing subclasses
- * to continue processing.
+ * PathResolver
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class StandardResolver implements RuleCriterionResolver
+public class PathResolver implements RuleCriterionResolver
 {
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
      */
     public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        String value = context.getRequestParameter(criterion.getName());
-        if (value == null)
+        String path = context.getPath();
+        if (path == null)
         {
-            value = criterion.getValue();
+            path = criterion.getValue();
         }
-        return value;            
+        return path;
     }
 }

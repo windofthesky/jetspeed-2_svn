@@ -91,31 +91,24 @@ public class StandardProfilingRule
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
-            if (criterion.getResolverName() == null || criterion.getType() == null)
+            if (criterion.getType() == null)
             {
-                log.warn("Invalid criterion provided - name or type null on rule " + this);
+                log.warn("Invalid criterion provided - type null on rule " + this);
             }
-            if (criterion.getType().equals(ProfilingRule.STANDARD))
+            RuleCriterionResolver resolver = getResolver(criterion.getType());
+            if (resolver == null)
             {
-                RuleCriterionResolver resolver = getResolver(criterion.getResolverName());
-                if (resolver == null)
-                {
-                    resolver = getDefaultResolver();
-                }
-                String value = resolver.resolve(context, criterion);
-                key.append(criterion.getName());
+                resolver = getDefaultResolver();
+            }
+            String value = resolver.resolve(context, criterion);
+            key.append(criterion.getName());
+            key.append(ProfileLocator.PATH_SEPARATOR);
+            key.append(value);
+            if (criteria.hasNext())
+            {
                 key.append(ProfileLocator.PATH_SEPARATOR);
-                key.append(value);
-                if (criteria.hasNext())
-                {
-                    key.append(ProfileLocator.PATH_SEPARATOR);
-                }
-                count++;                                                                                                    
             }
-            else
-            {
-                // ignore: only handles standard criteria
-            }
+            count++;                                                                                                    
         }
         
         // try to get the profile locator from the cache        
@@ -132,19 +125,16 @@ public class StandardProfilingRule
         while (criteria.hasNext())
         {
             RuleCriterion criterion = (RuleCriterion)criteria.next();
-            if (criterion.getResolverName() == null || criterion.getType() == null)
+            if (criterion.getType() == null)
             {
-                log.warn("Invalid criterion provided - name or type null on rule " + this);
+                log.warn("Invalid criterion provided - type null on rule " + this);
             }
-            if (criterion.getType().equals(ProfilingRule.STANDARD))
+            RuleCriterionResolver resolver = getResolver(criterion.getType());
+            if (resolver != null)
             {
-                RuleCriterionResolver resolver = getResolver(criterion.getResolverName());
-                if (resolver != null)
-                {
-                    String value = resolver.resolve(context, criterion);
-                    locator.add(criterion, value);
-                }                
-            }
+                String value = resolver.resolve(context, criterion);
+                locator.add(criterion, value);
+            }                
         }               
              
         addLocatorToCache(locatorKey, locator);

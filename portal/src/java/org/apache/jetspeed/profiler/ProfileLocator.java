@@ -68,14 +68,16 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
  * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
  * An example locator path:</p>
  * 
- *      <pre>/desktop/default-desktop.psml/page/default.psml/artist/al-stewart/song/on-the-border</pre>
+ *      <pre>desktop:default-desktop.psml:page:default.psml:artist:al-stewart:song:on-the-border</pre>
+ *      <pre>desktop:default-desktop.psml:path:/sports/football/nfl/chiefs:language:en</pre>
+ * 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public interface ProfileLocator 
 {
-    public final static String PATH_SEPARATOR = "/";
+    public final static String PATH_SEPARATOR = ":";
         
     /**
      * Get an iterator over the locator's properties.
@@ -113,10 +115,10 @@ public interface ProfileLocator
     
     /**
      * <p>Profiles can be created from a normalized <i>Profile Locator Path</i>
-     * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
+     * The format of the path is name:value pairs of all property, separated by a <i>path separator</i>.
      * An example locator path:</p>
      * 
-     *      <pre>/desktop/default-desktop.psml/page/default.psml/artist/air/song/all-i-need</pre>
+     *      <pre>:desktop:default-desktop.psml:page:default.psml:artist:air:song:all-i-need</pre>
      * 
      * @param path The normalized path as shown above from which the locator is created.
      */
@@ -127,7 +129,7 @@ public interface ProfileLocator
      * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
      * An example locator path:</p>
      * 
-     *      <pre>/desktop/default-desktop.psml/page/default.psml/artist/joni-mitchell/song/cary</pre>
+     *      <pre>:desktop:default-desktop.psml:page:default.psml:artist:joni-mitchell:song:cary</pre>
      * 
      * @return The normalized path as shown above.
      */

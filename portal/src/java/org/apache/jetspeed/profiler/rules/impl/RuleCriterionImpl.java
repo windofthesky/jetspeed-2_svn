@@ -67,7 +67,6 @@ public class RuleCriterionImpl implements RuleCriterion
     private String ruleId;
     private String type;
     private String name = null;
-    private String resolverName;    
     private String value;
     private int fallbackType = RuleCriterion.FALLBACK_CONTINUE;
     private int fallbackOrder;
@@ -78,7 +77,6 @@ public class RuleCriterionImpl implements RuleCriterion
 
     public RuleCriterionImpl(RuleCriterion master)
     {
-        this.resolverName = master.getResolverName();        
         this.name = master.getName();
         this.ruleId = master.getRuleId();
         this.type = master.getType();
@@ -108,10 +106,6 @@ public class RuleCriterionImpl implements RuleCriterion
      */
     public String getName()
     {
-        if (this.name == null)
-        {
-            return this.resolverName;
-        }
         return this.name;
     }
     
@@ -187,20 +181,5 @@ public class RuleCriterionImpl implements RuleCriterion
         fallbackType = i;
     }
 
-    /**
-     * @return
-     */
-    public String getResolverName()
-    {
-        return resolverName;
-    }
-
-    /**
-     * @param string
-     */
-    public void setResolverName(String string)
-    {
-        resolverName = string;
-    }
-
+    
 }

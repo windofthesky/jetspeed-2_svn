@@ -292,5 +292,55 @@ public interface RequestContext
      */
     Map getParameterMap();
 
-    Object getRequestAttribute(String key);        
+    
+    /**
+     * Gets an attribute from the session.
+     * This method is decoupled from the servlet api request to 
+     * facilitate abstractions for testing and other programs not 
+     * connected to a servlet application.
+     * 
+     * @param key The key of the attribute
+     * @return The value of the attribute
+     */
+    Object getSessionAttribute(String key);
+
+    /**
+     * Sets an attribute into the session.
+     * This method is decoupled from the servlet api request to 
+     * facilitate abstractions for testing and other programs not 
+     * connected to a servlet application.
+     * 
+     * @param key The key of the session attribute
+     * @param value The value of the session attribute
+     */    
+    void setSessionAttribute(String key, Object value);
+    
+    /**
+     * Get a request attribute associated with this single request.
+     * 
+     * @param key The key of the request attribute
+     * @return The value of the request attribute
+     */
+    Object getAttribute(String key);
+                
+    /**
+     * Sets an attribute into the request.
+     * This method is decoupled from the servlet api request to 
+     * facilitate abstractions for testing and other programs not 
+     * connected to a servlet application.
+     * 
+     * @param key The key of the request attribute
+     * @param value The value of the request attribute
+     */    
+    void setAttribute(String key, Object value);
+      
+    /**
+     * Returns any extra path information associated with the URL the 
+     * client sent when it made this request. The extra path information 
+     * follows the servlet path but precedes the query string. 
+     * This method returns null if there was no extra path information.
+     * 
+     * @return the path 
+     */
+    String getPath();                    
 }

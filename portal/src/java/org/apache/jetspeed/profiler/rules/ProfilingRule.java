@@ -54,7 +54,6 @@
 package org.apache.jetspeed.profiler.rules;
 
 import java.util.Collection;
-
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfilerService;
 import org.apache.jetspeed.request.RequestContext;
@@ -89,8 +88,8 @@ public interface ProfilingRule
     public final static String REQUEST_PARAMETER = "request";
     /** Request attributes as defined in the Portlet spec 1.0 PLT.11.1.3 */
     public final static String REQUEST_ATTRIBUTE = "attribute";
-    /** Request parameters as defined in the Portlet spec 1.0 PLT.11.1.4 */    
-    public final static String REQUEST_PROPERTY = "property";
+    /** Session Attribute */    
+    public final static String SESSION_ATTRIBUTE = "session";
     /** User attributes as defined in the Portlet spec 1.0 PLT.17 */
     public final static String USER_ATTRIBUTE = "user";
     /** Composite Capabilities and Preference Profile as defined http://www.w3.org/TR/NOTE-CCPP/ */

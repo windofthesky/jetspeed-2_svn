@@ -98,7 +98,7 @@
      jdbc-type="VARCHAR"
     />    
     <field-descriptor
-     name="resolverName"
+     name="name"
      column="NAME"
      jdbc-type="VARCHAR"
     />    

@@ -131,6 +131,7 @@ public class CapabilityValveImpl implements CapabilityValve
             
             // Put the Mime Type into the request
             request.setMimeType("text/html");
+            request.getResponse().setContentType("text/html");
 
         } 
         catch (Exception e)

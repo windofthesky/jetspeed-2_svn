@@ -70,10 +70,18 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
 {
     private Map requestParameters = new HashMap();
     private Map requestAttributes = new HashMap();
+    private Map sessionAttributes = new HashMap();
+    private String path;
         
     public MockRequestContext(PortalContext pc)
     {
         super(pc, null, null, null);
+    }
+
+    public MockRequestContext(PortalContext pc, String path)
+    {
+        super(pc, null, null, null);
+        this.path = path;
     }
         
     /* (non-Javadoc)
@@ -91,9 +99,45 @@ public class MockRequestContext extends JetspeedRequestContext implements Reques
     {
         return requestParameters;    
     }
-        
-    public Object getRequestProperty(String key)
+            
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setSessionAttribute(java.lang.String, java.lang.Object)
+     */
+    public void setSessionAttribute(String key, Object value)
     {
-        return requestAttributes.get(key);        
+        this.sessionAttributes.put(key, value);
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getSessionAttribute(java.lang.String)
+     */
+    public Object getSessionAttribute(String key)
+    {
+        return this.sessionAttributes.get(key);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setAttribute(java.lang.String, java.lang.Object)
+     */
+    public void setAttribute(String key, Object value)
+    {
+        requestAttributes.put(key, value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getAttribute(java.lang.String)
+     */
+    public Object getAttribute(String key)
+    {
+        return requestAttributes.get(key);    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getPath()
+     */
+    public String getPath()
+    {
+        return path;
+    }
+    
 }
