@@ -65,6 +65,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.persistence.TransactionStateException;
 
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
@@ -199,7 +200,7 @@ public class JetspeedPortletRegistry
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#removeApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public static void removeApplication(PortletApplicationDefinition app) throws RegistryException
+    public static void removeApplication(PortletApplicationDefinition app) throws RegistryException, TransactionStateException
     {
         getService().removeApplication(app);
 
@@ -208,7 +209,7 @@ public class JetspeedPortletRegistry
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#updatePortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public static void updatePortletApplication(PortletApplicationDefinition app)
+    public static void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException
     {
         getService().updatePortletApplication(app);
     }
@@ -275,5 +276,37 @@ public class JetspeedPortletRegistry
     {
         getService().resetDeploymentSystem();
     }
+    
+	/**
+	 * @see org.apache.jetspeed.services.registry.PortletRegistryService#beginTransaction()
+	 */
+	public static void beginTransaction() throws TransactionStateException
+	{
+	   getService().beginTransaction();
+
+	}
+
+
+	/**
+	 * @see org.apache.jetspeed.services.registry.PortletRegistryService#commitTransaction()
+	 */
+	public static void commitTransaction() throws TransactionStateException
+	{
+		getService().commitTransaction();
+
+	}
+
+
+	/**
+	 * @see org.apache.jetspeed.services.registry.PortletRegistryService#rollbackTransaction()
+	 */
+	public static void rollbackTransaction() throws TransactionStateException
+	{
+		getService().rollbackTransaction();
+
+	}
+
+
+
 
 }

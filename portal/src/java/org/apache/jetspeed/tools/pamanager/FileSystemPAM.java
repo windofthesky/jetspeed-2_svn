@@ -66,6 +66,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.jetspeed.persistence.TransactionStateException;
 
 /**
  * This is the catalina specific implemenation for deplyment of Portlet Applications.
@@ -221,9 +222,9 @@ public class FileSystemPAM implements Deployment
 
             // JetspeedPortletRegistry.processPortletApplicationTree(app, "remove");
             // locate the deployment home
-
+			JetspeedPortletRegistry.beginTransaction();
             JetspeedPortletRegistry.removeApplication(app);
-
+			JetspeedPortletRegistry.commitTransaction();
             // Remove the webapps directory
             System.out.println("Remove " + webAppsDir + paName + " and all sub-directories.");
 
@@ -241,6 +242,15 @@ public class FileSystemPAM implements Deployment
         }
         catch (Exception re)
         {
+			try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             throw new PortletApplicationException(re.getMessage());
         }
 
@@ -299,13 +309,23 @@ public class FileSystemPAM implements Deployment
                 System.out.println("Saving the portlet.xml in the registry...");
                 // locate the deployment home
                 identifyDeploymentSystem();
-
+				JetspeedPortletRegistry.beginTransaction();
                 JetspeedPortletRegistry.removeApplication(app);
+				JetspeedPortletRegistry.commitTransaction();
             }
 
         }
         catch (Exception e1)
         {
+			try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e2)
+            {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
             e1.printStackTrace();
         }
 

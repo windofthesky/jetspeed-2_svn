@@ -73,6 +73,7 @@ import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -168,42 +169,74 @@ public class TestPersistenceService extends JetspeedTest
         assertNotNull(pd);
     }
 
-    public void testAddingLangaugeToPortlet()
+    public void testAddingLangaugeToPortlet() throws Exception
     {
         PersistencePlugin plugin = service.getPersistencePlugin("jetspeed-test");
-        initTestObject();
-        MutablePortletApplication app = getTestObject1();
 
-        Language english = getEnglishLanguage();
-        assertNotNull(english);
+        try
+        {
+            initTestObject();
+            MutablePortletApplication app = getTestObject1();
+            plugin.beginTransaction();
+            plugin.prepareForUpdate(app);
 
-        PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 1");
+            Language english = getEnglishLanguage();
+            assertNotNull(english);
 
-        pdc.addLanguage(english);
+            PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 1");
+            plugin.prepareForUpdate(pdc);
+            pdc.addLanguage(english);
 
-        plugin.update(pdc);
+            plugin.commitTransaction();
+        }
+        catch (TransactionStateException e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+                throw e1;
+            }
+            e.printStackTrace();
+            throw e;
+        }
 
     }
 
-    public void testUpdate()
+    public void testUpdate() throws Exception
     {
         initTestObject();
 
         PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
 
-        PortletApplicationDefinitionImpl app = getTestObject1();
+        PortletApplicationDefinitionImpl app;
+        try
+        {
+            app = getTestObject1();
 
-        assertNotNull(app);
+            assertNotNull(app);
+            plugin.beginTransaction();
+            plugin.prepareForUpdate(app);
 
-        String version = app.getVersion();
+            String version = app.getVersion();
 
-        app.setVersion("5.5.5");
+            app.setVersion("5.5.5");
 
-        MutableWebApplication wac = (MutableWebApplication) app.getWebApplicationDefinition();
+            MutableWebApplication wac = (MutableWebApplication) app.getWebApplicationDefinition();
 
-        wac.setContextRoot("/root/changed");
+            wac.setContextRoot("/root/changed");
 
-        plugin.update(app);
+            plugin.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            plugin.rollbackTransaction();
+            e.printStackTrace();
+            throw e;
+        }
 
         app = getTestObject1();
 
@@ -215,28 +248,48 @@ public class TestPersistenceService extends JetspeedTest
         assertTrue(cRoot.equals("/root/changed"));
     }
 
-    public void testAdd2atATime()
+    public void testAdd2atATime() throws TransactionStateException
     {
         PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         MutablePortletApplication app1 = new PortletApplicationDefinitionImpl();
-        app1.setName("This is app 1 of 2");
-        app1.setVersion("1.0");
-        app1.setDescription("This is app 1 of 2");
-        app1.setApplicationIdentifier("app1of2");
 
-        plugin.add(app1);
+        try
+        {
+            plugin.beginTransaction();
+            plugin.prepareForUpdate(app1);
+            app1.setName("This is app 1 of 2");
+            app1.setVersion("1.0");
+            app1.setDescription("This is app 1 of 2");
+            app1.setApplicationIdentifier("app1of2");
 
-        MutablePortletApplication app2 = new PortletApplicationDefinitionImpl();
-        app2.setName("This is app 2 of 2");
-        app2.setVersion("1.0");
-        app2.setDescription("This is app 2 of 2");
-        app1.setApplicationIdentifier("app2of2");
+            MutablePortletApplication app2 = new PortletApplicationDefinitionImpl();
+            plugin.prepareForUpdate(app2);
+            app2.setName("This is app 2 of 2");
+            app2.setVersion("1.0");
+            app2.setDescription("This is app 2 of 2");
+            app1.setApplicationIdentifier("app2of2");
 
-        plugin.add(app2);
+            plugin.commitTransaction();
+        }
+        catch (TransactionStateException e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                // TODO Auto-generated catch block                
+                e1.printStackTrace();
+            }
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
+        }
 
     }
 
-    public void testGet2atATime()
+    public void testGet2atATime() throws TransactionStateException
     {
         PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
         LookupCriteria lc1 = plugin.newLookupCriteria();
@@ -247,19 +300,38 @@ public class TestPersistenceService extends JetspeedTest
                 plugin.generateQuery(PortletApplicationDefinitionImpl.class, lc1));
 
         assertNotNull("Could not retrieve test app 1 from the db", app1);
-        plugin.delete(app1);
+        try
+        {
+            plugin.beginTransaction();
+            plugin.prepareForDelete(app1);
 
-        LookupCriteria lc2 = plugin.newLookupCriteria();
-        lc2.addEqualTo("name", "This is app 2 of 2");
-        MutablePortletApplication app2 =
-            (MutablePortletApplication) plugin.getObjectByQuery(
-                PortletApplicationDefinitionImpl.class,
-                plugin.generateQuery(PortletApplicationDefinitionImpl.class, lc2));
-        assertNotNull("Could not retrieve test app 2 from the db", app2);
-        plugin.delete(app2);
+            LookupCriteria lc2 = plugin.newLookupCriteria();
+            lc2.addEqualTo("name", "This is app 2 of 2");
+            MutablePortletApplication app2 =
+                (MutablePortletApplication) plugin.getObjectByQuery(
+                    PortletApplicationDefinitionImpl.class,
+                    plugin.generateQuery(PortletApplicationDefinitionImpl.class, lc2));
+            assertNotNull("Could not retrieve test app 2 from the db", app2);
+            plugin.prepareForDelete(app2);
+            plugin.commitTransaction();
+        }
+        catch (TransactionStateException e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+            }
+
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    public void testDelete()
+    public void testDelete() throws TransactionStateException
     {
         initTestObject();
 
@@ -269,11 +341,31 @@ public class TestPersistenceService extends JetspeedTest
 
         PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
 
-        plugin.delete(app);
+        try
+        {
+            plugin.beginTransaction();
+            plugin.prepareForDelete(app);
+            plugin.commitTransaction();
 
-        app = getTestObject1();
+            app = getTestObject1();
 
-        assertNull(app);
+            assertNull(app);
+        }
+        catch (TransactionStateException e)
+        {
+        	try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+            
+                e1.printStackTrace();
+            }
+            
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     protected PersistenceService getService()
@@ -290,30 +382,50 @@ public class TestPersistenceService extends JetspeedTest
     {
 
         PersistencePlugin plugin = getService().getPersistencePlugin("jetspeed-test");
-        MutablePortletApplication app = new PortletApplicationDefinitionImpl();
-        app.setName("test adding object");
-        app.setVersion("1.0");
-        app.setDescription("This is a test from persistence layer");
-        // create a web application
-        MutableWebApplication wad = new WebApplicationDefinitionImpl();
-        wad.addDescription(getEnglishLanguage().getLocale(), "This is an english desrcitpion");
-        wad.addDisplayName(getEnglishLanguage().getLocale(), "This is an english display name");
-        wad.setContextRoot("/test");
-        app.setWebApplicationDefinition(wad);
+        try
+        {
 
-        // Create some Portlets 
-        PortletDefinitionComposite pdc = new PortletDefinitionImpl();
-        pdc.setClassName("com.bogus.Class1");
-        pdc.setName("Portlet 1");
+            plugin.beginTransaction();
+            MutablePortletApplication app = new PortletApplicationDefinitionImpl();
+            plugin.prepareForUpdate(app);
+            app.setName("test adding object");
+            app.setVersion("1.0");
+            app.setDescription("This is a test from persistence layer");
+            // create a web application
+            MutableWebApplication wad = new WebApplicationDefinitionImpl();
+            wad.addDescription(getEnglishLanguage().getLocale(), "This is an english desrcitpion");
+            wad.addDisplayName(getEnglishLanguage().getLocale(), "This is an english display name");
+            wad.setContextRoot("/test");
+            app.setWebApplicationDefinition(wad);
 
-        PortletDefinitionComposite pdc2 = new PortletDefinitionImpl();
-        pdc2.setClassName("com.bogus.Class2");
-        pdc2.setName("Portlet 2");
+            // Create some Portlets 
+            PortletDefinitionComposite pdc = new PortletDefinitionImpl();
+            pdc.setClassName("com.bogus.Class1");
+            pdc.setName("Portlet 1");
 
-        app.addPortletDefinition(pdc);
-        app.addPortletDefinition(pdc2);
+            PortletDefinitionComposite pdc2 = new PortletDefinitionImpl();
+            pdc2.setClassName("com.bogus.Class2");
+            pdc2.setName("Portlet 2");
 
-        plugin.add(app);
+            app.addPortletDefinition(pdc);
+            app.addPortletDefinition(pdc2);
+
+            plugin.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     protected Language getEnglishLanguage()
@@ -354,14 +466,32 @@ public class TestPersistenceService extends JetspeedTest
                 plugin.generateQuery(PortletApplicationDefinitionImpl.class, c));
 
         Iterator itr = removeUs.iterator();
-        while (itr.hasNext())
+        try
         {
-            plugin.delete(itr.next());
+            plugin.beginTransaction();
+            while (itr.hasNext())
+            {
+                plugin.prepareForDelete(itr.next());
+            }
+            plugin.commitTransaction();
+        }
+        catch (TransactionStateException e)
+        {
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
         }
 
     }
 
-    /**
+    /**com
      * @see junit.framework.TestCase#tearDown()
      */
     public void tearDown()

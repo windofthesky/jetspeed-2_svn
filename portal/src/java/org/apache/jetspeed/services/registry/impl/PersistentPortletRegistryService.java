@@ -80,6 +80,7 @@ import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.services.registry.PortletRegistryService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.pluto.om.common.Language;
@@ -241,21 +242,21 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#updatePortletApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public void updatePortletApplication(PortletApplicationDefinition app)
+    public void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException
     {
-        plugin.update(app);
+        plugin.prepareForUpdate(app);
 
     }
 
     /**
      * @see org.apache.jetspeed.services.registry.PortletRegistryService#removeApplication(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
-    public void removeApplication(PortletApplicationDefinition app)
+    public void removeApplication(PortletApplicationDefinition app) throws TransactionStateException
     {
         ArgUtil.notNull(new Object[] { app }, new String[] { "app" }, "removeApplication(PortletApplicationDefinition)");
 
         log.info("Removing portlet application " + ((MutablePortletApplication) app).getName());
-        plugin.delete(app);
+        plugin.prepareForDelete(app);
     }
 
     /**
@@ -416,7 +417,26 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
         }
         else
         {
-            usePlugin.add(pac);
+            try
+            {
+                plugin.beginTransaction();
+                plugin.prepareForUpdate(pac);
+                plugin.commitTransaction();
+            }
+            catch (TransactionStateException e)
+            {
+               try
+                {
+                     plugin.rollbackTransaction();
+                }
+                catch (TransactionStateException e1)
+                {
+                    log.error("Failed to rollback transaction.", e);
+                }
+                String msg = "Unable to register new portlet application.";
+                log.error(msg, e);
+                throw new RegistryException(msg, e);
+            }
         }
 
     }
@@ -456,6 +476,33 @@ public class PersistentPortletRegistryService extends BaseCommonService implemen
         {
             plugin.setDbAlias(originalAlias);
         }
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.services.registry.PortletRegistryService#beginTransaction()
+     */
+    public void beginTransaction() throws TransactionStateException
+    {
+       plugin.beginTransaction();
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.services.registry.PortletRegistryService#commitTransaction()
+     */
+    public void commitTransaction() throws TransactionStateException
+    {
+        plugin.commitTransaction();
+
+    }
+
+    /**
+     * @see org.apache.jetspeed.services.registry.PortletRegistryService#rollbackTransaction()
+     */
+    public void rollbackTransaction() throws TransactionStateException
+    {
+        plugin.rollbackTransaction();
 
     }
 

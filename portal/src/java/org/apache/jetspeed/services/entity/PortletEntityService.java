@@ -76,9 +76,9 @@ public interface PortletEntityService extends CommonService
 
     PortletEntity getPortletEntity(PortletDefinition portletDefinition, String portletName);
        
-    void storePortletEntity(PortletEntity portletEntity);
+    void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException;
 
-    void removePortletEntity(PortletEntity portletEntity);
+    void removePortletEntity(PortletEntity portletEntity) throws PortletEntityNotDeletedException;
 
     PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
 

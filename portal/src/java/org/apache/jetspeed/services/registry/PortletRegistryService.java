@@ -66,6 +66,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.pluto.om.common.Language;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -204,9 +205,9 @@ public interface PortletRegistryService extends CommonService
         * persistent.
         * @param app
         */
-    void updatePortletApplication(PortletApplicationDefinition app);
+    void updatePortletApplication(PortletApplicationDefinition app) throws TransactionStateException;
 
-    void removeApplication(PortletApplicationDefinition app);
+    void removeApplication(PortletApplicationDefinition app) throws TransactionStateException;
 
     Language createLanguage(
         Locale locale,
@@ -241,4 +242,11 @@ public interface PortletRegistryService extends CommonService
      *
      */
     void resetDeploymentSystem();
+    
+    
+    public void beginTransaction() throws TransactionStateException;
+    
+	public void commitTransaction() throws TransactionStateException;
+	
+	public void rollbackTransaction() throws TransactionStateException;
 }

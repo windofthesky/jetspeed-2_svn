@@ -53,6 +53,7 @@
  */
 package org.apache.jetspeed.om.entity.impl;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -63,6 +64,7 @@ import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.services.entity.PortletEntityAccess;
+import org.apache.jetspeed.services.entity.PortletEntityNotStoredException;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
@@ -134,7 +136,14 @@ public class PortletEntityImpl implements PortletEntity, PortletEntityCtrl, Pers
 
     public void store() throws java.io.IOException
     {
-        PortletEntityAccess.storePortletEntity(this);
+        try
+        {
+            PortletEntityAccess.storePortletEntity(this);
+        }
+        catch (PortletEntityNotStoredException e)
+        {
+            throw new IOException("Unable to store Portlet Entity. "+e.toString());
+        }
 
     }
 

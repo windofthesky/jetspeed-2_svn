@@ -63,6 +63,7 @@ import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -98,7 +99,7 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
             PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
             autoCreateNewEntities = getConfiguration().getBoolean("autocreate", false);
-            entityClass = this.loadModelClass("entity.impl");            
+            entityClass = this.loadModelClass("entity.impl");
             plugin = ps.getPersistencePlugin(pluginName);
             setInit(true);
         }
@@ -145,21 +146,59 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
     /**
      * @see org.apache.jetspeed.services.entity.PortletEntityService#storePortletEntity(org.apache.pluto.om.entity.PortletEntity)
      */
-    public void storePortletEntity(PortletEntity portletEntity)
+    public void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException
     {
-        plugin.update(portletEntity);
+        try
+        {
+            plugin.beginTransaction();
+            plugin.markDirty(portletEntity);
+            plugin.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to store Portlet Entity.";
+            log.error(msg, e);
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                log.error("Could not rollback transaction", e1);
+            }
+            throw new PortletEntityNotStoredException(msg, e);
+        }
     }
 
     /**
      * @see org.apache.jetspeed.services.entity.PortletEntityService#removePortletEntity(org.apache.pluto.om.entity.PortletEntity)
      */
-    public void removePortletEntity(PortletEntity portletEntity)
+    public void removePortletEntity(PortletEntity portletEntity) throws PortletEntityNotDeletedException
     {
         if (entityCache.containsKey(portletEntity.getId()))
         {
             entityCache.remove(entityCache.get(portletEntity.getId()));
         }
-        plugin.delete(portletEntity);
+        try
+        {
+            plugin.beginTransaction();
+            plugin.prepareForDelete(this);
+            plugin.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to delete Portlet Entity.";
+            log.error(msg, e);
+            try
+            {
+                plugin.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                log.error("Could not rollback transaction", e1);
+            }
+            throw new PortletEntityNotDeletedException(msg, e);
+        }
     }
 
     /**
@@ -167,9 +206,9 @@ public class PortletEntityServiceImpl extends BaseCommonService implements Portl
      */
     public PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition)
     {
-        PortletEntityCtrl portletEntity = (PortletEntityCtrl)this.createObject(entityClass);
+        PortletEntityCtrl portletEntity = (PortletEntityCtrl) this.createObject(entityClass);
         portletEntity.setPortletDefinition(portletDefinition);
-        return (PortletEntity)portletEntity;
+        return (PortletEntity) portletEntity;
     }
 
 }

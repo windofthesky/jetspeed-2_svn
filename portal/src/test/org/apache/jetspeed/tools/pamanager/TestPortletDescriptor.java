@@ -71,6 +71,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.services.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.pluto.om.common.DisplayName;
@@ -306,7 +307,18 @@ public class TestPortletDescriptor extends JetspeedTest
         MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication("HW_App");
         if (app != null)
         {
-            JetspeedPortletRegistry.removeApplication(app);
+            try
+            {
+                JetspeedPortletRegistry.beginTransaction();
+                JetspeedPortletRegistry.removeApplication(app);
+                JetspeedPortletRegistry.commitTransaction();
+            }
+            catch (Exception e)
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+                throw e;
+            }
+
         }
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
 
@@ -315,7 +327,6 @@ public class TestPortletDescriptor extends JetspeedTest
         PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
         plugin.clearCache();
-        
 
         PortletDefinition pd = JetspeedPortletRegistry.getPortletDefinitionByUniqueName("PreferencePortlet");
         assertNotNull(pd);
@@ -336,7 +347,27 @@ public class TestPortletDescriptor extends JetspeedTest
 
         assertTrue(count > 0);
 
-        JetspeedPortletRegistry.removeApplication(app);
+        try
+        {
+			JetspeedPortletRegistry.beginTransaction();
+            JetspeedPortletRegistry.removeApplication(app);
+			JetspeedPortletRegistry.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            try
+            {
+				JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
+        }
 
     }
 }

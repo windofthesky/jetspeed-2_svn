@@ -51,91 +51,57 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
 package org.apache.jetspeed.services.page;
 
-import java.util.List;
-
-import org.apache.jetspeed.cps.CommonPortletServices;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.Property;
 
 /**
- * Convenience static wrapper around <code>PageManagerService</code>
- *
+ * <p>
+ * PageNotRemovedException
+ * </p>
+ * 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ *
  */
-public class PageManager
+public class PageNotRemovedException extends JetspeedException
 {
-    private static final PageManagerService getService()
+
+    /**
+     * 
+     */
+    public PageNotRemovedException()
     {
-        return (PageManagerService) CommonPortletServices.getPortalService(PageManagerService.SERVICE_NAME);
+        super();
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newPage()
+     * @param message
      */
-    public static Page newPage()
+    public PageNotRemovedException(String message)
     {
-        return getService().newPage();
+        super(message);
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newFragment()
+     * @param nested
      */
-    public static Fragment newFragment()
+    public PageNotRemovedException(Throwable nested)
     {
-        return getService().newFragment();
+        super(nested);
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#newProperty()
+     * @param msg
+     * @param nested
      */
-    public static Property newProperty()
+    public PageNotRemovedException(String msg, Throwable nested)
     {
-        return getService().newProperty();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
-     */
-    public static Page getPage(String id)
-    {
-        return getService().getPage(id);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
-     */
-    public static List listPages()
-    {
-        return getService().listPages();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
-     */
-    public static void registerPage(Page page) throws JetspeedException
-    {
-        getService().registerPage(page);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
-     */
-    public static void updatePage(Page page) throws JetspeedException
-    {
-        getService().updatePage(page);
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
-     */
-    public static void removePage(Page page) throws PageNotRemovedException
-    {
-        getService().removePage(page);
+        super(msg, nested);
+        // TODO Auto-generated constructor stub
     }
 
 }

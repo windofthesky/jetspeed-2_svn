@@ -74,7 +74,7 @@ public class PortletEntityAccess
         return getService().getPortletEntity(def, entityName);
     }
 
-    public static void storePortletEntity(PortletEntity portletEntity)
+    public static void storePortletEntity(PortletEntity portletEntity) throws PortletEntityNotStoredException
     {
         getService().storePortletEntity(portletEntity);
     }

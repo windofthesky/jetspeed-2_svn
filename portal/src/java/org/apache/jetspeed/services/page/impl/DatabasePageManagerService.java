@@ -66,7 +66,9 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.services.idgenerator.JetspeedIdGenerator;
+import org.apache.jetspeed.services.page.*;
 import org.apache.jetspeed.services.page.PageManagerService;
 
 /**
@@ -75,21 +77,19 @@ import org.apache.jetspeed.services.page.PageManagerService;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DatabasePageManagerService
-    extends AbstractPageManagerService
-    implements PageManagerService
+public class DatabasePageManagerService extends AbstractPageManagerService implements PageManagerService
 {
     protected final static Log log = LogFactory.getLog(DatabasePageManagerService.class);
-    
+
     private PersistencePlugin plugin;
 
     private PersistencePlugin originalPlugin;
 
     private String originalAlias;
-    
+
     // TODO: this should eventually use a system cach like JCS
     private Map pageCache = new HashMap();
-    
+
     /* (non-Javadoc)
      * @see org.apache.fulcrum.Service#init()
      */
@@ -98,17 +98,16 @@ public class DatabasePageManagerService
         if (!isInitialized())
         {
             super.init();
-            
+
             PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
             String pluginName = getConfiguration().getString("persistence.plugin.name", "jetspeed");
 
             plugin = ps.getPersistencePlugin(pluginName);
-            
+
             setInit(true);
         }
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#getPage(java.lang.String)
      */
@@ -129,7 +128,7 @@ public class DatabasePageManagerService
             return page;
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#listPages()
      */
@@ -138,7 +137,7 @@ public class DatabasePageManagerService
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#registerPage(org.apache.jetspeed.om.page.Page)
      */
@@ -159,28 +158,45 @@ public class DatabasePageManagerService
             id = page.getId();
             log.warn("Page with no Id, created new Id : " + id);
         }
-        
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
      */
-    public void updatePage(Page page) throws JetspeedException
+    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException
     {
-        plugin.update(page);
+        try
+        {
+            plugin.prepareForUpdate(page);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to update Page.";
+            log.error(msg, e);
+            throw new PageNotUpdatedException(msg, e);
+        }
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
      */
-    public void removePage(Page page)
+    public void removePage(Page page) throws PageNotRemovedException
     {
         if (pageCache.containsKey(page.getId()))
         {
             pageCache.remove(pageCache.get(page.getId()));
         }
-        plugin.delete(page);
+        try
+        {
+            plugin.prepareForDelete(page);
+        }
+        catch (Exception e)
+        {
+            String msg = "Unable to remove Page.";
+            log.error(msg, e);
+            throw new PageNotRemovedException(msg, e);
+        }
     }
-        
+
 }

@@ -70,6 +70,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.persistence.TransactionStateException;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DisplayName;
@@ -161,28 +162,38 @@ public class TestRegistry extends JetspeedTest
 
     public void testAddingPortlet()
     {
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
-        assertNotNull(app);
-
-        //add a portlet
-        PortletDefinitionComposite portlet1 = JetspeedPortletRegistry.newPortletDefinition();
-
-        portlet1.setClassName("com.portlet.MyClass");
-        portlet1.setName("Portlet 1");
-        portlet1.setPortletIdentifier("com.portlet.MyClass.Portlet 1");
-        app.addPortletDefinition(portlet1);
-
-        portlet1.addDisplayName(Jetspeed.getDefaultLocale(), "Portlet 1 Display Name");
-        portlet1.addDescription(Jetspeed.getDefaultLocale(), "Portlet 1 Description");
-
         try
         {
-            JetspeedPortletRegistry.updatePortletApplication(app);
-            System.out.print("");
+            MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
+                        
+            assertNotNull(app);
+			JetspeedPortletRegistry.beginTransaction();
+			JetspeedPortletRegistry.updatePortletApplication(app);
+
+            //add a portlet
+            PortletDefinitionComposite portlet1 = JetspeedPortletRegistry.newPortletDefinition();
+
+            portlet1.setClassName("com.portlet.MyClass");
+            portlet1.setName("Portlet 1");
+            portlet1.setPortletIdentifier("com.portlet.MyClass.Portlet 1");
+            app.addPortletDefinition(portlet1);
+
+            portlet1.addDisplayName(Jetspeed.getDefaultLocale(), "Portlet 1 Display Name");
+            portlet1.addDescription(Jetspeed.getDefaultLocale(), "Portlet 1 Description");
+
+			JetspeedPortletRegistry.commitTransaction();            
         }
         catch (Throwable e)
         {
-
+			try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             e.printStackTrace();
             throw new AssertionFailedError();
         }
@@ -213,43 +224,69 @@ public class TestRegistry extends JetspeedTest
         System.out.println("Default local displayName  for Portlet 1 is " + displayName.getDisplayName());
     }
 
-    public void testAddPortletInfo()
+    public void testAddPortletInfo() throws Exception
     {
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
-        assertNotNull(app);
-        PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 0");
-        assertNotNull(pdc);
+        try
+        {
+            // begin a transaction
+            JetspeedPortletRegistry.beginTransaction();
 
-        // add 2 parameters
-         ((ParameterSetCtrl) pdc.getInitParameterSet()).add("param 1", "value 1");
-        ((ParameterSetCtrl) pdc.getInitParameterSet()).add("param 2", "value 2");
+            MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
 
-        // add a language
-        pdc.addLanguage(
-            JetspeedPortletRegistry.createLanguage(Locale.getDefault(), "Test Portlet 0", "Portlet 0", "This is Portlet 0", null));
+            
+            assertNotNull(app);
+            // Mark portlet app for update
+			JetspeedPortletRegistry.updatePortletApplication(app);
+            PortletDefinitionComposite pdc = (PortletDefinitionComposite) app.getPortletDefinitionByName("Portlet 0");
+            assertNotNull(pdc);
 
-        //add content types
-        ContentTypeComposite html = JetspeedPortletRegistry.newContentType();
-        html.setContentType("html/text");
-        ContentTypeComposite wml = JetspeedPortletRegistry.newContentType();
-        html.addPortletMode(new PortletMode("EDIT"));
-        html.addPortletMode(new PortletMode("VIEW"));
-        html.addPortletMode(new PortletMode("HELP"));
-        wml.setContentType("wml");
-        wml.addPortletMode(new PortletMode("HELP"));
-        wml.addPortletMode(new PortletMode("VIEW"));
-        pdc.addContentType(html);
-        pdc.addContentType(wml);
+            // add 2 parameters
+             ((ParameterSetCtrl) pdc.getInitParameterSet()).add("param 1", "value 1");
+            ((ParameterSetCtrl) pdc.getInitParameterSet()).add("param 2", "value 2");
 
-        PreferenceComposite pref =
-            pdc.addPreference("preference 1", new String[] { "pref 1 values 1", "pref 1 value 2" });
+            // add a language
+            pdc.addLanguage(
+                JetspeedPortletRegistry.createLanguage(
+                    Locale.getDefault(),
+                    "Test Portlet 0",
+                    "Portlet 0",
+                    "This is Portlet 0",
+                    null));
 
-        pref.addDescription(Jetspeed.getDefaultLocale(), "Preference 1 description");
+            //add content types
+            ContentTypeComposite html = JetspeedPortletRegistry.newContentType();
+            html.setContentType("html/text");
+            ContentTypeComposite wml = JetspeedPortletRegistry.newContentType();
+            html.addPortletMode(new PortletMode("EDIT"));
+            html.addPortletMode(new PortletMode("VIEW"));
+            html.addPortletMode(new PortletMode("HELP"));
+            wml.setContentType("wml");
+            wml.addPortletMode(new PortletMode("HELP"));
+            wml.addPortletMode(new PortletMode("VIEW"));
+            pdc.addContentType(html);
+            pdc.addContentType(wml);
 
-        pdc.addDisplayName(Jetspeed.getDefaultLocale(), "Portlet 0 Display Name");
-        pdc.addDescription(Jetspeed.getDefaultLocale(), "Portlet 0 Description");
+            PreferenceComposite pref = pdc.addPreference("preference 1", new String[] { "pref 1 values 1", "pref 1 value 2" });
 
-        JetspeedPortletRegistry.updatePortletApplication(app);
+            pref.addDescription(Jetspeed.getDefaultLocale(), "Preference 1 description");
+
+            pdc.addDisplayName(Jetspeed.getDefaultLocale(), "Portlet 0 Display Name");
+            pdc.addDescription(Jetspeed.getDefaultLocale(), "Portlet 0 Description");
+
+            JetspeedPortletRegistry.commitTransaction();
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                JetspeedPortletRegistry.rollbackTransaction();
+            }
+            catch (TransactionStateException e1)
+            {
+                e1.printStackTrace();
+            }
+            throw e;
+        }
     }
 
     public void testContentType()
@@ -266,7 +303,7 @@ public class TestRegistry extends JetspeedTest
         Iterator modes = html.getPortletModes();
         while (modes.hasNext())
         {
-            PortletMode mode = (PortletMode)modes.next();
+            PortletMode mode = (PortletMode) modes.next();
             System.out.println("   - Available Mode: " + mode);
         }
     }
@@ -325,7 +362,7 @@ public class TestRegistry extends JetspeedTest
         }
 
         assertTrue("\"preference 1\" should have 2 values not " + valueCount, valueCount == 2);
-        
+
         assertTrue(count == 1);
     }
 
@@ -351,10 +388,21 @@ public class TestRegistry extends JetspeedTest
         {
             try
             {
+                JetspeedPortletRegistry.beginTransaction();
                 JetspeedPortletRegistry.removeApplication(pac);
+                JetspeedPortletRegistry.commitTransaction();
             }
             catch (Exception e)
             {
+                try
+                {
+                    JetspeedPortletRegistry.rollbackTransaction();
+                }
+                catch (TransactionStateException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 System.out.println("Unable to tear down test.");
                 e.printStackTrace();
             }

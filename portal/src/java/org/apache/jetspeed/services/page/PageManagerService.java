@@ -120,13 +120,13 @@ public interface PageManagerService extends CommonService
      *
      * @param locator The description of the profile to be removed.
      */
-    public void updatePage(Page page) throws JetspeedException;
+    public void updatePage(Page page) throws JetspeedException, PageNotUpdatedException;
 
     /** Remove a document.
      *
      * @param locator The description of the profile to be removed.
      */
-    public void removePage(Page page);
+    public void removePage(Page page)  throws PageNotRemovedException;
 
 }
 
