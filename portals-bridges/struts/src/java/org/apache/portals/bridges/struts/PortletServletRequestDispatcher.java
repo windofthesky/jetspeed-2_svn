@@ -98,8 +98,8 @@ public class PortletServletRequestDispatcher extends HttpRequestDispatcherImpl
                             originURL);
                 }
             }
-            req.getSession(true).setAttribute(StrutsPortlet.RENDER_CONTEXT,
-                    context);
+            String portletName = (String) req.getAttribute(StrutsPortlet.PORTLET_NAME);
+            req.getSession(true).setAttribute(StrutsPortlet.RENDER_CONTEXT + "_" + portletName, context);
         } 
         else
         {

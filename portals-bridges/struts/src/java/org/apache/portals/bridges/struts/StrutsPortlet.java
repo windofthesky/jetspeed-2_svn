@@ -98,6 +98,7 @@ public class StrutsPortlet extends GenericPortlet
     public static final String REDIRECT_URL = "org.apache.portals.bridges.struts.redirect_url";
     public static final String RENDER_CONTEXT = "org.apache.portals.bridges.struts.render_context";
     public static final String ERROR_CONTEXT = "org.apache.portals.bridges.struts.error_context";
+    public static final String PORTLET_NAME = "org.apache.portals.bridges.struts.portlet_name";
     public static final String ACTION_REQUEST = "ACTION";
     public static final String VIEW_REQUEST = "VIEW";
     public static final String CUSTOM_REQUEST = "CUSTOM";
@@ -228,6 +229,7 @@ public class StrutsPortlet extends GenericPortlet
                 this, request);
         HttpServletResponse res = servletContextProvider
                 .getHttpServletResponse(this, response);
+        req.setAttribute(PORTLET_NAME, this.getPortletConfig().getPortletName());
         boolean actionRequest = (request instanceof ActionRequest);
         try
         {

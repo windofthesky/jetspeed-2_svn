@@ -55,18 +55,38 @@ public class PortletServlet extends ActionServlet
         if (!request.getAttribute(StrutsPortlet.REQUEST_TYPE).equals(
                 StrutsPortlet.ACTION_REQUEST))
         {
-            StrutsPortletRenderContext context = (StrutsPortletRenderContext) request
+            StrutsPortletRenderContext context = null;
+        	
+            String portletName = (String) request.getAttribute(StrutsPortlet.PORTLET_NAME);
+        	
+        		String contextKey = StrutsPortlet.RENDER_CONTEXT + "_" + portletName;
+            context = (StrutsPortletRenderContext) request
                     .getSession(true)
-                    .getAttribute(StrutsPortlet.RENDER_CONTEXT);
+                    .getAttribute(contextKey);
             if (context != null)
             {
                 if (log.isDebugEnabled())
+                {
                     log.debug("render context path: " + context.getPath());
-                request.getSession().removeAttribute(
-                        StrutsPortlet.RENDER_CONTEXT);
-                if (context.getActionForm() != null)
-                    request.setAttribute(mapping.getAttribute(), context
-                            .getActionForm());
+                }
+                request.getSession().removeAttribute(contextKey);
+                if (context.getActionForm() != null) {
+                	String attribute = mapping.getAttribute();
+                	if (attribute != null) {
+                	    if (log.isDebugEnabled())
+                	    {
+                	        log.debug("Putting form " + context.getActionForm().getClass().getName() + 
+                	                " into request as " + attribute + " for mapping " + mapping.getName());
+                	    }
+                    	request.setAttribute(mapping.getAttribute(), context
+                                .getActionForm());
+                	} 
+                	else if (log.isWarnEnabled())
+                	{
+                	    log.warn("Attribute is null for form " + context.getActionForm().getClass().getName() + 
+                	            ", won't put it into request for mapping " + mapping.getName());
+                	}
+                }
                 if (context.isRequestCancelled())
                     request.setAttribute(Globals.CANCEL_KEY, Boolean.TRUE);
                 if (context.getMessages() != null)
