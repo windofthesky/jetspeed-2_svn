@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
@@ -32,6 +30,7 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.ProfiledPageContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -43,11 +42,11 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
-    public static final String SLASH = "/";
     protected Log log = LogFactory.getLog(ProfilerValveImpl.class);
+
+    public static final String PROFILED_PAGE_CONTEXT_ATTR_KEY = "org.apache.jetspeed.profiledPageContext";
+
     private Profiler profiler;
-    static final String LOCATOR_KEY = "org.apache.jetpeed.profileLocator";
-    public static final String FOLDER_ATTR_KEY = "org.apache.jetspeed.folder";
     private PageManager pageManager;
 
     public ProfilerValveImpl( Profiler profiler, PageManager pageManager )
@@ -66,18 +65,23 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     {
         try
         {
+            // perform profiling to get profiled page context using
+            // the profiler and page manager
+            ProfileLocator locator = profiler.getProfile(request);
+            ProfiledPageContext profiledPageContext = pageManager.getProfiledPageContext(locator);
+            if ((profiledPageContext == null) || (profiledPageContext.getPage() == null) || (profiledPageContext.getLocator() == null)) 
+                throw new NodeNotFoundException("Unable to profile request: " + request.getPath());
 
+            // set request page and profile locator
+            request.setPage(profiledPageContext.getPage());
+            request.setProfileLocator(profiledPageContext.getLocator());
+
+            // return profiled page context in request attribute
             HttpServletRequest httpRequest = request.getRequest();
-            ProfileLocator locator = null;
-            Folder folder = getFolder(request);
-            httpRequest.setAttribute(FOLDER_ATTR_KEY, folder);
-            request.setPage(folder.getPage(getPageName(request, folder)));
+            httpRequest.setAttribute(PROFILED_PAGE_CONTEXT_ATTR_KEY, profiledPageContext);
 
-            locator = profiler.getProfile(request);
-            request.setProfileLocator(locator);
-            // request.setPage(profiler.getPage(locator));
+            // continue
             context.invokeNext(request);
-
         }
         catch (NodeNotFoundException e)
         {
@@ -94,85 +98,6 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         catch (Exception e)
         {
             throw new PipelineException(e.toString(), e);
-        }
-    }
-
-    protected Folder getFolder( RequestContext request ) throws FolderNotFoundException, NodeException
-    {
-        HttpServletRequest httpRequest = request.getRequest();
-        String folderInRequest = getFolderPath(request);
-        Folder selectedFolder = null;
-
-        if (folderInRequest != null)
-        {
-            selectedFolder = pageManager.getFolder(folderInRequest);
-        }
-
-        if (selectedFolder != null)
-        {
-            httpRequest.getSession().setAttribute(FOLDER_ATTR_KEY, selectedFolder);
-        }
-        else
-        {
-            selectedFolder = (Folder) httpRequest.getAttribute(FOLDER_ATTR_KEY);
-            if (selectedFolder == null)
-            {
-                selectedFolder = pageManager.getFolder(SLASH);
-            }
-        }
-
-        return selectedFolder;
-
-    }
-
-    protected String getFolderPath( RequestContext request )
-    {
-        String pathInfo = request.getPath();
-
-        String folder = null;
-        if (pathInfo != null)
-        {
-            if (pathInfo.endsWith(Page.DOCUMENT_TYPE))
-            {
-                int lastSlash = pathInfo.lastIndexOf(SLASH);
-                if (lastSlash > -1)
-                {
-                    String folderPath = pathInfo.substring(0, lastSlash);
-                    if (folderPath.length() > 0)
-                    {
-                        return folderPath;
-                    }
-                    else
-                    {
-                        return SLASH;
-                    }
-                }
-                else
-                {
-                    return SLASH;
-                }
-            }
-            else
-            {
-                return pathInfo;
-            }
-        }
-        else
-        {
-            return SLASH;
-        }
-    }
-
-    protected String getPageName( RequestContext request, Folder currentFolder )
-    {
-        String pathInfo = request.getPath();
-        if (pathInfo == null || !pathInfo.endsWith(".psml"))
-        {
-            return currentFolder.getDefaultPage();
-        }
-        else
-        {
-            return pathInfo;
         }
     }
 
