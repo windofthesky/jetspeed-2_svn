@@ -166,6 +166,11 @@ public class StrutsPortlet extends GenericPortlet
         return config.getInitParameter(PARAM_SERVLET_CONTEXT_PROVIDER);
     }
     
+    protected ServletContextProvider getServletContextProvider()
+    {
+        return servletContextProvider;
+    }
+    
     protected String getActionPageParameter(PortletConfig config)
     {
         return config.getInitParameter(PARAM_ACTION_PAGE);
