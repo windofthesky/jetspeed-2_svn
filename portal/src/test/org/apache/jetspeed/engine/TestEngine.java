@@ -7,6 +7,7 @@
 package org.apache.jetspeed.engine;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -65,7 +66,7 @@ public class TestEngine extends TestCase
     {        
         super.setUp();
         PropertiesConfiguration config = new  PropertiesConfiguration();
-        config.load("./src/webapp/WEB-INF/conf/jetspeed.properties");
+        config.load(new FileInputStream("./src/webapp/WEB-INF/conf/jetspeed.properties")); 
         Jetspeed.createEngine(config, "./src/webapp", null);
         NanoContainer nano  = new NanoContainer(new File("./src/webapp/WEB-INF/assembly/jetspeed.groovy"));
         scriptBuilder = nano.getContainerBuilder();
