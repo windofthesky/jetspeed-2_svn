@@ -14,7 +14,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.io.File;
 import java.net.URL;
 import java.security.Policy;
 
@@ -60,9 +59,9 @@ public class SecurityProviderImpl implements SecurityProvider
         }
         if (null != loginConfigUrl)
         {
-            File loginConfigFile = new File(loginConfigUrl.getFile());
-            if (log.isDebugEnabled()) log.debug("java.security.auth.login.config = " + loginConfigFile.getAbsolutePath());
-            System.setProperty("java.security.auth.login.config", loginConfigFile.getAbsolutePath());
+            if (log.isDebugEnabled()) 
+                log.debug("java.security.auth.login.config = " + loginConfigUrl.toString());
+            System.setProperty("java.security.auth.login.config", loginConfigUrl.toString());
         }
         Policy.setPolicy(policy);
         Policy.getPolicy().refresh();

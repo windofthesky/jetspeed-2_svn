@@ -14,6 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Context path="/jetspeed" docBase="jetspeed" crossContext="true">
+
+  <Realm className="org.apache.catalina.realm.JAASRealm"
+         appName="Jetspeed"
+         userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
+         roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
+         debug="3"/>
+
 	<ResourceParams name="jdbc/jetspeed">
     <parameter>
       <name>factory</name>
