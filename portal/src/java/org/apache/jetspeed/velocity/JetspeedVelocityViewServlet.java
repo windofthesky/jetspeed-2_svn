@@ -177,7 +177,6 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                                    .append(request.getServerName()).append(":")
                                    .append(request.getServerPort()).append(renderRequest.getContextPath());
         ctx.put("appRoot", appRoot.toString());
-
         
         // setup TLS for Context propagation
         handlingRequestContext.set(ctx);
@@ -262,26 +261,30 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         RequestContext requestContext = (RequestContext) ctx.get("JS2RequestContext");
         if ((renderRequest != null) && (requestContext != null))
         {
-            // get fragment type and decoration, fallback to
-            // fragment page default decorations
-            Fragment fragment = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
-            String fragmentType = fragment.getType();
-            String fragmentDecoration = fragment.getDecorator();
-            if (fragmentDecoration == null)
+            // get layout type and decoration, fallback to
+            // page default decorations
+            Fragment layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.LAYOUT_ATTR);
+            if (layout == null)
             {
-                Page fragmentPage = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
-                fragmentDecoration = fragmentPage.getDefaultDecorator(fragmentType);
+                layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
+            }
+            String layoutType = layout.getType();
+            String layoutDecoration = layout.getDecorator();
+            if (layoutDecoration == null)
+            {
+                Page page = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
+                layoutDecoration = page.getDefaultDecorator(layoutType);
             }
             
-            // get fragment capabilites and locale
+            // get layout capabilites and locale
             CapabilityMap capabilityMap = requestContext.getCapabilityMap();
             Locale locale = requestContext.getLocale();
-            String fragmentMediaType = capabilityMap.getPreferredMediaType().getName();
-            String fragmentLanguage = locale.getLanguage();
-            String fragmentCountry = locale.getCountry();
+            String layoutMediaType = capabilityMap.getPreferredMediaType().getName();
+            String layoutLanguage = locale.getLanguage();
+            String layoutCountry = locale.getCountry();
             
             // lookup cache config based on decoration cache key
-            String cacheKey = fragmentDecoration + ":" + fragmentType + ":" + fragmentMediaType + ":" + fragmentLanguage + ":" + fragmentCountry;
+            String cacheKey = layoutDecoration + ":" + layoutType + ":" + layoutMediaType + ":" + layoutLanguage + ":" + layoutCountry;
             VelocityEngineConfig config = null;
             synchronized (velocityEngineConfigCache)
             {
@@ -323,13 +326,13 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             {
                 log.error("getVelocityEngine(): unable create base descriptor", tle);
             }
-            descriptor.setMediaType(fragmentMediaType);
-            descriptor.setCountry(fragmentCountry);
-            descriptor.setLanguage(fragmentLanguage);
-            descriptor.setType(fragmentType);
+            descriptor.setMediaType(layoutMediaType);
+            descriptor.setCountry(layoutCountry);
+            descriptor.setLanguage(layoutLanguage);
+            descriptor.setType(layoutType);
             
             // get decoration configuration properties descriptor
-            descriptor.setName(fragmentDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + ".properties");
+            descriptor.setName(layoutDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + ".properties");
             TemplateDescriptor propertiesDescriptor = null;
             try
             {
@@ -369,7 +372,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                 // get decoration template macros descriptor if defined
                 if ((ext != null) && (ext.length() > 0) && (macros != null) && (macros.length() > 0))
                 {
-                    descriptor.setName(fragmentDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + macros + ext);
+                    descriptor.setName(layoutDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + macros + ext);
                     try
                     {
                         macrosDescriptor = decorationLocator.locateTemplate(descriptor);
@@ -400,7 +403,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             boolean forceVelocityEngineRefresh = false;
             if (config == null)
             {
-                config = new VelocityEngineConfig(fragmentDecoration, fragmentType, fragmentMediaType, fragmentLanguage, fragmentCountry);
+                config = new VelocityEngineConfig(layoutDecoration, layoutType, layoutMediaType, layoutLanguage, layoutCountry);
                 synchronized (velocityEngineConfigCache)
                 {
                     velocityEngineConfigCache.put(cacheKey, config);
@@ -454,7 +457,10 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     {
                         // create and cache new velocity engine
                         velocity = initVelocity(macrosDescriptor);
-                        velocityEngineCache.put(config.macros.getPath(), velocity);
+                        if (velocity != null)
+                        {
+                            velocityEngineCache.put(config.macros.getPath(), velocity);
+                        }
                     }
                 }
             }
