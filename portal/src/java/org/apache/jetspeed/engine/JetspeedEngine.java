@@ -258,6 +258,10 @@ public class JetspeedEngine implements Engine
             }
             String targetPipeline = context
                     .getRequestParameter(PortalReservedParameters.PIPELINE);
+            if (null == targetPipeline)
+            {
+                targetPipeline = (String)context.getRequest().getAttribute(PortalReservedParameters.PIPELINE);                
+            }
             tlRequestContext.set(context);
             Pipeline pipeline = defaultPipeline;
             if (targetPipeline != null)
