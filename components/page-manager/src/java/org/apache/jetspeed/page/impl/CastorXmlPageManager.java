@@ -606,25 +606,64 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     private List generateProfilingSearchPaths(String requestPath, ProfileLocator locator, boolean forceRequestPath)
     {
-        // generate profile locator folder/page paths
-        List paths = new ArrayList();
+        // set locator page path default
         String pagePath = requestPath;
+
+        // generate profile locator folder/page paths
+        List orderedLocatorPaths = new ArrayList();
+        List locatorPathsSet = new ArrayList();
         Iterator locatorIter = locator.iterator();
         while (locatorIter.hasNext())
         {
             // get fallback locator properties
             ProfileLocatorProperty [] locatorProperties = (ProfileLocatorProperty []) locatorIter.next();
             log.debug("generateProfilingSearchPaths(), locatorPath = " + locator.getLocatorPath(locatorProperties));
-            
+
             // get folder and page locator path elements
+            String locatorPathRoot = Folder.PATH_SEPARATOR;
+            int locatorPathDepth = 0;
             List locatorPaths = new ArrayList();
-            locatorPaths.add(new StringBuffer(Folder.PATH_SEPARATOR));
+            locatorPaths.add(new StringBuffer(locatorPathRoot));
             int lastLocatorPathsCount = 0;
             String lastLocatorPropertyName = null;
+            int lastLocatorPropertyValueCount = 0;
             int lastLocatorPropertyValueLength = 0;
             for (int i = 0; (i < locatorProperties.length); i++)
             {
-                if (locatorProperties[i].isControl())
+                if (locatorProperties[i].isNavigation())
+                {
+                    // reset search paths to navigation root path, (reset
+                    // only navigation supported), skip null navigation values
+                    if (locatorProperties[i].getValue() != null)
+                    {
+                        // assume navigation value must be a root prefix
+                        locatorPathRoot = locatorProperties[i].getValue();
+                        if (! locatorPathRoot.startsWith(Folder.PATH_SEPARATOR))
+                        {
+                            locatorPathRoot = Folder.PATH_SEPARATOR + locatorPathRoot; 
+                        }
+                        if (! locatorPathRoot.endsWith(Folder.PATH_SEPARATOR))
+                        {
+                            locatorPathRoot += Folder.PATH_SEPARATOR; 
+                        }
+
+                        // reset locator paths using new prefix
+                        locatorPathDepth = 0;
+                        locatorPaths.clear();
+                        locatorPaths.add(new StringBuffer(locatorPathRoot));
+                        lastLocatorPathsCount = 0;
+                        lastLocatorPropertyName = null;
+                        lastLocatorPropertyValueCount = 0;
+                        lastLocatorPropertyValueLength = 0;
+                    }
+                    else
+                    {
+                        // make sure trailing null valued property is ignored
+                        // and previous value is removed from profiler iterator
+                        lastLocatorPropertyValueCount++;
+                    }
+                }
+                else if (locatorProperties[i].isControl())
                 {
                     // skip null control values
                     if (locatorProperties[i].getValue() != null)
@@ -653,6 +692,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                 multipleValueLocatorPaths.add(multipleValueLocatorPath);
                             }
                             locatorPaths.addAll(multipleValueLocatorPaths);
+                            lastLocatorPropertyValueCount++;
                         }
                         else
                         {
@@ -669,60 +709,98 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                             }
 
                             // reset last locator property vars
+                            locatorPathDepth++;
                             lastLocatorPathsCount = locatorPaths.size();
                             lastLocatorPropertyName = locatorPropertyName;
+                            lastLocatorPropertyValueCount = 1;
                             lastLocatorPropertyValueLength = locatorPropertyValue.length();
                         }
                     }
+                    else
+                    {
+                        // make sure trailing null valued property is ignored
+                        // and previous value is removed from profiler iterator
+                        lastLocatorPropertyValueCount++;
+                    }
                 }
-                else if (! forceRequestPath)
+                else
                 {
                     // set locator page path with page/path properties relative
                     // to the request path
-                    if (locatorProperties[i].getValue() != null)
+                    if (! forceRequestPath)
                     {
-                        pagePath = constructRootPagePath(requestPath, locatorProperties[i].getValue());
+                        if (locatorProperties[i].getValue() != null)
+                        {
+                            pagePath = constructRootPagePath(requestPath, locatorProperties[i].getValue());
+                        }
+                        else
+                        {
+                            pagePath = requestPath;
+                        }
                     }
-                    else
-                    {
-                        pagePath = requestPath;
-                    }
+
+                    // make sure trailing page/path property is ignored
+                    // and previous value is removed from profiler iterator
+                    lastLocatorPropertyValueCount++;
                 }
             }
 
-            // append page path to locator path folders and add to paths
-            Iterator locatorPathsIter = locatorPaths.iterator();
-            while (locatorPathsIter.hasNext())
+            // append any generated paths to locator path set
+            if (locatorPathDepth > 0)
             {
-                StringBuffer locatorPath = (StringBuffer) locatorPathsIter.next();
-                if (pagePath != null)
+                locatorPathsSet.addAll(locatorPaths);
+            }
+
+            // if end of locator path set, append locator path root to locator path
+            // set, (locator path roots not returned by profile iterator), and
+            // insert set into ordered locator paths
+            if (locatorPathDepth <= 1)
+            {
+                // add locator path root to set
+                locatorPathsSet.add(new StringBuffer(locatorPathRoot));
+
+                // add set to ordered and unique locator paths
+                ListIterator locatorPathsIter = locatorPathsSet.listIterator(locatorPathsSet.size());
+                while (locatorPathsIter.hasPrevious())
                 {
-                    if (pagePath.startsWith(Folder.PATH_SEPARATOR))
+                    String locatorPath = locatorPathsIter.previous().toString();
+                    if (! orderedLocatorPaths.contains(locatorPath))
                     {
-                        locatorPath.append(pagePath.substring(1));
-                    }
-                    else
-                    {
-                        locatorPath.append(pagePath);
+                        orderedLocatorPaths.add(0, locatorPath);
                     }
                 }
-                paths.add(locatorPath.toString());
+                locatorPathsSet.clear();
+            }
+
+            // skip multiple last property values, (because profile
+            // iterator is not multiple value aware), or because last
+            // property does not constitute a valid or control property
+            for (int skip = lastLocatorPropertyValueCount; ((skip > 1) && (locatorIter.hasNext())); skip--)
+            {
+                locatorIter.next();
             }
         }
 
-        // add default page path with no locator path to paths
+        // append page path to returned ordered locator path if required
         if (pagePath != null)
         {
-            if (! pagePath.startsWith(Folder.PATH_SEPARATOR))
+            // trim leading path separator from page path
+            if (pagePath.startsWith(Folder.PATH_SEPARATOR))
             {
-                paths.add(Folder.PATH_SEPARATOR + pagePath);
+                pagePath = pagePath.substring(1);
             }
-            else
+
+            // append page path to locator paths
+            ListIterator locatorPathsIter = orderedLocatorPaths.listIterator();
+            while (locatorPathsIter.hasNext())
             {
-                paths.add(pagePath);
+                String locatorPath = (String) locatorPathsIter.next();
+                locatorPathsIter.set(locatorPath + pagePath);
             }
         }
-        return paths;
+
+        // return ordered locator search paths
+        return orderedLocatorPaths;
     }
 
     private String constructRootPagePath(String requestPath, String pagePath)
