@@ -55,6 +55,7 @@ package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -94,6 +95,7 @@ import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -123,6 +125,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Serial
 
     private MutableDisplayNameSet displayNames;
     private MutableDescriptionSet descriptions;
+    
+    protected List portletEntities;
 
     /** PortletApplicationDefinition this PortletDefinition belongs to */
     private MutablePortletApplication app;
