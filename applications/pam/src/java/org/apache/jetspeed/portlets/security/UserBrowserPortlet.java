@@ -29,12 +29,12 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
@@ -44,7 +44,7 @@ import org.apache.webapp.admin.TreeControlNode;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class UserBrowserPortlet extends ServletPortlet
+public class UserBrowserPortlet extends GenericServletPortlet
 {
     private UserManager manager;
 

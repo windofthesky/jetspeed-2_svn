@@ -26,7 +26,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.jetspeed.portlet.ServletPortlet;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**
  * This class only exists to maintain the Help and View page names.  As soon
@@ -36,40 +36,40 @@ import org.apache.jetspeed.portlet.ServletPortlet;
  * @version $Id$
  * @task Remove this class when the container/engine retain preferences
  */
-public class PickANumberServlet extends ServletPortlet
+public class PickANumberServlet extends GenericServletPortlet
 {
     /**
      * Default action page when preference does not exist
      *
-     * @see org.apache.jetspeed.portlet.ServletPortlet#processAction
+     * @see org.apache.portals.bridges.common.GenericServletPortlet#processAction
      */
     private static final String DEFAULT_ACTION_PAGE = null;
     
     /**
      * Default custom page when preference does not exist
      *
-     * @see org.apache.jetspeed.portlet.ServletPortlet#doCustom
+     * @see org.apache.portals.bridges.common.GenericServletPortlet#doCustom
      */
     private static final String DEFAULT_CUSTOM_PAGE = null;
     
     /**
      * Default edit page when preference does not exist
      *
-     * @see org.apache.jetspeed.portlet.ServletPortlet#doEdit
+     * @see org.apache.portals.bridges.common.GenericServletPortlet#doEdit
      */
     private static final String DEFAULT_EDIT_PAGE = "/WEB-INF/demo/simple/PickANumberEdit.jsp";
     
     /**
      * Default help page when preference does not exist
      *
-     * @see org.apache.jetspeed.portlet.ServletPortlet#doHelp
+     * @see org.apache.portals.bridges.common.GenericServletPortlet#doHelp
      */
     private static final String DEFAULT_HELP_PAGE = "/WEB-INF/demo/simple/PickANumberHelp.jsp";
     
     /**
      * Default help page when preference does not exist
      *
-     * @see org.apache.jetspeed.portlet.ServletPortlet#doView
+     * @see org.apache.portals.bridges.common.GenericServletPortlet#doView
      */
     
     private static final String DEFAULT_VIEW_PAGE = "/WEB-INF/demo/simple/PickANumber.jsp";

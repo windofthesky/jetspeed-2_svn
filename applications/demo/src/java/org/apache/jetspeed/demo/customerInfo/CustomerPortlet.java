@@ -29,7 +29,7 @@ import javax.portlet.RenderResponse;
  * @author <a href="mailto:paulsp@apache.org">Paul Spencer</a>
  * @version $Id$
  */
-public class CustomerPortlet extends org.apache.jetspeed.portlet.ServletPortlet
+public class CustomerPortlet extends org.apache.portals.bridges.common.GenericServletPortlet
 {
     
     private List defaultCustomers = new ArrayList();

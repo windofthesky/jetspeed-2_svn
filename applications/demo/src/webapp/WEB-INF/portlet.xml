@@ -96,7 +96,7 @@ limitations under the License.
     </init-param>
     <portlet-name>DisplayRequestPortlet</portlet-name>
     <display-name>DisplayRequest Portlet Wrapper</display-name>
-    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -272,7 +272,7 @@ limitations under the License.
     </init-param>
     <portlet-name>RoleSecurityTest</portlet-name>
     <display-name>Role Security Test</display-name>
-    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -315,7 +315,7 @@ limitations under the License.
     </init-param>
     <portlet-name>UserInfoTest</portlet-name>
     <display-name>User Info Test</display-name>
-    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>

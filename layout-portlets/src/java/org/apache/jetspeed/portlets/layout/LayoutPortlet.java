@@ -39,7 +39,7 @@ import org.apache.pluto.om.window.PortletWindow;
 
 /**
  */
-public class LayoutPortlet extends org.apache.jetspeed.portlet.ServletPortlet
+public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServletPortlet
 {
     /** Commons logging */
     protected final static Log log = LogFactory.getLog(LayoutPortlet.class);

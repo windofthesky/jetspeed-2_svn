@@ -165,10 +165,15 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-
+    <dependency>
+      <id>portals-bridges-common</id>
+      <groupId>portals-bridges</groupId>
+      <version>0.1</version>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
    </dependencies>
-
-
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <resources>

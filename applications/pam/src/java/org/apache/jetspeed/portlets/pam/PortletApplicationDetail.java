@@ -32,7 +32,6 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
@@ -51,6 +50,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**
  * This portlet is a tabbed editor user interface for editing both portlet defintions
@@ -60,7 +60,7 @@ import org.apache.pluto.om.portlet.ContentType;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletApplicationDetail extends ServletPortlet
+public class PortletApplicationDetail extends GenericServletPortlet
 {
     private static final String PORTLET_ACTION = "portlet_action";
     private final String VIEW_PA = "portletApplication"; 

@@ -22,7 +22,7 @@ limitations under the License.
 		</init-param>
     	<portlet-name>LoginPortlet</portlet-name>
     	<display-name>Login Portlet</display-name>
-    	<portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    	<portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
 	    <expiration-cache>-1</expiration-cache>
     	<supports>
 	      <mime-type>text/html</mime-type>

@@ -36,8 +36,8 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
@@ -47,7 +47,7 @@ import org.apache.webapp.admin.TreeControlNode;
  * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
  * @version $Id$
  */
-public class SiteBrowserPortlet extends ServletPortlet
+public class SiteBrowserPortlet extends GenericServletPortlet
 {
     private PortletContext context;
     private PageManager pageManager;

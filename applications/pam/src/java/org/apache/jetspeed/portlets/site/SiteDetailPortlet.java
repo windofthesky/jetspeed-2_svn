@@ -36,9 +36,9 @@ import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
-import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 
 /**
  * This portlet is a tabbed editor user interface for editing site resoures: pages and folders.
@@ -46,7 +46,7 @@ import org.apache.jetspeed.portlets.pam.beans.TabBean;
  * @author <a href="mailto:jford@apache.com">Jeremy Ford</a>
  * @version $Id$
  */
-public class SiteDetailPortlet extends ServletPortlet
+public class SiteDetailPortlet extends GenericServletPortlet
 {
     private PortletContext context;
     private PageManager pageManager;

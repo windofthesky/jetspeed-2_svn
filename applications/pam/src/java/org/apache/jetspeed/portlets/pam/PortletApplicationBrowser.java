@@ -34,10 +34,10 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.portals.bridges.common.GenericServletPortlet;
 import org.apache.webapp.admin.TreeControl;
 import org.apache.webapp.admin.TreeControlNode;
 
@@ -50,7 +50,7 @@ import org.apache.webapp.admin.TreeControlNode;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletApplicationBrowser extends ServletPortlet
+public class PortletApplicationBrowser extends GenericServletPortlet
 {
     private String template;
     private PortletContext context;
