@@ -29,4 +29,8 @@ limitations under the License.
         <dc:creator>J2 Team</dc:creator>
     </portlet>
 
+	<js:services>
+		<js:service name='PortletRegistryComponent'/>
+	</js:services>
+	
 </portlet-app>
