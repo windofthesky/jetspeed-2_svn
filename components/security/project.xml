@@ -213,7 +213,7 @@ limitations under the License.
     </dependency>
      <dependency>
       <id>jdom</id>
-      <version>b9</version>
+      <version>b10</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
