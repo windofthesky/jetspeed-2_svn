@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <id>proxytoys</id>
-      <version>0.1-20040709</version>
+      <version>0.1-J2PATCHED</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
