@@ -55,19 +55,19 @@ package org.apache.jetspeed.container;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.Portlet;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.portlet.RenderResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.Portlet;
-
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
@@ -231,20 +231,27 @@ public class JetspeedContainerServlet
                 return; 
             }
     
-            res.getWriter().print(PHONEY_PORTLET_WINDOW);            
-            res.getWriter().print(portletDefinition.getName());            
-            res.getWriter().print(PHONEY_PORTLET_WINDOW);            
-
-            RenderRequest request = (RenderRequest)req.getAttribute(ContainerConstants.PORTLET_REQUEST);
-            
-            RenderResponse response = (RenderResponse)req.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-
-           
             //res.getWriter().print("Rendering: Portlet Class = " + entity.getPortletClass() + "<BR/>");
-                                                
-            portlet.render(request, response);            
 
-            res.getWriter().print(PHONEY_PORTLET_WINDOW);
+            if (method == ContainerConstants.METHOD_ACTION)
+            {
+                ActionRequest request = (ActionRequest)req.getAttribute(ContainerConstants.PORTLET_REQUEST);           
+                ActionResponse response = (ActionResponse)req.getAttribute(ContainerConstants.PORTLET_RESPONSE);                
+                portlet.processAction(request, response);                
+            }
+            else if (method == ContainerConstants.METHOD_RENDER)           
+            {
+                RenderRequest request = (RenderRequest)req.getAttribute(ContainerConstants.PORTLET_REQUEST);           
+                RenderResponse response = (RenderResponse)req.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                
+                res.getWriter().print(PHONEY_PORTLET_WINDOW);            
+                res.getWriter().print(portletDefinition.getName());            
+                res.getWriter().print(PHONEY_PORTLET_WINDOW);            
+                                                
+                portlet.render(request, response);            
+    
+                res.getWriter().print(PHONEY_PORTLET_WINDOW);
+            }
             
         }
         catch (Throwable t)

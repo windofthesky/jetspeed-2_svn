@@ -82,7 +82,13 @@ public class PreferencePortlet extends GenericPortlet
      */
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-
+        String attribute = (String)request.getAttribute("invokeMessage");
+        if (attribute != null)
+        {
+            System.out.println("+++ Got the attribute: " + attribute);
+            response.setContentType("text/html");            
+            response.getWriter().println("Got attribute set in ACTION: " + attribute + "<br/>");
+        }
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/demo/preference/pref-view.jsp");
         rd.include(request, response);     
@@ -102,7 +108,7 @@ public class PreferencePortlet extends GenericPortlet
      */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-       request.setAttribute("invokeMessge", "I was invoked!!!");
+       request.setAttribute("invokeMessage", "I was invoked!!!");
        System.out.println("I was invoked!!!");
     }
 

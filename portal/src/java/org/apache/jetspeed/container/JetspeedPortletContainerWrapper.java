@@ -114,9 +114,10 @@ public class JetspeedPortletContainerWrapper
     {
         PortletContainerFactory.
             getPortletContainerOriginal().
-                processPortletAction(portletWindow, 
-                                     ServletObjectAccess.getServletRequest(servletRequest),
-                                     ServletObjectAccess.getServletResponse(servletResponse));
+                processPortletAction(portletWindow,
+                                     servletRequest, servletResponse);                                      
+//                                     ServletObjectAccess.getServletRequest(servletRequest),
+//                                     ServletObjectAccess.getServletResponse(servletResponse));
     }
 
     public void portletLoad ( PortletWindow portletWindow,
