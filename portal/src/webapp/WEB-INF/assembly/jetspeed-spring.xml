@@ -64,6 +64,9 @@ limitations under the License.
   	   	  <entry key="SSO">
   	   	  	<ref bean="org.apache.jetspeed.sso.SSOProvider"/>
   	   	  </entry>   	  
+  	   	  <entry key="EntityAccessor">
+  	   	  	 <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent'/>
+  	   	  </entry>
   	   	</map>
   	   </constructor-arg>
   </bean>

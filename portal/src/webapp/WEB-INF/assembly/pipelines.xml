@@ -162,10 +162,12 @@ limitations under the License.
    <constructor-arg>
     <list>
     	<ref bean="localizationValve"/>
+        <ref bean="portalURLValve"/>    	    	
     	<ref bean="capabilityValve"/>
-      <ref bean="portalURLValve"/>
+    	<ref bean="securityValve"/>    	    	
+        <ref bean="profilerValve"/>    	    	    	
     	<ref bean="containerValve"/>
-    	<ref bean="portletValve"/>
+    	<ref bean="portletValve"/>    
     </list>
     </constructor-arg>
   </bean> 
