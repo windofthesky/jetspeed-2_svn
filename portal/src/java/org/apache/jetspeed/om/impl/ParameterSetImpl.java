@@ -60,7 +60,6 @@ import java.util.Set;
 
 //TODO: import org.apache.jetspeed.exception.JetspeedRuntimeException;
 import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.jetspeed.om.impl.*;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
 import org.apache.pluto.om.common.ParameterSetCtrl;

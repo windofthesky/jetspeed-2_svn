@@ -56,7 +56,6 @@ package org.apache.jetspeed.om.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import org.apache.jetspeed.om.impl.*;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
