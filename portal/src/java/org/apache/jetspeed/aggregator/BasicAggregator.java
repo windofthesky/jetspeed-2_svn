@@ -61,6 +61,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.cps.CPSInitializationException;
@@ -71,7 +73,6 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -207,7 +208,8 @@ public class BasicAggregator extends BaseCommonService implements Aggregator
             // Load Portlet from registry
             // 
             System.out.println("*** Getting portlet from registry: " + fragment.getName());
-            PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(fragment.getName());
+			PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+            PortletDefinition portletDefinition = regsitry.getPortletDefinitionByUniqueName(fragment.getName());
             if (portletDefinition == null)
             {
                 throw new JetspeedException("Failed to load: " + fragment.getName() + " from registry");

@@ -12,13 +12,14 @@ import java.util.HashMap;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.fs.FileSystemScanner;
 import org.apache.jetspeed.deployment.fs.JARObjectHandlerImpl;
 import org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener;
 import org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener;
 import org.apache.jetspeed.deployment.simpleregistry.SimpleRegistry;
 import org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.tools.pamanager.FileSystemPAM;
@@ -113,7 +114,8 @@ public class TestSimpleDeployment extends JetspeedTest
             new File(deployRoot + File.separator + "html" + File.separator + "portletstd" + File.separator + "decorator.vm");
 
         assertTrue(decoratorVm.getCanonicalPath() + " was not created!", decoratorVm.exists());
-        assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", JetspeedPortletRegistry.getPortletApplicationByIndetifier(TEST_PORTLET_APP_NAME));
+		PortletRegistryComponent portletRegistry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+        assertNotNull(TEST_PORTLET_APP_NAME+" was not registered into the portlet registery.", portletRegistry.getPortletApplicationByIndetifier(TEST_PORTLET_APP_NAME));
 
     }
 

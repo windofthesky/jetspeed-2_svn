@@ -13,13 +13,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.tools.pamanager.Deployment;
-
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -77,8 +77,8 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     {
                         throw new PortletApplicationException("<portlet-app> requires a unique \"id\" attribute.");
                     }
-
-                    if (JetspeedPortletRegistry.getPortletApplicationByIndetifier(id) != null)
+					PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+                    if (regsitry.getPortletApplicationByIndetifier(id) != null)
                     {
                         log.info("Portlet application \"" + id + "\"" + " already been registered.  Skipping initial deployment.");
                         // still need to register the filename to the app name so undeploy works correctly

@@ -59,17 +59,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.container.PortletContainerFactory;
 import org.apache.jetspeed.cps.BaseCommonService;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.entity.PortletEntityAccess;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -233,7 +234,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
 
         if (portletEntity==null)
         {
-            PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(fragment.getName());
+			PortletRegistryComponent registry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+            PortletDefinition portletDefinition = registry.getPortletDefinitionByUniqueName(fragment.getName());
             if (portletDefinition == null)
             {
                 log.error("Failed to load: " + fragment.getName() + " from registry");

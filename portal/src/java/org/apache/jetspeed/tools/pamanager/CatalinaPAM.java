@@ -55,11 +55,8 @@ package org.apache.jetspeed.tools.pamanager;
 
 
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager;
 
 

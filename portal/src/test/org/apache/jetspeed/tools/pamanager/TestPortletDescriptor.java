@@ -55,15 +55,15 @@ package org.apache.jetspeed.tools.pamanager;
 
 import java.util.Iterator;
 import java.util.Locale;
+
 import javax.portlet.PortletMode;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.cps.CommonPortletServices;
-import org.apache.jetspeed.exception.RegistryException;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
@@ -72,8 +72,6 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.persistence.PersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
-import org.apache.jetspeed.persistence.TransactionStateException;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.jetspeed.test.JetspeedTest;
 import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.pluto.om.common.DisplayName;
@@ -95,6 +93,8 @@ import org.apache.pluto.om.portlet.PortletDefinitionList;
  */
 public class TestPortletDescriptor extends JetspeedTest
 {
+    private PortletRegistryComponent registry;
+
     /**
      * Defines the testcase name for JUnit.
      *
@@ -306,42 +306,25 @@ public class TestPortletDescriptor extends JetspeedTest
 
     public void testWritingToDB() throws Exception
     {
-        MutablePortletApplication app = JetspeedPortletRegistry.getPortletApplication("HW_App");
+        MutablePortletApplication app = registry.getPortletApplication("HW_App");
         if (app != null)
         {
-            try
-            {
-                JetspeedPortletRegistry.beginTransaction();
-                JetspeedPortletRegistry.removeApplication(app);
-                JetspeedPortletRegistry.commitTransaction();
-            }
-            catch (Exception e)
-            {
-                JetspeedPortletRegistry.rollbackTransaction();
-                throw e;
-            }
+                
+            registry.removeApplication(app);               
+            
 
         }
         app = PortletDescriptorUtilities.loadPortletDescriptor("./test/testdata/deploy/portlet2.xml", "HW_App");
 
         app.setName("HW_App");
-		try
-        {
-            JetspeedPortletRegistry.beginTransaction();
-            JetspeedPortletRegistry.registerPortletApplication(app);
-            JetspeedPortletRegistry.commitTransaction();
-        }
-        catch (Exception e)
-        {
-			JetspeedPortletRegistry.rollbackTransaction();
-			throw e;
-        }
+	    registry.registerPortletApplication(app);
+     
       
         PersistenceService ps = (PersistenceService) CommonPortletServices.getPortalService(PersistenceService.SERVICE_NAME);
         PersistencePlugin plugin = ps.getDefaultPersistencePlugin();
         
 
-        PortletDefinition pd = JetspeedPortletRegistry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
+        PortletDefinition pd = registry.getPortletDefinitionByUniqueName("HW_App::PreferencePortlet");
         assertNotNull(pd);
 
         assertNotNull(pd.getPreferenceSet());
@@ -360,27 +343,25 @@ public class TestPortletDescriptor extends JetspeedTest
 
         assertTrue(count > 0);
 
-        try
-        {
-			JetspeedPortletRegistry.beginTransaction();
-            JetspeedPortletRegistry.removeApplication(app);
-			JetspeedPortletRegistry.commitTransaction();
-        }
-        catch (Exception e)
-        {
-            try
-            {
-				JetspeedPortletRegistry.rollbackTransaction();
-            }
-            catch (TransactionStateException e1)
-            {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw e;
-        }
+     	
+        registry.removeApplication(app);
+			
+     
 
     }
+    /** 
+     * <p>
+     * setUp
+     * </p>
+     * 
+     * @see junit.framework.TestCase#setUp()
+     * @throws Exception
+     */
+    public void setUp() throws Exception
+    {
+        // TODO Auto-generated method stub
+        super.setUp();
+        registry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+    }
+
 }

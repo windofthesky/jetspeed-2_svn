@@ -62,9 +62,10 @@ import java.util.StringTokenizer;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.aggregator.PortletWindowFactory;
+import org.apache.jetspeed.components.portletregsitry.PortletRegistryComponent;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.registry.JetspeedPortletRegistry;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.StringUtils;
@@ -272,8 +273,9 @@ public class PortalControlParameter
                 String portletName = idTokenizer.nextToken();
                 String sequence = idTokenizer.nextToken();
                 String entityName = idTokenizer.nextToken();
-
-                PortletDefinition portletDefinition = JetspeedPortletRegistry.getPortletDefinitionByUniqueName(entityName + "::" + portletName);
+                PortletRegistryComponent regsitry =
+                    (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+                PortletDefinition portletDefinition = regsitry.getPortletDefinitionByUniqueName(entityName + "::" + portletName);
                 if (portletDefinition == null)
                 {
                     throw new JetspeedException("Failed to load: " + portletName + " from registry");
