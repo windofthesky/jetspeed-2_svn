@@ -391,7 +391,8 @@ public class JetspeedProfiler implements Profiler
         return locators;
     }
     
-    public void addProfilingRule(ProfilingRule rule)
+    
+    public void storeProfilingRule(ProfilingRule rule)
     throws ProfilerException
     {
         try
@@ -410,27 +411,8 @@ public class JetspeedProfiler implements Profiler
             throw new ProfilerException("failed to store: " + rule.getId(), e);
         }
     }
-
-    public void updateProfilingRule(ProfilingRule rule)
-    throws ProfilerException
-    {
-        try
-        {
-            System.out.println("UP making pers : " + rule.getId());
-            Transaction tx = persistentStore.getTransaction();
-            tx.begin();
-            persistentStore.lockForWrite(rule);
-            tx.commit();
-            System.out.println("UP done making pers : " + rule.getId());
-            
-        }
-        catch (Exception e)
-        {
-            throw new ProfilerException("failed to store: " + rule.getId(), e);
-        }
-    }
     
-    public void removeProfilingRule(ProfilingRule rule)
+    public void deleteProfilingRule(ProfilingRule rule)
     throws ProfilerException    
     {
         try
@@ -442,7 +424,7 @@ public class JetspeedProfiler implements Profiler
         }
         catch (Exception e)
         {
-            throw new ProfilerException("failed to remove: " + rule.getId(), e);
+            throw new ProfilerException("failed to delete: " + rule.getId(), e);
         }
         
     }

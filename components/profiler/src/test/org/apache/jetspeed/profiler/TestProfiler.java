@@ -381,19 +381,19 @@ public class TestProfiler extends PersistenceSupportedTestCase
         rule.setClassname("org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule");
         rule.setId("testmo");
         rule.setTitle("The Grand Title");
-        profiler.addProfilingRule(rule);
+        profiler.storeProfilingRule(rule);
         ProfilingRule rule2 = profiler.getRule("testmo");
         assertNotNull("rule couldnt be added", rule2);
         assertTrue("rule id bad", rule.getId().equals(rule2.getId()));
         
         rule2.setTitle("The New Title");
-        profiler.updateProfilingRule(rule2);
+        profiler.storeProfilingRule(rule2);
                 
         ProfilingRule rule3= profiler.getRule("testmo");
         assertNotNull("rule couldnt be retrieved", rule3);
         assertTrue("rule title is bad", rule3.getTitle().equals(rule2.getTitle()));
                 
-        profiler.removeProfilingRule(rule);
+        profiler.deleteProfilingRule(rule);
         ProfilingRule rule4 = profiler.getRule("testmo");
         assertNull("rule couldnt be deleted", rule4);
         
