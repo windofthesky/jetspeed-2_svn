@@ -113,15 +113,98 @@ limitations under the License.
 </c:if>
 <%--End of User Attributes tab data--%>
 
-<%--Beginning Security tab data--%>
+<%--Beginning Security Role tab data--%>
 <%--TODO:  switch to c:choose --%>
-<c:if test="${selectedTab.id == 'user_security'}">
-  <div id="Security">
-  </div>
-  <h3>SECURITY ATTRIBUTES</h3>
+<c:if test="${selectedTab.id == 'user_role'}">
+  <div id="Role">
+  <portlet:actionURL var="edit_role_link" />
   
+	<form name="Edit_Role_Form" action="<c:out value="${edit_role_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.edit_role"/>		
+		<table>
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="security.rolename"/></th>
+			</tr>
+		<c:forEach var="role" items="${roles}">
+			<tr>			
+				<td>
+					<input type="checkbox" name="user_role_id" value="<c:out value="${role.principal.name}"/>"/>
+				</td>
+				<td>
+					<c:out value="${role.principal.name}"/>
+				</td>
+			</tr>
+		</c:forEach>
+		</table>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_role'"/>
+    </form>
+	<form name="Add_Role_Form" action="<c:out value="${edit_role_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.add_user_role"/>
+		
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="security.rolename"/>
+				</td>
+				<td>
+					<input type="text" name="role_name" value=""/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="security.add"/>"/>
+	</form>
+    
+  </div>  
 </c:if>
-<%--End of Security tab data--%>
+<%--End of Security Role tab data--%>
+
+<%--Beginning Security Group tab data--%>
+<%--TODO:  switch to c:choose --%>
+<c:if test="${selectedTab.id == 'user_group'}">
+  <div id="Role">
+  <portlet:actionURL var="edit_group_link" />
+  
+	<form name="Edit_Group_Form" action="<c:out value="${edit_group_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.edit_group"/>		
+		<table>
+			<tr>
+				<th>&nbsp;</th>
+				<th><fmt:message key="security.groupname"/></th>
+			</tr>
+		<c:forEach var="group" items="${groups}">
+			<tr>			
+				<td>
+					<input type="checkbox" name="user_group_id" value="<c:out value="${group.principal.name}"/>"/>
+				</td>
+				<td>
+					<c:out value="${group.principal.name}"/>
+				</td>
+			</tr>
+		</c:forEach>
+		</table>
+		<input type="submit" value="<fmt:message key="security.remove"/>" onClick="this.form.portlet_action.value = 'security_user.remove_user_group'"/>
+    </form>
+	<form name="Add_Group_Form" action="<c:out value="${edit_group_link}"/>">
+		<input type="hidden" name="portlet_action" value="security_user.add_user_group"/>
+		
+		<table>
+			<tr>
+				<td>
+					<fmt:message key="security.groupname"/>
+				</td>
+				<td>
+					<input type="text" name="group_name" value=""/>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="<fmt:message key="security.add"/>"/>
+	</form>
+    
+  </div>  
+</c:if>
+<%--End of Security Group tab data--%>
+
 
 <%--Beginning Profile tab data--%>
 <%--TODO:  switch to c:choose --%>

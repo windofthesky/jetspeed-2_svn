@@ -16,6 +16,7 @@
 package org.apache.jetspeed.portlets.security;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,8 +36,11 @@ import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
 import org.apache.jetspeed.portlets.pam.beans.TabBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.portlets.security.users.JetspeedUserBean.StringAttribute;
+import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * This portlet is a tabbed editor user interface for editing user attributes
@@ -49,12 +53,26 @@ import org.apache.jetspeed.security.UserManager;
 public class UserDetailsPortlet extends ServletPortlet
 {
     private final String VIEW_USER = "user"; 
+    private final String VIEW_ROLES = "roles";
+    private final String VIEW_GROUPS = "groups";
+    
     private final String USER_ACTION_PREFIX = "security_user.";
     private final String ACTION_UPDATE_ATTRIBUTE = "update_user_attribute";
     private final String ACTION_REMOVE_ATTRIBUTE = "remove_user_attribute";
     private final String ACTION_ADD_ATTRIBUTE = "add_user_attribute";
+    private final String ACTION_REMOVE_ROLE = "remove_user_role";
+    private final String ACTION_ADD_ROLE = "add_user_role";
+    private final String ACTION_REMOVE_GROUP = "remove_user_group";
+    private final String ACTION_ADD_GROUP = "add_user_group";
     
-    private UserManager manager;
+    private final String TAB_ATTRIBUTES = "user_attributes";
+    private final String TAB_ROLE = "user_role";
+    private final String TAB_GROUP = "user_group";
+    private final String TAB_PROFILE = "user_profile";
+    
+    private UserManager  userManager;
+    private RoleManager  roleManager;
+    private GroupManager groupManager;
 
     private LinkedHashMap userTabMap = new LinkedHashMap();
     
@@ -62,19 +80,31 @@ public class UserDetailsPortlet extends ServletPortlet
     throws PortletException 
     {
         super.init(config);
-        manager = (UserManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
-        if (null == manager)
+        userManager = (UserManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
+        if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
+        roleManager = (RoleManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_ROLE_MANAGER_COMPONENT);
+        if (null == roleManager)
+        {
+            throw new PortletException("Failed to find the Role Manager on portlet initialization");
+        }
+        groupManager = (GroupManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_GROUP_MANAGER_COMPONENT);
+        if (null == groupManager)
+        {
+            throw new PortletException("Failed to find the Group Manager on portlet initialization");
+        }
         
-        TabBean tb1 = new TabBean("user_attributes");
-        TabBean tb2 = new TabBean("user_security");
-        TabBean tb3 = new TabBean("user_profile");
+        TabBean tb1 = new TabBean(TAB_ATTRIBUTES);
+        TabBean tb2 = new TabBean(TAB_ROLE);
+        TabBean tb3 = new TabBean(TAB_GROUP);
+        TabBean tb4 = new TabBean(TAB_PROFILE);
         
         userTabMap.put(tb1.getId(), tb1);
         userTabMap.put(tb2.getId(), tb2);
-        userTabMap.put(tb3.getId(), tb3);        
+        userTabMap.put(tb3.getId(), tb3); 
+        userTabMap.put(tb4.getId(), tb4);
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -95,7 +125,6 @@ public class UserDetailsPortlet extends ServletPortlet
         
         if (user != null)
         {        
-            request.setAttribute(VIEW_USER, new JetspeedUserBean(user));
             
             // Tabs
             request.setAttribute("tabs", userTabMap.values());        
@@ -105,7 +134,20 @@ public class UserDetailsPortlet extends ServletPortlet
             {
                 selectedTab = (TabBean) userTabMap.values().iterator().next();
             }
-                        
+            request.setAttribute(VIEW_USER, new JetspeedUserBean(user));
+            if (selectedTab.getId().equals(TAB_ROLE))
+            {
+                request.setAttribute(VIEW_ROLES, getRoles(userName));                
+            }
+            else if (selectedTab.getId().equals(TAB_GROUP))
+            {
+                request.setAttribute(VIEW_GROUPS, getGroups(userName));  
+            }
+            else if (selectedTab.getId().equals(TAB_PROFILE))
+            {
+                
+            }
+           
             request.setAttribute(PortletApplicationResources.REQUEST_SELECT_TAB, selectedTab);
         }
         
@@ -133,15 +175,32 @@ public class UserDetailsPortlet extends ServletPortlet
             {
                 updateUserAttribute(actionRequest, actionResponse);
             }
-            else if(action.endsWith(ACTION_REMOVE_ATTRIBUTE))
+            else if (action.endsWith(ACTION_REMOVE_ATTRIBUTE))
             {
                 removeUserAttributes(actionRequest, actionResponse);
             }
-            else if(action.endsWith(ACTION_ADD_ATTRIBUTE))
+            else if (action.endsWith(ACTION_ADD_ATTRIBUTE))
             {
                 addUserAttribute(actionRequest, actionResponse);
             }
-        }        
+            else if (action.endsWith(ACTION_REMOVE_ROLE))
+            {
+                removeUserRoles(actionRequest, actionResponse);
+            }
+            else if (action.endsWith(ACTION_ADD_ROLE))
+            {
+                addUserRole(actionRequest, actionResponse);
+            }
+            else if (action.endsWith(ACTION_REMOVE_GROUP))
+            {
+                removeUserGroups(actionRequest, actionResponse);
+            }
+            else if (action.endsWith(ACTION_ADD_GROUP))
+            {
+                addUserGroup(actionRequest, actionResponse);
+            }
+            
+        }
     }    
 
     private void updateUserAttribute(ActionRequest actionRequest, ActionResponse actionResponse)
@@ -225,6 +284,118 @@ public class UserDetailsPortlet extends ServletPortlet
         }
     }
     
+    private void removeUserRoles(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String[] roleNames = actionRequest.getParameterValues("user_role_id");
+
+            if(roleNames != null)
+            {
+                for (int ix = 0; ix < roleNames.length; ix++)
+                {
+                    try
+                    {
+                        if (roleManager.roleExists(roleNames[ix]))
+                        {
+                            roleManager.removeRoleFromUser(userName, roleNames[ix]);
+                        }
+                    }
+                    catch (SecurityException e)
+                    {
+                        // TODO: logging
+                        System.err.println("failed to remove user from role: " + userName + ", "  + roleNames[ix] + e);                       
+                    }                
+                }
+            }            
+        }
+    }    
+    
+    private void addUserRole(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String roleName = actionRequest.getParameter("role_name");
+            if (roleName != null && roleName.trim().length() > 0)
+            {
+                try
+                {
+                    roleManager.addRoleToUser(userName, roleName);
+                }
+                catch (SecurityException e)
+                {
+                    // TODO: logging
+                    System.err.println("failed to add user to role: " + userName + ", "  + roleName + e);                       
+                }
+            }
+        }
+    }
+    
+    private void removeUserGroups(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String[] groupNames = actionRequest.getParameterValues("user_group_id");
+
+            if(groupNames != null)
+            {
+                for (int ix = 0; ix < groupNames.length; ix++)
+                {
+                    try
+                    {
+                        if (groupManager.groupExists(groupNames[ix]))
+                        {
+                            groupManager.removeUserFromGroup(userName, groupNames[ix]);
+                        }
+                    }
+                    catch (SecurityException e)
+                    {
+                        // TODO: logging
+                        System.err.println("failed to remove user from group: " + userName + ", "  + groupNames[ix] + e);                       
+                    }                
+                }
+            }            
+        }
+    }    
+    
+    private void addUserGroup(ActionRequest actionRequest, ActionResponse actionResponse)
+    {
+        String userName = (String)
+            actionRequest.getPortletSession().getAttribute(PortletApplicationResources.PAM_CURRENT_USER, 
+                                     PortletSession.APPLICATION_SCOPE);
+        
+        User user = lookupUser(userName);
+        if (user != null)
+        {
+            String groupName = actionRequest.getParameter("group_name");
+            if (groupName != null && groupName.trim().length() > 0)
+            {
+                try
+                {
+                    groupManager.addUserToGroup(userName, groupName);
+                }
+                catch (SecurityException e)
+                {
+                    // TODO: logging
+                    System.err.println("failed to add user to group: " + userName + ", "  + groupName + e);                       
+                }
+            }
+        }
+    }
+        
     private String getAction(String prefix, String action)
     {
         return action.substring(prefix.length());
@@ -235,12 +406,40 @@ public class UserDetailsPortlet extends ServletPortlet
         return action.startsWith(USER_ACTION_PREFIX);
     }
     
+    private Collection getRoles(String userName)
+    {
+        try
+        {
+            return roleManager.getRolesForUser(userName); 
+        }
+        catch (SecurityException e)
+        {
+            // TODO: logging
+            System.err.println("roles not found: " + userName + ", " + e);       
+        }
+        return new LinkedList();
+    }
+    
+    private Collection getGroups(String userName)
+    {
+        try
+        {
+            return groupManager.getGroupsForUser(userName); 
+        }
+        catch (SecurityException e)
+        {
+            // TODO: logging
+            System.err.println("groups not found: " + userName + ", " + e);       
+        }
+        return new LinkedList();
+    }    
+    
     private User lookupUser(String userName)
     {
         User user = null;
         try
         {
-            user = manager.getUser(userName);
+            user = userManager.getUser(userName);
         }
         catch (Exception e)
         {
