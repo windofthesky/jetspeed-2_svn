@@ -20,13 +20,13 @@ limitations under the License.
          userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
          roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
          useContextClassLoader="false"
-         debug="3"/>
+         debug="0"/>
 
 
 	<Resource name="jdbc/jetspeed" auth="Container"
             factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-            type="javax.sql.DataSource" username="j2" password="digital"
-            driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://j2-server/j2?autoReconnect=true"
+            type="javax.sql.DataSource" username="@USERNAME@" password="@PASSWORD@"
+            driverClassName="@DRIVER@" url="@URL@"
             maxActive="100" maxIdle="30" maxWait="10000"/> 
 
 </Context>
