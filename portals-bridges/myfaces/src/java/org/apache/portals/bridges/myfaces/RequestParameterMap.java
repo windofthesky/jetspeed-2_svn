@@ -19,10 +19,13 @@ import java.util.Enumeration;
 
 import javax.portlet.PortletRequest;
 
-import net.sourceforge.myfaces.context.AbstractAttributeMap;
+import org.apache.portals.bridges.myfaces.AbstractAttributeMap;
 
 /**
  * <p>{@link PortletRequest} parameters as Map.</p>
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
  * 
  * @author <a href="dlestrat@apache.org">David Le Strat</a>
  */
@@ -33,6 +36,9 @@ public class RequestParameterMap extends AbstractAttributeMap
 	/** The {@link PortletRequest}. */
 	private final PortletRequest portletRequest;
 
+    /**
+     * @param request The request.
+     */
     public RequestParameterMap(Object request)
     {
         if (request instanceof PortletRequest)
@@ -45,6 +51,9 @@ public class RequestParameterMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttribute(java.lang.String)
+     */
     public Object getAttribute(String key)
     {
         if (null != this.portletRequest)
@@ -57,16 +66,25 @@ public class RequestParameterMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#setAttribute(java.lang.String, java.lang.Object)
+     */
     public void setAttribute(String key, Object value)
     {
         throw new UnsupportedOperationException("Cannot set PortletRequest Parameter");
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#removeAttribute(java.lang.String)
+     */
     public void removeAttribute(String key)
     {
         throw new UnsupportedOperationException("Cannot remove PortletRequest Parameter");
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttributeNames()
+     */
     public Enumeration getAttributeNames()
     {
         if (null != this.portletRequest)

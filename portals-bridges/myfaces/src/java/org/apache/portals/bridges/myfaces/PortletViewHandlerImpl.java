@@ -30,7 +30,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * View handler for JSF portlet bridge.
+ * </p>
+ * 
+ * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
 public class PortletViewHandlerImpl extends ViewHandler
 {
@@ -41,7 +45,8 @@ public class PortletViewHandlerImpl extends ViewHandler
     private ViewHandler handler;
 
     /**
-     * <p>Construct a new <code>ViewHandler</code> instance that delegates
+     * <p>
+     * Construct a new <code>ViewHandler</code> instance that delegates
      * non-portlet-specific behavior to the specified implementation.
      * 
      * @param handler The <code>ViewHandler</code> instance
@@ -54,48 +59,78 @@ public class PortletViewHandlerImpl extends ViewHandler
         }
         this.handler = handler;
     }
-    
+
+    /**
+     * @see javax.faces.application.ViewHandler#calculateLocale(javax.faces.context.FacesContext)
+     */
     public Locale calculateLocale(FacesContext facesContext)
     {
         return handler.calculateLocale(facesContext);
     }
 
+    /**
+     * @see javax.faces.application.ViewHandler#calculateRenderKitId(javax.faces.context.FacesContext)
+     */
     public String calculateRenderKitId(FacesContext facesContext)
     {
         return handler.calculateRenderKitId(facesContext);
     }
 
+    /**
+     * @see javax.faces.application.ViewHandler#createView(javax.faces.context.FacesContext,
+     *      java.lang.String)
+     */
     public UIViewRoot createView(FacesContext facesContext, String viewId)
     {
         return handler.createView(facesContext, viewId);
     }
 
+    /**
+     * @see javax.faces.application.ViewHandler#getActionURL(javax.faces.context.FacesContext,
+     *      java.lang.String)
+     */
     public String getActionURL(FacesContext facesContext, String viewId)
     {
         Object response = facesContext.getExternalContext().getResponse();
-        if (!(response instanceof RenderResponse)) {
+        if (!(response instanceof RenderResponse))
+        {
             throw new IllegalStateException("Must be a RenderResponse");
         }
         RenderResponse renderResponse = (RenderResponse) response;
         PortletURL actionURL = renderResponse.createActionURL();
         return (actionURL.toString());
     }
-    
+
+    /**
+     * @see javax.faces.application.ViewHandler#getResourceURL(javax.faces.context.FacesContext,
+     *      java.lang.String)
+     */
     public String getResourceURL(FacesContext facesContext, String path)
     {
         return handler.getResourceURL(facesContext, path);
     }
-    
+
+    /**
+     * @see javax.faces.application.ViewHandler#renderView(javax.faces.context.FacesContext,
+     *      javax.faces.component.UIViewRoot)
+     */
     public void renderView(FacesContext facesContext, UIViewRoot viewToRender) throws IOException, FacesException
     {
         handler.renderView(facesContext, viewToRender);
     }
-    
+
+    /**
+     * @see javax.faces.application.ViewHandler#restoreView(javax.faces.context.FacesContext,
+     *      java.lang.String)
+     */
     public UIViewRoot restoreView(FacesContext facesContext, String viewId)
     {
         return handler.restoreView(facesContext, viewId);
     }
 
+    /**
+     * @see javax.faces.application.ViewHandler#writeState(javax.faces.context.FacesContext)
+     */
     public void writeState(FacesContext facesContext) throws IOException
     {
         handler.writeState(facesContext);

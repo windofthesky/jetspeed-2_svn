@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -43,34 +44,71 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 /**
- * <p>JSF 1.0 PRD2, 6.1.1</p>
+ * <p>
+ * JSF 1.0 PRD2, 6.1.1
+ * </p>
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
  * 
- * @author <a href="dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="dlestrat@apache.org">David Le Strat </a>
  */
 public class PortletExternalContextImpl extends ExternalContext
 {
-	private static final Log log = LogFactory.getLog(PortletExternalContextImpl.class);
-	
-	private static final String INIT_PARAMETER_MAP_ATTRIBUTE = InitParameterMap.class.getName();
-    
+    private static final Log log = LogFactory.getLog(PortletExternalContextImpl.class);
+
+    /** The init parameter map attribute. */
+    private static final String INIT_PARAMETER_MAP_ATTRIBUTE = InitParameterMap.class.getName();
+
+    /** The portlet context. */
     private PortletContext portletContext;
+
+    /** The portlet request. */
     private PortletRequest portletRequest;
+
+    /** The portlet response. */
     private PortletResponse portletResponse;
+
+    /** The application map. */
     private Map applicationMap;
+
+    /** The session map. */
     private Map sessionMap;
+
+    /** The request map. */
     private Map requestMap;
+
+    /** The request parameter map. */
     private Map requestParameterMap;
+
+    /** The request parameter values map. */
     private Map requestParameterValuesMap;
+
+    /** The request header map. */
     private Map requestHeaderMap;
+
+    /** The request header values map. */
     private Map requestHeaderValuesMap;
+
+    /** The request cookie map. */
     private Map requestCookieMap;
+
+    /** The init parameter map. */
     private Map initParameterMap;
+
+    /** The request path info. */
     private String requestPathInfo;
+
+    /** The request servlet path. */
     private String requestServletPath;
-    
-    public PortletExternalContextImpl(PortletContext portletContext,
-    								  PortletRequest portletRequest,
-    								  PortletResponse portletResponse)
+
+    /**
+     * @param portletContext The {@link PortletContext}.
+     * @param portletRequest The {@link PortletRequest}.
+     * @param portletResponse The {@link PortletResponse}.
+     */
+    public PortletExternalContextImpl(PortletContext portletContext, PortletRequest portletRequest,
+            PortletResponse portletResponse)
     {
         this.portletContext = portletContext;
         this.portletRequest = portletRequest;
@@ -88,6 +126,11 @@ public class PortletExternalContextImpl extends ExternalContext
         this.requestServletPath = null;
     }
 
+    /**
+     * <p>
+     * Reset the member variables.
+     * </p>
+     */
     public void release()
     {
         this.portletContext = null;
@@ -106,27 +149,41 @@ public class PortletExternalContextImpl extends ExternalContext
         this.requestServletPath = null;
     }
 
-
+    /**
+     * @see javax.faces.context.ExternalContext#getSession(boolean)
+     */
     public Object getSession(boolean create)
     {
         return this.portletRequest.getPortletSession(create);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getContext()
+     */
     public Object getContext()
     {
         return this.portletContext;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequest()
+     */
     public Object getRequest()
     {
         return this.portletRequest;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getResponse()
+     */
     public Object getResponse()
     {
         return this.portletResponse;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getApplicationMap()
+     */
     public Map getApplicationMap()
     {
         if (this.applicationMap == null)
@@ -136,6 +193,9 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.applicationMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getSessionMap()
+     */
     public Map getSessionMap()
     {
         if (this.sessionMap == null)
@@ -145,6 +205,9 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.sessionMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestMap()
+     */
     public Map getRequestMap()
     {
         if (this.requestMap == null)
@@ -154,6 +217,9 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.requestMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestParameterMap()
+     */
     public Map getRequestParameterMap()
     {
         if (this.requestParameterMap == null)
@@ -163,6 +229,9 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.requestParameterMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestParameterValuesMap()
+     */
     public Map getRequestParameterValuesMap()
     {
         if (this.requestParameterValuesMap == null)
@@ -172,65 +241,101 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.requestParameterValuesMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestParameterNames()
+     */
     public Iterator getRequestParameterNames()
     {
         final Enumeration enum = this.portletRequest.getParameterNames();
         Iterator it = new Iterator()
         {
-            public boolean hasNext() {
+            public boolean hasNext()
+            {
                 return enum.hasMoreElements();
             }
 
-            public Object next() {
+            public Object next()
+            {
                 return enum.nextElement();
             }
 
-            public void remove() {
+            public void remove()
+            {
                 throw new UnsupportedOperationException(this.getClass().getName() + " UnsupportedOperationException");
             }
         };
         return it;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestHeaderMap()
+     */
     public Map getRequestHeaderMap()
     {
-        return null;
+        // TODO Hack to fix issue with MyFaces 1.0.6
+        if (this.requestHeaderMap == null)
+        {
+            requestHeaderMap = new HashMap();
+            requestHeaderMap.put("Content-Type", portletRequest.getResponseContentType());
+        }
+        return requestHeaderMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestHeaderValuesMap()
+     */
     public Map getRequestHeaderValuesMap()
     {
-        return null;
+        return requestHeaderValuesMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestCookieMap()
+     */
     public Map getRequestCookieMap()
     {
         return null;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestLocale()
+     */
     public Locale getRequestLocale()
     {
         return this.portletRequest.getLocale();
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestPathInfo()
+     */
     public String getRequestPathInfo()
     {
-    	if (null == this.requestPathInfo)
-    	{
-        	this.requestPathInfo = (String) this.portletRequest.getAttribute("javax.servlet.include.path_info");
-    	}
-    	return  this.requestPathInfo;
+        if (null == this.requestPathInfo)
+        {
+            this.requestPathInfo = (String) this.portletRequest.getAttribute("javax.servlet.include.path_info");
+        }
+        return this.requestPathInfo;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestContextPath()
+     */
     public String getRequestContextPath()
     {
         return this.portletRequest.getContextPath();
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getInitParameter(java.lang.String)
+     */
     public String getInitParameter(String s)
     {
         return this.portletContext.getInitParameter(s);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getInitParameterMap()
+     */
     public Map getInitParameterMap()
     {
         if (this.initParameterMap == null)
@@ -244,50 +349,68 @@ public class PortletExternalContextImpl extends ExternalContext
         return this.initParameterMap;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getResourcePaths(java.lang.String)
+     */
     public Set getResourcePaths(String s)
     {
         return this.portletContext.getResourcePaths(s);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getResourceAsStream(java.lang.String)
+     */
     public InputStream getResourceAsStream(String s)
     {
         return this.portletContext.getResourceAsStream(s);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#encodeActionURL(java.lang.String)
+     */
     public String encodeActionURL(String s)
     {
-    	return this.portletResponse.encodeURL(s);
+        return this.portletResponse.encodeURL(s);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#encodeResourceURL(java.lang.String)
+     */
     public String encodeResourceURL(String s)
     {
         return this.portletResponse.encodeURL(s);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#encodeNamespace(java.lang.String)
+     */
     public String encodeNamespace(String s)
     {
         return s;
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#dispatch(java.lang.String)
+     */
     public void dispatch(String requestURI) throws IOException, FacesException
     {
         if (!(this.portletResponse instanceof RenderResponse))
         {
-        	throw new IllegalArgumentException("Only RenderResponse can be dispatched");
+            throw new IllegalArgumentException("Only RenderResponse can be dispatched");
         }
         if (!(this.portletRequest instanceof RenderRequest))
         {
-        	throw new IllegalArgumentException("Only RenderRequest can be dispatched");
+            throw new IllegalArgumentException("Only RenderRequest can be dispatched");
         }
-    	PortletRequestDispatcher portletRequestDispatcher
-            = this.portletContext.getRequestDispatcher(requestURI);
+        PortletRequestDispatcher portletRequestDispatcher = this.portletContext.getRequestDispatcher(requestURI);
         try
         {
-        	portletRequestDispatcher.include((RenderRequest) this.portletRequest, (RenderResponse) this.portletResponse);
+            portletRequestDispatcher
+                    .include((RenderRequest) this.portletRequest, (RenderResponse) this.portletResponse);
         }
         catch (PortletException e)
         {
-        	if (e.getMessage() != null)
+            if (e.getMessage() != null)
             {
                 throw new FacesException(e.getMessage(), e);
             }
@@ -298,48 +421,80 @@ public class PortletExternalContextImpl extends ExternalContext
         }
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestServletPath()
+     */
     public String getRequestServletPath()
     {
         return (String) this.portletRequest.getAttribute(FacesPortlet.VIEW_ID);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getAuthType()
+     */
     public String getAuthType()
     {
         return this.portletRequest.getAuthType();
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRemoteUser()
+     */
     public String getRemoteUser()
     {
         return this.portletRequest.getRemoteUser();
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#isUserInRole(java.lang.String)
+     */
     public boolean isUserInRole(String role)
     {
         return this.portletRequest.isUserInRole(role);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getUserPrincipal()
+     */
     public Principal getUserPrincipal()
     {
         return this.portletRequest.getUserPrincipal();
     }
 
-    public void log(String message) {
+    /**
+     * @see javax.faces.context.ExternalContext#log(java.lang.String)
+     */
+    public void log(String message)
+    {
         this.portletContext.log(message);
     }
 
-    public void log(String message, Throwable t) {
-    	this.portletContext.log(message, t);
+    /**
+     * @see javax.faces.context.ExternalContext#log(java.lang.String, java.lang.Throwable)
+     */
+    public void log(String message, Throwable t)
+    {
+        this.portletContext.log(message, t);
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#redirect(java.lang.String)
+     */
     public void redirect(String url) throws IOException
     {
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getRequestLocales()
+     */
     public Iterator getRequestLocales()
     {
         return new EnumerationIterator(this.portletRequest.getLocales());
     }
 
+    /**
+     * @see javax.faces.context.ExternalContext#getResource(java.lang.String)
+     */
     public URL getResource(String s) throws MalformedURLException
     {
         return this.portletContext.getResource(s);

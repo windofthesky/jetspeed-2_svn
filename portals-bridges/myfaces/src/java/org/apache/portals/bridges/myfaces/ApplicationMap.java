@@ -19,69 +19,91 @@ import java.util.Enumeration;
 
 import javax.portlet.PortletContext;
 
-import net.sourceforge.myfaces.context.servlet.AbstractAttributeMap;
+import org.apache.portals.bridges.myfaces.AbstractAttributeMap;
 
 /**
- * <p>{@link PortletContext} attributes as a Map.</p>
+ * <p>
+ * {@link PortletContext}attributes as a Map.
+ * </p>
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
  * 
- * @author <a href="dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="dlestrat@apache.org">David Le Strat </a>
  */
 public class ApplicationMap extends AbstractAttributeMap
 {
     /** Illegal argument exception message. */
-	final private static String ILLEGAL_ARGUMENT = "Only PortletContext supported";
-	/** The {@link PortletContext}. */
-	final private PortletContext portletContext;
+    final private static String ILLEGAL_ARGUMENT = "Only PortletContext supported";
 
+    /** The {@link PortletContext}. */
+    final private PortletContext portletContext;
+
+    /**
+     * @param context The context.
+     */
     public ApplicationMap(Object context)
     {
         if (context instanceof PortletContext)
         {
-        	this.portletContext = (PortletContext) context;
+            this.portletContext = (PortletContext) context;
         }
         else
         {
-        	throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttribute(java.lang.String)
+     */
     public Object getAttribute(String key)
     {
         if (null != this.portletContext)
         {
-        	return this.portletContext.getAttribute(key);
+            return this.portletContext.getAttribute(key);
         }
-    	else
-    	{
-    		throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
-    	}
+        else
+        {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+        }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#setAttribute(java.lang.String,
+     *      java.lang.Object)
+     */
     public void setAttribute(String key, Object value)
     {
-    	if (null != this.portletContext)
+        if (null != this.portletContext)
         {
-    		this.portletContext.setAttribute(key, value);
+            this.portletContext.setAttribute(key, value);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#removeAttribute(java.lang.String)
+     */
     public void removeAttribute(String key)
     {
-    	if (null != this.portletContext)
+        if (null != this.portletContext)
         {
-    		this.portletContext.removeAttribute(key);
+            this.portletContext.removeAttribute(key);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttributeNames()
+     */
     public Enumeration getAttributeNames()
     {
-    	if (null != this.portletContext)
+        if (null != this.portletContext)
         {
-    		return this.portletContext.getAttributeNames();
+            return this.portletContext.getAttributeNames();
         }
-    	else
-    	{
-    		throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
-    	}
+        else
+        {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+        }
     }
 }

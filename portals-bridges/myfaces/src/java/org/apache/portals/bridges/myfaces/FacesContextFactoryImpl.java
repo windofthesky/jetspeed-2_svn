@@ -25,22 +25,25 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 /**
- * <p>Loads the {@link PortletFacesContextImpl}</p>
- * @author <a href="dlestrat@apache.org">David Le Strat</a>
+ * <p>
+ * Loads the {@link PortletFacesContextImpl}
+ * </p>
+ * 
+ * @author <a href="dlestrat@apache.org">David Le Strat </a>
  */
 public class FacesContextFactoryImpl extends FacesContextFactory
 {
-    public FacesContext getFacesContext(Object context,
-                                        Object request,
-                                        Object response,
-                                        Lifecycle lifecycle)
-    	throws FacesException
+    /**
+     * @see javax.faces.context.FacesContextFactory#getFacesContext(java.lang.Object,
+     *      java.lang.Object, java.lang.Object, javax.faces.lifecycle.Lifecycle)
+     */
+    public FacesContext getFacesContext(Object context, Object request, Object response, Lifecycle lifecycle)
+            throws FacesException
     {
         if (context instanceof PortletContext)
         {
-            return new PortletFacesContextImpl((PortletContext)context,
-                                               (PortletRequest)request,
-                                               (PortletResponse)response);
+            return new PortletFacesContextImpl((PortletContext) context, (PortletRequest) request,
+                    (PortletResponse) response);
         }
         else
         {

@@ -40,64 +40,105 @@ import javax.portlet.PortletResponse;
 import net.sourceforge.myfaces.util.NullIterator;
 
 /**
- * TODO There should be a base class shared with ServletFacesContextImpl.
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
+ * <p>
+ * TODO There should be a base class shared with the MyFaces
+ * ServletFacesContextImpl.
+ * </p>
  * 
- * @see Also {@link net.sourceforge.myfaces.context.servlet.ServletFacesContextImpl}
- * @author <a href="dlestrat@apache.org">David Le Strat</a>
- *
+ * @author <a href="dlestrat@apache.org">David Le Strat </a>
+ *  
  */
 public class PortletFacesContextImpl extends FacesContext
 {
-	//~ Static fields/initializers -----------------------------------------------------------------
-	protected static final Object NULL_DUMMY = new Object();
+    protected static final Object NULL_DUMMY = new Object();
 
-	//~ Instance fields ----------------------------------------------------------------------------
+    /** The message client ids. */
     private List messageClientIds = null;
+
+    /** The mesages. */
     private List messages = null;
+
+    /** The application. */
     private Application application;
+
+    /** The portlet external context. */
     private PortletExternalContextImpl externalContext;
+
+    /** The response stream. */
     private ResponseStream responseStream = null;
+
+    /** The response writer. */
     private ResponseWriter responseWriter = null;
+
+    /** The severity. */
     private FacesMessage.Severity maximumSeverity = FacesMessage.SEVERITY_INFO;
+
+    /** The view root. */
     private UIViewRoot viewRoot;
+
+    /** The render response. */
     private boolean renderResponse = false;
+
+    /** Whether the response is complete. */
     private boolean responseComplete = false;
+
+    /** The render kit factory. */
     private RenderKitFactory renderKitFactory;
 
-    //~ Constructors -------------------------------------------------------------------------------
-    public PortletFacesContextImpl(PortletContext portletContext,
-                                   PortletRequest portletRequest,
-                                   PortletResponse portletResponse)
+    /**
+     * @param portletContext The {@link PortletContext}.
+     * @param portletRequest The {@link PortletRequest}.
+     * @param portletResponse The {@link PortletResponse}.
+     */
+    public PortletFacesContextImpl(PortletContext portletContext, PortletRequest portletRequest,
+            PortletResponse portletResponse)
     {
-        this.application = ((ApplicationFactory)FactoryFinder.getFactory(FactoryFinder.APPLICATION_FACTORY))
-                            .getApplication();
+        this.application = ((ApplicationFactory) FactoryFinder.getFactory(FactoryFinder.APPLICATION_FACTORY))
+                .getApplication();
         this.renderKitFactory = (RenderKitFactory) FactoryFinder.getFactory(FactoryFinder.RENDER_KIT_FACTORY);
-        this.externalContext = new PortletExternalContextImpl(portletContext,
-                                                          	  portletRequest,
-                                                              portletResponse);
-        FacesContext.setCurrentInstance(this);  //protected method, therefore must be called from here
+        this.externalContext = new PortletExternalContextImpl(portletContext, portletRequest, portletResponse);
+        FacesContext.setCurrentInstance(this); //protected method, therefore
+                                               // must be called from here
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getExternalContext()
+     */
     public ExternalContext getExternalContext()
     {
         return this.externalContext;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getMaximumSeverity()
+     */
     public FacesMessage.Severity getMaximumSeverity()
     {
         return this.maximumSeverity;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getMessages()
+     */
     public Iterator getMessages()
     {
         return (this.messages != null) ? this.messages.iterator() : Collections.EMPTY_LIST.iterator();
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getApplication()
+     */
     public Application getApplication()
     {
         return this.application;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getClientIdsWithMessages()
+     */
     public Iterator getClientIdsWithMessages()
     {
         if (this.messages == null || this.messages.isEmpty())
@@ -107,23 +148,24 @@ public class PortletFacesContextImpl extends FacesContext
 
         return new Iterator()
         {
-        	private int next;
+            private int next;
+
             boolean nextFound;
 
             public void remove()
             {
-            	throw new UnsupportedOperationException(this.getClass().getName() + " UnsupportedOperationException");
+                throw new UnsupportedOperationException(this.getClass().getName() + " UnsupportedOperationException");
             }
 
             public boolean hasNext()
             {
-            	if (!nextFound)
+                if (!nextFound)
                 {
-                	for (int len = messageClientIds.size(); next < len; next++)
+                    for (int len = messageClientIds.size(); next < len; next++)
                     {
-                		if (messageClientIds.get(next) != NULL_DUMMY)
+                        if (messageClientIds.get(next) != NULL_DUMMY)
                         {
-                        	nextFound = true;
+                            nextFound = true;
                             break;
                         }
                     }
@@ -133,16 +175,19 @@ public class PortletFacesContextImpl extends FacesContext
 
             public Object next()
             {
-            	if (hasNext())
+                if (hasNext())
                 {
-            		nextFound = false;
+                    nextFound = false;
                     return messageClientIds.get(next++);
                 }
-            	throw new NoSuchElementException();
+                throw new NoSuchElementException();
             }
         };
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getMessages(java.lang.String)
+     */
     public Iterator getMessages(String clientId)
     {
         if (this.messages == null)
@@ -156,25 +201,30 @@ public class PortletFacesContextImpl extends FacesContext
             Object savedClientId = this.messageClientIds.get(i);
             if (clientId == null)
             {
-                if (savedClientId == NULL_DUMMY) lst.add(this.messages.get(i));
+                if (savedClientId == NULL_DUMMY)
+                    lst.add(this.messages.get(i));
             }
             else
             {
-                if (clientId.equals(savedClientId)) lst.add(this.messages.get(i));
+                if (clientId.equals(savedClientId))
+                    lst.add(this.messages.get(i));
             }
         }
         return lst.iterator();
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getRenderKit()
+     */
     public RenderKit getRenderKit()
     {
-    	if (getViewRoot() == null)
+        if (getViewRoot() == null)
         {
             return null;
         }
 
         String renderKitId = getViewRoot().getRenderKitId();
-       
+
         if (renderKitId == null)
         {
             return null;
@@ -183,16 +233,25 @@ public class PortletFacesContextImpl extends FacesContext
         return this.renderKitFactory.getRenderKit(this, renderKitId);
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getRenderResponse()
+     */
     public boolean getRenderResponse()
     {
         return this.renderResponse;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getResponseComplete()
+     */
     public boolean getResponseComplete()
     {
         return this.responseComplete;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#setResponseStream(javax.faces.context.ResponseStream)
+     */
     public void setResponseStream(ResponseStream responseStream)
     {
         if (responseStream == null)
@@ -202,11 +261,17 @@ public class PortletFacesContextImpl extends FacesContext
         this.responseStream = responseStream;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getResponseStream()
+     */
     public ResponseStream getResponseStream()
     {
         return this.responseStream;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#setResponseWriter(javax.faces.context.ResponseWriter)
+     */
     public void setResponseWriter(ResponseWriter responseWriter)
     {
         if (responseWriter == null)
@@ -216,11 +281,17 @@ public class PortletFacesContextImpl extends FacesContext
         this.responseWriter = responseWriter;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getResponseWriter()
+     */
     public ResponseWriter getResponseWriter()
     {
         return this.responseWriter;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#setViewRoot(javax.faces.component.UIViewRoot)
+     */
     public void setViewRoot(UIViewRoot viewRoot)
     {
         if (viewRoot == null)
@@ -230,11 +301,17 @@ public class PortletFacesContextImpl extends FacesContext
         this.viewRoot = viewRoot;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#getViewRoot()
+     */
     public UIViewRoot getViewRoot()
     {
         return this.viewRoot;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#addMessage(java.lang.String, javax.faces.application.FacesMessage)
+     */
     public void addMessage(String clientId, FacesMessage message)
     {
         if (message == null)
@@ -249,13 +326,16 @@ public class PortletFacesContextImpl extends FacesContext
         }
         this.messages.add(message);
         this.messageClientIds.add((clientId != null) ? clientId : NULL_DUMMY);
-        FacesMessage.Severity serSeverity =  message.getSeverity();
+        FacesMessage.Severity serSeverity = message.getSeverity();
         if (serSeverity != null && serSeverity.compareTo(this.maximumSeverity) > 0)
         {
             this.maximumSeverity = message.getSeverity();
         }
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#release()
+     */
     public void release()
     {
         if (this.externalContext != null)
@@ -274,11 +354,17 @@ public class PortletFacesContextImpl extends FacesContext
         FacesContext.setCurrentInstance(null);
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#renderResponse()
+     */
     public void renderResponse()
     {
         this.renderResponse = true;
     }
 
+    /**
+     * @see javax.faces.context.FacesContext#responseComplete()
+     */
     public void responseComplete()
     {
         this.responseComplete = true;

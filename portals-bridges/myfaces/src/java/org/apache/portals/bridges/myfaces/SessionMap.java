@@ -20,80 +20,100 @@ import java.util.Enumeration;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
-import net.sourceforge.myfaces.context.AbstractAttributeMap;
-import net.sourceforge.myfaces.util.NullEnumeration;
+import org.apache.portals.bridges.myfaces.AbstractAttributeMap;
+import org.apache.portals.bridges.myfaces.NullEnumeration;
 
 /**
- * HttpSession attibutes as Map.
+ * <p>
+ * Session attibutes as Map.
+ * </p>
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
  * 
- * @author Anton Koinov (latest modification by $Author$)<br>
- *         Refactored to support Portlets by <a href="dlestrat@apache.org">David Le Strat</a>
+ * @author <a href="dlestrat@apache.org">David Le Strat </a>
  */
 public class SessionMap extends AbstractAttributeMap
 {
-	/** Illegal argument exception message. */
-	final private static String ILLEGAL_ARGUMENT = "Only PortletContext supported";
-	/** The {@link PortletRequest}. */
-	private final PortletRequest portletRequest;
+    /** Illegal argument exception message. */
+    final private static String ILLEGAL_ARGUMENT = "Only PortletContext supported";
 
+    /** The {@link PortletRequest}. */
+    private final PortletRequest portletRequest;
+
+    /**
+     * @param request The request.
+     */
     public SessionMap(Object request)
     {
         if (request instanceof PortletRequest)
         {
-        	this.portletRequest = (PortletRequest) request;
+            this.portletRequest = (PortletRequest) request;
         }
         else
         {
-        	throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttribute(java.lang.String)
+     */
     protected Object getAttribute(String key)
     {
         if (null != this.portletRequest)
         {
-        	PortletSession portletSession = this.portletRequest.getPortletSession(false);
-        	return (portletSession == null) 
-        		? null : portletSession.getAttribute(key.toString());
+            PortletSession portletSession = this.portletRequest.getPortletSession(false);
+            return (portletSession == null) ? null : portletSession.getAttribute(key.toString());
         }
         else
         {
-        	throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#setAttribute(java.lang.String,
+     *      java.lang.Object)
+     */
     protected void setAttribute(String key, Object value)
     {
-    	if (null != this.portletRequest)
+        if (null != this.portletRequest)
         {
-    		this.portletRequest.getPortletSession(true).setAttribute(key, value);
+            this.portletRequest.getPortletSession(true).setAttribute(key, value);
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#removeAttribute(java.lang.String)
+     */
     protected void removeAttribute(String key)
     {
-    	if (null != this.portletRequest)
-    	{
-    		PortletSession portletSession = this.portletRequest.getPortletSession(false);;
-    		if (null != portletSession)
-    		{
-    			portletSession.removeAttribute(key);
-    		}
-    	}
+        if (null != this.portletRequest)
+        {
+            PortletSession portletSession = this.portletRequest.getPortletSession(false);
+            ;
+            if (null != portletSession)
+            {
+                portletSession.removeAttribute(key);
+            }
+        }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttributeNames()
+     */
     protected Enumeration getAttributeNames()
     {
-    	if (null != this.portletRequest)
-    	{
-    		PortletSession portletSession = this.portletRequest.getPortletSession(false);;
-    		return (portletSession == null)
-            	? NullEnumeration.instance()
-                : portletSession.getAttributeNames();
-    	}
-    	else
+        if (null != this.portletRequest)
         {
-        	throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
+            PortletSession portletSession = this.portletRequest.getPortletSession(false);
+            ;
+            return (portletSession == null) ? NullEnumeration.instance() : portletSession.getAttributeNames();
+        }
+        else
+        {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT);
         }
     }
 

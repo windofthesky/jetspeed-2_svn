@@ -20,11 +20,13 @@ import java.util.Enumeration;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 
-import net.sourceforge.myfaces.context.AbstractAttributeMap;
-
+import org.apache.portals.bridges.myfaces.AbstractAttributeMap;
 
 /**
  * <p>{@link PortletRequest} attributes Map.</p>
+ * <p>
+ * See MyFaces project for servlet implementation.
+ * </p>
  * 
  * @author <a href="dlestrat@apache.org">David Le Strat</a>
  */
@@ -35,6 +37,9 @@ public class RequestMap extends AbstractAttributeMap
 	/** The {@link PortletContext}. */
 	private final PortletRequest portletRequest;
 
+    /**
+     * @param request The request.
+     */
     public RequestMap(Object request)
     {
         if (request instanceof PortletRequest)
@@ -47,6 +52,9 @@ public class RequestMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttribute(java.lang.String)
+     */
     public Object getAttribute(String key)
     {
         if (null != this.portletRequest)
@@ -59,6 +67,9 @@ public class RequestMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#setAttribute(java.lang.String, java.lang.Object)
+     */
     public void setAttribute(String key, Object value)
     {
     	if (null != this.portletRequest)
@@ -67,6 +78,9 @@ public class RequestMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#removeAttribute(java.lang.String)
+     */
     public void removeAttribute(String key)
     {
     	if (null != this.portletRequest)
@@ -75,6 +89,9 @@ public class RequestMap extends AbstractAttributeMap
         }
     }
 
+    /**
+     * @see org.apache.portals.bridges.myfaces.AbstractAttributeMap#getAttributeNames()
+     */
     public Enumeration getAttributeNames()
     {
     	if (null != this.portletRequest)

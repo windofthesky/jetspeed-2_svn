@@ -42,12 +42,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * <p>FacesPortlet utilizes Java Server Faces to create the user interface in a
- * portlet environment.</p>
+ * <p>
+ * FacesPortlet utilizes Java Server Faces to create the user interface in a
+ * portlet environment.
+ * </p>
  * 
  * @author <a href="mailto:dlestrat@yahoo.com">David Le Strat </a>
  */
-public final class FacesPortlet extends GenericPortlet
+public class FacesPortlet extends GenericPortlet
 {
 
     /** The Log instance for this class. */
@@ -101,8 +103,6 @@ public final class FacesPortlet extends GenericPortlet
     /** Default URL for the view page. */
     private String defaultViewPage = null;
 
-    // ------------------------------------------------------ Manifest Constants
-
     /**
      * <p>
      * Context initialization parameter name for the lifecycle identifier of the
@@ -110,8 +110,6 @@ public final class FacesPortlet extends GenericPortlet
      * </p>
      */
     private static final String LIFECYCLE_ID_ATTR = FacesServlet.LIFECYCLE_ID_ATTR;
-
-    // ------------------------------------------------------ Instance Variables
 
     /**
      * <p>
@@ -141,10 +139,10 @@ public final class FacesPortlet extends GenericPortlet
      */
     private PortletConfig portletConfig = null;
 
-    // ---------------------------------------------------------- Public Methods
-
     /**
-     * <p>Release all resources acquired at startup time.</p>
+     * <p>
+     * Release all resources acquired at startup time.
+     * </p>
      */
     public void destroy()
     {
@@ -164,13 +162,14 @@ public final class FacesPortlet extends GenericPortlet
     }
 
     /**
-     * <p>Acquire the factory instance we will require.</p>
+     * <p>
+     * Acquire the factory instance we will require.
+     * </p>
      * 
-     * @exception PortletException
-     *                if, for any reason, the startp of this Faces application
-     *                failed. This includes errors in the config file that is
-     *                parsed before or during the processing of this
-     *                <code>init()</code> method.
+     * @exception PortletException if, for any reason, the startp of this Faces
+     *                application failed. This includes errors in the config
+     *                file that is parsed before or during the processing of
+     *                this <code>init()</code> method.
      */
     public void init(PortletConfig portletConfig) throws PortletException
     {
@@ -215,33 +214,57 @@ public final class FacesPortlet extends GenericPortlet
         }
     }
 
+    /**
+     * @see javax.portlet.GenericPortlet#doEdit(javax.portlet.RenderRequest,
+     *      javax.portlet.RenderResponse)
+     */
     public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         process(request, response, defaultEditPage, FacesPortlet.EDIT_REQUEST);
     }
 
+    /**
+     * @see javax.portlet.GenericPortlet#doHelp(javax.portlet.RenderRequest,
+     *      javax.portlet.RenderResponse)
+     */
     public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         process(request, response, defaultHelpPage, FacesPortlet.HELP_REQUEST);
     }
 
+    /**
+     * @param request The {@link RenderRequest}.
+     * @param response The {@link RenderResponse}.
+     * @throws PortletException Throws a {@link PortletException}.
+     * @throws IOException Throws a {@link IOException}.
+     */
     public void doCustom(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         process(request, response, defaultCustomPage, FacesPortlet.CUSTOM_REQUEST);
     }
 
+    /**
+     * @see javax.portlet.GenericPortlet#doView(javax.portlet.RenderRequest,
+     *      javax.portlet.RenderResponse)
+     */
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         process(request, response, defaultViewPage, FacesPortlet.VIEW_REQUEST);
     }
 
+    /**
+     * @see javax.portlet.Portlet#processAction(javax.portlet.ActionRequest,
+     *      javax.portlet.ActionResponse)
+     */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
         process(request, response, defaultActionPage, FacesPortlet.ACTION_REQUEST);
     }
 
     /**
-     * <p>Gets the {@link FacesContextFactory}.</p>
+     * <p>
+     * Gets the {@link FacesContextFactory}.
+     * </p>
      * 
      * @return The {@link FacesContextFactory}.
      * @throws PortletException Throws a {@link PortletException}.
@@ -276,7 +299,9 @@ public final class FacesPortlet extends GenericPortlet
     }
 
     /**
-     * <p>Get the faces life cycle.</p>
+     * <p>
+     * Get the faces life cycle.
+     * </p>
      * 
      * @return The {@link Lifecycle}.
      * @throws PortletException Throws a {@link PortletException}.
@@ -326,7 +351,9 @@ public final class FacesPortlet extends GenericPortlet
     }
 
     /**
-     * <p>Processes the request.</p>
+     * <p>
+     * Processes the request.
+     * </p>
      * 
      * @param request The {@link PortletRequest}.
      * @param response The {@link PortletResponse}.
@@ -415,30 +442,37 @@ public final class FacesPortlet extends GenericPortlet
     }
 
     /**
-     * <p>Set the view identifier to a default page.</p>
+     * <p>
+     * Set the view identifier to a default page.
+     * </p>
      * 
-     * @param context The {@link FacesContext} for the current request.
+     * @param context The {@link FacesContext}for the current request.
      * @param defaultView The default view identifier.
      */
     private void setDefaultView(FacesContext facesContext, String defaultView)
     {
-        // Need to be able to transport viewId between actionRequest and renderRequest.
-        // If actionRequest, the view id is obtained from the navigation, we need to be able to keep that
-        // value and not have it overwritten by the default view id.  Putting that value in the portletRequest does not
+        // Need to be able to transport viewId between actionRequest and
+        // renderRequest.
+        // If actionRequest, the view id is obtained from the navigation, we
+        // need to be able to keep that
+        // value and not have it overwritten by the default view id. Putting
+        // that value in the portletRequest does not
         // work. Need to use actionResponse.setRenderParameter...
         PortletRequest portletRequest = (PortletRequest) facesContext.getExternalContext().getRequest();
         if (portletRequest instanceof ActionRequest)
         {
             if ((null != facesContext.getViewRoot()) && (null != facesContext.getViewRoot().getViewId()))
             {
-                ((ActionResponse) facesContext.getExternalContext().getResponse()).setRenderParameter(FacesPortlet.VIEW_ID, facesContext.getViewRoot().getViewId());
+                ((ActionResponse) facesContext.getExternalContext().getResponse()).setRenderParameter(
+                        FacesPortlet.VIEW_ID, facesContext.getViewRoot().getViewId());
             }
         }
         if ((portletRequest instanceof RenderRequest) && (null != portletRequest.getParameter(FacesPortlet.VIEW_ID)))
         {
             defaultView = portletRequest.getParameter(FacesPortlet.VIEW_ID);
         }
-        if ((null != portletRequest.getAttribute(FacesPortlet.VIEW_ID)) && (!portletRequest.getAttribute(FacesPortlet.VIEW_ID).equals(defaultView)))
+        if ((null != portletRequest.getAttribute(FacesPortlet.VIEW_ID))
+                && (!portletRequest.getAttribute(FacesPortlet.VIEW_ID).equals(defaultView)))
         {
             return;
         }
