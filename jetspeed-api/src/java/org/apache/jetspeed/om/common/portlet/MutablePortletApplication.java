@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -136,4 +137,11 @@ public interface MutablePortletApplication extends PortletApplication, Serializa
      * stored in Jetspeed managed portlet application space.
      */
     public static final int LOCAL = 1;
+        
+    /**
+     * Adds a Jetspeed component service to the collection of component services allowed for this application.
+     * 
+     * @param service The component service being added.
+     */
+    void addJetspeedService(JetspeedServiceReference service);
 }

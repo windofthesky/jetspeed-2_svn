@@ -93,4 +93,12 @@ public interface PortletApplication extends PortletApplicationDefinition
      */
     int getApplicationType();
     
+    /**
+     * Gets a collection of all Jetspeed Services allowed for this application.
+     * 
+     * @see org.apache.jetspeed.om.common.JetspeedServiceReference
+     * @return The collection of services of type <code>JetspeedServiceReference</code>.
+     */
+    Collection getJetspeedServices();
+    
 }
