@@ -5,6 +5,7 @@
 		<classname>
   	 	org.apache.jetspeed.persistence.impl.OJBODMGPersistencePlugin
   	   </classname>
+  	   <OJB.path>ojb</OJB.path> 
 	</plugin>	
 
 </plugins>
