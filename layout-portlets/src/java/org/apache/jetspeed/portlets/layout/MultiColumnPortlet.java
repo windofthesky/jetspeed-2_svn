@@ -292,18 +292,18 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         int newRow = row + y;
         int newColumn = column + x;
-        doMoveFragmentTo(fToMove, newColumn, newRow,  request, fragments);
+        doMoveFragmentTo(fToMove, newColumn, newRow,  request, fragments, true);
               
     }
     
-    protected void doMoveFragmentTo( Fragment fToMove, int column, int row, RenderRequest request, List fragments )
+    protected void doMoveFragmentTo( Fragment fToMove, int column, int row, RenderRequest request, List fragments, boolean firstCall )
     {        
         //Wrapping logic 
         if(column >= numColumns)
         {
             column = 0;
             row+=1;
-            doMoveFragmentTo(fToMove, column, row, request, fragments);
+            doMoveFragmentTo(fToMove, column, row, request, fragments, false);
             return;
             
         }
@@ -311,17 +311,18 @@ public class MultiColumnPortlet extends LayoutPortlet
         {
             row-=1;
             column=(numColumns-1);           
-            doMoveFragmentTo(fToMove, column, row, request, fragments);    
+            doMoveFragmentTo(fToMove, column, row, request, fragments, false);    
             return;
         }
         else if(row < 0)
         {           
             row = getLastRowInColumn(column, fragments, fToMove)+1;
-            doMoveFragmentTo(fToMove, column, row, request, fragments);      
+            doMoveFragmentTo(fToMove, column, row, request, fragments, false);      
             return;
         }
         else
         {           
+            
            int currentRow = Integer.parseInt(fToMove.getPropertyValue(layoutType, "row"));
            int currentColumn = Integer.parseInt(fToMove.getPropertyValue(layoutType, "column"));
            
@@ -346,7 +347,14 @@ public class MultiColumnPortlet extends LayoutPortlet
                    int aColumn = Integer.parseInt(aFragment.getPropertyValue(layoutType, "column"));
                    if (aColumn == column && aRow == row)
                    {
-                         doMoveFragmentTo(aFragment, currentColumn, currentRow,  request, fragments );
+                       if(currentColumn == column && currentRow < row && firstCall)
+                       {
+                          doMoveFragmentTo(aFragment, column, (row-1),  request, fragments, false );
+                       }
+                       else
+                       {
+                           doMoveFragmentTo(aFragment, column, (row+1),  request, fragments, false );
+                       }
                    }
                }
                
