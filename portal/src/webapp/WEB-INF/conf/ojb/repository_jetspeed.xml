@@ -198,6 +198,13 @@
          jdbc-type="VARCHAR"
       />
       
+      <field-descriptor
+         name="preferenceValidatorClassname"
+         column="PREFERENCE_VALIDATOR"
+         jdbc-type="VARCHAR"
+      />
+      
+      
 
 
       <reference-descriptor 
@@ -559,7 +566,12 @@
          name="type"
          column="TYPE"
          jdbc-type="VARCHAR"
-      />  
+      />
+       <field-descriptor
+         name="readOnly"
+         column="READ_ONLY"
+         jdbc-type="BIT"
+      />    
       
       <collection-descriptor
          name="valueObjects"
