@@ -146,6 +146,7 @@ public class TestRegistryDirectPart2 extends AbstractComponentAwareTestCase
         assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
         assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
         assertNotNull("\"preference 1\" was not found.", portlet.getPreferenceSet().get("preference 1"));
+        assertTrue("\"user.name.family\" user attribute was not found.", portlet.getUserAttributeSet().size() == 1);
         assertNotNull("Language information not found for Portlet 1", portlet.getLanguageSet().get(Locale.getDefault()));
         assertNotNull("Content Type html not found.", portlet.getContentTypeSet().get("html/text"));
         assertNotNull("Content Type wml not found.", portlet.getContentTypeSet().get("wml"));
