@@ -18,6 +18,7 @@ package org.apache.jetspeed.pipeline.valve.impl;
 import java.io.IOException;
 
 import javax.portlet.PortletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -69,9 +70,11 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             if (actionWindow != null)
             {
                 HttpServletResponse response = request.getResponseForWindow(actionWindow);
+                HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
+                requestForWindow.setAttribute(RequestContext.REQUEST_PORTALENV, request);
                 container.processPortletAction(
                     actionWindow,
-                    request.getRequestForWindow(actionWindow),
+                    requestForWindow,
                     response);
                 // The container redirects the client after PortletAction processing
                 // so there is no need to continue the pipeline
