@@ -30,6 +30,12 @@ limitations under the License.
    <scope>request</scope>
    <class>org.apache.jetspeed.velocity.JetspeedPowerTool</class>
  </tool>
+  
+  <tool>
+   <key>remoteContent</key>
+   <scope>application</scope>
+   <class>org.apache.jetspeed.velocity.RemoteContentTool</class>
+ </tool>
  
   <tool>
    <key>pp</key>
