@@ -89,11 +89,11 @@ Support for Tomcat 4.1.x has been dropped.
 
 4. startup Tomcat 
 
-   execute /jetspeed/jakarta-tomcat-<version>/bin/start.sh
+   execute /jetspeed/jakarta-tomcat-<version>/bin/startup.sh
    
    For Windows:
    
-   execute c:\jetspeed\jakarta-tomcat-<version>\bin\start.bat
+   execute c:\jetspeed\jakarta-tomcat-<version>\bin\startup.bat
    
 
 5. start up a web browser and navigate to http://localhost:8080/jetspeed/portal
