@@ -129,7 +129,7 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
     protected void doIFrame(RenderRequest request, RenderResponse response) throws IOException
     {
         PortletPreferences prefs = request.getPreferences();
-        String source = getURLSource(request, prefs);
+        String source = getURLSource(request, response, prefs);
         // generate HTML IFRAME content
         StringBuffer content = new StringBuffer(4096);
         content.append("<IFRAME");
@@ -169,7 +169,7 @@ public class IFrameGenericPortlet extends GenericVelocityPortlet
         response.getWriter().print(content.toString());
     }
 
-    public String getURLSource(RenderRequest request, PortletPreferences prefs)
+    public String getURLSource(RenderRequest request, RenderResponse response, PortletPreferences prefs)
     {
         String source = getAttributePreference(prefs, "SRC");
         if (source == null) source = "";

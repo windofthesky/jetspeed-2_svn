@@ -18,6 +18,7 @@ package org.apache.jetspeed.portlet;
 import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
+
 import javax.security.auth.Subject;
 
 import javax.portlet.ActionRequest;
@@ -48,8 +49,8 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
     public static final String SSO_TYPE_HTTP = "http";
     public static final String SSO_TYPE_CERTIFICATE = "certificate";
     
-    public static final String SSO_TYPE_URL_USERNAME = "sso.url.param.username";
-    public static final String SSO_TYPE_URL_PASSWORD = "sso.url.param.password";
+    public static final String SSO_TYPE_URL_USERNAME = "sso.url.Principal";
+    public static final String SSO_TYPE_URL_PASSWORD = "sso.url.Credential";
     
     public static final String SSO_REQUEST_ATTRIBUTE_USERNAME = "sso.ra.username";
     public static final String SSO_REQUEST_ATTRIBUTE_PASSWORD = "sso.ra.password";
@@ -102,7 +103,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         
         super.doEdit(request, response);
     }
-    
+        
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
@@ -112,6 +113,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             // no credentials configured in SSO store
             // switch to SSO Configure View
             request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
+            setupPreferencesEdit(request, response);
             super.doView(request, response);
             return;
         }
@@ -130,6 +132,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
                 // no credentials configured in SSO store
                 // switch to SSO Configure View
                 request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
+                setupPreferencesEdit(request, response);                
             }
             else
             {
@@ -150,6 +153,13 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         // ssoUserName 
         String ssoPrincipal = request.getParameter(SSO_FORM_PRINCIPAL);
         String ssoCredential = request.getParameter(SSO_FORM_CREDENTIAL);
+        /*
+        if (ssoPrincipal == null || ssoCredential == null)
+        {
+            
+            actionResponse.setPortletMode(PortletMode.EDIT); // stay on edit
+        }
+        */
         String site = request.getPreferences().getValue("SRC", "");
         try
         {
@@ -170,14 +180,14 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
         
     }
     
-    public String getURLSource(RenderRequest request, PortletPreferences prefs)
+    public String getURLSource(RenderRequest request, RenderResponse response, PortletPreferences prefs)
     {
-        String baseSource = super.getURLSource(request, prefs);
+        String baseSource = super.getURLSource(request, response, prefs);
         String type = prefs.getValue(SSO_TYPE, SSO_TYPE_URL);
         if (type.equals(SSO_TYPE_URL))
         {
-            String userNameParam = prefs.getValue("sso.url.param.username", "");
-            String passwordParam = prefs.getValue("sso.url.param.password", "");
+            String userNameParam = prefs.getValue(SSO_TYPE_URL_USERNAME, "user");
+            String passwordParam = prefs.getValue(SSO_TYPE_URL_PASSWORD, "password");
             StringBuffer source = new StringBuffer(baseSource);
             if (baseSource.indexOf("?") == -1)
             {
@@ -200,7 +210,8 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             source.append(passwordParam);
             source.append("=");
             source.append(password);
-            return source.toString();
+            
+            return response.encodeURL(source.toString());
         }
         else
         {

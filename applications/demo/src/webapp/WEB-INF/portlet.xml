@@ -473,12 +473,12 @@ limitations under the License.
 				<value>url</value>
 			</preference>			
 			<preference>
-				<name>sso.url.param.username</name>
-				<value>ssouser</value>
+				<name>sso.url.Principal</name>
+				<value>sso-principal</value>
 			</preference>			
 			<preference>
-				<name>sso.url.param.password</name>
-				<value>ssopw</value>
+				<name>sso.url.Credential</name>
+				<value>sso-credential</value>
 			</preference>						
         </portlet-preferences>
         <supported-locale>en</supported-locale>
