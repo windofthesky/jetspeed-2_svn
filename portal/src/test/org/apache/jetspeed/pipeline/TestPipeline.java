@@ -53,7 +53,6 @@
  */
 package org.apache.jetspeed.pipeline;
 
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -66,45 +65,45 @@ import org.apache.jetspeed.test.JetspeedTest;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPipeline extends JetspeedTest 
+public class TestPipeline extends JetspeedTest
 {
-    
+
     /**
      * Defines the testcase name for JUnit.
      *
      * @param name the testcase's name.
      */
-    public TestPipeline(String name) 
+    public TestPipeline(String name)
     {
-        super( name );
+        super(name);
     }
-    
+
     /**
      * Start the tests.
      *
      * @param args the arguments. Not used
      */
-    public static void main(String args[]) 
+    public static void main(String args[])
     {
-        junit.awtui.TestRunner.main( new String[] { TestPipeline.class.getName() } );
+        junit.awtui.TestRunner.main(new String[] { TestPipeline.class.getName()});
     }
- 
-    public void setup() 
+
+    public void setup()
     {
     }
-    
+
     /**
      * Creates the test suite.
      *
      * @return a test suite (<code>TestSuite</code>) that includes all methods
      *         starting with "test"
      */
-    public static Test suite() 
+    public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite( TestPipeline.class );
+        return new TestSuite(TestPipeline.class);
     }
-    
+
     /**
      * Tests
      *
@@ -117,8 +116,9 @@ public class TestPipeline extends JetspeedTest
         assertNotNull(pipeline);
         Valve[] valves = pipeline.getValves();
         assertTrue(valves[0].toString().equals("CapabilityValveImpl"));
-        assertTrue(valves[1].toString().equals("ContainerValve"));                        
+        assertTrue(valves[1].toString().equals("ContainerValve"));
         assertTrue(valves[2].toString().equals("ProfilerValve"));
-        assertTrue(valves[3].toString().equals("AggregatorValve"));
+        assertTrue(valves[3].toString().equals("ActionValveImpl"));
+        assertTrue(valves[4].toString().equals("AggregatorValve"));
     }
 }
