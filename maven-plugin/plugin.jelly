@@ -69,35 +69,36 @@ limitations under the License.
   
   <goal name="jetspeed2:db.execute">
   	<echo>Execing SQL: ${database.arg.script}</echo>
-    <sql driver="${org.apache.jetspeed.database.driver}"
-         url="${org.apache.jetspeed.database.url}"
-         userid="${org.apache.jetspeed.database.user}"
-         password="${org.apache.jetspeed.database.password}"
+    <sql driver="${org.apache.jetspeed.production.database.driver}"
+         url="${org.apache.jetspeed.production.database.url}"
+         userid="${org.apache.jetspeed.production.database.user}"
+         password="${org.apache.jetspeed.production.database.password}"
          src="${database.arg.script}">
       <classpath>
         <path refid="maven.dependency.classpath"/>
-        <pathelement path="${org.apache.jetspeed.jdbc.drivers.path}"/>
+        <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>
         <pathelement path="${plugin.getDependencyPath('hsqldb')}"/>
       </classpath>
     </sql>
   </goal>
   
   <goal name="jetspeed2:db.create">
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/phase3ojb-schema.sql" />
+  	<echo>Using DB: ${org.apache.jetspeed.production.database.default.name}</echo>
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase3ojb-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/phase1-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase1-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/phase2-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/phase2-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/registry-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/registry-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/prefs-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/prefs-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/security-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/security-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
     <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/populate-db-default.sql" />
     <attainGoal name="jetspeed2:db.execute" />
-    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
+    <j:set var="database.arg.script" value="${org.apache.jetspeed.plugin.root}/plugin-resources/${org.apache.jetspeed.production.database.default.name}/test-persistence-schema.sql" />
     <attainGoal name="jetspeed2:db.execute" />
   </goal>
   
