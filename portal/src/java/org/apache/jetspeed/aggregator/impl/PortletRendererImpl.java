@@ -108,9 +108,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             this.container = PortletContainerFactory.getPortletContainer();
         }
         catch (PortletContainerException e)
-        {
-            e.printStackTrace();
-            log.error("Failed to get PortletContainer: " + e);
+        {            
+            log.error("Failed to get PortletContainer: " + e.toString(), e);
             return;
         }
 
@@ -148,9 +147,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             container.renderPortlet(portletWindow, servletRequest, servletResponse);
         }
         catch (Throwable t)
-        {
-            t.printStackTrace();
-            log.error("Failed to service portlet, portlet exception: " + t);
+        {            
+            log.error("Failed to service portlet, portlet exception: " + t.toString(), t);
         }
         finally
         {
@@ -178,9 +176,8 @@ public class PortletRendererImpl extends BaseCommonService implements PortletRen
             container.renderPortlet(portletWindow, request, response);
         }
         catch (Throwable t)
-        {
-            t.printStackTrace();
-            log.error("Failed to service portlet, portlet exception: " + t);
+        {            
+            log.error("Failed to service portlet, portlet exception: " + t.toString(), t);
         }
     }
 
