@@ -23,10 +23,10 @@ import org.apache.pluto.PortletContainer;
 import org.picocontainer.MutablePicoContainer;
 
 /**
- * @author david
+ * TestPortletContainer
  *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
 public class TestPortletContainer extends AbstractComponentAwareTestCase 
 {
@@ -76,5 +76,6 @@ public class TestPortletContainer extends AbstractComponentAwareTestCase
     public void testBasic()
     {
         assertNotNull("portlet container is null", portletContainer);
+        // not much more i can do without setting up a mock servlet or portlet framework
     }
 }

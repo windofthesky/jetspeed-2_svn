@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2004 The Apache Software Foundation.
+ * Copyright 2000-2001,2004 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,29 @@ package org.apache.jetspeed.aggregator;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.Jetspeed;
-
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextFactory;
-import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.ComponentAwareTestSuite;
-import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.container.TestPortletContainer;
 import org.picocontainer.MutablePicoContainer;
 
 /**
- * <P>Test the aggregation service</P>
+ * TestPortletRenderer
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
- * 
  */
-public class TestAggregator extends AbstractComponentAwareTestCase
+public class TestRenderer extends AbstractComponentAwareTestCase 
 {
     private MutablePicoContainer container;
-    private PortletAggregator portletAggregator;
-    private PageAggregator pageAggregator;
+    private PortletRenderer renderer;
     
     /**
      * Defines the testcase name for JUnit.
      *
      * @param name the testcase's name.
      */
-    public TestAggregator(String name)
+    public TestRenderer(String name)
     {
         super(name);
     }
@@ -57,15 +51,14 @@ public class TestAggregator extends AbstractComponentAwareTestCase
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(new String[] { TestAggregator.class.getName()});
+        junit.awtui.TestRunner.main(new String[] { TestRenderer.class.getName()});
     }
 
     protected void setUp() throws Exception
     {
         super.setUp();
         container = (MutablePicoContainer) getContainer();
-        pageAggregator = (PageAggregator) container.getComponentInstance(PageAggregator.class);
-        portletAggregator = (PortletAggregator) container.getComponentInstance(PortletAggregator.class);                
+        renderer = (PortletRenderer) container.getComponentInstance(PortletRenderer.class);        
     }
 
     /**
@@ -76,25 +69,14 @@ public class TestAggregator extends AbstractComponentAwareTestCase
      */
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestAggregator.class);
-        suite.setScript("org/apache/jetspeed/containers/test-aggregator-container.groovy");
+        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPortletContainer.class);
+        suite.setScript("org/apache/jetspeed/containers/test-renderer-container.groovy");
         return suite;                                   
     }
 
     public void testBasic() throws Exception
     {
-        assertNotNull("portlet aggregator is null", portletAggregator);
-        assertNotNull("page aggregator is null", pageAggregator);
-        /*
-        Profiler profiler = (Profiler)Jetspeed.getComponentManager().getComponent(Profiler.class);
-
-        RequestContext request = RequestContextFactory.getInstance(null, null, null);
-
-        ProfileLocator locator = profiler.getProfile(request);
-        request.setProfileLocator(locator);
-
-        pageAggregator.build(request);
-        */
+        assertNotNull("portlet renderer is null", renderer);
     }
-
+    
 }
