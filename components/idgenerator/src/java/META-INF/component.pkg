@@ -1,0 +1,9 @@
+package.id=IdGenerator
+
+classloading.strategy=webapp
+
+component=IdGenerator
+IdGenerator.is.singleton=true
+IdGenerator.classname=org.apache.jetspeed.idgenerator.impl.JetspeedIdGenerator
+
+export.package=org.apache.jetspeed.idgenerator
