@@ -15,7 +15,6 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.util.Map;
 
 
 /**
@@ -34,7 +33,7 @@ public interface Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    public void start(String paName) throws PortletApplicationException;
+    public void startPortletApplication(String paName) throws PortletApplicationException;
 
     /**
      * Stops a portlet application from running on the Application Server
@@ -42,7 +41,7 @@ public interface Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    public void stop(String paName) throws PortletApplicationException;
+    public void stopPortletApplication(String paName) throws PortletApplicationException;
 
     /**
      * Reloads a portlet application.
@@ -50,7 +49,7 @@ public interface Lifecycle
      * @param paName The Portlet Application name 
      * @throws PortletApplicationException
      */
-    public void reload(String paName) throws PortletApplicationException;
+    public void reloadPortletApplication(String paName) throws PortletApplicationException;
 
 }
  
