@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+ Copyright 2000-2004 Apache Software Foundation
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!-- The SQL in these maps files has purposely been typed with more verbosity than is actually required.
+ For example, many of the selects could have just used SELECT * FROM... instead of listing all of the columns.
+ This is to demonstrate that even complex SQL can be handled and coded and formatted the way SQL was meant
+ to be (i.e. not a bunch of concatenated strings in a Java class). -->
+
+<sqlMap namespace="Category">
+
+  <typeAlias alias="category" type="com.ibatis.jpetstore.domain.Category"/>
+
+  <cacheModel id="oneDayCategory" type="LRU">
+    <flushInterval hours="24"/>
+  </cacheModel>
+
+  <resultMap id="categoryResult" class="category">
+    <result property="categoryId" column="CATID"/>
+    <result property="name" column="NAME"/>
+    <result property="imagePath" column="IMAGEPATH"/>
+  </resultMap>
+
+  <select id="getCategory" resultMap="categoryResult" parameterClass="string">
+    select CATID, NAME, IMAGEPATH from CATEGORY where CATID = #value#
+  </select>
+
+  <select id="getCategoryList" resultMap="categoryResult">
+    select CATID, NAME, IMAGEPATH from CATEGORY
+  </select>
+
+</sqlMap>

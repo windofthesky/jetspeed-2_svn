@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<!--
+ Copyright 2000-2004 Apache Software Foundation
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<struts-config>
+
+  <form-beans>
+    <form-bean name="accountBean" type="com.ibatis.jpetstore.presentation.AccountBean"/>
+    <form-bean name="catalogBean" type="com.ibatis.jpetstore.presentation.CatalogBean"/>
+    <form-bean name="cartBean" type="com.ibatis.jpetstore.presentation.CartBean"/>
+    <form-bean name="orderBean" type="com.ibatis.jpetstore.presentation.OrderBean"/>
+  </form-beans>
+
+  <global-exceptions>
+    <exception key="errors.general" type="java.lang.Exception" path="/common/Error.jsp"/>
+  </global-exceptions>
+
+  <global-forwards>
+    <forward name="failure" path="/error.shtml"/>
+    <forward name="error" path="/error.shtml"/>
+    <forward name="signon" path="/shop/signonForm.shtml"/>
+    <forward name="newOrderForm" path="/shop/newOrderForm.shtml"/>
+  </global-forwards>
+
+  <action-mappings>
+
+    <action path="/index" include="/index.jsp"/>
+    <action path="/help" include="/help.jsp"/>
+    <action path="/error" include="/common/Error.jsp"/>
+
+    <action path="/shop/index" type="com.ibatis.struts.BeanAction"
+      validate="false" >
+      <forward name="success" path="/catalog/Main.jsp"/>
+    </action>
+
+    <!-- CATALOG ACTIONS -->
+
+    <action path="/shop/searchProducts" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showProducts.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showProducts"
+      name="catalogBean" scope="session" validate="false" include="/catalog/SearchProducts.jsp"/>
+
+    <action path="/shop/switchSearchListPage" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session" parameter="switchProductListPage"
+      validate="false">
+      <forward name="success" path="/shop/showProducts.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/viewCategory" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false" >
+      <forward name="success" path="/shop/showCategory.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showCategory"
+      name="catalogBean" scope="session" validate="false" include="/catalog/Category.jsp"/>
+
+    <action path="/shop/switchProductListPage" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false" >
+      <forward name="success" path="/shop/showCategory.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/viewProduct" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false" >
+      <forward name="success" path="/shop/showProduct.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showProduct"
+      name="catalogBean" scope="session" validate="false" include="/catalog/Product.jsp"/>
+
+    <action path="/shop/switchItemListPage" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false" >
+      <forward name="success" path="/shop/showProduct.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/viewItem" type="com.ibatis.struts.BeanAction"
+      name="catalogBean" scope="session"
+      validate="false" input="/shop/showProduct.shtml">
+      <forward name="success" path="/shop/showItem.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showItem" name="catalogBean" scope="session"
+      validate="false" include="/catalog/Item.jsp"/>
+
+    <!-- CART ACTIONS -->
+
+    <action path="/shop/addItemToCart" type="com.ibatis.struts.BeanAction"
+      name="cartBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/removeItemFromCart" type="com.ibatis.struts.BeanAction"
+      name="cartBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/updateCartQuantities" type="com.ibatis.struts.BeanAction"
+      name="cartBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/checkout"
+      name="cartBean" scope="session" validate="false" include="/cart/Checkout.jsp"/>
+
+    <action path="/shop/viewCart" type="com.ibatis.struts.BeanAction"
+      name="cartBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showCart"
+      name="cartBean" scope="session" validate="false" include="/cart/Cart.jsp"/>
+
+    <action path="/shop/switchCartPage" type="com.ibatis.struts.BeanAction"
+      name="cartBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/switchMyListPage" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showCart.shtml" redirect="true"/>
+    </action>
+
+    <!-- ACCOUNT ACTIONS -->
+
+    <action path="/shop/newAccountForm" type="com.ibatis.struts.BeanAction"
+      validate="false">
+      <forward name="success" path="/account/NewAccountForm.jsp"/>
+    </action>
+
+    <action path="/shop/newAccount" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="true" input="/account/NewAccountForm.jsp">
+      <forward name="success" path="/shop/index.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/editAccountForm" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="false">
+      <forward name="success" path="/account/EditAccountForm.jsp"/>
+    </action>
+
+    <action path="/shop/editAccount" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="true" input="/account/EditAccountForm.jsp">
+      <forward name="success" path="/shop/index.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/signonForm" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session" parameter="*"
+      validate="false">
+      <forward name="success" path="/account/SignonForm.jsp"/>
+    </action>
+
+    <action path="/shop/signon" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/index.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/signoff" type="com.ibatis.struts.BeanAction"
+      name="accountBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/index.shtml" redirect="true"/>
+    </action>
+
+    <!-- ORDER ACTIONS -->
+
+    <action path="/shop/newOrderForm" type="com.ibatis.struts.BeanAction"
+      name="orderBean" scope="session"
+      validate="false">
+      <forward name="success" path="/order/NewOrderForm.jsp"/>
+    </action>
+
+    <action path="/shop/newOrder" type="com.ibatis.struts.BeanAction"
+      name="orderBean" scope="session"
+      validate="true" input="/order/NewOrderForm.jsp">
+      <forward name="confirm" path="/shop/confirmOrder.shtml" redirect="true"/>
+      <forward name="shipping" path="/shop/shippingForm.shtml" redirect="true"/>
+      <forward name="success" path="/shop/showOrder.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/shippingForm"
+      name="orderBean" scope="session" validate="false" include="/order/ShippingForm.jsp"/>
+
+    <action path="/shop/confirmOrder"
+      name="orderBean" scope="session" validate="false" include="/order/ConfirmOrder.jsp"/>
+
+    <action path="/shop/showOrder"
+      name="orderBean" scope="session" validate="false" include="/order/ViewOrder.jsp"/>
+
+    <action path="/shop/listOrders" type="com.ibatis.struts.BeanAction"
+      name="orderBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showOrders.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/switchOrderPage" type="com.ibatis.struts.BeanAction"
+      name="orderBean" scope="session"
+      validate="false">
+      <forward name="success" path="/shop/showOrders.shtml" redirect="true"/>
+    </action>
+
+    <action path="/shop/showOrders"
+      name="orderBean" scope="session" validate="false" include="/order/ListOrders.jsp"/>
+
+    <action path="/shop/viewOrder" type="com.ibatis.struts.BeanAction"
+      name="orderBean" scope="session"
+      validate="false">
+      <forward name="success" path="/order/ViewOrder.jsp"/>
+    </action>
+
+  </action-mappings>
+
+  <controller pagePattern="$M$P" inputForward="false" processorClass="org.apache.portals.bridges.struts.PortletRequestProcessor"/>
+
+  <message-resources parameter="properties.application"/>
+
+</struts-config>
