@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY % locator-entities SYSTEM "file:locator.ent"> %locator-entities;
+]>
 <!--
 Copyright 2004 The Apache Software Foundation
 
