@@ -32,6 +32,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlet.helloworld.resources.HelloWorldResources</resource-bundle>
     <portlet-info>
       <title>HelloWorldTitle</title>
       <short-title>This is the short title</short-title>
@@ -65,6 +68,9 @@ limitations under the License.
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.preferences.resources.PreferenceResources</resource-bundle>
     <portlet-info>
       <title>Preference Test</title>
       <short-title>Preference Test</short-title>
@@ -97,6 +103,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.simple.resources.DisplayRequestResources</resource-bundle>
     <portlet-info>
       <title>Display the Portlet Request Information</title>
       <short-title>Portlet Request Information</short-title>
@@ -126,6 +135,10 @@ limitations under the License.
       <portlet-mode>HELP</portlet-mode>
       <portlet-mode>EDIT</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.simple.resources.PickANumberResources</resource-bundle>
     <portlet-info>
       <title>Pick a Number</title>
     </portlet-info>
@@ -138,6 +151,14 @@ limitations under the License.
   </portlet>
 
   <portlet id="AttributeScopePortlet">
+    <init-param>
+      <name>HelpPage</name>
+      <value>/WEB-INF/demo/simple/AttributeScopeHelp.jsp</value>
+    </init-param>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/demo/simple/AttributeScope.jsp</value>
+    </init-param>
     <portlet-name>AttributeScopePortlet</portlet-name>
     <display-name>Attribute Scope Demo</display-name>
     <portlet-class>org.apache.jetspeed.demo.simple.AttributeScopeServlet</portlet-class>
@@ -147,6 +168,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.simple.resources.AttributeScopeResources</resource-bundle>
     <portlet-info>
       <title>Attribute Scope Demo Portlet</title>
     </portlet-info>
@@ -170,6 +194,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>EDIT</portlet-mode>      
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerListResources</resource-bundle>
     <portlet-info>
       <title>Customer List</title>
       <short-title>Customer List</short-title>
@@ -194,6 +221,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>EDIT</portlet-mode>            
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerInfoResources</resource-bundle>
     <portlet-info>
       <title>Customer Information</title>
       <short-title>Customer Info</short-title>
@@ -218,6 +248,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>EDIT</portlet-mode>            
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.customerInfo.resources.CustomerDetailResources</resource-bundle>
     <portlet-info>
       <title>Customer Detail</title>
       <short-title>Customer Detail</short-title>
@@ -246,6 +279,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <resource-bundle>org.apache.jetspeed.demo.security.resources.RoleResources</resource-bundle>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
     <portlet-info>
       <title>Role Security Test</title>
       <short-title>Role Security Test</short-title>
@@ -286,6 +322,9 @@ limitations under the License.
       <portlet-mode>VIEW</portlet-mode>
       <portlet-mode>HELP</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>org.apache.jetspeed.demo.userinfo.resources.UserInfoResources</resource-bundle>
     <portlet-info>
       <title>User Info Test</title>
       <short-title>User Info Test</short-title>
