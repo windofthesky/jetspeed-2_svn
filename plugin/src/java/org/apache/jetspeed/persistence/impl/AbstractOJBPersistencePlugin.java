@@ -318,7 +318,7 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin,
     {
 
         this.configuration = configuration;
-
+        /*
         String correctPath = configuration.getPathResolver().getRealPath(configuration.getProperty("OJB.path") + File.separator);
 
         File ojbPropsLocation = new File(correctPath);
@@ -348,6 +348,7 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin,
         {
             throw new PluginInitializationException("Could not locate the OJB load directory. " + ojbUrl);
         }
+        */
 
         //System.setProperty("OJB.properties", ojbPropsLocation);
 
