@@ -80,45 +80,40 @@ public class ContentFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException
     {
-        try
+        if (request instanceof HttpServletRequest)
         {
-            if (request instanceof HttpServletRequest)
+            
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            String requestURI = httpRequest.getRequestURI();
+            String mimeType = config.getServletContext()
+            .getMimeType(requestURI);
+            
+            if (mimeType == null) { throw new NullPointerException(
+                    "MIME-TYPE for "
+                    + requestURI
+                    + " could not be located.  Make sure your container is properly configured to detect MIME types."); }
+            
+            System.out.println(mimeType + " detected: " + requestURI);
+            
+            SimpleContentLocator contentLocator = new SimpleContentLocator(this.contentDir, getContentSearchPathes(httpRequest), "/content/", true);
+            long contentLength = contentLocator.mergeContent(requestURI, response.getOutputStream());
+            
+            if (contentLength > -1)
             {
-
-                HttpServletRequest httpRequest = (HttpServletRequest) request;
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
-                String requestURI = httpRequest.getRequestURI();
-                String mimeType = config.getServletContext().getMimeType(
-                        requestURI);
-
-                if (mimeType == null) { throw new NullPointerException(
-                        "MIME-TYPE for "
-                                + requestURI
-                                + " could not be located.  Make sure your container is properly configured to detect MIME types."); }
-
-                System.out.println(mimeType + " detected: " + requestURI);
-
-                boolean found = setThemeContent(requestURI, httpRequest,
-                        httpResponse, mimeType);
-
-                if (found)
-                {
-                    System.out.println("Setting status to OK");
-                    httpResponse.setStatus(HttpServletResponse.SC_OK);
-                } else
-                {
-                    chain.doFilter(request, response);
-                }
-
-                return;
-
+                response.setContentType(mimeType);
+                response.setContentLength((int) contentLength);
+                System.out.println("Setting status to OK");
+                httpResponse.setStatus(HttpServletResponse.SC_OK);
+            } else
+            {
+                chain.doFilter(request, response);
             }
-        } catch (Exception e)
-        {
-
-            System.out.println("Error filtering image, " + e.toString());
-            e.printStackTrace();
+            
+            return;
+            
         }
+        
 
         chain.doFilter(request, response);
     }
@@ -131,88 +126,88 @@ public class ContentFilter implements Filter
 
     }
 
-    protected boolean setThemeContent(String URI, HttpServletRequest request,
-            HttpServletResponse response, String mimeType)
-    {
-        int rootLen = 7;
-        int rootStart = URI.lastIndexOf("content");
-        if (rootStart != -1)
-        {
-            String dir = URI.substring(rootStart + rootLen);
-            List pathes = getContentSearchPathes(request);
-
-            for (int i = 0; i < pathes.size(); i++)
-            {
-                File fqFile = null;
-                if (fileCache.containsKey(pathes.get(i) + ":" + URI))
-                {
-                    fqFile = (File) fileCache.get(pathes.get(i) + ":" + URI);
-                    System.out.println("Found cached file for URI: "
-                            + URI);
-                } 
-                else
-                {
-                    // String fqPath = pathes.get(i) + "/html" + dir;
-                    String sep="";
-                    if(pathes.get(i).toString().trim().length() > 1)
-                    {
-                        sep = "/";
-                    }
-                    String fqPath = contentDir + sep + pathes.get(i) + dir;
-                    
-                    fqFile = new File(fqPath);
-                    System.out.println("Actual content located at: "
-                            + fqPath);
-                    System.out.println("Content exists? "
-                            + fqFile.exists());
-                    if(!fqFile.exists())
-                    {
-                        continue;
-                    }
-                    fileCache.put(pathes.get(i) + ":" + URI, fqFile);
-                }
-
-                BufferedInputStream bis = null;
-                try
-                {
-
-                    bis = new BufferedInputStream(new FileInputStream(fqFile));
-                    response.setContentType(mimeType);
-                    response.setContentLength((int) fqFile.length());
-                    ServletOutputStream sos = response.getOutputStream();
-                    for (int j = bis.read(); j != -1; j = bis.read())
-                    {
-                        sos.write((byte) j);
-                    }
-                    System.out.println("Wrote " + fqFile.length()
-                            + " to the response output stream.");
-
-                    return true;
-
-                } catch (Exception e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } 
-                finally
-                {
-                    try
-                    {
-                        if (bis != null)
-                        {
-                            bis.close();
-                        }
-                    } catch (IOException e1)
-                    {
-                        // ignore
-
-                    }
-                }
-            }
-        }
-        return false;
-
-    }
+//    protected boolean setThemeContent(String URI, HttpServletRequest request,
+//            HttpServletResponse response, String mimeType)
+//    {
+//        int rootLen = 7;
+//        int rootStart = URI.lastIndexOf("content");
+//        if (rootStart != -1)
+//        {
+//            String dir = URI.substring(rootStart + rootLen);
+//            List pathes = getContentSearchPathes(request);
+//
+//            for (int i = 0; i < pathes.size(); i++)
+//            {
+//                File fqFile = null;
+//                if (fileCache.containsKey(pathes.get(i) + ":" + URI))
+//                {
+//                    fqFile = (File) fileCache.get(pathes.get(i) + ":" + URI);
+//                    System.out.println("Found cached file for URI: "
+//                            + URI);
+//                } 
+//                else
+//                {
+//                    // String fqPath = pathes.get(i) + "/html" + dir;
+//                    String sep="";
+//                    if(pathes.get(i).toString().trim().length() > 1)
+//                    {
+//                        sep = "/";
+//                    }
+//                    String fqPath = contentDir + sep + pathes.get(i) + dir;
+//                    
+//                    fqFile = new File(fqPath);
+//                    System.out.println("Actual content located at: "
+//                            + fqPath);
+//                    System.out.println("Content exists? "
+//                            + fqFile.exists());
+//                    if(!fqFile.exists())
+//                    {
+//                        continue;
+//                    }
+//                    fileCache.put(pathes.get(i) + ":" + URI, fqFile);
+//                }
+//
+//                BufferedInputStream bis = null;
+//                try
+//                {
+//
+//                    bis = new BufferedInputStream(new FileInputStream(fqFile));
+//                    response.setContentType(mimeType);
+//                    response.setContentLength((int) fqFile.length());
+//                    ServletOutputStream sos = response.getOutputStream();
+//                    for (int j = bis.read(); j != -1; j = bis.read())
+//                    {
+//                        sos.write((byte) j);
+//                    }
+//                    System.out.println("Wrote " + fqFile.length()
+//                            + " to the response output stream.");
+//
+//                    return true;
+//
+//                } catch (Exception e)
+//                {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                } 
+//                finally
+//                {
+//                    try
+//                    {
+//                        if (bis != null)
+//                        {
+//                            bis.close();
+//                        }
+//                    } catch (IOException e1)
+//                    {
+//                        // ignore
+//
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//
+//    }
 
     protected List getContentSearchPathes(HttpServletRequest request)
     {
