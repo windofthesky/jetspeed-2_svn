@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -39,6 +40,7 @@ public class NodeSetImpl implements NodeSet
     private Map subsets;
     private String resolveToPath;
     private Comparator comparator;
+    protected static final Map patternCache = new HashMap();
 
     public NodeSetImpl( String resolveToPath )
     {
@@ -187,12 +189,13 @@ public class NodeSetImpl implements NodeSet
     {
         Iterator allNodes = nodes.entrySet().iterator();
         NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
+        final Pattern pattern = getPattern(regex);
         while (allNodes.hasNext())
         {
             Map.Entry entry = (Map.Entry) allNodes.next();
             Node node = (Node) entry.getValue();
             String key = (String) entry.getKey();
-            if (!key.matches(regex) && !node.getName().matches(regex))
+            if (!matches(pattern, key) && !matches(pattern, node.getName()))
             {
                 subset.add(node);
             }
@@ -214,17 +217,56 @@ public class NodeSetImpl implements NodeSet
     {
         Iterator allNodes = nodes.entrySet().iterator();
         NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
+        final Pattern pattern = getPattern(regex);
         while (allNodes.hasNext())
         {
             Map.Entry entry = (Map.Entry) allNodes.next();
             String key = (String) entry.getKey();
             Node node = (Node) entry.getValue();
-            if (key.matches(regex) || node.getName().matches(regex))
+            if (matches(pattern, key) || matches(pattern, node.getName()))
             {
                 subset.add(node);
             }
         }
         
         return subset;
+    }
+    
+    /**
+     * 
+     * <p>
+     * matches
+     * </p>
+     *
+     * @param pattern
+     * @param value
+     * @return
+     */
+    protected final boolean matches(Pattern pattern, String value)
+    {
+        return pattern.matcher(value).matches();
+    }
+    
+    /**
+     * 
+     * <p>
+     * getPattern
+     * </p>
+     *
+     * @param regex
+     * @return
+     */
+    protected final Pattern getPattern(String regex)
+    {        
+        if(patternCache.containsKey(regex))
+        {
+            return (Pattern)patternCache.get(regex);
+        }
+        else
+        {
+            Pattern pattern = Pattern.compile(regex);
+            patternCache.put(regex, pattern);
+            return pattern;
+        }       
     }
 }
