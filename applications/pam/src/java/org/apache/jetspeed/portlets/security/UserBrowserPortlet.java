@@ -31,6 +31,7 @@ import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlet.ServletPortlet;
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -39,92 +40,103 @@ import org.apache.webapp.admin.TreeControlNode;
 
 /**
  * This portlet is a browser over all the portlet applications in the system.
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class UserBrowserPortlet extends ServletPortlet
 {
     private UserManager manager;
-    
+
     /** the id of the tree control */
     private static final String TREE_CONTROL = "j2_tree";
+
     /** query filter for selecting users */
     private static final String USER_FILTER = "";
+
     /** the id of the root node of the tree control */
     private static final String SECURITY_NODE_ID = "SECURITY-NODE";
+
     /** the domain of the security sub-tree */
     private static final String SECURITY_DOMAIN = "SECURITY_DOMAIN";
+
     /** the id of the user node of the tree control */
     private static final String USER_NODE_ID = "USER-NODE";
+
     /** the domain of the user sub-tree */
     private static final String USER_DOMAIN = "USER_DOMAIN";
+
     /** the domain of the users leaf nodes */
     private static final String USER_DETAIL_DOMAIN = "USER_DETAIL_DOMAIN";
-    
-    
-    public void init(PortletConfig config)
-    throws PortletException 
+
+    public void init(PortletConfig config) throws PortletException
     {
-        super.init(config);                       
-        manager = (UserManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
+        super.init(config);
+        manager = (UserManager) getPortletContext()
+                .getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
         if (null == manager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
     }
-    
-    public void doView(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         response.setContentType("text/html");
-        
+
         TreeControl control = (TreeControl) request.getPortletSession().getAttribute(TREE_CONTROL);
-        if(control == null)
+        try
         {
-            Iterator users = manager.getUsers(USER_FILTER);
-            control = buildTree(users, request.getLocale());
-            request.getPortletSession().setAttribute(TREE_CONTROL, control);
+            if (control == null)
+            {
+                Iterator users = manager.getUsers(USER_FILTER);
+                control = buildTree(users, request.getLocale());
+                request.getPortletSession().setAttribute(TREE_CONTROL, control);
+            }
+        }
+        catch (SecurityException se)
+        {
+            throw new PortletException(se);
         }
         request.setAttribute(TREE_CONTROL, control);
-        
+
         super.doView(request, response);
-        
+
     }
 
-    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException, IOException
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse) throws PortletException,
+            IOException
     {
         TreeControl control = (TreeControl) actionRequest.getPortletSession().getAttribute(TREE_CONTROL);
         //assert control != null
-        if(control != null)
+        if (control != null)
         {
             // expand or contact non-leaf nodes
             String node = actionRequest.getParameter(PortletApplicationResources.REQUEST_NODE);
-            if(node != null)
+            if (node != null)
             {
                 TreeControlNode controlNode = control.findNode(node);
-                if(controlNode != null)
+                if (controlNode != null)
                 {
                     controlNode.setExpanded(!controlNode.isExpanded());
                 }
             }
-            
+
             // select a node
             String selectedNode = actionRequest.getParameter(PortletApplicationResources.REQUEST_SELECT_NODE);
-            if(selectedNode != null)
+            if (selectedNode != null)
             {
                 control.selectNode(selectedNode);
                 TreeControlNode child = control.findNode(selectedNode);
                 if (child != null)
                 {
                     String domain = child.getDomain();
-                    if(domain.equals(USER_DETAIL_DOMAIN))
+                    if (domain.equals(USER_DETAIL_DOMAIN))
                     {
                         if (selectedNode != null)
                         {
                             actionRequest.getPortletSession().setAttribute(
-                                    PortletApplicationResources.PAM_CURRENT_USER,
-                                    selectedNode,
+                                    PortletApplicationResources.PAM_CURRENT_USER, selectedNode,
                                     PortletSession.APPLICATION_SCOPE);
                         }
                     }
@@ -132,47 +144,37 @@ public class UserBrowserPortlet extends ServletPortlet
             }
         }
     }
-            
-    private TreeControl buildTree(Iterator users, Locale locale) 
-    {       
-        
-        TreeControlNode root =
-            new TreeControlNode(SECURITY_NODE_ID, // node id
-                                null,  // icon 
-                                getMessage(MSG_SECURITY_ROOT, locale), // title
-                                PortletApplicationResources.PORTLET_URL,
-                                null, // target window
-                                true, // expand initially
-                                SECURITY_DOMAIN); // domain
-        
+
+    private TreeControl buildTree(Iterator users, Locale locale)
+    {
+
+        TreeControlNode root = new TreeControlNode(SECURITY_NODE_ID, // node id
+                null, // icon
+                getMessage(MSG_SECURITY_ROOT, locale), // title
+                PortletApplicationResources.PORTLET_URL, null, // target window
+                true, // expand initially
+                SECURITY_DOMAIN); // domain
+
         TreeControl control = new TreeControl(root);
-        
-        
-        TreeControlNode userTree = 
-            new TreeControlNode(USER_NODE_ID, // node id 
-                                null,  // icon
-                                getMessage(MSG_USER_ROOT, locale), // title 
-                                PortletApplicationResources.PORTLET_URL, 
-                                null, // target window
-                                false, // expand initially
-                                USER_DOMAIN); // domain
+
+        TreeControlNode userTree = new TreeControlNode(USER_NODE_ID, // node id
+                null, // icon
+                getMessage(MSG_USER_ROOT, locale), // title
+                PortletApplicationResources.PORTLET_URL, null, // target window
+                false, // expand initially
+                USER_DOMAIN); // domain
         root.addChild(userTree);
-        
+
         while (users.hasNext())
         {
-            User user = (User)users.next();
+            User user = (User) users.next();
             Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);
-            
-            TreeControlNode userNode = new TreeControlNode(principal.getName(), 
-                                                           null, 
-                                                           principal.getName(), 
-                                                           PortletApplicationResources.PORTLET_URL, 
-                                                           null, 
-                                                           false, 
-                                                           USER_DETAIL_DOMAIN);
-            userTree.addChild(userNode);            
+
+            TreeControlNode userNode = new TreeControlNode(principal.getName(), null, principal.getName(),
+                    PortletApplicationResources.PORTLET_URL, null, false, USER_DETAIL_DOMAIN);
+            userTree.addChild(userNode);
         }
-                
+
         return control;
     }
 
@@ -194,11 +196,12 @@ public class UserBrowserPortlet extends ServletPortlet
 
     /** Messages */
     private static final String MSG_SECURITY_ROOT = "tree.security.root";
+
     private static final String MSG_USER_ROOT = "tree.user.root";
-    
+
     private String getMessage(String key, Locale locale)
     {
         return getResourceBundle(locale).getString(key);
     }
-    
+
 }

@@ -25,6 +25,7 @@ import javax.portlet.PortletException;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.portlets.pam.PortletApplicationResources;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
@@ -33,52 +34,58 @@ import org.apache.portals.bridges.myfaces.FacesPortlet;
 import tyrex.naming.MemoryContext;
 import tyrex.tm.RuntimeContext;
 
-
 /**
  * Provides maintenance capabilities for User Administration.
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class UserManagerPortlet extends FacesPortlet
 {
     private UserManager userManager;
-    
-    public void init(PortletConfig config)
-    throws PortletException 
+
+    public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
-        userManager = (UserManager)getPortletContext().getAttribute(PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
+        userManager = (UserManager) getPortletContext().getAttribute(
+                PortletApplicationResources.CPS_USER_MANAGER_COMPONENT);
         if (null == userManager)
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
         System.out.println("user manager = " + userManager);
-        Iterator users = userManager.getUsers("");
-        while (users.hasNext())
+        try
         {
-            User user = (User)users.next();
-            System.out.println("++++ User = " + user);
-            Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);             
-            System.out.println("principal = " + principal.getName());
+            Iterator users = userManager.getUsers("");
+            while (users.hasNext())
+            {
+                User user = (User) users.next();
+                System.out.println("++++ User = " + user);
+                Principal principal = getPrincipal(user.getSubject(), UserPrincipal.class);
+                System.out.println("principal = " + principal.getName());
+            }
+        }
+        catch (SecurityException se)
+        {
+            throw new PortletException(se);
         }
         try
         {
             Hashtable env = new Hashtable();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "tyrex.naming.MemoryContextFactory");
-            Context root = new MemoryContext(null);                                   
+            Context root = new MemoryContext(null);
             Context ctx = root.createSubcontext("comp");
-            ctx.bind("UserManager", userManager); 
+            ctx.bind("UserManager", userManager);
             RuntimeContext runCtx = RuntimeContext.newRuntimeContext(root, null);
-            RuntimeContext.setRuntimeContext(runCtx);            
+            RuntimeContext.setRuntimeContext(runCtx);
         }
         catch (Exception e)
         {
-            e.printStackTrace();            
+            e.printStackTrace();
         }
-        
+
     }
-    
+
     public Principal getPrincipal(Subject subject, Class classe)
     {
         Principal principal = null;
@@ -94,6 +101,5 @@ public class UserManagerPortlet extends FacesPortlet
         }
         return principal;
     }
-    
 
 }
