@@ -311,23 +311,17 @@ public class StrutsPortlet extends GenericPortlet
             }
                                 
             String path = null;
-            String query_string = null;
             String pageURL = request.getParameter(StrutsPortletURL.PAGE);
             if (pageURL == null)
                 path = defaultPage;
             else
             {
-                int index;
                 path = pageURL;
-                if ((index = path.indexOf('?')) != -1)
-                {
-                    query_string = path.substring(index + 1);
-                    path = path.substring(0, index);
-                }
             }
+
             if (log.isDebugEnabled())
-                log.debug("process path: " + path + ", query string: "
-                        + query_string + ", requestType: " + requestType);
+                log.debug("process path: " + path + ", requestType: " + requestType);
+
             RequestDispatcher rd = servletContext.getRequestDispatcher(path);
             if (rd != null)
             {
@@ -338,8 +332,7 @@ public class StrutsPortlet extends GenericPortlet
                 req.setAttribute(StrutsPortlet.REQUEST_TYPE, requestType);
                 try
                 {
-                    rd.include(new PortletServletRequestWrapper(servletContext,
-                            req, query_string), res);
+                    rd.include(new PortletServletRequestWrapper(servletContext, req), res);
                 } catch (ServletException e)
                 {
                     if (log.isErrorEnabled())

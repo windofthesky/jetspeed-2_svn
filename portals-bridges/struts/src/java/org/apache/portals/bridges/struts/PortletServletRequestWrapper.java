@@ -18,11 +18,10 @@ package org.apache.portals.bridges.struts;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.portals.bridges.struts.util.DispatchedHttpServletRequestWrapper;
 
 /**
  * PortletServletRequestWrapper
@@ -30,39 +29,41 @@ import org.apache.portals.bridges.struts.util.DispatchedHttpServletRequestWrappe
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PortletServletRequestWrapper
-        extends
-            DispatchedHttpServletRequestWrapper
+public class PortletServletRequestWrapper extends HttpServletRequestWrapper
 {
-    private static final Log log = LogFactory
-            .getLog(PortletServletRequestWrapper.class);
+    private static final Log log = LogFactory.getLog(PortletServletRequestWrapper.class);
     private ServletContext context;
-    public PortletServletRequestWrapper(ServletContext context,
-            HttpServletRequest request, String queryString)
+    public PortletServletRequestWrapper(ServletContext context, HttpServletRequest request)
     {
-        super(request, queryString);
+        super(request);
         this.context = context;
     }
+
     public String getPathInfo()
     {
         return (String) getAttribute("javax.servlet.include.path_info");
     }
+
     public String getContextPath()
     {
         return (String) getAttribute("javax.servlet.include.context_path");
     }
+
     public String getRequestURI()
     {
         return (String) getAttribute("javax.servlet.include.request_uri");
     }
+
     public String getServletPath()
     {
         return (String) getAttribute("javax.servlet.include.servlet_path");
     }
+
     public String getQueryString()
     {
         return (String) getAttribute("javax.servlet.include.query_string");
     }
+
     public RequestDispatcher getRequestDispatcher(String relativePath)
     {
         // Below comment and workaround taken from

@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.portals.bridges.struts.util.HttpRequestDispatcherImpl;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMessages;
@@ -38,20 +37,22 @@ import org.apache.struts.config.ActionConfig;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PortletServletRequestDispatcher extends HttpRequestDispatcherImpl
+public class PortletServletRequestDispatcher implements RequestDispatcher
 {
-    private static final Log log = LogFactory
-            .getLog(PortletServletRequestDispatcher.class);
+    private static final Log log = LogFactory.getLog(PortletServletRequestDispatcher.class);
+    private RequestDispatcher dispatcher;
+    private String path;
     private boolean named;
     
     public PortletServletRequestDispatcher(RequestDispatcher dispatcher,
             String path, boolean named)
     {
-        super(dispatcher, path);
+        this.dispatcher = dispatcher;
+        this.path = path;
         this.named = named;
     }
     
-    protected void invoke(ServletRequest request, ServletResponse response,
+    private void invoke(ServletRequest request, ServletResponse response,
             boolean include) throws ServletException, IOException
     {
         String request_type = (String) request
@@ -62,13 +63,13 @@ public class PortletServletRequestDispatcher extends HttpRequestDispatcherImpl
             if (log.isDebugEnabled())
             {
                 log.debug("saving " + (named ? "named " : " ")
-                        + "dispatch to :" + getPath() + ", from "
+                        + "dispatch to :" + path + ", from "
                         + request_type + " "
                         + StrutsPortletURL.getPageURL(request));
             }
             HttpServletRequest req = (HttpServletRequest) request;
             StrutsPortletRenderContext context = new StrutsPortletRenderContext();
-            context.setPath(getPath());
+            context.setPath(path);
             context.setDispatchNamed(named);
             ActionConfig actionConfig = (ActionConfig) request
                     .getAttribute(Globals.MAPPING_KEY);
@@ -110,9 +111,9 @@ public class PortletServletRequestDispatcher extends HttpRequestDispatcherImpl
                 // catch Session already invalidated Exception
                 if (log.isDebugEnabled())
                 {
-                    log.debug("Session invalidated: redirecting to: "+getPath()+" instead.");
+                    log.debug("Session invalidated: redirecting to: "+path+" instead.");
                 }
-                ((HttpServletResponse)response).sendRedirect(getPath());
+                ((HttpServletResponse)response).sendRedirect(path);
             }
         } 
         else
@@ -120,11 +121,37 @@ public class PortletServletRequestDispatcher extends HttpRequestDispatcherImpl
             if (log.isDebugEnabled())
             {
                 log.debug("invoking " + (named ? "named " : " ")
-                        + " dispatch to :" + getPath() + ", from "
+                        + " dispatch to :" + path + ", from "
                         + request_type + " "
                         + StrutsPortletURL.getPageURL(request));
             }
-            super.invoke(request, response, true);
+            dispatcher.include(request, response);
         }
+    }
+
+    public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+        if ( PortletServlet.isPortletRequest(request) )
+        {
+            invoke(request, response, false);
+        }
+        else
+        {
+            dispatcher.forward(request,response);
+        }
+    }
+
+    public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+        if ( PortletServlet.isPortletRequest(request) )
+        {
+            invoke(request, response, true);
+        }
+        else
+        {
+            dispatcher.include(request,response);
+        }
+    }
+
+    public String toString() {
+        return dispatcher.toString();
     }
 }
