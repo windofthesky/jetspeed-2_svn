@@ -72,8 +72,8 @@ import org.apache.pluto.om.common.PreferenceSetCtrl;
 public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
 {
     Set getNames();
-    
+
     int size();
-    
-	void setPreferenceValidator(PreferencesValidator validator);
+
+    void setPreferenceValidator(PreferencesValidator validator);
 }
