@@ -38,7 +38,7 @@ public class FolderImpl implements Folder
     private int id;
     private String name;
     //TODO: need to grab this from metadata...once we have metadata
-    private String defaultPage="default-page.psml";
+    private String defaultPage = "default-page.psml";
     private String defaultTheme;
     private FolderSet folders;
     private PageSet pages;
@@ -53,7 +53,14 @@ public class FolderImpl implements Folder
     {
 
         this.directory = directory;
-        this.name = name;
+        if (!name.startsWith("/"))
+        {
+            this.name = "/" + name;
+        }
+        else
+        {
+            this.name = name;
+        }
         this.pageManager = pageManager;
     }
 
@@ -70,11 +77,11 @@ public class FolderImpl implements Folder
      */
     public Folder getParent()
     {
-        if(name.equals("/"))
+        if (name.equals("/"))
         {
             return null;
         }
-        
+
         if (parent == null)
         {
             int lastSlash = name.lastIndexOf('/');
@@ -156,7 +163,7 @@ public class FolderImpl implements Folder
                 return "page_not_found.psml";
             }
         }
-        
+
     }
 
     /*

@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
@@ -32,16 +33,27 @@ public class PathSessionResolver implements RuleCriterionResolver
      */
     public String resolve(RequestContext context, RuleCriterion criterion)
     {        
-        String value = context.getPath();
-        if (value == null)
+        String path = null;
+        Page page = context.getPage();
+        
+        if(page != null)
+        {
+            path = page.getId();
+        }
+        else
+        {
+            path = context.getPath();
+        }
+        
+        if (path == null)
         {
             String key = this.getClass() + "." + criterion.getName();
-            value = (String)context.getSessionAttribute(key);
-            if (value == null)
+            path = (String)context.getSessionAttribute(key);
+            if (path == null)
             {
-                value = criterion.getValue();
+                path = criterion.getValue();
             }
         }
-        return value;            
+        return path;            
     }
 }
