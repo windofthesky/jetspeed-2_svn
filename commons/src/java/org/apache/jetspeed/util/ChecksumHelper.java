@@ -15,54 +15,51 @@
  */
 package org.apache.jetspeed.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
+import java.util.zip.Adler32;
+import java.util.zip.CheckedInputStream;
 
 
 /**
- * implements common directory and jar operations
+ * implements checksum related utilities
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public abstract class AbstractFileSystemHelper
+public final class ChecksumHelper
 {
-    public abstract File getRootDirectory();
-    
-    public long getChecksum(String path)
+    public static long getChecksum(InputStream is)
     {
-        File child = new File(getRootDirectory(), path);
-        if (child == null || !child.exists())
-        {
-            return 0;
-        }
-                
+        CheckedInputStream cis = null;        
         long checksum = 0;
-        InputStream is = null;
-        try
+        try 
         {
-            is = new FileInputStream(child);
-            checksum = ChecksumHelper.getChecksum(is);
+            cis = new CheckedInputStream(is, new Adler32());
+            byte[] tempBuf = new byte[128];
+            while (cis.read(tempBuf) >= 0) 
+            {
+            }
+            checksum = cis.getChecksum().getValue();
+        } 
+        catch (IOException e) 
+        {
+            checksum = 0;
         }
-        catch (FileNotFoundException e)
+        finally
         {
-        }
-        finally 
-        {
-             if (is != null)
-             {
-                 try
-                 {
-                     is.close();
-                 }
-                 catch (IOException io)
-                 {}
-             }
+            if (cis != null)
+            {
+                try
+                {
+                    cis.close();
+                }
+                catch (IOException ioe)
+                {                    
+                }
+            }
         }
         return checksum;
     }
-
 }
+        
