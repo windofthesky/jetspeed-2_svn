@@ -153,7 +153,12 @@ public class ContentFilter implements Filter
                 else
                 {
                     // String fqPath = pathes.get(i) + "/html" + dir;
-                    String fqPath = contentDir + "/" + pathes.get(i) + dir;
+                    String sep="";
+                    if(pathes.get(i).toString().trim().length() > 1)
+                    {
+                        sep = "/";
+                    }
+                    String fqPath = contentDir + sep + pathes.get(i) + dir;
                     
                     fqFile = new File(fqPath);
                     System.out.println("Actual content located at: "
