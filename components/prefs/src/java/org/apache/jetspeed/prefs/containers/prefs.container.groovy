@@ -4,8 +4,6 @@ import org.picocontainer.defaults.ConstantParameter
 import org.picocontainer.defaults.ComponentParameter
 import org.picocontainer.defaults.ConstructorComponentAdapter
 
-import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore
-import org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
 
 import org.apache.jetspeed.prefs.PropertyManager
