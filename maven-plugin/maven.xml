@@ -27,6 +27,15 @@ limitations under the License.
  	 <attainGoal name="copyDb" />
  	 <attainGoal name="copyPortlaWebApp" />
  </preGoal>   
+ 
+ <preGoal name="clean">
+
+ 	<delete includeEmptyDirs="true">
+       <fileset dir="src/plugin-resources">
+       	  <filename name="**/*"/>
+       </fileset>	  
+    </delete>
+ </preGoal>
 
    <goal name="copyDb">
 	 <copy todir="src/plugin-resources" overwrite="true" failonerror="true">
@@ -45,7 +54,7 @@ limitations under the License.
      </copy>
      
      <move file="${basedir}/src/plugin-resources/Empty.script" tofile="${basedir}/src/plugin-resources/Production.script" overwrite="true"/>
-	 
+	 <echo>Initializing HSQL Production.script with basic portal info.......</echo>
 	<j:set var="org.apache.jetspeed.database.url" value="jdbc:hsqldb:src/plugin-resources/Production"/>
     <j:set var="org.apache.jetspeed.database.driver" value="org.hsqldb.jdbcDriver"/>
     <j:set var="org.apache.jetspeed.database.user" value="sa"/>
@@ -91,9 +100,7 @@ limitations under the License.
     <attainGoal name="db.execute" />
     <j:set var="database.arg.script" value="./src/plugin-resources/populate-db-default.sql" />
     <attainGoal name="db.execute" />
-    <j:set var="database.arg.script" value="./src/plugin-resources/${org.apache.jetspeed.database.default.name}/test-persistence-schema.sql" />
-    <attainGoal name="db.execute" />
-  </goal>
+   </goal>
   
 
   
