@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="$INSTALL_PATH" default="install" name="utilities">
+	
+  <property file="${basedir}/build.properties"/>
+ 
+	
+	
+	<target name="install">
+	  <antcall target="build.db" inheritall="true" />
+	  <antcall target="install.tomcat" inheritall="true" />
+	  <antcall target="install.jetspeed" inheritall="true" />
+    </target>
+	
+  <target name="build.db" >
+    <property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/phase3ojb-schema.sql" />
+    <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/phase1-schema.sql" />
+     <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/phase2-schema.sql" />
+    <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/registry-schema.sql" />
+    <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/refs-schema.sql" />
+    <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/${ojb.platform}/security-schema.sql" />
+    <antcall target="db.execute" inheritall="true" />
+	<property name="database.arg.script" value="${basedir}/sql/populate-db-default.sql" />
+    <antcall target="db.execute" inheritall="true" />
+  </target>
+	
+  <target name="db.execute">
+	<echo>Execing SQL: ${database.arg.script}</echo>
+  	<echo>${driver.path}</echo>
+    <sql driver="${jdbc.driver}"
+         url="${db.url}"
+         userid="${db.username}"
+         password="${db.password}"
+         src="${database.arg.script}">
+      <classpath>
+        <pathelement path="${driver.path}"/>
+      </classpath>
+    </sql>
+  </target>
+	
+  <target name="install.tomcat">
+	<unzip dest="${basedir}" src="${basedir}/tomcat/jakarta-tomcat-5.0.30.zip" overwrite="true" />
+	<copy file="${basedir}/resources/tomcat-users.xml" todir="${tomcat.home}/conf" overwrite="true" />
+	<chmod perm="ugo+x" verbose="true">
+	   <fileset dir="${tomcat.home}/bin" />
+	</chmod>
+  </target>
+	
+  <target name="install.jetspeed">
+	<copy todir="${tomcat.home}/webapps/jetspeed"  >
+	  	<fileset dir="${basedir}/jetspeed" />
+	</copy>
+	
+	<!-- Set up tomcat's local security -->
+	<copy file="${basedir}/resources/jetspeed.xml" tofile="${tomcat.home}/conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+	   <filterset begintoken="@" endtoken="@">
+	   <filter token="USERNAME" value="${db.username}"/>
+	   <filter token="PASSWORD" value="${db.password}"/>
+	   <filter token="DRIVER" value="${jdbc.driver}"/>
+	   <filter token="URL" value="${db.url}"/>
+	   <filter token="USE_CONTEXTCLASSLOADER" value=""/>
+	 </filterset>
+	</copy>
+	
+	<!-- Copy and filter our OJB database platform definition so that it matches the users selection -->
+	<copy file="${basedir}/resources/repository_database.xml" todir="${tomcat.home}/webapps/jetspeed/WEB-INF/classes" overwrite="true">
+	    <filterset begintoken="@" endtoken="@">
+	        <filter token="PLATFORM" value="${ojb.platform}"/>
+	    </filterset>
+	</copy>
+	
+	<!-- Set up our main properties file per user variables -->
+	<copy file="${basedir}/resources/jetspeed.properties" tofile="${tomcat.home}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties" overwrite="true">
+	      <filterset begintoken="@" endtoken="@">
+	        <filter token="AUTODEPLOYMENT_SERVER" value="${tomcat.server}"/>
+	        <filter token="AUTODEPLOYMENT_USER" value="${deployment.user}"/>
+	        <filter token="AUTODEPLOYMENT_PASSWORD" value="${deployment.password}"/>
+	      </filterset>
+	      <!-- Below filter is special because this concerns a numeric property for which a non-numeric token results
+	           in a test failure (TestSpringEngine)
+	           This property therefore MUST remain defined EXACTLY as specified for this filter to be able to work
+	      -->
+	      <filterset begintoken="autodeployment.catalina.version.major" endtoken="4">
+	        <filter token="=" value="autodeployment.catalina.version.major=5"/>
+	      </filterset>
+	      <filterset begintoken="autodeployment.port" endtoken="8080">
+	        <filter token="=" value="autodeployment.port=${tomcat.port}"/>
+	      </filterset>
+	</copy>
+	
+	<!-- Shared lib stuff -->
+	<copy todir="${tomcat.home}/shared/lib" verbose="true" >	   
+	  <fileset dir="${basedir}/resources" >
+	       <include name="**/*.jar"/>
+	  </fileset>
+	  <!-- make sure our JDBC driver gets copied -->
+	  <fileset file="${driver.path}" />
+	</copy>
+	
+	<!-- deploy demo portlets -->
+	<copy todir="${tomcat.home}/webapps/jetspeed/WEB-INF/deploy" verbose="true" >	   
+      <fileset dir="${basedir}/resources" >
+		<include name="**/*.war"/>
+      </fileset>		 
+    </copy>
+	
+  </target>
+
+</project>

@@ -1,0 +1,87 @@
+<userInput>
+  <panel order="0">
+    <field type="title" txt="Datasource Configuration" />
+    
+    <field type="rule" variable="dbServer">
+      <description align="left" txt="The datasource url"
+               id="dbServer.text"/>
+      <spec txt="Enter the datasource url:  "  layout="O:15:U" resultFormat="displayFormat"/>
+      <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Datasource server is required!" />
+    </field>
+    <space/>
+    <field type="rule" variable="jdbcDriver">
+      <description align="left" txt="The JDBC driver used to connect to this datasource."
+               id="jdbcDriver.text"/>
+      <spec txt="Enter the JDBC driver class name:  " id="jdbcDriver.label" layout="O:15:U" resultFormat="displayFormat" />
+      <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="A JDBC driver is required!" />
+    </field>    
+    <space/>
+    <field type="search" variable="driverPath" >
+    <description align="left" 
+               txt="Choose the location of your JDBC driver."
+               id="description.drvier.path"/>
+     <spec txt="Path to JDBC dirver:" type="file" result="file" >
+     	<choice value="" os="unix" />
+     	<choice value="" os="windows" />
+    </spec>
+   </field>
+   <space />
+    <field type="text" variable="dbUserName">
+      <description align="left" txt="User that will be used to connect to the datasource."
+               id="dbUserName.text"/>
+      <spec txt="Enter the datasource user name:  " id="dbUserName.label" size="15" />
+    </field>
+    <space/>
+    <field type="text" variable="dbUserPassword">
+      <description align="left" txt="Password that will be used to connect to the datasource."
+               id="dbUserPassword.text"/>
+      <spec txt="Enter the datasource password:  " id="dbUserPassword.label" size="15" />
+    </field>
+  </panel>
+  
+  <panel order="1">
+    <field type="title" txt="DB Creation Configuration" />
+    <space/>
+    <field type="radio" variable="ojbPlatform">
+     <description align="left" txt="Select the DB platform you are using."
+               id="description.ojbPlatform"/>
+     <spec>
+      <choice txt="MySQL" id="radio.label.1" value="mysql" set="true"/>
+      <choice txt="Microsoft SQL Server" id="radio.label.2" value="mssqldb" />
+      <choice txt="Hypersonic DB" id="radio.label.3" value="hsqldb" />
+      <choice txt="Oracle" id="radio.label.4" value="oracle" />
+      <choice txt="Postgres" id="radio.label.5" value="postgres" />
+    </spec>
+  </field>
+  <space/>
+
+  </panel>
+  
+  <panel order="2">
+    <field type="title" txt="Tomcat Configuration" />
+    <space />
+    <field type="text" variable="tomcat_server" >
+      <description align="left" txt="The hostname/ip that tomcat listens on."
+               id="tomcat.server.text"/>
+      <spec txt="Tomcat host:  " id="tomcat.server.label" size="6" set="localhost"/>
+    </field>
+    <space />
+    <field type="text" variable="tomcat_port">
+      <description align="left" txt="The port that tomcat listens on."
+               id="tomcat.port.text"/>
+      <spec txt="Tomcat port:  " id="tomcat.port.label" size="6" set="8080"/>
+    </field>
+    <space/>
+     <field type="text" variable="deployment_user">
+      <description align="left" txt="User that will be used to deploy webapps to tomcat."
+               id="deployment.user.text" />
+      <spec txt="Enter the tomcat user name:  " id="deployment.user.label" size="15" set="j2deployer" />
+    </field>
+    <space/>
+    <field type="text" variable="deployment_password">
+      <description align="left" txt="Password that will be used to deploy webapps to tomcat."
+               id="deployment.password.text"/>
+      <spec txt="Enter the tomcat password:  " id="deployment.password.label" size="15" />
+    </field>    
+  </panel>
+</userInput> 
