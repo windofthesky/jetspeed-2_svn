@@ -17,8 +17,6 @@ package org.apache.jetspeed.om.common;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.ObjectID;
-
 /**
  * GenericMetadata
  * <br/>
@@ -36,4 +34,6 @@ public interface GenericMetadata {
     
     public Collection getFields();
     public void setFields(Collection fields);
+    
+    LocalizedField createLocalizedField();
 }
