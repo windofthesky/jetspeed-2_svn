@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry kind="src" path="components/sso/src/test"/>
 	<classpathentry kind="src" path="applications/rss/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/sso/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portals-bridges/php/src/java"/>
