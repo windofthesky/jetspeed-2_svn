@@ -66,7 +66,7 @@ import org.apache.jetspeed.profiler.ProfiledPageContext;
  * This service is responsible for loading and saving PSML pages serialized to
  * disk
  * 
- * @author <a href="mailto:raphael@apache.org">Raphaël Luta </a>
+ * @author <a href="mailto:raphael@apache.org">Raphaï¿½l Luta </a>
  * @author <a href="mailto:weaver@apache.org">Scott T Weaver </a>
  * @version $Id$
  */
@@ -316,7 +316,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                         DocumentSet documentSet = (DocumentSet) documentSetsIter.next();
                         NodeSetImpl documentSetNodes = null;
                         documentSetNodes = expandAndProfileDocumentSet(pageContext.getLocators(), documentSet, documentSetNodes);
-                        if ((documentSetNodes != null) && (documentSetNodes.size() > 0))
+                        if (documentSetNodes != null)
                         {
                             documentSets.add(documentSet);
                             documentSetNodeSets.put(documentSet, documentSetNodes);
@@ -466,7 +466,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                 // expand document set using default document set order
                                 NodeSetImpl documentSetNodes = new NodeSetImpl(null, documentComparator);
                                 documentSetNodes = expandDocumentSet(documentSet, documentSetNodes);
-                                if ((documentSetNodes != null) && (documentSetNodes.size() > 0))
+                                if (documentSetNodes != null)
                                 {
                                     documentSets.add(documentSet);
                                     documentSetNodeSets.put(documentSet, documentSetNodes);
