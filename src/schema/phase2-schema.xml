@@ -127,6 +127,9 @@ limitations under the License.
             <index-column name="RULE_ID" />
             <index-column name="FALLBACK_ORDER" />
         </index>
+        <foreign-key foreignTable="PROFILING_RULE">
+            <reference foreign="RULE_ID" local="RULE_ID"/>
+        </foreign-key>                
     </table>
     
     <table name="PRINCIPAL_RULE_ASSOC">
