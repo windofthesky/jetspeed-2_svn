@@ -322,7 +322,7 @@ public class PortletApplicationDetail extends ServletPortlet
         {
             String userAttrName = actionRequest.getParameter("user_attr_name");
             String userAttrDesc = actionRequest.getParameter("user_attr_desc");
-            if(userAttrName != null)
+            if (userAttrName != null && userAttrName.trim().length() > 0)                
             {
                 try
                 {
