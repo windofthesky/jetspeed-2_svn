@@ -17,13 +17,12 @@ package org.apache.jetspeed.components.persistence;
 import java.util.ArrayList;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
-import org.apache.jetspeed.components.ComponentAwareTestSuite;
 import org.apache.jetspeed.components.persistence.store.Filter;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer;
-import org.picocontainer.MutablePicoContainer;
+import org.apache.jetspeed.components.persistence.store.ojb.pb.PBStore;
+import org.apache.jetspeed.components.util.DatasourceTestCase;
 
 /**
  * <p>
@@ -34,39 +33,18 @@ import org.picocontainer.MutablePicoContainer;
  * @version $ $
  *  
  */
-public class TestPersistenceContainer extends AbstractComponentAwareTestCase
+public class TestPersistenceContainer extends DatasourceTestCase
 {
     
-    private MutablePicoContainer rdbmsContainer;
-    private PersistenceStoreContainer persistenceContainer;
-    private MutablePicoContainer parent;
-    private PersistenceStore store;
-
-
-    /**
-     * @param arg0
-     */
-    public TestPersistenceContainer(String arg0)
-    {
-        super(arg0, "./src/test/Log4j.properties");
-        // TODO Auto-generated constructor stub
-    }
+    private PersistenceStore store; 
 
     public static Test suite()
     {
-        ComponentAwareTestSuite suite = new ComponentAwareTestSuite(TestPersistenceContainer.class);
-        suite.setScript("org/apache/jetspeed/containers/test.persistence.groovy");
-        
-        return suite;
+        // All methods starting with "test" will be executed in the test suite.
+        return new TestSuite(TestPersistenceContainer.class);
     }
 
-    public void testStartContainer()
-    {
-        assertNotNull(parent);
-        assertNotNull(persistenceContainer);
-        assertNotNull(store);
-    }
-
+   
     public void test001() throws Exception
     {
         try
@@ -139,8 +117,6 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        parent = (MutablePicoContainer) getContainer();
-        persistenceContainer = (PersistenceStoreContainer) parent.getComponentInstance(PersistenceStoreContainer.class);
-        store = persistenceContainer.getStore("jetspeed");
+        store = new PBStore("jetspeed");        
     }
 }
