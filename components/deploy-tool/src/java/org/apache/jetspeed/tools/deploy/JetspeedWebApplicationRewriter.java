@@ -49,14 +49,16 @@ public class JetspeedWebApplicationRewriter
     protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
             "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
             "servlet-mapping"};
-	  
+      
     private Document document;
+    private String portletApplication;
     private boolean changed = false;
     private boolean registerAtInit = false;
     
-    public JetspeedWebApplicationRewriter(Document doc, boolean registerAtInit)
+    public JetspeedWebApplicationRewriter(Document doc, String portletApplication, boolean registerAtInit)
     {
-    		this.document = doc;
+            this.document = doc;
+            this.portletApplication = portletApplication;
             this.registerAtInit = registerAtInit;
     }
 
@@ -65,68 +67,68 @@ public class JetspeedWebApplicationRewriter
             this.document = doc;
     }
     
-	/**
-	 * 
-	 * <p>
-	 * processWebXML
-	 * </p>
-	 * 
-	 * Infuses this PortletApplicationWar's web.xml file with
-	 * <code>servlet</code> and a <code>servlet-mapping</code> element for
-	 * the JetspeedContainer servlet. This is only done if the descriptor does
-	 * not already contain these items.
-	 * 
-	 * @throws MetaDataException
-	 *             if there is a problem infusing
-	 */
-	public void processWebXML()
+    /**
+     * 
+     * <p>
+     * processWebXML
+     * </p>
+     * 
+     * Infuses this PortletApplicationWar's web.xml file with
+     * <code>servlet</code> and a <code>servlet-mapping</code> element for
+     * the JetspeedContainer servlet. This is only done if the descriptor does
+     * not already contain these items.
+     * 
+     * @throws MetaDataException
+     *             if there is a problem infusing
+     */
+    public void processWebXML()
     throws Exception
-	{
-	    SAXBuilder builder = new SAXBuilder();
-	    Writer webXmlWriter = null;
-	    InputStream webXmlIn = null;
-	
-	    try
-	    {
-	        // Use the local dtd instead of remote dtd. This
-	        // allows to deploy the application offline
-	        builder.setEntityResolver(new EntityResolver()
-	        {
-	            public InputSource resolveEntity( java.lang.String publicId, java.lang.String systemId )
-	                    throws SAXException, java.io.IOException
-	            {
-	
-	                if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
-	                {
-	                    return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
-	                }
-	                else return null;
-	            }
-	        });
-	
-	
-	        Element root = document.getRootElement();
-		
-	        Object jetspeedServlet = XPath.selectSingleNode(document, JETSPEED_SERVLET_XPATH);
-	        Object jetspeedServletMapping = XPath.selectSingleNode(document, JETSPEED_SERVLET_MAPPING_XPATH);
-	        if (document.getRootElement().getChildren().size() == 0)
-	        {
-	            throw new Exception("Source web.xml has no content!!!");
-	        }
-		
-	        if (jetspeedServlet == null)
-	        {
-	            Element jetspeedServletElement = new Element("servlet");
-	            Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
-	            Element servletDspName = (Element) new Element("display-name").addContent("Jetspeed Container");
-	            Element servletDesc = (Element) new Element("description")
-	                    .addContent("MVC Servlet for Jetspeed Portlet Applications");
-	            Element servletClass = (Element) new Element("servlet-class")
-	                    .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
-	            jetspeedServletElement.addContent(servletName);
-	            jetspeedServletElement.addContent(servletDspName);
-	            jetspeedServletElement.addContent(servletDesc);
-	            jetspeedServletElement.addContent(servletClass);
+    {
+        SAXBuilder builder = new SAXBuilder();
+        Writer webXmlWriter = null;
+        InputStream webXmlIn = null;
+    
+        try
+        {
+            // Use the local dtd instead of remote dtd. This
+            // allows to deploy the application offline
+            builder.setEntityResolver(new EntityResolver()
+            {
+                public InputSource resolveEntity( java.lang.String publicId, java.lang.String systemId )
+                        throws SAXException, java.io.IOException
+                {
+    
+                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+                    {
+                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
+                    }
+                    else return null;
+                }
+            });
+    
+    
+            Element root = document.getRootElement();
+        
+            Object jetspeedServlet = XPath.selectSingleNode(document, JETSPEED_SERVLET_XPATH);
+            Object jetspeedServletMapping = XPath.selectSingleNode(document, JETSPEED_SERVLET_MAPPING_XPATH);
+            if (document.getRootElement().getChildren().size() == 0)
+            {
+                throw new Exception("Source web.xml has no content!!!");
+            }
+        
+            if (jetspeedServlet == null)
+            {
+                Element jetspeedServletElement = new Element("servlet");
+                Element servletName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletDspName = (Element) new Element("display-name").addContent("Jetspeed Container");
+                Element servletDesc = (Element) new Element("description")
+                        .addContent("MVC Servlet for Jetspeed Portlet Applications");
+                Element servletClass = (Element) new Element("servlet-class")
+                        .addContent("org.apache.jetspeed.container.JetspeedContainerServlet");
+                jetspeedServletElement.addContent(servletName);
+                jetspeedServletElement.addContent(servletDspName);
+                jetspeedServletElement.addContent(servletDesc);
+                jetspeedServletElement.addContent(servletClass);
                 if (this.registerAtInit)
                 {
                     Element paramName = (Element) new Element("param-name").addContent("registerAtInit");
@@ -134,82 +136,90 @@ public class JetspeedWebApplicationRewriter
                     Element initParam = new Element("init-param");
                     initParam.addContent(paramName);
                     initParam.addContent(paramValue);
-                    jetspeedServletElement.addContent(initParam);                    
+                    jetspeedServletElement.addContent(initParam);
+                    
+                    Element param2Name = (Element) new Element("param-name").addContent("portletApplication");
+                    Element param2Value = (Element) new Element("param-value").addContent(portletApplication); 
+                    Element init2Param = new Element("init-param");
+                    init2Param.addContent(param2Name);
+                    init2Param.addContent(param2Value);
+                    jetspeedServletElement.addContent(init2Param);                    
+                    
                     Element loadOnStartup = (Element) new Element("load-on-startup").addContent("100");
                     jetspeedServletElement.addContent(loadOnStartup);
                 }
-	            insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
-	            changed = true;
-	        }
-	
-	        if (jetspeedServletMapping == null)
-	        {
-	
-	            Element jetspeedServletMappingElement = new Element("servlet-mapping");
-	
-	            Element servletMapName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
-	            Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
-	
-	            jetspeedServletMappingElement.addContent(servletMapName);
-	            jetspeedServletMappingElement.addContent(servletUrlPattern);
-	
-	            insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
-	            changed = true;
-	        }		
-	    }
-	    catch (Exception e)
-	    {
-	        throw new Exception("Unable to process web.xml for infusion " + e.toString(), e);
-	    }
-	
-	}
-	
+                insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
+                changed = true;
+            }
+    
+            if (jetspeedServletMapping == null)
+            {
+    
+                Element jetspeedServletMappingElement = new Element("servlet-mapping");
+    
+                Element servletMapName = (Element) new Element("servlet-name").addContent("JetspeedContainer");
+                Element servletUrlPattern = (Element) new Element("url-pattern").addContent("/container/*");
+    
+                jetspeedServletMappingElement.addContent(servletMapName);
+                jetspeedServletMappingElement.addContent(servletUrlPattern);
+    
+                insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
+                changed = true;
+            }        
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Unable to process web.xml for infusion " + e.toString(), e);
+        }
+    
+    }
+    
     public boolean isChanged()
     {
         return changed;
     }
     
-	/**
-	 * 
-	 * <p>
-	 * insertElementCorrectly
-	 * </p>
-	 * 
-	 * @param root
-	 *            JDom element representing the &lt; web-app &gt;
-	 * @param toInsert
-	 *            JDom element to insert into the web.xml hierarchy.
-	 * @param elementsBefore
-	 *            an array of web.xml elements that should be defined before the
-	 *            element we want to insert. This order should be the order
-	 *            defined by the web.xml's DTD type definition.
-	 */
-	protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
+    /**
+     * 
+     * <p>
+     * insertElementCorrectly
+     * </p>
+     * 
+     * @param root
+     *            JDom element representing the &lt; web-app &gt;
+     * @param toInsert
+     *            JDom element to insert into the web.xml hierarchy.
+     * @param elementsBefore
+     *            an array of web.xml elements that should be defined before the
+     *            element we want to insert. This order should be the order
+     *            defined by the web.xml's DTD type definition.
+     */
+    protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
     throws Exception
-	{
-	    List allChildren = root.getChildren();
-	    List elementsBeforeList = Arrays.asList(elementsBefore);
-	    toInsert.detach();
-	    int insertAfter = 0;
-	    for (int i = 0; i < allChildren.size(); i++)
-	    {
-	        Element element = (Element) allChildren.get(i);
-	        if (elementsBeforeList.contains(element.getName()))
-	        {
-	            // determine the Content index of the element to insert after
-	            insertAfter = root.indexOf(element);
-	        }
-	    }
-	
-	    try
-	    {
-	        root.addContent((insertAfter + 1), toInsert);
-	    }
-	    catch (ArrayIndexOutOfBoundsException e)
-	    {
-	        root.addContent(toInsert);
-	    }
-	}
-	
- 
+    {
+        List allChildren = root.getChildren();
+        List elementsBeforeList = Arrays.asList(elementsBefore);
+        toInsert.detach();
+        int insertAfter = 0;
+        for (int i = 0; i < allChildren.size(); i++)
+        {
+            Element element = (Element) allChildren.get(i);
+            if (elementsBeforeList.contains(element.getName()))
+            {
+                // determine the Content index of the element to insert after
+                insertAfter = root.indexOf(element);
+            }
+        }
+    
+        try
+        {
+            root.addContent((insertAfter + 1), toInsert);
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            root.addContent(toInsert);
+        }
+    }
+    
+    
 }

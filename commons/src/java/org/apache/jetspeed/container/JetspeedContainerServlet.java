@@ -15,11 +15,10 @@
  */
 package org.apache.jetspeed.container;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -38,8 +37,12 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.factory.JetspeedPortletFactory;
+import org.apache.jetspeed.services.JetspeedPortletServices;
+import org.apache.jetspeed.services.PortletServices;
+import org.apache.jetspeed.tools.pamanager.DeploymentRegistration;
+import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.pluto.om.portlet.PortletDefinition;
-// import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 /**
  * Jetspeed Container entry point.
@@ -53,22 +56,10 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
     private final static Log console = LogFactory.getLog(CONSOLE_LOGGER);
 
     /**
-     * In certain situations the init() method is called more than once,
-     * somtimes even concurrently. This causes bad things to happen,
-     * so we use this flag to prevent it.
-     */
-    private static boolean firstInit = true;
-
-    /**
      * Whether init succeeded or not.
      */
     private static Throwable initFailure = null;
 
-    /**
-     * Should initialization activities be performed during doGet()
-     * execution?
-     */
-    private static boolean firstDoGet = true;
 
     private static String webappRoot;
 
@@ -88,42 +79,29 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
             log.info(INIT_START_MSG + " " + config.getServletContext().getRealPath("/"));
             super.init(config);
 
-            if (!firstInit)
-            {
-                log.info("Double initialization of Jetspeed was attempted!");
-                return;
-            }
-            // executing init will trigger some static initializers, so we have
-            // only one chance.
-            firstInit = false;
 
             try
-            {
+            {                
                 ServletContext context = config.getServletContext();
-                /*
-                                String propertiesFilename =
-                                    ServletHelper.findInitParameter(context, config,
-                                                      JETSPEED_PROPERTIES_KEY,
-                                                      JETSPEED_PROPERTIES_DEFAULT);
+                webappRoot = config.getServletContext().getRealPath("/");                
+                String registerAtInit = config.getInitParameter("registerAtInit");
+                if (null != registerAtInit)
+                {
+                    System.out.println("*** Registering at INIT: " + context.getServletContextName());
+                    String portletApplication = config.getInitParameter("portletApplication");
+                    if (null == portletApplication)
+                    {
+                        throw new ServletException("Portlet Application Name not supplied in Init Parameters.");
+                    }
+                    
+                    registerPortletApplication(context, portletApplication);
+                    
+                }
+                else
+                {
+                    System.out.println("*** Not Registering at INIT: " + context.getServletContextName());
+                }
                 
-                                String applicationRoot =
-                                    ServletHelper.findInitParameter(context, config,
-                                                  APPLICATION_ROOT_KEY,
-                                                  APPLICATION_ROOT_DEFAULT);
-                  */
-                webappRoot = config.getServletContext().getRealPath("/");
-                /*
-                                if (applicationRoot == null || applicationRoot.equals(WEB_CONTEXT))
-                                {
-                                    applicationRoot = webappRoot;
-                                }
-                
-                                Configuration properties = (Configuration)
-                                    new PropertiesConfiguration(ServletHelper.getRealPath(config, propertiesFilename));
-                
-                                properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
-                                properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
-                  */
             }
             catch (Exception e)
             {
@@ -138,28 +116,64 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
         }
     }
 
-    /**
-     * Initializes the services which need <code>RunData</code> to
-     * initialize themselves (post startup).
-     *
-     * @param data The first <code>GET</code> request.
-     */
-    public synchronized final void init(HttpServletRequest request, HttpServletResponse response)
+    
+    private void registerPortletApplication(ServletContext context, String portletApplicationName)
     {
-        synchronized (JetspeedContainerServlet.class)
+        System.out.println("*** Registering PA: " + portletApplicationName);
+        //InputStream portletStream = null;
+        //InputStream servletStream = null;
+        
+        try
         {
-            if (firstDoGet)
+            //portletStream = context.getResourceAsStream("WEB-INF/portlet.xml");
+            //servletStream = context.getResourceAsStream("WEB-INF/web.xml");
+                                   
+            PortletServices services = JetspeedPortletServices.getSingleton();                         
+            DeploymentRegistration registrar =
+                (DeploymentRegistration)services.getService("PAM"); 
+            
+            if (registrar != null)
             {
-                // Mark that we're done.
-                firstDoGet = false;
+                System.out.println("registrar found: " + registrar);
+                FileSystemHelper webapp = new DirectoryHelper(new File(context.getRealPath("/")));
+                registrar.registerPortletApplication(webapp, portletApplicationName);
+                System.out.println("done registering " + registrar);                
             }
+            else
+            {
+                System.out.println("registry not yet available...");
+            }            
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            //closeStream(portletStream);
+            //closeStream(servletStream);
+        }
+        
     }
 
+    /*
+    private void closeStream(InputStream stream)
+    {
+        try
+        {
+            if (stream != null)
+            {
+                stream.close();
+            }
+        }
+        catch (IOException e)
+        {        
+        }
+    }
+    */
     // -------------------------------------------------------------------
     // R E Q U E S T  P R O C E S S I N G
     // -------------------------------------------------------------------
-    static private final String PHONEY_PORTLET_WINDOW = "<P>----------------------------------</P>";
 
     /**
      * The primary method invoked when the Jetspeed servlet is executed.
@@ -171,7 +185,7 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
      */
     public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
-    	String portletName = null;
+        String portletName = null;
         try
         {
             // Check to make sure that we started up properly.
@@ -180,17 +194,11 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
                 throw initFailure;
             }
 
-            // If this is the first invocation, perform some late initialization.
-            if (firstDoGet)
-            {
-                init(request, response);
-            }
-
             // infuseClasspath();
 
             PortletDefinition portletDefinition = (PortletDefinition) request.getAttribute(ContainerConstants.PORTLET_ENTITY);
             Portlet portlet = JetspeedPortletFactory.getPortlet(this.getServletConfig(), portletDefinition);
-			portletName = portletDefinition.getName();
+            portletName = portletDefinition.getName();
             Integer method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
             if (method == ContainerConstants.METHOD_NOOP)
             {
@@ -272,9 +280,6 @@ public class JetspeedContainerServlet extends HttpServlet implements ServletCont
      */
     public final void destroy()
     {
-        // Allow turbine to be started back up again.
-        firstInit = true;
-
         log.info("Done shutting down!");
     }
 

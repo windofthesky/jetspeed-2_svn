@@ -507,6 +507,8 @@ container.registerComponent(singletonAdapter(
                           )
 )
 
+services.addPortletService("PAM", container.getComponentInstance("PAM"))
+
 portletApplicationListener = new DeployPortletAppEventListener(webAppDeployDirectory, 
                                    container.getComponentInstance("PAM"), 
                                    container.getComponentInstance(PortletRegistryComponent));  

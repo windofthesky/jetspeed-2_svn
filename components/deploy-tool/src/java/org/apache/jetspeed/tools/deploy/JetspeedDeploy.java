@@ -50,16 +50,17 @@ public class JetspeedDeploy
     }
 
     private final byte[] buffer = new byte[4096];
-
+    
     public JetspeedDeploy(String inputName, String outputName) throws Exception 
     {
         JarInputStream jin = null;
         JarOutputStream jout = null;
         try 
         {
+            String portletApplicationName = getPortletApplicationName(outputName);
             jin = new JarInputStream(new FileInputStream(inputName));
             jout = new JarOutputStream(new FileOutputStream(outputName), jin.getManifest());
-
+            
             // copy over all of the files in the input war to the output
             // war except for web.xml and portlet.xml, which we parse for
             // use later
@@ -94,7 +95,7 @@ public class JetspeedDeploy
                 throw new IllegalArgumentException("WEB-INF/portlet.xml");
             }
             
-            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, true);
+            JetspeedWebApplicationRewriter rewriter = new JetspeedWebApplicationRewriter(webXml, portletApplicationName, true);
             rewriter.processWebXML();
             
             // mung the web.xml
@@ -164,6 +165,20 @@ public class JetspeedDeploy
         }
     }
 
+    private String getPortletApplicationName(String path)
+    {
+        File file = new File(path);
+        String name = file.getName();
+        String portletApplicationName = name;
+        
+        int index = name.lastIndexOf(".");
+        if (index > -1)
+        {
+            portletApplicationName = name.substring(0, index); 
+        }
+        return portletApplicationName;
+    }
+    
     private class UncloseableInputStream extends InputStream {
         private final InputStream in;
 
