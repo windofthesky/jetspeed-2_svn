@@ -19,10 +19,7 @@ package org.apache.jetspeed.om.page;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 
-
-import org.apache.jetspeed.test.JetspeedTestSuite;
 import org.apache.jetspeed.components.AbstractComponentAwareTestCase;
 import org.apache.jetspeed.components.NanoDeployerBasedTestSuite;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
