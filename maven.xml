@@ -90,6 +90,13 @@
                postProcessing="false"
                ignoreFailures="false"/>
     <maven:reactor
+               basedir="${basedir}/components/prefs"
+               includes="project.xml"
+               goals="build.prefs"
+               banner="Build and Install the Preferences Components jar"
+               postProcessing="false"
+               ignoreFailures="false"/>
+    <maven:reactor
                basedir="${basedir}/cps"
                includes="project.xml"
                goals="jar:install"
