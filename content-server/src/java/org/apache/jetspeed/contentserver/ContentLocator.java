@@ -7,6 +7,7 @@
 package org.apache.jetspeed.contentserver;
 
 import java.io.OutputStream;
+import java.util.List;
 
 
 /**
@@ -33,5 +34,5 @@ public interface ContentLocator
      * @return int the length of actual content in bytes or -1
      * if the <code>URI</code> was not found.
      */
-    long mergeContent(String URI, OutputStream os);
+    long mergeContent(String URI, List lookupPathes, OutputStream os);
 }

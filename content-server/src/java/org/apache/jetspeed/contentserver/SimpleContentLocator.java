@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p>
  * SimpleContentLocator
@@ -25,9 +28,7 @@ import java.util.Map;
  *  
  */
 public class SimpleContentLocator implements ContentLocator
-{
-
-    private List lookupPathes;
+{    
 
     private String rootPath;
 
@@ -36,20 +37,21 @@ public class SimpleContentLocator implements ContentLocator
     private Map fileCache;
 
     private String URLHint;
+    
+    private static final Log log = LogFactory.getLog(SimpleContentLocator.class);
 
-    public SimpleContentLocator(String rootPath, List lookupPathes,
-            String URLHint, boolean useCachedLookup)
+    public SimpleContentLocator(String rootPath, String URLHint, boolean useCachedLookup)
     {
-        this.lookupPathes = lookupPathes;
+
         this.rootPath = rootPath;
         this.useCachedLookup = useCachedLookup;
         fileCache = new HashMap();
         this.URLHint = URLHint;
     }
 
-    public long mergeContent(String URI, OutputStream os)
+    public long mergeContent(String URI, List lookupPathes, OutputStream os)
     {
-        File content = locateContent(URI);
+        File content = locateContent(URI, lookupPathes);
         if(content != null)
         {
             return setContent(content, os);
@@ -60,10 +62,11 @@ public class SimpleContentLocator implements ContentLocator
         }
     }
 
-    protected File locateContent(String URI)
+    protected File locateContent(String URI, List lookupPathes)
     {
         int rootLen = URLHint.length();
-        int rootStart = URI.indexOf(URLHint);
+        // int rootStart = URI.indexOf(URLHint);
+        int rootStart = URI.lastIndexOf(URLHint);
         File fqFile = null;
         if (rootStart != -1)
         {
@@ -76,7 +79,7 @@ public class SimpleContentLocator implements ContentLocator
                 {
                     fqFile = (File) fileCache.get(lookupPathes.get(i) + ":"
                             + URI);
-                    System.out.println("Found cached file for URI: " + URI);
+                    log.debug("Found cached file for URI: " + URI);
                 }
                 else
                 {
@@ -97,8 +100,8 @@ public class SimpleContentLocator implements ContentLocator
                                     + sep[1] + dir;
 
                     fqFile = new File(fqPath);
-                    System.out.println("Actual content located at: " + fqPath);
-                    System.out.println("Content exists? " + fqFile.exists());
+                    log.debug("Actual content located at: " + fqPath);
+                    log.debug("Content exists? " + fqFile.exists());
                     if (!fqFile.exists())
                     {
                         fqFile = null;
@@ -129,7 +132,7 @@ public class SimpleContentLocator implements ContentLocator
             {
                 os.write((byte) j);
             }
-            System.out.println("Wrote " + fqFile.length()
+            log.debug("Wrote " + fqFile.length()
                     + " to the output stream.");
 
             return fqFile.length();
