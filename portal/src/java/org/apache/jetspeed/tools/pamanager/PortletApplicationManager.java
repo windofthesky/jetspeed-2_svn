@@ -661,11 +661,10 @@ public class PortletApplicationManager implements JetspeedEngineConstants
         {
             String paramName = args[ix];            
             String paramValue = "--PARAMS OUT OF BALANCE--";
-            if (ix < args.length)
+            if (ix <= args.length)
             {
                 paramValue = args[++ix];
             }
-
             if (logAsError)
             {            
                 log.error(paramName + " : " + paramValue);
