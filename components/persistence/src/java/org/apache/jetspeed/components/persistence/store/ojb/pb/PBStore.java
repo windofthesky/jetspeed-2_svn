@@ -57,7 +57,7 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class PBStore implements PersistenceStore
 {
     private PBKey pbKey;
-    private static Set listeners;
+    private static final Set listeners = new HashSet(); ;
     private StoreEventInvoker invoker;
     private PersistenceBroker pb;
    
@@ -79,7 +79,7 @@ public class PBStore implements PersistenceStore
             {
                 pbKey = PersistenceBrokerFactory.getDefaultKey();
             }
-            listeners = new HashSet();        
+                   
             invoker = new StoreEventInvoker(listeners, this);
             pb = PersistenceBrokerFactory.createPersistenceBroker(pbKey);        
             toBeStored = new HashSet();
