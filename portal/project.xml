@@ -203,7 +203,7 @@ limitations under the License.
       <id>commons-configuration</id>
       <version>1.0-dev</version>
       <properties>
-        <war.bundle>false</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -238,7 +238,7 @@ limitations under the License.
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
-        <war.bundle>false</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -310,7 +310,7 @@ limitations under the License.
       <id>log4j</id>
       <version>1.2.8</version>
       <properties>
-        <war.bundle>false</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
