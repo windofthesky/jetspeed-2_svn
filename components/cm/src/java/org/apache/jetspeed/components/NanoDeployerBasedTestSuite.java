@@ -101,7 +101,7 @@ public class NanoDeployerBasedTestSuite extends TestSuite
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         FileSystemManager fsManager = VFS.getManager();
         NanoContainerDeployer deployer = new NanoContainerDeployer(fsManager);
-        MutablePicoContainer parent = new DefaultPicoContainer();
+        MutablePicoContainer parent = new ChildAwareContainer();
         SimpleReference parentRef = new SimpleReference();
         parentRef.set(parent);
         for(int i=0; i < getApplicationFolders().length; i++)
