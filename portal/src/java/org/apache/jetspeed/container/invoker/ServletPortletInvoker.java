@@ -31,6 +31,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -205,6 +206,8 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
             servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
             servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletConfig);
+            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest)servletRequest).getContextPath());
+
             JetspeedPortletFactoryProxy.setCurrentPortletDefinition(portletDefinition);                        
             
             dispatcher.include(servletRequest, servletResponse);
