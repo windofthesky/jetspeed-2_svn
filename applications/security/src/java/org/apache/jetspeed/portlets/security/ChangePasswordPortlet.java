@@ -32,6 +32,9 @@ import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.InvalidNewPasswordException;
+import org.apache.jetspeed.security.InvalidPasswordException;
+import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
@@ -169,8 +172,21 @@ public class ChangePasswordPortlet extends GenericServletPortlet
                         RequestContext requestContext = (RequestContext)actionRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);                  
                         requestContext.setSessionAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
                     }
+                    catch ( InvalidPasswordException ipe )
+                    {
+                        errorMessages.add(bundle.getString("chgpwd.error.invalidPassword"));
+                    }
+                    catch ( InvalidNewPasswordException inpe )
+                    {
+                        errorMessages.add(bundle.getString("chgpwd.error.invalidNewPassword"));
+                    }
+                    catch ( PasswordAlreadyUsedException paue )
+                    {
+                        errorMessages.add(bundle.getString("chgpwd.error.passwordAlreadyUsed"));
+                    }
                     catch ( SecurityException e)
                     {
+                        // todo: localization of all exception messages
                         errorMessages.add(e.getMessage());
                     }
                 }
