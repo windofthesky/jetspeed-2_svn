@@ -32,6 +32,11 @@ limitations under the License.
 <rtexprvalue>true</rtexprvalue>
 </attribute>
 <attribute>
+<name>acceptCharset</name>
+<required>false</required>
+<rtexprvalue>true</rtexprvalue>
+</attribute>
+<attribute>
 <name>enctype</name>
 <required>false</required>
 <rtexprvalue>true</rtexprvalue>
