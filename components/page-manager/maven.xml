@@ -17,18 +17,11 @@ limitations under the License.
          xmlns:j="jelly:core" 
          xmlns:define="jelly:define">
 
-<!--
-  <preGoal name="test:test">
-  	<attainGoal name="db.recreate"/>
-  </preGoal>
-<property name='testcase' value='org.apache.jetspeed.components.portletregistry.TestRegistryDirect'/> 
-
--->  
-<property name='testcase' value='org.apache.jetspeed.components.portletentity.TestPortletEntityAccessComponent'/> 
+   <property name='testcase' value='org.apache.jetspeed.components.portletentity.TestPortletEntityAccessComponent'/> 
   
    <goal name="deployJar">
+    <property name='maven.test.skip' value='true'/> 
   	<attainGoal name="jar:install"/>
-
   	<copy file="${basedir}/target/${maven.final.name}.jar" todir="${org.apache.jetspeed.deploy.war.dir}/jetspeed/WEB-INF/lib"/>
   </goal>
   
