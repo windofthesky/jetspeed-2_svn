@@ -20,15 +20,13 @@ import java.io.InputStream;
 
 import org.apache.commons.httpclient.HttpException;
 
-import groovy.swing.impl.Startable;
-
 /**
  * JBoss application server management
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JBossManager implements ApplicationServerManager, Startable
+public class JBossManager implements ApplicationServerManager
 {
 
     /* (non-Javadoc)

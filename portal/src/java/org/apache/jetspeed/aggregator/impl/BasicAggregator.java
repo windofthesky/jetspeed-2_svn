@@ -34,7 +34,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
-import org.picocontainer.Startable;
 
 /**
  * Basic Aggregator, nothing complicated. 
@@ -42,7 +41,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class BasicAggregator implements Aggregator, Startable
+public class BasicAggregator implements Aggregator
 {
     private final static Log log = LogFactory.getLog(BasicAggregator.class);
 

@@ -24,7 +24,6 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.picocontainer.Startable;
 
 /**
  * This is the catalina specific implemenation for deplyment of Portlet
@@ -36,7 +35,7 @@ import org.picocontainer.Startable;
  * @version $Id$
  */
 
-public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, Startable, DeploymentRegistration
+public class ApplicationServerPAM extends FileSystemPAM implements Lifecycle, DeploymentRegistration
 {
     // Implementaion of deplyment interface
     public final static String PAM_PROPERTY_SERVER = "server";

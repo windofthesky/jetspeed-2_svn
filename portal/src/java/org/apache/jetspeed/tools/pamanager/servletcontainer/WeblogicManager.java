@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.httpclient.HttpException;
-import org.picocontainer.Startable;
 
 /**
  * Weblogic application server management
@@ -27,7 +26,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class WeblogicManager implements ApplicationServerManager, Startable
+public class WeblogicManager implements ApplicationServerManager
 {
 
     /* (non-Javadoc)

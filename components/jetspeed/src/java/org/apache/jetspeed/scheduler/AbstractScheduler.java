@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.picocontainer.Startable;
 
 /**
  * Service for a cron like scheduler.
@@ -27,7 +26,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:mbryson@mont.mindspring.com">Dave Bryson</a>
  * @version $Id$
  */
-public abstract class AbstractScheduler implements Scheduler, Startable
+public abstract class AbstractScheduler implements Scheduler
 {
     private final static Log log = LogFactory.getLog(MemoryBasedScheduler.class);
     

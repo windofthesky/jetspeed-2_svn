@@ -34,9 +34,12 @@ public interface RewriterController
      * The Rewriter implementation is configured in the service configuration.
      *  
      * @return A new rewriter that does not support rulesets.
+     * @throws InstantiationException
+     * @throws 
+     * @throws IllegalAccessException
      */
     Rewriter createRewriter()
-        throws RewriterException;
+        throws IllegalAccessException, InstantiationException;
 
     /**
      * Creates a rewriter that supports rulesets configurations.

@@ -20,7 +20,6 @@ import java.util.Vector;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.picocontainer.Startable;
 
 /**
  * Service for a cron like scheduler that uses the
@@ -59,7 +58,7 @@ import org.picocontainer.Startable;
  * @version $Id$
  */
 public class MemoryBasedScheduler
-    extends AbstractScheduler implements Scheduler, Startable
+    extends AbstractScheduler implements Scheduler
 {
     private final static Log log = LogFactory.getLog(MemoryBasedScheduler.class);
     private Configuration config;

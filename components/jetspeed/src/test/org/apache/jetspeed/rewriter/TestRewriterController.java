@@ -18,17 +18,19 @@ package org.apache.jetspeed.rewriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
-
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.ComponentAssemblyTestCase;
+import org.apache.jetspeed.rewriter.html.SwingParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Attribute;
 import org.apache.jetspeed.rewriter.rules.Rule;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.rules.Tag;
+import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
 
 /**
  * TestRewriterRules
@@ -36,7 +38,7 @@ import org.apache.jetspeed.rewriter.rules.Tag;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestRewriterController extends ComponentAssemblyTestCase
+public class TestRewriterController extends TestCase
 {
     /**
       * Defines the testcase name for JUnit.
@@ -72,7 +74,7 @@ public class TestRewriterController extends ComponentAssemblyTestCase
     public void testFactories()
               throws Exception
     {         
-        RewriterController component = (RewriterController)componentManager.getComponent("RewriterController");
+        RewriterController component = getController();
         assertNotNull("template component is null", component);            
         
         Rewriter basic = component.createRewriter();
@@ -88,7 +90,7 @@ public class TestRewriterController extends ComponentAssemblyTestCase
     public void testRules()
               throws Exception
     { 
-        RewriterController component = (RewriterController)componentManager.getComponent("RewriterController");
+        RewriterController component = getController();
         assertNotNull("template component is null", component);            
         
         assertNotNull("rewriter component is null", component);
@@ -189,7 +191,7 @@ public class TestRewriterController extends ComponentAssemblyTestCase
     public void testRewriting()
               throws Exception
     { 
-        RewriterController component = (RewriterController)componentManager.getComponent("RewriterController");
+        RewriterController component = getController();
         assertNotNull("template component is null", component);            
         
         assertNotNull("rewriter component is null", component);
@@ -242,7 +244,7 @@ public class TestRewriterController extends ComponentAssemblyTestCase
     private FileReader getTestReader(String filename)
         throws IOException
     {
-        return new FileReader(getApplicationRoot() + "/rewriter/" + filename);
+        return new FileReader("test/rewriter/" + filename);
     }
 
     /**
@@ -256,7 +258,14 @@ public class TestRewriterController extends ComponentAssemblyTestCase
     {
         String cwd = System.getProperty("user.dir");
         String path;
-        return new FileWriter(getApplicationRoot() + "/rewriter/" + filename);
+        return new FileWriter("test/rewriter/" + filename);
+    }
+    
+    private RewriterController getController() throws Exception
+    {        
+        Class[] rewrtierClasses = new Class[]{BasicRewriter.class, RulesetRewriterImpl.class};
+        Class[] adaptorClasses = new Class[]{SwingParserAdaptor.class, SaxParserAdaptor.class};
+        return new JetspeedRewriterController("test/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewrtierClasses), Arrays.asList(adaptorClasses));
     }
         
 }

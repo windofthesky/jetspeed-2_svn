@@ -15,17 +15,16 @@
  */
 package org.apache.jetspeed.locator;
 
-import java.util.Iterator;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.picocontainer.Startable;
 
 /**
  * Jetspeed's default implementation of a template locator.
@@ -33,7 +32,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedTemplateLocator implements TemplateLocator, Startable
+public class JetspeedTemplateLocator implements TemplateLocator
 {
     private final static Log log = LogFactory.getLog(JetspeedTemplateLocator.class);
 

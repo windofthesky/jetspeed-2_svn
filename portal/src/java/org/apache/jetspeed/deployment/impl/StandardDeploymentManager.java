@@ -35,7 +35,6 @@ import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.DeploymentManager;
 import org.apache.jetspeed.deployment.DeploymentObject;
-import org.picocontainer.Startable;
 
 /**
  * <p>
@@ -48,7 +47,7 @@ import org.picocontainer.Startable;
  *          Exp $
  *  
  */
-public class StandardDeploymentManager implements Startable, DeploymentManager
+public class StandardDeploymentManager implements DeploymentManager
 {
     protected Log log = LogFactory.getLog("deployment");
 

@@ -37,7 +37,6 @@ import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
-import org.picocontainer.Startable;
 
 /**
  * <h4>PortletRendererService<br />
@@ -48,7 +47,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:raphael@apache.org">Raphaël Luta</a>
  * @version $Id$
  */
-public class PortletRendererImpl implements PortletRenderer, Startable
+public class PortletRendererImpl implements PortletRenderer
 {
     protected final static Log log = LogFactory.getLog(PortletRendererImpl.class);
 

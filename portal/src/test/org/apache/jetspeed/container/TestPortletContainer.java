@@ -21,7 +21,6 @@ import junit.framework.TestSuite;
 
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerImpl;
-import org.picocontainer.MutablePicoContainer;
 
 /**
  * TestPortletContainer
@@ -31,7 +30,7 @@ import org.picocontainer.MutablePicoContainer;
  */
 public class TestPortletContainer extends TestCase 
 {
-    private MutablePicoContainer container;
+    
     private PortletContainer portletContainer;
     
     /**

@@ -1,5 +1,5 @@
 <!-- Project dependencies -->
-<!ENTITY pico-nano-groovy SYSTEM "file:../../etc/project-dependencies/pico-nano-groovy.xml">
+<!ENTITY pico-nano-groovy SYSTEM "file:../../etc/project-dependencies/spring-deps.xml">
 
 <!-- Project reports -->
 <!ENTITY j2-reports SYSTEM "file:../../etc/project-reports/j2-reports.xml">

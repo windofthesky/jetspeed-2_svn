@@ -18,13 +18,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.picocontainer.Startable;
 
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
-public class PreferencesProviderImpl implements PreferencesProvider, Startable
+public class PreferencesProviderImpl implements PreferencesProvider
 {
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesProviderImpl.class);

@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.picocontainer.Startable;
 
 /**
  * <p>
@@ -41,7 +40,7 @@ import org.picocontainer.Startable;
  * @version $ $
  *
  */
-public class DBCPDatasourceComponent implements DatasourceComponent, Startable
+public class DBCPDatasourceComponent implements DatasourceComponent
 {
 
     private static final Log log = LogFactory.getLog(DBCPDatasourceComponent.class);

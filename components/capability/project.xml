@@ -121,10 +121,6 @@ limitations under the License.
       <id>commons-dbcp</id>
       <version>1.2.1</version>
     </dependency>
-    <dependency>
-      <id>picocontainer</id>
-      <version>1.0-beta-5</version>
-    </dependency>      
      
     <!-- This is only a test dependency -->
     <dependency>

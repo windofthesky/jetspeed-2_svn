@@ -19,7 +19,6 @@ package org.apache.jetspeed.idgenerator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.picocontainer.Startable;
 
 /**
  * Simple implementation of the IdGeneratorService.
@@ -28,7 +27,7 @@ import org.picocontainer.Startable;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedIdGenerator implements IdGenerator, Startable
+public class JetspeedIdGenerator implements IdGenerator
 {
     private final static Log log = LogFactory.getLog(JetspeedIdGenerator.class);
 

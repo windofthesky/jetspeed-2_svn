@@ -29,7 +29,6 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.pluto.om.window.PortletWindow;
-import org.picocontainer.MutablePicoContainer;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -45,7 +44,6 @@ import com.mockrunner.mock.web.MockServletConfig;
 
 public class TestNavigationalState extends TestCase 
 {
-    private MutablePicoContainer container;
     private NavigationalStateComponent navSession;
     private NavigationalStateComponent navPluto;    
     /**

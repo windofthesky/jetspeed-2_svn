@@ -39,7 +39,6 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.picocontainer.Startable;
 
 /**
  * <p>
@@ -50,7 +49,7 @@ import org.picocontainer.Startable;
  * @version $Id$
  *
  */
-public class TomcatManager implements ApplicationServerManager, Startable
+public class TomcatManager implements ApplicationServerManager
 {
     private static final String DEFUALT_MANAGER_APP_PATH = "/manager";
     private static final String EMBEDDED_CONTEXT_FILE_PATH = "/META-INF/tomcat-context.xml";
