@@ -116,6 +116,20 @@ limitations under the License.
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
+     <dependency>
+      <id>jetspeed2:jetspeed-api</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
+     <dependency>
+      <id>jetspeed2:jetspeed-locator</id>
+      <version>2.0-a1-dev</version>
+      <properties>
+        <war.bundle.jar>true</war.bundle.jar>
+      </properties>
+    </dependency>
 
     <dependency>
       <id>picocontainer</id>
