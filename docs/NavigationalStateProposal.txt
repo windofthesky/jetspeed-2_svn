@@ -1,0 +1,42 @@
+
+Navigational State and Jetspeed Path Proposal
+
+The URL path is a common way to track navigation state.
+Pluto does this, as does Websphere.
+
+Jetspeed has the concepts of folders, and pages.
+Folders contain pages or more folders. A typical tree hierarchy.
+Users can navigate through the portal by specifying folders and pages.
+Jetspeed Folders and Pages also represent navigational state, 
+however they are not directly covered by the Portlet specification.
+
+We are proposing specifying the Jetspeed Paths and Folders directly in the URL path, not the request parameters.
+This solves the issues of locating the correct page at all times, as long as Jetspeed rewrites the URL.
+The Jetspeed URL rewriter must always rewrite the Page into the URL.
+Of course there are still default pages for users, which do not need to be in the URL.
+
+Example URLs:
+
+http://localhost/portal/jetspeed/nfl/afc/chiefs/passing-stats.psml
+
+where "nfl/afc/chiefs/passing-stats.psml" is the complete path.
+and passing is either a page or folder.
+".psml" helps the profiler figure out that its a page.
+Otherwise it will first look for a page with that name, then a folder.
+
+NOTE: we are not using path pairs
+
+This will introduce problems for other path params that require pairs.
+Most notably, Navigation State.
+Navigation State is currently implemented with Pluto-like pairs of parameters.
+In order for this to continue to function, we would enhance the path parsing code to find 
+the end of the path locator and then start parsing.
+Navigational state must be written after the folder/page path.
+
+Window Navigational State will be enhanced:
+
+1. abstract all navigational state to use interfaces
+2. provide 2 implementations
+    1. URL path state
+    2. session-based state
+    note: i don't think its possible to use request params to keep nav state
