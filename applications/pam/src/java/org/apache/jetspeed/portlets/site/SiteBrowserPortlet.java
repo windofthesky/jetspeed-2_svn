@@ -204,8 +204,8 @@ public class SiteBrowserPortlet extends GenericServletPortlet
             Iterator folderIter = childFolders.iterator();
             while (folderIter.hasNext())
             {
-                Folder childFolder = (Folder) folderIter.next();
-                TreeControlNode childNode = new TreeControlNode(childFolder.getName(), null, childFolder
+                Folder childFolder = (Folder) folderIter.next();                
+                TreeControlNode childNode = new TreeControlNode(childFolder.getPath(), null, childFolder
                         .getTitle(locale), PortletApplicationResources.PORTLET_URL, null, false, "FOLDER_DOMAIN");
                 parent.addChild(childNode);
                 buildFolderNodes(childFolder, childNode, locale);

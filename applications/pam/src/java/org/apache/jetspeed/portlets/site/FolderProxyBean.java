@@ -39,6 +39,7 @@ public class FolderProxyBean
     private transient Folder folder;
     private String title;
     private String lookupKey;
+    private boolean isNew = true;
     
     public FolderProxyBean()
     {        
@@ -61,6 +62,7 @@ public class FolderProxyBean
             {
                 this.folder = pageManager.getFolder(key);    
                 setTitle(folder.getTitle());
+                isNew = false;
             }
         }
         catch (Exception ne)
@@ -98,5 +100,19 @@ public class FolderProxyBean
     public void setLookupKey(String lookupKey)
     {
         this.lookupKey = lookupKey;
+    }
+    /**
+     * @return Returns the isNew.
+     */
+    public boolean isNew()
+    {
+        return isNew;
+    }
+    /**
+     * @param isNew The isNew to set.
+     */
+    public void setNew(boolean isNew)
+    {
+        this.isNew = isNew;
     }
 }
