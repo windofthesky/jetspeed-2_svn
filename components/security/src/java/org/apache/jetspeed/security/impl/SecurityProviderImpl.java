@@ -14,23 +14,25 @@
  */
 package org.apache.jetspeed.security.impl;
 
+
+
 import java.io.File;
 import java.net.URL;
 import java.security.Policy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
+import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.UserManager;
+import org.picocontainer.Startable;
 
 /**
  * @author <a href="">David Le Strat</a>
  *
  */
-public class SecurityProviderImpl implements SecurityProvider
+public class SecurityProviderImpl implements SecurityProvider, Startable 
 {
 
     private static final Log log = LogFactory.getLog(SecurityProviderImpl.class);
@@ -78,4 +80,20 @@ public class SecurityProviderImpl implements SecurityProvider
         return this.userMgr;
     }
 
+    /* (non-Javadoc)
+     * @see org.picocontainer.Startable#start()
+     */
+    public void start()
+    {
+        // TODO Auto-generated method stub
+
+    }
+    /* (non-Javadoc)
+     * @see org.picocontainer.Startable#stop()
+     */
+    public void stop()
+    {
+        // TODO Auto-generated method stub
+
+    }
 }

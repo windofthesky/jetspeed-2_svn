@@ -1,0 +1,37 @@
+package.id=Security
+
+component=org.apache.jetspeed.security.UserManager
+
+org.apache.jetspeed.security.UserManager.key.as.class=true
+org.apache.jetspeed.security.UserManager.is.singleton=true
+org.apache.jetspeed.security.UserManager.classname= org.apache.jetspeed.security.impl.UserManagerImpl
+
+component=org.apache.jetspeed.security.PermissionManager
+
+org.apache.jetspeed.security.PermissionManager.key.as.class=true
+org.apache.jetspeed.security.PermissionManager.is.singleton=true
+org.apache.jetspeed.security.PermissionManager.classname= org.apache.jetspeed.security.impl.PermissionManagerImpl
+
+component=java.security.Policy
+
+java.security.Policy.key.as.class=true
+java.security.Policy.is.singleton=true
+java.security.Policy.classname= org.apache.jetspeed.security.impl.RdbmsPolicy
+
+component=org.apache.jetspeed.security.RoleManager
+
+org.apache.jetspeed.security.RoleManager.key.as.class=true
+org.apache.jetspeed.security.RoleManager.is.singleton=true
+org.apache.jetspeed.security.RoleManager.classname= org.apache.jetspeed.security.impl.RoleManagerImpl
+
+component=org.apache.jetspeed.security.GroupManager
+
+org.apache.jetspeed.security.GroupManager.key.as.class=true
+org.apache.jetspeed.security.GroupManager.is.singleton=true
+org.apache.jetspeed.security.GroupManager.classname= org.apache.jetspeed.security.impl.GroupManagerImpl
+
+component=org.apache.jetspeed.security.SecurityProvider
+
+org.apache.jetspeed.security.SecurityProvider.key.as.class=true
+org.apache.jetspeed.security.SecurityProvider.is.singleton=true
+org.apache.jetspeed.security.SecurityProvider.classname= org.apache.jetspeed.security.impl.SecurityProviderImpl
