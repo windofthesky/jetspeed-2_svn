@@ -82,16 +82,17 @@ public class PreferencePortlet extends GenericPortlet
      */
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
-        String attribute = (String)request.getAttribute("invokeMessage");
+        String attribute = (String) request.getAttribute("invokeMessage");
         if (attribute != null)
         {
             System.out.println("+++ Got the attribute: " + attribute);
-            response.setContentType("text/html");            
+            response.setContentType("text/html");
             response.getWriter().println("Got attribute set in ACTION: " + attribute + "<br/>");
         }
+        request.setAttribute("viewMessage", "My Mode is view.");
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/demo/preference/pref-view.jsp");
-        rd.include(request, response);     
+        rd.include(request, response);
     }
 
     /**
@@ -108,8 +109,19 @@ public class PreferencePortlet extends GenericPortlet
      */
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
-       request.setAttribute("invokeMessage", "I was invoked!!!");
-       System.out.println("I was invoked!!!");
+        Integer iCount = (Integer) request.getAttribute("org.apache.jetspeed.invocationCount");
+        if (iCount == null)
+        {
+            iCount = new Integer(0);
+        }
+
+        int count = iCount.intValue();
+        count++;
+
+        request.setAttribute("org.apache.jetspeed.invocationCount", new Integer(count));
+
+        request.setAttribute("invokeMessage", "I was invoked " + count + " times!");
+        System.out.println("--------------------------- I was invoked!!!---------------------------------");
     }
 
 }
