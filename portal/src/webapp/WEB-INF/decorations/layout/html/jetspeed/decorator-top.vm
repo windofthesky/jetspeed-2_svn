@@ -26,14 +26,6 @@ limitations under the License.
 </head>
 <body class="layout-Jetspeed">
 
-#*
-<ol>
-#foreach($cssUrl in $cssUrls)
-	<li>$cssUrl</li>
-#end
-</ol>
-*#
-
 #set($myF = $jetspeed.currentFragment)
 
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
@@ -46,28 +38,27 @@ limitations under the License.
 	#set($folder = $request.getAttribute("org.apache.jetspeed.folder"))
 	
 	## #set($preferedLocal = $request.getAttribute("org.apache.jetspeed.prefered.locale"))
-	#set($preferedLocal = $JS2RequestContext.locale)
-
+	#set($preferedLocale = $JS2RequestContext.locale)
+	
 	#if($folder.parent)
 	 <p style="font-style:italic">	
-		<a href="${appRoot}/portal${folder.parent.name}">Back to $folder.parent.metaData.getTitle($preferedLocal)</a> &nbsp;
+		<a href="${appRoot}/portal${folder.parent.url}">Back to $folder.parent.metaData.getTitle($preferedLocale)</a> &nbsp;
 	 </p>
 	#end
 		
 	#foreach($childFolder in $folder.folders.iterator())
-	  <a href="${appRoot}/portal${childFolder.name}">$childFolder.metaData.getTitle($preferedLocal)</a> &nbsp;		
+	  <a href="${appRoot}/portal${childFolder.url}">$childFolder.metaData.getTitle($preferedLocale)</a> &nbsp;		
 	#end
 
-    #*	
-	#foreach($childPage in $folder.pages.iterator())		
-		<a href="${appRoot}/portal${childPage.id}">$childPage.getTitle($preferedLocal)</a> &nbsp;
-	#end
-    *#
+
+
+</p>
+
     <p>
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 #foreach($childPage in $folder.pages.iterator())
-                #set($tabName = $childPage.getTitle($preferedLocal))
+                #set($tabName = $childPage.getTitle($preferedLocale))
                 #if($jetspeed.page == $childPage)
                 <td class="LTabLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
                 <td class="LTab" align="center" valign="middle" nowrap="true">${tabName}</td>
@@ -81,10 +72,27 @@ limitations under the License.
             </tr>
         </table>
     </p>
-	
 </p>
-</div>
-
+	
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+	<td valign="top" nowrap>	
+		
+	 #set($pageManager = $jetspeed.getComponent("pageManager"))
+     #set($rootFolder = $pageManager.getFolder("/"))
+     #set($links = $rootFolder.links)
+	 Additional Links:
+	
+     <div id="rootLinks">
+     #foreach($link in $links.iterator()) 
+	 <p>
+      <a href="$link.url" target="$link.target">$link.getTitle($preferedLocale)</a>	
+	 </p> 
+	 #end
+	 </div>
+	</td>
+	<td width="99%" nowrap valign="top">
+  
 ## $jetspeed.include($jetspeed.currentFragment)
 
 <!--  END: layout/html/jetspeed/decorator.vm -->
