@@ -26,6 +26,10 @@ import java.util.Collection;
  * access entitlement on specified resources.
  * </p>
  * <p>
+ * The permission manager does not enforce any hierarchy resolution, all relevant
+ * principals must be passed to the permission manager to assess the proper permissions.
+ * </p>
+ * <p>
  * For instance:
  * </p>
  * 

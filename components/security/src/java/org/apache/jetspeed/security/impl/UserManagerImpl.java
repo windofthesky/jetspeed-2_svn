@@ -124,6 +124,18 @@ public class UserManagerImpl implements UserManager
         ArgUtil.notNull(new Object[] { username, password }, new String[] { "username", "password" },
                 "addUser(java.lang.String, java.lang.String)");
 
+        addUser(username, password, atnProviderProxy.getDefaultAuthenticationProvider());
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.UserManager#addUser(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
+    public void addUser(String username, String password, String atnProviderName) throws SecurityException
+    {
+        ArgUtil.notNull(new Object[] { username, password, atnProviderName }, new String[] { "username", "password", "atnProviderName"},
+                "addUser(java.lang.String, java.lang.String, java.lang.String)");
+
         // Check if user already exists.
         if (userExists(username))
         {
@@ -146,7 +158,7 @@ public class UserManagerImpl implements UserManager
                 atnProviderProxy.setUserPrincipal(userPrincipal);
                 // Set security credentials
                 PasswordCredential pwdCredential = new PasswordCredential(username, password.toCharArray());
-                atnProviderProxy.setPrivatePasswordCredential(null, pwdCredential);
+                atnProviderProxy.setPrivatePasswordCredential(null, pwdCredential, atnProviderName);
                 if (log.isDebugEnabled())
                 {
                     log.debug("Added user: " + fullPath);

@@ -49,6 +49,19 @@ public interface UserManager
      * @throws Throws a security exception.
      */
     void addUser(String username, String password) throws SecurityException;
+    
+    /**
+     * <p>
+     * Add a new user provided a username and password in the specified authentication
+     * provider store.
+     * </p>
+     * 
+     * @param username The user name.
+     * @param password The password.
+     * @param atnProviderName The authentication provider name.
+     * @throws Throws a security exception.
+     */
+    void addUser(String username, String password, String atnProviderName) throws SecurityException;
 
     /**
      * <p>

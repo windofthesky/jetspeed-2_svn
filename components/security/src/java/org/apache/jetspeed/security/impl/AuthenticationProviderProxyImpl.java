@@ -68,7 +68,17 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
             credentialHandlers.add(((AuthenticationProvider) authenticationProviders.get(i)).getCredentialHandler());
         }
     }
+    
+    
 
+    /**
+     * @see org.apache.jetspeed.security.AuthenticationProviderProxy#getDefaultAuthenticationProvider()
+     */
+    public String getDefaultAuthenticationProvider()
+    {
+        return this.defaultAuthenticationProvider;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */

@@ -28,6 +28,15 @@ public interface AuthenticationProviderProxy extends UserSecurityHandler, Creden
 {
     /**
      * <p>
+     * Returns the default authentication provider.
+     * </p>
+     * 
+     * @return The default authentication provider.
+     */
+    String getDefaultAuthenticationProvider();
+    
+    /**
+     * <p>
      * Sets user principal in a given authentication provider.
      * </p>
      * 
