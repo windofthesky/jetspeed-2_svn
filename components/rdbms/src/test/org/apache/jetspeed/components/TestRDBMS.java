@@ -87,7 +87,7 @@ public class TestRDBMS extends AbstractComponentAwareTestCase
      */
     public TestRDBMS(String name)
     {
-        super(name);
+        super(name, "./src/test/Log4j.properties");
     }
     public void testDBCP_1() throws Exception
     {

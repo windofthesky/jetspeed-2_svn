@@ -250,7 +250,7 @@
   </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
+    <unitTestSourceDirectory>${basedir}/xsrc/test</unitTestSourceDirectory>
     <unitTest>
        <includes>
         <include>**/Test*.java</include>

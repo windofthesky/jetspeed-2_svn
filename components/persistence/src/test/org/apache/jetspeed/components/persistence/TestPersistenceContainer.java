@@ -87,7 +87,7 @@ public class TestPersistenceContainer extends AbstractComponentAwareTestCase
      */
     public TestPersistenceContainer(String arg0)
     {
-        super(arg0);
+        super(arg0, "./src/test/Log4j.properties");
         // TODO Auto-generated constructor stub
     }
 

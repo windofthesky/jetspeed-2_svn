@@ -66,7 +66,7 @@ public class TestPreferences extends AbstractComponentAwareTestCase
      */
     public TestPreferences(String testName)
     {
-        super(testName);
+        super(testName, "./src/test/Log4j.properties");
     }
 
     /**

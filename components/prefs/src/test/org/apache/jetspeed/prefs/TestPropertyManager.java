@@ -68,7 +68,7 @@ public class TestPropertyManager extends AbstractComponentAwareTestCase
      */
     public TestPropertyManager(String testName)
     {
-        super(testName);
+        super(testName, "./src/test/Log4j.properties");
     }
 
     /**

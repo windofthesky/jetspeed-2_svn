@@ -129,13 +129,13 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
     public StoreablePortletEntityDelegate getPortletEntity(PortletDefinition portletDefinition, String entityName)
     {
         ObjectID entityId = JetspeedObjectID.createPortletEntityId(portletDefinition, entityName);
-        PortletEntity portletEntity = getPortletEntity(entityId);
+        PortletEntity portletEntity = null; // TODO: DST: this is failing, need a unit test for it: getPortletEntity(entityId);
         if (portletEntity == null)
         {
             portletEntity = newPortletEntityInstance(portletDefinition);
             ((PortletEntityCtrl) portletEntity).setId(entityId.toString());
         }
-        return wrapEntity((PortletEntityImpl) portletEntity);
+        return (StoreablePortletEntityDelegate)portletEntity; //wrapEntity(portletEntity);
     }
 
     /**
@@ -236,7 +236,7 @@ public class PortletEntityAccessComponentImpl implements PortletEntityAccessComp
         return pContainer.getStoreForThread(storeName);
     }
     
-    protected StoreablePortletEntityDelegate wrapEntity(PortletEntityImpl entity )
+    protected StoreablePortletEntityDelegate wrapEntity(PortletEntityImpl entity)
     {
 		List list =(List) ((PreferenceSetImpl)entity.getPreferenceSet()).getInnerCollection();
 		return new StoreablePortletEntityDelegate(entity, entity, list, getPersistenceStore());

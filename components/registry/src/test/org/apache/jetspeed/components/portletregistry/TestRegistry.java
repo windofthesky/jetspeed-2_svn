@@ -215,7 +215,7 @@ public class TestRegistry extends AbstractComponentAwareTestCase
      */
     public TestRegistry(String testName)
     {
-        super(testName);
+        super(testName, "./src/test/Log4j.properties");
     }
 
     /**
