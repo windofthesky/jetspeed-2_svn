@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistryComponent;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
@@ -21,6 +22,7 @@ import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.deployment.fs.FSObjectHandler;
 import org.apache.jetspeed.tools.pamanager.Deployment;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -119,6 +121,15 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                     log.warn(msg);
                 	throw new DeploymentException(msg);
                 }
+                
+                PortletRegistryComponent regsitry = (PortletRegistryComponent) Jetspeed.getComponentManager().getComponent(PortletRegistryComponent.class);
+                PortletApplicationDefinition pa = regsitry.getPortletApplicationByIdentifier(paName);
+                if(pa != null)
+                {
+                    log.info("Removing a portlets from the PortletCache that belong to portlet application "+paName);
+                    PortletCache.removeAll(pa);
+                }
+                
                 log.info("Preparing to undeploy portlet application \""+paName+"\"");
                 pam.undeploy(webAppDir, paName);
                 log.info("Portlet application \""+paName+"\""+" was successfuly undeployed.");

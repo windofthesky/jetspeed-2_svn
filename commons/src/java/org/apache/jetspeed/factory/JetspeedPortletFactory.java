@@ -15,14 +15,15 @@
  */
 package org.apache.jetspeed.factory;
 
+import javax.portlet.Portlet;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import javax.portlet.Portlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletConfig;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.PortletCache;
 import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -37,6 +38,8 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public abstract class JetspeedPortletFactory
 {
 
+    private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
+    
     /**
      * Gets a portlet by either creating it or returning a handle to it from the portlet 'cache'
      * 
@@ -50,7 +53,8 @@ public abstract class JetspeedPortletFactory
         Portlet portlet = null;
         Class portletClass = null;
         String handle = null;
-        String portletName =  portletDefinition.getName();
+        String portletName = portletDefinition.getId().toString();
+        //String portletName = portletDefinition.getName();
         String className = portletDefinition.getClassName(); 
 
         try
@@ -74,9 +78,9 @@ public abstract class JetspeedPortletFactory
         }
         catch (Throwable e)
         {
-            System.out.println(">>>> Exception Loading Class: " + e);
+            log.error("PortletFactory: Failed to load portlet "+className, e);
             e.printStackTrace();
-            throw new PortletException( "PortletFactory: Unable to load class " + className );
+            throw new PortletException( "PortletFactory: Failed to load portlet " + className +":"+e.toString(), e);
         }
 
         return portlet;

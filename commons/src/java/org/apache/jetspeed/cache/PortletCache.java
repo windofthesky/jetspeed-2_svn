@@ -16,8 +16,14 @@
 package org.apache.jetspeed.cache;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.portlet.Portlet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * Very Simple Portlet Cache to manage portlets in container
@@ -33,6 +39,7 @@ import javax.portlet.Portlet;
 public class PortletCache
 {
     static private HashMap portlets = new HashMap();
+    private static Log log = LogFactory.getLog(PortletCache.class);
     
     /*
      * Adds a portlet to the portlet cache. If it exists, replaces it
@@ -69,6 +76,18 @@ public class PortletCache
         {        
             portlets.remove(portletName);
         }    
+    }
+    
+    static public void removeAll(PortletApplicationDefinition portletApplication)
+    {
+         Iterator itr = portletApplication.getPortletDefinitionList().iterator();
+         log.info("Removing all portlets from cache for PA: "+portletApplication.getId());
+         while(itr.hasNext())
+         {             
+             PortletDefinition portlet = (PortletDefinition) itr.next();
+             log.info("Removing portlet "+portlet.getId());
+             remove(portlet.getId().toString());
+         }
     }
     
 }
