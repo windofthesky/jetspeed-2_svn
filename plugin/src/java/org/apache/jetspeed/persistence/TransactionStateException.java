@@ -51,86 +51,54 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package org.apache.jetspeed.persistence.impl;
+package org.apache.jetspeed.persistence;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import org.apache.fulcrum.InitializationException;
-import org.apache.jetspeed.persistence.TransactionStateException;
-import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.commons.lang.exception.NestableException;
 
 /**
- * This plugin uses OJB with straight peristence broker to 
- * provide persistence operations.  transaction support 
- * is provided straight through RDBMS. 
+ * <p>
+ * TransactionStateException
+ * </p>
  * 
- * @deprecated Currently unimplemented.  DO NOT USE!!!  
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a> 
+ * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @version $Id$
+ *
  */
-public class OJBPBPersistencePlugin extends AbstractOJBPersistencePlugin
+public class TransactionStateException extends NestableException
 {
 
     /**
-     * @see org.apache.jetspeed.services.perisistence.impl.AbstractOJBPersistencePlugin#postInit()
+     * 
      */
-    protected void postInit() throws InitializationException
+    public TransactionStateException()
     {
-        // nothing needs to be done
-    }
-
-    /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#beginTransaction()
-     */
-    public void beginTransaction() throws TransactionStateException
-    {
-        throw new UnsupportedOperationException("Not Implemented!");
+        super();
         
     }
 
     /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#commitTransaction()
+     * @param arg0
      */
-    public void commitTransaction() throws TransactionStateException
+    public TransactionStateException(String arg0)
     {
-		throw new UnsupportedOperationException("Not Implemented!");
-
+        super(arg0);        
     }
 
     /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#markDirty(java.lang.Object)
+     * @param arg0
      */
-    public Object markDirty(Object obj) throws TransactionStateException
+    public TransactionStateException(Throwable arg0)
     {
-		throw new UnsupportedOperationException("Not Implemented!");
+        super(arg0);     
     }
 
     /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#prepareForDelete(java.lang.Object)
+     * @param arg0
+     * @param arg1
      */
-    public void prepareForDelete(Object obj) throws TransactionStateException
+    public TransactionStateException(String arg0, Throwable arg1)
     {
-		throw new UnsupportedOperationException("Not Implemented!");
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#prepareForUpdate(java.lang.Object)
-     */
-    public void prepareForUpdate(Object obj) throws TransactionStateException
-    {
-		throw new UnsupportedOperationException("Not Implemented!");
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.persistence.PersistencePlugin#rollbackTransaction()
-     */
-    public void rollbackTransaction() throws TransactionStateException
-    {
-		throw new UnsupportedOperationException("Not Implemented!");
-
+        super(arg0, arg1);     
     }
 
 }

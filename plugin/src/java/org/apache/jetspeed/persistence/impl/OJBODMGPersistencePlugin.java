@@ -56,12 +56,13 @@ package org.apache.jetspeed.persistence.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fulcrum.InitializationException;
+import org.apache.jetspeed.persistence.*;
 import org.apache.jetspeed.persistence.LookupCriteria;
 import org.apache.jetspeed.persistence.ODMGPersistencePlugin;
 import org.apache.jetspeed.persistence.PersistenceService;
 import org.apache.jetspeed.services.plugin.PluginConfiguration;
 
-import org.apache.ojb.broker.Identity;
+
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.odmg.OJB;
 import org.apache.ojb.odmg.TransactionImpl;
@@ -79,80 +80,160 @@ import org.odmg.Transaction;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
 public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin implements ODMGPersistencePlugin
-{
+{    
 
-    private static final Log log = LogFactory.getLog(OJBODMGPersistencePlugin.class);
+	private static final Log log = LogFactory.getLog(OJBODMGPersistencePlugin.class);
 
-    private String overrideDefaultJcd;
-    private PluginConfiguration configuration;
-    private String persistenceApi;
-    private Implementation odmg;
-    private Database db;
-    private PersistenceService ps;
+	private String overrideDefaultJcd;
+	private PluginConfiguration configuration;
+	private String persistenceApi;
+	private Implementation odmg;
+	private Database db;
+	private PersistenceService ps;
+	
+    private ThreadLocal TLtx;
     /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#abortTransaction(java.lang.Object)
+     * @see com.rippe.essential.agora.services.entity.AgoraEntityService#beginTransaction()
      */
-    public void abortTransaction(Object transaction)
+    public void beginTransaction() throws TransactionStateException
     {
-        Transaction tx = (Transaction) transaction;
-        tx.abort();
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#addObjectToTransaction(java.lang.Object, java.lang.Object)
-     */
-    public void addObjectToTransaction(Object object, Object transaction, int lockLevel)
-    {
-        int useLevel = -1;
-
-        switch (lockLevel)
+        if (TLtx == null || TLtx.get() == null)
         {
-            case LOCK_LEVEL_READ :
-                useLevel = Transaction.READ;
-                break;
+            if (TLtx == null)
+            {
+                TLtx = new ThreadLocal();
+            }
+            Transaction tx = null;
 
-            default :
-                useLevel = Transaction.WRITE;
-                break;
+            try
+            {
+                tx = odmg.newTransaction();
+                tx.begin();
+                TLtx.set(tx);
+            }
+            catch (Exception e)
+            {
+                if (tx != null)
+                {
+                    tx.abort();
+
+                }
+
+                log.fatal("beginTransaction() failed.", e);
+                throw new TransactionStateException("beginTransaction() failed.", e);
+            }
+        }
+    }
+    /**
+     * @see com.rippe.essential.agora.services.entity.AgoraEntityService#commitTransaction(java.lang.Object)
+     */
+    public void commitTransaction() throws TransactionStateException
+    {
+        Transaction tx = (Transaction) TLtx.get();
+        try
+        {
+
+            if (tx == null)
+            {
+                throw new TransactionStateException("Transaction is null for this thread.");
+            }
+
+            if (!tx.isOpen())
+            {
+                throw new TransactionStateException(tx + " is not in open.");
+            }
+
+            tx.commit();
+        }
+        catch (Exception e)
+        {
+            log.error("Unable to commit transaction " + e.toString(), e);
+            tx.abort();
+            throw new TransactionStateException("Unable to commit transaction " + e.toString(), e);
+        }
+        finally
+        {
+            if (tx != null)
+            {
+                TLtx.set(null);
+
+            }
         }
 
-        Transaction tx = (Transaction) transaction;
-        tx.lock(object, useLevel);
+    }
+    public void prepareForDelete(Object obj) throws TransactionStateException
+    {
+        Transaction tx = null;
+        if (TLtx == null || TLtx.get() == null)
+        {
+            throw new TransactionStateException("You can not mark objects for delete before a Transaction has been started.");
+        }
+        else
+        {
+            try
+            {
+                tx = (Transaction) TLtx.get();
+                tx.lock(obj, Transaction.WRITE);
+                db.deletePersistent(obj);
+            }
+            catch (Exception e)
+            {
+                throw new TransactionStateException("Unable to set object for deletion " + e.toString(), e);
+            }
+        }
 
     }
-
     /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#commitTransaction(java.lang.Object)
+     * @see com.rippe.essential.agora.services.entity.AgoraEntityService#update(java.lang.Object)
      */
-    public void commitTransaction(Object transaction)
+    public void prepareForUpdate(Object obj) throws TransactionStateException
     {
-        Transaction tx = (Transaction) transaction;
-        tx.commit();
-        System.out.print("");
+        Transaction tx = null;
+        if (TLtx == null || TLtx.get() == null)
+        {
+            throw new TransactionStateException("You can not mark objects for update before a Transaction has been started.");
+        }
+        else
+        {
+            try
+            {
+                tx = (Transaction) TLtx.get();
+                tx.lock(obj, Transaction.WRITE);
+            }
+            catch (Exception e)
+            {
+                throw new TransactionStateException("Unable to set object for update " + e.toString(), e);
+            }
+        }
+
     }
-
     /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#setObjectForDeletion(java.lang.Object, java.lang.Object)
+     * @see com.rippe.essential.agora.services.entity.AgoraEntityService#rollbackTranaction(java.lang.Object)
      */
-    public void setObjectForDeletion(Object object, Object transaction)
+    public void rollbackTransaction() throws TransactionStateException
     {
-        Transaction tx = (Transaction) transaction;
-        tx.lock(object, Transaction.WRITE);
-        db.deletePersistent(object);
-    }
+        Transaction tx = (Transaction) TLtx.get();
+        try
+        {
+            if (tx != null && tx.isOpen())
+            {
+                tx.abort();
+                TLtx.set(null);
+            }
+            else
+            {
+                log.warn("Unable to rollback null or not-in-progess connection");
+            }
 
-    /**
-     * This plug in uses ODMG to bacl its transactions.
-     * 
-     * @return  <code>org.odmg.Transaction</code> 
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#startTransaction()
-     * 
-     */
-    public Object startTransaction()
-    {
-        Transaction tx = odmg.newTransaction();
-        tx.begin();
-        return tx;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof TransactionStateException)
+            {
+                throw (TransactionStateException) e;
+            }
+            throw new TransactionStateException("Unable to rollback transaction " + tx + " " + e.toString(), e);
+        }
     }
 
     protected void initODMG() throws InitializationException
@@ -198,88 +279,6 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
     }
 
     /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#update(java.lang.Object)
-     */
-    public void update(Object object)
-    {
-
-        try
-        {
-
-            // 1. Start the transaction
-            TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
-            tx.begin();
-
-            //  2. remove object from the OJB cache
-            PersistenceBroker pb = tx.getBroker();
-            //pb.removeFromCache(object);
-
-            tx.markDirty(object);
-
-            // 3. retreive a "stale" version of this object from the db
-            Identity id = new Identity(object, pb);
-            //Object staleObject = pb.getObjectByIdentity(id);
-            // addObjectToTransaction(staleObject, tx, LOCK_LEVEL_WRITE);
-            tx.lock(object, Transaction.WRITE);
-
-            // 4. Map new values to the stale object
-            //BeanUtils.copyProperties(object, object);
-
-            // 5. Commit the transaction
-            tx.commit();
-
-        }
-        catch (Throwable e)
-        {
-            log.error("Unexpected exception thrown while updating object instance", e);
-        }
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#delete(java.lang.Object)
-     */
-    public void delete(Object object)
-    {
-        //        //  PersistenceBroker pb1 = getBroker();
-        //        try
-        //        {
-        //            // 1. Start the transaction
-        //            TransactionImpl tx = (TransactionImpl) odmg.newTransaction();
-        //
-        //            // 2. remove object from the OJB cache
-        //
-        //            tx.begin();
-        //            PersistenceBroker pb = tx.getBroker();
-        //            pb.removeFromCache(object);
-        //            Identity id = new Identity(object, pb);
-        //            // 3. retreive a "stale" version of this object from the db
-        //
-        //            Object staleObject = pb.getObjectByIdentity(id);
-        //            tx.lock(staleObject, Transaction.WRITE);
-        //            db.deletePersistent(staleObject);
-        //            pb.removeFromCache(staleObject);
-        //
-        //            // 5. Commit the transaction
-        //            tx.commit();
-        //        }
-        //        finally
-        //        {
-        //            // releaseBroker(pb1);
-        //        }
-        PersistenceBroker pb = getBroker();
-        try
-        {
-            pb.delete(object);
-        }
-        finally
-        {
-            releaseBroker(pb);
-        }
-
-    }
-
-    /**
      * @see org.apache.jetspeed.services.persistence.ODMGPersistencePlugin#newODMGTransaction()
      */
     public Transaction newODMGTransaction()
@@ -296,15 +295,21 @@ public class OJBODMGPersistencePlugin extends AbstractOJBPersistencePlugin imple
     }
 
     /**
-     * @see org.apache.jetspeed.services.persistence.PersistencePlugin#add(java.lang.Object)
+     * @see org.apache.jetspeed.persistence.PersistencePlugin#makeObjectConsistent(java.lang.Object)
      */
-    public void add(Object object)
+    public Object markDirty(Object obj) throws TransactionStateException
     {
-        Transaction tx = odmg.newTransaction();
-        tx.begin();
-        tx.lock(object, Transaction.WRITE);
-        tx.commit();
-
+        TransactionImpl ojbTx = (TransactionImpl) TLtx.get();
+        if(ojbTx != null && ojbTx.isOpen() )
+        {
+        	ojbTx.markDirty(obj);
+        	return obj;
+        }
+        else
+        {
+        	throw new  TransactionStateException("No transaction in progress");
+        }
+        
     }
 
 }

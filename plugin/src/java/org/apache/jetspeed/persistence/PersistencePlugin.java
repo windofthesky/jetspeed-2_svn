@@ -87,100 +87,28 @@ public interface PersistencePlugin extends Plugin
 
     /** Constant that specifies a transaction lock level of read */
     int LOCK_LEVEL_READ = 1;
-
-    /**
-     * <p>
-     * Starts a transaction to which objects being persisted through this plugin
-     * can be added to using the <code>addObjectToTransaction()</code> method.
-     * <br/>
-     * You should not perform operations directly on the returned transaction, instead
-     * use the methods supplied through the <code>PersistencePlugin</code>
-     * interface.
-     * </p>
-     * <p>
-     * <strong>NOTE:<strong> Transaction support is not a requirement to creating
-     * a PersistencePlugin.  However, since almost all apis that support transactions
-     * require that objects be modified within a transaction for there changes to be persisted
-     * (requirements of both ODMG and JDO).  So it is a good idea to perform these
-     * operations within a transaction regardless of whether or not transactions are supported
-     * by this plugin.  Plugins not providing transactions should return a <code>NullTransaction</code>.  
-     * object.  In addition they should also handle the <code>NullTransaction</code> object
-     * gracefully within any plugin methods that deal directly with transaction i.e. ignore it
-     * entirely with no exceptions being thrown.
-     * </p>
-     * 
-     * @return Object reflecting a transaction object specific to this plugin.
-     */
-    Object startTransaction();
-
-    /**
-     * Adds an <code>object</code> to the <code>transaction</code>
-     * started by this plugin's <code>startTransaction()</code> method.
-     * @param object Object to be added to the transaction
-     * @param transaction Transaction object started by this plugin's startTransaction method
-     */
-    void addObjectToTransaction(Object object, Object transaction, int lockLevel);
-
-    /**
-     * Sets the <code>object</code> for deletion within the current
-     * <code>treansaction</code>.  Upon invoking the <code>commitTransaction()</code>
-     * method, all objects scheduled for deletion are removed from persisteance.   
-     * Child objects and/or collections maybe removed/deleted
-     * if the underlying api provides support for cascading deletes.
-     * @param object Object to be scheduled for deletion 
-     * @param transaction Current transaction.
-     */
-    void setObjectForDeletion(Object object, Object transaction);
-
-    /**
-     * Aborts an existing transaction and all changes should be rolled back by the 
-     * underlying api, if transaction are supported.
-     * 
-     * @param transaction Transaction to abort.
-     */
-    void abortTransaction(Object transaction);
-
-    /**
-     * Commits all changes made to objects that were added to the 
-     * current transaction via the <code>addObjectToTransaction()</code>
-     * method and deletes all objects that have been scheduled for deletion
-     * via the <code>setObjectForDeletion()</code> method.
-     * @param transaction Transaction to be commited.
-     */
-    void commitTransaction(Object transaction);
-
-    /**
-     * Convenience method that updates a persistent object.  If this PersistencePlugin supports
-     * tranasctions, it should create an atomic transaction for updating this
-     * object and commit it.  This transaction will ONLY include this object
-     * and possibly child object and/or collections, if the underlying api or
-     * persistence mechanism supports it.
-     * <br/>
-     * <strong>NOTE:</strong>There is no need to perform this within a 
-     * transaction and may cause unexpected object locl contention if it is
-     * used within a transaction.
-     * 
-     * @param object persistent object to be updated
-     */
-    void update(Object object);
-
-    /**
-     * Convenience method that makes a previously non-persistent object persistent.  
-     * You should follow the same guidelines set 
-     * forth by the <code>update()</code> method in regards to transactions.
-     * @param object Object to be persisted.
-     */
-    void add(Object object);
-
-    /**
-     * Convenience method that removes a persistent object.  This operation
-     * should be considered atomic as both <code>add()</code> and <code>update()</code>
-     * with regards to transactions.  Child objects and/or collections maybe removed
-     * if the underlying api provides support for cascading deletes.
-     * 
-     * @param object Object that will be removed from persistence.
-     */
-    void delete(Object object);
+    
+	void beginTransaction() throws TransactionStateException;
+	
+	void commitTransaction() throws TransactionStateException;
+	
+	void prepareForDelete(Object obj) throws TransactionStateException;
+	
+	void prepareForUpdate(Object obj) throws TransactionStateException;
+	
+	void rollbackTransaction() throws TransactionStateException;
+	
+	/**
+	 * Takes an object that was modified outside of the current transaction
+	 * and makes it so that it appears to have been modified within the 
+	 * current transaction.
+	 * @param obj Object modified outside of a transaction
+	 * @return An object the same type, whose object graph match those
+	 * of the <code>obj</code> argument but is consistent within the
+	 * current transaction.
+	 * @throws TransactionStateException
+	 */
+	Object markDirty(Object obj) throws TransactionStateException;
 
     Collection getCollectionByQuery(Class clazz, Object query);
     

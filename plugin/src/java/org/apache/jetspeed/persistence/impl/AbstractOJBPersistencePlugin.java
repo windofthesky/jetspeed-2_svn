@@ -106,42 +106,6 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
     private String overrideDefaultJcd;
 
     /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#abortTransaction(java.lang.Object)
-     */
-    public abstract void abortTransaction(Object transaction);
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#add(java.lang.Object)
-     */
-    public void add(Object object)
-    {
-        Object tx = startTransaction();
-        addObjectToTransaction(object, tx, LOCK_LEVEL_WRITE);
-        commitTransaction(tx);
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#addObjectToTransaction(java.lang.Object, java.lang.Object)
-     */
-    public abstract void addObjectToTransaction(Object object, Object transaction, int lockLevel);
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#commitTransaction(java.lang.Object)
-     */
-    public abstract void commitTransaction(Object transaction);
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#delete(java.lang.Object)
-     */
-    public void delete(Object object)
-    {
-        Object tx = startTransaction();
-        setObjectForDeletion(object, tx);
-        commitTransaction(tx);
-    }
-
-    /**
      * @return <code>true</code> if the <code>obj</code> is
      * of type AbstractOJBPersistencePlugin and the name defined
      * within the plugin configuration for <code>obj</code> is the
@@ -487,54 +451,6 @@ public abstract class AbstractOJBPersistencePlugin implements PersistencePlugin
             releaseBroker(pb);
         }
 
-    }
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#setObjectForDeletion(java.lang.Object, java.lang.Object)
-     */
-    public abstract void setObjectForDeletion(Object object, Object transaction);
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#startTransaction()
-     */
-    public abstract Object startTransaction();
-
-    /**
-     * @see org.apache.jetspeed.services.perisistence.PersistencePlugin#update(java.lang.Object)
-     */
-    public void update(Object object)
-    {
-        PersistenceBroker pb = null;
-        try
-        {
-            pb = getBroker();
-            // 1. remove object from the OJB cache
-            pb.removeFromCache(object);
-
-            // 2. Start the transaction
-            Object tx = startTransaction();
-
-            // 3. retreive a "stale" version of this object from the db
-            Identity id = new Identity(object, pb);
-            Object staleObject = pb.getObjectByIdentity(id);
-            addObjectToTransaction(staleObject, tx, LOCK_LEVEL_WRITE);
-
-            // 4. Map new values to the stale object
-            BeanUtils.copyProperties(staleObject, object);
-
-            // 5. Commit the transaction
-            commitTransaction(tx);
-            pb.removeFromCache(staleObject);
-
-        }
-        catch (Throwable e)
-        {
-            log.error("Unexpected exception thrown while updating object instance", e);
-        }
-        finally
-        {
-            releaseBroker(pb);
-        }
     }
 
     public Collection getExtent(Class clazz)
