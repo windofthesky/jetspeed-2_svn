@@ -5,3 +5,4 @@ target
 hsqldb
 bin
 *.log*
+.checkclipse
