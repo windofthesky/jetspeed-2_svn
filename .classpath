@@ -5,7 +5,6 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="struts-portlet/framework/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="struts-portlet/spi/src/java"/>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry excluding="**/CVS/*" kind="src" path="portal/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="portlet-api/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="applications/demo/src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="cps/src/java"/>
@@ -25,6 +24,7 @@
 	<classpathentry kind="src" path="components/prefs/src/test"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/security/src/java"/>
 	<classpathentry excluding="**/CVS*" kind="src" path="components/security/src/test"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="portal/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/jdom/jars/jdom-b8.jar"/>
 	<classpathentry exported="true" kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-1.0-beta-1.jar"/>

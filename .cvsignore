@@ -6,3 +6,4 @@ hsqldb
 bin
 *.log*
 .checkclipse
+.encoding
