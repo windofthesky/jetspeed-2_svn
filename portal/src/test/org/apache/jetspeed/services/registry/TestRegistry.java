@@ -65,6 +65,7 @@ import junit.framework.Test;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cps.CommonPortletServices;
+import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -187,6 +188,11 @@ public class TestRegistry extends JetspeedTest
             pac.setName(APP_1_NAME);
             pac.setDescription("This is a Registry Test Portlet.");
             pac.setVersion("1.0");
+            
+            DublinCore dc = pac.getDublinCore();
+            dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 1");
+            dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 2");
+            dc.addTitle(Jetspeed.getDefaultLocale(), "Test title 3");
 
             wac.setContextRoot("/root");
             wac.addDescription(Jetspeed.getDefaultLocale(), "This is an english desrcitpion");
@@ -278,6 +284,30 @@ public class TestRegistry extends JetspeedTest
             throw e;
         }
 
+    }
+    
+    public void testDublinCore() throws Throwable
+    {
+        // JetspeedPortletRegistry.clearCache();
+        // test that portlet application exists
+        // plugin.clearCache();
+        try
+        {
+            JetspeedPortletRegistry.beginTransaction();
+            MutablePortletApplication appExists = JetspeedPortletRegistry.getPortletApplication(APP_1_NAME);
+            assertNotNull(appExists);
+            
+            DublinCore dc = appExists.getDublinCore();
+            
+            assertEquals(dc.getTitles().size(), 3);
+            
+            JetspeedPortletRegistry.commitTransaction();
+        }
+        catch(Throwable e)
+        {
+            JetspeedPortletRegistry.rollbackTransaction();
+            throw e;
+        }
     }
 
     public void testAddingPortlet() throws Throwable
