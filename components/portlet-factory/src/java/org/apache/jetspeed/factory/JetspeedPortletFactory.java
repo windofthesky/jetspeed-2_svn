@@ -112,7 +112,7 @@ public class JetspeedPortletFactory implements PortletFactory
         catch (ClassNotFoundException e)
         {
             synchronized (classLoaderMap)
-            {
+            {                
                 Iterator itr = classLoaderMap.values().iterator();
                 while (itr.hasNext() && portlet == null)
                 {
@@ -120,22 +120,20 @@ public class JetspeedPortletFactory implements PortletFactory
                     try
                     {                        
                         portlet = (Portlet) cl.loadClass(className).newInstance();
+                        if(portlet != null)
+                        {
+                           log.warn("Portlet class "+className+" successfuly located in classloader "+cl+".  "+
+                                     "You can safely ignore any prior messages classloading messages for this class."); 
+                        }
                     }
-                    catch (ClassNotFoundException e1)
+                    catch (Exception e1)
                     {
                         // move along
-                        System.out.println("CNF: "  + e1.toString() + ":" + className);
+                        log.warn("The PortletFactory did not locate class "+className+" in classloader "+cl+".  "+
+                                   "This message can be ignored if "+className+" can be located in subsequent classloaders.  "+
+                                   "This message triggered by: "+e.toString());
                     }
-                    catch (NoClassDefFoundError e2)
-                    {
-                        // move along
-                        System.out.println("NCDF: " + e2.toString() + ":" + className);                        
-                    }
-                    catch (ExceptionInInitializerError e3)
-                    {
-                        // move along
-                        System.out.println("EIIE: " + e3.toString() + ":" + className);                                                
-                    }
+                    
                 }
             }
         }
