@@ -35,9 +35,17 @@ public interface SSOProvider
     * Public API's for SSO functinality
     * @return
     */
-	boolean			hasSSOCredentials(Subject subject, String site);
-	void					addBasicAuthenticationForSite(HttpServletRequest request, Subject subject, String site) throws SSOException;
-	SSOContext		getCredentials(Subject subject, String site)  throws SSOException;;
-	void      			addCredentialsForSite(Subject subject, String site, String pwd)  throws SSOException; 
-	void      			removeCredentialsForSite(Subject subject, String site)  throws SSOException; 
+	boolean	hasSSOCredentials(Subject subject, String site);
+        
+	SSOContext getCredentials(Subject subject, String site)  
+        throws SSOException;
+    
+	void  addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
+        throws SSOException;
+    
+    void  updateCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
+    throws SSOException;
+    
+	void removeCredentialsForSite(Subject subject, String site)  
+        throws SSOException; 
 }

@@ -121,7 +121,7 @@ public class TestSSOComponent extends DatasourceEnabledSpringTestCase
     		// Add credential
     		try
 			{
-    			ssoBroker.addCredentialsForSite(subject, TEST_URL,"test");
+    			ssoBroker.addCredentialsForSite(subject, "TODO", TEST_URL,"test");
     			System.out.println("SSO Credential added for user:" + TEST_USER+ " site: " + TEST_URL);
 			}
 			catch(SSOException ssoex)

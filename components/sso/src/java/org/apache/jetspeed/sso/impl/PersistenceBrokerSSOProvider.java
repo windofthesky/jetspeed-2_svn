@@ -95,15 +95,6 @@ public class PersistenceBrokerSSOProvider extends
 	}
 
 	/* (non-Javadoc)
-	 * @see org.apache.jetspeed.sso.SSOProvider#addBasicAuthenticationForSite(javax.servlet.http.HttpServletRequest, javax.security.auth.Subject, java.lang.String)
-	 */
-	public void addBasicAuthenticationForSite(HttpServletRequest request,
-			Subject subject, String site) throws SSOException {
-		// TODO Needs to be done for SSO Final
-
-	}
-
-	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.sso.SSOProvider#getCredentials(javax.security.auth.Subject, java.lang.String)
 	 */
 	public SSOContext getCredentials(Subject subject, String site)
@@ -134,7 +125,7 @@ public class PersistenceBrokerSSOProvider extends
 		 * Adds credentials for a user to the site. If the site doesn't exist it will be created
 	 * @see org.apache.jetspeed.sso.SSOProvider#addCredentialsForSite(javax.security.auth.Subject, java.lang.String, java.lang.String)
 	 */
-	public void addCredentialsForSite(Subject subject, String site, String pwd)
+	public void addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)
 			throws SSOException {
 		
 		// Check if the site already exists
@@ -357,4 +348,10 @@ public class PersistenceBrokerSSOProvider extends
 	    return null;
 	    
 	}
+    
+    public void  updateCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
+    throws SSOException
+    {
+        
+    }
 }
