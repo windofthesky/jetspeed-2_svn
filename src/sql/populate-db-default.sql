@@ -304,7 +304,6 @@ insert into PROFILING_RULE values ('role-group',
 insert into RULE_CRITERION values (11, 'role-group', 0, 'role', 'role', null, 2);
 insert into RULE_CRITERION values (12, 'role-group', 1, 'navigation', 'navigation', '/', 2);
 insert into RULE_CRITERION values (13, 'role-group', 2, 'group', 'group', null, 2);
-insert into RULE_CRITERION values (14, 'role-group', 3, 'group', 'group', null, 2);
 
 insert into PROFILING_RULE values ('group-fallback', 
      'org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule',
