@@ -31,6 +31,7 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -38,8 +39,8 @@ import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * SecurityValve
- *
- * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
 public class SecurityValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.SecurityValve
@@ -47,20 +48,20 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
     private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
     private Profiler profiler;
     private UserManager userMgr;
-    
-    public SecurityValveImpl(Profiler profiler, UserManager userMgr)
+
+    public SecurityValveImpl( Profiler profiler, UserManager userMgr )
     {
         this.profiler = profiler;
         this.userMgr = userMgr;
     }
 
     /**
-     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)
+     * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext,
+     *          org.apache.jetspeed.pipeline.valve.ValveContext)
      */
-    public void invoke(RequestContext request, ValveContext context) throws PipelineException
+public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {
-        try
-        {
+
             // initialize/validate security subject
 
             // access request user principal if defined or default
@@ -102,6 +103,7 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
                 {
                     subject = null;
                 }
+           
                 
                 // if subject not available, generate default subject using
                 // request or default profiler anonymous user principal
@@ -119,33 +121,32 @@ public class SecurityValveImpl extends AbstractValve implements org.apache.jetsp
             // set request context subject
             request.setSubject(subject);
             
-            // Pass control to the next Valve in the Pipeline and execute under the current subject
+            // Pass control to the next Valve in the Pipeline and execute under
+            // the current subject
             final ValveContext vc = context;
             final RequestContext rc = request;            
-            Subject.doAsPrivileged(subject, new PrivilegedAction()
+            PipelineException pe = (PipelineException) Subject.doAsPrivileged(subject, new PrivilegedAction()
             {
-                public Object run()
+                public Object run() 
                 {
-                    try 
+                     try
                     {
-                        vc.invokeNext(rc);
+                        vc.invokeNext(rc);                 
+                        return null;
                     }
                     catch (PipelineException e)
-                    {                        
-                    }
-                    return null;                    
+                    {
+                        return e;
+                    }                    
                 }
             }, null);
             
-        }
-        catch (Throwable t)
-        {
-            // TODO: valve exception handling formalized
-            t.printStackTrace();
-        }
+            if(pe != null)
+            {
+                throw pe;
+            }       
 
     }
-
     public String toString()
     {
         return "SecurityValve";

@@ -17,20 +17,18 @@ package org.apache.jetspeed.engine;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -151,11 +149,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             catch (Throwable e)
             {
                 // save the exception to complain loudly later :-)
-                initFailure = e;
-                log.fatal("Jetspeed: init() failed: ", e);
-                console.fatal("Jetspeed: init() failed: ", e);
-                System.err.println(ExceptionUtils.getStackTrace(e));
-                throw new ServletException("Jetspeed: init() failed", e);
+                final String msg = "Jetspeed: init() failed: ";
+                initFailure = e;               
+                log.fatal(msg, e);
+                console.fatal(msg, e);
+
             }
 
             console.info(INIT_DONE_MSG);
@@ -205,7 +203,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             // Check to make sure that we started up properly.
             if (initFailure != null)
             {
-                throw initFailure;
+                throw new ServletException("Failed to initalize jetspeed.  "+initFailure.toString(), initFailure);
             }
 
             // If this is the first invocation, perform some late
@@ -229,10 +227,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             }
 
         }
-        catch (Throwable t)
+        catch (JetspeedException e)
         {
-            t.printStackTrace();
-            //handleException(data, req, res, t);
+            final String msg = "Fatal error encountered while processing portal request: "+e.toString();
+            log.fatal(msg, e);
+            throw new ServletException(msg, e);
         }
     }
 

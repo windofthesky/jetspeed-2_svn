@@ -221,8 +221,8 @@ public abstract class AbstractEngine implements Engine
     public void service( RequestContext context ) throws JetspeedException
     {
         // requestContextPerThread.put(Thread.currentThread(), context);
-        try
-        {
+
+
             if (useInternalJNDI)
             {
                 // bind the current JNDI context to this service thread.
@@ -230,7 +230,14 @@ public abstract class AbstractEngine implements Engine
                         .getComponent(JNDIComponent.class);
                 if (jndi != null)
                 {
-                    jndi.bindToCurrentThread();
+                    try
+                    {
+                        jndi.bindToCurrentThread();
+                    }
+                    catch (NamingException e)
+                    {
+                        throw new JetspeedException("Unable bind jndi: "+e.toString(), e);
+                    }
                 }
             }
             String targetPipeline = context
@@ -250,22 +257,7 @@ public abstract class AbstractEngine implements Engine
                 }
             }
             pipeline.invoke(context);
-        }
-        catch (Throwable t)
-        {
-            String msg = "JetspeedEngine unable to service request: "
-                    + t.toString();
-            log.error(msg, t);
-            try
-            {
-                // throw new JetspeedException(msg, t);
-                t.printStackTrace(context.getResponse().getWriter());
-            }
-            catch (IOException e)
-            {
-                log.error("Failed to write error to response "+e.toString(), e);
-            }
-        }
+   
     }
 
     /**
