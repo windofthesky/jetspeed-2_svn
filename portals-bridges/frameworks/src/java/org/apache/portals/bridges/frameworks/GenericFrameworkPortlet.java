@@ -65,7 +65,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
     private static final String INITPARAM_VALIDATOR_CONFIG = "validator-configuration";
 
     private static final String PREFS_SUFFIX = ".prefs";
-    
+
     /**
      * Action signature for calling velocity portlet actions
      */
@@ -85,18 +85,15 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         super.init(config);
 
         String springConfig = this.getInitParameter(INITPARAM_SPRING_CONFIG);
-        if (springConfig == null) { throw new PortletException(
-                "Spring Configuration file not specified"); }
+        if (springConfig == null) { throw new PortletException("Spring Configuration file not specified"); }
 
-        String validatorConfig = this
-                .getInitParameter(INITPARAM_VALIDATOR_CONFIG);
+        String validatorConfig = this.getInitParameter(INITPARAM_VALIDATOR_CONFIG);
 
         synchronized (semaphore)
         {
             if (null == model)
             {
-                model = new PortletApplicationModelImpl(springConfig,
-                        validatorConfig);
+                model = new PortletApplicationModelImpl(springConfig, validatorConfig);
                 model.init(config);
             }
         }
@@ -110,8 +107,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
      * (4) execute the velocity action (5) forward to another view
      *  
      */
-    public void processAction(ActionRequest request, ActionResponse response)
-            throws PortletException, IOException
+    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
     {
         // (1) Determine the current view
         String view = determineLogicalView(request);
@@ -123,7 +119,8 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         {
             // (2) restore state from Form to Prefs
             bean = formToPrefs(request, view, mb);
-        } else
+        }
+        else
         {
             // (2) restore state from Form to Bean
             bean = formToBean(request, view, mb);
@@ -146,14 +143,15 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 }
 
                 forward = model.getForward(view, ForwardConstants.SUCCESS);
-            } else
+            }
+            else
             {
                 // call the specified action in the post params
-                String actionForward = invokeVelocityPortletAction(action,
-                        request, response);
+                String actionForward = invokeVelocityPortletAction(action, request, response);
                 forward = model.getForward(actionForward);
             }
-        } else
+        }
+        else
         {
             // failed validation
             forward = model.getForward(view, ForwardConstants.FAILURE);
@@ -164,8 +162,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     }
 
-    protected void forwardToView(ActionRequest request,
-            ActionResponse response, String forward)
+    protected void forwardToView(ActionRequest request, ActionResponse response, String forward)
     {
         if (forward == null) { return; // stay on same page
         }
@@ -178,12 +175,13 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             String token = tokenizer.nextToken();
             if (token.startsWith(ForwardConstants.MODE_PREFIX))
             {
-                newMode = setPortletMode(response, token.substring(ForwardConstants.MODE_PREFIX
-                        .length()));
-            } else if (token.startsWith(ForwardConstants.STATE_PREFIX))
+                newMode = setPortletMode(response, token.substring(ForwardConstants.MODE_PREFIX.length()));
+            }
+            else if (token.startsWith(ForwardConstants.STATE_PREFIX))
             {
                 setWindowState(response, token.substring(ForwardConstants.STATE_PREFIX.length()));
-            } else
+            }
+            else
             {
                 logicalView = token;
             }
@@ -202,14 +200,17 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             if (forward.equals(ForwardConstants.MAXIMIZED))
             {
                 response.setWindowState(WindowState.MAXIMIZED);
-            } else if (forward.equals(ForwardConstants.MINIMIZED))
+            }
+            else if (forward.equals(ForwardConstants.MINIMIZED))
             {
                 response.setWindowState(WindowState.MINIMIZED);
-            } else if (forward.equals(ForwardConstants.NORMAL))
+            }
+            else if (forward.equals(ForwardConstants.NORMAL))
             {
                 response.setWindowState(WindowState.NORMAL);
             }
-        } catch (WindowStateException e)
+        }
+        catch (WindowStateException e)
         {
         }
     }
@@ -223,23 +224,25 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 response.setPortletMode(PortletMode.VIEW);
                 mode = PortletMode.VIEW;
-            } else if (forward.equals(ForwardConstants.EDIT))
+            }
+            else if (forward.equals(ForwardConstants.EDIT))
             {
                 response.setPortletMode(PortletMode.EDIT);
                 mode = PortletMode.EDIT;
-            } else if (forward.equals(ForwardConstants.HELP))
+            }
+            else if (forward.equals(ForwardConstants.HELP))
             {
                 response.setPortletMode(PortletMode.HELP);
                 mode = PortletMode.HELP;
             }
-        } catch (PortletModeException e)
+        }
+        catch (PortletModeException e)
         {
         }
         return mode;
     }
 
-    protected void storePreferences(PortletRequest request, Map bean)
-            throws IOException, PortletException
+    protected void storePreferences(PortletRequest request, Map bean) throws IOException, PortletException
     {
         String key = "none";
 
@@ -257,10 +260,10 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 }
             }
             prefs.store();
-        } catch (ReadOnlyException roe)
+        }
+        catch (ReadOnlyException roe)
         {
-            throw new PortletException("Failed to set preference " + key
-                    + ", value is readonly");
+            throw new PortletException("Failed to set preference " + key + ", value is readonly");
         }
 
     }
@@ -273,8 +276,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
      * @return the current view
      * @throws PortletException
      */
-    protected String determineLogicalView(PortletRequest request)
-            throws PortletException
+    protected String determineLogicalView(PortletRequest request) throws PortletException
     {
         String view = null;
         if (request.getPortletMode().equals(PortletMode.VIEW))
@@ -284,69 +286,71 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
             {
                 view = this.getDefaultViewPage();
             }
-        } else if (request.getPortletMode().equals(PortletMode.EDIT))
+        }
+        else if (request.getPortletMode().equals(PortletMode.EDIT))
         {
             view = request.getParameter(FrameworkConstants.VIEW_EDIT_MODE);
             if (view == null)
             {
                 view = this.getDefaultEditPage();
             }
-        } else if (request.getPortletMode().equals(PortletMode.HELP))
+        }
+        else if (request.getPortletMode().equals(PortletMode.HELP))
         {
-            view = request.getParameter(FrameworkConstants.VIEW_VIEW_MODE);
+            view = request.getParameter(FrameworkConstants.VIEW_HELP_MODE);
             if (view == null)
             {
                 view = this.getDefaultHelpPage();
             }
         }
-        if (null == view) { throw new PortletException(
-                "Portlet error: cant find view resource for portlet: "
-                        + this.getPortletName()); }
+        if (null == view) { throw new PortletException("Portlet error: cant find view resource for portlet: "
+                + this.getPortletName()); }
         return view;
     }
 
-    protected void setLogicalView(ActionRequest request,
-            ActionResponse response, String view, PortletMode newMode)
+    protected void setLogicalView(ActionRequest request, ActionResponse response, String view, PortletMode newMode)
     {
         if (newMode == null)
         {
             if (request.getPortletMode().equals(PortletMode.VIEW))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
-            } else if (request.getPortletMode().equals(PortletMode.EDIT))
+            }
+            else if (request.getPortletMode().equals(PortletMode.EDIT))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
-            } else if (request.getPortletMode().equals(PortletMode.HELP))
+            }
+            else if (request.getPortletMode().equals(PortletMode.HELP))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
             }
-        } else
+        }
+        else
         {
             if (newMode.equals(PortletMode.VIEW))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_VIEW_MODE, view);
-            } else if (newMode.equals(PortletMode.EDIT))
+            }
+            else if (newMode.equals(PortletMode.EDIT))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_EDIT_MODE, view);
-            } else if (newMode.equals(PortletMode.HELP))
+            }
+            else if (newMode.equals(PortletMode.HELP))
             {
                 response.setRenderParameter(FrameworkConstants.VIEW_HELP_MODE, view);
             }
         }
     }
 
-    protected Object formToBean(ActionRequest request, String view, ModelBean mb)
-            throws PortletException
+    protected Object formToBean(ActionRequest request, String view, ModelBean mb) throws PortletException
     {
 
         // try to get the bean from the session first
-        Object bean = request.getPortletSession()
-                .getAttribute(mb.getBeanName());
+        Object bean = request.getPortletSession().getAttribute(mb.getBeanName());
         if (bean == null)
         {
             bean = model.createBean(mb);
-            if (bean == null) { throw new PortletException(
-                    "Portlet Action error in creating bean for view: " + view); }
+            if (bean == null) { throw new PortletException("Portlet Action error in creating bean for view: " + view); }
             request.getPortletSession().setAttribute(mb.getBeanName(), bean);
         }
 
@@ -354,21 +358,18 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
         try
         {
             BeanUtils.populate(bean, params);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
-            throw new PortletException(
-                    "Portlet Action error in  populating bean: "
-                            + mb.getBeanName(), e);
+            throw new PortletException("Portlet Action error in  populating bean: " + mb.getBeanName(), e);
         }
         return bean;
     }
 
-    protected Object formToPrefs(ActionRequest request, String view,
-            ModelBean mb) throws PortletException
+    protected Object formToPrefs(ActionRequest request, String view, ModelBean mb) throws PortletException
     {
         Map params = request.getParameterMap();
-        Map bean = (Map) request.getPortletSession().getAttribute(
-                view + PREFS_SUFFIX);
+        Map bean = (Map) request.getPortletSession().getAttribute(view + PREFS_SUFFIX);
         if (bean == null)
         {
             PortletPreferences prefs = request.getPreferences();
@@ -393,15 +394,16 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
                 if (value instanceof String)
                 {
                     bean.put(key, value);
-                } else if (value instanceof String[])
+                }
+                else if (value instanceof String[])
                 {
                     bean.put(key, ((String[]) value)[0]);
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
-            throw new PortletException(
-                    "Portlet Action error in  populating bean: ", e);
+            throw new PortletException("Portlet Action error in  populating bean: ", e);
         }
         return bean;
     }
@@ -414,65 +416,57 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
      * 
      * @param methodName
      */
-    protected String invokeVelocityPortletAction(String methodName,
-            ActionRequest request, ActionResponse response)
+    protected String invokeVelocityPortletAction(String methodName, ActionRequest request, ActionResponse response)
             throws PortletException
     {
         try
         {
-            Method method = this.getClass().getMethod(methodName,
-                    VELOCITY_PORTLET_ACTION_SIGNATURE);
+            Method method = this.getClass().getMethod(methodName, VELOCITY_PORTLET_ACTION_SIGNATURE);
             Object[] parameters =
             { request, response};
             String result = (String) method.invoke(this, parameters);
             return result;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
-            throw new PortletException("Failed to invoke portlet action: "
-                    + methodName, e);
+            throw new PortletException("Failed to invoke portlet action: " + methodName, e);
         }
     }
 
-    public void doView(RenderRequest request, RenderResponse response)
-            throws PortletException, IOException
+    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         doRender(request, response);
     }
 
-    public void doHelp(RenderRequest request, RenderResponse response)
-            throws PortletException, IOException
+    public void doHelp(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         doRender(request, response);
     }
 
-    public void doEdit(RenderRequest request, RenderResponse response)
-            throws PortletException, IOException
+    public void doEdit(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         doRender(request, response);
     }
 
-    protected void doRender(RenderRequest request, RenderResponse response)
-            throws PortletException, IOException
+    protected void doRender(RenderRequest request, RenderResponse response) throws PortletException, IOException
     {
         String view = determineLogicalView(request);
-        if (view == null) { throw new PortletException(
-                "Logical View not found: " + view); }
+        if (view == null) { throw new PortletException("Logical View not found: " + view); }
 
         String template = model.getTemplate(view);
-        if (template == null) { throw new PortletException(
-                "Template not found for Logical View: " + view); }
+        if (template == null) { throw new PortletException("Template not found for Logical View: " + view); }
 
         ModelBean mb = model.getBean(view);
         if (mb.getBeanType() == ModelBean.PREFS_MAP)
         {
             prefsToContext(request, view, mb);
-        } else
+        }
+        else
         {
             beanToContext(request, view, mb);
         }
 
-        putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request,
-                response));
+        putRequestVariable(request, FrameworkConstants.FORWARD_TOOL, new Forwarder(model, request, response));
 
         PortletContext context = getPortletContext();
         PortletRequestDispatcher rd = context.getRequestDispatcher(template);
@@ -481,8 +475,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     private void beanToContext(RenderRequest request, String view, ModelBean mb)
     {
-        Object bean = request.getPortletSession()
-                .getAttribute(mb.getBeanName());
+        Object bean = request.getPortletSession().getAttribute(mb.getBeanName());
         if (bean == null)
         {
             bean = model.createBean(mb);
@@ -494,8 +487,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
 
     private void prefsToContext(RenderRequest request, String view, ModelBean mb)
     {
-        Map bean = (Map) request.getPortletSession().getAttribute(
-                view + PREFS_SUFFIX);
+        Map bean = (Map) request.getPortletSession().getAttribute(view + PREFS_SUFFIX);
         if (bean == null)
         {
             PortletPreferences prefs = request.getPreferences();
@@ -511,8 +503,7 @@ public class GenericFrameworkPortlet extends GenericVelocityPortlet
      * @param name
      * @param value
      */
-    protected void putRequestVariable(RenderRequest request, String name,
-            Object value)
+    protected void putRequestVariable(RenderRequest request, String name, Object value)
     {
         request.setAttribute(name, value);
     }
