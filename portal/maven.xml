@@ -6,6 +6,21 @@
   <!-- Target of maven test:single test -->
 <property name='testcase' value='org.apache.jetspeed.profiler.TestProfiler'/>
 
+  <!-- ================================================================ -->
+  <!-- Set System properties for junit                                  -->
+  <!-- ================================================================ -->
+  <preGoal name="test:single">
+     <j:set var="java.security.auth.login.config" value="../services/security/src/webapp/WEB-INF/conf/jaas/login.conf"/>
+     <j:set var="applicationRoot" value="src/webapp"/>
+     <j:set var="maven.junit.sysproperties">java.security.auth.login.config applicationRoot</j:set>
+  </preGoal>
+ 
+  <preGoal name="test:test">
+    <j:set var="java.security.auth.login.config" value="../services/security/src/webapp/WEB-INF/conf/jaas/login.conf"/>
+    <j:set var="applicationRoot" value="src/webapp"/>
+    <j:set var="maven.junit.sysproperties">java.security.auth.login.config applicationRoot</j:set>
+  </preGoal>
+
 <!--
   <goal name="jaxb:portlet"
         description="Generate java classes from protlet API schema">
@@ -79,7 +94,6 @@
             <pathelement path="${maven.build.dest}"/>
           </classpath>
             <sysproperty key="services.HSQLDBServer.db.path" value="${hsql.deployment.db.path}"/>
-            <sysproperty key="pam.jetspeed.properties" value="/WEB-INF/conf/jetspeed.properties"/>
             <arg value="-action" />
             <arg value="deploy" />
             <arg value="-PortletAppName" />
@@ -105,7 +119,7 @@
             <arg value="-PortletAppName" />
             <arg value="testsuite" />
             <arg value="-warfilename" />
-            <arg value="../../SAVE-jakarta-pluto/testsuite/target/testsuite.war" />
+            <arg value="../../jakarta-pluto/testsuite/target/testsuite.war" />
             <arg value="-webappDir" />
             <arg value="${pam.deploy.dir}/" />
             <arg value="-PortalName" />
@@ -253,7 +267,6 @@
       <copy  file="./target/jetspeed.war" tofile="${deploy.war.dir}/${webapp.name}.war"/>
       <unwar src="${deploy.war.dir}/${webapp.name}.war" dest="${deploy.war.dir}/${webapp.name}"/>
       <copy  file="./src/resources/jetspeed.xml" tofile="${deploy.war.dir}/jetspeed.xml"/>
-      <copy  file="./src/resources/jetspeed.xml" tofile="${tomcat.root}/conf/Catalina/localhost/jetspeed.xml"/>
       <attainGoal name="catalina:base-shared" />
       <attainGoal name="catalina:shared" />
   </goal>
@@ -350,7 +363,8 @@
   <!-- ================================================================ -->
   <goal name="ojb.registry">
     <copy  file="./../services/registry/src/webapp/WEB-INF/conf/ojb/repository_registry.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_registry.xml"/>
-   </goal>
+    <copy  file="./../services/security/src/webapp/WEB-INF/conf/ojb/repository_security.xml" tofile="./src/webapp/WEB-INF/conf/ojb/repository_security.xml"/>
+  </goal>
   
 
  <goal name="pam.rssdeploy">
