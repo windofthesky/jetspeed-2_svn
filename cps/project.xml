@@ -128,14 +128,14 @@ limitations under the License.
     </dependency>
     <dependency>
       <id>picocontainer</id>
-      <version>1.0-beta-5-SNAPSHOT</version>
+      <version>1.0-beta-5</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
     <dependency>
       <id>nanocontainer</id>
-      <version>1.0-beta-1-SNAPSHOT</version>
+      <version>1.0-beta-1</version>
       <properties>
         <war.bundle.jar>true</war.bundle.jar>
       </properties>
