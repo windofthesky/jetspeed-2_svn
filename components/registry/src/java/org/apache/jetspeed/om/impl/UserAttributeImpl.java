@@ -26,6 +26,7 @@ public class UserAttributeImpl implements UserAttribute
 
     /** The application id. */
     protected long appId;
+    protected long id;
     
     /**
      * <p>Default constructor.</p>
@@ -91,4 +92,11 @@ public class UserAttributeImpl implements UserAttribute
         return userAttribute;
     }
 
+    /**
+     * @return Returns the id.
+     */
+    public long getId()
+    {
+        return id;
+    }
 }
